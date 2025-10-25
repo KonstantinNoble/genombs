@@ -675,23 +675,23 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="marketEvents" className="text-base font-semibold">
-                    Market Context (Optional)
-                    {marketEvents && (
-                      <span className={`ml-2 text-xs font-normal ${marketEvents.length > 250 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                        ({marketEvents.length}/250 characters)
-                      </span>
-                    )}
-                  </Label>
-                  <Textarea
-                    id="marketEvents"
-                    placeholder="e.g., ECB interest rate cut, Strong AI rally in tech sector, Upcoming earnings season"
-                    value={marketEvents}
-                    onChange={(e) => setMarketEvents(e.target.value)}
-                    rows={4}
-                    maxLength={250}
-                    className="resize-none"
-                  />
+                  <Label htmlFor="marketEvents" className="text-base font-semibold">Market Context (Optional)</Label>
+                  <Select value={marketEvents} onValueChange={setMarketEvents}>
+                    <SelectTrigger id="marketEvents" className="h-12">
+                      <SelectValue placeholder="Select market context" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="interest-rate-changes">Interest Rate Changes</SelectItem>
+                      <SelectItem value="tech-rally">Tech Sector Rally</SelectItem>
+                      <SelectItem value="earnings-season">Earnings Season</SelectItem>
+                      <SelectItem value="market-volatility">High Market Volatility</SelectItem>
+                      <SelectItem value="inflation-concerns">Inflation Concerns</SelectItem>
+                      <SelectItem value="geopolitical-tensions">Geopolitical Tensions</SelectItem>
+                      <SelectItem value="economic-recovery">Economic Recovery</SelectItem>
+                      <SelectItem value="market-correction">Market Correction</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Button

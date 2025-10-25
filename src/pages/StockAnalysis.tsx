@@ -53,6 +53,8 @@ const StockAnalysis = () => {
   const [wealthClass, setWealthClass] = useState<string>("");
 
   useEffect(() => {
+    let creditsChannel: any = null;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/auth");
@@ -61,20 +63,52 @@ const StockAnalysis = () => {
         loadHistory(session.user.id);
         loadCredits(session.user.id);
         setLoading(false);
+
+        // Realtime: keep credits in sync
+        creditsChannel = supabase
+          .channel('user_credits_updates')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
+            (payload) => {
+              const next = (payload as any)?.new?.credits ?? (payload as any)?.old?.credits;
+              if (typeof next === 'number') setCredits(next);
+            }
+          )
+          .subscribe();
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         navigate("/auth");
+        creditsChannel?.unsubscribe();
+        creditsChannel = null;
       } else {
         setUser(session.user);
         loadHistory(session.user.id);
         loadCredits(session.user.id);
+
+        // Recreate realtime subscription for this user
+        creditsChannel?.unsubscribe();
+        creditsChannel = supabase
+          .channel('user_credits_updates')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
+            (payload) => {
+              const next = (payload as any)?.new?.credits ?? (payload as any)?.old?.credits;
+              if (typeof next === 'number') setCredits(next);
+            }
+          )
+          .subscribe();
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      creditsChannel?.unsubscribe();
+    };
   }, [navigate]);
 
   const loadHistory = async (userId: string) => {
@@ -103,7 +137,7 @@ const StockAnalysis = () => {
     }
   };
 
-  const loadCredits = async (userId: string) => {
+  const loadCredits = async (userId: string): Promise<number> => {
     try {
       // Reset credits if needed (daily reset)
       await supabase.rpc('reset_daily_credits', { p_user_id: userId });
@@ -128,12 +162,15 @@ const StockAnalysis = () => {
         
         if (insertError) throw insertError;
         setCredits(100);
+        return 100;
       } else {
         setCredits(data.credits);
+        return data.credits;
       }
     } catch (error) {
       console.error('Error loading credits:', error);
       setCredits(0);
+      return 0;
     }
   };
 
@@ -143,9 +180,16 @@ const StockAnalysis = () => {
       return;
     }
 
-    if (credits < 100) {
+    // Always refresh credits before attempting an analysis
+    let currentCredits = credits;
+    if (user) {
+      const latest = await loadCredits(user.id);
+      if (typeof latest === 'number') currentCredits = latest;
+    }
+
+    if (currentCredits < 100) {
       toast.error(
-        `Nicht genügend Credits! Du hast ${credits} Credits, benötigst aber 100. Credits werden täglich um Mitternacht auf 100 zurückgesetzt.`,
+        `Not enough credits! You have ${currentCredits} credits, need 100. Credits reset daily at midnight.`,
         { duration: 5000 }
       );
       return;
@@ -198,13 +242,13 @@ const StockAnalysis = () => {
       console.error('Analysis error:', error);
       
       // Handle insufficient credits error
-      if (error?.message?.includes('Insufficient credits')) {
+      if (error?.status === 402 || error?.message?.includes('Insufficient credits')) {
         toast.error(
-          "Nicht genügend Credits! Du benötigst 100 Credits für eine Analyse. Deine Credits werden täglich zurückgesetzt.",
+          "Not enough credits. You need 100 credits for an analysis. Credits reset daily.",
           { duration: 5000 }
         );
       } else {
-        toast.error("Analyse konnte nicht generiert werden. Bitte versuche es erneut.");
+        toast.error("Failed to generate analysis. Please try again.");
       }
       
       // ALWAYS reload credits after an error to keep display in sync
@@ -504,7 +548,7 @@ const StockAnalysis = () => {
                   ) : credits < 100 ? (
                     <>
                       <Coins className="mr-2 h-5 w-5" />
-                      Nicht genügend Credits ({credits}/100)
+                      Not enough credits ({credits}/100)
                     </>
                   ) : (
                     <>

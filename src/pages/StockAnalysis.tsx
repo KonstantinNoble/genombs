@@ -99,19 +99,14 @@ const StockAnalysis = () => {
     }
   };
 
-  const countWords = (text: string): number => {
-    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-  };
-
   const handleAnalyze = async () => {
     if (!assetClass) {
       toast.error("Please select an asset class");
       return;
     }
 
-    const wordCount = countWords(marketEvents);
-    if (wordCount > 40) {
-      toast.error(`Market context too long (${wordCount} words). Please limit to 40 words.`);
+    if (marketEvents.length > 250) {
+      toast.error(`Market context too long (${marketEvents.length} characters). Please limit to 250 characters.`);
       return;
     }
 
@@ -331,10 +326,10 @@ const StockAnalysis = () => {
 
             <div className="space-y-2">
               <Label htmlFor="marketEvents">
-                Market Context (Optional) - Max 40 words
+                Market Context (Optional) - Max 250 characters
                 {marketEvents && (
-                  <span className={`ml-2 text-xs ${countWords(marketEvents) > 40 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                    ({countWords(marketEvents)}/40 words)
+                  <span className={`ml-2 text-xs ${marketEvents.length > 250 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    ({marketEvents.length}/250 characters)
                   </span>
                 )}
               </Label>
@@ -344,6 +339,7 @@ const StockAnalysis = () => {
                 value={marketEvents}
                 onChange={(e) => setMarketEvents(e.target.value)}
                 rows={3}
+                maxLength={250}
               />
             </div>
 

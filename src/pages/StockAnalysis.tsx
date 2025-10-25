@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle, Trash2 } from "lucide-react";
+import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle, Trash2, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -43,6 +43,7 @@ const StockAnalysis = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [credits, setCredits] = useState<number>(100);
 
   const [riskTolerance, setRiskTolerance] = useState<string>("medium");
   const [timeHorizon, setTimeHorizon] = useState<string>("medium");
@@ -58,6 +59,7 @@ const StockAnalysis = () => {
       } else {
         setUser(session.user);
         loadHistory(session.user.id);
+        loadCredits(session.user.id);
         setLoading(false);
       }
     });
@@ -68,6 +70,7 @@ const StockAnalysis = () => {
       } else {
         setUser(session.user);
         loadHistory(session.user.id);
+        loadCredits(session.user.id);
       }
     });
 
@@ -100,9 +103,32 @@ const StockAnalysis = () => {
     }
   };
 
+  const loadCredits = async (userId: string) => {
+    try {
+      // Reset credits if needed (daily reset)
+      await supabase.rpc('reset_daily_credits', { p_user_id: userId });
+      
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('credits')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) throw error;
+      setCredits(data?.credits || 0);
+    } catch (error) {
+      console.error('Error loading credits:', error);
+    }
+  };
+
   const handleAnalyze = async () => {
     if (!assetClass) {
       toast.error("Please select an asset class");
+      return;
+    }
+
+    if (credits < 100) {
+      toast.error("Insufficient credits. You need 100 credits for an analysis. Credits reset daily.");
       return;
     }
 
@@ -130,8 +156,11 @@ const StockAnalysis = () => {
 
       setResult(data);
 
-      // Save to history
+      // Reload credits after successful analysis
       if (user) {
+        loadCredits(user.id);
+        
+        // Save to history
         await supabase.from('stock_analysis_history').insert({
           user_id: user.id,
           risk_tolerance: riskTolerance,
@@ -146,9 +175,16 @@ const StockAnalysis = () => {
       }
 
       toast.success("Analysis generated successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Analysis error:', error);
-      toast.error("Failed to generate analysis. Please try again.");
+      
+      // Handle insufficient credits error
+      if (error?.message?.includes('Insufficient credits')) {
+        toast.error("Insufficient credits. You need 100 credits for an analysis. Credits reset daily.");
+        if (user) loadCredits(user.id); // Reload credits to show current amount
+      } else {
+        toast.error("Failed to generate analysis. Please try again.");
+      }
     } finally {
       setAnalyzing(false);
     }
@@ -277,15 +313,24 @@ const StockAnalysis = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             <div className="mb-8 text-center">
-              <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full border border-yellow-500/30">
+                  <Coins className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                  <span className="text-sm font-semibold">{credits} Credits</span>
+                </div>
               </div>
               <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 AI Stock Analysis
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Get personalized stock suggestions based on your investment profile
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Each analysis costs 100 credits • Credits reset daily to 100
               </p>
             </div>
 
@@ -419,7 +464,7 @@ const StockAnalysis = () => {
 
                 <Button
                   onClick={handleAnalyze}
-                  disabled={analyzing || !assetClass}
+                  disabled={analyzing || !assetClass || credits < 100}
                   className="w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                   size="lg"
                 >
@@ -428,10 +473,15 @@ const StockAnalysis = () => {
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Analyzing...
                     </>
+                  ) : credits < 100 ? (
+                    <>
+                      <Coins className="mr-2 h-5 w-5" />
+                      Insufficient Credits (Need 100)
+                    </>
                   ) : (
                     <>
                       <TrendingUp className="mr-2 h-5 w-5" />
-                      Generate AI Analysis
+                      Generate AI Analysis (100 Credits)
                     </>
                   )}
                 </Button>

@@ -62,8 +62,9 @@ const Auth = () => {
       if (data.user) {
         toast({
           title: "Registration successful!",
-        description: "Please check your email to verify your account.",
+          description: "Please check your email to verify your account.",
         });
+        setIsLogin(true);
         setEmail("");
         setPassword("");
         setFullName("");
@@ -75,7 +76,13 @@ const Auth = () => {
           description: error.errors[0].message,
           variant: "destructive",
         });
-      } else if (error.message?.includes("already registered")) {
+      } else if (error.message?.toLowerCase()?.includes("signups not allowed") || error.message?.toLowerCase()?.includes("signup_disabled")) {
+        toast({
+          title: "Sign-ups disabled",
+          description: "Sign-ups are currently disabled. Please try again later.",
+          variant: "destructive",
+        });
+      } else if (error.message?.toLowerCase()?.includes("already registered")) {
         toast({
           title: "Email already registered",
           description: "Please sign in or use a different email address.",
@@ -100,12 +107,22 @@ const Auth = () => {
     try {
       const validatedData = signInSchema.parse({ email, password });
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: validatedData.email,
         password: validatedData.password,
       });
 
       if (error) throw error;
+
+      if (!data?.user?.email_confirmed_at) {
+        await supabase.auth.signOut();
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before signing in.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Welcome back!",

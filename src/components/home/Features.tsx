@@ -1,26 +1,26 @@
-import { TrendingUp, Shield, BarChart3, Lightbulb } from "lucide-react";
+import { Sparkles, Brain, BookOpen, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    icon: TrendingUp,
-    title: "Smart Portfolio Growth",
-    description: "Build a diversified portfolio tailored to your financial goals with AI-powered recommendations.",
+    icon: Sparkles,
+    title: "AI-Powered Suggestions",
+    description: "Get personalized stock recommendations based on your unique investment profile and risk tolerance.",
   },
   {
-    icon: Shield,
-    title: "Risk Management",
-    description: "Protect your investments with proven risk assessment tools and strategic allocation.",
+    icon: Brain,
+    title: "Smart Analysis",
+    description: "Advanced AI models analyze market trends and generate insights tailored to your goals.",
   },
   {
-    icon: BarChart3,
-    title: "Real-Time Analytics",
-    description: "Track performance with comprehensive analytics and market insights updated in real-time.",
+    icon: BookOpen,
+    title: "Educational Blog",
+    description: "Learn investment strategies, market analysis, and financial literacy through our expert articles.",
   },
   {
-    icon: Lightbulb,
-    title: "Expert Insights",
-    description: "Access curated research and expert analysis to make informed investment decisions.",
+    icon: Clock,
+    title: "Daily Free Analysis",
+    description: "Receive one free AI-powered stock analysis every 24 hours to guide your investment decisions.",
   },
 ];
 

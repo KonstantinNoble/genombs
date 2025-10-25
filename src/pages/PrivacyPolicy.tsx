@@ -168,6 +168,76 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Investment Analysis</h2>
+            <p className="text-muted-foreground mb-4">
+              Our website offers an AI-powered stock analysis feature that provides personalized investment inspiration
+              based on your individual investment profile. When you use this feature, the following personal data is
+              processed:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your investment preferences (risk tolerance, investment horizon, age group, asset class preferences)</li>
+              <li>Your market sentiment and wealth class information</li>
+              <li>User ID (to manage your analysis history and credit balance)</li>
+              <li>Date and time of analysis requests</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Purpose and functionality:</strong> The AI analysis generates personalized stock suggestions based
+              on your input. To prevent misuse, we operate a credit system: each analysis costs 100 credits, and users
+              receive 100 free credits daily that reset at midnight UTC. Your analysis history is stored in your account
+              so you can review previous suggestions.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data recipient and third-country transfer:</strong> To generate the AI-powered analysis, your
+              investment profile data is transmitted to OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA. OpenAI
+              processes this data using their GPT-4o-mini language model to generate personalized stock suggestions.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              As OpenAI is located in the United States (a third country outside the European Economic Area), data
+              transfers are subject to additional safeguards. OpenAI has implemented Standard Contractual Clauses (SCCs)
+              approved by the European Commission to ensure an adequate level of data protection. More information about
+              OpenAI's data processing practices can be found in their privacy policy at{" "}
+              <a
+                href="https://openai.com/policies/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://openai.com/policies/privacy-policy
+              </a>
+              .
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                Art. 6(1)(b) GDPR – The processing is necessary for the performance of the contract (providing you with
+                the requested AI analysis service).
+              </li>
+              <li>
+                Art. 6(1)(a) GDPR – By clicking "Generate AI Analysis", you consent to the transmission of your data to
+                OpenAI for the purpose of generating personalized investment inspiration.
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data retention and usage:</strong> According to OpenAI's data usage policies, API requests are
+              retained for a maximum of 30 days for abuse monitoring and security purposes. After this period, the data is
+              permanently deleted. Your input data is not used to train or improve OpenAI's models.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Your analysis history and credit usage data are stored in our backend database as long as your account
+              remains active. You can delete individual analysis entries from your history at any time. When you delete
+              your account, all associated analysis history and credit data is permanently removed.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important disclaimer:</strong> The AI-generated stock suggestions are for informational and
+              inspirational purposes only and do not constitute financial advice, investment recommendations, or
+              solicitations to buy or sell securities. You should always conduct your own research and consult with a
+              qualified financial advisor before making any investment decisions.
+            </p>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. Hosting and Data Transfers</h2>
             <p className="text-muted-foreground mb-4">
               Our website is hosted by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to
@@ -278,6 +348,9 @@ const PrivacyPolicy = () => {
               <li>Authentication data (hashed passwords, session tokens)</li>
               <li>Usage data (IP address, browser type, OS, referrer URL)</li>
               <li>Technical connection data (server logs)</li>
+              <li>Investment preferences (risk tolerance, time horizon, age, asset class, market sentiment, wealth class)</li>
+              <li>AI analysis requests and responses (stock suggestions, analysis history)</li>
+              <li>Credit usage data (daily credit balance, analysis timestamps)</li>
               <li>Affiliate tracking data (only on Impact.com / Simplify Wall Street websites)</li>
             </ul>
           </section>
@@ -289,6 +362,7 @@ const PrivacyPolicy = () => {
               <li>
                 Backend services (operated by Lovable.dev and their GDPR-compliant sub-processors including Supabase)
               </li>
+              <li>AI service provider: OpenAI LLC (USA) – for AI-powered investment analysis</li>
               <li>Email and domain provider: IONOS SE</li>
               <li>Affiliate partners: Impact Tech, Inc. (Impact.com) and Simplify Wall Street</li>
               <li>Public authorities, if legally required</li>
@@ -388,7 +462,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> October 25, 2025
+              <strong>Last updated:</strong> January 25, 2025
             </p>
           </section>
         </article>

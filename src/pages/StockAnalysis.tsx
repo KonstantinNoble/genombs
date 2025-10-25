@@ -103,35 +103,17 @@ const StockAnalysis = () => {
     let analysisChannel: any = null;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
+      if (session) {
         setUser(session.user);
         loadHistory(session.user.id);
         loadAnalysisLimit(session.user.id);
-        setLoading(false);
-
-        // Realtime: keep analysis limit in sync
-        analysisChannel = supabase
-          .channel('user_analysis_limit_updates')
-          .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
-            (payload) => {
-              const lastAnalysis = (payload as any)?.new?.last_analysis_at ?? (payload as any)?.old?.last_analysis_at;
-              if (lastAnalysis !== undefined) {
-                setLastAnalysisAt(lastAnalysis);
-                checkCanAnalyze(lastAnalysis);
-              }
-            }
-          )
-          .subscribe();
       }
+      setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        navigate("/auth");
+        setUser(null);
         analysisChannel?.unsubscribe();
         analysisChannel = null;
       } else {
@@ -331,6 +313,164 @@ const StockAnalysis = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // Preview mode for non-authenticated users
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
+        <Navbar />
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
+              </div>
+              <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                AI Stock Analysis
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Get personalized stock suggestions based on your investment profile
+              </p>
+            </div>
+
+            {/* Preview Cards */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <Card className="border-primary/20 shadow-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                <CardHeader className="relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <TrendingUp className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">Personalized Recommendations</CardTitle>
+                  </div>
+                  <CardDescription className="text-base">
+                    Our AI analyzes your risk tolerance, time horizon, and investment goals to suggest stocks tailored specifically for you.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="border-primary/20 shadow-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                <CardHeader className="relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Shield className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">Market Context Analysis</CardTitle>
+                  </div>
+                  <CardDescription className="text-base">
+                    Get insights that consider current market events, economic conditions, and sector trends for more informed decisions.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="border-primary/20 shadow-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                <CardHeader className="relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <DollarSign className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">Diversified Strategies</CardTitle>
+                  </div>
+                  <CardDescription className="text-base">
+                    Receive a balanced portfolio of growth, defensive, and dividend stocks aligned with your wealth class and goals.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="border-primary/20 shadow-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                <CardHeader className="relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Clock className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">Daily Free Analysis</CardTitle>
+                  </div>
+                  <CardDescription className="text-base">
+                    Get one comprehensive AI-powered stock analysis every day, completely free after signing up.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+
+            {/* Sample Analysis Preview */}
+            <Card className="mb-8 shadow-xl border-primary/20 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-50" />
+              <CardHeader className="relative">
+                <CardTitle className="text-2xl mb-2">Sample Analysis Output</CardTitle>
+                <CardDescription className="text-base">Here's what you'll receive:</CardDescription>
+              </CardHeader>
+              <CardContent className="relative space-y-4">
+                <div className="p-4 bg-card/50 border border-border rounded-lg backdrop-blur-sm">
+                  <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Stock Suggestions
+                  </h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Badge className="mt-1 bg-green-500/10 text-green-700 dark:text-green-400">Growth</Badge>
+                      <span>Technology sector recommendations with detailed rationale</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Badge className="mt-1 bg-blue-500/10 text-blue-700 dark:text-blue-400">Defensive</Badge>
+                      <span>Stable companies for risk mitigation</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Badge className="mt-1 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">Dividend</Badge>
+                      <span>Income-generating stocks for steady returns</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="p-4 bg-card/50 border border-border rounded-lg backdrop-blur-sm">
+                  <h3 className="font-semibold text-lg mb-2">General Market Analysis</h3>
+                  <p className="text-muted-foreground">
+                    Comprehensive overview of market conditions, sector trends, and strategic recommendations tailored to your profile.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* CTA Section */}
+            <Card className="shadow-2xl border-primary/30 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+              <CardContent className="p-8 text-center">
+                <div className="max-w-2xl mx-auto space-y-6">
+                  <h2 className="text-3xl font-bold">Ready to Get Your Personalized Analysis?</h2>
+                  <p className="text-lg text-muted-foreground">
+                    Sign up now to receive your first AI-powered stock analysis for free. No credit card required.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <Button 
+                      size="lg" 
+                      onClick={() => navigate("/auth")}
+                      className="bg-gradient-to-r from-primary to-secondary hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg px-8"
+                    >
+                      Sign Up Free
+                    </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      onClick={() => navigate("/auth")}
+                      className="text-lg px-8 border-primary/30 hover:bg-primary/5"
+                    >
+                      Sign In
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Join thousands of investors making smarter decisions with AI
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }

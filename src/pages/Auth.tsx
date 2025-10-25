@@ -195,11 +195,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-8 left-8">
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={() => navigate("/")}
-          className="text-muted-foreground hover:text-foreground"
+          className="bg-background/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back

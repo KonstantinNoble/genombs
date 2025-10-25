@@ -226,9 +226,7 @@ const PrivacyPolicy = () => {
               Economic Area), data transfers are subject to additional safeguards through Standard Contractual Clauses
               (SCCs) approved by the European Commission.
             </p>
-            <p className="text-muted-foreground mb-4">
-              More information:
-            </p>
+            <p className="text-muted-foreground mb-4">More information:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 Google Privacy Policy:{" "}
@@ -267,9 +265,7 @@ const PrivacyPolicy = () => {
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                Art. 6(1)(b) GDPR – Processing necessary for providing the requested AI analysis service
-              </li>
+              <li>Art. 6(1)(b) GDPR – Processing necessary for providing the requested AI analysis service</li>
               <li>
                 Art. 6(1)(a) GDPR – By clicking "Generate AI Analysis", you consent to data transmission to the AI
                 providers
@@ -295,7 +291,10 @@ const PrivacyPolicy = () => {
               includes:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your investment profile inputs (risk tolerance, time horizon, age, asset class, market events, wealth class)</li>
+              <li>
+                Your investment profile inputs (risk tolerance, time horizon, age, asset class, market events, wealth
+                class)
+              </li>
               <li>The generated stock suggestions and analysis</li>
               <li>Timestamp of the analysis</li>
             </ul>
@@ -313,13 +312,6 @@ const PrivacyPolicy = () => {
               The application uses realtime database subscriptions to update your analysis limit status automatically
               when a new analysis becomes available (after 24 hours). This technical feature does not involve additional
               data processing beyond what is already described.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">Preview Mode for Non-Authenticated Users</h3>
-            <p className="text-muted-foreground mb-4">
-              Users who are not logged in can view a preview of the AI Analysis feature, including sample outputs and
-              feature descriptions. No personal data is collected from non-authenticated users visiting this preview
-              page.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Important Disclaimer</h3>
@@ -440,15 +432,33 @@ const PrivacyPolicy = () => {
               <li>Contact data (email address, if you contact us)</li>
               <li>User account data (email, user ID, timestamps)</li>
               <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
-              <li>Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for technical purposes</li>
+              <li>
+                Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for
+                technical purposes
+              </li>
               <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
-              <li>Investment preferences (risk tolerance, time horizon, age, asset class preferences, market events/context, wealth class)</li>
-              <li>AI analysis requests and responses (stock suggestions with ticker symbols, sectors, assessments, rationale, general market analysis, and complete analysis history)</li>
+              <li>
+                Investment preferences (risk tolerance, time horizon, age, asset class preferences, market
+                events/context, wealth class)
+              </li>
+              <li>
+                AI analysis requests and responses (stock suggestions with ticker symbols, sectors, assessments,
+                rationale, general market analysis, and complete analysis history)
+              </li>
               <li>Analysis limit tracking data (last analysis timestamp, 24-hour usage limit enforcement data)</li>
-              <li>Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our servers)</li>
+              <li>
+                Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our
+                servers)
+              </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
-              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered stock analysis feature, your personal investment data (risk tolerance, time horizon, etc.) is transmitted server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway. <strong>Your client IP address is NOT transmitted to the AI providers (Google or OpenAI)</strong>. Only the IP address of our backend server is visible to the AI providers. This server-side architecture protects your privacy by ensuring that AI providers cannot directly identify or track individual users by their IP addresses.
+              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered stock
+              analysis feature, your personal investment data (risk tolerance, time horizon, etc.) is transmitted
+              server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
+              <strong>Your client IP address is NOT transmitted to the AI providers (Google or OpenAI)</strong>. Only
+              the IP address of our backend server is visible to the AI providers. This server-side architecture
+              protects your privacy by ensuring that AI providers cannot directly identify or track individual users by
+              their IP addresses.
             </p>
           </section>
 
@@ -456,10 +466,12 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">10. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages infrastructure, and processes technical connection data (IP addresses, server logs)
+                <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
+                infrastructure, and processes technical connection data (IP addresses, server logs)
               </li>
               <li>
-                <strong>Backend services:</strong> Operated by Lovable.dev and their GDPR-compliant sub-processors including Supabase (database, authentication, serverless functions, realtime subscriptions)
+                <strong>Backend services:</strong> Operated by Lovable.dev and their GDPR-compliant sub-processors
+                including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
                 <strong>AI service providers (for AI-powered stock analysis only):</strong>
@@ -469,21 +481,28 @@ const PrivacyPolicy = () => {
                   <li>OpenAI LLC (San Francisco, CA, USA) – GPT-5 models (GPT-5, GPT-5 Mini, GPT-5 Nano)</li>
                 </ul>
                 <p className="mt-2 text-sm">
-                  <strong>Server-side processing:</strong> AI requests are processed through our backend (Supabase Edge Functions), which means AI providers receive only your investment profile data (risk tolerance, time horizon, age, asset class, market events, wealth class) and the generated analysis, but NOT your client IP address or direct user identification data. Only the backend server's IP address is visible to AI providers.
+                  <strong>Server-side processing:</strong> AI requests are processed through our backend (Supabase Edge
+                  Functions), which means AI providers receive only your investment profile data (risk tolerance, time
+                  horizon, age, asset class, market events, wealth class) and the generated analysis, but NOT your
+                  client IP address or direct user identification data. Only the backend server's IP address is visible
+                  to AI providers.
                 </p>
               </li>
               <li>
                 <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – email communication
               </li>
               <li>
-                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Simplify Wall Street – tracking only occurs on their websites after you click affiliate links
+                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Simplify Wall Street – tracking
+                only occurs on their websites after you click affiliate links
               </li>
               <li>
                 <strong>Public authorities:</strong> Only if legally required by applicable law
               </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
-              All third-party processors are bound by GDPR-compliant Data Processing Agreements (DPAs) or Standard Contractual Clauses (SCCs) where data is transferred to third countries outside the European Economic Area.
+              All third-party processors are bound by GDPR-compliant Data Processing Agreements (DPAs) or Standard
+              Contractual Clauses (SCCs) where data is transferred to third countries outside the European Economic
+              Area.
             </p>
           </section>
 

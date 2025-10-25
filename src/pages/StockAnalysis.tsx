@@ -144,7 +144,10 @@ const StockAnalysis = () => {
     }
 
     if (credits < 100) {
-      toast.error("Insufficient credits. You need 100 credits for an analysis. Credits reset daily.");
+      toast.error(
+        `Nicht genügend Credits! Du hast ${credits} Credits, benötigst aber 100. Credits werden täglich um Mitternacht auf 100 zurückgesetzt.`,
+        { duration: 5000 }
+      );
       return;
     }
 
@@ -196,11 +199,16 @@ const StockAnalysis = () => {
       
       // Handle insufficient credits error
       if (error?.message?.includes('Insufficient credits')) {
-        toast.error("Insufficient credits. You need 100 credits for an analysis. Credits reset daily.");
-        if (user) loadCredits(user.id); // Reload credits to show current amount
+        toast.error(
+          "Nicht genügend Credits! Du benötigst 100 Credits für eine Analyse. Deine Credits werden täglich zurückgesetzt.",
+          { duration: 5000 }
+        );
       } else {
-        toast.error("Failed to generate analysis. Please try again.");
+        toast.error("Analyse konnte nicht generiert werden. Bitte versuche es erneut.");
       }
+      
+      // ALWAYS reload credits after an error to keep display in sync
+      if (user) loadCredits(user.id);
     } finally {
       setAnalyzing(false);
     }
@@ -334,8 +342,12 @@ const StockAnalysis = () => {
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full border border-yellow-500/30">
-                  <Coins className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${
+                  credits < 100 
+                    ? 'bg-red-500/20 border-red-500/30' 
+                    : 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30'
+                }`}>
+                  <Coins className={`h-5 w-5 ${credits < 100 ? 'text-red-600 dark:text-red-500' : 'text-yellow-600 dark:text-yellow-500'}`} />
                   <span className="text-sm font-semibold">{credits} Credits</span>
                 </div>
               </div>
@@ -492,7 +504,7 @@ const StockAnalysis = () => {
                   ) : credits < 100 ? (
                     <>
                       <Coins className="mr-2 h-5 w-5" />
-                      Insufficient Credits (Need 100)
+                      Nicht genügend Credits ({credits}/100)
                     </>
                   ) : (
                     <>

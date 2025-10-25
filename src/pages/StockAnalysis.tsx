@@ -333,8 +333,17 @@ const StockAnalysis = () => {
                 AI Stock Analysis
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get personalized stock suggestions based on your investment profile
+                Get general market information and educational stock examples based on your preferences
               </p>
+              <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-2xl mx-auto">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-muted-foreground text-left">
+                    <p className="font-semibold text-foreground mb-1">Wichtiger Hinweis:</p>
+                    <p>Dies ist keine Finanzberatung. Alle Informationen dienen ausschließlich zu Bildungszwecken. Konsultieren Sie einen zugelassenen Finanzberater, bevor Sie Investitionsentscheidungen treffen.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Preview Cards */}
@@ -559,11 +568,20 @@ const StockAnalysis = () => {
                 AI Stock Analysis
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get personalized stock suggestions based on your investment profile
+                Get general market information and educational stock examples based on your preferences
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 One free analysis per day • Powered by Gemini 2.5 Flash
               </p>
+              <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-2xl mx-auto">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-muted-foreground text-left">
+                    <p className="font-semibold text-foreground mb-1">Wichtiger Hinweis:</p>
+                    <p>Dies ist <strong>keine Finanzberatung</strong>. Alle Informationen dienen ausschließlich zu Bildungszwecken. Es werden keine konkreten Kauf- oder Verkaufsempfehlungen gegeben. Konsultieren Sie einen zugelassenen Finanzberater, bevor Sie Investitionsentscheidungen treffen.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <Card className="mb-6 border-yellow-500/50 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 shadow-lg">

@@ -77,21 +77,33 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are a financial analysis AI assistant. Based on the user's risk profile and market context, suggest 3-5 stocks that match their investment criteria.
+    const systemPrompt = `You are a financial information assistant providing general market information for educational purposes only.
+
+CRITICAL DISCLAIMERS - You MUST communicate these clearly:
+- This is NOT financial advice, investment advice, or personal financial consultation
+- This is general market information for educational purposes only
+- You do NOT provide personalized recommendations or specific buy/sell instructions
+- Users should consult with licensed financial advisors before making investment decisions
+- Past performance does not guarantee future results
+- All investments carry risk, including potential loss of principal
+
+Based on the user's stated preferences, provide 3-5 stock examples that generally align with their criteria as educational information:
 
 For each stock provide:
 - Company name and ticker symbol
 - Sector/Industry
-- Assessment (growth-oriented, defensive, dividend-strong, etc.)
-- Brief rationale (1-2 sentences)
+- General characteristics (e.g., growth-oriented, defensive, dividend-focused, etc.)
+- Brief factual information about why it might align with the stated criteria (1-2 sentences)
 
-Important:
-- These suggestions are purely informational and NOT financial advice
-- Always consider the user's risk tolerance and time horizon
-- Take current market events into account
-- Provide balanced suggestions across different sectors when appropriate`;
+Important Guidelines:
+- Use neutral, educational language
+- Present factual market information without directive recommendations
+- Emphasize this is for informational purposes only
+- Consider the user's stated risk tolerance and time horizon as filtering criteria
+- Take current market context into account
+- Provide balanced examples across different sectors when appropriate`;
 
-    const userPrompt = `Analyze investment opportunities with the following profile:
+    const userPrompt = `Provide general market information and educational stock examples based on the following stated preferences:
 - Risk Tolerance: ${riskTolerance}
 - Time Horizon: ${timeHorizon}
 ${age ? `- Age: ${age}` : ''}
@@ -99,7 +111,7 @@ ${wealthClass ? `- Wealth Class: ${wealthClass}` : ''}
 - Asset Class: ${assetClass}
 - Market Context: ${marketEvents || 'Current market conditions'}
 
-Provide 3-5 stock suggestions that match this profile.`;
+Please provide 3-5 stock examples for educational purposes that generally align with these stated preferences. Remember: This is informational only, not financial advice.`;
 
     console.log('Calling Lovable AI Gateway...');
 
@@ -120,7 +132,7 @@ Provide 3-5 stock suggestions that match this profile.`;
             type: 'function',
             function: {
               name: 'provide_stock_suggestions',
-              description: 'Provide stock investment suggestions based on user profile',
+              description: 'Provide educational stock examples based on stated user preferences (not financial advice)',
               parameters: {
                 type: 'object',
                 properties: {
@@ -134,10 +146,10 @@ Provide 3-5 stock suggestions that match this profile.`;
                         sector: { type: 'string', description: 'Industry sector' },
                         assessment: { 
                           type: 'string', 
-                          description: 'Type of stock',
+                          description: 'General characteristics of the stock',
                           enum: ['growth-oriented', 'defensive', 'dividend-strong', 'balanced', 'speculative']
                         },
-                        rationale: { type: 'string', description: 'Brief explanation (1-2 sentences)' }
+                        rationale: { type: 'string', description: 'Factual information about why this aligns with stated criteria (1-2 sentences)' }
                       },
                       required: ['name', 'ticker', 'sector', 'assessment', 'rationale'],
                       additionalProperties: false
@@ -147,7 +159,7 @@ Provide 3-5 stock suggestions that match this profile.`;
                   },
                   generalAnalysis: { 
                     type: 'string', 
-                    description: 'Overall market analysis and recommendations (2-3 sentences)' 
+                    description: 'General market information and educational context (2-3 sentences). Must emphasize this is for informational purposes only, not financial advice.' 
                   }
                 },
                 required: ['stocks', 'generalAnalysis'],

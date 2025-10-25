@@ -438,29 +438,53 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">9. Categories of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Contact data (email address, if you contact us)</li>
-              <li>User account data (email, timestamps)</li>
-              <li>Authentication data (hashed passwords, session tokens)</li>
-              <li>Usage data (IP address, browser type, OS, referrer URL)</li>
-              <li>Technical connection data (server logs)</li>
-              <li>Investment preferences (risk tolerance, time horizon, age, asset class, market sentiment, wealth class)</li>
-              <li>AI analysis requests and responses (stock suggestions, analysis history)</li>
-              <li>Credit usage data (daily credit balance, analysis timestamps)</li>
-              <li>Affiliate tracking data (only on Impact.com / Simplify Wall Street websites)</li>
+              <li>User account data (email, user ID, timestamps)</li>
+              <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
+              <li>Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for technical purposes</li>
+              <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
+              <li>Investment preferences (risk tolerance, time horizon, age, asset class preferences, market events/context, wealth class)</li>
+              <li>AI analysis requests and responses (stock suggestions with ticker symbols, sectors, assessments, rationale, general market analysis, and complete analysis history)</li>
+              <li>Analysis limit tracking data (last analysis timestamp, 24-hour usage limit enforcement data)</li>
+              <li>Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our servers)</li>
             </ul>
+            <p className="text-muted-foreground mb-4 mt-4">
+              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered stock analysis feature, your personal investment data (risk tolerance, time horizon, etc.) is transmitted server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway. <strong>Your client IP address is NOT transmitted to the AI providers (Google or OpenAI)</strong>. Only the IP address of our backend server is visible to the AI providers. This server-side architecture protects your privacy by ensuring that AI providers cannot directly identify or track individual users by their IP addresses.
+            </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">10. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Hosting provider: Lovable.dev</li>
               <li>
-                Backend services (operated by Lovable.dev and their GDPR-compliant sub-processors including Supabase)
+                <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages infrastructure, and processes technical connection data (IP addresses, server logs)
               </li>
-              <li>AI service provider: OpenAI LLC (USA) – for AI-powered investment analysis</li>
-              <li>Email and domain provider: IONOS SE</li>
-              <li>Affiliate partners: Impact Tech, Inc. (Impact.com) and Simplify Wall Street</li>
-              <li>Public authorities, if legally required</li>
+              <li>
+                <strong>Backend services:</strong> Operated by Lovable.dev and their GDPR-compliant sub-processors including Supabase (database, authentication, serverless functions, realtime subscriptions)
+              </li>
+              <li>
+                <strong>AI service providers (for AI-powered stock analysis only):</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Lovable AI Gateway (ai.gateway.lovable.dev) – intermediary service that routes requests to:</li>
+                  <li>Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)</li>
+                  <li>OpenAI LLC (San Francisco, CA, USA) – GPT-5 models (GPT-5, GPT-5 Mini, GPT-5 Nano)</li>
+                </ul>
+                <p className="mt-2 text-sm">
+                  <strong>Server-side processing:</strong> AI requests are processed through our backend (Supabase Edge Functions), which means AI providers receive only your investment profile data (risk tolerance, time horizon, age, asset class, market events, wealth class) and the generated analysis, but NOT your client IP address or direct user identification data. Only the backend server's IP address is visible to AI providers.
+                </p>
+              </li>
+              <li>
+                <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – email communication
+              </li>
+              <li>
+                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Simplify Wall Street – tracking only occurs on their websites after you click affiliate links
+              </li>
+              <li>
+                <strong>Public authorities:</strong> Only if legally required by applicable law
+              </li>
             </ul>
+            <p className="text-muted-foreground mb-4 mt-4">
+              All third-party processors are bound by GDPR-compliant Data Processing Agreements (DPAs) or Standard Contractual Clauses (SCCs) where data is transferred to third countries outside the European Economic Area.
+            </p>
           </section>
 
           <section className="mb-8">

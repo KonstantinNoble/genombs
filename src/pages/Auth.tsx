@@ -61,11 +61,12 @@ const Auth = () => {
 
       if (data.user) {
         toast({
-          title: "Account created successfully!",
-          description: "You can now sign in with your credentials.",
+          title: "Registrierung erfolgreich!",
+          description: "Bitte überprüfen Sie Ihre E-Mails, um Ihr Konto zu verifizieren.",
         });
-        setIsLogin(true);
+        setEmail("");
         setPassword("");
+        setFullName("");
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {

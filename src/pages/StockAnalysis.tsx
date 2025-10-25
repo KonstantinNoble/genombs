@@ -4,12 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle, Trash2, Coins } from "lucide-react";
+import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle, Trash2, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -43,7 +42,8 @@ const StockAnalysis = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [credits, setCredits] = useState<number>(100);
+  const [lastAnalysisAt, setLastAnalysisAt] = useState<string | null>(null);
+  const [canAnalyze, setCanAnalyze] = useState<boolean>(true);
 
   const [riskTolerance, setRiskTolerance] = useState<string>("medium");
   const [timeHorizon, setTimeHorizon] = useState<string>("medium");
@@ -52,8 +52,55 @@ const StockAnalysis = () => {
   const [marketEvents, setMarketEvents] = useState<string>("");
   const [wealthClass, setWealthClass] = useState<string>("");
 
+  const checkCanAnalyze = (lastAnalysis: string | null) => {
+    if (!lastAnalysis) {
+      setCanAnalyze(true);
+      return;
+    }
+    
+    const lastAnalysisDate = new Date(lastAnalysis);
+    const now = new Date();
+    const hoursSince = (now.getTime() - lastAnalysisDate.getTime()) / (1000 * 60 * 60);
+    
+    setCanAnalyze(hoursSince >= 24);
+  };
+
+  const loadAnalysisLimit = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('last_analysis_at')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          console.log('No analysis limit entry found, creating one...');
+          const { error: insertError } = await supabase
+            .from('user_credits')
+            .insert({
+              user_id: userId,
+              last_analysis_at: null
+            });
+          
+          if (insertError) throw insertError;
+          setLastAnalysisAt(null);
+          setCanAnalyze(true);
+        } else {
+          throw error;
+        }
+      } else {
+        setLastAnalysisAt(data?.last_analysis_at || null);
+        checkCanAnalyze(data?.last_analysis_at || null);
+      }
+    } catch (error) {
+      console.error('Error loading analysis limit:', error);
+      setCanAnalyze(false);
+    }
+  };
+
   useEffect(() => {
-    let creditsChannel: any = null;
+    let analysisChannel: any = null;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -61,18 +108,21 @@ const StockAnalysis = () => {
       } else {
         setUser(session.user);
         loadHistory(session.user.id);
-        loadCredits(session.user.id);
+        loadAnalysisLimit(session.user.id);
         setLoading(false);
 
-        // Realtime: keep credits in sync
-        creditsChannel = supabase
-          .channel('user_credits_updates')
+        // Realtime: keep analysis limit in sync
+        analysisChannel = supabase
+          .channel('user_analysis_limit_updates')
           .on(
             'postgres_changes',
             { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
             (payload) => {
-              const next = (payload as any)?.new?.credits ?? (payload as any)?.old?.credits;
-              if (typeof next === 'number') setCredits(next);
+              const lastAnalysis = (payload as any)?.new?.last_analysis_at ?? (payload as any)?.old?.last_analysis_at;
+              if (lastAnalysis !== undefined) {
+                setLastAnalysisAt(lastAnalysis);
+                checkCanAnalyze(lastAnalysis);
+              }
             }
           )
           .subscribe();
@@ -82,23 +132,26 @@ const StockAnalysis = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         navigate("/auth");
-        creditsChannel?.unsubscribe();
-        creditsChannel = null;
+        analysisChannel?.unsubscribe();
+        analysisChannel = null;
       } else {
         setUser(session.user);
         loadHistory(session.user.id);
-        loadCredits(session.user.id);
+        loadAnalysisLimit(session.user.id);
 
         // Recreate realtime subscription for this user
-        creditsChannel?.unsubscribe();
-        creditsChannel = supabase
-          .channel('user_credits_updates')
+        analysisChannel?.unsubscribe();
+        analysisChannel = supabase
+          .channel('user_analysis_limit_updates')
           .on(
             'postgres_changes',
             { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
             (payload) => {
-              const next = (payload as any)?.new?.credits ?? (payload as any)?.old?.credits;
-              if (typeof next === 'number') setCredits(next);
+              const lastAnalysis = (payload as any)?.new?.last_analysis_at ?? (payload as any)?.old?.last_analysis_at;
+              if (lastAnalysis !== undefined) {
+                setLastAnalysisAt(lastAnalysis);
+                checkCanAnalyze(lastAnalysis);
+              }
             }
           )
           .subscribe();
@@ -107,7 +160,7 @@ const StockAnalysis = () => {
 
     return () => {
       subscription.unsubscribe();
-      creditsChannel?.unsubscribe();
+      analysisChannel?.unsubscribe();
     };
   }, [navigate]);
 
@@ -137,59 +190,19 @@ const StockAnalysis = () => {
     }
   };
 
-  const loadCredits = async (userId: string): Promise<number> => {
-    try {
-      // Reset credits if needed (daily reset)
-      await supabase.rpc('reset_daily_credits', { p_user_id: userId });
-      
-      const { data, error } = await supabase
-        .from('user_credits')
-        .select('credits')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) throw error;
-      
-      // If no entry exists, create one
-      if (!data) {
-        const { error: insertError } = await supabase
-          .from('user_credits')
-          .insert({ 
-            user_id: userId, 
-            credits: 100,
-            last_reset_date: new Date().toISOString().split('T')[0]
-          });
-        
-        if (insertError) throw insertError;
-        setCredits(100);
-        return 100;
-      } else {
-        setCredits(data.credits);
-        return data.credits;
-      }
-    } catch (error) {
-      console.error('Error loading credits:', error);
-      setCredits(0);
-      return 0;
-    }
-  };
-
   const handleAnalyze = async () => {
     if (!assetClass) {
       toast.error("Please select an asset class");
       return;
     }
 
-    // Always refresh credits before attempting an analysis
-    let currentCredits = credits;
-    if (user) {
-      const latest = await loadCredits(user.id);
-      if (typeof latest === 'number') currentCredits = latest;
-    }
-
-    if (currentCredits < 100) {
+    if (!canAnalyze) {
+      const nextAnalysisTime = lastAnalysisAt 
+        ? new Date(new Date(lastAnalysisAt).getTime() + 24 * 60 * 60 * 1000)
+        : new Date();
+      
       toast.error(
-        `Not enough credits! You have ${currentCredits} credits, need 100. Credits reset daily at midnight.`,
+        `You can only perform one analysis per day. Next analysis available at ${nextAnalysisTime.toLocaleString()}`,
         { duration: 5000 }
       );
       return;
@@ -219,11 +232,8 @@ const StockAnalysis = () => {
 
       setResult(data);
 
-      // Reload credits after successful analysis
+      // Save to history and reload analysis limit
       if (user) {
-        loadCredits(user.id);
-        
-        // Save to history
         await supabase.from('stock_analysis_history').insert({
           user_id: user.id,
           risk_tolerance: riskTolerance,
@@ -235,24 +245,25 @@ const StockAnalysis = () => {
           result: data
         });
         loadHistory(user.id);
+        loadAnalysisLimit(user.id);
       }
 
       toast.success("Analysis generated successfully!");
     } catch (error: any) {
       console.error('Analysis error:', error);
       
-      // Handle insufficient credits error
-      if (error?.status === 402 || error?.message?.includes('Insufficient credits')) {
+      // Handle rate limit error
+      if (error?.status === 429 || error?.message?.includes('rate limit') || error?.message?.includes('one analysis per day')) {
         toast.error(
-          "Not enough credits. You need 100 credits for an analysis. Credits reset daily.",
+          "You can only perform one analysis per day. Please try again tomorrow.",
           { duration: 5000 }
         );
       } else {
         toast.error("Failed to generate analysis. Please try again.");
       }
       
-      // ALWAYS reload credits after an error to keep display in sync
-      if (user) loadCredits(user.id);
+      // Reload analysis limit after error
+      if (user) loadAnalysisLimit(user.id);
     } finally {
       setAnalyzing(false);
     }
@@ -303,6 +314,17 @@ const StockAnalysis = () => {
       default:
         return "bg-gray-500/10 text-gray-700 dark:text-gray-400";
     }
+  };
+
+  const getTimeUntilNextAnalysis = () => {
+    if (!lastAnalysisAt) return null;
+    
+    const lastAnalysisDate = new Date(lastAnalysisAt);
+    const nextAnalysisDate = new Date(lastAnalysisDate.getTime() + 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const hoursLeft = Math.max(0, Math.ceil((nextAnalysisDate.getTime() - now.getTime()) / (1000 * 60 * 60)));
+    
+    return hoursLeft;
   };
 
   if (loading) {
@@ -386,14 +408,12 @@ const StockAnalysis = () => {
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
                 </div>
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${
-                  credits < 100 
-                    ? 'bg-red-500/20 border-red-500/30' 
-                    : 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30'
-                }`}>
-                  <Coins className={`h-5 w-5 ${credits < 100 ? 'text-red-600 dark:text-red-500' : 'text-yellow-600 dark:text-yellow-500'}`} />
-                  <span className="text-sm font-semibold">{credits} Credits</span>
-                </div>
+                {!canAnalyze && (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-orange-500/20 border-orange-500/30">
+                    <Clock className="h-5 w-5 text-orange-600 dark:text-orange-500" />
+                    <span className="text-sm font-semibold">Next in {getTimeUntilNextAnalysis()}h</span>
+                  </div>
+                )}
               </div>
               <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 AI Stock Analysis
@@ -402,7 +422,7 @@ const StockAnalysis = () => {
                 Get personalized stock suggestions based on your investment profile
               </p>
               <p className="text-sm text-muted-foreground mt-2">
-                Each analysis costs 100 credits • Credits reset daily to 100
+                One free analysis per day • Powered by Gemini 2.5 Flash
               </p>
             </div>
 
@@ -536,7 +556,7 @@ const StockAnalysis = () => {
 
                 <Button
                   onClick={handleAnalyze}
-                  disabled={analyzing || !assetClass || credits < 100}
+                  disabled={analyzing || !assetClass || !canAnalyze}
                   className="w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                   size="lg"
                 >
@@ -545,15 +565,15 @@ const StockAnalysis = () => {
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Analyzing...
                     </>
-                  ) : credits < 100 ? (
+                  ) : !canAnalyze ? (
                     <>
-                      <Coins className="mr-2 h-5 w-5" />
-                      Not enough credits ({credits}/100)
+                      <Clock className="mr-2 h-5 w-5" />
+                      Available in {getTimeUntilNextAnalysis()}h
                     </>
                   ) : (
                     <>
                       <TrendingUp className="mr-2 h-5 w-5" />
-                      Generate AI Analysis (100 Credits)
+                      Generate AI Analysis (1x/day)
                     </>
                   )}
                 </Button>

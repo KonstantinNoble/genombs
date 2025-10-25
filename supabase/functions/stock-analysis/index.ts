@@ -2,8 +2,6 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -40,24 +38,23 @@ serve(async (req) => {
       );
     }
 
-    // Check and deduct credits (100 credits per analysis)
-    const { data: deductResult, error: deductError } = await supabaseClient.rpc('deduct_credits', {
-      p_user_id: user.id,
-      p_amount: 100
+    // Check if user can perform analysis (24h limit)
+    const { data: canAnalyze, error: limitError } = await supabaseClient.rpc('check_and_update_analysis_limit', {
+      p_user_id: user.id
     });
 
-    if (deductError) {
-      console.error('Error deducting credits:', deductError);
+    if (limitError) {
+      console.error('Error checking analysis limit:', limitError);
       return new Response(
-        JSON.stringify({ error: 'Failed to process credits' }),
+        JSON.stringify({ error: 'Failed to check analysis limit' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!deductResult) {
+    if (!canAnalyze) {
       return new Response(
-        JSON.stringify({ error: 'Insufficient credits. You need 100 credits for an analysis.' }),
-        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'You can only perform one analysis per day. Please try again in 24 hours.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -65,8 +62,9 @@ serve(async (req) => {
 
     console.log('Stock analysis request:', { riskTolerance, timeHorizon, age, assetClass, marketEvents, wealthClass });
 
-    if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY is not configured');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!lovableApiKey) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     // Validate inputs
@@ -101,14 +99,16 @@ ${wealthClass ? `- Wealth Class: ${wealthClass}` : ''}
 
 Provide 3-5 stock suggestions that match this profile.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    console.log('Calling Lovable AI Gateway...');
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -159,8 +159,20 @@ Provide 3-5 stock suggestions that match this profile.`;
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'AI service rate limit exceeded. Please try again later.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'AI service credits exhausted for this workspace.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
+      console.error('Lovable AI error:', response.status, errorText);
       return new Response(
         JSON.stringify({ error: 'Failed to generate analysis. Please try again.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -168,7 +180,7 @@ Provide 3-5 stock suggestions that match this profile.`;
     }
 
     const data = await response.json();
-    console.log('OpenAI response received');
+    console.log('AI response received');
 
     const toolCall = data.choices[0].message.tool_calls?.[0];
     if (!toolCall) {

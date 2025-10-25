@@ -47,10 +47,8 @@ const StockAnalysis = () => {
 
   const [riskTolerance, setRiskTolerance] = useState<string>("medium");
   const [timeHorizon, setTimeHorizon] = useState<string>("medium");
-  const [age, setAge] = useState<string>("");
   const [assetClass, setAssetClass] = useState<string>("");
   const [marketEvents, setMarketEvents] = useState<string>("");
-  const [wealthClass, setWealthClass] = useState<string>("");
 
   const checkCanAnalyze = (lastAnalysis: string | null) => {
     if (!lastAnalysis) {
@@ -203,10 +201,8 @@ const StockAnalysis = () => {
         body: {
           riskTolerance,
           timeHorizon,
-          age: age ? parseInt(age) : undefined,
           assetClass,
-          marketEvents,
-          wealthClass
+          marketEvents
         }
       });
 
@@ -220,10 +216,8 @@ const StockAnalysis = () => {
           user_id: user.id,
           risk_tolerance: riskTolerance,
           time_horizon: timeHorizon,
-          age: age ? parseInt(age) : null,
           asset_class: assetClass,
           market_events: marketEvents,
-          wealth_class: wealthClass,
           result: data
         });
         loadHistory(user.id);
@@ -634,42 +628,6 @@ const StockAnalysis = () => {
                       <SelectItem value="long">Long (5+ years)</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="age" className="text-base font-semibold">Age (Optional)</Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      placeholder="e.g., 35"
-                      value={age}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value.length <= 3) {
-                          setAge(value);
-                        }
-                      }}
-                      min="18"
-                      max="100"
-                      className="h-12"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="wealthClass" className="text-base font-semibold">Wealth Class (Optional)</Label>
-                    <Select value={wealthClass} onValueChange={setWealthClass}>
-                      <SelectTrigger id="wealthClass" className="h-12">
-                        <SelectValue placeholder="Select wealth class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low (up to €50,000)</SelectItem>
-                        <SelectItem value="middle">Middle (€50,000 - €250,000)</SelectItem>
-                        <SelectItem value="upper-middle">Upper Middle (€250,000 - €1M)</SelectItem>
-                        <SelectItem value="high">High (over €1M)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 <div className="space-y-2">

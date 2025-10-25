@@ -60,9 +60,9 @@ serve(async (req) => {
       );
     }
 
-    const { riskTolerance, timeHorizon, age, assetClass, marketEvents, wealthClass } = await req.json();
+    const { riskTolerance, timeHorizon, assetClass, marketEvents } = await req.json();
 
-    console.log('Stock analysis request:', { riskTolerance, timeHorizon, age, assetClass, marketEvents, wealthClass });
+    console.log('Stock analysis request:', { riskTolerance, timeHorizon, assetClass, marketEvents });
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {
@@ -106,8 +106,6 @@ Important Guidelines:
     const userPrompt = `Provide general market information and educational stock examples based on the following stated preferences:
 - Risk Tolerance: ${riskTolerance}
 - Time Horizon: ${timeHorizon}
-${age ? `- Age: ${age}` : ''}
-${wealthClass ? `- Wealth Class: ${wealthClass}` : ''}
 - Asset Class: ${assetClass}
 - Market Context: ${marketEvents || 'Current market conditions'}
 

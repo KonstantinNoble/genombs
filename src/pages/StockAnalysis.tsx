@@ -27,12 +27,22 @@ interface AnalysisResult {
   generalAnalysis: string;
 }
 
+interface HistoryItem {
+  id: string;
+  created_at: string;
+  asset_class: string;
+  risk_tolerance: string;
+  time_horizon: string;
+  result: AnalysisResult;
+}
+
 const StockAnalysis = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   const [riskTolerance, setRiskTolerance] = useState<string>("medium");
   const [timeHorizon, setTimeHorizon] = useState<string>("medium");
@@ -46,6 +56,7 @@ const StockAnalysis = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
+        loadHistory(session.user.id);
         setLoading(false);
       }
     });
@@ -55,15 +66,52 @@ const StockAnalysis = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
+        loadHistory(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const loadHistory = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('stock_analysis_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      
+      const typedHistory: HistoryItem[] = (data || []).map(item => ({
+        id: item.id,
+        created_at: item.created_at,
+        asset_class: item.asset_class,
+        risk_tolerance: item.risk_tolerance,
+        time_horizon: item.time_horizon,
+        result: item.result as unknown as AnalysisResult
+      }));
+      
+      setHistory(typedHistory);
+    } catch (error) {
+      console.error('Error loading history:', error);
+    }
+  };
+
+  const countWords = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
   const handleAnalyze = async () => {
     if (!assetClass) {
       toast.error("Please select an asset class");
+      return;
+    }
+
+    const wordCount = countWords(marketEvents);
+    if (wordCount > 40) {
+      toast.error(`Market context too long (${wordCount} words). Please limit to 40 words.`);
       return;
     }
 
@@ -84,6 +132,21 @@ const StockAnalysis = () => {
       if (error) throw error;
 
       setResult(data);
+
+      // Save to history
+      if (user) {
+        await supabase.from('stock_analysis_history').insert({
+          user_id: user.id,
+          risk_tolerance: riskTolerance,
+          time_horizon: timeHorizon,
+          age: age ? parseInt(age) : null,
+          asset_class: assetClass,
+          market_events: marketEvents,
+          result: data
+        });
+        loadHistory(user.id);
+      }
+
       toast.success("Analysis generated successfully!");
     } catch (error) {
       console.error('Analysis error:', error);
@@ -134,7 +197,40 @@ const StockAnalysis = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {/* History Sidebar */}
+          <aside className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Analysis History</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {history.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No history yet</p>
+                ) : (
+                  history.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => setResult(item.result)}
+                    >
+                      <div className="font-medium text-sm">{item.asset_class}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(item.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Risk: {item.risk_tolerance} | {item.time_horizon}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </aside>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-6">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">AI Stock Analysis</h1>
           <p className="text-muted-foreground">
@@ -234,7 +330,14 @@ const StockAnalysis = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="marketEvents">Market Context (Optional)</Label>
+              <Label htmlFor="marketEvents">
+                Market Context (Optional) - Max 40 words
+                {marketEvents && (
+                  <span className={`ml-2 text-xs ${countWords(marketEvents) > 40 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    ({countWords(marketEvents)}/40 words)
+                  </span>
+                )}
+              </Label>
               <Textarea
                 id="marketEvents"
                 placeholder="e.g., ECB interest rate cut, Strong AI rally in tech sector, Upcoming earnings season"
@@ -314,6 +417,8 @@ const StockAnalysis = () => {
             </Card>
           </div>
         )}
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

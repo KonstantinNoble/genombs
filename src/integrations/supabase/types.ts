@@ -32,6 +32,42 @@ export type Database = {
         }
         Relationships: []
       }
+      stock_analysis_history: {
+        Row: {
+          age: number | null
+          asset_class: string
+          created_at: string
+          id: string
+          market_events: string | null
+          result: Json
+          risk_tolerance: string
+          time_horizon: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          asset_class: string
+          created_at?: string
+          id?: string
+          market_events?: string | null
+          result: Json
+          risk_tolerance: string
+          time_horizon: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          asset_class?: string
+          created_at?: string
+          id?: string
+          market_events?: string | null
+          result?: Json
+          risk_tolerance?: string
+          time_horizon?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

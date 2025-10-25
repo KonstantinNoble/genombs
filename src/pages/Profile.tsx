@@ -12,8 +12,6 @@ import { User } from "@supabase/supabase-js";
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [fullName, setFullName] = useState("");
-  const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -28,16 +26,6 @@ const Profile = () => {
       }
 
       setUser(session.user);
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .maybeSingle();
-
-      if (profile) {
-        setFullName(profile.full_name || "");
-      }
     };
 
     getProfile();
@@ -51,35 +39,6 @@ const Profile = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setLoading(true);
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ full_name: fullName })
-        .eq("id", user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update profile",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -138,41 +97,19 @@ const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={user.email || ""}
-                    disabled
-                    className="bg-muted"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Email cannot be changed
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="bg-background"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-xl transition-all duration-300"
-                  disabled={loading}
-                >
-                  {loading ? "Updating..." : "Update Profile"}
-                </Button>
-              </form>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={user.email || ""}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Your registered email address
+                </p>
+              </div>
 
               <div className="pt-6 border-t border-border space-y-4">
                 <Button

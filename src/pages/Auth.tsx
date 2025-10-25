@@ -12,7 +12,6 @@ import { ArrowLeft } from "lucide-react";
 const signUpSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  fullName: z.string().trim().min(1, { message: "Full name is required" }),
 });
 
 const signInSchema = z.object({
@@ -24,7 +23,6 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -45,16 +43,13 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const validatedData = signUpSchema.parse({ email, password, fullName });
+      const validatedData = signUpSchema.parse({ email, password });
 
       const { data, error } = await supabase.auth.signUp({
         email: validatedData.email,
         password: validatedData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            full_name: validatedData.fullName,
-          },
         },
       });
 
@@ -68,7 +63,6 @@ const Auth = () => {
         setIsLogin(true);
         setEmail("");
         setPassword("");
-        setFullName("");
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -218,21 +212,6 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={isLogin ? handleSignIn : handleSignUp} className="space-y-4">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="bg-background"
-                />
-              </div>
-            )}
-            
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -291,6 +270,7 @@ const Auth = () => {
               onClick={() => {
                 setIsLogin(!isLogin);
                 setPassword("");
+                setEmail("");
               }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >

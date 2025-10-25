@@ -298,10 +298,14 @@ const StockAnalysis = () => {
                 type="number"
                 placeholder="e.g., 35"
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 3) {
+                    setAge(value);
+                  }
+                }}
                 min="18"
                 max="100"
-                maxLength={3}
               />
             </div>
 

@@ -49,6 +49,7 @@ const StockAnalysis = () => {
   const [age, setAge] = useState<string>("");
   const [assetClass, setAssetClass] = useState<string>("");
   const [marketEvents, setMarketEvents] = useState<string>("");
+  const [wealthClass, setWealthClass] = useState<string>("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -120,7 +121,8 @@ const StockAnalysis = () => {
           timeHorizon,
           age: age ? parseInt(age) : undefined,
           assetClass,
-          marketEvents
+          marketEvents,
+          wealthClass
         }
       });
 
@@ -137,6 +139,7 @@ const StockAnalysis = () => {
           age: age ? parseInt(age) : null,
           asset_class: assetClass,
           market_events: marketEvents,
+          wealth_class: wealthClass,
           result: data
         });
         loadHistory(user.id);
@@ -307,6 +310,21 @@ const StockAnalysis = () => {
                 min="18"
                 max="100"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="wealthClass">Vermögensschicht (Optional)</Label>
+              <Select value={wealthClass} onValueChange={setWealthClass}>
+                <SelectTrigger id="wealthClass">
+                  <SelectValue placeholder="Vermögensschicht auswählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Niedrig (bis 50.000€)</SelectItem>
+                  <SelectItem value="middle">Mittel (50.000€ - 250.000€)</SelectItem>
+                  <SelectItem value="upper-middle">Gehoben (250.000€ - 1 Mio.€)</SelectItem>
+                  <SelectItem value="high">Hoch (über 1 Mio.€)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

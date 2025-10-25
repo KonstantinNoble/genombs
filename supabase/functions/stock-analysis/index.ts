@@ -14,9 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { riskTolerance, timeHorizon, age, assetClass, marketEvents } = await req.json();
+    const { riskTolerance, timeHorizon, age, assetClass, marketEvents, wealthClass } = await req.json();
 
-    console.log('Stock analysis request:', { riskTolerance, timeHorizon, age, assetClass, marketEvents });
+    console.log('Stock analysis request:', { riskTolerance, timeHorizon, age, assetClass, marketEvents, wealthClass });
 
     if (!openAIApiKey) {
       throw new Error('OPENAI_API_KEY is not configured');
@@ -48,6 +48,7 @@ Important:
 - Risk Tolerance: ${riskTolerance}
 - Time Horizon: ${timeHorizon}
 ${age ? `- Age: ${age}` : ''}
+${wealthClass ? `- Wealth Class: ${wealthClass}` : ''}
 - Asset Class: ${assetClass}
 - Market Context: ${marketEvents || 'Current market conditions'}
 

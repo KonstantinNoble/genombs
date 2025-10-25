@@ -43,6 +43,7 @@ export type Database = {
           risk_tolerance: string
           time_horizon: string
           user_id: string
+          wealth_class: string | null
         }
         Insert: {
           age?: number | null
@@ -54,6 +55,7 @@ export type Database = {
           risk_tolerance: string
           time_horizon: string
           user_id: string
+          wealth_class?: string | null
         }
         Update: {
           age?: number | null
@@ -65,6 +67,7 @@ export type Database = {
           risk_tolerance?: string
           time_horizon?: string
           user_id?: string
+          wealth_class?: string | null
         }
         Relationships: []
       }

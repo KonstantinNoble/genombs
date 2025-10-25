@@ -26,8 +26,8 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-background via-[hsl(220,35%,96%)] to-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(220,70%,15%,0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(220,70%,15%,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+    <section className="py-24 bg-gradient-to-b from-background via-[hsl(220,35%,96%)] to-background relative overflow-hidden" aria-label="Platform features">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(220,70%,15%,0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(220,70%,15%,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" aria-hidden="true" />
       <div className="container relative mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">

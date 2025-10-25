@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black" aria-label="Hero section">
       
       <div className="container relative z-10 mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">

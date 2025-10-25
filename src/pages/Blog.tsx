@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
@@ -7,6 +8,10 @@ import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => {
   return (
+    <>
+      <title>Investment Blog - Expert Insights | Wealthconomy</title>
+      <meta name="description" content="Read expert investment insights, market analysis, and wealth-building strategies. Learn from professionals about stock investing, portfolio management, and financial planning." />
+    
     <div className="min-h-screen bg-background">
       <Navbar />
       
@@ -53,7 +58,9 @@ const Blog = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
+    </>
   );
 };
 

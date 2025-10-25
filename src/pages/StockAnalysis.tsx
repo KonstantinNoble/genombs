@@ -681,7 +681,7 @@ const StockAnalysis = () => {
                       <SelectValue placeholder="Select market context" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       <SelectItem value="interest-rate-changes">Interest Rate Changes</SelectItem>
                       <SelectItem value="tech-rally">Tech Sector Rally</SelectItem>
                       <SelectItem value="earnings-season">Earnings Season</SelectItem>

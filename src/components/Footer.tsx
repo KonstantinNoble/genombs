@@ -13,10 +13,15 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-bold text-lg mb-4">Privacy Policy</h3>
-            <p className="text-sm text-muted-foreground">
-              We are committed to protecting your privacy and ensuring the security of your personal information.
-            </p>
+            <h3 className="font-bold text-lg mb-4">Legal</h3>
+            <nav className="flex flex-col space-y-2">
+              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/imprint" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Imprint
+              </Link>
+            </nav>
           </div>
           
           <div>

@@ -61,8 +61,8 @@ const Auth = () => {
 
       if (data.user) {
         toast({
-          title: "Registrierung erfolgreich!",
-          description: "Bitte überprüfen Sie Ihre E-Mails, um Ihr Konto zu verifizieren.",
+          title: "Registration successful!",
+        description: "Please check your email to verify your account.",
         });
         setEmail("");
         setPassword("");
@@ -120,6 +120,12 @@ const Auth = () => {
           description: error.errors[0].message,
           variant: "destructive",
         });
+      } else if (error.message?.toLowerCase()?.includes("email not confirmed") || error.message?.toLowerCase()?.includes("confirm your email")) {
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before signing in. You can resend the verification email below.",
+          variant: "destructive",
+        });
       } else if (error.message?.includes("Invalid login credentials")) {
         toast({
           title: "Invalid credentials",
@@ -133,6 +139,37 @@ const Auth = () => {
           variant: "destructive",
         });
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast({
+        title: "Enter your email",
+        description: "Please enter your email to resend the verification link.",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/` },
+      });
+      if (error) throw error;
+      toast({
+        title: "Verification email sent",
+        description: "Check your inbox (and spam) for the verification link.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to resend",
+        description: error.message ?? "Could not resend verification email.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -207,6 +244,19 @@ const Auth = () => {
               {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
             </Button>
           </form>
+
+          {isLogin && (
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                disabled={loading || !email}
+              >
+                Resend verification email
+              </button>
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <button

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, ArrowLeft } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
 import NotFound from "./NotFound";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -41,37 +43,22 @@ const BlogPost = () => {
               </div>
             </div>
 
-            <div 
-              className="prose prose-lg max-w-none 
-                prose-headings:font-serif prose-headings:font-bold 
-                prose-h1:text-4xl prose-h1:mb-8
-                prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:text-primary 
-                prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
-                prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
-                prose-strong:text-foreground prose-strong:font-semibold 
-                prose-a:text-secondary prose-a:no-underline hover:prose-a:underline 
-                prose-ul:my-8 prose-ul:space-y-3
-                prose-li:my-3 prose-li:text-foreground prose-li:text-lg prose-li:leading-relaxed
-                prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic"
-              dangerouslySetInnerHTML={{ __html: post.content.split('\n').map(line => {
-                if (line.startsWith('# ')) {
-                  return `<h1>${line.substring(2)}</h1>`;
-                } else if (line.startsWith('## ')) {
-                  return `<h2>${line.substring(3)}</h2>`;
-                } else if (line.startsWith('### ')) {
-                  return `<h3>${line.substring(4)}</h3>`;
-                } else if (line.trim() === '') {
-                  return '<br/>';
-                } else if (line.startsWith('- ')) {
-                  return `<li>${line.substring(2)}</li>`;
-                } else if (line.match(/^\d+\. /)) {
-                  return `<li>${line.substring(line.indexOf(' ') + 1)}</li>`;
-                } else if (line.startsWith('**') && line.endsWith('**')) {
-                  return `<p><strong>${line.substring(2, line.length - 2)}</strong></p>`;
-                }
-                return `<p>${line}</p>`;
-              }).join('') }}
-            />
+            <div className="prose prose-lg max-w-none 
+              prose-headings:font-serif prose-headings:font-bold 
+              prose-h1:text-4xl prose-h1:mb-8
+              prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:text-primary 
+              prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
+              prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
+              prose-strong:text-foreground prose-strong:font-semibold 
+              prose-a:text-secondary prose-a:no-underline hover:prose-a:underline 
+              prose-ul:my-8 prose-ul:space-y-3
+              prose-li:my-3 prose-li:text-foreground prose-li:text-lg prose-li:leading-relaxed
+              prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic"
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {post.content}
+              </ReactMarkdown>
+            </div>
 
             <div className="mt-16 pt-10 border-t border-border">
               <Link to="/blog">

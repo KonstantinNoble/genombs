@@ -74,24 +74,24 @@ export type Database = {
       user_credits: {
         Row: {
           created_at: string
-          credits: number
           id: string
+          last_analysis_at: string | null
           last_reset_date: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          credits?: number
           id?: string
+          last_analysis_at?: string | null
           last_reset_date?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          credits?: number
           id?: string
+          last_analysis_at?: string | null
           last_reset_date?: string
           updated_at?: string
           user_id?: string
@@ -103,11 +103,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      deduct_credits: {
-        Args: { p_amount: number; p_user_id: string }
+      check_and_update_analysis_limit: {
+        Args: { p_user_id: string }
         Returns: boolean
       }
-      reset_daily_credits: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

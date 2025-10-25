@@ -96,15 +96,12 @@ const Profile = () => {
     setDeleting(true);
 
     try {
-      // First delete the profile (which will cascade to auth.users due to ON DELETE CASCADE)
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", user.id);
+      const { data, error } = await supabase.functions.invoke("delete-account", {
+        method: "POST",
+        body: {},
+      });
+      if (error) throw error;
 
-      if (profileError) throw profileError;
-
-      // Sign out the user
       await supabase.auth.signOut();
 
       toast({

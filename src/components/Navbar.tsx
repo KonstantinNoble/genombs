@@ -53,18 +53,16 @@ const Navbar = () => {
           >
             Blog
           </Link>
-          {user && (
-            <Link 
-              to="/stock-analysis" 
-              className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
-                isActive("/stock-analysis") 
-                  ? "text-primary after:w-full" 
-                  : "text-muted-foreground after:w-0 hover:after:w-full"
-              }`}
-            >
-              AI Analysis
-            </Link>
-          )}
+          <Link 
+            to="/stock-analysis" 
+            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
+              isActive("/stock-analysis") 
+                ? "text-primary after:w-full" 
+                : "text-muted-foreground after:w-0 hover:after:w-full"
+            }`}
+          >
+            AI Analysis
+          </Link>
           {user ? (
             <Link to="/profile">
               <Button size="sm" className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300">
@@ -107,15 +105,13 @@ const Navbar = () => {
             >
               Blog
             </Link>
-            {user && (
-              <Link
-                to="/stock-analysis"
-                className="block text-foreground hover:text-secondary transition-colors py-2"
-                onClick={() => setIsOpen(false)}
-              >
-                AI Analysis
-              </Link>
-            )}
+            <Link
+              to="/stock-analysis"
+              className="block text-foreground hover:text-secondary transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              AI Analysis
+            </Link>
             {user ? (
               <Link to="/profile" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold">

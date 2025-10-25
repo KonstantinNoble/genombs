@@ -188,7 +188,7 @@ const PrivacyPolicy = () => {
                   <li>Age (optional)</li>
                   <li>Preferred asset classes (stocks, bonds, ETFs, cryptocurrencies, commodities, real estate)</li>
                   <li>Wealth class (optional: low, medium, high, very high)</li>
-                  <li>Market context/events (optional free text, max. 250 characters)</li>
+                  <li>Market context/events </li>
                 </ul>
               </li>
               <li>

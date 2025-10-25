@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { ArrowLeft } from "lucide-react";
 
 const signUpSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -194,6 +195,16 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <div className="absolute top-4 left-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/")}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+      </div>
       <Card className="w-full max-w-md bg-card border-border">
         <CardHeader className="space-y-2">
           <CardTitle className="text-3xl font-bold text-center">

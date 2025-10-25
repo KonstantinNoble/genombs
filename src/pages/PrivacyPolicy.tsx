@@ -139,11 +139,11 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               <strong>Account deletion:</strong> You have the right to delete your account and all associated personal
               data at any time. Our website provides a self-service account deletion feature accessible through your
-              account settings page (/account). When you initiate account deletion:
+              account settings. When you initiate account deletion:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                Your profile data (name, email, timestamps) is immediately and permanently deleted from our production
+                Your profile data (email, timestamps) is immediately and permanently deleted from our production
                 database
               </li>
               <li>

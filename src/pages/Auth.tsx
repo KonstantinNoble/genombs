@@ -11,7 +11,13 @@ import { ArrowLeft } from "lucide-react";
 
 const signUpSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: z
+    .string()
+    .min(12, { message: "Password must be at least 12 characters" })
+    .regex(/[a-z]/, { message: "Password must include a lowercase letter" })
+    .regex(/[A-Z]/, { message: "Password must include an uppercase letter" })
+    .regex(/[0-9]/, { message: "Password must include a number" })
+    .regex(/[^A-Za-z0-9]/, { message: "Password must include a symbol" }),
 });
 
 const signInSchema = z.object({
@@ -238,7 +244,7 @@ const Auth = () => {
               />
               {!isLogin && (
                 <p className="text-xs text-muted-foreground">
-                  Must be at least 6 characters
+                  Use at least 12 characters with upper, lower, number, and symbol.
                 </p>
               )}
             </div>

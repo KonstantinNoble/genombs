@@ -3,8 +3,6 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   content: string;
-  date: string;
-  author: string;
   readTime: string;
   category: string;
 }
@@ -13,64 +11,110 @@ export const blogPosts: BlogPost[] = [
   {
     id: "diversification-key-to-success",
     title: "The Power of Diversification: Your Key to Long-Term Success",
-    excerpt: "Learn why spreading your investments across different asset classes is crucial for managing risk and maximizing returns.",
-    date: "2024-10-20",
-    author: "Sarah Mitchell",
-    readTime: "5 min read",
+    excerpt: "Understanding why spreading investments across different asset classes is the cornerstone of risk management and sustainable wealth building.",
+    readTime: "6 min read",
     category: "Strategy",
     content: `
-# The Power of Diversification: Your Key to Long-Term Success
+## The Foundation of Smart Investing
 
-Diversification is often called the only free lunch in investing, and for good reason. It's one of the most powerful tools at your disposal for managing risk while pursuing your financial goals.
+Diversification stands as one of the most fundamental principles in investing. Often referred to as the only "free lunch" in finance, it's a strategy that can significantly reduce portfolio risk without necessarily sacrificing returns.
 
-## What is Diversification?
+## Understanding Diversification
 
-Diversification means spreading your investments across different asset classes, sectors, and geographic regions. Instead of putting all your eggs in one basket, you create a portfolio that can weather various market conditions.
+At its core, diversification means not putting all your eggs in one basket. It involves spreading investments across various asset classes, industries, geographic regions, and investment styles. This approach helps ensure that poor performance in one area doesn't devastate your entire portfolio.
 
-## Why Diversification Matters
+**The Mathematics of Risk**
 
-1. **Risk Reduction**: When one investment underperforms, others may compensate, smoothing out your overall returns.
+When you hold multiple investments that don't move in perfect correlation, the overall portfolio volatility decreases. This happens because when some investments decline, others may remain stable or even increase, creating a natural buffer against market turbulence.
 
-2. **Opportunity Capture**: Different assets perform well at different times. A diversified portfolio positions you to benefit from various market cycles.
+## Key Diversification Strategies
 
-3. **Peace of Mind**: Knowing your wealth isn't tied to the fate of a single company or sector helps you sleep better at night.
+### Asset Class Diversification
 
-## How to Diversify Effectively
+**Stocks**: Offer growth potential and historically outpace inflation over long periods. However, they come with higher volatility and short-term risk.
 
-### Across Asset Classes
-- Stocks for growth potential
-- Bonds for stability and income
-- Real estate for inflation protection
-- Commodities for portfolio balance
+**Bonds**: Provide stability, regular income, and typically move inversely to stocks during market stress, acting as a portfolio stabilizer.
 
-### Within Asset Classes
-Don't just buy tech stocks—spread across sectors like healthcare, consumer goods, finance, and energy.
+**Real Estate**: Offers inflation protection, tangible value, and income through rent, while often behaving differently than stocks and bonds.
+
+**Alternative Investments**: Including commodities, private equity, and hedge funds, these can further reduce correlation with traditional markets.
 
 ### Geographic Diversification
-International investments can provide exposure to faster-growing economies and reduce dependence on any single country's economic performance.
+
+Don't limit yourself to domestic markets. International investments provide:
+- Exposure to faster-growing emerging economies
+- Protection against domestic economic downturns  
+- Currency diversification benefits
+- Access to unique investment opportunities unavailable domestically
+
+### Sector and Industry Spread
+
+Even within stocks, diversification matters. Technology, healthcare, consumer goods, energy, and financial sectors all respond differently to economic conditions. A well-balanced portfolio includes exposure across multiple sectors.
 
 ## Common Diversification Mistakes
 
-1. **Over-Diversification**: Too many holdings can dilute returns and make portfolio management unwieldy.
+**Over-Diversification**
 
-2. **False Diversification**: Owning 20 tech stocks isn't true diversification—you're still concentrated in one sector.
+Yes, you can have too much of a good thing. Owning hundreds of individual positions can:
+- Dilute returns from your best ideas
+- Create excessive complexity and monitoring burden
+- Increase transaction costs and tax complications
+- Result in performance that merely mirrors market indices
 
-3. **Ignoring Correlation**: Choose investments that don't all move in the same direction.
+**False Diversification**
 
-## The Bottom Line
+Buying 15 technology stocks doesn't provide true diversification—you're still concentrated in one sector. Similarly, owning multiple funds that hold the same underlying stocks creates an illusion of diversification.
 
-Diversification isn't about eliminating risk—it's about managing it intelligently. A well-diversified portfolio aligned with your goals and risk tolerance is your foundation for long-term wealth building.
+**Ignoring Correlation**
 
-Remember: The goal isn't to avoid all losses, but to create a resilient portfolio that can grow steadily over time, regardless of market turbulence.
+The key to effective diversification is understanding how investments move in relation to each other. Assets that always move together provide no diversification benefit. Seek investments with low or negative correlations.
+
+## Building Your Diversified Portfolio
+
+**Step 1: Determine Your Asset Allocation**
+
+Your age, risk tolerance, financial goals, and time horizon should drive how you split investments between stocks, bonds, and other assets. Younger investors can typically handle more stock exposure, while those nearing retirement might prefer more stability.
+
+**Step 2: Diversify Within Each Asset Class**
+
+Within stocks, spread across:
+- Large, mid, and small-cap companies
+- Growth and value styles  
+- Domestic and international markets
+- Multiple sectors and industries
+
+**Step 3: Rebalance Regularly**
+
+Market movements will shift your allocation over time. Rebalancing—selling winners and buying underperformers—maintains your target allocation and enforces buy-low, sell-high discipline.
+
+**Step 4: Consider Index Funds and ETFs**
+
+These vehicles provide instant diversification at low cost, making them ideal building blocks for most portfolios.
+
+## The Long-Term Perspective
+
+Diversification isn't about maximizing returns in any given year—it's about achieving consistent, risk-adjusted returns over decades. A diversified portfolio will underperform in bull markets focused on one sector but will protect you when that sector crashes.
+
+The 2008 financial crisis and the 2020 pandemic both demonstrated diversification's value. Investors with balanced portfolios recovered faster and experienced less devastating losses than those concentrated in failing sectors.
+
+## Taking Action
+
+Start evaluating your current portfolio:
+- Calculate your exposure to different asset classes
+- Identify any concentration risks
+- Look for correlation patterns among your holdings
+- Develop a plan to achieve better balance
+
+Remember, perfect diversification is impossible and unnecessary. The goal is thoughtful allocation across uncorrelated assets aligned with your personal financial situation and goals.
+
+Diversification won't eliminate all investment risk, but it remains your most reliable tool for managing it. Build your wealth on this solid foundation.
     `
   },
   {
     id: "value-investing-fundamentals",
-    title: "Value Investing 101: Finding Hidden Gems in the Market",
-    excerpt: "Discover the principles of value investing and how to identify undervalued stocks with strong growth potential.",
-    date: "2024-10-18",
-    author: "Michael Chen",
-    readTime: "7 min read",
+    title: "Value Investing Principles: Finding Undervalued Opportunities",
+    excerpt: "Master the time-tested approach of identifying stocks trading below their intrinsic value and building wealth through patient, disciplined investing.",
+    readTime: "8 min read",
     category: "Fundamentals",
     content: `
 # Value Investing 101: Finding Hidden Gems in the Market
@@ -143,11 +187,9 @@ Value investing isn't glamorous, but it's one of the most proven paths to buildi
   },
   {
     id: "dollar-cost-averaging",
-    title: "Dollar-Cost Averaging: A Strategy for All Market Conditions",
-    excerpt: "Master the technique of consistent investing that removes emotion from the equation and builds wealth steadily over time.",
-    date: "2024-10-15",
-    author: "Jennifer Rodriguez",
-    readTime: "6 min read",
+    title: "Dollar-Cost Averaging: The Disciplined Path to Wealth",
+    excerpt: "Discover how consistent, scheduled investing removes emotional decision-making and builds substantial wealth over time, regardless of market conditions.",
+    readTime: "7 min read",
     category: "Strategy",
     content: `
 # Dollar-Cost Averaging: A Strategy for All Market Conditions
@@ -245,11 +287,9 @@ Start today with whatever amount you can afford, and let consistency do the heav
   },
   {
     id: "understanding-market-cycles",
-    title: "Understanding Market Cycles: How to Invest in Any Economy",
-    excerpt: "Learn to recognize different market phases and adjust your investment strategy to thrive in bull and bear markets alike.",
-    date: "2024-10-12",
-    author: "David Thompson",
-    readTime: "8 min read",
+    title: "Market Cycles Decoded: Strategic Investing Across Economic Phases",
+    excerpt: "Learn to identify market cycle phases and position your portfolio to capitalize on opportunities while managing risk through bull and bear markets.",
+    readTime: "9 min read",
     category: "Market Analysis",
     content: `
 # Understanding Market Cycles: How to Invest in Any Economy

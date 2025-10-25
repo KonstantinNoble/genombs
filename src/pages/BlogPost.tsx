@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, ArrowLeft } from "lucide-react";
+import { Clock, ArrowLeft } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
 import NotFound from "./NotFound";
 
@@ -15,46 +15,44 @@ const BlogPost = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background via-[hsl(220,35%,96%)] to-background">
       <Navbar />
       
-      <article className="py-16">
+      <article className="py-12">
         <div className="container mx-auto px-4 animate-fade-in-up">
           <div className="max-w-4xl mx-auto">
             <Link to="/blog">
-              <Button variant="ghost" className="mb-8 -ml-4 hover:translate-x-1 transition-transform duration-300">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Blog
+              <Button variant="ghost" className="mb-8 -ml-4 hover:translate-x-1 transition-transform duration-300 group">
+                <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" />
+                Back to Articles
               </Button>
             </Link>
 
-            <Badge className="mb-4 bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors duration-300">
+            <Badge className="mb-6 bg-primary/5 text-primary hover:bg-primary/10 transition-colors duration-300 border border-primary/20 text-sm px-3 py-1">
               {post.category}
             </Badge>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">{post.title}</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{post.title}</h1>
             
-            <div className="flex flex-wrap gap-6 text-muted-foreground mb-8 pb-8 border-b">
-              <div className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                {post.author}
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                {new Date(post.date).toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                {post.readTime}
+            <div className="flex items-center gap-3 text-muted-foreground mb-12 pb-8 border-b border-border">
+              <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full">
+                <Clock className="h-4 w-4" />
+                <span className="text-sm font-medium">{post.readTime}</span>
               </div>
             </div>
 
             <div 
-              className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:text-foreground prose-p:leading-relaxed prose-strong:text-foreground prose-a:text-secondary prose-a:no-underline hover:prose-a:underline"
+              className="prose prose-lg max-w-none 
+                prose-headings:font-serif prose-headings:font-bold 
+                prose-h1:text-4xl prose-h1:mb-8
+                prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:text-primary 
+                prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
+                prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
+                prose-strong:text-foreground prose-strong:font-semibold 
+                prose-a:text-secondary prose-a:no-underline hover:prose-a:underline 
+                prose-ul:my-8 prose-ul:space-y-3
+                prose-li:my-3 prose-li:text-foreground prose-li:text-lg prose-li:leading-relaxed
+                prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic"
               dangerouslySetInnerHTML={{ __html: post.content.split('\n').map(line => {
                 if (line.startsWith('# ')) {
                   return `<h1>${line.substring(2)}</h1>`;
@@ -75,11 +73,11 @@ const BlogPost = () => {
               }).join('') }}
             />
 
-            <div className="mt-12 pt-8 border-t">
+            <div className="mt-16 pt-10 border-t border-border">
               <Link to="/blog">
-                <Button variant="outline" className="hover:scale-105 transition-transform duration-300">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to All Articles
+                <Button variant="outline" className="hover:scale-105 transition-transform duration-300 group">
+                  <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" />
+                  View All Articles
                 </Button>
               </Link>
             </div>

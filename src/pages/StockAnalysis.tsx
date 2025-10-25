@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle } from "lucide-react";
+import { Loader2, TrendingUp, Shield, DollarSign, AlertTriangle, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -154,6 +154,23 @@ const StockAnalysis = () => {
     }
   };
 
+  const handleDeleteHistory = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('stock_analysis_history')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setHistory(prev => prev.filter(item => item.id !== id));
+      toast.success("Analysis deleted from history");
+    } catch (error) {
+      console.error('Error deleting history:', error);
+      toast.error("Failed to delete analysis");
+    }
+  };
+
   const getAssessmentIcon = (assessment: string) => {
     switch (assessment) {
       case "growth-oriented":
@@ -210,16 +227,31 @@ const StockAnalysis = () => {
                   history.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                      onClick={() => setResult(item.result)}
+                      className="p-3 border rounded-lg hover:bg-muted/50 transition-colors group relative"
                     >
-                      <div className="font-medium text-sm">{item.asset_class}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(item.created_at).toLocaleDateString()}
+                      <div 
+                        className="cursor-pointer"
+                        onClick={() => setResult(item.result)}
+                      >
+                        <div className="font-medium text-sm">{item.asset_class}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Risk: {item.risk_tolerance} | {item.time_horizon}
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Risk: {item.risk_tolerance} | {item.time_horizon}
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteHistory(item.id);
+                        }}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
                   ))
                 )}
@@ -313,16 +345,16 @@ const StockAnalysis = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="wealthClass">Vermögensschicht (Optional)</Label>
+              <Label htmlFor="wealthClass">Wealth Class (Optional)</Label>
               <Select value={wealthClass} onValueChange={setWealthClass}>
                 <SelectTrigger id="wealthClass">
-                  <SelectValue placeholder="Vermögensschicht auswählen" />
+                  <SelectValue placeholder="Select wealth class" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Niedrig (bis 50.000€)</SelectItem>
-                  <SelectItem value="middle">Mittel (50.000€ - 250.000€)</SelectItem>
-                  <SelectItem value="upper-middle">Gehoben (250.000€ - 1 Mio.€)</SelectItem>
-                  <SelectItem value="high">Hoch (über 1 Mio.€)</SelectItem>
+                  <SelectItem value="low">Low (up to €50,000)</SelectItem>
+                  <SelectItem value="middle">Middle (€50,000 - €250,000)</SelectItem>
+                  <SelectItem value="upper-middle">Upper Middle (€250,000 - €1M)</SelectItem>
+                  <SelectItem value="high">High (over €1M)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -3,16 +3,16 @@ import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-gradient-to-br from-background via-muted/10 to-background">
       <div 
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-5"
         style={{
-          background: 'var(--gradient-hero)',
+          background: 'radial-gradient(circle at 50% 50%, hsl(43 96% 56%), transparent 70%)',
         }}
       />
       
       <div className="container relative mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
+        <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-bold">
             Ready to Start Building Your Wealth?
           </h2>
@@ -21,10 +21,10 @@ const CTA = () => {
           </p>
           <Button 
             size="lg" 
-            className="bg-gradient-to-r from-secondary to-[hsl(36,100%,50%)] text-primary font-semibold hover:opacity-90 transition-all hover:scale-105 text-lg px-8"
+            className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg px-8 group"
           >
             Get Started Now
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
       </div>

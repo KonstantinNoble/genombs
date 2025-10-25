@@ -19,16 +19,16 @@ const BlogPost = () => {
       <Navbar />
       
       <article className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 animate-fade-in-up">
           <div className="max-w-4xl mx-auto">
             <Link to="/blog">
-              <Button variant="ghost" className="mb-8 -ml-4">
+              <Button variant="ghost" className="mb-8 -ml-4 hover:translate-x-1 transition-transform duration-300">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Blog
               </Button>
             </Link>
 
-            <Badge className="mb-4 bg-secondary/10 text-secondary hover:bg-secondary/20">
+            <Badge className="mb-4 bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors duration-300">
               {post.category}
             </Badge>
             
@@ -77,7 +77,7 @@ const BlogPost = () => {
 
             <div className="mt-12 pt-8 border-t">
               <Link to="/blog">
-                <Button variant="outline">
+                <Button variant="outline" className="hover:scale-105 transition-transform duration-300">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to All Articles
                 </Button>

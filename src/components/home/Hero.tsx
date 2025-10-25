@@ -1,20 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import heroImage from "@/assets/hero-investment.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[hsl(220,70%,15%)] via-[hsl(220,60%,20%)] to-[hsl(220,50%,25%)]">
-      <div 
-        className="absolute inset-0 z-0 opacity-20"
-        style={{
-          backgroundImage: `url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-[hsl(220,70%,15%)]/80" />
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
       
       <div className="container relative z-10 mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">

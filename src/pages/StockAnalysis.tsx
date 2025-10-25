@@ -112,12 +112,28 @@ const StockAnalysis = () => {
         .from('user_credits')
         .select('credits')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      setCredits(data?.credits || 0);
+      
+      // If no entry exists, create one
+      if (!data) {
+        const { error: insertError } = await supabase
+          .from('user_credits')
+          .insert({ 
+            user_id: userId, 
+            credits: 100,
+            last_reset_date: new Date().toISOString().split('T')[0]
+          });
+        
+        if (insertError) throw insertError;
+        setCredits(100);
+      } else {
+        setCredits(data.credits);
+      }
     } catch (error) {
       console.error('Error loading credits:', error);
+      setCredits(0);
     }
   };
 

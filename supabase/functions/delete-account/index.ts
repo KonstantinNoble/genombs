@@ -18,8 +18,8 @@ serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-      console.error("Missing Supabase env vars");
-      return new Response(JSON.stringify({ error: "Server misconfiguration" }), {
+      console.error("Configuration error");
+      return new Response(JSON.stringify({ error: "Service unavailable" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -47,8 +47,8 @@ serve(async (req) => {
 
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userData.user.id);
     if (deleteError) {
-      console.error("deleteUser error:", deleteError);
-      return new Response(JSON.stringify({ error: "Failed to delete user" }), {
+      console.error("Account deletion failed");
+      return new Response(JSON.stringify({ error: "Service unavailable" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -60,8 +60,8 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (e) {
-    console.error("delete-account error:", e);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error("Operation failed");
+    return new Response(JSON.stringify({ error: "Service unavailable" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

@@ -57,32 +57,30 @@ const StockAnalysis = () => {
       setCanAnalyze(true);
       return;
     }
-    
+
     const lastAnalysisDate = new Date(lastAnalysis);
     const now = new Date();
     const hoursSince = (now.getTime() - lastAnalysisDate.getTime()) / (1000 * 60 * 60);
-    
+
     setCanAnalyze(hoursSince >= 24);
   };
 
   const loadAnalysisLimit = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('user_credits')
-        .select('last_analysis_at')
-        .eq('user_id', userId)
+        .from("user_credits")
+        .select("last_analysis_at")
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          console.log('No analysis limit entry found, creating one...');
-          const { error: insertError } = await supabase
-            .from('user_credits')
-            .insert({
-              user_id: userId,
-              last_analysis_at: null
-            });
-          
+        if (error.code === "PGRST116") {
+          console.log("No analysis limit entry found, creating one...");
+          const { error: insertError } = await supabase.from("user_credits").insert({
+            user_id: userId,
+            last_analysis_at: null,
+          });
+
           if (insertError) throw insertError;
           setLastAnalysisAt(null);
           setCanAnalyze(true);
@@ -94,7 +92,7 @@ const StockAnalysis = () => {
         checkCanAnalyze(data?.last_analysis_at || null);
       }
     } catch (error) {
-      console.error('Error loading analysis limit:', error);
+      console.error("Error loading analysis limit:", error);
       setCanAnalyze(false);
     }
   };
@@ -111,7 +109,9 @@ const StockAnalysis = () => {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setUser(null);
         analysisChannel?.unsubscribe();
@@ -124,17 +124,17 @@ const StockAnalysis = () => {
         // Recreate realtime subscription for this user
         analysisChannel?.unsubscribe();
         analysisChannel = supabase
-          .channel('user_analysis_limit_updates')
+          .channel("user_analysis_limit_updates")
           .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'user_credits', filter: `user_id=eq.${session.user.id}` },
+            "postgres_changes",
+            { event: "*", schema: "public", table: "user_credits", filter: `user_id=eq.${session.user.id}` },
             (payload) => {
               const lastAnalysis = (payload as any)?.new?.last_analysis_at ?? (payload as any)?.old?.last_analysis_at;
               if (lastAnalysis !== undefined) {
                 setLastAnalysisAt(lastAnalysis);
                 checkCanAnalyze(lastAnalysis);
               }
-            }
+            },
           )
           .subscribe();
       }
@@ -149,26 +149,26 @@ const StockAnalysis = () => {
   const loadHistory = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('stock_analysis_history')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
+        .from("stock_analysis_history")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      
-      const typedHistory: HistoryItem[] = (data || []).map(item => ({
+
+      const typedHistory: HistoryItem[] = (data || []).map((item) => ({
         id: item.id,
         created_at: item.created_at,
         asset_class: item.asset_class,
         risk_tolerance: item.risk_tolerance,
         time_horizon: item.time_horizon,
-        result: item.result as unknown as AnalysisResult
+        result: item.result as unknown as AnalysisResult,
       }));
-      
+
       setHistory(typedHistory);
     } catch (error) {
-      console.error('Error loading history:', error);
+      console.error("Error loading history:", error);
     }
   };
 
@@ -179,13 +179,13 @@ const StockAnalysis = () => {
     }
 
     if (!canAnalyze) {
-      const nextAnalysisTime = lastAnalysisAt 
+      const nextAnalysisTime = lastAnalysisAt
         ? new Date(new Date(lastAnalysisAt).getTime() + 24 * 60 * 60 * 1000)
         : new Date();
-      
+
       toast.error(
         `You can only perform one analysis per day. Next analysis available at ${nextAnalysisTime.toLocaleString()}`,
-        { duration: 5000 }
+        { duration: 5000 },
       );
       return;
     }
@@ -199,15 +199,15 @@ const StockAnalysis = () => {
     setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('stock-analysis', {
+      const { data, error } = await supabase.functions.invoke("stock-analysis", {
         body: {
           riskTolerance,
           timeHorizon,
           age: age ? parseInt(age) : undefined,
           assetClass,
           marketEvents,
-          wealthClass
-        }
+          wealthClass,
+        },
       });
 
       if (error) throw error;
@@ -216,7 +216,7 @@ const StockAnalysis = () => {
 
       // Save to history and reload analysis limit
       if (user) {
-        await supabase.from('stock_analysis_history').insert({
+        await supabase.from("stock_analysis_history").insert({
           user_id: user.id,
           risk_tolerance: riskTolerance,
           time_horizon: timeHorizon,
@@ -224,7 +224,7 @@ const StockAnalysis = () => {
           asset_class: assetClass,
           market_events: marketEvents,
           wealth_class: wealthClass,
-          result: data
+          result: data,
         });
         loadHistory(user.id);
         loadAnalysisLimit(user.id);
@@ -232,18 +232,19 @@ const StockAnalysis = () => {
 
       toast.success("Analysis generated successfully!");
     } catch (error: any) {
-      console.error('Analysis error:', error);
-      
+      console.error("Analysis error:", error);
+
       // Handle rate limit error
-      if (error?.status === 429 || error?.message?.includes('rate limit') || error?.message?.includes('one analysis per day')) {
-        toast.error(
-          "You can only perform one analysis per day. Please try again tomorrow.",
-          { duration: 5000 }
-        );
+      if (
+        error?.status === 429 ||
+        error?.message?.includes("rate limit") ||
+        error?.message?.includes("one analysis per day")
+      ) {
+        toast.error("You can only perform one analysis per day. Please try again tomorrow.", { duration: 5000 });
       } else {
         toast.error("Failed to generate analysis. Please try again.");
       }
-      
+
       // Reload analysis limit after error
       if (user) loadAnalysisLimit(user.id);
     } finally {
@@ -253,17 +254,14 @@ const StockAnalysis = () => {
 
   const handleDeleteHistory = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('stock_analysis_history')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from("stock_analysis_history").delete().eq("id", id);
 
       if (error) throw error;
 
-      setHistory(prev => prev.filter(item => item.id !== id));
+      setHistory((prev) => prev.filter((item) => item.id !== id));
       toast.success("Analysis deleted from history");
     } catch (error) {
-      console.error('Error deleting history:', error);
+      console.error("Error deleting history:", error);
       toast.error("Failed to delete analysis");
     }
   };
@@ -300,12 +298,12 @@ const StockAnalysis = () => {
 
   const getTimeUntilNextAnalysis = () => {
     if (!lastAnalysisAt) return null;
-    
+
     const lastAnalysisDate = new Date(lastAnalysisAt);
     const nextAnalysisDate = new Date(lastAnalysisDate.getTime() + 24 * 60 * 60 * 1000);
     const now = new Date();
     const hoursLeft = Math.max(0, Math.ceil((nextAnalysisDate.getTime() - now.getTime()) / (1000 * 60 * 60)));
-    
+
     return hoursLeft;
   };
 
@@ -332,18 +330,7 @@ const StockAnalysis = () => {
               <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 AI Stock Analysis
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get general market information and educational stock examples based on your preferences
-              </p>
-              <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-2xl mx-auto">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-muted-foreground text-left">
-                    <p className="font-semibold text-foreground mb-1">Wichtiger Hinweis:</p>
-                    <p>Dies ist keine Finanzberatung. Alle Informationen dienen ausschließlich zu Bildungszwecken. Konsultieren Sie einen zugelassenen Finanzberater, bevor Sie Investitionsentscheidungen treffen.</p>
-                  </div>
-                </div>
-              </div>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto"></p>
             </div>
 
             {/* Preview Cards */}
@@ -358,7 +345,8 @@ const StockAnalysis = () => {
                     <CardTitle className="text-xl">Personalized Recommendations</CardTitle>
                   </div>
                   <CardDescription className="text-base">
-                    Our AI analyzes your risk tolerance, time horizon, and investment goals to suggest stocks tailored specifically for you.
+                    Our AI analyzes your risk tolerance, time horizon, and investment goals to suggest stocks tailored
+                    specifically for you.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -373,7 +361,8 @@ const StockAnalysis = () => {
                     <CardTitle className="text-xl">Market Context Analysis</CardTitle>
                   </div>
                   <CardDescription className="text-base">
-                    Get insights that consider current market events, economic conditions, and sector trends for more informed decisions.
+                    Get insights that consider current market events, economic conditions, and sector trends for more
+                    informed decisions.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -388,7 +377,8 @@ const StockAnalysis = () => {
                     <CardTitle className="text-xl">Diversified Strategies</CardTitle>
                   </div>
                   <CardDescription className="text-base">
-                    Receive a balanced portfolio of growth, defensive, and dividend stocks aligned with your wealth class and goals.
+                    Receive a balanced portfolio of growth, defensive, and dividend stocks aligned with your wealth
+                    class and goals.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -440,7 +430,8 @@ const StockAnalysis = () => {
                 <div className="p-4 bg-card/50 border border-border rounded-lg backdrop-blur-sm">
                   <h3 className="font-semibold text-lg mb-2">General Market Analysis</h3>
                   <p className="text-muted-foreground">
-                    Comprehensive overview of market conditions, sector trends, and strategic recommendations tailored to your profile.
+                    Comprehensive overview of market conditions, sector trends, and strategic recommendations tailored
+                    to your profile.
                   </p>
                 </div>
               </CardContent>
@@ -455,15 +446,15 @@ const StockAnalysis = () => {
                     Sign up now to receive your first AI-powered stock analysis for free. No credit card required.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       onClick={() => navigate("/auth")}
                       className="bg-gradient-to-r from-primary to-secondary hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg px-8"
                     >
                       Sign Up Free
                     </Button>
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       variant="outline"
                       onClick={() => navigate("/auth")}
                       className="text-lg px-8 border-primary/30 hover:bg-primary/5"
@@ -471,9 +462,7 @@ const StockAnalysis = () => {
                       Sign In
                     </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Join thousands of investors making smarter decisions with AI
-                  </p>
+                  <p className="text-sm text-muted-foreground"></p>
                 </div>
               </CardContent>
             </Card>
@@ -510,16 +499,13 @@ const StockAnalysis = () => {
                       key={item.id}
                       className="p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group relative"
                     >
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => setResult(item.result)}
-                      >
+                      <div className="cursor-pointer" onClick={() => setResult(item.result)}>
                         <div className="font-semibold text-sm text-foreground">{item.asset_class}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {new Date(item.created_at).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            year: 'numeric'
+                          {new Date(item.created_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
                           })}
                         </div>
                         <div className="flex gap-1 mt-2">
@@ -568,20 +554,11 @@ const StockAnalysis = () => {
                 AI Stock Analysis
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get general market information and educational stock examples based on your preferences
+                Get personalized stock suggestions based on your investment profile
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 One free analysis per day • Powered by Gemini 2.5 Flash
               </p>
-              <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-2xl mx-auto">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-muted-foreground text-left">
-                    <p className="font-semibold text-foreground mb-1">Wichtiger Hinweis:</p>
-                    <p>Dies ist <strong>keine Finanzberatung</strong>. Alle Informationen dienen ausschließlich zu Bildungszwecken. Es werden keine konkreten Kauf- oder Verkaufsempfehlungen gegeben. Konsultieren Sie einen zugelassenen Finanzberater, bevor Sie Investitionsentscheidungen treffen.</p>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <Card className="mb-6 border-yellow-500/50 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 shadow-lg">
@@ -595,9 +572,8 @@ const StockAnalysis = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-sm leading-relaxed">
-                  These suggestions are purely informational and do NOT constitute financial advice.
-                  Always conduct your own research and consult with a qualified financial advisor
-                  before making investment decisions.
+                  These suggestions are purely informational and do NOT constitute financial advice. Always conduct your
+                  own research and consult with a qualified financial advisor before making investment decisions.
                 </p>
               </CardContent>
             </Card>
@@ -609,7 +585,9 @@ const StockAnalysis = () => {
               </CardHeader>
               <CardContent className="space-y-8 pt-6">
                 <div className="space-y-2">
-                  <Label htmlFor="riskTolerance" className="text-base font-semibold">Risk Tolerance</Label>
+                  <Label htmlFor="riskTolerance" className="text-base font-semibold">
+                    Risk Tolerance
+                  </Label>
                   <Select value={riskTolerance} onValueChange={setRiskTolerance}>
                     <SelectTrigger id="riskTolerance" className="h-12">
                       <SelectValue placeholder="Select risk tolerance" />
@@ -623,7 +601,9 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="timeHorizon" className="text-base font-semibold">Investment Time Horizon</Label>
+                  <Label htmlFor="timeHorizon" className="text-base font-semibold">
+                    Investment Time Horizon
+                  </Label>
                   <Select value={timeHorizon} onValueChange={setTimeHorizon}>
                     <SelectTrigger id="timeHorizon" className="h-12">
                       <SelectValue placeholder="Select time horizon" />
@@ -638,7 +618,9 @@ const StockAnalysis = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="age" className="text-base font-semibold">Age (Optional)</Label>
+                    <Label htmlFor="age" className="text-base font-semibold">
+                      Age (Optional)
+                    </Label>
                     <Input
                       id="age"
                       type="number"
@@ -657,7 +639,9 @@ const StockAnalysis = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="wealthClass" className="text-base font-semibold">Wealth Class (Optional)</Label>
+                    <Label htmlFor="wealthClass" className="text-base font-semibold">
+                      Wealth Class (Optional)
+                    </Label>
                     <Select value={wealthClass} onValueChange={setWealthClass}>
                       <SelectTrigger id="wealthClass" className="h-12">
                         <SelectValue placeholder="Select wealth class" />
@@ -673,7 +657,9 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="assetClass" className="text-base font-semibold">Asset Class</Label>
+                  <Label htmlFor="assetClass" className="text-base font-semibold">
+                    Asset Class
+                  </Label>
                   <Select value={assetClass} onValueChange={setAssetClass}>
                     <SelectTrigger id="assetClass" className="h-12">
                       <SelectValue placeholder="Select asset class" />
@@ -693,23 +679,25 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="marketEvents" className="text-base font-semibold">Market Context (Optional)</Label>
-                  <Select value={marketEvents} onValueChange={setMarketEvents}>
-                    <SelectTrigger id="marketEvents" className="h-12">
-                      <SelectValue placeholder="Select market context" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="interest-rate-changes">Interest Rate Changes</SelectItem>
-                      <SelectItem value="tech-rally">Tech Sector Rally</SelectItem>
-                      <SelectItem value="earnings-season">Earnings Season</SelectItem>
-                      <SelectItem value="market-volatility">High Market Volatility</SelectItem>
-                      <SelectItem value="inflation-concerns">Inflation Concerns</SelectItem>
-                      <SelectItem value="geopolitical-tensions">Geopolitical Tensions</SelectItem>
-                      <SelectItem value="economic-recovery">Economic Recovery</SelectItem>
-                      <SelectItem value="market-correction">Market Correction</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="marketEvents" className="text-base font-semibold">
+                    Market Context (Optional)
+                    {marketEvents && (
+                      <span
+                        className={`ml-2 text-xs font-normal ${marketEvents.length > 250 ? "text-destructive" : "text-muted-foreground"}`}
+                      >
+                        ({marketEvents.length}/250 characters)
+                      </span>
+                    )}
+                  </Label>
+                  <Textarea
+                    id="marketEvents"
+                    placeholder="e.g., ECB interest rate cut, Strong AI rally in tech sector, Upcoming earnings season"
+                    value={marketEvents}
+                    onChange={(e) => setMarketEvents(e.target.value)}
+                    rows={4}
+                    maxLength={250}
+                    className="resize-none"
+                  />
                 </div>
 
                 <Button
@@ -754,8 +742,8 @@ const StockAnalysis = () => {
 
                 <div className="grid gap-4">
                   {result.stocks.map((stock, index) => (
-                    <Card 
-                      key={index} 
+                    <Card
+                      key={index}
                       className="group hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
                     >
                       <CardHeader className="pb-3">
@@ -780,9 +768,7 @@ const StockAnalysis = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm leading-relaxed text-muted-foreground">
-                          {stock.rationale}
-                        </p>
+                        <p className="text-sm leading-relaxed text-muted-foreground">{stock.rationale}</p>
                       </CardContent>
                     </Card>
                   ))}

@@ -168,72 +168,166 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Investment Analysis</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Stock Analysis</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers an AI-powered stock analysis feature that provides personalized investment inspiration
-              based on your individual investment profile. When you use this feature, the following personal data is
-              processed:
+              based on your individual investment profile. This feature is available to registered users and requires
+              authentication.
             </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your investment preferences (risk tolerance, investment horizon, age group, asset class preferences)</li>
-              <li>Your market sentiment and wealth class information</li>
-              <li>User ID (to manage your analysis history and credit balance)</li>
-              <li>Date and time of analysis requests</li>
-            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Stock Analysis</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>Purpose and functionality:</strong> The AI analysis generates personalized stock suggestions based
-              on your input. To prevent misuse, we operate a credit system: each analysis costs 100 credits, and users
-              receive 100 free credits daily that reset at midnight UTC. Your analysis history is stored in your account
-              so you can review previous suggestions.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data recipient and third-country transfer:</strong> To generate the AI-powered analysis, your
-              investment profile data is transmitted to OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA. OpenAI
-              processes this data using their GPT-4o-mini language model to generate personalized stock suggestions.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              As OpenAI is located in the United States (a third country outside the European Economic Area), data
-              transfers are subject to additional safeguards. OpenAI has implemented Standard Contractual Clauses (SCCs)
-              approved by the European Commission to ensure an adequate level of data protection. More information about
-              OpenAI's data processing practices can be found in their privacy policy at{" "}
-              <a
-                href="https://openai.com/policies/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://openai.com/policies/privacy-policy
-              </a>
-              .
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong>
+              When you use this feature, the following personal data is processed:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                Art. 6(1)(b) GDPR – The processing is necessary for the performance of the contract (providing you with
-                the requested AI analysis service).
+                <strong>Investment Profile Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Risk tolerance (conservative, moderate, aggressive)</li>
+                  <li>Investment time horizon (short-term, medium-term, long-term)</li>
+                  <li>Age (optional)</li>
+                  <li>Preferred asset classes (stocks, bonds, ETFs, cryptocurrencies, commodities, real estate)</li>
+                  <li>Wealth class (optional: low, medium, high, very high)</li>
+                  <li>Market context/events (optional free text, max. 250 characters)</li>
+                </ul>
               </li>
               <li>
-                Art. 6(1)(a) GDPR – By clicking "Generate AI Analysis", you consent to the transmission of your data to
-                OpenAI for the purpose of generating personalized investment inspiration.
+                <strong>User Account Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>User ID (to manage your analysis history and daily limit)</li>
+                  <li>Timestamps (date and time of analysis requests)</li>
+                </ul>
               </li>
             </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Data Recipients and Third-Country Transfers</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>Data retention and usage:</strong> According to OpenAI's data usage policies, API requests are
-              retained for a maximum of 30 days for abuse monitoring and security purposes. After this period, the data is
-              permanently deleted. Your input data is not used to train or improve OpenAI's models.
+              To generate the AI-powered analysis, your investment profile data is transmitted through the Lovable AI
+              Gateway to AI service providers. The gateway may use one of the following AI models:
             </p>
             <p className="text-muted-foreground mb-4">
-              Your analysis history and credit usage data are stored in our backend database as long as your account
-              remains active. You can delete individual analysis entries from your history at any time. When you delete
-              your account, all associated analysis history and credit data is permanently removed.
+              <strong>Google AI Models</strong> (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA):
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Gemini 2.5 Pro</li>
+              <li>Gemini 2.5 Flash</li>
+              <li>Gemini 2.5 Flash Lite</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>OpenAI Models</strong> (OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA):
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>GPT-5</li>
+              <li>GPT-5 Mini</li>
+              <li>GPT-5 Nano</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Since both Google and OpenAI are located in the United States (a third country outside the European
+              Economic Area), data transfers are subject to additional safeguards through Standard Contractual Clauses
+              (SCCs) approved by the European Commission.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Important disclaimer:</strong> The AI-generated stock suggestions are for informational and
-              inspirational purposes only and do not constitute financial advice, investment recommendations, or
-              solicitations to buy or sell securities. You should always conduct your own research and consult with a
-              qualified financial advisor before making any investment decisions.
+              More information:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                Google Privacy Policy:{" "}
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  https://policies.google.com/privacy
+                </a>
+              </li>
+              <li>
+                OpenAI Privacy Policy:{" "}
+                <a
+                  href="https://openai.com/policies/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  https://openai.com/policies/privacy-policy
+                </a>
+              </li>
+              <li>
+                Lovable AI Documentation:{" "}
+                <a
+                  href="https://docs.lovable.dev/features/ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  https://docs.lovable.dev/features/ai
+                </a>
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                Art. 6(1)(b) GDPR – Processing necessary for providing the requested AI analysis service
+              </li>
+              <li>
+                Art. 6(1)(a) GDPR – By clicking "Generate AI Analysis", you consent to data transmission to the AI
+                providers
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Usage Limits and Fair Use</h3>
+            <p className="text-muted-foreground mb-4">
+              To ensure fair use and prevent abuse, each user can perform one free AI analysis per 24-hour period. The
+              system automatically tracks your last analysis timestamp and enforces this limit. Attempting to perform
+              multiple analyses within 24 hours will result in an error message indicating when the next analysis will
+              be available.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention</h3>
+            <p className="text-muted-foreground mb-4">
+              <strong>AI Provider Retention:</strong> According to the providers' data policies, API requests are
+              retained for a limited period (typically 30 days) for abuse monitoring and security purposes, after which
+              they are permanently deleted. Your input data is not used to train or improve the AI models.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Local Storage (Our Database):</strong> Your analysis history is stored in our backend database and
+              includes:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your investment profile inputs (risk tolerance, time horizon, age, asset class, market events, wealth class)</li>
+              <li>The generated stock suggestions and analysis</li>
+              <li>Timestamp of the analysis</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              This data remains stored as long as your account is active. You can:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>View your analysis history at any time</li>
+              <li>Delete individual analysis entries from your history</li>
+              <li>Delete your entire account, which permanently removes all analysis history</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Realtime Updates</h3>
+            <p className="text-muted-foreground mb-4">
+              The application uses realtime database subscriptions to update your analysis limit status automatically
+              when a new analysis becomes available (after 24 hours). This technical feature does not involve additional
+              data processing beyond what is already described.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Preview Mode for Non-Authenticated Users</h3>
+            <p className="text-muted-foreground mb-4">
+              Users who are not logged in can view a preview of the AI Analysis feature, including sample outputs and
+              feature descriptions. No personal data is collected from non-authenticated users visiting this preview
+              page.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Important Disclaimer</h3>
+            <p className="text-muted-foreground mb-4">
+              The AI-generated stock suggestions are for informational and inspirational purposes only and do not
+              constitute financial advice, investment recommendations, or solicitations to buy or sell securities. You
+              should always conduct your own research and consult with a qualified financial advisor before making any
+              investment decisions.
             </p>
           </section>
 

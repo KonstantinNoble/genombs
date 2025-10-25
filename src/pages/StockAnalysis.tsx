@@ -313,85 +313,32 @@ const StockAnalysis = () => {
                 <CardDescription className="text-base">Tell us about your investment preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-8 pt-6">
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">Risk Tolerance</Label>
-                  <RadioGroup value={riskTolerance} onValueChange={setRiskTolerance} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="relative">
-                      <RadioGroupItem value="low" id="low" className="peer sr-only" />
-                      <Label 
-                        htmlFor="low" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <Shield className="h-5 w-5" />
-                        <div>
-                          <div className="font-semibold">Low</div>
-                          <div className="text-xs opacity-80">Prefer stable investments</div>
-                        </div>
-                      </Label>
-                    </div>
-                    <div className="relative">
-                      <RadioGroupItem value="medium" id="medium" className="peer sr-only" />
-                      <Label 
-                        htmlFor="medium" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <TrendingUp className="h-5 w-5" />
-                        <div>
-                          <div className="font-semibold">Medium</div>
-                          <div className="text-xs opacity-80">Balanced approach</div>
-                        </div>
-                      </Label>
-                    </div>
-                    <div className="relative">
-                      <RadioGroupItem value="high" id="high" className="peer sr-only" />
-                      <Label 
-                        htmlFor="high" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <AlertTriangle className="h-5 w-5" />
-                        <div>
-                          <div className="font-semibold">High</div>
-                          <div className="text-xs opacity-80">Willing to take risks</div>
-                        </div>
-                      </Label>
-                    </div>
-                  </RadioGroup>
+                <div className="space-y-2">
+                  <Label htmlFor="riskTolerance" className="text-base font-semibold">Risk Tolerance</Label>
+                  <Select value={riskTolerance} onValueChange={setRiskTolerance}>
+                    <SelectTrigger id="riskTolerance" className="h-12">
+                      <SelectValue placeholder="Select risk tolerance" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low - Prefer stable investments</SelectItem>
+                      <SelectItem value="medium">Medium - Balanced approach</SelectItem>
+                      <SelectItem value="high">High - Willing to take risks</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">Investment Time Horizon</Label>
-                  <RadioGroup value={timeHorizon} onValueChange={setTimeHorizon} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="relative">
-                      <RadioGroupItem value="short" id="short" className="peer sr-only" />
-                      <Label 
-                        htmlFor="short" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <span className="font-semibold">Short</span>
-                        <span className="text-xs opacity-80">1-2 years</span>
-                      </Label>
-                    </div>
-                    <div className="relative">
-                      <RadioGroupItem value="medium" id="medium-time" className="peer sr-only" />
-                      <Label 
-                        htmlFor="medium-time" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <span className="font-semibold">Medium</span>
-                        <span className="text-xs opacity-80">3-5 years</span>
-                      </Label>
-                    </div>
-                    <div className="relative">
-                      <RadioGroupItem value="long" id="long" className="peer sr-only" />
-                      <Label 
-                        htmlFor="long" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
-                      >
-                        <span className="font-semibold">Long</span>
-                        <span className="text-xs opacity-80">5+ years</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
+                <div className="space-y-2">
+                  <Label htmlFor="timeHorizon" className="text-base font-semibold">Investment Time Horizon</Label>
+                  <Select value={timeHorizon} onValueChange={setTimeHorizon}>
+                    <SelectTrigger id="timeHorizon" className="h-12">
+                      <SelectValue placeholder="Select time horizon" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">Short (1-2 years)</SelectItem>
+                      <SelectItem value="medium">Medium (3-5 years)</SelectItem>
+                      <SelectItem value="long">Long (5+ years)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">

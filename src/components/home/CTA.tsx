@@ -3,11 +3,11 @@ import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
   return (
-    <section className="py-24 relative overflow-hidden bg-gradient-to-br from-background via-muted/10 to-background">
+    <section className="py-24 relative overflow-hidden bg-gradient-to-br from-[hsl(220,35%,96%)] via-background to-[hsl(220,35%,96%)]">
       <div 
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0 opacity-8"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, hsl(43 96% 56%), transparent 70%)',
+          background: 'radial-gradient(circle at 50% 50%, hsl(45 98% 58%), transparent 70%)',
         }}
       />
       

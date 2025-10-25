@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User } from "lucide-react";
+import { Clock } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => {
@@ -10,8 +10,8 @@ const Blog = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <section className="py-16 bg-gradient-to-b from-muted/20 to-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <section className="py-16 bg-gradient-to-b from-[hsl(220,35%,96%)] to-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(220,70%,15%,0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(220,70%,15%,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
         <div className="container relative mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4 animate-fade-in-up">
             <h1 className="text-5xl md:text-6xl font-bold">Investment Insights</h1>
@@ -38,23 +38,9 @@ const Blog = () => {
                     <p className="text-muted-foreground">{post.excerpt}</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {post.author}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(post.date).toLocaleDateString('en-US', { 
-                          month: 'long', 
-                          day: 'numeric', 
-                          year: 'numeric' 
-                        })}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {post.readTime}
-                      </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      {post.readTime}
                     </div>
                   </CardContent>
                 </Card>

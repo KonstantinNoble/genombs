@@ -301,6 +301,7 @@ const StockAnalysis = () => {
                 onChange={(e) => setAge(e.target.value)}
                 min="18"
                 max="100"
+                maxLength={3}
               />
             </div>
 

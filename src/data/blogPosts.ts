@@ -23,7 +23,7 @@ Diversification stands as one of the most fundamental principles in investing. O
 
 At its core, diversification means not putting all your eggs in one basket. It involves spreading investments across various asset classes, industries, geographic regions, and investment styles. This approach helps ensure that poor performance in one area doesn't devastate your entire portfolio.
 
-**The Mathematics of Risk**
+The Mathematics of Risk
 
 When you hold multiple investments that don't move in perfect correlation, the overall portfolio volatility decreases. This happens because when some investments decline, others may remain stable or even increase, creating a natural buffer against market turbulence.
 
@@ -31,13 +31,13 @@ When you hold multiple investments that don't move in perfect correlation, the o
 
 ### Asset Class Diversification
 
-**Stocks**: Offer growth potential and historically outpace inflation over long periods. However, they come with higher volatility and short-term risk.
+Stocks: Offer growth potential and historically outpace inflation over long periods. However, they come with higher volatility and short-term risk.
 
-**Bonds**: Provide stability, regular income, and typically move inversely to stocks during market stress, acting as a portfolio stabilizer.
+Bonds: Provide stability, regular income, and typically move inversely to stocks during market stress, acting as a portfolio stabilizer.
 
-**Real Estate**: Offers inflation protection, tangible value, and income through rent, while often behaving differently than stocks and bonds.
+Real Estate: Offers inflation protection, tangible value, and income through rent, while often behaving differently than stocks and bonds.
 
-**Alternative Investments**: Including commodities, private equity, and hedge funds, these can further reduce correlation with traditional markets.
+Alternative Investments: Including commodities, private equity, and hedge funds, these can further reduce correlation with traditional markets.
 
 ### Geographic Diversification
 
@@ -53,7 +53,7 @@ Even within stocks, diversification matters. Technology, healthcare, consumer go
 
 ## Common Diversification Mistakes
 
-**Over-Diversification**
+Over-Diversification
 
 Yes, you can have too much of a good thing. Owning hundreds of individual positions can:
 - Dilute returns from your best ideas
@@ -61,21 +61,21 @@ Yes, you can have too much of a good thing. Owning hundreds of individual positi
 - Increase transaction costs and tax complications
 - Result in performance that merely mirrors market indices
 
-**False Diversification**
+False Diversification
 
 Buying 15 technology stocks doesn't provide true diversification—you're still concentrated in one sector. Similarly, owning multiple funds that hold the same underlying stocks creates an illusion of diversification.
 
-**Ignoring Correlation**
+Ignoring Correlation
 
 The key to effective diversification is understanding how investments move in relation to each other. Assets that always move together provide no diversification benefit. Seek investments with low or negative correlations.
 
 ## Building Your Diversified Portfolio
 
-**Step 1: Determine Your Asset Allocation**
+Step 1: Determine Your Asset Allocation
 
 Your age, risk tolerance, financial goals, and time horizon should drive how you split investments between stocks, bonds, and other assets. Younger investors can typically handle more stock exposure, while those nearing retirement might prefer more stability.
 
-**Step 2: Diversify Within Each Asset Class**
+Step 2: Diversify Within Each Asset Class
 
 Within stocks, spread across:
 - Large, mid, and small-cap companies
@@ -83,11 +83,11 @@ Within stocks, spread across:
 - Domestic and international markets
 - Multiple sectors and industries
 
-**Step 3: Rebalance Regularly**
+Step 3: Rebalance Regularly
 
 Market movements will shift your allocation over time. Rebalancing—selling winners and buying underperformers—maintains your target allocation and enforces buy-low, sell-high discipline.
 
-**Step 4: Consider Index Funds and ETFs**
+Step 4: Consider Index Funds and ETFs
 
 These vehicles provide instant diversification at low cost, making them ideal building blocks for most portfolios.
 
@@ -148,13 +148,13 @@ Strong, consistent cash flow is often more reliable than accounting earnings.
 
 ## How to Find Value Stocks
 
-1. **Screen for Low Valuations**: Use stock screeners to find companies with low P/E, P/B, or high dividend yields.
+1. Screen for Low Valuations: Use stock screeners to find companies with low P/E, P/B, or high dividend yields.
 
-2. **Analyze Fundamentals**: Dig deep into financial statements, competitive position, and management quality.
+2. Analyze Fundamentals: Dig deep into financial statements, competitive position, and management quality.
 
-3. **Understand the Business**: Only invest in companies whose business models you understand.
+3. Understand the Business: Only invest in companies whose business models you understand.
 
-4. **Look for Catalysts**: What might cause the market to recognize the stock's true value?
+4. Look for Catalysts: What might cause the market to recognize the stock's true value?
 
 ## Common Value Traps to Avoid
 
@@ -177,10 +177,10 @@ Value investing isn't just about finding cheap stocks—it's about being a disci
 
 ## Getting Started
 
-1. **Build Your Knowledge**: Read classics like "The Intelligent Investor" and "Security Analysis"
-2. **Start Small**: Begin with companies you understand well
-3. **Track Your Decisions**: Keep a journal of why you bought each stock
-4. **Learn From Mistakes**: Every investor makes errors—the key is learning from them
+1. Build Your Knowledge: Read classics like "The Intelligent Investor" and "Security Analysis"
+2. Start Small: Begin with companies you understand well
+3. Track Your Decisions: Keep a journal of why you bought each stock
+4. Learn From Mistakes: Every investor makes errors—the key is learning from them
 
 Value investing isn't glamorous, but it's one of the most proven paths to building lasting wealth in the stock market.
     `
@@ -203,9 +203,9 @@ DCA means investing a fixed amount of money at regular intervals, regardless of 
 ## How It Works
 
 Imagine investing $500 monthly in an index fund:
-- **Month 1**: Price $50/share → Buy 10 shares
-- **Month 2**: Price $40/share → Buy 12.5 shares
-- **Month 3**: Price $60/share → Buy 8.33 shares
+- Month 1: Price $50/share → Buy 10 shares
+- Month 2: Price $40/share → Buy 12.5 shares
+- Month 3: Price $60/share → Buy 8.33 shares
 
 Over time, you buy more shares when prices are low and fewer when prices are high, potentially lowering your average cost per share.
 
@@ -299,24 +299,24 @@ Markets move in cycles—periods of growth followed by decline, then recovery an
 ## The Four Phases of Market Cycles
 
 ### 1. Accumulation Phase
-- **Characteristics**: Pessimism dominates, prices are low
-- **Smart Money**: Informed investors start buying
-- **Opportunity**: Best time for long-term investors to build positions
+- Characteristics: Pessimism dominates, prices are low
+- Smart Money: Informed investors start buying
+- Opportunity: Best time for long-term investors to build positions
 
 ### 2. Mark-Up Phase (Bull Market)
-- **Characteristics**: Improving sentiment, rising prices
-- **Participation**: More investors enter the market
-- **Strategy**: Stay invested, let winners run
+- Characteristics: Improving sentiment, rising prices
+- Participation: More investors enter the market
+- Strategy: Stay invested, let winners run
 
 ### 3. Distribution Phase
-- **Characteristics**: Optimism peaks, valuations stretch
-- **Activity**: Smart money starts selling
-- **Warning Signs**: Excessive speculation, "this time is different" mentality
+- Characteristics: Optimism peaks, valuations stretch
+- Activity: Smart money starts selling
+- Warning Signs: Excessive speculation, "this time is different" mentality
 
 ### 4. Mark-Down Phase (Bear Market)
-- **Characteristics**: Declining prices, increasing pessimism
-- **Emotion**: Fear and panic selling
-- **Reality**: Setting up the next accumulation phase
+- Characteristics: Declining prices, increasing pessimism
+- Emotion: Fear and panic selling
+- Reality: Setting up the next accumulation phase
 
 ## Economic Cycles vs. Market Cycles
 
@@ -326,63 +326,63 @@ Markets and economies are related but don't move in perfect lockstep. Markets ar
 - GDP growing
 - Employment rising
 - Consumer confidence high
-- **Market Behavior**: Often strong, but may peak before expansion ends
+- Market Behavior: Often strong, but may peak before expansion ends
 
 ### Peak
 - Economy at maximum output
 - Potential inflation concerns
-- **Market Behavior**: May decline as investors anticipate slowdown
+- Market Behavior: May decline as investors anticipate slowdown
 
 ### Contraction/Recession
 - GDP declining
 - Rising unemployment
 - Reduced spending
-- **Market Behavior**: Often bottoms before recession ends
+- Market Behavior: Often bottoms before recession ends
 
 ### Trough
 - Economy at lowest point
 - High unemployment
-- **Market Behavior**: Usually begins recovering as worst is priced in
+- Market Behavior: Usually begins recovering as worst is priced in
 
 ## Investing Strategies Across Cycles
 
 ### During Bull Markets
-1. **Stay Invested**: Don't try to time the top
-2. **Rebalance Regularly**: Take some profits from big winners
-3. **Maintain Discipline**: Avoid excessive risk-taking
-4. **Build Watch Lists**: Identify quality companies for future buying opportunities
+1. Stay Invested: Don't try to time the top
+2. Rebalance Regularly: Take some profits from big winners
+3. Maintain Discipline: Avoid excessive risk-taking
+4. Build Watch Lists: Identify quality companies for future buying opportunities
 
 ### During Bear Markets
-1. **Don't Panic Sell**: History shows markets recover
-2. **Dollar-Cost Average**: Buy quality at lower prices
-3. **Focus on Quality**: Strong balance sheets and cash flows
-4. **Rebalance Into Weakness**: Shift from bonds back into stocks
+1. Don't Panic Sell: History shows markets recover
+2. Dollar-Cost Average: Buy quality at lower prices
+3. Focus on Quality: Strong balance sheets and cash flows
+4. Rebalance Into Weakness: Shift from bonds back into stocks
 
 ### During Transitions
-1. **Watch Leading Indicators**: Employment data, consumer confidence, yield curves
-2. **Adjust Sector Exposure**: Different sectors lead at different times
-3. **Manage Risk**: Ensure your portfolio matches your risk tolerance
-4. **Stay Flexible**: Be willing to adjust as conditions change
+1. Watch Leading Indicators: Employment data, consumer confidence, yield curves
+2. Adjust Sector Exposure: Different sectors lead at different times
+3. Manage Risk: Ensure your portfolio matches your risk tolerance
+4. Stay Flexible: Be willing to adjust as conditions change
 
 ## Sector Rotation Through Cycles
 
 Different sectors perform best at different cycle stages:
 
 ### Early Recovery
-- **Leaders**: Financials, consumer discretionary, real estate
-- **Why**: Benefit from improving economy and low interest rates
+- Leaders: Financials, consumer discretionary, real estate
+- Why: Benefit from improving economy and low interest rates
 
 ### Mid Expansion
-- **Leaders**: Technology, industrials
-- **Why**: Profit from economic growth and capital spending
+- Leaders: Technology, industrials
+- Why: Profit from economic growth and capital spending
 
 ### Late Expansion
-- **Leaders**: Energy, materials
-- **Why**: Rising commodity prices, strong demand
+- Leaders: Energy, materials
+- Why: Rising commodity prices, strong demand
 
 ### Recession
-- **Leaders**: Utilities, consumer staples, healthcare
-- **Why**: Defensive sectors with stable demand
+- Leaders: Utilities, consumer staples, healthcare
+- Why: Defensive sectors with stable demand
 
 ## Key Indicators to Monitor
 
@@ -406,25 +406,25 @@ Different sectors perform best at different cycle stages:
 
 ## Common Mistakes to Avoid
 
-1. **Fighting the Trend**: Don't stay bearish in bull markets or bullish in bear markets too long
+1. Fighting the Trend: Don't stay bearish in bull markets or bullish in bear markets too long
 
-2. **Overreacting**: Not every decline is a bear market; not every rally is a bull market
+2. Overreacting: Not every decline is a bear market; not every rally is a bull market
 
-3. **Abandoning Your Plan**: Emotional decisions usually lead to poor outcomes
+3. Abandoning Your Plan: Emotional decisions usually lead to poor outcomes
 
-4. **Market Timing**: Consistently timing cycles is nearly impossible
+4. Market Timing: Consistently timing cycles is nearly impossible
 
-5. **Ignoring Valuations**: High valuations in late bull markets increase risk
+5. Ignoring Valuations: High valuations in late bull markets increase risk
 
 ## Building a Cycle-Resistant Portfolio
 
-1. **Diversify Across Asset Classes**: Stocks, bonds, real estate, commodities
+1. Diversify Across Asset Classes: Stocks, bonds, real estate, commodities
 
-2. **Include International Exposure**: Different regions may be at different cycle stages
+2. Include International Exposure: Different regions may be at different cycle stages
 
-3. **Mix Growth and Value**: Different styles perform better at different times
+3. Mix Growth and Value: Different styles perform better at different times
 
-4. **Maintain Cash Reserves**: Ability to buy during downturns
+4. Maintain Cash Reserves: Ability to buy during downturns
 
 5. **Regular Rebalancing**: Brings discipline to buying low and selling high
 

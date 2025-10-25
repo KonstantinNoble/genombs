@@ -17,7 +17,7 @@ const Blog = () => {
             <div className="inline-block px-4 py-1.5 bg-secondary/10 rounded-full mb-2">
               <span className="text-sm font-semibold text-secondary">Investment Insights</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Expert Knowledge</h1>
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-2">Expert Knowledge</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Evidence-based strategies and insights to help you make smarter, more confident investment decisions
             </p>

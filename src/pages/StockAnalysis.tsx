@@ -210,41 +210,56 @@ const StockAnalysis = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* History Sidebar */}
           <aside className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Analysis History</CardTitle>
+            <Card className="sticky top-8 border-primary/20 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Analysis History
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 max-h-[600px] overflow-y-auto">
                 {history.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No history yet</p>
+                  <div className="text-center py-8">
+                    <Shield className="h-12 w-12 mx-auto text-muted-foreground/30 mb-2" />
+                    <p className="text-sm text-muted-foreground">No history yet</p>
+                  </div>
                 ) : (
                   history.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 border rounded-lg hover:bg-muted/50 transition-colors group relative"
+                      className="p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group relative"
                     >
                       <div 
                         className="cursor-pointer"
                         onClick={() => setResult(item.result)}
                       >
-                        <div className="font-medium text-sm">{item.asset_class}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </div>
+                        <div className="font-semibold text-sm text-foreground">{item.asset_class}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          Risk: {item.risk_tolerance} | {item.time_horizon}
+                          {new Date(item.created_at).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                        <div className="flex gap-1 mt-2">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0">
+                            {item.risk_tolerance}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs px-1.5 py-0">
+                            {item.time_horizon}
+                          </Badge>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteHistory(item.id);
@@ -261,213 +276,287 @@ const StockAnalysis = () => {
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">AI Stock Analysis</h1>
-          <p className="text-muted-foreground">
-            Get personalized stock suggestions based on your investment profile
-          </p>
-        </div>
-
-        <Card className="mb-6 border-yellow-500/50 bg-yellow-500/5">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-              <CardTitle className="text-lg">Important Disclaimer</CardTitle>
+            <div className="mb-8 text-center">
+              <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-primary/10 rounded-full">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
+              </div>
+              <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                AI Stock Analysis
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Get personalized stock suggestions based on your investment profile
+              </p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              These suggestions are purely informational and do NOT constitute financial advice.
-              Always conduct your own research and consult with a qualified financial advisor
-              before making investment decisions.
-            </p>
-          </CardContent>
-        </Card>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Investment Profile</CardTitle>
-            <CardDescription>Tell us about your investment preferences</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label>Risk Tolerance</Label>
-              <RadioGroup value={riskTolerance} onValueChange={setRiskTolerance}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="low" id="low" />
-                  <Label htmlFor="low" className="font-normal cursor-pointer">Low - Prefer stable investments</Label>
+            <Card className="mb-6 border-yellow-500/50 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 shadow-lg">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-yellow-500/20 rounded-lg">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                  </div>
+                  <CardTitle className="text-lg">Important Disclaimer</CardTitle>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="medium" id="medium" />
-                  <Label htmlFor="medium" className="font-normal cursor-pointer">Medium - Balanced approach</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="high" id="high" />
-                  <Label htmlFor="high" className="font-normal cursor-pointer">High - Willing to take risks</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Investment Time Horizon</Label>
-              <RadioGroup value={timeHorizon} onValueChange={setTimeHorizon}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="short" id="short" />
-                  <Label htmlFor="short" className="font-normal cursor-pointer">Short (1-2 years)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="medium" id="medium-time" />
-                  <Label htmlFor="medium-time" className="font-normal cursor-pointer">Medium (3-5 years)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="long" id="long" />
-                  <Label htmlFor="long" className="font-normal cursor-pointer">Long (5+ years)</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="age">Age (Optional)</Label>
-              <Input
-                id="age"
-                type="number"
-                placeholder="e.g., 35"
-                value={age}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length <= 3) {
-                    setAge(value);
-                  }
-                }}
-                min="18"
-                max="100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="wealthClass">Wealth Class (Optional)</Label>
-              <Select value={wealthClass} onValueChange={setWealthClass}>
-                <SelectTrigger id="wealthClass">
-                  <SelectValue placeholder="Select wealth class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low (up to €50,000)</SelectItem>
-                  <SelectItem value="middle">Middle (€50,000 - €250,000)</SelectItem>
-                  <SelectItem value="upper-middle">Upper Middle (€250,000 - €1M)</SelectItem>
-                  <SelectItem value="high">High (over €1M)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="assetClass">Asset Class</Label>
-              <Select value={assetClass} onValueChange={setAssetClass}>
-                <SelectTrigger id="assetClass">
-                  <SelectValue placeholder="Select asset class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="stocks">General Stocks</SelectItem>
-                  <SelectItem value="etfs">ETFs</SelectItem>
-                  <SelectItem value="tech">Technology</SelectItem>
-                  <SelectItem value="dividends">Dividend Stocks</SelectItem>
-                  <SelectItem value="energy">Energy</SelectItem>
-                  <SelectItem value="healthcare">Healthcare</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="consumer">Consumer Goods</SelectItem>
-                  <SelectItem value="real-estate">Real Estate</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="marketEvents">
-                Market Context (Optional) - Max 250 characters
-                {marketEvents && (
-                  <span className={`ml-2 text-xs ${marketEvents.length > 250 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                    ({marketEvents.length}/250 characters)
-                  </span>
-                )}
-              </Label>
-              <Textarea
-                id="marketEvents"
-                placeholder="e.g., ECB interest rate cut, Strong AI rally in tech sector, Upcoming earnings season"
-                value={marketEvents}
-                onChange={(e) => setMarketEvents(e.target.value)}
-                rows={3}
-                maxLength={250}
-              />
-            </div>
-
-            <Button
-              onClick={handleAnalyze}
-              disabled={analyzing || !assetClass}
-              className="w-full"
-              size="lg"
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                "Generate AI Analysis"
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {result && (
-          <div className="space-y-6 animate-in fade-in duration-500">
-            <div>
-              <h2 className="text-2xl font-bold mb-4">AI-Generated Investment Inspiration</h2>
-              <Card className="bg-muted/50">
-                <CardContent className="pt-6">
-                  <p className="text-sm">{result.generalAnalysis}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid gap-4">
-              {result.stocks.map((stock, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-xl mb-1">{stock.name}</CardTitle>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{stock.ticker}</Badge>
-                          <span className="text-sm text-muted-foreground">{stock.sector}</span>
-                        </div>
-                      </div>
-                      <Badge className={getAssessmentColor(stock.assessment)}>
-                        <span className="flex items-center gap-1">
-                          {getAssessmentIcon(stock.assessment)}
-                          {stock.assessment}
-                        </span>
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{stock.rationale}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <Card className="border-yellow-500/50 bg-yellow-500/5">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Reminder:</strong> These suggestions are purely informational and do NOT constitute
-                    financial advice. Always conduct your own research and consult with a qualified financial
-                    advisor before making investment decisions.
-                  </p>
-                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm leading-relaxed">
+                  These suggestions are purely informational and do NOT constitute financial advice.
+                  Always conduct your own research and consult with a qualified financial advisor
+                  before making investment decisions.
+                </p>
               </CardContent>
             </Card>
-          </div>
-        )}
+
+            <Card className="mb-8 shadow-xl border-primary/20">
+              <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent pb-6">
+                <CardTitle className="text-2xl">Investment Profile</CardTitle>
+                <CardDescription className="text-base">Tell us about your investment preferences</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-8 pt-6">
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Risk Tolerance</Label>
+                  <RadioGroup value={riskTolerance} onValueChange={setRiskTolerance} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="relative">
+                      <RadioGroupItem value="low" id="low" className="peer sr-only" />
+                      <Label 
+                        htmlFor="low" 
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <Shield className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <div className="font-medium">Low</div>
+                          <div className="text-xs text-muted-foreground">Prefer stable investments</div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="relative">
+                      <RadioGroupItem value="medium" id="medium" className="peer sr-only" />
+                      <Label 
+                        htmlFor="medium" 
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <TrendingUp className="h-5 w-5 text-green-500" />
+                        <div>
+                          <div className="font-medium">Medium</div>
+                          <div className="text-xs text-muted-foreground">Balanced approach</div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="relative">
+                      <RadioGroupItem value="high" id="high" className="peer sr-only" />
+                      <Label 
+                        htmlFor="high" 
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <AlertTriangle className="h-5 w-5 text-orange-500" />
+                        <div>
+                          <div className="font-medium">High</div>
+                          <div className="text-xs text-muted-foreground">Willing to take risks</div>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Investment Time Horizon</Label>
+                  <RadioGroup value={timeHorizon} onValueChange={setTimeHorizon} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="relative">
+                      <RadioGroupItem value="short" id="short" className="peer sr-only" />
+                      <Label 
+                        htmlFor="short" 
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <span className="font-medium">Short</span>
+                        <span className="text-xs text-muted-foreground">1-2 years</span>
+                      </Label>
+                    </div>
+                    <div className="relative">
+                      <RadioGroupItem value="medium" id="medium-time" className="peer sr-only" />
+                      <Label 
+                        htmlFor="medium-time" 
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <span className="font-medium">Medium</span>
+                        <span className="text-xs text-muted-foreground">3-5 years</span>
+                      </Label>
+                    </div>
+                    <div className="relative">
+                      <RadioGroupItem value="long" id="long" className="peer sr-only" />
+                      <Label 
+                        htmlFor="long" 
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50"
+                      >
+                        <span className="font-medium">Long</span>
+                        <span className="text-xs text-muted-foreground">5+ years</span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="text-base font-semibold">Age (Optional)</Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      placeholder="e.g., 35"
+                      value={age}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 3) {
+                          setAge(value);
+                        }
+                      }}
+                      min="18"
+                      max="100"
+                      className="h-12"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="wealthClass" className="text-base font-semibold">Wealth Class (Optional)</Label>
+                    <Select value={wealthClass} onValueChange={setWealthClass}>
+                      <SelectTrigger id="wealthClass" className="h-12">
+                        <SelectValue placeholder="Select wealth class" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low (up to €50,000)</SelectItem>
+                        <SelectItem value="middle">Middle (€50,000 - €250,000)</SelectItem>
+                        <SelectItem value="upper-middle">Upper Middle (€250,000 - €1M)</SelectItem>
+                        <SelectItem value="high">High (over €1M)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="assetClass" className="text-base font-semibold">Asset Class</Label>
+                  <Select value={assetClass} onValueChange={setAssetClass}>
+                    <SelectTrigger id="assetClass" className="h-12">
+                      <SelectValue placeholder="Select asset class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="stocks">General Stocks</SelectItem>
+                      <SelectItem value="etfs">ETFs</SelectItem>
+                      <SelectItem value="tech">Technology</SelectItem>
+                      <SelectItem value="dividends">Dividend Stocks</SelectItem>
+                      <SelectItem value="energy">Energy</SelectItem>
+                      <SelectItem value="healthcare">Healthcare</SelectItem>
+                      <SelectItem value="finance">Finance</SelectItem>
+                      <SelectItem value="consumer">Consumer Goods</SelectItem>
+                      <SelectItem value="real-estate">Real Estate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="marketEvents" className="text-base font-semibold">
+                    Market Context (Optional)
+                    {marketEvents && (
+                      <span className={`ml-2 text-xs font-normal ${marketEvents.length > 250 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        ({marketEvents.length}/250 characters)
+                      </span>
+                    )}
+                  </Label>
+                  <Textarea
+                    id="marketEvents"
+                    placeholder="e.g., ECB interest rate cut, Strong AI rally in tech sector, Upcoming earnings season"
+                    value={marketEvents}
+                    onChange={(e) => setMarketEvents(e.target.value)}
+                    rows={4}
+                    maxLength={250}
+                    className="resize-none"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleAnalyze}
+                  disabled={analyzing || !assetClass}
+                  className="w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                  size="lg"
+                >
+                  {analyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="mr-2 h-5 w-5" />
+                      Generate AI Analysis
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {result && (
+              <div className="space-y-6 animate-in fade-in duration-700">
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="h-1 w-12 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+                    <h2 className="text-3xl font-bold">AI-Generated Investment Inspiration</h2>
+                  </div>
+                  <Card className="bg-gradient-to-br from-primary/5 to-transparent border-primary/20 shadow-lg">
+                    <CardContent className="pt-6">
+                      <p className="text-base leading-relaxed">{result.generalAnalysis}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid gap-4">
+                  {result.stocks.map((stock, index) => (
+                    <Card 
+                      key={index} 
+                      className="group hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                              {stock.name}
+                            </CardTitle>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="font-mono font-semibold">
+                                {stock.ticker}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground">{stock.sector}</span>
+                            </div>
+                          </div>
+                          <Badge className={`${getAssessmentColor(stock.assessment)} px-3 py-1.5`}>
+                            <span className="flex items-center gap-1.5">
+                              {getAssessmentIcon(stock.assessment)}
+                              <span className="capitalize">{stock.assessment}</span>
+                            </span>
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {stock.rationale}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <Card className="border-yellow-500/50 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 shadow-lg">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-yellow-500/20 rounded-lg flex-shrink-0">
+                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                      </div>
+                      <p className="text-sm leading-relaxed">
+                        <strong>Reminder:</strong> These suggestions are purely informational and do NOT constitute
+                        financial advice. Always conduct your own research and consult with a qualified financial
+                        advisor before making investment decisions.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
       </main>

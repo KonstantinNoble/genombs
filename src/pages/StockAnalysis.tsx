@@ -320,12 +320,12 @@ const StockAnalysis = () => {
                       <RadioGroupItem value="low" id="low" className="peer sr-only" />
                       <Label 
                         htmlFor="low" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <Shield className="h-5 w-5 text-blue-500" />
+                        <Shield className="h-5 w-5" />
                         <div>
-                          <div className="font-medium">Low</div>
-                          <div className="text-xs text-muted-foreground">Prefer stable investments</div>
+                          <div className="font-semibold">Low</div>
+                          <div className="text-xs opacity-80">Prefer stable investments</div>
                         </div>
                       </Label>
                     </div>
@@ -333,12 +333,12 @@ const StockAnalysis = () => {
                       <RadioGroupItem value="medium" id="medium" className="peer sr-only" />
                       <Label 
                         htmlFor="medium" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <TrendingUp className="h-5 w-5 text-green-500" />
+                        <TrendingUp className="h-5 w-5" />
                         <div>
-                          <div className="font-medium">Medium</div>
-                          <div className="text-xs text-muted-foreground">Balanced approach</div>
+                          <div className="font-semibold">Medium</div>
+                          <div className="text-xs opacity-80">Balanced approach</div>
                         </div>
                       </Label>
                     </div>
@@ -346,12 +346,12 @@ const StockAnalysis = () => {
                       <RadioGroupItem value="high" id="high" className="peer sr-only" />
                       <Label 
                         htmlFor="high" 
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <AlertTriangle className="h-5 w-5 text-orange-500" />
+                        <AlertTriangle className="h-5 w-5" />
                         <div>
-                          <div className="font-medium">High</div>
-                          <div className="text-xs text-muted-foreground">Willing to take risks</div>
+                          <div className="font-semibold">High</div>
+                          <div className="text-xs opacity-80">Willing to take risks</div>
                         </div>
                       </Label>
                     </div>
@@ -365,30 +365,30 @@ const StockAnalysis = () => {
                       <RadioGroupItem value="short" id="short" className="peer sr-only" />
                       <Label 
                         htmlFor="short" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <span className="font-medium">Short</span>
-                        <span className="text-xs text-muted-foreground">1-2 years</span>
+                        <span className="font-semibold">Short</span>
+                        <span className="text-xs opacity-80">1-2 years</span>
                       </Label>
                     </div>
                     <div className="relative">
                       <RadioGroupItem value="medium" id="medium-time" className="peer sr-only" />
                       <Label 
                         htmlFor="medium-time" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <span className="font-medium">Medium</span>
-                        <span className="text-xs text-muted-foreground">3-5 years</span>
+                        <span className="font-semibold">Medium</span>
+                        <span className="text-xs opacity-80">3-5 years</span>
                       </Label>
                     </div>
                     <div className="relative">
                       <RadioGroupItem value="long" id="long" className="peer sr-only" />
                       <Label 
                         htmlFor="long" 
-                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-[0_0_20px_rgba(var(--primary),0.3)] peer-checked:ring-2 peer-checked:ring-primary/30"
+                        className="flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary/50 border-border bg-background peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground"
                       >
-                        <span className="font-medium">Long</span>
-                        <span className="text-xs text-muted-foreground">5+ years</span>
+                        <span className="font-semibold">Long</span>
+                        <span className="text-xs opacity-80">5+ years</span>
                       </Label>
                     </div>
                   </RadioGroup>

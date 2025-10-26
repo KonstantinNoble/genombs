@@ -170,9 +170,15 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Stock Analysis</h2>
             <p className="text-muted-foreground mb-4">
-              Our website offers an AI-powered stock analysis feature that provides personalized investment inspiration
-              based on your individual investment profile. This feature is available to registered users and requires
-              authentication.
+              Our website offers an AI-powered feature that provides general stock market information and educational examples 
+              based on your stated investment preferences. This feature is available to registered users and requires authentication.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong className="text-destructive">IMPORTANT DISCLAIMER:</strong> This feature provides general market information 
+              for educational purposes only. It does NOT constitute financial advice, investment recommendations, personalized financial 
+              consultation, or specific buy/sell instructions. You should consult with licensed financial advisors before making any 
+              investment decisions. Past performance does not guarantee future results, and all investments carry risk, including 
+              potential loss of principal.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Stock Analysis</h3>
@@ -181,52 +187,68 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Investment Profile Data:</strong>
+                <strong>Investment Profile Data (stated preferences):</strong>
                 <ul className="list-disc pl-6 mt-2">
                   <li>Risk tolerance (conservative, moderate, aggressive)</li>
-                  <li>Investment time horizon (short-term, medium-term, long-term)</li>
-                  <li>Age (optional)</li>
+                  <li>Market capitalization preference (small-cap, mid-cap, large-cap, mega-cap)</li>
                   <li>Preferred asset classes (stocks, bonds, ETFs, cryptocurrencies, commodities, real estate)</li>
-                  <li>Wealth class (optional: low, medium, high, very high)</li>
-                  <li>Market context/events </li>
+                  <li>Volatility preference (low, medium, high)</li>
                 </ul>
               </li>
               <li>
                 <strong>User Account Data:</strong>
                 <ul className="list-disc pl-6 mt-2">
-                  <li>User ID (to manage your analysis history and daily limit)</li>
+                  <li>User ID (to manage your analysis history and daily usage limit)</li>
                   <li>Timestamps (date and time of analysis requests)</li>
                 </ul>
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Data Recipients and Third-Country Transfers</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">Role of Lovable AI Gateway</h3>
             <p className="text-muted-foreground mb-4">
-              To generate the AI-powered analysis, your investment profile data is transmitted through the Lovable AI
-              Gateway to AI service providers. The gateway may use one of the following AI models:
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Google AI Models</strong> (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA):
+              The Lovable AI Gateway (operated by Lovable Labs Incorporated, 340 S Lemon Ave #9828, Walnut, CA 91789, USA) 
+              acts as an intermediary service that routes AI requests to external AI model providers. The gateway:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Gemini 2.5 Pro</li>
-              <li>Gemini 2.5 Flash</li>
-              <li>Gemini 2.5 Flash Lite</li>
+              <li>Receives your investment profile data from our backend (Supabase Edge Functions)</li>
+              <li>Forwards the request to either Google AI or OpenAI models</li>
+              <li>Returns the generated response to our backend</li>
+              <li>Acts as a data processor under Art. 28 GDPR on behalf of our website</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>OpenAI Models</strong> (OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA):
+              <strong>Data Processing Agreement:</strong> A Data Processing Agreement (DPA) pursuant to Art. 28 GDPR has been 
+              concluded with Lovable Labs Incorporated covering all processing activities through the AI Gateway.
             </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>GPT-5</li>
-              <li>GPT-5 Mini</li>
-              <li>GPT-5 Nano</li>
-            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">AI Model Providers and Third-Country Transfers</h3>
             <p className="text-muted-foreground mb-4">
-              Since both Google and OpenAI are located in the United States (a third country outside the European
-              Economic Area), data transfers are subject to additional safeguards through Standard Contractual Clauses
-              (SCCs) approved by the European Commission.
+              To generate the educational stock examples, your investment profile data is transmitted through our backend 
+              infrastructure and the Lovable AI Gateway to one of the following AI service providers:
             </p>
-            <p className="text-muted-foreground mb-4">More information:</p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Google AI Models</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Models:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Gemini 2.5 Flash Lite
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis for third-country transfer:</strong> Art. 45 GDPR (Adequacy Decision)
+              <br />
+              Google LLC is certified under the EU-U.S. Data Privacy Framework (DPF). The European Commission has recognized 
+              the DPF as providing an adequate level of data protection equivalent to EU law. Therefore, data transfers to 
+              Google for AI processing are based on the adequacy decision pursuant to Art. 45 GDPR and do not require 
+              additional safeguards such as Standard Contractual Clauses.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data usage by Google:</strong> According to Google Cloud's API data usage policies, input data submitted 
+              through the Gemini API is not used to train or improve Google's models. Google retains API request data for a 
+              limited period (typically 30 days) for abuse prevention and security monitoring purposes only.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              More information:
+            </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 Google Privacy Policy:{" "}
@@ -240,6 +262,53 @@ const PrivacyPolicy = () => {
                 </a>
               </li>
               <li>
+                Google DPF Certification:{" "}
+                <a
+                  href="https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt000000001L5AAI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Data Privacy Framework
+                </a>
+              </li>
+              <li>
+                Google Cloud API Data Usage:{" "}
+                <a
+                  href="https://cloud.google.com/terms/service-terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Google Cloud Terms
+                </a>
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">OpenAI Models</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Models:</strong> GPT-5, GPT-5 Mini, GPT-5 Nano
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis for third-country transfer:</strong> Art. 46 GDPR (Standard Contractual Clauses)
+              <br />
+              OpenAI LLC is NOT certified under the EU-U.S. Data Privacy Framework. Therefore, data transfers to OpenAI 
+              are safeguarded through Standard Contractual Clauses (SCCs) approved by the European Commission pursuant to 
+              Art. 46(2)(c) GDPR. These SCCs ensure an adequate level of data protection when processing data in the United States.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data usage by OpenAI:</strong> According to OpenAI's API data usage policies, input data submitted 
+              through the API is not used to train or improve OpenAI's models unless you explicitly opt in. OpenAI retains 
+              API request data for 30 days for abuse and misuse monitoring purposes, after which it is automatically deleted.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              More information:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
                 OpenAI Privacy Policy:{" "}
                 <a
                   href="https://openai.com/policies/privacy-policy"
@@ -251,75 +320,118 @@ const PrivacyPolicy = () => {
                 </a>
               </li>
               <li>
-                Lovable AI Documentation:{" "}
+                OpenAI API Data Usage:{" "}
                 <a
-                  href="https://docs.lovable.dev/features/ai"
+                  href="https://openai.com/policies/api-data-usage-policies"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  https://docs.lovable.dev/features/ai
+                  API Data Usage Policies
                 </a>
               </li>
             </ul>
 
+            <p className="text-muted-foreground mb-4 mt-4">
+              <strong>Lovable AI Gateway Documentation:</strong>{" "}
+              <a
+                href="https://docs.lovable.dev/features/ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://docs.lovable.dev/features/ai
+              </a>
+            </p>
+
             <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Art. 6(1)(b) GDPR – Processing necessary for providing the requested AI analysis service</li>
               <li>
-                Art. 6(1)(a) GDPR – By clicking "Generate AI Analysis", you consent to data transmission to the AI
-                providers
+                <strong>Primary legal basis:</strong> Art. 6(1)(b) GDPR – Processing is necessary for the performance of the 
+                contract (providing the educational stock analysis feature you requested as a registered user)
+              </li>
+              <li>
+                <strong>Legitimate interest:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing innovative, 
+                AI-powered educational features to enhance user experience
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              By using the "Generate AI Analysis" feature as a logged-in user, you are requesting the contractual service 
+              of receiving educational stock market information based on your stated preferences. The processing is necessary 
+              to fulfill this service request.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Technical and Organizational Security Measures</h3>
+            <p className="text-muted-foreground mb-4">
+              We implement the following technical safeguards to protect your data during AI processing:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Data minimization:</strong> Only the minimum necessary investment preference data is transmitted to 
+                AI providers. We do not transmit identifying information such as your name, email address, or IP address to 
+                the AI models.
+              </li>
+              <li>
+                <strong>Encryption in transit:</strong> All data transmissions between our backend, the Lovable AI Gateway, 
+                and AI providers are encrypted using industry-standard TLS/SSL encryption protocols.
+              </li>
+              <li>
+                <strong>Server-side processing:</strong> AI requests are routed through our backend infrastructure (Supabase 
+                Edge Functions), ensuring that your client IP address is NOT visible to AI providers. Only the backend server's 
+                IP address is transmitted.
+              </li>
+              <li>
+                <strong>Pseudonymization:</strong> Your investment preferences are processed without direct personal identifiers, 
+                making it significantly more difficult for AI providers to link the data to your identity.
+              </li>
+              <li>
+                <strong>Access controls:</strong> Strict authentication requirements ensure only authorized users can access 
+                the AI analysis feature.
               </li>
             </ul>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Usage Limits and Fair Use</h3>
             <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, each user can perform one free AI analysis per 24-hour period. The
-              system automatically tracks your last analysis timestamp and enforces this limit. Attempting to perform
-              multiple analyses within 24 hours will result in an error message indicating when the next analysis will
-              be available.
+              To ensure fair use and prevent abuse, each user can perform one AI analysis per 24-hour period. The system 
+              automatically tracks your last analysis timestamp and enforces this limit. Attempting to perform multiple 
+              analyses within 24 hours will result in an error message indicating when the next analysis will be available.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention:</strong> According to the providers' data policies, API requests are
-              retained for a limited period (typically 30 days) for abuse monitoring and security purposes, after which
-              they are permanently deleted. Your input data is not used to train or improve the AI models.
+              <strong>AI Provider Retention (Google):</strong> Google retains API request data for approximately 30 days for 
+              abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT used to 
+              train or improve Google's AI models.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Local Storage (Our Database):</strong> Your analysis history is stored in our backend database and
-              includes:
+              <strong>AI Provider Retention (OpenAI):</strong> OpenAI retains API request data for 30 days for abuse and misuse 
+              monitoring purposes, after which it is automatically deleted. Your input data is NOT used to train or improve 
+              OpenAI's models unless you explicitly opt in (which is not applicable through our service).
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Local Storage (Our Database):</strong> Your analysis history is stored in our backend database and includes:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                Your investment profile inputs (risk tolerance, time horizon, age, asset class, market events, wealth
-                class)
+                Your investment profile inputs (risk tolerance, market capitalization, asset class, volatility)
               </li>
-              <li>The generated stock suggestions and analysis</li>
+              <li>The generated stock examples and general market information</li>
               <li>Timestamp of the analysis</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               This data remains stored as long as your account is active. You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your analysis history at any time</li>
+              <li>View your analysis history at any time through your profile page</li>
               <li>Delete individual analysis entries from your history</li>
-              <li>Delete your entire account, which permanently removes all analysis history</li>
+              <li>Delete your entire account, which permanently removes all analysis history from our production database</li>
             </ul>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Realtime Updates</h3>
             <p className="text-muted-foreground mb-4">
-              The application uses realtime database subscriptions to update your analysis limit status automatically
-              when a new analysis becomes available (after 24 hours). This technical feature does not involve additional
-              data processing beyond what is already described.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">Important Disclaimer</h3>
-            <p className="text-muted-foreground mb-4">
-              The AI-generated stock suggestions are for informational and inspirational purposes only and do not
-              constitute financial advice, investment recommendations, or solicitations to buy or sell securities. You
-              should always conduct your own research and consult with a qualified financial advisor before making any
-              investment decisions.
+              The application uses realtime database subscriptions to update your analysis limit status automatically when 
+              a new analysis becomes available (after 24 hours). This technical feature does not involve additional data 
+              processing beyond what is already described.
             </p>
           </section>
 
@@ -438,17 +550,15 @@ const PrivacyPolicy = () => {
               </li>
               <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
               <li>
-                Investment preferences (risk tolerance, time horizon, age, asset class preferences, market
-                events/context, wealth class)
+                Investment preferences (risk tolerance, market capitalization preference, asset class preferences, volatility preference)
               </li>
               <li>
-                AI analysis requests and responses (stock suggestions with ticker symbols, sectors, assessments,
-                rationale, general market analysis, and complete analysis history)
+                AI analysis requests and responses (educational stock examples with ticker symbols, sectors, general characteristics,
+                factual information, general market analysis, and complete analysis history)
               </li>
               <li>Analysis limit tracking data (last analysis timestamp, 24-hour usage limit enforcement data)</li>
               <li>
-                Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our
-                servers)
+                Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our servers)
               </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
@@ -474,18 +584,32 @@ const PrivacyPolicy = () => {
                 including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
-                <strong>AI service providers (for AI-powered stock analysis only):</strong>
+                <strong>AI service providers (for educational stock market information only):</strong>
                 <ul className="list-disc pl-6 mt-2">
-                  <li>Lovable AI Gateway (ai.gateway.lovable.dev) – intermediary service that routes requests to:</li>
-                  <li>Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)</li>
-                  <li>OpenAI LLC (San Francisco, CA, USA) – GPT-5 models (GPT-5, GPT-5 Mini, GPT-5 Nano)</li>
+                  <li>
+                    Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor 
+                    and intermediary service that routes requests to:
+                  </li>
+                  <li>
+                    Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)
+                    <br />
+                    <em className="text-sm">
+                      Third-country transfer basis: Art. 45 GDPR (EU-U.S. Data Privacy Framework adequacy decision)
+                    </em>
+                  </li>
+                  <li>
+                    OpenAI LLC (San Francisco, CA, USA) – GPT-5 models (GPT-5, GPT-5 Mini, GPT-5 Nano)
+                    <br />
+                    <em className="text-sm">
+                      Third-country transfer basis: Art. 46 GDPR (Standard Contractual Clauses)
+                    </em>
+                  </li>
                 </ul>
                 <p className="mt-2 text-sm">
-                  <strong>Server-side processing:</strong> AI requests are processed through our backend (Supabase Edge
-                  Functions), which means AI providers receive only your investment profile data (risk tolerance, time
-                  horizon, age, asset class, market events, wealth class) and the generated analysis, but NOT your
-                  client IP address or direct user identification data. Only the backend server's IP address is visible
-                  to AI providers.
+                  <strong>Data minimization and security:</strong> AI requests are processed through our backend (Supabase Edge
+                  Functions), which means AI providers receive only your investment profile data (risk tolerance, market capitalization,
+                  asset class, volatility) without personal identifiers such as your name, email, or client IP address. Only 
+                  the backend server's IP address is visible to AI providers. All transmissions are encrypted using TLS/SSL protocols.
                 </p>
               </li>
               <li>
@@ -599,7 +723,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> January 25, 2025
+              <strong>Last updated:</strong> January 26, 2025
             </p>
           </section>
         </article>

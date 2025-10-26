@@ -688,6 +688,10 @@ const PrivacyPolicy = () => {
                 restriction of processing under certain circumstances.
               </li>
               <li>
+                {" "}
+                <strong> Right to object to automated processing (Art. 21 GDPR)</strong>
+              </li>
+              <li>
                 <strong>Right to data portability (Art. 20 GDPR)</strong> – You have the right to receive your personal
                 data in a structured, commonly used, and machine-readable format.
               </li>

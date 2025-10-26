@@ -433,7 +433,8 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               The application uses realtime database subscriptions to update your analysis limit status automatically
               when a new analysis becomes available (after 24 hours). This technical feature does not involve additional
-              data processing beyond what is already described.
+              data processing beyond what is already described. Legal basis: Art. 6(1)(b) GDPR (necessary for contract
+              performance) and Art. 6(1)(f) GDPR (legitimate interest in providing a seamless user experience).
             </p>
           </section>
 

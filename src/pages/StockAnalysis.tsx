@@ -46,9 +46,9 @@ const StockAnalysis = () => {
   const [canAnalyze, setCanAnalyze] = useState<boolean>(true);
 
   const [riskTolerance, setRiskTolerance] = useState<string>("medium");
-  const [timeHorizon, setTimeHorizon] = useState<string>("medium");
+  const [marketCapitalization, setMarketCapitalization] = useState<string>("large");
   const [assetClass, setAssetClass] = useState<string>("");
-  const [marketEvents, setMarketEvents] = useState<string>("");
+  const [volatility, setVolatility] = useState<string>("medium");
 
   const checkCanAnalyze = (lastAnalysis: string | null) => {
     if (!lastAnalysis) {
@@ -188,10 +188,6 @@ const StockAnalysis = () => {
       return;
     }
 
-    if (marketEvents.length > 250) {
-      toast.error(`Market context too long (${marketEvents.length} characters). Please limit to 250 characters.`);
-      return;
-    }
 
     setAnalyzing(true);
     setResult(null);
@@ -200,9 +196,9 @@ const StockAnalysis = () => {
       const { data, error } = await supabase.functions.invoke('stock-analysis', {
         body: {
           riskTolerance,
-          timeHorizon,
+          marketCapitalization,
           assetClass,
-          marketEvents
+          volatility
         }
       });
 
@@ -215,9 +211,9 @@ const StockAnalysis = () => {
         await supabase.from('stock_analysis_history').insert({
           user_id: user.id,
           risk_tolerance: riskTolerance,
-          time_horizon: timeHorizon,
+          time_horizon: marketCapitalization,
           asset_class: assetClass,
-          market_events: marketEvents,
+          market_events: volatility,
           result: data
         });
         loadHistory(user.id);
@@ -617,15 +613,16 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="timeHorizon" className="text-base font-semibold">Investment Time Horizon</Label>
-                  <Select value={timeHorizon} onValueChange={setTimeHorizon}>
-                    <SelectTrigger id="timeHorizon" className="h-12">
-                      <SelectValue placeholder="Select time horizon" />
+                  <Label htmlFor="marketCapitalization" className="text-base font-semibold">Market Capitalization</Label>
+                  <Select value={marketCapitalization} onValueChange={setMarketCapitalization}>
+                    <SelectTrigger id="marketCapitalization" className="h-12">
+                      <SelectValue placeholder="Select market capitalization" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="short">Short (1-2 years)</SelectItem>
-                      <SelectItem value="medium">Medium (3-5 years)</SelectItem>
-                      <SelectItem value="long">Long (5+ years)</SelectItem>
+                      <SelectItem value="large">Large Cap (over $10B)</SelectItem>
+                      <SelectItem value="medium">Mid Cap ($2B - $10B)</SelectItem>
+                      <SelectItem value="small">Small Cap (under $2B)</SelectItem>
+                      <SelectItem value="mixed">Mixed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -651,21 +648,15 @@ const StockAnalysis = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="marketEvents" className="text-base font-semibold">Market Context (Optional)</Label>
-                  <Select value={marketEvents} onValueChange={setMarketEvents}>
-                    <SelectTrigger id="marketEvents" className="h-12">
-                      <SelectValue placeholder="Select market context" />
+                  <Label htmlFor="volatility" className="text-base font-semibold">Volatility Preference</Label>
+                  <Select value={volatility} onValueChange={setVolatility}>
+                    <SelectTrigger id="volatility" className="h-12">
+                      <SelectValue placeholder="Select volatility preference" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="interest-rate-changes">Interest Rate Changes</SelectItem>
-                      <SelectItem value="tech-rally">Tech Sector Rally</SelectItem>
-                      <SelectItem value="earnings-season">Earnings Season</SelectItem>
-                      <SelectItem value="market-volatility">High Market Volatility</SelectItem>
-                      <SelectItem value="inflation-concerns">Inflation Concerns</SelectItem>
-                      <SelectItem value="geopolitical-tensions">Geopolitical Tensions</SelectItem>
-                      <SelectItem value="economic-recovery">Economic Recovery</SelectItem>
-                      <SelectItem value="market-correction">Market Correction</SelectItem>
+                      <SelectItem value="low">Low Volatility</SelectItem>
+                      <SelectItem value="medium">Medium Volatility</SelectItem>
+                      <SelectItem value="high">High Volatility</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

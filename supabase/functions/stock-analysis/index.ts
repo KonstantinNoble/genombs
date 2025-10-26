@@ -60,9 +60,9 @@ serve(async (req) => {
       );
     }
 
-    const { riskTolerance, timeHorizon, assetClass, marketEvents } = await req.json();
+    const { riskTolerance, marketCapitalization, assetClass, volatility } = await req.json();
 
-    console.log('Stock analysis request:', { riskTolerance, timeHorizon, assetClass, marketEvents });
+    console.log('Stock analysis request:', { riskTolerance, marketCapitalization, assetClass, volatility });
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {
@@ -70,9 +70,9 @@ serve(async (req) => {
     }
 
     // Validate inputs
-    if (!riskTolerance || !timeHorizon || !assetClass) {
+    if (!riskTolerance || !marketCapitalization || !assetClass || !volatility) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: riskTolerance, timeHorizon, or assetClass' }),
+        JSON.stringify({ error: 'Missing required fields: riskTolerance, marketCapitalization, assetClass, or volatility' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -99,17 +99,16 @@ Important Guidelines:
 - Use neutral, educational language
 - Present factual market information without directive recommendations
 - Emphasize this is for informational purposes only
-- Consider the user's stated risk tolerance and time horizon as filtering criteria
-- Take current market context into account
+- Consider the user's stated risk tolerance, market capitalization preference, and volatility tolerance as filtering criteria
 - Provide balanced examples across different sectors when appropriate`;
 
     const userPrompt = `Provide general market information and educational stock examples based on the following stated preferences:
 - Risk Tolerance: ${riskTolerance}
-- Time Horizon: ${timeHorizon}
+- Market Capitalization Preference: ${marketCapitalization}
 - Asset Class: ${assetClass}
-- Market Context: ${marketEvents || 'Current market conditions'}
+- Volatility Preference: ${volatility}
 
-Please provide 3-5 stock examples for educational purposes that generally align with these stated preferences. Remember: This is informational only, not financial advice.`;
+Please provide 3-5 stock examples for educational purposes that generally align with these stated preferences. Focus on companies matching the specified market capitalization and volatility characteristics. Remember: This is informational only, not financial advice.`;
 
     console.log('Calling Lovable AI Gateway...');
 

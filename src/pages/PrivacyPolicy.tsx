@@ -639,8 +639,12 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">11. Obligation to Provide Data</h2>
             <p className="text-muted-foreground mb-4">
-              You are not legally or contractually obliged to provide personal data when visiting our website. However,
-              without certain technical data (e.g., IP address), the website cannot be displayed correctly.
+              You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
+              the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
+              legitimate interest according to Art. 6(1)(f) GDPR). Furthermore, to use our registration-required AI
+              Analysis Service, the provision of your email address and your investment preferences is mandatory, as
+              this processing is necessary for the performance of the contract (Art. 6(1)(b) GDPR). We cannot otherwise
+              fulfill the contractually agreed-upon service.
             </p>
           </section>
 

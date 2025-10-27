@@ -168,32 +168,33 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Stock Analysis</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Business Tools Advisor</h2>
             <p className="text-muted-foreground mb-4">
-              Our website offers an AI-powered feature that provides general stock market information and educational
-              examples based on your stated investment preferences. This feature is available to registered users and
-              requires authentication.
+              Our website offers an AI-powered feature that provides personalized recommendations for business tools,
+              software, and strategies based on your stated business context and goals. This feature is available to
+              registered users and requires authentication.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong className="text-destructive">IMPORTANT DISCLAIMER:</strong> This feature provides general market
-              information for educational purposes only. It does NOT constitute financial advice, investment
-              recommendations, personalized financial consultation, or specific buy/sell instructions. You should
-              consult with licensed financial advisors before making any investment decisions. Past performance does not
-              guarantee future results, and all investments carry risk, including potential loss of principal.
+              <strong>IMPORTANT DISCLAIMER:</strong> This feature provides general recommendations and information for
+              educational and informational purposes only. It does NOT constitute professional business consulting,
+              legal advice, or personalized business strategy consultation. You should consult with qualified business
+              advisors and legal professionals before making significant business decisions. Results may vary, and we
+              make no guarantees regarding the effectiveness of recommended tools or strategies for your specific
+              business situation.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Stock Analysis</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Business Tools Analysis</h3>
             <p className="text-muted-foreground mb-4">
               When you use this feature, the following personal data is processed:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Investment Profile Data (stated preferences):</strong>
+                <strong>Business Profile Data (stated preferences):</strong>
                 <ul className="list-disc pl-6 mt-2">
-                  <li>Risk tolerance (conservative, moderate, aggressive)</li>
-                  <li>Market capitalization preference (small-cap, mid-cap, large-cap, mega-cap)</li>
-                  <li>Preferred asset classes (stocks, bonds, ETFs, cryptocurrencies, commodities, real estate)</li>
-                  <li>Volatility preference (low, medium, high)</li>
+                  <li>Industry sector (e.g., technology, retail, healthcare, manufacturing, etc.)</li>
+                  <li>Team size (solo, 2-10, 11-50, 51-200, 200+ employees)</li>
+                  <li>Budget range for business tools (e.g., &lt;$100/month, $100-500/month, $500-2000/month, $2000+/month)</li>
+                  <li>Business goals and objectives (text description of what you want to achieve)</li>
                 </ul>
               </li>
               <li>
@@ -348,17 +349,17 @@ const PrivacyPolicy = () => {
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Primary legal basis:</strong> Art. 6(1)(b) GDPR – Processing is necessary for the performance of
-                the contract (providing the educational stock analysis feature you requested as a registered user)
+                the contract (providing the business tools recommendation feature you requested as a registered user)
               </li>
               <li>
                 <strong>Legitimate interest:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing
-                innovative, AI-powered educational features to enhance user experience
+                innovative, AI-powered business recommendation features to enhance user experience
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              By using the "Generate AI Analysis" feature as a logged-in user, you are requesting the contractual
-              service of receiving educational stock market information based on your stated preferences. The processing
-              is necessary to fulfill this service request.
+              By using the "Get Recommendations" feature as a logged-in user, you are requesting the contractual
+              service of receiving personalized business tool and strategy recommendations based on your stated business
+              context and goals. The processing is necessary to fulfill this service request.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Technical and Organizational Security Measures</h3>
@@ -367,7 +368,7 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Data minimization:</strong> Only the minimum necessary investment preference data is transmitted
+                <strong>Data minimization:</strong> Only the minimum necessary business profile data is transmitted
                 to AI providers. We do not transmit identifying information such as your name, email address, or IP
                 address to the AI models.
               </li>
@@ -381,7 +382,7 @@ const PrivacyPolicy = () => {
                 backend server's IP address is transmitted.
               </li>
               <li>
-                <strong>Pseudonymization:</strong> Your investment preferences are processed without direct personal
+                <strong>Pseudonymization:</strong> Your business profile data is processed without direct personal
                 identifiers, making it significantly more difficult for AI providers to link the data to your identity.
               </li>
               <li>
@@ -414,18 +415,18 @@ const PrivacyPolicy = () => {
               includes:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your investment profile inputs (risk tolerance, market capitalization, asset class, volatility)</li>
-              <li>The generated stock examples and general market information</li>
+              <li>Your business profile inputs (industry, team size, budget range, business goals)</li>
+              <li>The generated business tool recommendations and strategies</li>
               <li>Timestamp of the analysis</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               This data remains stored as long as your account is active. You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your analysis history at any time through your profile page</li>
-              <li>Delete individual analysis entries from your history</li>
+              <li>View your recommendation history at any time through your profile page</li>
+              <li>Delete individual recommendation entries from your history</li>
               <li>
-                Delete your entire account, which permanently removes all analysis history from our production database
+                Delete your entire account, which permanently removes all recommendation history from our production database
               </li>
             </ul>
 
@@ -553,12 +554,11 @@ const PrivacyPolicy = () => {
               </li>
               <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
               <li>
-                Investment preferences (risk tolerance, market capitalization preference, asset class preferences,
-                volatility preference)
+                Business profile data (industry sector, team size, budget range, business goals and objectives)
               </li>
               <li>
-                AI analysis requests and responses (educational stock examples with ticker symbols, sectors, general
-                characteristics, factual information, general market analysis, and complete analysis history)
+                AI recommendation requests and responses (business tool recommendations, software suggestions, business
+                strategies, implementation guidance, and complete recommendation history)
               </li>
               <li>Analysis limit tracking data (last analysis timestamp, 24-hour usage limit enforcement data)</li>
               <li>
@@ -567,8 +567,8 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
-              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered stock
-              analysis feature, your personal investment data (risk tolerance, time horizon, etc.) is transmitted
+              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered business
+              tools advisor feature, your business profile data (industry, team size, budget, goals) is transmitted
               server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
               <strong>Your client IP address is NOT transmitted to the AI providers (Google or OpenAI)</strong>. Only
               the IP address of our backend server is visible to the AI providers. This server-side architecture
@@ -589,7 +589,7 @@ const PrivacyPolicy = () => {
                 including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
-                <strong>AI service providers (for educational stock market information only):</strong>
+                <strong>AI service providers (for business tools recommendations only):</strong>
                 <ul className="list-disc pl-6 mt-2">
                   <li>
                     Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
@@ -612,8 +612,8 @@ const PrivacyPolicy = () => {
                 </ul>
                 <p className="mt-2 text-sm">
                   <strong>Data minimization and security:</strong> AI requests are processed through our backend
-                  (Supabase Edge Functions), which means AI providers receive only your investment profile data (risk
-                  tolerance, market capitalization, asset class, volatility) without personal identifiers such as your
+                  (Supabase Edge Functions), which means AI providers receive only your business profile data (industry,
+                  team size, budget range, business goals) without personal identifiers such as your
                   name, email, or client IP address. Only the backend server's IP address is visible to AI providers.
                   All transmissions are encrypted using TLS/SSL protocols.
                 </p>

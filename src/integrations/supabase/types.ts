@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_tools_history: {
+        Row: {
+          budget_range: string
+          business_goals: string
+          created_at: string
+          id: string
+          industry: string
+          result: Json
+          team_size: string
+          user_id: string
+        }
+        Insert: {
+          budget_range: string
+          business_goals: string
+          created_at?: string
+          id?: string
+          industry: string
+          result: Json
+          team_size: string
+          user_id: string
+        }
+        Update: {
+          budget_range?: string
+          business_goals?: string
+          created_at?: string
+          id?: string
+          industry?: string
+          result?: Json
+          team_size?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

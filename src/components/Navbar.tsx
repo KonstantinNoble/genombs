@@ -54,14 +54,14 @@ const Navbar = () => {
             Blog
           </Link>
           <Link 
-            to="/stock-analysis" 
+            to="/business-tools" 
             className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
-              isActive("/stock-analysis") 
+              isActive("/business-tools") 
                 ? "text-primary after:w-full" 
                 : "text-muted-foreground after:w-0 hover:after:w-full"
             }`}
           >
-            AI Analysis
+            Business Tools
           </Link>
           {user ? (
             <Link to="/profile">
@@ -106,11 +106,11 @@ const Navbar = () => {
               Blog
             </Link>
             <Link
-              to="/stock-analysis"
+              to="/business-tools"
               className="block text-foreground hover:text-secondary transition-colors py-2"
               onClick={() => setIsOpen(false)}
             >
-              AI Analysis
+              Business Tools
             </Link>
             {user ? (
               <Link to="/profile" onClick={() => setIsOpen(false)}>

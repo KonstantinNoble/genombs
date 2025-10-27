@@ -193,7 +193,10 @@ const PrivacyPolicy = () => {
                 <ul className="list-disc pl-6 mt-2">
                   <li>Industry sector (e.g., technology, retail, healthcare, manufacturing, etc.)</li>
                   <li>Team size (solo, 2-10, 11-50, 51-200, 200+ employees)</li>
-                  <li>Budget range for business tools (e.g., &lt;$100/month, $100-500/month, $500-2000/month, $2000+/month)</li>
+                  <li>
+                    Budget range for business tools (e.g., &lt;$100/month, $100-500/month, $500-2000/month,
+                    $2000+/month)
+                  </li>
                   <li>Business goals and objectives (text description of what you want to achieve)</li>
                 </ul>
               </li>
@@ -357,9 +360,9 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              By using the "Get Recommendations" feature as a logged-in user, you are requesting the contractual
-              service of receiving personalized business tool and strategy recommendations based on your stated business
-              context and goals. The processing is necessary to fulfill this service request.
+              By using the "Get Recommendations" feature as a logged-in user, you are requesting the contractual service
+              of receiving personalized business tool and strategy recommendations based on your stated business context
+              and goals. The processing is necessary to fulfill this service request.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Technical and Organizational Security Measures</h3>
@@ -368,9 +371,9 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Data minimization:</strong> Only the minimum necessary business profile data is transmitted
-                to AI providers. We do not transmit identifying information such as your name, email address, or IP
-                address to the AI models.
+                <strong>Data minimization:</strong> Only the minimum necessary business profile data is transmitted to
+                AI providers. We do not transmit identifying information such as your name, email address, or IP address
+                to the AI models.
               </li>
               <li>
                 <strong>Encryption in transit:</strong> All data transmissions between our backend, the Lovable AI
@@ -426,7 +429,8 @@ const PrivacyPolicy = () => {
               <li>View your recommendation history at any time through your profile page</li>
               <li>Delete individual recommendation entries from your history</li>
               <li>
-                Delete your entire account, which permanently removes all recommendation history from our production database
+                Delete your entire account, which permanently removes all recommendation history from our production
+                database
               </li>
             </ul>
 
@@ -553,9 +557,7 @@ const PrivacyPolicy = () => {
                 technical purposes
               </li>
               <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
-              <li>
-                Business profile data (industry sector, team size, budget range, business goals and objectives)
-              </li>
+              <li>Business profile data (industry sector, team size, budget range, business goals and objectives)</li>
               <li>
                 AI recommendation requests and responses (business tool recommendations, software suggestions, business
                 strategies, implementation guidance, and complete recommendation history)
@@ -613,9 +615,9 @@ const PrivacyPolicy = () => {
                 <p className="mt-2 text-sm">
                   <strong>Data minimization and security:</strong> AI requests are processed through our backend
                   (Supabase Edge Functions), which means AI providers receive only your business profile data (industry,
-                  team size, budget range, business goals) without personal identifiers such as your
-                  name, email, or client IP address. Only the backend server's IP address is visible to AI providers.
-                  All transmissions are encrypted using TLS/SSL protocols.
+                  team size, budget range, business goals) without personal identifiers such as your name, email, or
+                  client IP address. Only the backend server's IP address is visible to AI providers. All transmissions
+                  are encrypted using TLS/SSL protocols.
                 </p>
               </li>
               <li>
@@ -651,14 +653,15 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">12. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
-              AI-Powered Stock Analysis: Our AI-powered stock analysis feature uses automated processing to generate
-              educational stock examples. However, this does NOT constitute automated decision-making within the meaning
-              of Art. 22 GDPR because: 1. The results are purely informational and educational in nature 2. No legal
-              effects or similarly significant effects arise for you 3. You retain full control over whether and how to
-              use the suggestions 4. No binding decisions are made without human intervention Your right to object: You
-              may object to the use of the AI analysis feature at any time by simply not using it or by deleting your
-              account. No other automated decisions: Apart from the AI analysis feature described above, we do not
-              engage in automated decision-making or profiling pursuant to Art. 22 GDPR.
+              AI-Powered Business Tools Advisor: Our AI-powered business tools advisor feature uses automated processing
+              to generate educational business tool recommendations. However, this does NOT constitute automated
+              decision-making within the meaning of Art. 22 GDPR because: 1. The results are purely informational and
+              educational in nature 2. No legal effects or similarly significant effects arise for you 3. You retain
+              full control over whether and how to use the suggestions 4. No binding decisions are made without human
+              intervention Your right to object: You may object to the use of the AI analysis feature at any time by
+              simply not using it or by deleting your account. No other automated decisions: Apart from the AI analysis
+              feature described above, we do not engage in automated decision-making or profiling pursuant to Art. 22
+              GDPR.
             </p>
           </section>
 

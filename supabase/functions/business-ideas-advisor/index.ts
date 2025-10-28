@@ -37,7 +37,7 @@ serve(async (req) => {
     }
 
     const { data: canAnalyze, error: limitError } = await supabaseClient
-      .rpc('check_and_update_analysis_limit', { p_user_id: user.id });
+      .rpc('check_and_update_analysis_limit', { p_user_id: user.id, p_analysis_type: 'ideas' });
 
     if (limitError) {
       console.error('Error checking limit:', limitError);

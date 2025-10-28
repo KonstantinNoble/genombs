@@ -34,7 +34,7 @@ serve(async (req) => {
     // Check daily analysis limit
     const { data: limitData, error: limitError } = await supabase.rpc(
       'check_and_update_analysis_limit',
-      { p_user_id: user.id }
+      { p_user_id: user.id, p_analysis_type: 'tools' }
     );
 
     if (limitError) {

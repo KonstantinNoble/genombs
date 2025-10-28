@@ -125,8 +125,12 @@ export type Database = {
           analysis_window_start: string | null
           created_at: string
           id: string
+          ideas_count: number | null
+          ideas_window_start: string | null
           last_analysis_at: string | null
           last_reset_date: string
+          tools_count: number | null
+          tools_window_start: string | null
           updated_at: string
           user_id: string
         }
@@ -135,8 +139,12 @@ export type Database = {
           analysis_window_start?: string | null
           created_at?: string
           id?: string
+          ideas_count?: number | null
+          ideas_window_start?: string | null
           last_analysis_at?: string | null
           last_reset_date?: string
+          tools_count?: number | null
+          tools_window_start?: string | null
           updated_at?: string
           user_id: string
         }
@@ -145,8 +153,12 @@ export type Database = {
           analysis_window_start?: string | null
           created_at?: string
           id?: string
+          ideas_count?: number | null
+          ideas_window_start?: string | null
           last_analysis_at?: string | null
           last_reset_date?: string
+          tools_count?: number | null
+          tools_window_start?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -157,10 +169,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_and_update_analysis_limit: {
-        Args: { p_user_id: string }
-        Returns: boolean
-      }
+      check_and_update_analysis_limit:
+        | { Args: { p_user_id: string }; Returns: boolean }
+        | {
+            Args: { p_analysis_type?: string; p_user_id: string }
+            Returns: boolean
+          }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
     }
     Enums: {

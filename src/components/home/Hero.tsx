@@ -9,16 +9,16 @@ const Hero = () => {
       <div className="container relative z-10 mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight animate-fade-in-up" style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}>
-            AI-Powered Stock{" "}
+            AI-Powered{" "}
             <span className="relative inline-block">
               <span className="bg-gradient-to-r from-secondary via-[hsl(38,100%,50%)] to-secondary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent">
-                Investment Ideas
+                Business Solutions
               </span>
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-white/90 font-light animate-fade-in-up" style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}>
-            Get personalized stock suggestions powered by AI. Tailored to your risk profile, time horizon, and investment goals.
+            Get personalized business tool recommendations powered by AI. Tailored to your industry, team size, and growth goals.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-fade-in-up" style={{ animationDelay: "0.3s", animationFillMode: "backwards" }}>
@@ -27,8 +27,8 @@ const Hero = () => {
               className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg px-8 group"
               asChild
             >
-              <Link to="/stock-analysis">
-                Try AI Analysis Free
+              <Link to="/business-tools">
+                Try Business AI Free
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </Button>

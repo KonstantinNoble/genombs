@@ -4,23 +4,23 @@ import { Card, CardContent } from "@/components/ui/card";
 const features = [
   {
     icon: Sparkles,
-    title: "AI-Powered Suggestions",
-    description: "Get personalized stock recommendations based on your unique investment profile and risk tolerance.",
+    title: "AI-Powered Recommendations",
+    description: "Get personalized business tool suggestions based on your industry, team size, and budget.",
   },
   {
     icon: Brain,
     title: "Smart Analysis",
-    description: "Advanced AI models analyze market trends and generate insights tailored to your goals.",
+    description: "Advanced AI models analyze your business needs and generate tailored tool recommendations.",
   },
   {
     icon: BookOpen,
     title: "Educational Blog",
-    description: "Learn investment strategies, market analysis, and financial literacy through our expert articles.",
+    description: "Learn business strategies, tool optimization, and growth tactics through our expert articles.",
   },
   {
     icon: Clock,
     title: "Daily Free Analysis",
-    description: "Receive one free AI-powered stock analysis every 24 hours to guide your investment decisions.",
+    description: "Receive one free AI-powered business analysis every 24 hours to optimize your operations.",
   },
 ];
 
@@ -34,7 +34,7 @@ const Features = () => {
             Why Choose Wealthconomy?
           </h2>
           <p className="text-xl text-muted-foreground">
-            Powerful tools and insights to help you make smarter investment decisions
+            Powerful AI tools to help you make smarter business decisions
           </p>
         </div>
         

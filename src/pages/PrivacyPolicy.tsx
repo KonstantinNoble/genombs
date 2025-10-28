@@ -212,11 +212,11 @@ const PrivacyPolicy = () => {
             <h3 className="text-xl font-semibold mb-3 mt-6">Role of Lovable AI Gateway</h3>
             <p className="text-muted-foreground mb-4">
               The Lovable AI Gateway (operated by Lovable Labs Incorporated, 340 S Lemon Ave #9828, Walnut, CA 91789,
-              USA) acts as an intermediary service that routes AI requests to external AI model providers. The gateway:
+              USA) acts as an intermediary service that routes AI requests to Google's AI models. The gateway:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Receives your investment profile data from our backend (Supabase Edge Functions)</li>
-              <li>Forwards the request to either Google AI or OpenAI models</li>
+              <li>Receives your business profile data from our backend (Supabase Edge Functions)</li>
+              <li>Forwards the request to Google AI models</li>
               <li>Returns the generated response to our backend</li>
               <li>Acts as a data processor under Art. 28 GDPR on behalf of our website</li>
             </ul>
@@ -225,10 +225,10 @@ const PrivacyPolicy = () => {
               been concluded with Lovable Labs Incorporated covering all processing activities through the AI Gateway.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">AI Model Providers and Third-Country Transfers</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">AI Model Provider and Third-Country Transfer</h3>
             <p className="text-muted-foreground mb-4">
-              To generate the educational stock examples, your investment profile data is transmitted through our
-              backend infrastructure and the Lovable AI Gateway to one of the following AI service providers:
+              To generate business tool recommendations, your business profile data is transmitted through our
+              backend infrastructure and the Lovable AI Gateway to Google AI:
             </p>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Google AI Models</h4>
@@ -285,53 +285,6 @@ const PrivacyPolicy = () => {
                   className="text-primary hover:underline"
                 >
                   Google Cloud Terms
-                </a>
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">OpenAI Models</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> OpenAI LLC, 3180 18th Street, San Francisco, CA 94110, USA
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Models:</strong> GPT-5, GPT-5 Mini, GPT-5 Nano
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis for third-country transfer:</strong> Art. 46 GDPR (Standard Contractual Clauses)
-              <br />
-              OpenAI LLC is NOT certified under the EU-U.S. Data Privacy Framework. Therefore, data transfers to OpenAI
-              are safeguarded through Standard Contractual Clauses (SCCs) approved by the European Commission pursuant
-              to Art. 46(2)(c) GDPR. These SCCs ensure an adequate level of data protection when processing data in the
-              United States.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data usage by OpenAI:</strong> According to OpenAI's API data usage policies, input data submitted
-              through the API is not used to train or improve OpenAI's models unless you explicitly opt in. OpenAI
-              retains API request data for 30 days for abuse and misuse monitoring purposes, after which it is
-              automatically deleted.
-            </p>
-            <p className="text-muted-foreground mb-4">More information:</p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                OpenAI Privacy Policy:{" "}
-                <a
-                  href="https://openai.com/policies/privacy-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  https://openai.com/policies/privacy-policy
-                </a>
-              </li>
-              <li>
-                OpenAI API Data Usage:{" "}
-                <a
-                  href="https://openai.com/policies/api-data-usage-policies"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  API Data Usage Policies
                 </a>
               </li>
             </ul>
@@ -404,14 +357,9 @@ const PrivacyPolicy = () => {
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention (Google):</strong> Google retains API request data for approximately 30 days
+              <strong>AI Provider Retention:</strong> Google retains API request data for approximately 30 days
               for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
               used to train or improve Google's AI models.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention (OpenAI):</strong> OpenAI retains API request data for 30 days for abuse and
-              misuse monitoring purposes, after which it is automatically deleted. Your input data is NOT used to train
-              or improve OpenAI's models unless you explicitly opt in (which is not applicable through our service).
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Local Storage (Our Database):</strong> Your analysis history is stored in our backend database and
@@ -572,9 +520,9 @@ const PrivacyPolicy = () => {
               <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered business
               tools advisor feature, your business profile data (industry, team size, budget, goals) is transmitted
               server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
-              <strong>Your client IP address is NOT transmitted to the AI providers (Google or OpenAI)</strong>. Only
-              the IP address of our backend server is visible to the AI providers. This server-side architecture
-              protects your privacy by ensuring that AI providers cannot directly identify or track individual users by
+              <strong>Your client IP address is NOT transmitted to Google AI</strong>. Only
+              the IP address of our backend server is visible to the AI provider. This server-side architecture
+              protects your privacy by ensuring that the AI provider cannot directly identify or track individual users by
               their IP addresses.
             </p>
           </section>
@@ -591,7 +539,7 @@ const PrivacyPolicy = () => {
                 including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
-                <strong>AI service providers (for business tools recommendations only):</strong>
+                <strong>AI service provider (for business tools recommendations only):</strong>
                 <ul className="list-disc pl-6 mt-2">
                   <li>
                     Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
@@ -604,19 +552,12 @@ const PrivacyPolicy = () => {
                       Third-country transfer basis: Art. 45 GDPR (EU-U.S. Data Privacy Framework adequacy decision)
                     </em>
                   </li>
-                  <li>
-                    OpenAI LLC (San Francisco, CA, USA) – GPT-5 models (GPT-5, GPT-5 Mini, GPT-5 Nano)
-                    <br />
-                    <em className="text-sm">
-                      Third-country transfer basis: Art. 46 GDPR (Standard Contractual Clauses)
-                    </em>
-                  </li>
                 </ul>
                 <p className="mt-2 text-sm">
                   <strong>Data minimization and security:</strong> AI requests are processed through our backend
-                  (Supabase Edge Functions), which means AI providers receive only your business profile data (industry,
+                  (Supabase Edge Functions), which means Google AI receives only your business profile data (industry,
                   team size, budget range, business goals) without personal identifiers such as your name, email, or
-                  client IP address. Only the backend server's IP address is visible to AI providers. All transmissions
+                  client IP address. Only the backend server's IP address is visible to Google. All transmissions
                   are encrypted using TLS/SSL protocols.
                 </p>
               </li>

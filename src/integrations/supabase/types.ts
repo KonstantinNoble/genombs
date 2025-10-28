@@ -80,6 +80,27 @@ export type Database = {
         }
         Relationships: []
       }
+      deleted_accounts: {
+        Row: {
+          deleted_at: string | null
+          email_hash: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          deleted_at?: string | null
+          email_hash: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          deleted_at?: string | null
+          email_hash?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -134,6 +155,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

@@ -45,6 +45,24 @@ serve(async (req) => {
       auth: { persistSession: false },
     });
 
+    // Hash email and store in deleted_accounts BEFORE deleting user
+    const encoder = new TextEncoder();
+    const emailData = encoder.encode(userData.user.email!.toLowerCase().trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', emailData);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const emailHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    console.log('Storing email hash before deletion');
+
+    const { error: hashError } = await adminClient
+      .from('deleted_accounts')
+      .insert({ email_hash: emailHash });
+
+    if (hashError) {
+      console.error('Failed to store email hash:', hashError);
+      // Continue anyway - better to delete account than to block deletion
+    }
+
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userData.user.id);
     if (deleteError) {
       console.error("Account deletion failed");

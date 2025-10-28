@@ -51,6 +51,25 @@ const Auth = () => {
     try {
       const validatedData = signUpSchema.parse({ email, password });
 
+      // Check email availability (30-day deletion blacklist)
+      const { data: availabilityData, error: availabilityError } = await supabase.functions.invoke(
+        'check-email-availability',
+        { body: { email: validatedData.email } }
+      );
+
+      if (availabilityError) {
+        console.error('Availability check failed:', availabilityError);
+        // Fail-open: Continue with registration on error
+      } else if (availabilityData && !availabilityData.available) {
+        toast({
+          title: "Registrierung blockiert",
+          description: availabilityData.reason || "Diese Email-Adresse kann nicht verwendet werden.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: validatedData.email,
         password: validatedData.password,

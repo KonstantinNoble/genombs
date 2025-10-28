@@ -7,6 +7,66 @@ import { blogPosts } from "@/data/blogPosts";
 import NotFound from "./NotFound";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { Components } from "react-markdown";
+
+
+const markdownComponents: Components = {
+  h1: ({ children }) => (
+    <h1 className="text-4xl md:text-5xl font-bold mt-16 mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-3xl md:text-4xl font-bold mt-16 mb-6 text-primary border-b border-border pb-3">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-2xl md:text-3xl font-semibold mt-12 mb-5 text-foreground">
+      {children}
+    </h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-xl md:text-2xl font-semibold mt-8 mb-4 text-muted-foreground">
+      {children}
+    </h4>
+  ),
+  p: ({ children }) => (
+    <p className="text-lg md:text-xl leading-relaxed mb-6 text-foreground">
+      {children}
+    </p>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-bold text-primary">
+      {children}
+    </strong>
+  ),
+  a: ({ href, children }) => (
+    <a href={href} className="text-secondary font-semibold no-underline hover:underline decoration-2 underline-offset-2">
+      {children}
+    </a>
+  ),
+  ul: ({ children }) => (
+    <ul className="list-disc pl-6 my-8 space-y-3">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="list-decimal pl-6 my-8 space-y-3">
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => (
+    <li className="text-lg md:text-xl leading-relaxed text-foreground">
+      {children}
+    </li>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="border-l-4 border-secondary pl-6 my-8 bg-muted/30 py-4 rounded-r-lg italic">
+      {children}
+    </blockquote>
+  ),
+};
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -43,22 +103,11 @@ const BlogPost = () => {
               </div>
             </div>
 
-            <div className="prose prose-lg max-w-none 
-              prose-headings:font-bold prose-headings:tracking-tight
-              prose-h1:text-5xl prose-h1:md:text-6xl prose-h1:mb-10 prose-h1:mt-16 prose-h1:leading-tight prose-h1:bg-gradient-to-r prose-h1:from-primary prose-h1:to-primary/70 prose-h1:bg-clip-text prose-h1:text-transparent
-              prose-h2:text-3xl prose-h2:md:text-4xl prose-h2:mt-20 prose-h2:mb-8 prose-h2:text-primary prose-h2:leading-snug prose-h2:border-b prose-h2:border-border prose-h2:pb-3
-              prose-h3:text-2xl prose-h3:md:text-3xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:font-semibold prose-h3:text-foreground
-              prose-h4:text-xl prose-h4:md:text-2xl prose-h4:mt-8 prose-h4:mb-4 prose-h4:font-semibold prose-h4:text-muted-foreground
-              prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg prose-p:md:text-xl
-              prose-strong:text-primary prose-strong:font-bold 
-              prose-a:text-secondary prose-a:no-underline prose-a:font-semibold hover:prose-a:underline prose-a:decoration-2 prose-a:underline-offset-2
-              prose-ul:my-8 prose-ul:space-y-4 prose-ul:list-disc prose-ul:pl-6
-              prose-ol:my-8 prose-ol:space-y-4 prose-ol:list-decimal prose-ol:pl-6
-              prose-li:my-2 prose-li:text-foreground prose-li:text-lg prose-li:md:text-xl prose-li:leading-relaxed
-              prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:my-8 prose-blockquote:bg-muted/30 prose-blockquote:py-4 prose-blockquote:rounded-r-lg
-              prose-code:text-secondary prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm"
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <div className="max-w-none">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+              >
                 {post.content}
               </ReactMarkdown>
             </div>

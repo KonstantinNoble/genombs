@@ -9,8 +9,8 @@ import { blogPosts } from "@/data/blogPosts";
 const Blog = () => {
   return (
     <>
-      <title>Investment Blog - Expert Insights | Wealthconomy</title>
-      <meta name="description" content="Read expert investment insights, market analysis, and wealth-building strategies. Learn from professionals about stock investing, portfolio management, and financial planning." />
+      <title>Business & Entrepreneurship Blog - Expert Insights | Wealthconomy</title>
+      <meta name="description" content="Read expert insights on entrepreneurship, business strategy, AI-powered tools, and startup growth. Learn from successful founders and discover innovative business solutions." />
     
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -20,11 +20,11 @@ const Blog = () => {
         <div className="container relative mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
             <div className="inline-block px-4 py-1.5 bg-secondary/10 rounded-full mb-2">
-              <span className="text-sm font-semibold text-secondary">Investment Insights</span>
+              <span className="text-sm font-semibold text-secondary">Business Insights</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-2">Expert Knowledge</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Evidence-based strategies and insights to help you make smarter, more confident investment decisions
+              Actionable strategies and insights to help entrepreneurs build, grow, and scale successful businesses using AI and modern tools
             </p>
           </div>
         </div>

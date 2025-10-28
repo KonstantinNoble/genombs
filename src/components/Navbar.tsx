@@ -61,7 +61,7 @@ const Navbar = () => {
                 : "text-muted-foreground after:w-0 hover:after:w-full"
             }`}
           >
-            Business Tools
+            Business AI
           </Link>
           {user ? (
             <Link to="/profile">
@@ -110,7 +110,7 @@ const Navbar = () => {
               className="block text-foreground hover:text-secondary transition-colors py-2"
               onClick={() => setIsOpen(false)}
             >
-              Business Tools
+              Business AI
             </Link>
             {user ? (
               <Link to="/profile" onClick={() => setIsOpen(false)}>

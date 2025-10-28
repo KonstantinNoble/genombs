@@ -282,7 +282,7 @@ const BusinessToolsAdvisor = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
               <Lightbulb className="h-16 w-16 mx-auto text-primary" />
-              <h1 className="text-4xl font-bold">Business Tools Advisor</h1>
+              <h1 className="text-4xl font-bold">Business AI</h1>
               <p className="text-xl text-muted-foreground">
                 Get AI-powered recommendations for tools and strategies to grow your business
               </p>
@@ -377,7 +377,7 @@ const BusinessToolsAdvisor = () => {
         {/* Main Content */}
         <main className="flex-1 space-y-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Business Tools Advisor</h1>
+            <h1 className="text-3xl font-bold mb-2">Business AI</h1>
             <p className="text-muted-foreground">
               Get personalized tool and strategy recommendations for your business
             </p>
@@ -457,7 +457,7 @@ const BusinessToolsAdvisor = () => {
                   value={businessGoals}
                   onChange={(e) => setBusinessGoals(e.target.value)}
                   rows={4}
-                  maxLength={20}
+                  maxLength={40}
                 />
               </div>
 
@@ -518,7 +518,21 @@ const BusinessToolsAdvisor = () => {
                           <div className="flex items-start gap-3 flex-1">
                             <span className="text-2xl">{getCategoryIcon(rec.category)}</span>
                             <div className="flex-1">
-                              <CardTitle className="text-lg">{rec.name}</CardTitle>
+                              <div className="flex items-center gap-2">
+                                <CardTitle className="text-lg">{rec.name}</CardTitle>
+                                <a
+                                  href={`https://www.google.com/search?q=${encodeURIComponent(rec.name)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:text-primary/80 transition-colors"
+                                  title={`Search for ${rec.name} on Google`}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                  </svg>
+                                </a>
+                              </div>
                               <div className="flex flex-wrap gap-2 mt-2">
                                 <span className="text-xs px-2 py-1 rounded-full bg-secondary">
                                   {rec.category}

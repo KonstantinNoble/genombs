@@ -121,6 +121,8 @@ export type Database = {
       }
       user_credits: {
         Row: {
+          analysis_count: number | null
+          analysis_window_start: string | null
           created_at: string
           id: string
           last_analysis_at: string | null
@@ -129,6 +131,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_count?: number | null
+          analysis_window_start?: string | null
           created_at?: string
           id?: string
           last_analysis_at?: string | null
@@ -137,6 +141,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_count?: number | null
+          analysis_window_start?: string | null
           created_at?: string
           id?: string
           last_analysis_at?: string | null

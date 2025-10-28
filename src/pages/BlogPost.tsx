@@ -44,16 +44,19 @@ const BlogPost = () => {
             </div>
 
             <div className="prose prose-lg max-w-none 
-              prose-headings:font-serif prose-headings:font-bold 
-              prose-h1:text-4xl prose-h1:mb-8
-              prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:text-primary 
-              prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
-              prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
-              prose-strong:text-foreground prose-strong:font-semibold 
-              prose-a:text-secondary prose-a:no-underline hover:prose-a:underline 
-              prose-ul:my-8 prose-ul:space-y-3
-              prose-li:my-3 prose-li:text-foreground prose-li:text-lg prose-li:leading-relaxed
-              prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic"
+              prose-headings:font-bold prose-headings:tracking-tight
+              prose-h1:text-5xl prose-h1:md:text-6xl prose-h1:mb-10 prose-h1:mt-16 prose-h1:leading-tight prose-h1:bg-gradient-to-r prose-h1:from-primary prose-h1:to-primary/70 prose-h1:bg-clip-text prose-h1:text-transparent
+              prose-h2:text-3xl prose-h2:md:text-4xl prose-h2:mt-20 prose-h2:mb-8 prose-h2:text-primary prose-h2:leading-snug prose-h2:border-b prose-h2:border-border prose-h2:pb-3
+              prose-h3:text-2xl prose-h3:md:text-3xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:font-semibold prose-h3:text-foreground
+              prose-h4:text-xl prose-h4:md:text-2xl prose-h4:mt-8 prose-h4:mb-4 prose-h4:font-semibold prose-h4:text-muted-foreground
+              prose-p:text-foreground prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg prose-p:md:text-xl
+              prose-strong:text-primary prose-strong:font-bold 
+              prose-a:text-secondary prose-a:no-underline prose-a:font-semibold hover:prose-a:underline prose-a:decoration-2 prose-a:underline-offset-2
+              prose-ul:my-8 prose-ul:space-y-4 prose-ul:list-disc prose-ul:pl-6
+              prose-ol:my-8 prose-ol:space-y-4 prose-ol:list-decimal prose-ol:pl-6
+              prose-li:my-2 prose-li:text-foreground prose-li:text-lg prose-li:md:text-xl prose-li:leading-relaxed
+              prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:my-8 prose-blockquote:bg-muted/30 prose-blockquote:py-4 prose-blockquote:rounded-r-lg
+              prose-code:text-secondary prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm"
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {post.content}

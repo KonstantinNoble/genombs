@@ -537,7 +537,7 @@ const BusinessToolsAdvisor = () => {
                       value={businessGoals}
                       onChange={(e) => setBusinessGoals(e.target.value)}
                       rows={4}
-                      maxLength={500}
+                      maxLength={50}
                     />
                   </div>
                   <Button
@@ -692,7 +692,7 @@ const BusinessToolsAdvisor = () => {
                       value={businessContext}
                       onChange={(e) => setBusinessContext(e.target.value)}
                       rows={4}
-                      maxLength={500}
+                      maxLength={50}
                     />
                   </div>
                   <Button

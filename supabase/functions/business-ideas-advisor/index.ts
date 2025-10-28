@@ -1,6 +1,5 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,103 +26,104 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
     if (userError || !user) {
+      console.error('Auth error:', userError);
       throw new Error('Unauthorized');
     }
 
-    const { data: canAnalyze, error: limitError } = await supabaseClient
-      .rpc('check_and_update_analysis_limit', { p_user_id: user.id });
+    console.log(`Business ideas request from user: ${user.id}`);
 
-    if (limitError) {
-      console.error('Error checking limit:', limitError);
-      throw new Error('Failed to check analysis limit');
+    // Step 1: Check credits BEFORE AI call (read-only)
+    const { data: creditsData, error: creditsError } = await supabase
+      .from('user_credits')
+      .select('analysis_count, analysis_window_start')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (creditsError) {
+      console.error('Error reading credits:', creditsError);
+      throw new Error('Failed to check credits');
     }
 
-    if (!canAnalyze) {
+    const now = new Date();
+    let currentCount = creditsData?.analysis_count ?? 0;
+    let windowStart = creditsData?.analysis_window_start ? new Date(creditsData.analysis_window_start) : null;
+
+    console.log(`Current credits: count=${currentCount}, window_start=${windowStart?.toISOString()}`);
+
+    // Check if window expired
+    if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
+      console.log('Window expired, resetting (in-memory check)');
+      currentCount = 0;
+      windowStart = null;
+    }
+
+    // Block if limit reached
+    if (currentCount >= 2) {
+      console.log(`Limit reached: ${currentCount}/2 in current window`);
       return new Response(
-        JSON.stringify({ error: 'Daily limit reached. You can request new recommendations once every 24 hours.' }),
+        JSON.stringify({ error: 'Daily limit reached. Please wait 24 hours before requesting new recommendations.' }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Limit check passed, proceeding with AI call');
+
+    // Step 2: Parse input
     const { industry, teamSize, budgetRange, businessContext } = await req.json();
 
     if (!industry || !teamSize || !budgetRange || !businessContext) {
       throw new Error('Missing required fields');
     }
 
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    if (!lovableApiKey) {
+    console.log('Input:', { industry, teamSize, budgetRange, businessContext: businessContext.substring(0, 50) + '...' });
+
+    // Step 3: Call Lovable AI
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a business innovation advisor specializing in generating creative and viable business ideas. 
-Your task is to provide 5-7 HIGHLY SPECIFIC and PERSONALIZED business idea recommendations based on the user's unique context.
+    const systemPrompt = `You are a business ideas advisor. Analyze the user's business context and provide personalized business ideas.
 
-CRITICAL: READ THE USER'S INPUT CAREFULLY AND TAILOR YOUR RESPONSE SPECIFICALLY TO THEIR SITUATION.
+CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
+Your response must be a raw JSON object starting with { and ending with }.
 
-For each idea, provide:
-- name: A clear, compelling name for the business idea that reflects their specific context
-- category: Choose from: product, service, saas, marketplace, content, consulting, ecommerce
-- viability: Choose from: quick-launch (can start in 1-3 months), medium-term (3-12 months), long-term (1+ years)
-- estimatedInvestment: Estimated startup capital needed that ALIGNS with their stated budget (e.g., "$500-$2,000", "$5,000-$20,000", "$50,000+")
-- rationale: 2-3 sentences explaining why THIS SPECIFIC idea fits THEIR UNIQUE context, challenges, and market opportunity. Reference their specific industry, budget, team size, or stated goals.
-
-Also provide general strategic advice about the current market landscape and trends relevant to THEIR SPECIFIC industry and context.
-
-PERSONALIZATION RULES - EXTREMELY IMPORTANT:
-- DEEPLY analyze their business context and pain points - generate ideas that DIRECTLY address what they mentioned
-- If they mention specific challenges, skills, or interests in the business context, your ideas MUST reflect those
-- Tailor investment levels to their actual budget - don't suggest $50k ideas for a $5k budget
-- Consider their team size - solo founders need different ideas than teams of 10
-- Reference their specific industry expertise and leverage it in your ideas
-- Make each idea feel uniquely crafted for them based on what they wrote, NOT generic business ideas
-- Quote or reference their specific context in your rationale to show you understood their situation
-
-Focus on:
-- Realistic and actionable ideas based on THEIR EXACT budget and team size
-- Current market trends and opportunities in THEIR SPECIFIC industry
-- Ideas that leverage THEIR stated industry expertise, skills, or context
-- Mix of different viability timeframes that match THEIR resources
-- Specific rather than generic suggestions - customize to THEIR situation
-- Ideas that solve problems or leverage opportunities they mentioned
-
-Return ONLY valid JSON in this exact format:
+Return a JSON object with:
 {
   "recommendations": [
     {
       "name": "Idea name",
-      "category": "category",
-      "viability": "viability",
-      "estimatedInvestment": "investment",
-      "rationale": "rationale"
+      "category": "product|service|saas|marketplace|content|consulting|ecommerce",
+      "viability": "quick-launch|medium-term|long-term",
+      "estimatedInvestment": "$X-$Y",
+      "rationale": "Why this idea fits their context"
     }
   ],
-  "generalAdvice": "Strategic overview and market insights specific to their industry and context"
-}`;
+  "generalAdvice": "Strategic advice based on their industry and budget"
+}
 
-    const userPrompt = `Please READ CAREFULLY and generate business ideas that are SPECIFICALLY TAILORED to this unique situation:
+Provide 5-7 concrete, actionable ideas tailored to their specific situation.`;
 
-Industry: ${industry}
+    const userPrompt = `Industry: ${industry}
 Team Size: ${teamSize}
-Available Budget: ${budgetRange}
+Budget Range: ${budgetRange}
 Business Context: ${businessContext}
 
-IMPORTANT: Analyze the business context deeply. This context contains specific information about their situation, challenges, skills, or interests. Your ideas MUST directly reflect and address what they wrote in the context field.
-
-Generate 5-7 innovative business ideas that are UNIQUELY SUITED to this specific business context, budget, team size, and industry. Make sure each idea feels personalized to their situation, not generic business advice.`;
+Please provide personalized business ideas based on this information.`;
 
     console.log('Calling Lovable AI for business ideas...');
-    
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -132,7 +132,7 @@ Generate 5-7 innovative business ideas that are UNIQUELY SUITED to this specific
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.8,
+        response_format: { type: "json_object" }
       }),
     });
 
@@ -146,31 +146,62 @@ Generate 5-7 innovative business ideas that are UNIQUELY SUITED to this specific
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
       if (aiResponse.status === 402) {
         return new Response(
           JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
       throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
     console.log('AI response received');
-    
-    const content = aiData.choices[0].message.content;
-    let result;
-    
+
+    let content = aiData.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error('No content in AI response');
+    }
+
+    console.log('Raw AI content length:', content.length);
+
+    // Step 4: Robust JSON parsing with fence removal
+    let parsedResult;
     try {
-      result = JSON.parse(content);
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', content);
+      // Try direct parse first
+      parsedResult = JSON.parse(content);
+      console.log('Direct JSON parse successful');
+    } catch (e) {
+      console.log('Direct parse failed, attempting fence removal');
+      // Remove markdown code fences if present
+      if (content.includes('```')) {
+        const fenceMatch = content.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+        if (fenceMatch) {
+          content = fenceMatch[1].trim();
+          console.log('Code fences removed, content length:', content.length);
+        }
+      }
+      
+      try {
+        parsedResult = JSON.parse(content);
+        console.log('Parse after fence removal successful');
+      } catch (e2) {
+        console.error('Failed to parse after fence removal:', e2);
+        console.error('Content preview:', content.substring(0, 500));
+        throw new Error('Invalid response format from AI');
+      }
+    }
+
+    // Validate structure
+    if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
+      console.error('Invalid structure - no recommendations array');
       throw new Error('Invalid response format from AI');
     }
 
-    const { error: insertError } = await supabaseClient
+    console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
+
+    // Step 5: Insert into history
+    const { error: historyError } = await supabase
       .from('business_ideas_history')
       .insert({
         user_id: user.id,
@@ -178,15 +209,41 @@ Generate 5-7 innovative business ideas that are UNIQUELY SUITED to this specific
         team_size: teamSize,
         budget_range: budgetRange,
         business_context: businessContext,
-        result
+        result: parsedResult
       });
 
-    if (insertError) {
-      console.error('Error saving to history:', insertError);
+    if (historyError) {
+      console.error('Error saving history:', historyError);
+      throw new Error('Failed to save recommendations');
+    }
+
+    console.log('History saved successfully');
+
+    // Step 6: Update credits AFTER successful insert
+    const newWindowStart = windowStart ?? now;
+    const newCount = currentCount + 1;
+
+    const { error: updateError } = await supabase
+      .from('user_credits')
+      .upsert({
+        user_id: user.id,
+        analysis_count: newCount,
+        analysis_window_start: newWindowStart.toISOString(),
+        last_analysis_at: now.toISOString(),
+        updated_at: now.toISOString()
+      }, {
+        onConflict: 'user_id'
+      });
+
+    if (updateError) {
+      console.error('Error updating credits:', updateError);
+      // Non-fatal - we already saved the result
+    } else {
+      console.log(`Credits updated: ${newCount}/2 in window starting ${newWindowStart.toISOString()}`);
     }
 
     return new Response(
-      JSON.stringify(result),
+      JSON.stringify(parsedResult),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

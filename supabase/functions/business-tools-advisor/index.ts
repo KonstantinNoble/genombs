@@ -1,11 +1,18 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+interface ToolRecommendation {
+  name: string;
+  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy";
+  implementation: "quick-win" | "medium-term" | "strategic";
+  estimatedCost: string;
+  rationale: string;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -19,162 +26,82 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
-      throw new Error('Invalid user token');
+      console.error('Auth error:', userError);
+      throw new Error('Unauthorized');
     }
 
-    console.log('Processing business tools request for user:', user.id);
+    console.log(`Business tools request from user: ${user.id}`);
 
-    // Check daily analysis limit
-    const { data: limitData, error: limitError } = await supabase.rpc(
-      'check_and_update_analysis_limit',
-      { p_user_id: user.id }
-    );
+    // Step 1: Check credits BEFORE AI call (read-only)
+    const { data: creditsData, error: creditsError } = await supabase
+      .from('user_credits')
+      .select('analysis_count, analysis_window_start')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    if (limitError) {
-      console.error('Error checking analysis limit:', limitError);
-      throw new Error('Failed to check analysis limit');
+    if (creditsError) {
+      console.error('Error reading credits:', creditsError);
+      throw new Error('Failed to check credits');
     }
 
-    if (!limitData) {
+    const now = new Date();
+    let currentCount = creditsData?.analysis_count ?? 0;
+    let windowStart = creditsData?.analysis_window_start ? new Date(creditsData.analysis_window_start) : null;
+
+    console.log(`Current credits: count=${currentCount}, window_start=${windowStart?.toISOString()}`);
+
+    // Check if window expired
+    if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
+      console.log('Window expired, resetting (in-memory check)');
+      currentCount = 0;
+      windowStart = null;
+    }
+
+    // Block if limit reached
+    if (currentCount >= 2) {
+      console.log(`Limit reached: ${currentCount}/2 in current window`);
       return new Response(
-        JSON.stringify({ 
-          error: 'Daily limit reached. You can request new recommendations once every 24 hours.' 
-        }),
-        { 
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        JSON.stringify({ error: 'Daily limit reached. Please wait 24 hours before requesting new recommendations.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Limit check passed, proceeding with AI call');
+
+    // Step 2: Parse input
     const { industry, teamSize, budgetRange, businessGoals } = await req.json();
 
     if (!industry || !teamSize || !budgetRange || !businessGoals) {
       throw new Error('Missing required fields');
     }
 
-    console.log('Request parameters:', { industry, teamSize, budgetRange, businessGoals });
+    console.log('Input:', { industry, teamSize, budgetRange, businessGoals: businessGoals.substring(0, 50) + '...' });
 
+    // Step 3: Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are an expert business consultant and technology advisor specializing in helping businesses optimize their operations and achieve their goals through strategic tool selection and process improvements.
+    const systemPrompt = `You are a business tools advisor. Analyze the user's business context and provide personalized tool and strategy recommendations.
 
-Your role is to:
-1. Carefully analyze the SPECIFIC business context provided by the user (industry, team size, budget, and goals)
-2. Recommend 5-7 HIGHLY TAILORED, specific tools or strategies that DIRECTLY address their unique situation
-3. Provide clear rationale explaining HOW each recommendation specifically solves their stated goals
-4. Consider cost-effectiveness, ease of implementation, and ROI based on THEIR budget
-5. Focus on practical solutions that can be implemented relatively quickly
+Use the suggest_tools function to return your recommendations.`;
 
-CRITICAL GUIDELINES - READ THE USER INPUT CAREFULLY:
-- ALWAYS reference the user's specific industry, goals, and context in your recommendations
-- Recommend SPECIFIC tools (e.g., "Notion for project management" not just "project management tool")
-- TAILOR recommendations to their exact budget - don't recommend expensive enterprise solutions for small budgets
-- If they mention specific pain points or goals, DIRECTLY address those in your recommendations
-- Balance quick wins with long-term strategic improvements based on what THEY asked for
-- Include a mix of software tools, processes, and strategic recommendations that fit THEIR unique situation
-- Be realistic about implementation complexity considering THEIR team size
-- Focus on proven tools and methodologies that align with THEIR industry
-
-PERSONALIZATION RULES:
-- Quote or reference the user's specific goals in your rationale
-- If they mention team challenges, address those specifically
-- If they mention growth targets, align recommendations to those targets
-- Adapt your language and examples to their industry context
-- Make each recommendation feel uniquely crafted for them, not generic advice
-
-IMPORTANT DISCLAIMER:
-- These are general recommendations based on common business needs
-- Each business is unique and should evaluate tools based on their specific requirements
-- Recommendations do not constitute professional consulting advice
-- Always do your own research and due diligence before implementing any tool or strategy`;
-
-    const userPrompt = `Please analyze this specific business carefully and provide HIGHLY CUSTOMIZED tool/strategy recommendations that directly address their unique situation:
-
-Industry: ${industry}
+    const userPrompt = `Industry: ${industry}
 Team Size: ${teamSize}
 Budget Range: ${budgetRange}
-Primary Business Goals: ${businessGoals}
+Business Goals: ${businessGoals}
 
-IMPORTANT: Read the goals and context carefully. Your recommendations must be specifically tailored to:
-- Their exact industry and business model
-- Their team size and budget constraints
-- Their specific goals and challenges mentioned above
+Please provide personalized business tool recommendations based on this information.`;
 
-Provide 5-7 specific, actionable recommendations that DIRECTLY help THIS business achieve THEIR stated goals within THEIR constraints. Reference their specific situation in your rationale.`;
-
-    const requestBody = {
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "recommend_business_tools",
-            description: "Provide business tool and strategy recommendations",
-            parameters: {
-              type: "object",
-              properties: {
-                recommendations: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      name: {
-                        type: "string",
-                        description: "Name of the tool or strategy"
-                      },
-                      category: {
-                        type: "string",
-                        enum: ["productivity", "marketing", "sales", "finance", "hr", "operations", "strategy"],
-                        description: "Category of the recommendation"
-                      },
-                      implementation: {
-                        type: "string",
-                        enum: ["quick-win", "medium-term", "strategic"],
-                        description: "Implementation timeline"
-                      },
-                      estimatedCost: {
-                        type: "string",
-                        description: "Estimated cost range (e.g., 'Free', '$10-50/month', '$100+/month')"
-                      },
-                      rationale: {
-                        type: "string",
-                        description: "Why this recommendation is valuable for this business"
-                      }
-                    },
-                    required: ["name", "category", "implementation", "estimatedCost", "rationale"],
-                    additionalProperties: false
-                  }
-                },
-                generalAdvice: {
-                  type: "string",
-                  description: "Overall strategic advice for this business (2-3 sentences)"
-                }
-              },
-              required: ["recommendations", "generalAdvice"],
-              additionalProperties: false
-            }
-          }
-        }
-      ],
-      tool_choice: { type: "function", function: { name: "recommend_business_tools" } }
-    };
-
-    console.log('Calling Lovable AI with request body');
+    console.log('Calling Lovable AI for business tools...');
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -182,7 +109,55 @@ Provide 5-7 specific, actionable recommendations that DIRECTLY help THIS busines
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "suggest_tools",
+              description: "Return 5-7 business tool and strategy recommendations",
+              parameters: {
+                type: "object",
+                properties: {
+                  recommendations: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        name: { type: "string", description: "Tool or strategy name" },
+                        category: { 
+                          type: "string",
+                          enum: ["productivity", "marketing", "sales", "finance", "hr", "operations", "strategy"]
+                        },
+                        implementation: {
+                          type: "string",
+                          enum: ["quick-win", "medium-term", "strategic"]
+                        },
+                        estimatedCost: { type: "string", description: "Cost range like $0-$50/month" },
+                        rationale: { type: "string", description: "Why this tool fits their context" }
+                      },
+                      required: ["name", "category", "implementation", "estimatedCost", "rationale"],
+                      additionalProperties: false
+                    }
+                  },
+                  generalAdvice: {
+                    type: "string",
+                    description: "Strategic advice based on their industry and goals"
+                  }
+                },
+                required: ["recommendations", "generalAdvice"],
+                additionalProperties: false
+              }
+            }
+          }
+        ],
+        tool_choice: { type: "function", function: { name: "suggest_tools" } }
+      }),
     });
 
     if (!aiResponse.ok) {
@@ -192,39 +167,39 @@ Provide 5-7 specific, actionable recommendations that DIRECTLY help THIS busines
       if (aiResponse.status === 429) {
         return new Response(
           JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { 
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
       if (aiResponse.status === 402) {
         return new Response(
-          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
-          { 
-            status: 402,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
+          JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
-      throw new Error(`AI API failed with status ${aiResponse.status}`);
+      throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
     console.log('AI response received');
 
+    // Step 4: Parse tool call result
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) {
-      throw new Error('No tool call in AI response');
+    if (!toolCall || toolCall.function?.name !== 'suggest_tools') {
+      console.error('No valid tool call in response');
+      throw new Error('Invalid AI response format');
     }
 
-    const result = JSON.parse(toolCall.function.arguments);
-    console.log('Parsed recommendations:', result);
+    const parsedResult = JSON.parse(toolCall.function.arguments);
+    
+    if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
+      console.error('Invalid structure - no recommendations array');
+      throw new Error('Invalid response format from AI');
+    }
 
-    // Save to history
-    const { error: insertError } = await supabase
+    console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
+
+    // Step 5: Insert into history
+    const { error: historyError } = await supabase
       .from('business_tools_history')
       .insert({
         user_id: user.id,
@@ -232,29 +207,49 @@ Provide 5-7 specific, actionable recommendations that DIRECTLY help THIS busines
         team_size: teamSize,
         budget_range: budgetRange,
         business_goals: businessGoals,
-        result
+        result: parsedResult
       });
 
-    if (insertError) {
-      console.error('Error saving to history:', insertError);
+    if (historyError) {
+      console.error('Error saving history:', historyError);
+      throw new Error('Failed to save recommendations');
+    }
+
+    console.log('History saved successfully');
+
+    // Step 6: Update credits AFTER successful insert
+    const newWindowStart = windowStart ?? now;
+    const newCount = currentCount + 1;
+
+    const { error: updateError } = await supabase
+      .from('user_credits')
+      .upsert({
+        user_id: user.id,
+        analysis_count: newCount,
+        analysis_window_start: newWindowStart.toISOString(),
+        last_analysis_at: now.toISOString(),
+        updated_at: now.toISOString()
+      }, {
+        onConflict: 'user_id'
+      });
+
+    if (updateError) {
+      console.error('Error updating credits:', updateError);
+      // Non-fatal - we already saved the result
+    } else {
+      console.log(`Credits updated: ${newCount}/2 in window starting ${newWindowStart.toISOString()}`);
     }
 
     return new Response(
-      JSON.stringify(result),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
+      JSON.stringify(parsedResult),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in business-tools-advisor function:', error);
+    console.error('Error in business-tools-advisor:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

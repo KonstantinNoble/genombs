@@ -95,6 +95,9 @@ const BusinessToolsAdvisor = () => {
 
   useEffect(() => {
     if (user) {
+      // Sync credits on initial load to fix any discrepancies
+      syncCredits();
+      
       loadToolHistory();
       loadIdeaHistory();
       loadAnalysisLimit();
@@ -120,6 +123,23 @@ const BusinessToolsAdvisor = () => {
       };
     }
   }, [user]);
+
+  const syncCredits = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase.functions.invoke('sync-credits');
+      if (error) {
+        console.error('Error syncing credits:', error);
+      } else {
+        console.log('Credits synced successfully');
+        // Reload analysis limit after sync
+        await loadAnalysisLimit();
+      }
+    } catch (error) {
+      console.error('Error calling sync-credits:', error);
+    }
+  };
 
   const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null): boolean => {
     const now = new Date();
@@ -241,10 +261,11 @@ const BusinessToolsAdvisor = () => {
         if (error.message?.includes('Daily limit reached') || error.message?.includes('429')) {
           toast({
             title: "Daily limit reached",
-            description: "You can request new recommendations once every 24 hours",
+            description: "Syncing your usage data...",
             variant: "destructive",
           });
-          await loadAnalysisLimit();
+          // Sync credits to fix any discrepancies
+          await syncCredits();
         } else if (error.message?.includes('Rate limit') || error.message?.includes('402')) {
           toast({
             title: "Service temporarily unavailable",

@@ -64,23 +64,35 @@ serve(async (req) => {
     }
 
     const systemPrompt = `You are a business innovation advisor specializing in generating creative and viable business ideas. 
-Your task is to provide 5-7 specific business idea recommendations based on the user's context.
+Your task is to provide 5-7 HIGHLY SPECIFIC and PERSONALIZED business idea recommendations based on the user's unique context.
+
+CRITICAL: READ THE USER'S INPUT CAREFULLY AND TAILOR YOUR RESPONSE SPECIFICALLY TO THEIR SITUATION.
 
 For each idea, provide:
-- name: A clear, compelling name for the business idea
+- name: A clear, compelling name for the business idea that reflects their specific context
 - category: Choose from: product, service, saas, marketplace, content, consulting, ecommerce
 - viability: Choose from: quick-launch (can start in 1-3 months), medium-term (3-12 months), long-term (1+ years)
-- estimatedInvestment: Estimated startup capital needed (e.g., "$500-$2,000", "$5,000-$20,000", "$50,000+")
-- rationale: 2-3 sentences explaining why this idea fits their context and market opportunity
+- estimatedInvestment: Estimated startup capital needed that ALIGNS with their stated budget (e.g., "$500-$2,000", "$5,000-$20,000", "$50,000+")
+- rationale: 2-3 sentences explaining why THIS SPECIFIC idea fits THEIR UNIQUE context, challenges, and market opportunity. Reference their specific industry, budget, team size, or stated goals.
 
-Also provide general strategic advice about the current market landscape and trends relevant to their industry.
+Also provide general strategic advice about the current market landscape and trends relevant to THEIR SPECIFIC industry and context.
+
+PERSONALIZATION RULES - EXTREMELY IMPORTANT:
+- DEEPLY analyze their business context and pain points - generate ideas that DIRECTLY address what they mentioned
+- If they mention specific challenges, skills, or interests in the business context, your ideas MUST reflect those
+- Tailor investment levels to their actual budget - don't suggest $50k ideas for a $5k budget
+- Consider their team size - solo founders need different ideas than teams of 10
+- Reference their specific industry expertise and leverage it in your ideas
+- Make each idea feel uniquely crafted for them based on what they wrote, NOT generic business ideas
+- Quote or reference their specific context in your rationale to show you understood their situation
 
 Focus on:
-- Realistic and actionable ideas based on their budget and team size
-- Current market trends and opportunities
-- Ideas that leverage their industry expertise
-- Mix of different viability timeframes
-- Specific rather than generic suggestions
+- Realistic and actionable ideas based on THEIR EXACT budget and team size
+- Current market trends and opportunities in THEIR SPECIFIC industry
+- Ideas that leverage THEIR stated industry expertise, skills, or context
+- Mix of different viability timeframes that match THEIR resources
+- Specific rather than generic suggestions - customize to THEIR situation
+- Ideas that solve problems or leverage opportunities they mentioned
 
 Return ONLY valid JSON in this exact format:
 {
@@ -93,15 +105,19 @@ Return ONLY valid JSON in this exact format:
       "rationale": "rationale"
     }
   ],
-  "generalAdvice": "Strategic overview and market insights"
+  "generalAdvice": "Strategic overview and market insights specific to their industry and context"
 }`;
 
-    const userPrompt = `Industry: ${industry}
+    const userPrompt = `Please READ CAREFULLY and generate business ideas that are SPECIFICALLY TAILORED to this unique situation:
+
+Industry: ${industry}
 Team Size: ${teamSize}
 Available Budget: ${budgetRange}
 Business Context: ${businessContext}
 
-Generate 5-7 innovative business ideas tailored to this context.`;
+IMPORTANT: Analyze the business context deeply. This context contains specific information about their situation, challenges, skills, or interests. Your ideas MUST directly reflect and address what they wrote in the context field.
+
+Generate 5-7 innovative business ideas that are UNIQUELY SUITED to this specific business context, budget, team size, and industry. Make sure each idea feels personalized to their situation, not generic business advice.`;
 
     console.log('Calling Lovable AI for business ideas...');
     

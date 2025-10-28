@@ -457,6 +457,7 @@ const BusinessToolsAdvisor = () => {
                   value={businessGoals}
                   onChange={(e) => setBusinessGoals(e.target.value)}
                   rows={4}
+                  maxLength={20}
                 />
               </div>
 
@@ -525,7 +526,7 @@ const BusinessToolsAdvisor = () => {
                                 <span className={`text-xs px-2 py-1 rounded-full border ${getImplementationColor(rec.implementation)}`}>
                                   {rec.implementation.replace('-', ' ')}
                                 </span>
-                                <span className="text-xs px-2 py-1 rounded-full bg-accent flex items-center gap-1">
+                                <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground flex items-center gap-1">
                                   <DollarSign className="h-3 w-3" />
                                   {rec.estimatedCost}
                                 </span>

@@ -169,12 +169,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_and_update_analysis_limit:
-        | { Args: { p_user_id: string }; Returns: boolean }
-        | {
-            Args: { p_analysis_type?: string; p_user_id: string }
-            Returns: boolean
-          }
+      check_and_update_analysis_limit: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
     }
     Enums: {

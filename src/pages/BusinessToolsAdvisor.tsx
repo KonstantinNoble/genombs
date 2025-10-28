@@ -121,36 +121,47 @@ const BusinessToolsAdvisor = () => {
     }
   }, [user]);
 
-  const checkCanAnalyze = (lastAnalysisAt: string | null): boolean => {
-    if (!lastAnalysisAt) return true;
-    const lastAnalysis = new Date(lastAnalysisAt);
+  const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null): boolean => {
     const now = new Date();
-    const hoursSinceLastAnalysis = (now.getTime() - lastAnalysis.getTime()) / (1000 * 60 * 60);
-    
-    if (hoursSinceLastAnalysis < 24) {
-      const nextTime = new Date(lastAnalysis.getTime() + 24 * 60 * 60 * 1000);
-      setNextAnalysisTime(nextTime);
-      return false;
+    if (!windowStart) {
+      setNextAnalysisTime(null);
+      return true;
     }
-    
-    return true;
+
+    const windowStartDate = new Date(windowStart);
+    const windowEndsAt = new Date(windowStartDate.getTime() + 24 * 60 * 60 * 1000);
+
+    // If window already expired, allow analysis
+    if (now >= windowEndsAt) {
+      setNextAnalysisTime(null);
+      return true;
+    }
+
+    // Within window: allow if fewer than 2 analyses used
+    if ((analysisCount ?? 0) < 2) {
+      setNextAnalysisTime(null);
+      return true;
+    }
+
+    // Limit reached: show remaining time
+    setNextAnalysisTime(windowEndsAt);
+    return false;
   };
 
   const loadAnalysisLimit = async () => {
     if (!user) return;
-    
     const { data, error } = await supabase
       .from('user_credits')
-      .select('last_analysis_at')
+      .select('analysis_count, analysis_window_start')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error loading analysis limit:', error);
       return;
     }
 
-    setCanAnalyze(checkCanAnalyze(data?.last_analysis_at));
+    setCanAnalyze(checkCanAnalyze(data?.analysis_count ?? 0, data?.analysis_window_start ?? null));
   };
 
   const loadToolHistory = async () => {

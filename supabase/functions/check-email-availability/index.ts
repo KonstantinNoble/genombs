@@ -62,14 +62,14 @@ serve(async (req) => {
 
     if (data) {
       // Hash found - email is blocked
-      const daysRemaining = Math.ceil(
-        (30 - (Date.now() - new Date(data.deleted_at).getTime()) / (1000 * 60 * 60 * 24))
+      const hoursRemaining = Math.ceil(
+        (24 - (Date.now() - new Date(data.deleted_at).getTime()) / (1000 * 60 * 60))
       );
 
       return new Response(
         JSON.stringify({ 
           available: false, 
-          reason: `This email address cannot be used. Please try again in ${daysRemaining} days.`
+          reason: `This email address cannot be used. Please try again in ${hoursRemaining} hours.`
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );

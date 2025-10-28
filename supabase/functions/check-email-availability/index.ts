@@ -69,7 +69,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           available: false, 
-          reason: `Diese Email-Adresse kann nicht verwendet werden. Bitte versuchen Sie es in ${daysRemaining} Tagen erneut.`
+          reason: `This email address cannot be used. Please try again in ${daysRemaining} days.`
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );

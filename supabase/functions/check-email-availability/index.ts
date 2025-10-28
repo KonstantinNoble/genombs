@@ -61,10 +61,19 @@ serve(async (req) => {
     }
 
     if (data) {
-      // Hash found - email is blocked
-      const hoursRemaining = Math.ceil(
-        (24 - (Date.now() - new Date(data.deleted_at).getTime()) / (1000 * 60 * 60))
-      );
+      // Hash found - check if it's actually still within 24h period
+      const hoursSinceDeletion = (Date.now() - new Date(data.deleted_at).getTime()) / (1000 * 60 * 60);
+      
+      // If older than 24h, treat as available (cron job will clean up soon)
+      if (hoursSinceDeletion >= 24) {
+        return new Response(
+          JSON.stringify({ available: true }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Email is blocked - calculate remaining hours (always positive)
+      const hoursRemaining = Math.max(1, Math.ceil(24 - hoursSinceDeletion));
 
       return new Response(
         JSON.stringify({ 

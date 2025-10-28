@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Lightbulb, TrendingUp, Clock, DollarSign, Trash2, LogIn } from "lucide-react";
+import { Loader2, Lightbulb, TrendingUp, Clock, DollarSign, Trash2, LogIn, ExternalLink } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
@@ -233,18 +233,6 @@ const BusinessToolsAdvisor = () => {
     });
   };
 
-  const getCategoryIcon = (category: string) => {
-    const icons: Record<string, string> = {
-      productivity: "⚡",
-      marketing: "📣",
-      sales: "💰",
-      finance: "💵",
-      hr: "👥",
-      operations: "⚙️",
-      strategy: "🎯"
-    };
-    return icons[category] || "💡";
-  };
 
   const getImplementationColor = (implementation: string) => {
     const colors: Record<string, string> = {
@@ -515,36 +503,37 @@ const BusinessToolsAdvisor = () => {
                     <Card key={index}>
                       <CardHeader>
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-3 flex-1">
-                            <span className="text-2xl">{getCategoryIcon(rec.category)}</span>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <CardTitle className="text-lg">{rec.name}</CardTitle>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <CardTitle className="text-lg">{rec.name}</CardTitle>
+                              <Button
+                                asChild
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 h-8"
+                              >
                                 <a
                                   href={`https://www.google.com/search?q=${encodeURIComponent(rec.name)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary hover:text-primary/80 transition-colors"
                                   title={`Search for ${rec.name} on Google`}
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.3-4.3"></path>
-                                  </svg>
+                                  <ExternalLink className="h-4 w-4" />
+                                  Google Search
                                 </a>
-                              </div>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                <span className="text-xs px-2 py-1 rounded-full bg-secondary">
-                                  {rec.category}
-                                </span>
-                                <span className={`text-xs px-2 py-1 rounded-full border ${getImplementationColor(rec.implementation)}`}>
-                                  {rec.implementation.replace('-', ' ')}
-                                </span>
-                                <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground flex items-center gap-1">
-                                  <DollarSign className="h-3 w-3" />
-                                  {rec.estimatedCost}
-                                </span>
-                              </div>
+                              </Button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <span className="text-xs px-2 py-1 rounded-full bg-secondary">
+                                {rec.category}
+                              </span>
+                              <span className={`text-xs px-2 py-1 rounded-full border ${getImplementationColor(rec.implementation)}`}>
+                                {rec.implementation.replace('-', ' ')}
+                              </span>
+                              <span className="text-xs px-2 py-1 rounded-full bg-accent text-accent-foreground flex items-center gap-1">
+                                <DollarSign className="h-3 w-3" />
+                                {rec.estimatedCost}
+                              </span>
                             </div>
                           </div>
                         </div>

@@ -271,7 +271,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Fair Use Policy</h3>
               <p className="mb-4">
-                The 2 analyses per 24-hour limit is designed to ensure fair access for all users. We monitor for unusual usage patterns and reserve the right to:
+                Usage limits are designed to ensure fair access for all users. We monitor for unusual usage patterns and reserve the right to:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
                 <li>Investigate suspected abuse or circumvention attempts</li>
@@ -297,36 +297,36 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4">VI. Haftung und Gewährleistung (Liability and Warranty)</h2>
 
-              <h3 className="text-xl font-semibold mb-3 mt-6">6.1 AI Disclaimer - CRITICAL NOTICE</h3>
+              <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Service Disclaimer - CRITICAL NOTICE</h3>
               <div className="bg-destructive/10 border border-destructive rounded-lg p-6 my-6">
                 <p className="font-bold text-lg mb-4">IMPORTANT: PLEASE READ CAREFULLY</p>
                 <p className="mb-4">
-                  <strong>All AI-generated recommendations provided by the Business Tools Advisor and Business Ideas Advisor are for informational and educational purposes only.</strong>
+                  <strong>All recommendations and services provided by our platform are for informational and educational purposes only.</strong>
                 </p>
                 <ul className="list-disc pl-6 space-y-3">
                   <li>
-                    <strong>NOT Professional Advice:</strong> Our AI recommendations are NOT financial advice, investment advice, legal advice, 
+                    <strong>NOT Professional Advice:</strong> Our services are NOT financial advice, investment advice, legal advice, 
                     business consulting, or any form of professional advisory service. They should not be relied upon as a substitute for professional consultation.
                   </li>
                   <li>
-                    <strong>No Guarantee of Results:</strong> We make no representations, warranties, or guarantees that implementing our recommendations will result in 
+                    <strong>No Guarantee of Results:</strong> We make no representations, warranties, or guarantees that using our services will result in 
                     business success, profitability, revenue growth, or any specific outcome.
                   </li>
                   <li>
                     <strong>Your Responsibility:</strong> You are solely responsible for all business decisions you make. You must conduct your own thorough due diligence, 
-                    research, and analysis before implementing any AI-generated recommendation.
+                    research, and analysis before implementing any recommendations.
                   </li>
                   <li>
                     <strong>Consult Qualified Professionals:</strong> Before making significant business decisions, financial commitments, or legal arrangements, 
                     you should consult qualified professionals including lawyers, certified accountants, licensed financial advisors, and business consultants.
                   </li>
                   <li>
-                    <strong>AI Limitations:</strong> AI models, including Google Gemini 2.5, may produce outputs that are inaccurate, incomplete, outdated, biased, 
-                    or contextually inappropriate. AI cannot account for all variables in your specific situation.
+                    <strong>Service Limitations:</strong> Our services may produce outputs that are inaccurate, incomplete, outdated, biased, 
+                    or contextually inappropriate. Technology cannot account for all variables in your specific situation.
                   </li>
                   <li>
-                    <strong>No Liability for AI Outputs:</strong> We are not liable for any business decisions, investments, losses, damages, or consequences 
-                    arising from your reliance on or implementation of AI-generated recommendations.
+                    <strong>No Liability for Outputs:</strong> We are not liable for any business decisions, investments, losses, damages, or consequences 
+                    arising from your reliance on or implementation of our recommendations.
                   </li>
                 </ul>
               </div>
@@ -379,15 +379,16 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">6.4 Third-Party Services</h3>
               <p className="mb-4">
-                We use Google AI services (Gemini 2.5 models) to generate recommendations. We are not responsible for:
+                We may use third-party services to provide our platform functionality. We are not responsible for:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Google AI service availability, uptime, or performance</li>
-                <li>The accuracy or quality of AI model outputs</li>
-                <li>Changes to Google AI capabilities or pricing</li>
+                <li>Third-party service availability, uptime, or performance</li>
+                <li>The accuracy or quality of third-party outputs</li>
+                <li>Changes to third-party capabilities, terms, or pricing</li>
               </ul>
               <p className="mb-4">
-                Data transfers to Google AI are protected under the EU-U.S. Data Privacy Framework. Google's own terms and privacy policies apply to their processing activities.
+                When we transfer data to third-party processors, we ensure compliance with applicable data protection regulations. 
+                Third-party providers' own terms and privacy policies apply to their processing activities.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">6.5 Indemnification</h3>
@@ -431,22 +432,17 @@ const TermsOfService = () => {
                 When you delete your account, the following data is <strong>permanently and irrevocably deleted</strong>:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Your profile information (email, user ID)</li>
-                <li>All Business Tools Advisor analysis history (business_tools_history table)</li>
-                <li>All Business Ideas Advisor analysis history (business_ideas_history table)</li>
-                <li>Credit tracking data (user_credits table)</li>
+                <li>Your profile information</li>
+                <li>All analysis and usage history</li>
+                <li>Credit tracking data</li>
                 <li>Any other personal data associated with your account</li>
               </ul>
 
-              <p className="mb-4"><strong>Browser localStorage Data:</strong></p>
+              <p className="mb-4"><strong>Local Device Data:</strong></p>
               <p className="mb-4">
-                Data stored in your browser's localStorage (Notion Idea Board state) is not automatically deleted when you delete your account, 
-                as it resides on your device. You can clear this data manually through:
+                Data stored locally on your device is not automatically deleted when you delete your account. 
+                You can clear this data manually through your browser settings or by using any "clear data" functions provided within the platform.
               </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Clicking "Clear All" on the Notion Idea Board page before deleting your account</li>
-                <li>Clearing your browser cache and site data</li>
-              </ul>
 
               <p className="mb-4"><strong>Email Hash Temporary Retention (Anti-Abuse Measure):</strong></p>
               <p className="mb-4">
@@ -499,15 +495,8 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">7.6 Data Export Before Termination</h3>
               <p className="mb-4">
-                Before deleting your account, we recommend exporting any data you wish to retain:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>View your analysis history in the Business Tools Advisor and Business Ideas Advisor pages</li>
-                <li>Screenshot or manually copy recommendations you want to keep</li>
-                <li>Export Notion Idea Board data by copying displayed recommendations</li>
-              </ul>
-              <p className="mb-4">
-                We do not currently offer an automated bulk data export feature, but you can view all your data through the user interface before deletion.
+                Before deleting your account, we recommend exporting any data you wish to retain. 
+                You can view and save your data through the user interface or by using any export features provided within the platform.
               </p>
             </section>
 

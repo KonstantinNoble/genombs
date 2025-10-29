@@ -653,35 +653,34 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Affiliate Marketing (Impact.com / Simplify Wall Street)</h2>
-            <p className="text-muted-foreground mb-4">
-              We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
-              program, we include affiliate links to products or services offered by Simplify Wall Street.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              When you click such a link, you are redirected to the partner website. Impact.com and/or Simplify Wall
-              Street may use cookies or similar technologies to track sales or sign-ups for commission purposes.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              We do not collect, store, or process any affiliate tracking data ourselves. Processing occurs exclusively
-              on the partner's website.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(a) GDPR – based on your consent given on the partner site.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              For details on data processing by Impact.com, please refer to:{" "}
-              <a
-                href="https://impact.com/privacy-policy/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://impact.com/privacy-policy/
-              </a>
-            </p>
-          </section>
+<section className="mb-8">
+  <h2 className="text-2xl font-semibold mb-4">8. Affiliate Marketing (Impact.com / Shopify)</h2>
+  <p className="text-muted-foreground mb-4">
+    We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
+    program, we include affiliate links to products or services offered by **Shopify**.
+  </p>
+  <p className="text-muted-foreground mb-4">
+    When you click such a link, you are redirected to the partner website. Impact.com and/or **Shopify** may use cookies or similar technologies to track sales or sign-ups for commission purposes.
+  </p>
+  <p className="text-muted-foreground mb-4">
+    We do not collect, store, or process any affiliate tracking data ourselves. Processing occurs exclusively
+    on the partner's website.
+  </p>
+  <p className="text-muted-foreground mb-4">
+    **Legal basis:** Art. 6(1)(a) GDPR – based on your consent given on the partner site.
+  </p>
+  <p className="text-muted-foreground mb-4">
+    For details on data processing by Impact.com, please refer to:{" "}
+    <a
+      href="https://impact.com/privacy-policy/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary hover:underline"
+    >
+      https://impact.com/privacy-policy/
+    </a>
+  </p>
+</section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">9. Categories of Personal Data</h2>

@@ -35,20 +35,19 @@ const TermsOfService = () => {
               <h3 className="text-xl font-semibold mb-3 mt-6">1.1 Platform Operator</h3>
               <p className="mb-4">
                 This platform is operated by:<br />
-                <strong>Investment Platform Inc.</strong><br />
-                123 Finance Street<br />
-                New York, NY 10001<br />
-                United States
+                <strong>Muhammed Kagan Yilmaz</strong><br />
+                Aroser Allee 50<br />
+                13407 Berlin<br />
+                Germany
               </p>
               <p className="mb-4">
-                Contact: <a href="mailto:info@investment.com" className="text-primary hover:underline">info@investment.com</a><br />
-                Phone: +1 (555) 123-4567
+                Contact: <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">mail@wealthconomy.com</a>
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">1.2 Scope of Application</h3>
               <p className="mb-4">
                 These Terms apply to all users of the Wealthconomy platform, including both visitors and registered users. 
-                By accessing or using our services, you enter into a binding agreement with Investment Platform Inc.
+                By accessing or using our services, you enter into a binding agreement with Muhammed Kagan Yilmaz.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">1.3 User Definitions</h3>
@@ -340,7 +339,7 @@ const TermsOfService = () => {
                 <li><strong>Permanent Termination:</strong> Serious violations (illegal activity, security threats, systematic abuse) may result in immediate permanent termination without prior notice</li>
               </ul>
               <p className="mb-4">
-                You will be notified of suspensions or terminations when feasible. You may appeal decisions by contacting info@investment.com.
+                You will be notified of suspensions or terminations when feasible. You may appeal decisions by contacting mail@wealthconomy.com.
               </p>
             </section>
 
@@ -440,7 +439,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">6.5 Indemnification</h3>
               <p className="mb-4">
-                You agree to indemnify, defend, and hold harmless Investment Platform Inc., its affiliates, officers, directors, employees, and agents from any claims, 
+                You agree to indemnify, defend, and hold harmless Muhammed Kagan Yilmaz, his affiliates, employees, and agents from any claims, 
                 liabilities, damages, losses, costs, or expenses (including reasonable legal fees) arising from:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
@@ -471,7 +470,7 @@ const TermsOfService = () => {
                 <li>Confirming the deletion in the dialog prompt</li>
               </ul>
               <p className="mb-4">
-                Termination is effective immediately upon confirmation. You may also contact us at info@investment.com to request account deletion.
+                Termination is effective immediately upon confirmation. You may also contact us at mail@wealthconomy.com to request account deletion.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">7.3 Account Deletion Process and Data Retention</h3>
@@ -589,9 +588,8 @@ const TermsOfService = () => {
                 You can contact us:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li><strong>By email:</strong> info@investment.com</li>
-                <li><strong>By mail:</strong> Investment Platform Inc., 123 Finance Street, New York, NY 10001, United States</li>
-                <li><strong>By phone:</strong> +1 (555) 123-4567</li>
+                <li><strong>By email:</strong> mail@wealthconomy.com</li>
+                <li><strong>By mail:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany</li>
               </ul>
               <p className="mb-4">
                 You may use the model withdrawal form provided below (Section 8.6), but it is not mandatory. Any clear statement of your intention to withdraw is sufficient.
@@ -633,11 +631,11 @@ const TermsOfService = () => {
                 <p className="font-semibold mb-4">Muster-Widerrufsformular (Model Withdrawal Form)</p>
                 <p className="mb-4">
                   To:<br />
-                  Investment Platform Inc.<br />
-                  123 Finance Street<br />
-                  New York, NY 10001<br />
-                  United States<br />
-                  Email: info@investment.com
+                  Muhammed Kagan Yilmaz<br />
+                  Aroser Allee 50<br />
+                  13407 Berlin<br />
+                  Germany<br />
+                  Email: mail@wealthconomy.com
                 </p>
                 <p className="mb-4">
                   I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract for the provision of the following service:
@@ -679,12 +677,11 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">9.1 Governing Law</h3>
               <p className="mb-4">
-                These Terms of Service are governed by and construed in accordance with the laws of the <strong>State of New York, United States of America</strong>, 
+                These Terms of Service and the entire legal relationship between you and us are governed by the laws of the <strong>Federal Republic of Germany</strong>, 
                 without regard to its conflict of law provisions.
               </p>
               <p className="mb-4">
-                <strong>Exception for EU Consumers:</strong> If you are a consumer residing in the European Union or European Economic Area, 
-                the mandatory consumer protection laws of your country of residence remain applicable and cannot be excluded by this choice of law provision.
+                <strong>For Consumers:</strong> This choice of law does not affect the application of mandatory provisions of the law of the country in which you have your habitual residence.
               </p>
               <p className="mb-4">
                 The <strong>United Nations Convention on Contracts for the International Sale of Goods (CISG)</strong> is expressly excluded and does not apply to these Terms.
@@ -693,14 +690,14 @@ const TermsOfService = () => {
               <h3 className="text-xl font-semibold mb-3 mt-6">9.2 Jurisdiction and Venue</h3>
               <p className="mb-4"><strong>For Business Users (B2B):</strong></p>
               <p className="mb-4">
-                If you are using our services for commercial or business purposes, you agree that any legal action or proceeding arising from or related to these Terms 
-                shall be brought exclusively in the state or federal courts located in New York County, New York, United States, and you consent to the exclusive jurisdiction of such courts.
+                If you are a merchant (Kaufmann), a legal entity under public law, or a special fund under public law, or if you do not have a general place of jurisdiction in Germany, 
+                the exclusive place of jurisdiction for all disputes arising from this contract is <strong>Berlin, Germany</strong>.
               </p>
               <p className="mb-4"><strong>For Consumers (B2C):</strong></p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>We may only bring legal actions against you in the courts of your country of residence</li>
-                <li>You may bring legal actions against us either in the courts of New York, United States, or in the courts of your country of residence</li>
-                <li>Mandatory consumer protection jurisdiction rules in your country of residence remain applicable</li>
+                <li>The statutory place of jurisdiction applies</li>
+                <li>We are obligated to bring actions against you only at your place of residence</li>
+                <li>Mandatory consumer protection jurisdiction rules remain applicable</li>
               </ul>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">9.3 Dispute Resolution and Alternative Dispute Resolution</h3>
@@ -708,7 +705,7 @@ const TermsOfService = () => {
                 Before initiating any legal proceedings, we encourage you to contact us to resolve disputes informally:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Email: info@investment.com</li>
+                <li>Email: mail@wealthconomy.com</li>
                 <li>Subject line: "Dispute Resolution"</li>
                 <li>We commit to responding within 14 business days</li>
               </ul>
@@ -756,7 +753,7 @@ const TermsOfService = () => {
               <h3 className="text-xl font-semibold mb-3 mt-6">9.6 Entire Agreement</h3>
               <p className="mb-4">
                 These Terms of Service, together with our Privacy Policy (accessible at /privacy-policy) and Imprint (accessible at /imprint), 
-                constitute the entire agreement between you and Investment Platform Inc. regarding your use of the Wealthconomy platform.
+                constitute the entire agreement between you and Muhammed Kagan Yilmaz regarding your use of the Wealthconomy platform.
               </p>
               <p className="mb-4">
                 These Terms supersede all prior or contemporaneous agreements, understandings, negotiations, or representations, whether written or oral, 
@@ -798,15 +795,13 @@ const TermsOfService = () => {
                 For all legal inquiries, questions about these Terms, or notices:
               </p>
               <p className="mb-4">
-                <strong>Legal Department</strong><br />
-                Investment Platform Inc.<br />
-                123 Finance Street<br />
-                New York, NY 10001<br />
-                United States
+                <strong>Muhammed Kagan Yilmaz</strong><br />
+                Aroser Allee 50<br />
+                13407 Berlin<br />
+                Germany
               </p>
               <p className="mb-4">
-                Email: <a href="mailto:info@investment.com" className="text-primary hover:underline">info@investment.com</a><br />
-                Phone: +1 (555) 123-4567
+                Email: <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">mail@wealthconomy.com</a>
               </p>
               <p className="mb-4">
                 For GDPR-related requests (data access, deletion, portability), please also see our Privacy Policy at /privacy-policy.

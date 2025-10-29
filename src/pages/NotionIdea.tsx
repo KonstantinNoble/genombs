@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Loader2, BookOpen, TrendingUp, Sparkles } from "lucide-react";
+import { Loader2, BookOpen, TrendingUp, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -260,60 +260,112 @@ const NotionIdea = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
         {viewMode === 'landing' && (
-          <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in py-12">
+          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in py-12">
             <div className="space-y-4">
               <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                Notion Idea
+                Notion Idea Board
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Organize and visualize your AI-generated business recommendations in a beautiful, Notion-style workspace
+                Sammeln und organisieren Sie Ihre KI-generierten Geschäftsempfehlungen in einem übersichtlichen Workspace
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 my-12">
-              <div className="p-6 rounded-lg border bg-card">
+              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <BookOpen className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Import Analyses</h3>
+                <h3 className="font-semibold mb-2">Analysen Importieren</h3>
                 <p className="text-sm text-muted-foreground">
-                  Select from your Business AI tools and ideas recommendations
+                  Importieren Sie Empfehlungen aus Business Tools & Ideen Analysen
                 </p>
               </div>
               
-              <div className="p-6 rounded-lg border bg-card">
+              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
                   <TrendingUp className="h-6 w-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold mb-2">Organize</h3>
+                <h3 className="font-semibold mb-2">Organisieren</h3>
                 <p className="text-sm text-muted-foreground">
-                  View recommendations organized by category and timeline
+                  Filtern, sortieren und gruppieren nach Kategorien
                 </p>
               </div>
               
-              <div className="p-6 rounded-lg border bg-card">
+              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Execute</h3>
+                <h3 className="font-semibold mb-2">Umsetzen</h3>
                 <p className="text-sm text-muted-foreground">
-                  Build your business roadmap with clear, actionable insights
+                  Entwickeln Sie Ihren Business-Fahrplan mit klaren Insights
                 </p>
               </div>
             </div>
 
-            <Button 
-              size="lg" 
-              onClick={handleGetStarted}
-              className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
-            >
-              {user ? 'Get Started' : 'Sign In to Get Started'}
-            </Button>
-
-            {!user && (
-              <p className="text-sm text-muted-foreground">
-                Sign in to import your AI recommendations and create your business roadmap
-              </p>
+            {user ? (
+              <div className="space-y-4">
+                <Button 
+                  size="lg" 
+                  onClick={handleGetStarted}
+                  className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
+                >
+                  Jetzt Starten
+                </Button>
+                {(toolsHistory.length === 0 && ideasHistory.length === 0) && (
+                  <div className="mt-8 p-6 rounded-lg border bg-card/50">
+                    <p className="text-muted-foreground mb-4">
+                      Sie haben noch keine Analysen erstellt. Nutzen Sie den Business AI Advisor, um Empfehlungen zu erhalten!
+                    </p>
+                    <Button 
+                      onClick={() => navigate('/business-tools')}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      Zur Business AI
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="p-6 rounded-lg border bg-card/50 max-w-2xl mx-auto">
+                  <h3 className="font-semibold mb-3 text-lg">So funktioniert es:</h3>
+                  <ol className="text-left space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold text-primary">1.</span>
+                      <span>Erstellen Sie Business Tool- oder Ideen-Analysen mit unserem AI Advisor</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold text-primary">2.</span>
+                      <span>Importieren Sie die Empfehlungen in Ihr Notion Idea Board</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold text-primary">3.</span>
+                      <span>Organisieren und priorisieren Sie Ihre Business-Strategie</span>
+                    </li>
+                  </ol>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    size="lg" 
+                    onClick={() => navigate('/auth')}
+                    className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
+                  >
+                    Anmelden & Starten
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate('/business-tools')}
+                    className="gap-2 text-lg px-8 py-6"
+                  >
+                    Zum Business AI Advisor
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         )}

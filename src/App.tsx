@@ -13,6 +13,7 @@ import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/notion-idea" element={<NotionIdea />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/imprint" element={<Imprint />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

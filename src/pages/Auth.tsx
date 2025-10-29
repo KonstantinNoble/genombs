@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { ArrowLeft } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "react-router-dom";
 
 const signUpSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -23,6 +25,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,6 +43,16 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!acceptedTerms) {
+      toast({
+        title: "Terms of Service Required",
+        description: "Please accept the Terms of Service to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -56,8 +69,8 @@ const Auth = () => {
         // Fail-open: Continue with registration on error
       } else if (availabilityData && !availabilityData.available) {
         toast({
-          title: "Registrierung blockiert",
-          description: availabilityData.reason || "Diese Email-Adresse kann nicht verwendet werden.",
+          title: "Registration Blocked",
+          description: availabilityData.reason || "This email address cannot be used.",
           variant: "destructive",
         });
         setLoading(false);
@@ -262,6 +275,31 @@ const Auth = () => {
               )}
             </div>
 
+            {!isLogin && (
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                  className="mt-1"
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+                >
+                  I have read and accept the{" "}
+                  <Link
+                    to="/terms-of-service"
+                    className="text-secondary hover:underline font-medium"
+                    target="_blank"
+                  >
+                    Terms of Service
+                  </Link>
+                  .
+                </label>
+              </div>
+            )}
+
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-xl transition-all duration-300"
@@ -290,6 +328,7 @@ const Auth = () => {
                 setIsLogin(!isLogin);
                 setPassword("");
                 setEmail("");
+                setAcceptedTerms(false);
               }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >

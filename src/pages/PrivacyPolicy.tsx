@@ -96,6 +96,14 @@ const PrivacyPolicy = () => {
               </li>
               <li>Art. 6(1)(f) GDPR – Our legitimate interest in offering secure and personalized services.</li>
             </ul>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">Password Requirements</h3>
+            <p className="text-muted-foreground mb-4">
+              Passwords must be at least 8 characters long. While we recommend using strong passwords with a mix of 
+              uppercase letters, lowercase letters, numbers, and symbols, the system enforces only the minimum length 
+              requirement to balance security with user convenience.
+            </p>
+            
             <p className="text-muted-foreground mb-4">
               <strong>Email confirmation:</strong> To ensure the security of your account and verify your email address,
               we require you to confirm your email after registration by clicking on a confirmation link sent to your
@@ -162,25 +170,60 @@ const PrivacyPolicy = () => {
                 for normal operations.
               </li>
             </ul>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">Email Hash Storage for Abuse Prevention</h3>
             <p className="text-muted-foreground mb-4">
+              To prevent abuse and protect against accidental re-registration, we create a cryptographic hash (SHA-256) 
+              of your email address and store it temporarily for 24 hours after account deletion. This hash is a 
+              one-way encryption that cannot be reversed to reveal your email address.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              During this 24-hour period, the same email address cannot be used to create a new account. This prevents:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Accidental duplicate registrations immediately after deletion</li>
+              <li>Abuse of free trial or quota systems through repeated account creation</li>
+              <li>Confusion from rapid account deletion and recreation cycles</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              After 24 hours, the hash is automatically deleted from our systems, and the email address becomes 
+              available for registration again.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Legitimate interest in preventing abuse, maintaining 
+              system integrity, and protecting against accidental duplicate registrations.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data minimization:</strong> We use SHA-256 cryptographic hashing instead of storing plain email 
+              addresses, ensuring that the stored hash cannot be used to identify you or be reversed to obtain your 
+              email address.
+            </p>
+            
+            <p className="text-muted-foreground mb-4 mt-6">
               Alternatively, you may also request account deletion by contacting us at mail@wealthconomy.com.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Business Tools Advisor</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Features</h2>
             <p className="text-muted-foreground mb-4">
-              Our website offers an AI-powered feature that provides personalized recommendations for business tools,
-              software, and strategies based on your stated business context and goals. This feature is available to
-              registered users and requires authentication.
+              Our website offers AI-powered features that provide personalized recommendations for business tools,
+              software, strategies, and business ideas based on your stated business context and goals. These features 
+              are available to registered users and require authentication.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>IMPORTANT DISCLAIMER:</strong> This feature provides general recommendations and information for
-              educational and informational purposes only. It does NOT constitute professional business consulting,
+              <strong>IMPORTANT DISCLAIMER:</strong> These features provide general recommendations and information for
+              educational and informational purposes only. They do NOT constitute professional business consulting,
               legal advice, or personalized business strategy consultation. You should consult with qualified business
               advisors and legal professionals before making significant business decisions. Results may vary, and we
-              make no guarantees regarding the effectiveness of recommended tools or strategies for your specific
-              business situation.
+              make no guarantees regarding the effectiveness of recommended tools, strategies, or business ideas for 
+              your specific business situation.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Business Tools Advisor</h3>
+            <p className="text-muted-foreground mb-4">
+              The Business Tools Advisor provides personalized recommendations for business tools, software, and 
+              strategies based on your business profile.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Business Tools Analysis</h3>
@@ -347,48 +390,194 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Usage Limits and Fair Use</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Business Ideas Advisor</h3>
             <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, each user can perform one AI analysis per 24-hour period. The system
-              automatically tracks your last analysis timestamp and enforces this limit. Attempting to perform multiple
-              analyses within 24 hours will result in an error message indicating when the next analysis will be
-              available.
+              The Business Ideas Advisor provides personalized business idea recommendations and startup concepts 
+              based on your market interests and constraints.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing for Business Ideas Analysis</h4>
+            <p className="text-muted-foreground mb-4">
+              When you use this feature, the following personal data is processed:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Business Profile Data (stated preferences):</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Industry sector (e.g., technology, retail, healthcare, manufacturing, etc.)</li>
+                  <li>Team size (solo, 2-10, 11-50, 51-200, 200+ employees)</li>
+                  <li>Budget range for business startup (e.g., &lt;$100/month, $100-500/month, $500-2000/month, $2000+/month)</li>
+                  <li>Business context (text description of market interests, target audience, or business ideas)</li>
+                </ul>
+              </li>
+              <li>
+                <strong>User Account Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>User ID (to manage your analysis history and daily usage limit)</li>
+                  <li>Timestamps (date and time of analysis requests)</li>
+                </ul>
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              The Business Ideas Advisor uses the same AI infrastructure as the Business Tools Advisor (Lovable AI 
+              Gateway and Google AI models). All data protection safeguards, third-country transfer mechanisms, and 
+              technical security measures described in section 4.1 apply equally to this feature.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data storage:</strong> Your business ideas analysis history is stored separately in the 
+              `business_ideas_history` database table and includes your business profile inputs (industry, team size, 
+              budget range, business context) and the generated idea recommendations.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (contract performance) and Art. 6(1)(f) GDPR (legitimate 
+              interest in providing innovative AI-powered features).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Combined Credit System</h3>
+            <p className="text-muted-foreground mb-4">
+              To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor share 
+              a unified quota system. You can perform a combined total of 2 analyses per 24-hour period across both 
+              features.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Credit tracking data processed:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Total analysis count (combined counter for both tools and ideas advisors)</li>
+              <li>Analysis window start timestamp (when the current 24-hour period began)</li>
+              <li>Last analysis timestamp (most recent analysis request)</li>
+              <li>User ID (to associate credit tracking with your account)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              The system automatically tracks your analysis count and enforces the 2-per-24-hour limit. Attempting to 
+              perform additional analyses within the 24-hour window will result in an error message indicating when 
+              the next analysis will be available.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Realtime synchronization:</strong> The application uses realtime database subscriptions to 
+              synchronize your credit status across all features automatically. This ensures accurate quota enforcement 
+              regardless of which feature you use.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance and fair use 
+              enforcement) and Art. 6(1)(f) GDPR (legitimate interest in preventing abuse and ensuring equitable 
+              service access for all users).
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Notion Idea Board</h3>
+            <p className="text-muted-foreground mb-4">
+              The Notion Idea Board feature allows you to import, organize, and visualize AI-generated recommendations 
+              from both the Business Tools Advisor and Business Ideas Advisor in a unified workspace interface.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing</h4>
+            <p className="text-muted-foreground mb-4">
+              When you use the Notion Idea Board:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Data sources:</strong> The feature retrieves your existing analysis data from the 
+                `business_tools_history` and `business_ideas_history` database tables
+              </li>
+              <li>
+                <strong>Browser localStorage:</strong> Your imported recommendations and workspace preferences 
+                (view mode, selected analyses) are stored locally in your web browser's localStorage to persist 
+                your workspace state across sessions
+              </li>
+              <li>
+                <strong>No server transmission:</strong> The Notion Idea Board state (imported recommendations, 
+                organization preferences) is stored exclusively in your browser's localStorage and is NOT 
+                transmitted to our servers
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">localStorage Data</h4>
+            <p className="text-muted-foreground mb-4">
+              The following data is stored in your browser's localStorage:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Imported recommendation data (derived from your existing analyses)</li>
+              <li>View mode state (landing, select, or display view)</li>
+              <li>Workspace organization preferences</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data persistence:</strong> localStorage data persists on your device until you manually clear 
+              it using the "Clear All" button in the application or clear your browser's cache/storage.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>User control:</strong> You have full control over your Notion Idea Board data:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Clear all imported data at any time via the "Clear All" button</li>
+              <li>Delete individual analyses from the board</li>
+              <li>Clear browser localStorage through your browser settings</li>
+              <li>Data is automatically cleared when you clear your browser cache</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Purpose:</strong> To provide a convenient workspace for organizing and visualizing your 
+              AI-generated business recommendations without requiring server-side storage of workspace state.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Art. 6(1)(b) GDPR – Processing is necessary for the performance of the contract (providing the 
+              workspace organization feature you requested)</li>
+              <li>Art. 6(1)(f) GDPR – Legitimate interest in providing a user-friendly interface that enhances 
+              your experience by persisting workspace preferences locally</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Privacy Implications</h4>
+            <p className="text-muted-foreground mb-4">
+              Since Notion Idea Board data is stored exclusively in your browser's localStorage:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The data never leaves your device</li>
+              <li>We cannot access, view, or process your Notion Idea Board workspace state</li>
+              <li>The data is only accessible from the specific browser and device where you use the feature</li>
+              <li>Clearing browser data or using a different browser/device will reset your Notion Idea Board</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention (All AI Features)</h3>
             <p className="text-muted-foreground mb-4">
               <strong>AI Provider Retention:</strong> Google retains API request data for approximately 30 days
               for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
               used to train or improve Google's AI models.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Local Storage (Our Database):</strong> Your analysis history is stored in our backend database and
-              includes:
+              <strong>Our Database Storage:</strong> Your analysis history is stored in our backend database in two 
+              separate tables:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your business profile inputs (industry, team size, budget range, business goals)</li>
-              <li>The generated business tool recommendations and strategies</li>
-              <li>Timestamp of the analysis</li>
+              <li>
+                <strong>business_tools_history:</strong> Business profile inputs (industry, team size, budget range, 
+                business goals) and generated tool recommendations
+              </li>
+              <li>
+                <strong>business_ideas_history:</strong> Business profile inputs (industry, team size, budget range, 
+                business context) and generated idea recommendations
+              </li>
+              <li>Timestamps of all analyses</li>
+              <li>Credit tracking data (analysis count, window start, last analysis timestamp)</li>
             </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Browser localStorage:</strong> Notion Idea Board workspace data is stored locally in your 
+              browser and persists until cleared by you.
+            </p>
             <p className="text-muted-foreground mb-4">
               This data remains stored as long as your account is active. You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your recommendation history at any time through your profile page</li>
-              <li>Delete individual recommendation entries from your history</li>
+              <li>View your complete recommendation history at any time through your profile page</li>
+              <li>Delete individual recommendation entries from either tools or ideas history</li>
+              <li>Clear your Notion Idea Board workspace data using the "Clear All" button</li>
               <li>
-                Delete your entire account, which permanently removes all recommendation history from our production
-                database
+                Delete your entire account, which permanently removes all recommendation history and credit tracking 
+                data from our production database
               </li>
             </ul>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">Realtime Updates</h3>
-            <p className="text-muted-foreground mb-4">
-              The application uses realtime database subscriptions to update your analysis limit status automatically
-              when a new analysis becomes available (after 24 hours). This technical feature does not involve additional
-              data processing beyond what is already described. Legal basis: Art. 6(1)(b) GDPR (necessary for contract
-              performance) and Art. 6(1)(f) GDPR (legitimate interest in providing a seamless user experience).
-            </p>
           </section>
 
           <section className="mb-8">
@@ -501,25 +690,47 @@ const PrivacyPolicy = () => {
               <li>User account data (email, user ID, timestamps)</li>
               <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
               <li>
+                Email hash data (SHA-256 cryptographic hash of deleted account email addresses, stored temporarily 
+                for 24 hours to prevent abuse and accidental re-registration)
+              </li>
+              <li>
                 Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for
                 technical purposes
               </li>
               <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
-              <li>Business profile data (industry sector, team size, budget range, business goals and objectives)</li>
               <li>
-                AI recommendation requests and responses (business tool recommendations, software suggestions, business
-                strategies, implementation guidance, and complete recommendation history)
+                Business profile data for Business Tools Advisor (industry sector, team size, budget range, business 
+                goals and objectives)
               </li>
-              <li>Analysis limit tracking data (last analysis timestamp, 24-hour usage limit enforcement data)</li>
+              <li>
+                Business profile data for Business Ideas Advisor (industry sector, team size, budget range, business 
+                context and market interests)
+              </li>
+              <li>
+                AI recommendation requests and responses:
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Business tool recommendations, software suggestions, business strategies (Business Tools Advisor)</li>
+                  <li>Business idea recommendations, startup concepts, market opportunities (Business Ideas Advisor)</li>
+                  <li>Complete recommendation history for both features</li>
+                </ul>
+              </li>
+              <li>
+                Combined credit tracking data (total analysis count across both features, analysis window start 
+                timestamp, last analysis timestamp, 24-hour usage limit enforcement data)
+              </li>
+              <li>
+                Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 
+                preferences – stored locally on your device only, not transmitted to our servers)
+              </li>
               <li>
                 Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our
                 servers)
               </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
-              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered business
-              tools advisor feature, your business profile data (industry, team size, budget, goals) is transmitted
-              server-side through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
+              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
+              (Business Tools Advisor or Business Ideas Advisor), your business profile data is transmitted server-side 
+              through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
               <strong>Your client IP address is NOT transmitted to Google AI</strong>. Only
               the IP address of our backend server is visible to the AI provider. This server-side architecture
               protects your privacy by ensuring that the AI provider cannot directly identify or track individual users by
@@ -539,11 +750,11 @@ const PrivacyPolicy = () => {
                 including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
-                <strong>AI service provider (for business tools recommendations only):</strong>
+                <strong>AI service provider (for Business Tools Advisor and Business Ideas Advisor):</strong>
                 <ul className="list-disc pl-6 mt-2">
                   <li>
                     Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
-                    and intermediary service that routes requests to:
+                    and intermediary service that routes requests from both AI features to:
                   </li>
                   <li>
                     Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)
@@ -554,11 +765,12 @@ const PrivacyPolicy = () => {
                   </li>
                 </ul>
                 <p className="mt-2 text-sm">
-                  <strong>Data minimization and security:</strong> AI requests are processed through our backend
-                  (Supabase Edge Functions), which means Google AI receives only your business profile data (industry,
-                  team size, budget range, business goals) without personal identifiers such as your name, email, or
-                  client IP address. Only the backend server's IP address is visible to Google. All transmissions
-                  are encrypted using TLS/SSL protocols.
+                  <strong>Data minimization and security:</strong> AI requests from both the Business Tools Advisor and 
+                  Business Ideas Advisor are processed through our backend (Supabase Edge Functions), which means Google 
+                  AI receives only your business profile data (industry, team size, budget range, business goals or 
+                  business context) without personal identifiers such as your name, email, or client IP address. Only 
+                  the backend server's IP address is visible to Google. All transmissions are encrypted using TLS/SSL 
+                  protocols.
                 </p>
               </li>
               <li>
@@ -584,25 +796,35 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
-              legitimate interest according to Art. 6(1)(f) GDPR). Furthermore, to use our registration-required AI
-              Analysis Service, the provision of your email address and your investment preferences is mandatory, as
-              this processing is necessary for the performance of the contract (Art. 6(1)(b) GDPR). We cannot otherwise
-              fulfill the contractually agreed-upon service.
+              legitimate interest according to Art. 6(1)(f) GDPR). Furthermore, to use our registration-required AI 
+              features (Business Tools Advisor and Business Ideas Advisor), the provision of your email address and 
+              your business profile data is mandatory, as this processing is necessary for the performance of the 
+              contract (Art. 6(1)(b) GDPR). We cannot otherwise fulfill the contractually agreed-upon service.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">12. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
-              AI-Powered Business Tools Advisor: Our AI-powered business tools advisor feature uses automated processing
-              to generate educational business tool recommendations. However, this does NOT constitute automated
-              decision-making within the meaning of Art. 22 GDPR because: 1. The results are purely informational and
-              educational in nature 2. No legal effects or similarly significant effects arise for you 3. You retain
-              full control over whether and how to use the suggestions 4. No binding decisions are made without human
-              intervention Your right to object: You may object to the use of the AI analysis feature at any time by
-              simply not using it or by deleting your account. No other automated decisions: Apart from the AI analysis
-              feature described above, we do not engage in automated decision-making or profiling pursuant to Art. 22
-              GDPR.
+              <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
+              (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
+              business recommendations, tool suggestions, and business idea concepts. However, this does NOT constitute 
+              automated decision-making within the meaning of Art. 22 GDPR because:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The results are purely informational and educational in nature</li>
+              <li>No legal effects or similarly significant effects arise for you</li>
+              <li>You retain full control over whether and how to use the suggestions</li>
+              <li>No binding decisions are made without human intervention</li>
+              <li>The recommendations serve only as guidance and do not determine any outcomes automatically</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Your right to object:</strong> You may object to the use of the AI features at any time by 
+              simply not using them or by deleting your account.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>No other automated decisions:</strong> Apart from the AI features described above, we do not 
+              engage in automated decision-making or profiling pursuant to Art. 22 GDPR.
             </p>
           </section>
 
@@ -682,13 +904,83 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Browser-Based Data Storage (localStorage)</h2>
+            <p className="text-muted-foreground mb-4">
+              We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
+              recommendations locally on your device. This technology allows the application to remember your workspace 
+              state across browser sessions without transmitting this data to our servers.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">What Data is Stored Locally</h3>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Imported recommendation data (derived from your existing analyses in the Business Tools Advisor and 
+              Business Ideas Advisor)</li>
+              <li>Notion Idea Board view mode state (whether you're in landing, select, or display view)</li>
+              <li>Workspace organization preferences and selected analyses</li>
+            </ul>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
+            <p className="text-muted-foreground mb-4">
+              <strong>Purpose:</strong> Enhance user experience by persisting your Notion Idea Board workspace state 
+              across sessions, eliminating the need to re-import and reorganize your recommendations each time you 
+              visit the page.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Legitimate interest in providing a user-friendly 
+              interface that improves usability and user experience.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">User Control and Data Management</h3>
+            <p className="text-muted-foreground mb-4">
+              You have full control over your localStorage data:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Clear via application:</strong> Use the "Clear All" button in the Notion Idea Board to 
+                immediately delete all imported recommendations and reset your workspace
+              </li>
+              <li>
+                <strong>Clear via browser settings:</strong> Access your browser's settings to clear localStorage, 
+                site data, or cache
+              </li>
+              <li>
+                <strong>Automatic clearing:</strong> localStorage data is automatically cleared when you clear your 
+                browser's cache or site data
+              </li>
+            </ul>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">Privacy Implications</h3>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>No transmission to servers:</strong> localStorage data remains on your device and is never 
+                transmitted to our servers
+              </li>
+              <li>
+                <strong>Device-specific:</strong> The data is only accessible from the specific browser and device 
+                where you use the Notion Idea Board
+              </li>
+              <li>
+                <strong>We cannot access it:</strong> We have no access to view, modify, or process your localStorage 
+                data
+              </li>
+              <li>
+                <strong>Persistence:</strong> Data persists until you manually clear it or clear your browser data
+              </li>
+              <li>
+                <strong>Cross-browser/device:</strong> Using a different browser or device will start with an empty 
+                Notion Idea Board (no synchronization across devices)
+              </li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> January 26, 2025
+              <strong>Last updated:</strong> October 29, 2025
             </p>
           </section>
         </article>

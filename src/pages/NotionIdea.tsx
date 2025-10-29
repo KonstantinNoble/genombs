@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Loader2 } from "lucide-react";
+import { Loader2, BookOpen, TrendingUp, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnalysisSelector from "@/components/notion-idea/AnalysisSelector";
@@ -74,7 +75,7 @@ const NotionIdea = () => {
   const [toolsHistory, setToolsHistory] = useState<ToolHistoryItem[]>([]);
   const [ideasHistory, setIdeasHistory] = useState<IdeaHistoryItem[]>([]);
   const [importedRecommendations, setImportedRecommendations] = useState<CombinedRecommendation[]>([]);
-  const [viewMode, setViewMode] = useState<'select' | 'display'>('select');
+  const [viewMode, setViewMode] = useState<'landing' | 'select' | 'display'>('landing');
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -131,6 +132,11 @@ const NotionIdea = () => {
   };
 
   const handleImport = (selectedToolIds: string[], selectedIdeaIds: string[]) => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
     if (selectedToolIds.length === 0 && selectedIdeaIds.length === 0) {
       toast({
         variant: "destructive",
@@ -198,16 +204,30 @@ const NotionIdea = () => {
   };
 
   const handleBackToSelection = () => {
-    setViewMode('select');
+    setViewMode('landing');
   };
 
   const handleClearAll = () => {
     setImportedRecommendations([]);
-    setViewMode('select');
+    setViewMode('landing');
     toast({
       title: "Cleared",
       description: "All imported recommendations have been cleared."
     });
+  };
+
+  const handleGetStarted = () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
+    if (toolsHistory.length === 0 && ideasHistory.length === 0) {
+      navigate('/business-tools');
+      return;
+    }
+    
+    setViewMode('select');
   };
 
   if (loading) {
@@ -221,27 +241,78 @@ const NotionIdea = () => {
     );
   }
 
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
-
-  if (toolsHistory.length === 0 && ideasHistory.length === 0) {
-    navigate('/business-tools');
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
-        {viewMode === 'select' ? (
+        {viewMode === 'landing' && (
+          <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in py-12">
+            <div className="space-y-4">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                Notion Idea
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Organize and visualize your AI-generated business recommendations in a beautiful, Notion-style workspace
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 my-12">
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold mb-2">Import Analyses</h3>
+                <p className="text-sm text-muted-foreground">
+                  Select from your Business AI tools and ideas recommendations
+                </p>
+              </div>
+              
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
+                  <TrendingUp className="h-6 w-6 text-secondary" />
+                </div>
+                <h3 className="font-semibold mb-2">Organize</h3>
+                <p className="text-sm text-muted-foreground">
+                  View recommendations organized by category and timeline
+                </p>
+              </div>
+              
+              <div className="p-6 rounded-lg border bg-card">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold mb-2">Execute</h3>
+                <p className="text-sm text-muted-foreground">
+                  Build your business roadmap with clear, actionable insights
+                </p>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              onClick={handleGetStarted}
+              className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
+            >
+              {user ? 'Get Started' : 'Sign In to Get Started'}
+            </Button>
+
+            {!user && (
+              <p className="text-sm text-muted-foreground">
+                Sign in to import your AI recommendations and create your business roadmap
+              </p>
+            )}
+          </div>
+        )}
+        
+        {viewMode === 'select' && (
           <AnalysisSelector
             toolsHistory={toolsHistory}
             ideasHistory={ideasHistory}
             onImport={handleImport}
           />
-        ) : (
+        )}
+        
+        {viewMode === 'display' && (
           <RecommendationDisplay
             recommendations={importedRecommendations}
             onBackToSelection={handleBackToSelection}

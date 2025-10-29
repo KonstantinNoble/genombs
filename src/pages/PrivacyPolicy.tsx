@@ -722,7 +722,7 @@ const PrivacyPolicy = () => {
                 preferences – stored locally on your device only, not transmitted to our servers)
               </li>
               <li>
-                Affiliate tracking data (only processed on Impact.com / Simplify Wall Street websites, not on our
+                Affiliate tracking data (only processed on Impact.com / Shopify websites, not on our
                 servers)
               </li>
             </ul>
@@ -776,7 +776,7 @@ const PrivacyPolicy = () => {
                 <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – email communication
               </li>
               <li>
-                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Simplify Wall Street – tracking
+                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Shopify – tracking
                 only occurs on their websites after you click affiliate links
               </li>
               <li>

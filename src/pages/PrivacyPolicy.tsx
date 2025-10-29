@@ -62,21 +62,52 @@ const PrivacyPolicy = () => {
               stability, security, and proper functioning of the website, and are then automatically deleted or
               anonymized.
             </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">3. Cookies</h2>
             <p className="text-muted-foreground mb-4">
-              <strong>Technically necessary cookies:</strong> We use a technically necessary session cookie
-              ("session-id") to enable the basic functionality of our website (e.g., maintaining your session during
-              navigation). This cookie does not store personal data beyond a randomly generated session identifier and
-              is automatically deleted when you close your browser.
+              Our website uses cookies to provide essential functionality and maintain your user session. Below we 
+              explain what cookies are used and for what purpose:
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.1 Session Cookie</h3>
+            <p className="text-muted-foreground mb-4">
+              <strong>Cookie name:</strong> session-id
             </p>
             <p className="text-muted-foreground mb-4">
-              The use of this cookie is based on our legitimate interest (Art. 6(1)(f) GDPR) in providing a functional
-              and user-friendly website. In addition, this use is permitted under Section 25 (2) No. 2 TTDSG, as the
-              cookie is technically necessary for the operation of the website.
+              <strong>Purpose:</strong> This technically necessary session cookie enables the basic functionality of our 
+              website, such as maintaining your browsing session during navigation and keeping you logged in while using 
+              the platform.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data stored:</strong> The cookie contains only a randomly generated session identifier and does not 
+              store any personal data beyond this technical reference.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Storage duration:</strong> This cookie is automatically deleted when you close your browser 
+              (session cookie).
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> The use of this cookie is based on our legitimate interest (Art. 6(1)(f) GDPR) 
+              in providing a functional and user-friendly website. In addition, this use is permitted under Section 25 (2) 
+              No. 2 TTDSG, as the cookie is technically necessary for the operation of the website.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Authentication Session Management</h3>
+            <p className="text-muted-foreground mb-4">
+              When you log in to your account, we store a session token (JWT) in your browser's local storage to maintain 
+              your logged-in state. This token is technically necessary for authentication and is covered by Section 25 (2) 
+              No. 2 TTDSG, as it is essential for providing the requested service.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance) and Art. 6(1)(f) GDPR 
+              (legitimate interest in providing secure authentication).
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">3. User Authentication (Login & Registration)</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. User Authentication (Login & Registration)</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers a user authentication system that allows you to create an account and log in to access
               premium features. When you register, we collect the following personal data:
@@ -108,11 +139,6 @@ const PrivacyPolicy = () => {
               <strong>Email confirmation:</strong> To ensure the security of your account and verify your email address,
               we require you to confirm your email after registration by clicking on a confirmation link sent to your
               provided email address.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Session management:</strong> When you log in, we store a session token (JWT) in your browser's
-              local storage to maintain your logged-in state. This token is technically necessary for authentication and
-              is covered by Section 25 (2) No. 2 TTDSG, as it is essential for providing the requested service.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Backend infrastructure:</strong> User authentication and data storage are handled through a secure
@@ -205,7 +231,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. AI-Powered Features</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. AI-Powered Features</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers AI-powered features that provide personalized recommendations for business tools,
               software, strategies, and business ideas based on your stated business context and goals. These features 
@@ -220,7 +246,7 @@ const PrivacyPolicy = () => {
               your specific business situation.
             </p>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Business Tools Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Business Tools Advisor</h3>
             <p className="text-muted-foreground mb-4">
               The Business Tools Advisor provides personalized recommendations for business tools, software, and 
               strategies based on your business profile.
@@ -390,7 +416,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Business Ideas Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Business Ideas Advisor</h3>
             <p className="text-muted-foreground mb-4">
               The Business Ideas Advisor provides personalized business idea recommendations and startup concepts 
               based on your market interests and constraints.
@@ -581,7 +607,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. Hosting and Data Transfers</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. Hosting and Data Transfers</h2>
             <p className="text-muted-foreground mb-4">
               Our website is hosted by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to
               servers located outside the European Union (e.g., in the United States). The transfer is based on Standard
@@ -618,7 +644,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Contact</h2>
+            <h2 className="text-2xl font-semibold mb-4">7. Contact</h2>
             <p className="text-muted-foreground mb-4">
               If you contact us (e.g., by email), we process the personal data you provide solely to respond to your
               inquiry. The processing is based on our legitimate interest (Art. 6(1)(f) GDPR) in handling such requests.
@@ -645,7 +671,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. External Links</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. External Links</h2>
             <p className="text-muted-foreground mb-4">
               Our website may contain links to external websites or social media platforms such as Twitter (X). When you
               click on these links, you will be redirected to the respective external platform. Please note that we have
@@ -654,7 +680,7 @@ const PrivacyPolicy = () => {
           </section>
 
 <section className="mb-8">
-  <h2 className="text-2xl font-semibold mb-4">8. Affiliate Marketing (Impact.com / Shopify)</h2>
+  <h2 className="text-2xl font-semibold mb-4">9. Affiliate Marketing (Impact.com / Shopify)</h2>
   <p className="text-muted-foreground mb-4">
     We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
     program, we include affiliate links to products or services offered by **Shopify**.
@@ -683,7 +709,7 @@ const PrivacyPolicy = () => {
 </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. Categories of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Contact data (email address, if you contact us)</li>
               <li>User account data (email, user ID, timestamps)</li>
@@ -738,7 +764,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
@@ -791,7 +817,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Obligation to Provide Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Data</h2>
             <p className="text-muted-foreground mb-4">
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
@@ -803,7 +829,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Automated Decision-Making / Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
               <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
               (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
@@ -828,7 +854,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Data Security</h2>
             <p className="text-muted-foreground mb-4">
               We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
               restricted server access, and regular security reviews by our hosting provider.
@@ -836,7 +862,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Your Rights</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Your Rights</h2>
             <p className="text-muted-foreground mb-4">You have the following rights under the GDPR:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -903,7 +929,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Browser-Based Data Storage (localStorage)</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Browser-Based Data Storage (localStorage)</h2>
             <p className="text-muted-foreground mb-4">
               We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
               recommendations locally on your device. This technology allows the application to remember your workspace 
@@ -973,7 +999,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.

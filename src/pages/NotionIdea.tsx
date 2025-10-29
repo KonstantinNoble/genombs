@@ -266,7 +266,7 @@ const NotionIdea = () => {
                 Notion Idea Board
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Sammeln und organisieren Sie Ihre KI-generierten Geschäftsempfehlungen in einem übersichtlichen Workspace
+                Collect and organize your AI-generated business recommendations in a clear, visual workspace
               </p>
             </div>
 
@@ -275,9 +275,9 @@ const NotionIdea = () => {
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <BookOpen className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Analysen Importieren</h3>
+                <h3 className="font-semibold mb-2">Import Analyses</h3>
                 <p className="text-sm text-muted-foreground">
-                  Importieren Sie Empfehlungen aus Business Tools & Ideen Analysen
+                  Import recommendations from your Business Tools & Ideas analyses
                 </p>
               </div>
               
@@ -285,9 +285,9 @@ const NotionIdea = () => {
                 <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
                   <TrendingUp className="h-6 w-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold mb-2">Organisieren</h3>
+                <h3 className="font-semibold mb-2">Organize</h3>
                 <p className="text-sm text-muted-foreground">
-                  Filtern, sortieren und gruppieren nach Kategorien
+                  Filter, sort, and group recommendations by categories
                 </p>
               </div>
               
@@ -295,9 +295,9 @@ const NotionIdea = () => {
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Umsetzen</h3>
+                <h3 className="font-semibold mb-2">Execute</h3>
                 <p className="text-sm text-muted-foreground">
-                  Entwickeln Sie Ihren Business-Fahrplan mit klaren Insights
+                  Build your business roadmap with clear, actionable insights
                 </p>
               </div>
             </div>
@@ -309,19 +309,19 @@ const NotionIdea = () => {
                   onClick={handleGetStarted}
                   className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
                 >
-                  Jetzt Starten
+                  Get Started
                 </Button>
                 {(toolsHistory.length === 0 && ideasHistory.length === 0) && (
                   <div className="mt-8 p-6 rounded-lg border bg-card/50">
                     <p className="text-muted-foreground mb-4">
-                      Sie haben noch keine Analysen erstellt. Nutzen Sie den Business AI Advisor, um Empfehlungen zu erhalten!
+                      You haven't created any analyses yet. Use the Business AI Advisor to get personalized recommendations!
                     </p>
                     <Button 
                       onClick={() => navigate('/business-tools')}
                       variant="outline"
                       className="gap-2"
                     >
-                      Zur Business AI
+                      Go to Business AI
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
@@ -330,19 +330,19 @@ const NotionIdea = () => {
             ) : (
               <div className="space-y-6">
                 <div className="p-6 rounded-lg border bg-card/50 max-w-2xl mx-auto">
-                  <h3 className="font-semibold mb-3 text-lg">So funktioniert es:</h3>
+                  <h3 className="font-semibold mb-3 text-lg">How it works:</h3>
                   <ol className="text-left space-y-2 text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span className="font-bold text-primary">1.</span>
-                      <span>Erstellen Sie Business Tool- oder Ideen-Analysen mit unserem AI Advisor</span>
+                      <span>Create Business Tool or Idea analyses using our AI Advisor</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-bold text-primary">2.</span>
-                      <span>Importieren Sie die Empfehlungen in Ihr Notion Idea Board</span>
+                      <span>Import the recommendations into your Notion Idea Board</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-bold text-primary">3.</span>
-                      <span>Organisieren und priorisieren Sie Ihre Business-Strategie</span>
+                      <span>Organize and prioritize your business strategy</span>
                     </li>
                   </ol>
                 </div>
@@ -353,7 +353,7 @@ const NotionIdea = () => {
                     onClick={() => navigate('/auth')}
                     className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
                   >
-                    Anmelden & Starten
+                    Sign In to Get Started
                   </Button>
                   <Button 
                     size="lg"
@@ -361,7 +361,7 @@ const NotionIdea = () => {
                     onClick={() => navigate('/business-tools')}
                     className="gap-2 text-lg px-8 py-6"
                   >
-                    Zum Business AI Advisor
+                    Go to Business AI Advisor
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -369,6 +369,7 @@ const NotionIdea = () => {
             )}
           </div>
         )}
+        
         
         {viewMode === 'select' && (
           <AnalysisSelector

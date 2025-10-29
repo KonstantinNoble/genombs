@@ -59,8 +59,8 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">1.4 Platform Purpose</h3>
               <p className="mb-4">
-                Wealthconomy provides AI-powered business advisory services, including tool recommendations and business idea generation. 
-                Our platform is designed for informational and educational purposes to support business decision-making.
+                Wealthconomy provides digital advisory services and tools to support business decision-making. 
+                Our platform is designed for informational and educational purposes only.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">1.5 Age Requirement</h3>
@@ -74,14 +74,14 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">II. Vertragsschluss und Registrierung (Contract Formation and Registration)</h2>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">2.1 Registration Process</h3>
-              <p className="mb-4">To access AI-powered features, you must create a free account by:</p>
+              <p className="mb-4">To access our services, you must create an account by:</p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
                 <li>Providing a valid email address</li>
-                <li>Creating a password (minimum 8 characters)</li>
+                <li>Creating a secure password</li>
                 <li>Verifying your email address through our confirmation process</li>
               </ul>
               <p className="mb-4">
-                We do not offer automatic or anonymous sign-ups. All accounts require standard email authentication.
+                All accounts require email authentication. Anonymous access may be restricted.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">2.2 User Obligations</h3>
@@ -102,17 +102,11 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">2.4 Account Security</h3>
               <p className="mb-4">
-                You are solely responsible for maintaining the security of your password. We implement industry-standard security measures including:
+                You are solely responsible for maintaining the security of your password. We implement industry-standard security measures 
+                to protect your data in compliance with applicable data protection laws, including GDPR Article 32 (Security of Processing).
               </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>TLS/SSL encryption for all data transmission</li>
-                <li>Row-Level Security (RLS) policies on all database tables</li>
-                <li>Secure password hashing</li>
-                <li>Regular security audits</li>
-              </ul>
               <p className="mb-4">
-                These measures comply with GDPR Article 32 (Security of Processing). However, no security system is completely impenetrable, 
-                and you bear responsibility for your account's security.
+                However, no security system is completely impenetrable, and you bear responsibility for your account's security.
               </p>
             </section>
 
@@ -128,90 +122,45 @@ const TermsOfService = () => {
                 <li>Public informational pages</li>
               </ul>
 
-              <h3 className="text-xl font-semibold mb-3 mt-6">3.2 AI-Powered Advisory Services</h3>
-              
-              <h4 className="text-lg font-semibold mb-2 mt-4">3.2.1 Business Tools Advisor</h4>
+              <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Advisory Services</h3>
               <p className="mb-4">
-                An AI-powered service that provides personalized recommendations for business tools and strategies based on your input.
-              </p>
-              <p className="mb-4"><strong>Input Required:</strong></p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Industry sector</li>
-                <li>Team size</li>
-                <li>Budget range</li>
-                <li>Business goals and objectives</li>
-              </ul>
-              <p className="mb-4"><strong>Output Provided:</strong></p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>5-7 personalized tool recommendations</li>
-                <li>Implementation timeline estimates</li>
-                <li>Cost estimates for each recommendation</li>
-                <li>Rationale for each suggestion</li>
-              </ul>
-              <p className="mb-4">
-                <strong>AI Models Used:</strong> Google Gemini 2.5 (Pro, Flash, or Flash Lite variants)<br />
-                <strong>Purpose:</strong> Informational and educational only. This is NOT professional business consulting.
-              </p>
-
-              <h4 className="text-lg font-semibold mb-2 mt-4">3.2.2 Business Ideas Advisor</h4>
-              <p className="mb-4">
-                An AI-powered service that generates and evaluates business ideas based on your parameters.
-              </p>
-              <p className="mb-4"><strong>Input Required:</strong></p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Industry sector</li>
-                <li>Team size</li>
-                <li>Budget range</li>
-                <li>Business context and market description</li>
-              </ul>
-              <p className="mb-4"><strong>Output Provided:</strong></p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Business idea recommendations across categories (product, service, SaaS, marketplace, content, consulting, ecommerce)</li>
-                <li>Viability assessments</li>
-                <li>Investment estimates</li>
-                <li>Market opportunity analysis</li>
-              </ul>
-              <p className="mb-4">
-                <strong>AI Models Used:</strong> Google Gemini 2.5 (Pro, Flash, or Flash Lite variants)<br />
-                <strong>Purpose:</strong> Informational and educational only. This is NOT investment advice or professional consulting.
-              </p>
-
-              <h4 className="text-lg font-semibold mb-2 mt-4">3.2.3 Notion Idea Board</h4>
-              <p className="mb-4">
-                A visualization and organization tool that allows you to:
+                We provide digital advisory tools and services that may include, but are not limited to:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Import AI-generated recommendations from both advisors</li>
-                <li>Organize and categorize recommendations</li>
-                <li>Filter by type, timeline, cost, and category</li>
-                <li>Sort and view recommendations in customizable formats</li>
+                <li>Personalized recommendations based on your business parameters and inputs</li>
+                <li>Analysis and evaluation of business opportunities</li>
+                <li>Visualization and organization tools for managing recommendations</li>
+                <li>Educational content and resources</li>
               </ul>
               <p className="mb-4">
-                <strong>Data Storage:</strong> Recommendation states and preferences are stored in your browser's localStorage. 
-                This data remains on your device and is not transmitted to our servers.
+                <strong>Important Disclaimer:</strong> All services are provided for informational and educational purposes only. 
+                Our recommendations do NOT constitute professional business consulting, investment advice, financial advice, or legal counsel. 
+                You should consult qualified professionals before making business decisions.
+              </p>
+              <p className="mb-4">
+                <strong>Data Processing:</strong> We process your inputs to generate personalized recommendations. Some data may be 
+                stored locally on your device or on our secure servers, depending on the specific service feature.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">3.3 Usage Limits</h3>
-              <p className="mb-4"><strong>Combined Quota System:</strong></p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>You can perform a combined total of <strong>2 AI analyses per 24-hour period</strong></li>
-                <li>This quota is shared between Business Tools Advisor and Business Ideas Advisor</li>
-                <li>The 24-hour window begins from your first analysis</li>
-                <li>Credits automatically reset after 24 hours</li>
-                <li>Real-time credit synchronization across both features</li>
-                <li>No additional purchases or quota increases are currently available</li>
-              </ul>
+              <p className="mb-4">
+                We may implement reasonable usage limits to ensure fair access and service quality for all users. 
+                These limits may include restrictions on the number of requests, analyses, or features accessed within specific time periods.
+              </p>
+              <p className="mb-4">
+                Current usage limits are displayed within the platform. We reserve the right to adjust these limits with reasonable notice.
+              </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">3.4 Service Availability</h3>
               <p className="mb-4">
-                We strive to provide reliable service with 99% uptime, but we do not guarantee uninterrupted availability. Service interruptions may occur due to:
+                We strive to provide reliable service, but we do not guarantee uninterrupted availability. Service interruptions may occur due to:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
                 <li>Planned maintenance (we will provide advance notice when possible)</li>
-                <li>Emergency maintenance (may occur without notice)</li>
-                <li>Technical issues beyond our control</li>
+                <li>Emergency maintenance or technical issues</li>
+                <li>Circumstances beyond our reasonable control</li>
                 <li>Force majeure events (natural disasters, pandemics, war, etc.)</li>
-                <li>Third-party service provider outages (including Google AI services)</li>
+                <li>Third-party service provider outages</li>
               </ul>
               <p className="mb-4">
                 We are not liable for service interruptions caused by circumstances beyond our reasonable control.
@@ -220,13 +169,14 @@ const TermsOfService = () => {
               <h3 className="text-xl font-semibold mb-3 mt-6">3.5 Service Modifications</h3>
               <p className="mb-4">We reserve the right to:</p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Modify, suspend, or discontinue any service feature with reasonable advance notice</li>
-                <li>Update AI models and algorithms to improve service quality</li>
-                <li>Adjust usage limits and quotas</li>
+                <li>Modify, suspend, or discontinue any service feature</li>
+                <li>Update our systems and technologies to improve service quality</li>
+                <li>Adjust usage limits, features, and functionality</li>
                 <li>Add new features or services</li>
               </ul>
               <p className="mb-4">
-                Material changes will be communicated via email at least 30 days in advance. Continued use of the service after changes become effective constitutes acceptance of the modifications.
+                Material changes affecting your rights will be communicated via email with reasonable advance notice. 
+                Continued use of the service after changes become effective constitutes acceptance of the modifications.
               </p>
             </section>
 

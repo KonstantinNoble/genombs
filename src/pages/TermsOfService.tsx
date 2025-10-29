@@ -370,6 +370,9 @@ const TermsOfService = () => {
                 <li>Data loss if you failed to maintain backups or use our data export features</li>
                 <li>Damages caused by third-party services, tools, or platforms</li>
                 <li>Damages caused by your violation of these Terms</li>
+                <li>
+    Damages caused by third-party services, tools, or platforms, including damages arising from the use of products or services offered via Affiliate-Links or damages resulting from external communication service providers like Brevo (formerly Sendinblue).
+  </li>
                 <li>Damages caused by force majeure events (wars, natural disasters, pandemics, government actions, internet outages, etc.)</li>
                 <li>Damages from unauthorized access to your account due to your failure to maintain credential security</li>
               </ul>

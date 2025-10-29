@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, User, Menu, X } from "lucide-react";
+import { TrendingUp, User, Menu, X, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
@@ -63,6 +63,16 @@ const Navbar = () => {
           >
             Business AI
           </Link>
+          <Link 
+            to="/notion-idea" 
+            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
+              isActive("/notion-idea") 
+                ? "text-primary after:w-full" 
+                : "text-muted-foreground after:w-0 hover:after:w-full"
+            }`}
+          >
+            Notion Idea
+          </Link>
           {user ? (
             <Link to="/profile">
               <Button size="sm" className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300">
@@ -111,6 +121,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Business AI
+            </Link>
+            <Link
+              to="/notion-idea"
+              className="block text-foreground hover:text-secondary transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              Notion Idea
             </Link>
             {user ? (
               <Link to="/profile" onClick={() => setIsOpen(false)}>

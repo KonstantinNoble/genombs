@@ -354,13 +354,15 @@ const TermsOfService = () => {
                 <li>Mandatory statutory liability that cannot be contractually excluded (e.g., product liability laws)</li>
               </ul>
 
-              <h4 className="text-lg font-semibold mb-2 mt-4">6.3.2 Limited Liability</h4>
-              <p className="mb-4">For simple negligence (einfache Fahrlässigkeit):</p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Liability is limited to foreseeable, typical damages that could reasonably be expected at the time of contract formation</li>
-                <li>Liability is limited to the value of the contract (currently €0 for free services; if paid services are introduced, up to €100 per user per year)</li>
-                <li>We are not liable for indirect damages, consequential damages, loss of profits, loss of data (if backups were not maintained), or special damages</li>
-              </ul>
+              <h4 className="text-lg font-semibold mb-2 mt-4">6.3.2 Limited Liability for Simple Negligence</h4>
+              <p className="mb-4">
+                For simple negligence (einfache Fahrlässigkeit) regarding non-essential contractual obligations, 
+                our liability is limited to foreseeable, typical damages that could reasonably be expected at the time of contract formation.
+              </p>
+              <p className="mb-4">
+                We are not liable for indirect damages, consequential damages, loss of profits, loss of data (if backups were not maintained), 
+                or special damages unless such damages arise from a breach of essential contractual obligations.
+              </p>
 
               <h4 className="text-lg font-semibold mb-2 mt-4">6.3.3 Excluded Liability</h4>
               <p className="mb-4">We are NOT liable for:</p>
@@ -665,22 +667,45 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">9.4 Amendments to These Terms</h3>
               <p className="mb-4">
-                We reserve the right to modify or update these Terms of Service at any time. When we make changes:
+                We may modify these Terms of Service only when there is a justifiable reason for doing so, including but not limited to:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>We will notify registered users via email at least <strong>30 days before</strong> the changes take effect</li>
-                <li>The notification email will include a summary of material changes and a link to the updated Terms</li>
-                <li>The "Effective Date" at the top of this document will be updated</li>
-                <li>We will maintain an archive of previous versions for reference</li>
+                <li>Changes in applicable laws or regulations requiring adjustments to our Terms</li>
+                <li>Technical improvements or modifications to our services that necessitate updated terms</li>
+                <li>Addition of new features or services</li>
+                <li>Addressing security concerns or preventing abuse</li>
+                <li>Clarification of existing provisions without changing their substance</li>
               </ul>
+              
+              <p className="mb-4 mt-6">
+                <strong>Notification Process:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>We will notify all registered users via email at least <strong>6 weeks before</strong> the changes take effect</li>
+                <li>The notification will clearly highlight the modified provisions and explain the justifiable reason for the changes</li>
+                <li>The notification will include the full text of the updated Terms or a link to them</li>
+                <li>The notification will inform you of your right to object and the consequences of not objecting</li>
+                <li>The "Effective Date" at the top of this document will be updated accordingly</li>
+              </ul>
+              
+              <p className="mb-4 mt-6">
+                <strong>Your Right to Object:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>You have the right to object to any proposed changes in writing (email to mail@wealthconomy.com) within the 6-week notification period</li>
+                <li>If you object to the changes, you may terminate your account at any time during the notice period without penalty or fees</li>
+                <li>If you do not object within the 6-week period and continue using our services, you are deemed to have accepted the changes</li>
+                <li>We will specifically draw your attention to your right to object, the objection deadline, and the legal consequences of not objecting in our notification email</li>
+              </ul>
+              
+              <p className="mb-4 mt-6">
+                <strong>Material Changes:</strong>
+              </p>
               <p className="mb-4">
-                <strong>Your Options:</strong>
+                For changes that significantly affect the core nature of our contractual relationship (such as introducing paid services, 
+                substantially restricting your rights, or significantly expanding our liability limitations), we will seek your explicit consent 
+                rather than relying on deemed acceptance.
               </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>If you do not agree with the updated Terms, you may terminate your account at any time during the 30-day notice period without penalty</li>
-                <li>If you continue to use our services after the effective date of the updated Terms, you are deemed to have accepted the changes</li>
-                <li>For material changes that significantly affect your rights, we may require your explicit consent</li>
-              </ul>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">9.5 Severability</h3>
               <p className="mb-4">

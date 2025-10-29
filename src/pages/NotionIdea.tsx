@@ -74,8 +74,14 @@ const NotionIdea = () => {
   const [loading, setLoading] = useState(true);
   const [toolsHistory, setToolsHistory] = useState<ToolHistoryItem[]>([]);
   const [ideasHistory, setIdeasHistory] = useState<IdeaHistoryItem[]>([]);
-  const [importedRecommendations, setImportedRecommendations] = useState<CombinedRecommendation[]>([]);
-  const [viewMode, setViewMode] = useState<'landing' | 'select' | 'display'>('landing');
+  const [importedRecommendations, setImportedRecommendations] = useState<CombinedRecommendation[]>(() => {
+    const saved = localStorage.getItem('notion-idea-recommendations');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [viewMode, setViewMode] = useState<'landing' | 'select' | 'display'>(() => {
+    const saved = localStorage.getItem('notion-idea-viewmode');
+    return (saved as 'landing' | 'select' | 'display') || 'landing';
+  });
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -98,6 +104,12 @@ const NotionIdea = () => {
       fetchAnalysesHistory();
     }
   }, [user]);
+
+  // Persist state to localStorage
+  useEffect(() => {
+    localStorage.setItem('notion-idea-recommendations', JSON.stringify(importedRecommendations));
+    localStorage.setItem('notion-idea-viewmode', viewMode);
+  }, [importedRecommendations, viewMode]);
 
   const fetchAnalysesHistory = async () => {
     if (!user) return;
@@ -210,6 +222,8 @@ const NotionIdea = () => {
   const handleClearAll = () => {
     setImportedRecommendations([]);
     setViewMode('landing');
+    localStorage.removeItem('notion-idea-recommendations');
+    localStorage.removeItem('notion-idea-viewmode');
     toast({
       title: "Cleared",
       description: "All imported recommendations have been cleared."

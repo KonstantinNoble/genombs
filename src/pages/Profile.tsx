@@ -18,21 +18,11 @@ const Profile = () => {
 
   useEffect(() => {
     const getProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const confirmed = !!session.user?.email_confirmed_at;
-      if (!confirmed) {
-        setTimeout(() => { supabase.auth.signOut(); }, 0);
-        toast({
-          title: "Email not verified",
-          description: "Please verify your email before accessing your profile.",
-          variant: "destructive",
-        });
+      if (!session) {
         navigate("/auth");
         return;
       }
@@ -42,20 +32,15 @@ const Profile = () => {
 
     getProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const confirmed = !!session?.user?.email_confirmed_at;
-      if (!confirmed) {
-        setUser(null);
-        if (session) {
-          setTimeout(() => { supabase.auth.signOut(); }, 0);
-        }
-        return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        navigate("/auth");
       }
       setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, [navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

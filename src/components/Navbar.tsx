@@ -13,23 +13,12 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   useEffect(() => {
-    // Listen for auth changes first to avoid missing events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const confirmed = !!session?.user?.email_confirmed_at;
-      setUser(confirmed ? session!.user : null);
-      // Clean up any unverified sessions to prevent accidental access
-      if (session && !confirmed) {
-        setTimeout(() => { supabase.auth.signOut(); }, 0);
-      }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
     });
 
-    // Then check existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const confirmed = !!session?.user?.email_confirmed_at;
-      setUser(confirmed ? session!.user : null);
-      if (session && !confirmed) {
-        setTimeout(() => { supabase.auth.signOut(); }, 0);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();

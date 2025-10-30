@@ -25,20 +25,37 @@ const Profile = () => {
         return;
       }
 
+      const confirmed = !!session.user?.email_confirmed_at;
+      if (!confirmed) {
+        setTimeout(() => { supabase.auth.signOut(); }, 0);
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before accessing your profile.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
       setUser(session.user);
     };
 
     getProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        navigate("/auth");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const confirmed = !!session?.user?.email_confirmed_at;
+      if (!confirmed) {
+        setUser(null);
+        if (session) {
+          setTimeout(() => { supabase.auth.signOut(); }, 0);
+        }
+        return;
       }
       setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

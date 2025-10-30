@@ -31,13 +31,14 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Check if user is already logged in and verified
     const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email_confirmed_at) {
         navigate("/");
+      } else if (session) {
+        // Clean up unverified sessions
+        setTimeout(() => { supabase.auth.signOut(); }, 0);
       }
     };
     checkUser();

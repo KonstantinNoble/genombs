@@ -83,13 +83,23 @@ const BusinessToolsAdvisor = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+    // Listen first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const confirmed = !!session?.user?.email_confirmed_at;
+      setUser(confirmed ? session!.user : null);
+      if (session && !confirmed) {
+        setTimeout(() => { supabase.auth.signOut(); }, 0);
+      }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // Then get existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const confirmed = !!session?.user?.email_confirmed_at;
+      setUser(confirmed ? session!.user : null);
+      setLoading(false);
+      if (session && !confirmed) {
+        setTimeout(() => { supabase.auth.signOut(); }, 0);
+      }
     });
 
     return () => subscription.unsubscribe();

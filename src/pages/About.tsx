@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
-import { Lightbulb, Rocket, Heart, Sparkles } from "lucide-react";
+import { Lightbulb, Rocket, Target, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const About = () => {
@@ -24,11 +24,11 @@ const About = () => {
         <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-24">
           {/* Hero Section */}
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2 rounded-full mb-6">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">Our Mission</span>
+              <span className="text-sm font-semibold text-primary">Our Mission</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif mb-6 bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Empowering Your Journey to Success
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
@@ -38,13 +38,13 @@ const About = () => {
 
           {/* Why We Exist */}
           <div className="max-w-4xl mx-auto mb-16">
-            <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-hover transition-all duration-300">
+            <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-card hover:shadow-hover transition-all duration-300">
               <CardContent className="p-8 sm:p-12">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
-                    <Heart className="h-6 w-6 text-primary" />
+                    <Target className="h-6 w-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold font-serif bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  <h2 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">
                     Why Wealthconomy Exists
                   </h2>
                 </div>
@@ -65,11 +65,11 @@ const About = () => {
 
           {/* Core Values */}
           <div className="max-w-5xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold font-serif text-center mb-12 bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl font-bold font-serif text-center mb-12 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               What Drives Us
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-hover hover:scale-105 transition-all duration-300">
+              <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-card hover:shadow-hover hover:scale-105 transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm mb-4 mx-auto">
                     <Lightbulb className="h-7 w-7 text-primary" />
@@ -81,10 +81,10 @@ const About = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-elegant border-secondary/20 bg-gradient-to-br from-card to-secondary/5 hover:shadow-hover hover:scale-105 transition-all duration-300">
+              <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-card hover:shadow-hover hover:scale-105 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center shadow-sm mb-4 mx-auto">
-                    <Rocket className="h-7 w-7 text-secondary" />
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm mb-4 mx-auto">
+                    <Rocket className="h-7 w-7 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold text-center mb-3 text-foreground">Growth & Success</h3>
                   <p className="text-sm text-muted-foreground text-center leading-relaxed">
@@ -93,10 +93,10 @@ const About = () => {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-hover hover:scale-105 transition-all duration-300">
+              <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-card hover:shadow-hover hover:scale-105 transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm mb-4 mx-auto">
-                    <Heart className="h-7 w-7 text-primary" />
+                    <Target className="h-7 w-7 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold text-center mb-3 text-foreground">Empowerment</h3>
                   <p className="text-sm text-muted-foreground text-center leading-relaxed">
@@ -109,12 +109,12 @@ const About = () => {
 
           {/* Motivational Section */}
           <div className="max-w-4xl mx-auto mb-16">
-            <Card className="shadow-elegant border-secondary/20 bg-gradient-to-br from-card to-secondary/5 hover:shadow-hover transition-all duration-300">
+            <Card className="shadow-elegant border-primary/20 bg-gradient-to-br from-card to-card hover:shadow-hover transition-all duration-300">
               <CardContent className="p-8 sm:p-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center shadow-sm mb-6 mx-auto">
-                  <Sparkles className="h-8 w-8 text-secondary animate-pulse" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm mb-6 mx-auto">
+                  <Sparkles className="h-8 w-8 text-primary animate-pulse" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold font-serif mb-6 bg-gradient-to-r from-secondary via-primary to-secondary/80 bg-clip-text text-transparent">
+                <h2 className="text-3xl sm:text-4xl font-bold font-serif mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                   Take Control of Your Future Today
                 </h2>
                 <div className="space-y-4 text-base sm:text-lg text-foreground leading-relaxed">
@@ -127,7 +127,7 @@ const About = () => {
                   <p>
                     Every successful entrepreneur started exactly where you are today—with an idea, a dream, and the courage to take the first step.
                   </p>
-                  <p className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mt-8">
+                  <p className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mt-8">
                     Your future is in your hands. Let's build it together.
                   </p>
                 </div>

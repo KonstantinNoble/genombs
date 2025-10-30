@@ -174,6 +174,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
+      cleanup_unconfirmed_users: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

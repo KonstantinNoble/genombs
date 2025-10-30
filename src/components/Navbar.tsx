@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, User, Menu, X } from "lucide-react";
+import { User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
@@ -25,54 +25,60 @@ const Navbar = () => {
   }, []);
   
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300 shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 animate-fade-in-up">
-        <Link to="/" className="flex items-center gap-2 transition-all duration-300 hover:scale-105 group">
-          <TrendingUp className="h-6 w-6 text-secondary transition-transform duration-300 group-hover:rotate-12" />
-          <span className="text-xl font-bold font-serif bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Wealthconomy</span>
+        <Link to="/" className="flex items-center gap-3 transition-all duration-300 hover:scale-105 group">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
+            <img 
+              src="/favicon.jpg" 
+              alt="Wealthconomy Logo" 
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+          </div>
+          <span className="text-xl font-bold font-serif bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">Wealthconomy</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">
           <Link 
             to="/" 
-            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full"
+                ? "text-primary after:w-full shadow-sm" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
             Home
           </Link>
           <Link 
             to="/business-tools"
-            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/business-tools") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full"
+                ? "text-primary after:w-full shadow-sm" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
             Business AI
           </Link>
           <Link 
             to="/notion-idea" 
-            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/notion-idea") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full"
+                ? "text-primary after:w-full shadow-sm" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
             Notion Idea
           </Link>
           {user ? (
             <Link to="/profile">
-              <Button size="sm" className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300">
+              <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300">
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </Button>
             </Link>
           ) : (
             <Link to="/auth">
-              <Button size="sm" className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300">
+              <Button size="sm" className="bg-gradient-to-r from-secondary to-secondary/80 text-primary font-semibold shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300">
                 Sign In
               </Button>
             </Link>
@@ -89,39 +95,39 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 space-y-4 animate-fade-in">
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm shadow-lg">
+          <div className="container mx-auto px-4 py-4 space-y-3 animate-fade-in">
             <Link
               to="/"
-              className="block text-foreground hover:text-secondary transition-colors py-2"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
             <Link
               to="/business-tools"
-              className="block text-foreground hover:text-secondary transition-colors py-2"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
               Business AI
             </Link>
             <Link
               to="/notion-idea"
-              className="block text-foreground hover:text-secondary transition-colors py-2"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
               Notion Idea
             </Link>
             {user ? (
               <Link to="/profile" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold">
+                <Button className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-elegant hover:shadow-hover transition-all duration-300">
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </Button>
               </Link>
             ) : (
               <Link to="/auth" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold">
+                <Button className="w-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-semibold shadow-elegant hover:shadow-hover transition-all duration-300">
                   Sign In
                 </Button>
               </Link>

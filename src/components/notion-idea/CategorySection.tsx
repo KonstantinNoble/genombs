@@ -74,25 +74,28 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
 
   return (
     <Accordion type="single" collapsible defaultValue={category}>
-      <AccordionItem value={category} className="border rounded-lg">
-        <AccordionTrigger className="px-6 hover:no-underline group">
+      <AccordionItem value={category} className="border rounded-xl bg-gradient-to-br from-card to-muted/5 shadow-sm hover:shadow-elegant transition-all">
+        <AccordionTrigger className="px-5 sm:px-6 hover:no-underline group">
           <div className="flex items-center gap-3 flex-1">
             <div 
-              className="p-2 rounded-lg transition-transform group-hover:scale-110"
-              style={{ backgroundColor: `${color}15` }}
+              className="p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-sm"
+              style={{ 
+                backgroundColor: `${color}15`,
+                boxShadow: `0 0 20px ${color}10`
+              }}
             >
               <Icon className="h-5 w-5" style={{ color }} />
             </div>
             <div className="flex items-center gap-3 flex-1">
-              <h3 className="text-lg font-semibold capitalize">{category}</h3>
+              <h3 className="text-base sm:text-lg font-semibold capitalize">{category}</h3>
               <div className="flex gap-2">
                 {toolCount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                     {toolCount} tool{toolCount !== 1 ? 's' : ''}
                   </Badge>
                 )}
                 {ideaCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/20">
                     {ideaCount} idea{ideaCount !== 1 ? 's' : ''}
                   </Badge>
                 )}
@@ -100,8 +103,8 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
             </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="px-6 pb-6">
-          <div className="space-y-4 pt-4">
+        <AccordionContent className="px-5 sm:px-6 pb-6">
+          <div className="space-y-4 pt-4 border-t border-border/50">
             {recommendations.map(rec => (
               <RecommendationCard key={rec.id} recommendation={rec} />
             ))}

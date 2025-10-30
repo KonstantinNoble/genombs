@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Lightbulb, Calendar } from "lucide-react";
+import { Wrench, Lightbulb, Calendar, Sparkles } from "lucide-react";
 import { ToolHistoryItem, IdeaHistoryItem } from "@/pages/NotionIdea";
 import { format } from "date-fns";
 
@@ -43,11 +43,15 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
 
   return (
     <div className="max-w-7xl mx-auto animate-fade-in">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+      <div className="text-center mb-8 space-y-3">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
+          <Lightbulb className="h-4 w-4 text-secondary animate-pulse" />
+          <span className="text-sm font-semibold text-foreground">Select & Import</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
           Import Your AI Recommendations
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
           Select the analyses you want to organize in your Notion Idea board
         </p>
       </div>
@@ -56,12 +60,14 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         {/* Tools Column */}
         {toolsHistory.length > 0 && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-gradient-to-r from-primary/5 to-transparent p-3 rounded-lg">
               <div className="flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-primary" />
-                <h2 className="text-2xl font-semibold">Tools Analyses</h2>
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Wrench className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
               </div>
-              <Button variant="outline" size="sm" onClick={selectAllTools}>
+              <Button variant="outline" size="sm" onClick={selectAllTools} className="hover:bg-primary/10 hover:border-primary transition-all">
                 Select All
               </Button>
             </div>
@@ -70,10 +76,10 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
               {toolsHistory.map(tool => (
                 <Card
                   key={tool.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`cursor-pointer transition-all duration-300 hover:shadow-elegant border ${
                     selectedToolIds.includes(tool.id)
-                      ? 'ring-2 ring-primary bg-primary/5'
-                      : ''
+                      ? 'ring-2 ring-primary bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30 shadow-lg'
+                      : 'hover:border-primary/30 bg-gradient-to-br from-card to-muted/10'
                   }`}
                   onClick={() => toggleToolSelection(tool.id)}
                 >
@@ -102,9 +108,12 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <p className="text-sm font-medium text-primary">
-                      {tool.result.recommendations.length} recommendation{tool.result.recommendations.length !== 1 ? 's' : ''}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                      <p className="text-sm font-medium text-primary">
+                        {tool.result.recommendations.length} recommendation{tool.result.recommendations.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -115,12 +124,14 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         {/* Ideas Column */}
         {ideasHistory.length > 0 && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-gradient-to-r from-secondary/5 to-transparent p-3 rounded-lg">
               <div className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-secondary" />
-                <h2 className="text-2xl font-semibold">Ideas Analyses</h2>
+                <div className="p-2 rounded-lg bg-secondary/10">
+                  <Lightbulb className="h-5 w-5 text-secondary" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
               </div>
-              <Button variant="outline" size="sm" onClick={selectAllIdeas}>
+              <Button variant="outline" size="sm" onClick={selectAllIdeas} className="hover:bg-secondary/10 hover:border-secondary transition-all">
                 Select All
               </Button>
             </div>
@@ -129,10 +140,10 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
               {ideasHistory.map(idea => (
                 <Card
                   key={idea.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`cursor-pointer transition-all duration-300 hover:shadow-elegant border ${
                     selectedIdeaIds.includes(idea.id)
-                      ? 'ring-2 ring-secondary bg-secondary/5'
-                      : ''
+                      ? 'ring-2 ring-secondary bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/30 shadow-lg'
+                      : 'hover:border-secondary/30 bg-gradient-to-br from-card to-muted/10'
                   }`}
                   onClick={() => toggleIdeaSelection(idea.id)}
                 >
@@ -161,9 +172,12 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <p className="text-sm font-medium text-secondary">
-                      {idea.result.recommendations.length} recommendation{idea.result.recommendations.length !== 1 ? 's' : ''}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                      <p className="text-sm font-medium text-secondary">
+                        {idea.result.recommendations.length} recommendation{idea.result.recommendations.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -177,8 +191,9 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
           size="lg"
           onClick={handleImport}
           disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
-          className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all"
+          className="bg-gradient-to-r from-primary via-secondary to-primary hover:shadow-elegant hover:scale-105 transition-all shadow-lg text-lg px-8"
         >
+          <Sparkles className="mr-2 h-5 w-5" />
           Import Selected ({selectedToolIds.length + selectedIdeaIds.length})
         </Button>
       </div>

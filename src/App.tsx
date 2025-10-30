@@ -13,7 +13,7 @@ import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
-import AdminNotifications from "./pages/AdminNotifications";
+import SyncUsersToResend from "./pages/SyncUsersToResend";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +33,7 @@ const App = () => (
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/imprint" element={<Imprint />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/admin/notifications" element={<AdminNotifications />} />
+          <Route path="/admin/sync-resend" element={<SyncUsersToResend />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -459,7 +459,7 @@ const PrivacyPolicy = () => {
               interest in providing innovative AI-powered features).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Combined Credit System</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Combined Credit System</h3>
             <p className="text-muted-foreground mb-4">
               To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor share 
               a unified quota system. You can perform a combined total of 2 analyses per 25-hour period across both 
@@ -490,7 +490,7 @@ const PrivacyPolicy = () => {
               service access for all users).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Notion Idea Board</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Notion Idea Board</h3>
             <p className="text-muted-foreground mb-4">
               The Notion Idea Board feature allows you to import, organize, and visualize AI-generated recommendations 
               from both the Business Tools Advisor and Business Ideas Advisor in a unified workspace interface.
@@ -716,7 +716,7 @@ const PrivacyPolicy = () => {
               <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
               <li>
                 Email hash data (SHA-256 cryptographic hash of deleted account email addresses, stored temporarily 
-                for 24 hours to prevent abuse and accidental re-registration)
+                for up to 25 hours to prevent abuse and accidental re-registration)
               </li>
               <li>
                 Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for
@@ -1005,7 +1005,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> October 29, 2025
+              <strong>Last updated:</strong> October 29, 2024
             </p>
           </section>
         </article>

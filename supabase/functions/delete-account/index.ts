@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.76.1";
-import { Resend } from "https://esm.sh/resend@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,40 +38,6 @@ serve(async (req) => {
         status: 401,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
-    }
-
-    const userEmail = userData.user.email!;
-
-    // Delete contact from Resend BEFORE deleting user account
-    try {
-      const resendApiKey = Deno.env.get('RESEND_API_KEY');
-      const resendAudienceId = Deno.env.get('RESEND_AUDIENCE_ID');
-      
-      if (resendApiKey && resendAudienceId) {
-        console.log('🗑️ Deleting contact from Resend:', userEmail);
-        const resend = new Resend(resendApiKey);
-        
-        // Search for contact by email
-        const contacts = await resend.contacts.list({
-          audienceId: resendAudienceId,
-        });
-        
-        const contact = contacts.data?.data?.find(c => c.email === userEmail);
-        
-        if (contact?.id) {
-          // Delete contact from Resend
-          await resend.contacts.remove({
-            audienceId: resendAudienceId,
-            id: contact.id,
-          });
-          console.log('✅ Contact deleted from Resend');
-        } else {
-          console.log('ℹ️ Contact not found in Resend (might have been deleted already)');
-        }
-      }
-    } catch (resendError) {
-      console.error('⚠️ Failed to delete Resend contact:', resendError);
-      // Continue with account deletion even if Resend deletion fails
     }
 
     // Admin client to delete the auth user

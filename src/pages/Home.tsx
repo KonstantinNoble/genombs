@@ -56,14 +56,6 @@ const Home = () => {
               await supabase.from('user_credits').insert({
                 user_id: session.user.id
               });
-              
-              // Sync to Resend
-              await supabase.functions.invoke('sync-user-to-resend', {
-                body: { 
-                  email: session.user.email, 
-                  user_id: session.user.id 
-                }
-              });
             }
             
             toast({

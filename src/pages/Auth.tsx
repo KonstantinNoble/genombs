@@ -90,16 +90,6 @@ const Auth = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Sync user to Resend in background (non-blocking)
-        try {
-          await supabase.functions.invoke('sync-user-to-resend', {
-            body: { email: validatedData.email, user_id: data.user.id }
-          });
-        } catch (syncError) {
-          console.error('Background sync to Resend failed:', syncError);
-          // Don't show error to user - registration was successful
-        }
-
         toast({
           title: "Registration successful!",
           description: "Please check your email to verify your account.",

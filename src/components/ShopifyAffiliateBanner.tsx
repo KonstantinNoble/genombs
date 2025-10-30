@@ -2,12 +2,12 @@ import shopifyBanner from "@/assets/shopify-affiliate-banner.png";
 
 const ShopifyAffiliateBanner = () => {
   return (
-    <div className="w-full flex justify-center my-8 animate-fade-in">
+    <div className="w-full flex justify-center my-8 animate-fade-in relative z-0">
       <a
         href="https://shopify.pxf.io/aOExeZ"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block transition-transform duration-300 hover:scale-105 hover:shadow-glow rounded-lg overflow-hidden"
+        className="inline-block transition-transform duration-300 hover:scale-105 hover:shadow-glow rounded-lg overflow-hidden touch-manipulation"
       >
         <img
           src={shopifyBanner}

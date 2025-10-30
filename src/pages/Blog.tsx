@@ -36,8 +36,8 @@ const Blog = () => {
           <ShopifyAffiliateBanner />
           <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
             {blogPosts.map((post, index) => (
-              <Link key={post.id} to={`/blog/${post.id}`} className="group">
-                <Card className="h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-border hover:border-secondary/30 overflow-hidden animate-scale-in" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}>
+              <Link key={post.id} to={`/blog/${post.id}`} className="group block relative z-10 touch-manipulation">
+                <Card className="h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-border hover:border-secondary/30 overflow-hidden animate-scale-in cursor-pointer" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}>
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                   <CardHeader className="space-y-4 pb-4">
                     <div className="flex items-center justify-between">

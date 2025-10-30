@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 
 interface ToolRecommendation {
   name: string;
@@ -385,6 +386,7 @@ const BusinessToolsAdvisor = () => {
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 to-background">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
+            <ShopifyAffiliateBanner />
             <div className="space-y-4">
               <div className="relative inline-block">
                 <Sparkles className="h-16 w-16 mx-auto text-secondary animate-pulse" />
@@ -450,7 +452,9 @@ const BusinessToolsAdvisor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Navbar />
-      <div className="flex-1 flex gap-6 container mx-auto px-4 py-8">
+      <div className="flex-1 container mx-auto px-4 py-8">
+        <ShopifyAffiliateBanner />
+        <div className="flex gap-6">
         {/* Sidebar - History */}
         <aside className="w-80 space-y-4 animate-fade-in">
           <Card className="shadow-elegant hover:shadow-hover transition-shadow duration-300">
@@ -851,6 +855,7 @@ const BusinessToolsAdvisor = () => {
             </TabsContent>
           </Tabs>
         </main>
+        </div>
       </div>
       <Footer />
     </div>

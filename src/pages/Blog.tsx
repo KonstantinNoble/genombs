@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 
 const Blog = () => {
   return (
@@ -32,6 +33,7 @@ const Blog = () => {
 
       <section className="py-20">
         <div className="container mx-auto px-4">
+          <ShopifyAffiliateBanner />
           <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
             {blogPosts.map((post, index) => (
               <Link key={post.id} to={`/blog/${post.id}`} className="group">

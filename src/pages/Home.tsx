@@ -4,6 +4,7 @@ import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 
 const Home = () => {
   useEffect(() => {
@@ -23,6 +24,7 @@ const Home = () => {
       <Navbar />
       <main>
         <Hero />
+        <ShopifyAffiliateBanner />
         <Features />
         <CTA />
       </main>

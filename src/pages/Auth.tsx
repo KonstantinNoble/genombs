@@ -33,11 +33,11 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
         navigate("/");
+      } else if (error) {
+        await supabase.auth.signOut();
       }
     };
     checkUser();

@@ -329,10 +329,10 @@ const Auth = () => {
                 setEmail("");
                 setAcceptedTerms(false);
               }}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-base sm:text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
             >
               {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <span className="text-secondary font-semibold">{isLogin ? "Sign Up" : "Sign In"}</span>
+              <span className="text-secondary font-bold text-lg sm:text-xl">{isLogin ? "Sign Up" : "Sign In"}</span>
             </button>
           </div>
         </CardContent>

@@ -3,6 +3,9 @@ project_id = "fdlyaasqywmdinyaivmw"
 [functions.delete-account]
 verify_jwt = true
 
+[functions.send-bulk-notification]
+verify_jwt = true
+
 [functions.stock-analysis]
 verify_jwt = true
 

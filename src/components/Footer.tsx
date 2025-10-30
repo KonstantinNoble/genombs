@@ -1,33 +1,11 @@
 import { Link } from "react-router-dom";
-import { Info, Scale } from "lucide-react";
+import { Scale } from "lucide-react";
 
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-background to-muted/20 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
-                <Info className="h-4 w-4 text-primary" />
-              </div>
-              <h3 className="font-bold text-base sm:text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">About</h3>
-            </div>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Your trusted AI-powered platform for transforming your business through intelligent insights and recommendations.
-            </p>
-            <div className="flex items-center gap-2 pt-2">
-              <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md">
-                <img 
-                  src="/favicon.jpg" 
-                  alt="Wealthconomy Logo" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="font-serif font-bold text-lg bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">Wealthconomy</span>
-            </div>
-          </div>
-          
+        <div className="max-w-md mx-auto">
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center shadow-sm">

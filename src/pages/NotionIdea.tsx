@@ -6,6 +6,7 @@ import { Loader2, BookOpen, TrendingUp, Sparkles, ArrowRight } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import AnalysisSelector from "@/components/notion-idea/AnalysisSelector";
 import RecommendationDisplay from "@/components/notion-idea/RecommendationDisplay";
 import { useToast } from "@/hooks/use-toast";
@@ -385,6 +386,12 @@ const NotionIdea = () => {
             onBackToSelection={handleBackToSelection}
             onClearAll={handleClearAll}
           />
+        )}
+        
+        {viewMode === 'landing' && (
+          <div className="mt-8">
+            <ShopifyAffiliateBanner />
+          </div>
         )}
       </main>
       <Footer />

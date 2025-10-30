@@ -10,6 +10,7 @@ import { Loader2, Lightbulb, TrendingUp, Clock, DollarSign, Trash2, LogIn, Exter
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { User } from "@supabase/supabase-js";
 
 interface ToolRecommendation {
@@ -854,6 +855,10 @@ const BusinessToolsAdvisor = () => {
             </TabsContent>
           </Tabs>
         </main>
+        </div>
+        
+        <div className="container mx-auto px-4 py-8">
+          <ShopifyAffiliateBanner />
         </div>
       </div>
       <Footer />

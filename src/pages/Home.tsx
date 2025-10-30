@@ -4,6 +4,7 @@ import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 
 const Home = () => {
   useEffect(() => {
@@ -22,9 +23,12 @@ const Home = () => {
     <div className="min-h-screen">
       <Navbar />
       <main>
-        <Hero />
-        <Features />
-        <CTA />
+      <Hero />
+      <Features />
+      <div className="container mx-auto px-4 py-8">
+        <ShopifyAffiliateBanner />
+      </div>
+      <CTA />
       </main>
       <Footer />
     </div>

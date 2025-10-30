@@ -24,7 +24,7 @@ const CTA = () => {
       <div className="container relative mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center space-y-10 animate-fade-in-up">
           <div className="inline-block px-4 py-2 bg-secondary/20 border border-secondary/40 rounded-full text-secondary font-medium backdrop-blur-sm">
-            🚀 Start Your Journey Today
+            Start Your Journey Today
           </div>
 
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">

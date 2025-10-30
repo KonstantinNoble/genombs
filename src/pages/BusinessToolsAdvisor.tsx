@@ -384,45 +384,51 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 to-background">
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-            <div className="space-y-4">
+      <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
+          <div className="max-w-4xl mx-auto text-center space-y-12 animate-fade-in">
+            <div className="space-y-6">
               <div className="relative inline-block">
-                <Sparkles className="h-16 w-16 mx-auto text-secondary animate-pulse" />
-                <div className="absolute inset-0 bg-secondary/20 blur-2xl" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl animate-pulse" />
+                <Sparkles className="relative h-20 w-20 mx-auto text-primary animate-pulse" />
               </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Business AI
+              <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in">
+                Business AI Advisor
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Get AI-powered recommendations for tools and strategies to supercharge your business growth
+              <p className="text-xl sm:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
+                Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
               </p>
             </div>
 
-            <Card className="text-left shadow-elegant hover:shadow-hover transition-shadow duration-300">
-              <CardHeader>
-                <CardTitle className="text-2xl">How it works</CardTitle>
+            <Card className="text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardHeader className="relative">
+                <CardTitle className="text-2xl sm:text-3xl flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
+                    <TrendingUp className="h-6 w-6 text-primary" />
+                  </div>
+                  How it works
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">1</div>
-                  <div>
-                    <h3 className="font-semibold">Share your business context</h3>
-                    <p className="text-sm text-muted-foreground">Tell us about your industry, team size, budget, and goals</p>
+              <CardContent className="space-y-6 relative">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">1</div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-1 text-foreground">Share your business context</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Tell us about your industry, team size, budget, and goals</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">2</div>
-                  <div>
-                    <h3 className="font-semibold">Get personalized recommendations</h3>
-                    <p className="text-sm text-muted-foreground">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">2</div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-1 text-foreground">Get personalized recommendations</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">3</div>
-                  <div>
-                    <h3 className="font-semibold">Implement and grow</h3>
-                    <p className="text-sm text-muted-foreground">Follow our actionable advice to optimize your business operations</p>
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">3</div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg mb-1 text-foreground">Implement and grow</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to optimize your business operations</p>
                   </div>
                 </div>
               </CardContent>
@@ -431,7 +437,7 @@ const BusinessToolsAdvisor = () => {
             <Button 
               size="lg" 
               onClick={() => window.location.href = '/auth'}
-              className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-glow hover:scale-105 transition-all duration-300"
+              className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-lg px-8 py-6 shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300"
             >
               <LogIn className="mr-2 h-5 w-5" />
               Sign in to get started

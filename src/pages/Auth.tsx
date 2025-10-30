@@ -156,6 +156,23 @@ const Auth = () => {
         return;
       }
 
+      // GDPR safety: Check if profile exists after successful login
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        await supabase.auth.signOut();
+        toast({
+          variant: "destructive",
+          title: "Account not found",
+          description: "This account has been deleted.",
+        });
+        return;
+      }
+
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",

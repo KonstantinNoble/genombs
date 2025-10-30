@@ -17,6 +17,20 @@ const Navbar = () => {
     if (error || !data?.user) {
       await supabase.auth.signOut();
       setUser(null);
+      return;
+    }
+
+    // Check if profile still exists (GDPR deletion safety)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      console.log('Profile deleted - invalidating session');
+      await supabase.auth.signOut();
+      setUser(null);
     }
   };
 

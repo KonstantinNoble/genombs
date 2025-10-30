@@ -25,6 +25,9 @@ const Footer = () => {
               <h3 className="font-bold text-base sm:text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Legal</h3>
             </div>
             <nav className="flex flex-col space-y-3 items-center" aria-label="Legal links">
+              <Link to="/about" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
+                → About
+              </Link>
               <Link to="/privacy-policy" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
                 → Privacy Policy
               </Link>

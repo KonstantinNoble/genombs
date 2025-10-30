@@ -17,8 +17,8 @@ const Blog = () => {
       <Navbar />
       
       <section className="py-16 bg-gradient-to-b from-[hsl(220,35%,96%)] to-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(220,70%,15%,0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(220,70%,15%,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
-        <div className="container relative mx-auto px-4">
+        <div className="absolute inset-0 pointer-events-none -z-10 bg-[linear-gradient(to_right,hsl(220,70%,15%,0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(220,70%,15%,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        <div className="container relative z-10 mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
             <div className="inline-block px-4 py-1.5 bg-secondary/10 rounded-full mb-2">
               <span className="text-sm font-semibold text-secondary">Business Insights</span>

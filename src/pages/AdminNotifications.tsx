@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,55 @@ const AdminNotifications = () => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Check admin status on mount
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast({
+            title: "Nicht authentifiziert",
+            description: "Bitte melden Sie sich an.",
+            variant: "destructive",
+          });
+          navigate("/auth");
+          return;
+        }
+
+        const { data: isAdmin } = await supabase.rpc('has_role', {
+          _user_id: session.user.id,
+          _role: 'admin'
+        });
+
+        if (!isAdmin) {
+          toast({
+            title: "Zugriff verweigert",
+            description: "Diese Seite ist nur für Administratoren zugänglich.",
+            variant: "destructive",
+          });
+          navigate("/");
+          return;
+        }
+
+        setIsCheckingAdmin(false);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        toast({
+          title: "Fehler",
+          description: "Zugriffsprüfung fehlgeschlagen.",
+          variant: "destructive",
+        });
+        navigate("/");
+      }
+    };
+
+    checkAdminStatus();
+  }, [navigate, toast]);
 
   const handleSendNotification = async () => {
     if (!subject.trim() || !message.trim()) {
@@ -71,6 +118,18 @@ const AdminNotifications = () => {
       setIsLoading(false);
     }
   };
+
+  if (isCheckingAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

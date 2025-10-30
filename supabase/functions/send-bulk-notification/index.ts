@@ -1,9 +1,7 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,6 +40,22 @@ serve(async (req) => {
       );
     }
 
+    // Check if user has admin role
+    const { data: isAdmin } = await supabaseClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
+
+    if (!isAdmin) {
+      console.warn(`Unauthorized bulk notification attempt by user: ${user.id}`);
+      return new Response(
+        JSON.stringify({ error: "Forbidden: Admin access required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`Admin user ${user.id} is sending bulk notification`);
+
     const { subject, message }: NotificationRequest = await req.json();
 
     console.log("Fetching all user emails...");
@@ -74,12 +88,18 @@ serve(async (req) => {
 
     console.log(`Sending notification to ${emails.length} users...`);
 
-    // Send email to all users
-    const emailResponse = await resend.emails.send({
-      from: "Wealthconomy <info@wealthconomy.com>",
-      to: emails,
-      subject: subject,
-      html: `
+    // Send email using Resend API
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: "Wealthconomy <info@wealthconomy.com>",
+        to: emails,
+        subject: subject,
+        html: `
         <!DOCTYPE html>
         <html>
           <head>
@@ -141,15 +161,22 @@ serve(async (req) => {
           </body>
         </html>
       `,
+      }),
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json();
+      throw new Error(`Resend API error: ${JSON.stringify(errorData)}`);
+    }
+
+    const emailData = await emailResponse.json();
+    console.log("Email sent successfully:", emailData);
 
     return new Response(
       JSON.stringify({ 
         message: "Notifications sent successfully",
         sentCount: emails.length,
-        emailResponse 
+        emailResponse: emailData 
       }),
       {
         status: 200,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, User, Menu, X, BookOpen } from "lucide-react";
+import { TrendingUp, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
@@ -42,16 +42,6 @@ const Navbar = () => {
             }`}
           >
             Home
-          </Link>
-          <Link 
-            to="/blog" 
-            className={`text-sm font-medium transition-all duration-300 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-secondary after:transition-all after:duration-300 ${
-              isActive("/blog") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full"
-            }`}
-          >
-            Blog
           </Link>
           <Link 
             to="/business-tools"
@@ -107,13 +97,6 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Home
-            </Link>
-            <Link
-              to="/blog"
-              className="block text-foreground hover:text-secondary transition-colors py-2"
-              onClick={() => setIsOpen(false)}
-            >
-              Blog
             </Link>
             <Link
               to="/business-tools"

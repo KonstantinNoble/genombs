@@ -3,8 +3,8 @@ project_id = "fdlyaasqywmdinyaivmw"
 [functions.delete-account]
 verify_jwt = true
 
-[functions.sync-user-to-resend]
-verify_jwt = false
+[functions.send-bulk-notification]
+verify_jwt = true
 
 [functions.stock-analysis]
 verify_jwt = true

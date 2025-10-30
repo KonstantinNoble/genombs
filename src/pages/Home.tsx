@@ -24,10 +24,10 @@ const Home = () => {
       <Navbar />
       <main>
       <Hero />
-      <Features />
       <div className="container mx-auto px-4 py-8">
         <ShopifyAffiliateBanner />
       </div>
+      <Features />
       <CTA />
       </main>
       <Footer />

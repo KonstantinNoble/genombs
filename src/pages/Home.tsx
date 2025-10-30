@@ -36,6 +36,36 @@ const Home = () => {
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session?.user) {
+            // Frontend fallback: Ensure profile and credits exist
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (!profile) {
+              console.log('Creating missing profile for user:', session.user.id);
+              
+              // Create profile
+              await supabase.from('profiles').insert({
+                id: session.user.id,
+                email: session.user.email
+              });
+              
+              // Create user credits
+              await supabase.from('user_credits').insert({
+                user_id: session.user.id
+              });
+              
+              // Sync to Resend
+              await supabase.functions.invoke('sync-user-to-resend', {
+                body: { 
+                  email: session.user.email, 
+                  user_id: session.user.id 
+                }
+              });
+            }
+            
             toast({
               title: "Email verified!",
               description: "Your account has been activated. Welcome!",

@@ -228,24 +228,28 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black p-4">
-      <div className="absolute top-8 left-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/95 to-primary/90 p-4 relative overflow-hidden">
+      {/* Animated gradient orbs */}
+      <div className="absolute top-20 left-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      
+      <div className="absolute top-8 left-8 z-10">
         <Button
           variant="outline"
           onClick={() => navigate("/")}
-          className="bg-background/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+          className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
       </div>
-      <Card className="w-full max-w-md bg-card border-border">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl font-bold text-center">
+      <Card className="w-full max-w-md bg-card border-border shadow-2xl relative z-10 animate-scale-in">
+        <CardHeader className="space-y-3">
+          <CardTitle className="text-4xl font-bold text-center bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             {isLogin ? "Welcome Back" : "Create Account"}
           </CardTitle>
-          <CardDescription className="text-center">
-            {isLogin ? "Sign in to access your account" : "Sign up to start your journey"}
+          <CardDescription className="text-center text-base">
+            {isLogin ? "Sign in to access your AI-powered business insights" : "Join us and unlock intelligent business recommendations"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -297,7 +301,7 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-xl transition-all duration-300"
+              className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-glow hover:scale-105 transition-all duration-300"
               disabled={loading}
             >
               {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}

@@ -383,19 +383,24 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-1 container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+      <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 to-background">
+          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
             <div className="space-y-4">
-              <Lightbulb className="h-16 w-16 mx-auto text-primary" />
-              <h1 className="text-4xl font-bold">Business AI</h1>
-              <p className="text-xl text-muted-foreground">
-                Get AI-powered recommendations for tools and strategies to grow your business
+              <div className="relative inline-block">
+                <Sparkles className="h-16 w-16 mx-auto text-secondary animate-pulse" />
+                <div className="absolute inset-0 bg-secondary/20 blur-2xl" />
+              </div>
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Business AI
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Get AI-powered recommendations for tools and strategies to supercharge your business growth
               </p>
             </div>
 
-            <Card className="text-left">
+            <Card className="text-left shadow-elegant hover:shadow-hover transition-shadow duration-300">
               <CardHeader>
-                <CardTitle>How it works</CardTitle>
+                <CardTitle className="text-2xl">How it works</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -422,7 +427,11 @@ const BusinessToolsAdvisor = () => {
               </CardContent>
             </Card>
 
-            <Button size="lg" onClick={() => window.location.href = '/auth'}>
+            <Button 
+              size="lg" 
+              onClick={() => window.location.href = '/auth'}
+              className="bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-glow hover:scale-105 transition-all duration-300"
+            >
               <LogIn className="mr-2 h-5 w-5" />
               Sign in to get started
             </Button>
@@ -439,14 +448,17 @@ const BusinessToolsAdvisor = () => {
   const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Navbar />
       <div className="flex-1 flex gap-6 container mx-auto px-4 py-8">
         {/* Sidebar - History */}
-        <aside className="w-80 space-y-4">
-          <Card>
+        <aside className="w-80 space-y-4 animate-fade-in">
+          <Card className="shadow-elegant hover:shadow-hover transition-shadow duration-300">
             <CardHeader>
-              <CardTitle className="text-lg">Previous Recommendations</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-secondary" />
+                Previous Recommendations
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
               {currentHistory.length === 0 ? (
@@ -485,11 +497,13 @@ const BusinessToolsAdvisor = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Business AI</h1>
-            <p className="text-muted-foreground">
-              Get personalized recommendations for your business
+        <main className="flex-1 space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div className="text-center">
+            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
+              Business AI
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Get personalized AI-powered recommendations to grow your business
             </p>
           </div>
 

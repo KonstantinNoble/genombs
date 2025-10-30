@@ -403,7 +403,7 @@ const BusinessToolsAdvisor = () => {
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = '/auth'}
-                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-xl px-12 py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 animate-pulse"
+                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-xl px-12 py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300"
               >
                 <LogIn className="mr-3 h-6 w-6" />
                 Sign in to get started

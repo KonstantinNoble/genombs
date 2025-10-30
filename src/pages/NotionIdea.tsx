@@ -348,7 +348,7 @@ const NotionIdea = () => {
                   <Button 
                     size="lg" 
                     onClick={() => navigate('/auth')}
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-110 transition-all text-xl px-12 py-8 font-bold w-full sm:w-auto shadow-lg animate-pulse"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-110 transition-all text-xl px-12 py-8 font-bold w-full sm:w-auto shadow-lg"
                   >
                     <Sparkles className="mr-3 h-6 w-6" />
                     Sign In to Get Started

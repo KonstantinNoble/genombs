@@ -385,7 +385,7 @@ const BusinessToolsAdvisor = () => {
       <div className="min-h-screen flex flex-col">
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
-          <div className="max-w-4xl mx-auto text-center space-y-12 animate-fade-in">
+          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
             <div className="space-y-6">
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl animate-pulse" />
@@ -397,6 +397,18 @@ const BusinessToolsAdvisor = () => {
               <p className="text-xl sm:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
                 Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
               </p>
+            </div>
+
+            <div className="py-6">
+              <Button 
+                size="lg" 
+                onClick={() => window.location.href = '/auth'}
+                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-xl px-12 py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 animate-pulse"
+              >
+                <LogIn className="mr-3 h-6 w-6" />
+                Sign in to get started
+              </Button>
+              <p className="text-sm text-muted-foreground mt-3">Start your free analysis now</p>
             </div>
 
             <Card className="text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">
@@ -433,15 +445,6 @@ const BusinessToolsAdvisor = () => {
                 </div>
               </CardContent>
             </Card>
-
-            <Button 
-              size="lg" 
-              onClick={() => window.location.href = '/auth'}
-              className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-lg px-8 py-6 shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300"
-            >
-              <LogIn className="mr-2 h-5 w-5" />
-              Sign in to get started
-            </Button>
           </div>
         </div>
         <Footer />

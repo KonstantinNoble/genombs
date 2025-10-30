@@ -261,7 +261,7 @@ const NotionIdea = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         {viewMode === 'landing' && (
-          <div className="max-w-5xl mx-auto text-center space-y-12 animate-fade-in py-8 sm:py-16">
+          <div className="max-w-5xl mx-auto text-center space-y-10 animate-fade-in py-8 sm:py-16">
             <div className="space-y-6 px-4 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 blur-3xl" />
               <div className="relative inline-block mb-4">
@@ -276,7 +276,7 @@ const NotionIdea = () => {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 my-12 px-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 px-4">
               <div className="p-6 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-elegant hover:scale-105 hover:border-primary/40 transition-all duration-500 group">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4 mx-auto shadow-sm group-hover:scale-110 transition-transform duration-300">
                   <BookOpen className="h-7 w-7 text-primary" />
@@ -344,6 +344,18 @@ const NotionIdea = () => {
               </div>
             ) : (
               <div className="space-y-8 px-4">
+                <div className="py-6">
+                  <Button 
+                    size="lg" 
+                    onClick={() => navigate('/auth')}
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-110 transition-all text-xl px-12 py-8 font-bold w-full sm:w-auto shadow-lg animate-pulse"
+                  >
+                    <Sparkles className="mr-3 h-6 w-6" />
+                    Sign In to Get Started
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-3">Start organizing your ideas now - it's free</p>
+                </div>
+
                 <div className="p-6 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-card shadow-elegant max-w-2xl mx-auto">
                   <h3 className="font-bold mb-6 text-xl sm:text-2xl text-center bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">How it works:</h3>
                   <ol className="text-left space-y-4 text-sm sm:text-base">
@@ -362,15 +374,7 @@ const NotionIdea = () => {
                   </ol>
                 </div>
                 
-                <div className="flex flex-col gap-4 justify-center max-w-md mx-auto">
-                  <Button 
-                    size="lg" 
-                    onClick={() => navigate('/auth')}
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-105 transition-all text-lg px-10 py-7 font-bold w-full shadow-lg"
-                  >
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Sign In to Get Started
-                  </Button>
+                <div className="max-w-md mx-auto">
                   <Button 
                     size="lg"
                     variant="outline"

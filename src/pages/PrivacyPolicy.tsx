@@ -607,7 +607,145 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Hosting and Data Transfers</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. Administrative Email Communication</h2>
+            <p className="text-muted-foreground mb-4">
+              To ensure proper functionality and security of our service, we may send administrative and transactional 
+              emails to registered users. These emails are essential for the operation of your account and the service.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Types of Administrative Emails</h3>
+            <p className="text-muted-foreground mb-4">
+              We may send the following types of administrative emails:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Account-related notifications:</strong> Account creation confirmation, password reset requests, 
+              email verification, account deletion confirmation</li>
+              <li><strong>Security notifications:</strong> Unusual login activity, security updates, mandatory password changes</li>
+              <li><strong>Service notifications:</strong> Important changes to our Terms of Service or Privacy Policy, 
+              service disruptions, scheduled maintenance</li>
+              <li><strong>Technical notifications:</strong> Credit limit reached, quota reset notifications, error reports 
+              affecting your account</li>
+            </ul>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Email Service Provider: Resend</h3>
+            <p className="text-muted-foreground mb-4">
+              For sending administrative emails, we use <strong>Resend</strong> (Plus Five Five, Inc.), a specialized 
+              email delivery service provider based in the United States.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed by Resend</h4>
+            <p className="text-muted-foreground mb-4">
+              When we send administrative emails through Resend, the following data is transmitted:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your email address (recipient address)</li>
+              <li>Email content (transactional message content)</li>
+              <li>Technical metadata (timestamps, delivery status, bounce information)</li>
+              <li>Your name/username (if included in the email)</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">GDPR Compliance and Data Protection</h4>
+            <p className="text-muted-foreground mb-4">
+              Resend is fully GDPR-compliant and provides strong data protection guarantees:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Data Processing Agreement (DPA):</strong> We have a Data Processing Agreement with Resend 
+                that includes Standard Contractual Clauses (SCCs) approved by the European Commission for data transfers 
+                to the United States
+              </li>
+              <li>
+                <strong>EU-US Data Privacy Framework (DPF):</strong> Resend is certified under the EU-US Data Privacy 
+                Framework and the UK Extension to the EU-US DPF (certified March 2025), providing additional safeguards 
+                for transatlantic data transfers
+              </li>
+              <li>
+                <strong>SOC 2 Compliance:</strong> Resend maintains SOC 2 Type II certification, ensuring robust 
+                security controls and data protection measures
+              </li>
+              <li>
+                <strong>Limited data retention:</strong> Resend retains email delivery data only for operational 
+                purposes and deletes it according to their data retention policies
+              </li>
+              <li>
+                <strong>No data sharing:</strong> Resend does not sell or share your data with third parties for 
+                marketing purposes
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis for Processing</h4>
+            <p className="text-muted-foreground mb-4">
+              The processing of your email address and related data for administrative emails is based on:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR – Contract performance:</strong> Administrative and transactional emails 
+                are necessary for the performance of our contract with you (e.g., account verification, password 
+                resets, service-critical notifications)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR – Legitimate interests:</strong> We have a legitimate interest in 
+                maintaining the security and integrity of our service, preventing fraud, and keeping you informed 
+                about important changes that affect your rights or the service functionality
+              </li>
+              <li>
+                <strong>Art. 6(1)(c) GDPR – Legal obligation:</strong> In some cases, we are legally required to 
+                send certain notifications (e.g., data breach notifications under Art. 34 GDPR)
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Your Rights</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important note:</strong> Administrative emails are essential for account security and service 
+              operation and <strong>cannot be opted out of</strong> while maintaining an active account. These are 
+              transactional emails required for the service, not marketing communications.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              If you do not wish to receive administrative emails, your only option is to delete your account through 
+              the account settings. Upon account deletion, we will send one final confirmation email, after which no 
+              further emails will be sent.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Party Links</h4>
+            <p className="text-muted-foreground mb-4">
+              For more information about Resend's data protection practices:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <a 
+                  href="https://resend.com/legal/privacy-policy" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Resend Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://resend.com/legal/dpa" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Resend Data Processing Agreement (DPA)
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://resend.com/security/gdpr" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Resend GDPR Compliance
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">7. Hosting and Data Transfers</h2>
             <p className="text-muted-foreground mb-4">
               Our website is hosted by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to
               servers located outside the European Union (e.g., in the United States). The transfer is based on Standard
@@ -644,7 +782,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Contact</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Contact</h2>
             <p className="text-muted-foreground mb-4">
               If you contact us (e.g., by email), we process the personal data you provide solely to respond to your
               inquiry. The processing is based on our legitimate interest (Art. 6(1)(f) GDPR) in handling such requests.
@@ -671,7 +809,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. External Links</h2>
+            <h2 className="text-2xl font-semibold mb-4">9. External Links</h2>
             <p className="text-muted-foreground mb-4">
               Our website may contain links to external websites or social media platforms such as Twitter (X). When you
               click on these links, you will be redirected to the respective external platform. Please note that we have
@@ -680,7 +818,7 @@ const PrivacyPolicy = () => {
           </section>
 
 <section className="mb-8">
-  <h2 className="text-2xl font-semibold mb-4">9. Affiliate Marketing (Impact.com / Shopify)</h2>
+  <h2 className="text-2xl font-semibold mb-4">10. Affiliate Marketing (Impact.com / Shopify)</h2>
   <p className="text-muted-foreground mb-4">
     We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
     program, we include affiliate links to products or services offered by **Shopify**.
@@ -709,7 +847,7 @@ const PrivacyPolicy = () => {
 </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Categories of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Contact data (email address, if you contact us)</li>
               <li>User account data (email, user ID, timestamps)</li>
@@ -764,7 +902,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
@@ -799,7 +937,13 @@ const PrivacyPolicy = () => {
                 </p>
               </li>
               <li>
-                <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – email communication
+                <strong>Administrative email service provider:</strong> Resend (Plus Five Five, Inc., USA) – 
+                transactional and administrative email delivery (account notifications, security alerts, password 
+                resets). Certified under EU-US Data Privacy Framework, GDPR-compliant with DPA and Standard 
+                Contractual Clauses
+              </li>
+              <li>
+                <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – general email communication
               </li>
               <li>
                 <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Shopify – tracking
@@ -817,7 +961,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Obligation to Provide Data</h2>
             <p className="text-muted-foreground mb-4">
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
@@ -829,7 +973,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making / Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
               <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
               (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
@@ -854,7 +998,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Data Security</h2>
             <p className="text-muted-foreground mb-4">
               We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
               restricted server access, and regular security reviews by our hosting provider.
@@ -862,7 +1006,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Your Rights</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Your Rights</h2>
             <p className="text-muted-foreground mb-4">You have the following rights under the GDPR:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -999,7 +1143,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">18. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.

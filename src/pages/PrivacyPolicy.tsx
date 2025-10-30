@@ -462,7 +462,7 @@ const PrivacyPolicy = () => {
             <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Combined Credit System</h3>
             <p className="text-muted-foreground mb-4">
               To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor share 
-              a unified quota system. You can perform a combined total of 2 analyses per 24-hour period across both 
+              a unified quota system. You can perform a combined total of 2 analyses per 25-hour period across both 
               features.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -470,13 +470,13 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Total analysis count (combined counter for both tools and ideas advisors)</li>
-              <li>Analysis window start timestamp (when the current 24-hour period began)</li>
+              <li>Analysis window start timestamp (when the current 25-hour period began)</li>
               <li>Last analysis timestamp (most recent analysis request)</li>
               <li>User ID (to associate credit tracking with your account)</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              The system automatically tracks your analysis count and enforces the 2-per-24-hour limit. Attempting to 
-              perform additional analyses within the 24-hour window will result in an error message indicating when 
+              The system automatically tracks your analysis count and enforces the 2-per-25-hour limit. Attempting to 
+              perform additional analyses within the 25-hour window will result in an error message indicating when 
               the next analysis will be available.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -741,7 +741,7 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 Combined credit tracking data (total analysis count across both features, analysis window start 
-                timestamp, last analysis timestamp, 24-hour usage limit enforcement data)
+                timestamp, last analysis timestamp, 25-hour usage limit enforcement data)
               </li>
               <li>
                 Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 

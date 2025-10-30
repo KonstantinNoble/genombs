@@ -453,9 +453,9 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2">
                 <li>Is a one-way cryptographic hash that <strong>cannot be reversed</strong> to reveal your email address</li>
-                <li>Is stored for exactly <strong>24 hours</strong></li>
-                <li>Prevents the same email address from being used for registration during the 24-hour period</li>
-                <li>Is automatically and permanently deleted after 24 hours</li>
+                <li>Is stored for up to <strong>25 hours</strong></li>
+                <li>Prevents the same email address from being used for registration during this period (up to 25 hours)</li>
+                <li>Is automatically and permanently deleted after this period</li>
                 <li>After deletion, your email becomes available for new account registration</li>
               </ul>
               <p className="mb-4">
@@ -566,7 +566,7 @@ const TermsOfService = () => {
                 <li>You lose your right of withdrawal once the service has been fully performed, if performance began with your prior express consent and acknowledgment that you will lose your right of withdrawal once the contract is fully performed</li>
               </ul>
               <p className="mb-4">
-                <strong>Note:</strong> For our current free AI advisory services with usage limits (2 analyses per 24 hours), using the services during the withdrawal period 
+                <strong>Note:</strong> For our current free AI advisory services with usage limits (2 analyses per 25 hours), using the services during the withdrawal period 
                 does not eliminate your right to withdraw, as the services are not "fully performed" within 14 days.
               </p>
 

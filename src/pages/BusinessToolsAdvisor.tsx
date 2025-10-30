@@ -450,10 +450,10 @@ const BusinessToolsAdvisor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex gap-6">
+      <div className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+        <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar - History */}
-        <aside className="w-80 space-y-4 animate-fade-in">
+        <aside className="w-full lg:w-80 shrink-0 space-y-4 animate-fade-in">
           <Card className="shadow-elegant hover:shadow-hover transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -461,7 +461,7 @@ const BusinessToolsAdvisor = () => {
                 Previous Recommendations
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <CardContent className="space-y-2 max-h-96 lg:max-h-[calc(100vh-200px)] overflow-y-auto">
               {currentHistory.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No history yet</p>
               ) : (
@@ -481,7 +481,7 @@ const BusinessToolsAdvisor = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0"
+                        className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 shrink-0"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(item.id);
@@ -498,26 +498,26 @@ const BusinessToolsAdvisor = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
+        <main className="flex-1 w-full min-w-0 space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div className="text-center px-2">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
               Business AI
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground">
               Get personalized AI-powered recommendations to grow your business
             </p>
           </div>
 
           {/* Tab Selector */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ideas")} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="tools" className="gap-2">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+              <TabsTrigger value="tools" className="gap-2 text-sm">
                 <Lightbulb className="h-4 w-4" />
-                Business Tools
+                <span className="hidden sm:inline">Business </span>Tools
               </TabsTrigger>
-              <TabsTrigger value="ideas" className="gap-2">
+              <TabsTrigger value="ideas" className="gap-2 text-sm">
                 <Sparkles className="h-4 w-4" />
-                Business Ideas
+                <span className="hidden sm:inline">Business </span>Ideas
               </TabsTrigger>
             </TabsList>
 
@@ -529,12 +529,12 @@ const BusinessToolsAdvisor = () => {
                   <CardDescription>Provide details to get tailored tool recommendations</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Industry</label>
                       <Select value={industry} onValueChange={setIndustry}>
                         <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="technology">Technology</SelectItem>
                           <SelectItem value="ecommerce">E-commerce</SelectItem>
                           <SelectItem value="saas">SaaS</SelectItem>
@@ -555,7 +555,7 @@ const BusinessToolsAdvisor = () => {
                       <label className="text-sm font-medium">Team Size</label>
                       <Select value={teamSize} onValueChange={setTeamSize}>
                         <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="solo">Solo (1 person)</SelectItem>
                           <SelectItem value="small">Small (2-10 people)</SelectItem>
                           <SelectItem value="medium">Medium (11-50 people)</SelectItem>
@@ -568,7 +568,7 @@ const BusinessToolsAdvisor = () => {
                       <label className="text-sm font-medium">Monthly Budget for Tools</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
                         <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="minimal">Minimal ($0-$100/month)</SelectItem>
                           <SelectItem value="low">Low ($100-$500/month)</SelectItem>
                           <SelectItem value="medium">Medium ($500-$2,000/month)</SelectItem>
@@ -628,18 +628,19 @@ const BusinessToolsAdvisor = () => {
                       {toolResult.recommendations.map((rec, index) => (
                         <Card key={index}>
                           <CardHeader>
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <CardTitle className="text-lg">{rec.name}</CardTitle>
-                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8">
+                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                  <CardTitle className="text-base sm:text-lg break-words">{rec.name}</CardTitle>
+                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8 w-fit shrink-0">
                                     <a
                                       href={`https://www.google.com/search?q=${encodeURIComponent(rec.name)}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <ExternalLink className="h-4 w-4" />Google Search
+                                      <ExternalLink className="h-4 w-4" />
+                                      <span className="text-xs">Search</span>
                                     </a>
                                   </Button>
                                 </div>
@@ -684,12 +685,12 @@ const BusinessToolsAdvisor = () => {
                   <CardDescription>Provide details to get tailored business idea recommendations</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Industry</label>
                       <Select value={industry} onValueChange={setIndustry}>
                         <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="technology">Technology</SelectItem>
                           <SelectItem value="ecommerce">E-commerce</SelectItem>
                           <SelectItem value="saas">SaaS</SelectItem>
@@ -710,7 +711,7 @@ const BusinessToolsAdvisor = () => {
                       <label className="text-sm font-medium">Team Size</label>
                       <Select value={teamSize} onValueChange={setTeamSize}>
                         <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="solo">Solo (1 person)</SelectItem>
                           <SelectItem value="small">Small (2-10 people)</SelectItem>
                           <SelectItem value="medium">Medium (11-50 people)</SelectItem>
@@ -723,7 +724,7 @@ const BusinessToolsAdvisor = () => {
                       <label className="text-sm font-medium">Available Startup Budget</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
                         <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           <SelectItem value="minimal">Minimal ($0-$100/month)</SelectItem>
                           <SelectItem value="low">Low ($100-$500/month)</SelectItem>
                           <SelectItem value="medium">Medium ($500-$2,000/month)</SelectItem>
@@ -783,18 +784,19 @@ const BusinessToolsAdvisor = () => {
                       {ideaResult.recommendations.map((rec, index) => (
                         <Card key={index}>
                           <CardHeader>
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <CardTitle className="text-lg">{rec.name}</CardTitle>
-                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8">
+                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                  <CardTitle className="text-base sm:text-lg break-words">{rec.name}</CardTitle>
+                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8 w-fit shrink-0">
                                     <a
                                       href={`https://www.google.com/search?q=${encodeURIComponent(rec.name + " business idea")}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <ExternalLink className="h-4 w-4" />Google Search
+                                      <ExternalLink className="h-4 w-4" />
+                                      <span className="text-xs">Search</span>
                                     </a>
                                   </Button>
                                 </div>

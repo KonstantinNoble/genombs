@@ -258,68 +258,68 @@ const NotionIdea = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         {viewMode === 'landing' && (
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in py-12">
-            <div className="space-y-4">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in py-8 sm:py-12">
+            <div className="space-y-4 px-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                 Notion Idea Board
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Collect and organize your AI-generated business recommendations in a clear, visual workspace
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 my-12">
-              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
-                  <BookOpen className="h-6 w-6 text-primary" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-8 sm:my-12 px-4">
+              <div className="p-4 sm:p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Import Analyses</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Import Analyses</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Import recommendations from your Business Tools & Ideas analyses
                 </p>
               </div>
               
-              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
-                  <TrendingUp className="h-6 w-6 text-secondary" />
+              <div className="p-4 sm:p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold mb-2">Organize</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Organize</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Filter, sort, and group recommendations by categories
                 </p>
               </div>
               
-              <div className="p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
-                  <Sparkles className="h-6 w-6 text-primary" />
+              <div className="p-4 sm:p-6 rounded-lg border bg-card hover:shadow-lg transition-shadow sm:col-span-2 lg:col-span-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Execute</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Execute</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Build your business roadmap with clear, actionable insights
                 </p>
               </div>
             </div>
 
             {user ? (
-              <div className="space-y-4">
+              <div className="space-y-4 px-4">
                 <Button 
                   size="lg" 
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
+                  className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto"
                 >
                   Get Started
                 </Button>
                 {(toolsHistory.length === 0 && ideasHistory.length === 0) && (
-                  <div className="mt-8 p-6 rounded-lg border bg-card/50">
-                    <p className="text-muted-foreground mb-4">
+                  <div className="mt-6 sm:mt-8 p-4 sm:p-6 rounded-lg border bg-card/50">
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4">
                       You haven't created any analyses yet. Use the Business AI Advisor to get personalized recommendations!
                     </p>
                     <Button 
                       onClick={() => navigate('/business-tools')}
                       variant="outline"
-                      className="gap-2"
+                      className="gap-2 w-full sm:w-auto"
                     >
                       Go to Business AI
                       <ArrowRight className="h-4 w-4" />
@@ -328,30 +328,30 @@ const NotionIdea = () => {
                 )}
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="p-6 rounded-lg border bg-card/50 max-w-2xl mx-auto">
-                  <h3 className="font-semibold mb-3 text-lg">How it works:</h3>
-                  <ol className="text-left space-y-2 text-muted-foreground">
+              <div className="space-y-6 px-4">
+                <div className="p-4 sm:p-6 rounded-lg border bg-card/50 max-w-2xl mx-auto">
+                  <h3 className="font-semibold mb-3 text-base sm:text-lg">How it works:</h3>
+                  <ol className="text-left space-y-2 text-sm sm:text-base text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <span className="font-bold text-primary">1.</span>
+                      <span className="font-bold text-primary shrink-0">1.</span>
                       <span>Create Business Tool or Idea analyses using our AI Advisor</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="font-bold text-primary">2.</span>
+                      <span className="font-bold text-primary shrink-0">2.</span>
                       <span>Import the recommendations into your Notion Idea Board</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="font-bold text-primary">3.</span>
+                      <span className="font-bold text-primary shrink-0">3.</span>
                       <span>Organize and prioritize your business strategy</span>
                     </li>
                   </ol>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col gap-3 sm:gap-4 justify-center">
                   <Button 
                     size="lg" 
                     onClick={() => navigate('/auth')}
-                    className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-lg px-8 py-6"
+                    className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full"
                   >
                     Sign In to Get Started
                   </Button>
@@ -359,7 +359,7 @@ const NotionIdea = () => {
                     size="lg"
                     variant="outline"
                     onClick={() => navigate('/business-tools')}
-                    className="gap-2 text-lg px-8 py-6"
+                    className="gap-2 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full"
                   >
                     Go to Business AI Advisor
                     <ArrowRight className="h-4 w-4" />

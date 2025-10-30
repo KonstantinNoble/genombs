@@ -33,7 +33,9 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         navigate("/");
       }
@@ -43,7 +45,7 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!acceptedTerms) {
       toast({
         title: "Terms of Service Required",
@@ -52,7 +54,7 @@ const Auth = () => {
       });
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -60,12 +62,12 @@ const Auth = () => {
 
       // Check email availability (30-day deletion blacklist)
       const { data: availabilityData, error: availabilityError } = await supabase.functions.invoke(
-        'check-email-availability',
-        { body: { email: validatedData.email } }
+        "check-email-availability",
+        { body: { email: validatedData.email } },
       );
 
       if (availabilityError) {
-        console.error('Availability check failed:', availabilityError);
+        console.error("Availability check failed:", availabilityError);
         // Fail-open: Continue with registration on error
       } else if (availabilityData && !availabilityData.available) {
         toast({
@@ -103,7 +105,10 @@ const Auth = () => {
           description: error.errors[0].message,
           variant: "destructive",
         });
-      } else if (error.message?.toLowerCase()?.includes("signups not allowed") || error.message?.toLowerCase()?.includes("signup_disabled")) {
+      } else if (
+        error.message?.toLowerCase()?.includes("signups not allowed") ||
+        error.message?.toLowerCase()?.includes("signup_disabled")
+      ) {
         toast({
           title: "Sign-ups disabled",
           description: "Sign-ups are currently disabled. Please try again later.",
@@ -155,7 +160,7 @@ const Auth = () => {
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      
+
       navigate("/");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -164,7 +169,10 @@ const Auth = () => {
           description: error.errors[0].message,
           variant: "destructive",
         });
-      } else if (error.message?.toLowerCase()?.includes("email not confirmed") || error.message?.toLowerCase()?.includes("confirm your email")) {
+      } else if (
+        error.message?.toLowerCase()?.includes("email not confirmed") ||
+        error.message?.toLowerCase()?.includes("confirm your email")
+      ) {
         toast({
           title: "Email not verified",
           description: "Please verify your email before signing in. You can resend the verification email below.",
@@ -237,9 +245,7 @@ const Auth = () => {
             {isLogin ? "Welcome Back" : "Create Account"}
           </CardTitle>
           <CardDescription className="text-center">
-            {isLogin
-              ? "Sign in to access your account"
-              : "Sign up to start your investment journey"}
+            {isLogin ? "Sign in to access your account" : "Sign up to start your journey"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -268,11 +274,7 @@ const Auth = () => {
                 required
                 className="bg-background"
               />
-              {!isLogin && (
-                <p className="text-xs text-muted-foreground">
-                  Use at least 8 characters.
-                </p>
-              )}
+              {!isLogin && <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>}
             </div>
 
             {!isLogin && (
@@ -283,16 +285,9 @@ const Auth = () => {
                   onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
                   className="mt-1"
                 />
-                <label
-                  htmlFor="terms"
-                  className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
-                >
+                <label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
                   I have read and accept the{" "}
-                  <Link
-                    to="/terms-of-service"
-                    className="text-secondary hover:underline font-medium"
-                    target="_blank"
-                  >
+                  <Link to="/terms-of-service" className="text-secondary hover:underline font-medium" target="_blank">
                     Terms of Service
                   </Link>
                   .
@@ -333,9 +328,7 @@ const Auth = () => {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <span className="text-secondary font-semibold">
-                {isLogin ? "Sign Up" : "Sign In"}
-              </span>
+              <span className="text-secondary font-semibold">{isLogin ? "Sign Up" : "Sign In"}</span>
             </button>
           </div>
         </CardContent>

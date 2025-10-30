@@ -12,7 +12,7 @@ import type { Components } from "react-markdown";
 
 const markdownComponents: Components = {
   h1: ({ children }) => (
-    <h1 className="text-4xl md:text-5xl font-bold mt-16 mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+    <h1 className="text-4xl md:text-5xl font-bold mt-16 mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 md:bg-clip-text md:text-transparent text-foreground">
       {children}
     </h1>
   ),
@@ -94,7 +94,7 @@ const BlogPost = () => {
               {post.category}
             </Badge>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{post.title}</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight bg-gradient-to-r from-primary to-primary/70 md:bg-clip-text md:text-transparent text-foreground">{post.title}</h1>
             
             <div className="flex items-center gap-3 text-muted-foreground mb-12 pb-8 border-b border-border">
               <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full">

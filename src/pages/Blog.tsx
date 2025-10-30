@@ -9,10 +9,7 @@ import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 
 const Blog = () => {
   return (
-    <>
-      <title>Business & Entrepreneurship Blog - Expert Insights | Wealthconomy</title>
-      <meta name="description" content="Read expert insights on entrepreneurship, business strategy, AI-powered tools, and startup growth. Learn from successful founders and discover innovative business solutions." />
-    
+    <> 
     <div className="min-h-screen bg-background">
       <Navbar />
       

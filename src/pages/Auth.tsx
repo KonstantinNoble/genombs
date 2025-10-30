@@ -103,6 +103,9 @@ const Auth = () => {
           // Don't block signup if Resend sync fails
         }
 
+        // Sign out immediately after signup to prevent auto-login before email verification
+        await supabase.auth.signOut();
+
         toast({
           title: "Registration successful!",
           description: "Please check your email to verify your account.",

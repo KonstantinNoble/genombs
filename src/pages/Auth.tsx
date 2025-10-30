@@ -90,6 +90,19 @@ const Auth = () => {
       if (error) throw error;
 
       if (data.user) {
+        // Sync user to Resend audience immediately after signup
+        try {
+          await supabase.functions.invoke('sync-user-to-resend', {
+            body: { 
+              email: data.user.email, 
+              user_id: data.user.id 
+            }
+          });
+        } catch (syncError) {
+          console.error('Failed to sync to Resend:', syncError);
+          // Don't block signup if Resend sync fails
+        }
+
         toast({
           title: "Registration successful!",
           description: "Please check your email to verify your account.",

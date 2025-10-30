@@ -96,25 +96,21 @@ const RecommendationDisplay = ({
     <div className="max-w-7xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-3">
-              <Sparkles className="h-3 w-3 text-secondary animate-pulse" />
-              <span className="text-xs font-semibold text-foreground">{recommendations.length} Total Items</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
               Your Business Roadmap
             </h1>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-              Organized recommendations to guide your business strategy
+            <p className="text-muted-foreground">
+              Organized recommendations from {recommendations.length} total items
             </p>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-initial hover:bg-primary/10 hover:border-primary transition-all">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onBackToSelection}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Import More
             </Button>
-            <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-initial hover:scale-105 transition-transform">
+            <Button variant="destructive" onClick={onClearAll}>
               <Trash2 className="mr-2 h-4 w-4" />
               Clear All
             </Button>
@@ -122,26 +118,26 @@ const RecommendationDisplay = ({
         </div>
 
         {/* Filters and Sorting */}
-        <div className="flex flex-wrap gap-3 sm:gap-4 items-center bg-gradient-to-r from-muted/30 to-transparent p-4 rounded-xl border">
+        <div className="flex flex-wrap gap-4 items-center">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-            <TabsList className="bg-background/50 backdrop-blur-sm">
-              <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80">All</TabsTrigger>
-              <TabsTrigger value="tools" className="data-[state=active]:bg-primary">Tools</TabsTrigger>
-              <TabsTrigger value="ideas" className="data-[state=active]:bg-secondary">Ideas</TabsTrigger>
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="tools">Tools Only</TabsTrigger>
+              <TabsTrigger value="ideas">Ideas Only</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)}>
-            <TabsList className="bg-background/50 backdrop-blur-sm">
+            <TabsList>
               <TabsTrigger value="all">All Timeline</TabsTrigger>
-              <TabsTrigger value="quick">Quick</TabsTrigger>
-              <TabsTrigger value="medium">Medium</TabsTrigger>
-              <TabsTrigger value="long">Long</TabsTrigger>
+              <TabsTrigger value="quick">Quick Wins</TabsTrigger>
+              <TabsTrigger value="medium">Medium-Term</TabsTrigger>
+              <TabsTrigger value="long">Long-Term</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-            <SelectTrigger className="w-[160px] sm:w-[180px] bg-background/50 backdrop-blur-sm">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
@@ -151,9 +147,8 @@ const RecommendationDisplay = ({
             </SelectContent>
           </Select>
 
-          <Badge variant="secondary" className="ml-auto bg-gradient-to-r from-secondary to-secondary/80 shadow-sm">
-            <Sparkles className="h-3 w-3 mr-1" />
-            {filteredRecommendations.length} shown
+          <Badge variant="secondary" className="ml-auto">
+            {filteredRecommendations.length} recommendations
           </Badge>
         </div>
       </div>
@@ -172,27 +167,24 @@ const RecommendationDisplay = ({
       {/* General Advice Section */}
       {generalAdviceItems.length > 0 && (
         <div className="mt-12">
-          <div className="flex items-center gap-3 mb-6 bg-gradient-to-r from-secondary/5 to-transparent p-3 rounded-lg">
-            <div className="p-2 rounded-lg bg-secondary/10">
-              <Sparkles className="h-6 w-6 text-secondary" />
-            </div>
-            <h2 className="text-2xl font-semibold">Strategic Insights</h2>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-6 w-6 text-secondary" />
+            <h2 className="text-2xl font-semibold">General Advice</h2>
           </div>
           <div className="space-y-4">
             {generalAdviceItems.map((item, index) => (
               <div
                 key={index}
-                className="p-5 sm:p-6 rounded-xl border bg-gradient-to-br from-card to-muted/10 hover:shadow-elegant hover:border-secondary/30 transition-all duration-300"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="p-6 rounded-lg border bg-card hover:shadow-md transition-shadow"
               >
-                <p className="text-sm sm:text-base leading-relaxed mb-4 text-foreground">{item.advice}</p>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <Badge variant="outline" className="text-xs bg-primary/5">
+                <p className="text-sm leading-relaxed mb-3">{item.advice}</p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Badge variant="outline" className="text-xs">
                     {item.source.sourceIndustry}
                   </Badge>
-                  <span className="text-muted-foreground/50">•</span>
+                  <span>•</span>
                   <span>{item.source.sourceTeamSize}</span>
-                  <span className="text-muted-foreground/50">•</span>
+                  <span>•</span>
                   <span>{item.source.sourceBudget}</span>
                 </div>
               </div>

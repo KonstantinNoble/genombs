@@ -41,16 +41,16 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   const cost = type === 'tool' ? estimatedCost : estimatedInvestment;
 
   return (
-    <Card className="hover:shadow-elegant transition-all duration-300 border-l-4 bg-gradient-to-br from-card to-muted/10 hover:scale-[1.01]" 
+    <Card className="hover:shadow-lg transition-all duration-300 border-l-4" 
           style={{ borderLeftColor: type === 'tool' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
-      <CardContent className="p-5 sm:p-6">
+      <CardContent className="p-6">
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
-          <div className={`p-2 sm:p-2.5 rounded-xl shadow-sm ${type === 'tool' ? 'bg-gradient-to-br from-primary to-primary/80' : 'bg-gradient-to-br from-secondary to-secondary/80'}`}>
+          <div className={`p-2 rounded-lg ${type === 'tool' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
             {type === 'tool' ? (
-              <Wrench className="h-5 w-5 text-white" />
+              <Wrench className="h-5 w-5 text-primary" />
             ) : (
-              <Lightbulb className="h-5 w-5 text-white" />
+              <Lightbulb className="h-5 w-5 text-secondary" />
             )}
           </div>
           <div className="flex-1">
@@ -75,8 +75,8 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </div>
 
         {/* Rationale */}
-        <div className="mb-4 p-4 rounded-xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50">
-          <p className="text-sm leading-relaxed text-foreground">{rationale}</p>
+        <div className="mb-4 p-4 rounded-lg bg-muted/50">
+          <p className="text-sm leading-relaxed text-muted-foreground">{rationale}</p>
         </div>
 
         {/* Source Info */}

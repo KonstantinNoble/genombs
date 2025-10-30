@@ -74,25 +74,30 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
 
   return (
     <Accordion type="single" collapsible defaultValue={category}>
-      <AccordionItem value={category} className="border rounded-lg">
-        <AccordionTrigger className="px-6 hover:no-underline group">
-          <div className="flex items-center gap-3 flex-1">
+      <AccordionItem value={category} className="border rounded-2xl bg-gradient-to-br from-card to-card/50 shadow-elegant hover:shadow-glow transition-all duration-500 overflow-hidden">
+        <AccordionTrigger className="px-8 py-5 hover:no-underline group">
+          <div className="flex items-center gap-4 flex-1">
             <div 
-              className="p-2 rounded-lg transition-transform group-hover:scale-110"
-              style={{ backgroundColor: `${color}15` }}
+              className="p-3 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm"
+              style={{ 
+                backgroundColor: `${color}15`,
+                boxShadow: `0 4px 12px ${color}25`
+              }}
             >
-              <Icon className="h-5 w-5" style={{ color }} />
+              <Icon className="h-6 w-6" style={{ color }} />
             </div>
-            <div className="flex items-center gap-3 flex-1">
-              <h3 className="text-lg font-semibold capitalize">{category}</h3>
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-1">
+              <h3 className="text-xl font-bold capitalize group-hover:translate-x-1 transition-transform" style={{ color }}>
+                {category}
+              </h3>
+              <div className="flex gap-2 flex-wrap">
                 {toolCount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20 font-semibold">
                     {toolCount} tool{toolCount !== 1 ? 's' : ''}
                   </Badge>
                 )}
                 {ideaCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs px-3 py-1 bg-secondary/10 text-secondary border-secondary/20 font-semibold">
                     {ideaCount} idea{ideaCount !== 1 ? 's' : ''}
                   </Badge>
                 )}
@@ -100,10 +105,16 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
             </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="px-6 pb-6">
-          <div className="space-y-4 pt-4">
-            {recommendations.map(rec => (
-              <RecommendationCard key={rec.id} recommendation={rec} />
+        <AccordionContent className="px-8 pb-8">
+          <div className="space-y-5 pt-6">
+            {recommendations.map((rec, index) => (
+              <div 
+                key={rec.id} 
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.05}s`, animationFillMode: 'backwards' }}
+              >
+                <RecommendationCard recommendation={rec} />
+              </div>
             ))}
           </div>
         </AccordionContent>

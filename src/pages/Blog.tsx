@@ -31,28 +31,32 @@ const Blog = () => {
         </div>
       </section>
 
-      <section className="py-20">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
         <div className="container mx-auto px-4">
           <ShopifyAffiliateBanner />
           <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
             {blogPosts.map((post, index) => (
               <Link key={post.id} to={`/blog/${post.id}`} className="group">
-                <Card className="h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-border hover:border-secondary/30 overflow-hidden animate-scale-in" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}>
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                  <CardHeader className="space-y-4 pb-4">
+                <Card className="h-full hover:shadow-glow transition-all duration-500 hover:-translate-y-3 border-border hover:border-secondary/40 overflow-hidden animate-scale-in bg-gradient-to-br from-card to-card/80 backdrop-blur-sm" style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}>
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-secondary via-primary to-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left shadow-glow" />
+                  <CardHeader className="space-y-5 pb-6 p-8">
                     <div className="flex items-center justify-between">
-                      <Badge className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors duration-300 border border-primary/20">
+                      <Badge className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary hover:from-primary/20 hover:to-primary/10 transition-all duration-300 border border-primary/30 px-4 py-1.5 font-semibold shadow-sm">
                         {post.category}
                       </Badge>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/50 px-3 py-1.5 rounded-full">
                         <Clock className="h-4 w-4" />
-                        <span>{post.readTime}</span>
+                        <span className="font-medium">{post.readTime}</span>
                       </div>
                     </div>
-                    <h2 className="text-2xl font-bold leading-tight group-hover:text-secondary transition-colors duration-300">
+                    <h2 className="text-2xl font-bold leading-tight group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-primary group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                       {post.title}
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed">{post.excerpt}</p>
+                    <p className="text-muted-foreground leading-relaxed text-base">{post.excerpt}</p>
                   </CardHeader>
                 </Card>
               </Link>

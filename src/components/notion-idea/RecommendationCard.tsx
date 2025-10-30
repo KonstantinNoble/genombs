@@ -41,32 +41,35 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   const cost = type === 'tool' ? estimatedCost : estimatedInvestment;
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 border-l-4" 
+    <Card className="group hover:shadow-glow hover:-translate-y-1 transition-all duration-500 border-l-4 overflow-hidden relative bg-gradient-to-br from-card to-card/80" 
           style={{ borderLeftColor: type === 'tool' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
-      <CardContent className="p-6">
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      
+      <CardContent className="p-7 relative">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-4">
-          <div className={`p-2 rounded-lg ${type === 'tool' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
+        <div className="flex items-start gap-4 mb-5">
+          <div className={`p-3 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300 ${type === 'tool' ? 'bg-gradient-to-br from-primary/20 to-primary/5' : 'bg-gradient-to-br from-secondary/20 to-secondary/5'}`}>
             {type === 'tool' ? (
-              <Wrench className="h-5 w-5 text-primary" />
+              <Wrench className="h-6 w-6 text-primary" />
             ) : (
-              <Lightbulb className="h-5 w-5 text-secondary" />
+              <Lightbulb className="h-6 w-6 text-secondary" />
             )}
           </div>
           <div className="flex-1">
-            <h4 className="text-lg font-semibold mb-2">{name}</h4>
+            <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">{name}</h4>
             <div className="flex flex-wrap gap-2">
               {timeline && (
-                <Badge className={getTimelineBadgeColor(timeline)}>
-                  <Clock className="h-3 w-3 mr-1" />
+                <Badge className={`${getTimelineBadgeColor(timeline)} px-3 py-1 font-semibold shadow-sm`}>
+                  <Clock className="h-3 w-3 mr-1.5" />
                   {timeline.split('-').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ')}
                 </Badge>
               )}
               {cost && (
-                <Badge variant="outline">
-                  <DollarSign className="h-3 w-3 mr-1" />
+                <Badge variant="outline" className="px-3 py-1 bg-background/50 font-semibold shadow-sm">
+                  <DollarSign className="h-3 w-3 mr-1.5" />
                   {cost}
                 </Badge>
               )}
@@ -75,29 +78,29 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </div>
 
         {/* Rationale */}
-        <div className="mb-4 p-4 rounded-lg bg-muted/50">
-          <p className="text-sm leading-relaxed text-muted-foreground">{rationale}</p>
+        <div className="mb-5 p-5 rounded-xl bg-gradient-to-br from-muted/80 to-muted/40 border border-border/50 backdrop-blur-sm">
+          <p className="text-sm leading-relaxed text-foreground/80">{rationale}</p>
         </div>
 
         {/* Source Info */}
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground bg-background/30 p-4 rounded-lg">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50">
+            <Calendar className="h-3.5 w-3.5" />
             <span>{format(new Date(sourceDate), 'MMM dd, yyyy')}</span>
           </div>
-          <span>•</span>
-          <div className="flex items-center gap-1">
-            <Building className="h-3 w-3" />
+          <span className="text-muted-foreground/50">•</span>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50">
+            <Building className="h-3.5 w-3.5" />
             <span>{sourceIndustry}</span>
           </div>
-          <span>•</span>
-          <div className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
+          <span className="text-muted-foreground/50">•</span>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50">
+            <Users className="h-3.5 w-3.5" />
             <span>{sourceTeamSize}</span>
           </div>
-          <span>•</span>
-          <div className="flex items-center gap-1">
-            <Wallet className="h-3 w-3" />
+          <span className="text-muted-foreground/50">•</span>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50">
+            <Wallet className="h-3.5 w-3.5" />
             <span>{sourceBudget}</span>
           </div>
         </div>

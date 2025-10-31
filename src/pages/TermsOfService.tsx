@@ -369,8 +369,7 @@ const TermsOfService = () => {
               <ul className="list-disc pl-6 mb-4 space-y-2">
                 <li>Business decisions, investments, or strategies implemented based on AI recommendations</li>
                 <li>Lost profits, revenue, business opportunities, contracts, or anticipated savings</li>
-                <li>Data loss if you failed to maintain backups or use our data export features</li>
-                <li>Damages caused by third-party services, tools, or platforms</li>
+                <li>Data loss if you failed to download your own backups before account deletion (we do not control backup infrastructure or retention periods)</li>
                 <li>Damages caused by your violation of these Terms</li>
                 <li>
     Damages caused by third-party services, tools, or platforms, including damages arising from the use of products or services offered via Affiliate-Links or damages resulting from external communication service providers.
@@ -469,8 +468,14 @@ const TermsOfService = () => {
 
               <p className="mb-4"><strong>Backup Retention:</strong></p>
               <p className="mb-4">
-                Deleted data may remain in encrypted backups for up to <strong>90 days</strong> for disaster recovery purposes. 
-                After 90 days, all backup copies are permanently overwritten and unrecoverable.
+                Deleted data may remain in encrypted backups for a <strong>technically determined period</strong> for disaster 
+                recovery purposes. We do not have direct control over the backup infrastructure or retention periods, which are 
+                determined by our hosting provider's technical capabilities. After this period, all backup copies are permanently 
+                overwritten and unrecoverable.
+              </p>
+              <p className="mb-4">
+                <strong>Important Recommendation:</strong> We strongly recommend that you download and save your own copies of 
+                any important data before deleting your account, as we cannot guarantee data recovery after deletion.
               </p>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">7.4 Platform Termination Rights</h3>

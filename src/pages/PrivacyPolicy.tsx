@@ -155,13 +155,18 @@ const PrivacyPolicy = () => {
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Your personal data is immediately and permanently removed from our production database</li>
               <li>
-                Data in automated backup systems (maintained by our hosting infrastructure for disaster recovery and
-                system integrity) are retained for up to 90 days, after which they are automatically and permanently
-                deleted
+                Copies in automated backup systems (maintained by our hosting provider for disaster recovery) are 
+                retained for a technically determined period and then permanently deleted. We do not have direct 
+                control over the backup infrastructure or retention periods, which are determined by our hosting 
+                provider's technical capabilities.
               </li>
               <li>
                 During the backup retention period, these data cannot be accessed, restored, or used for any operational
                 purposes
+              </li>
+              <li>
+                <strong>Important:</strong> We strongly recommend that you download and save your own copies of any 
+                important data before deleting your account, as we cannot guarantee recovery after deletion.
               </li>
               <li>Legal retention obligations may require us to keep certain records beyond this period</li>
             </ul>
@@ -191,9 +196,14 @@ const PrivacyPolicy = () => {
                 our production systems
               </li>
               <li>
-                Copies in automated backup systems (used solely for disaster recovery) are retained for up to 90 days
-                and then permanently deleted. During this retention period, backup data cannot be accessed or restored
-                for normal operations.
+                Copies in automated backup systems (used solely for disaster recovery) are retained for a technically 
+                determined period and then permanently deleted. We do not have direct control over the backup 
+                infrastructure or retention periods. During this retention period, backup data cannot be accessed or 
+                restored for normal operations.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> Please download your data before deletion if you need to retain it, 
+                as recovery cannot be guaranteed after account deletion.
               </li>
             </ul>
             
@@ -1041,9 +1051,10 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 <strong>Right to erasure / "Right to be forgotten" (Art. 17 GDPR)</strong> – You may delete your account
-                and all associated personal data at any time via your profile page. Please note that data in automated
-                backup systems (maintained for disaster recovery) will be retained for up to 90 days before permanent
-                deletion.
+                and all associated personal data at any time via your profile page. Please note that copies in automated
+                backup systems (maintained for disaster recovery) will be retained for a technically determined period 
+                before permanent deletion. We do not have direct control over the backup infrastructure. We recommend 
+                downloading your data before deletion if you need to retain it.
               </li>
               <li>
                 <strong>Right to restriction of processing (Art. 18 GDPR)</strong> – You have the right to request the

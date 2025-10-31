@@ -108,7 +108,8 @@ const NotionIdea = () => {
 
   // When the user logs out, clear sensitive state and localStorage
   useEffect(() => {
-    if (!user) {
+    // Only clear if not loading and user is truly logged out
+    if (!loading && !user) {
       setToolsHistory([]);
       setIdeasHistory([]);
       setImportedRecommendations([]);
@@ -120,7 +121,7 @@ const NotionIdea = () => {
         // ignore
       }
     }
-  }, [user]);
+  }, [user, loading]);
 
   // Persist state to localStorage
   useEffect(() => {

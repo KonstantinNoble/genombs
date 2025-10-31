@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -60,6 +60,7 @@ interface IdeaHistoryItem {
 }
 
 const BusinessToolsAdvisor = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
@@ -402,7 +403,7 @@ const BusinessToolsAdvisor = () => {
             <div className="py-4 sm:py-6">
               <Button 
                 size="lg" 
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => navigate('/auth')}
                 className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
               >
                 <LogIn className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />

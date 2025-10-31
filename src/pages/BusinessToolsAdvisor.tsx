@@ -384,63 +384,63 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-            <div className="space-y-6">
+      <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
+          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
+            <div className="space-y-4 sm:space-y-6 px-2">
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl animate-pulse" />
-                <Sparkles className="relative h-20 w-20 mx-auto text-primary animate-pulse" />
+                <Sparkles className="relative h-12 w-12 sm:h-20 sm:w-20 mx-auto text-primary animate-pulse" />
               </div>
-              <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
                 Business AI Advisor
               </h1>
-              <p className="text-xl sm:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
                 Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
               </p>
             </div>
 
-            <div className="py-6">
+            <div className="py-4 sm:py-6">
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = '/auth'}
-                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-xl px-12 py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300"
+                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
               >
-                <LogIn className="mr-3 h-6 w-6" />
+                <LogIn className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
                 Sign in to get started
               </Button>
-              <p className="text-sm text-muted-foreground mt-3">Start your free analysis now</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start your free analysis now</p>
             </div>
 
             <Card className="text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardHeader className="relative">
-                <CardTitle className="text-2xl sm:text-3xl flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
-                    <TrendingUp className="h-6 w-6 text-primary" />
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 sm:gap-3">
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
                   How it works
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 relative">
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">1</div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-1 text-foreground">Share your business context</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Tell us about your industry, team size, budget, and goals</p>
+              <CardContent className="space-y-4 sm:space-y-6 relative">
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">1</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your business context</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your industry, team size, budget, and goals</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">2</div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-1 text-foreground">Get personalized recommendations</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">2</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Get personalized recommendations</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300">3</div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-1 text-foreground">Implement and grow</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to optimize your business operations</p>
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">3</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Implement and grow</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to optimize your business operations</p>
                   </div>
                 </div>
               </CardContent>
@@ -463,10 +463,10 @@ const BusinessToolsAdvisor = () => {
       <div className="container mx-auto px-4 py-6">
         <ShopifyAffiliateBanner />
       </div>
-      <div className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Sidebar - History */}
-        <aside className="w-full lg:w-80 shrink-0 space-y-4 animate-fade-in">
+        <aside className="w-full lg:w-80 shrink-0 space-y-4 animate-fade-in order-2 lg:order-1">
           <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card via-card to-primary/5">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -524,55 +524,55 @@ const BusinessToolsAdvisor = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 w-full min-w-0 space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="text-center px-2 space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
-              <Sparkles className="h-4 w-4 text-secondary animate-pulse" />
-              <span className="text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
+        <main className="flex-1 w-full min-w-0 space-y-4 sm:space-y-6 animate-fade-in order-1 lg:order-2" style={{ animationDelay: '0.1s' }}>
+          <div className="text-center px-2 space-y-2 sm:space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
+              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-secondary animate-pulse" />
+              <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
               Business AI Advisor
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Get personalized AI-powered recommendations to grow your business with data-driven insights
             </p>
           </div>
 
           {/* Tab Selector */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ideas")} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12 bg-muted/50 p-1 backdrop-blur-sm">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-10 sm:h-12 bg-muted/50 p-1 backdrop-blur-sm">
               <TabsTrigger 
                 value="tools" 
-                className="gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
+                className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
-                <Lightbulb className="h-4 w-4" />
+                <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Business </span>Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
-                className="gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-primary transition-all duration-300"
+                className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-primary transition-all duration-300"
               >
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Business </span>Ideas
               </TabsTrigger>
             </TabsList>
 
             {/* Tools Tab */}
-            <TabsContent value="tools" className="space-y-6 mt-6">
+            <TabsContent value="tools" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
-                <CardHeader className="space-y-2 pb-4">
+                <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Lightbulb className="h-5 w-5 text-primary" />
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                     </div>
-                    <CardTitle className="text-xl">Tell us about your business</CardTitle>
+                    <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
                   </div>
-                  <CardDescription className="text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
+                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Industry</label>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Industry</label>
                       <Select value={industry} onValueChange={setIndustry}>
                         <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -592,8 +592,8 @@ const BusinessToolsAdvisor = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Team Size</label>
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Team Size</label>
                       <Select value={teamSize} onValueChange={setTeamSize}>
                         <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -605,8 +605,8 @@ const BusinessToolsAdvisor = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Monthly Budget for Tools</label>
+                    <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                      <label className="text-xs sm:text-sm font-medium">Monthly Budget for Tools</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
                         <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -619,95 +619,96 @@ const BusinessToolsAdvisor = () => {
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Primary Business Goals</label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label className="text-xs sm:text-sm font-medium">Primary Business Goals</label>
                     <Textarea
                       placeholder="E.g., Increase sales by 30%, improve team collaboration, automate repetitive tasks, reduce operational costs..."
                       value={businessGoals}
                       onChange={(e) => setBusinessGoals(e.target.value)}
-                      rows={4}
-                      maxLength={50}
+                      rows={3}
+                      className="text-sm sm:text-base resize-none"
+                      maxLength={500}
                     />
                   </div>
                   <Button
                     onClick={handleAnalyze}
                     disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessGoals.trim()}
-                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
                     size="lg"
                   >
                     {analyzing ? (
-                      <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Analyzing your business needs...</>
+                      <><Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" /><span className="truncate">Analyzing your business needs...</span></>
                     ) : !canAnalyze ? (
-                      <><Clock className="mr-2 h-5 w-5" />Next recommendation in {getTimeUntilNextAnalysis()}</>
+                      <><Clock className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /><span className="truncate">Next in {getTimeUntilNextAnalysis()}</span></>
                     ) : (
-                      <><Lightbulb className="mr-2 h-5 w-5" />Get AI Tool Recommendations</>
+                      <><Lightbulb className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />Get AI Tool Recommendations</>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-                    <Sparkles className="h-3 w-3" />
-                    You can request new recommendations once every 24 hours
+                  <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1 flex-wrap">
+                    <Sparkles className="h-3 w-3 shrink-0" />
+                    <span>You can request new recommendations once every 24 hours</span>
                   </p>
                 </CardContent>
               </Card>
 
               {/* Tool Results */}
               {toolResult && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="space-y-4 sm:space-y-6 animate-fade-in">
                   <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-card to-secondary/5 shadow-elegant">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-3 text-xl">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          <TrendingUp className="h-6 w-6 text-primary" />
+                    <CardHeader className="pb-3 sm:pb-4">
+                      <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl">
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                          <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
                         </div>
                         <span>Strategic Overview</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-base text-foreground leading-relaxed">{toolResult.generalAdvice}</p>
+                      <p className="text-sm sm:text-base text-foreground leading-relaxed">{toolResult.generalAdvice}</p>
                     </CardContent>
                   </Card>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-1 flex-1 bg-gradient-to-r from-primary via-secondary to-primary/30 rounded-full" />
-                      <h2 className="text-2xl font-bold whitespace-nowrap">Recommended Tools & Strategies</h2>
-                      <div className="h-1 flex-1 bg-gradient-to-l from-primary via-secondary to-primary/30 rounded-full" />
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="h-0.5 sm:h-1 flex-1 bg-gradient-to-r from-primary via-secondary to-primary/30 rounded-full" />
+                      <h2 className="text-base sm:text-xl lg:text-2xl font-bold whitespace-nowrap">Recommended Tools</h2>
+                      <div className="h-0.5 sm:h-1 flex-1 bg-gradient-to-l from-primary via-secondary to-primary/30 rounded-full" />
                     </div>
-                    <div className="grid gap-4">
+                    <div className="grid gap-3 sm:gap-4">
                       {toolResult.recommendations.map((rec, index) => (
                         <Card 
                           key={index}
                           className="hover:shadow-hover transition-all duration-300 border-border hover:border-primary/30 bg-gradient-to-br from-card to-muted/20"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                          <CardHeader className="pb-4">
-                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0 space-y-3">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                                  <CardTitle className="text-base sm:text-lg break-words flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                    {rec.name}
+                          <CardHeader className="pb-3 sm:pb-4">
+                            <div className="flex flex-col gap-3">
+                              <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                  <CardTitle className="text-sm sm:text-base lg:text-lg break-words flex items-center gap-2 flex-1">
+                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary animate-pulse shrink-0" />
+                                    <span>{rec.name}</span>
                                   </CardTitle>
-                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8 w-fit shrink-0 hover:bg-primary/10 hover:border-primary transition-all">
+                                  <Button asChild size="sm" variant="outline" className="gap-1.5 sm:gap-2 h-7 sm:h-8 w-fit shrink-0 hover:bg-primary/10 hover:border-primary transition-all text-xs sm:text-sm">
                                     <a
                                       href={`https://www.google.com/search?q=${encodeURIComponent(rec.name)}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <ExternalLink className="h-4 w-4" />
-                                      <span className="text-xs">Search</span>
+                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                                      <span>Search</span>
                                     </a>
                                   </Button>
                                 </div>
-                                <div className="flex flex-wrap gap-2">
-                                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-medium shadow-sm">
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-medium shadow-sm">
                                     {rec.category}
                                   </span>
-                                  <span className={`text-xs px-3 py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.implementation)}`}>
+                                  <span className={`text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.implementation)}`}>
                                     {rec.implementation.replace('-', ' ')}
                                   </span>
-                                  <span className="text-xs px-3 py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-1 font-medium shadow-sm">
+                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-0.5 sm:gap-1 font-medium shadow-sm">
                                     <DollarSign className="h-3 w-3" />{rec.estimatedCost}
                                   </span>
                                 </div>
@@ -715,7 +716,7 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-foreground leading-relaxed">{rec.rationale}</p>
+                            <p className="text-xs sm:text-sm text-foreground leading-relaxed">{rec.rationale}</p>
                           </CardContent>
                         </Card>
                       ))}
@@ -736,16 +737,16 @@ const BusinessToolsAdvisor = () => {
             </TabsContent>
 
             {/* Ideas Tab */}
-            <TabsContent value="ideas" className="space-y-6 mt-6">
+            <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-secondary/10 bg-gradient-to-br from-card to-secondary/5">
-                <CardHeader className="space-y-2 pb-4">
+                <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-secondary/10">
-                      <Sparkles className="h-5 w-5 text-secondary" />
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-secondary/10">
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
                     </div>
-                    <CardTitle className="text-xl">Tell us about your context</CardTitle>
+                    <CardTitle className="text-base sm:text-xl">Tell us about your context</CardTitle>
                   </div>
-                  <CardDescription className="text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
+                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">

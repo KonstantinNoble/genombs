@@ -328,8 +328,7 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               <strong>Data usage by Google:</strong> According to Google Cloud's API data usage policies, input data
               submitted through the Gemini API is not used to train or improve Google's models. Google retains API
-              request data for a limited period (typically 30 days) for abuse prevention and security monitoring
-              purposes only.
+              request data for a limited period for abuse prevention and security monitoring purposes only.
             </p>
             <p className="text-muted-foreground mb-4">More information:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
@@ -578,7 +577,7 @@ const PrivacyPolicy = () => {
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention (All AI Features)</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention:</strong> Google retains API request data for approximately 30 days
+              <strong>AI Provider Retention:</strong> Google retains API request data for a limited period
               for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
               used to train or improve Google's AI models.
             </p>

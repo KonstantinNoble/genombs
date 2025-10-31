@@ -615,46 +615,6 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 AI Request Logging for Quality Assurance</h3>
-            <p className="text-muted-foreground mb-4">
-              To ensure the quality and accuracy of our AI-powered features and to maintain evidence of proper 
-              operational conduct, we log all AI requests and responses in a secure, administrator-only database. 
-              This logging serves as proof that recommendations are generated algorithmically by the AI system and 
-              not manually by us.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data stored in audit logs:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>User ID (to link the request to your account)</li>
-              <li>Request parameters (industry, team size, budget, business context/goals you provided)</li>
-              <li>AI-generated recommendations (the full response from our AI system)</li>
-              <li>Timestamp of the request</li>
-              <li>Function name (which AI feature was used: Business Tools Advisor or Business Ideas Advisor)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Access control:</strong> These audit logs are accessible only by administrators using privileged 
-              credentials and cannot be viewed, modified, or deleted by regular users. This ensures the integrity of 
-              the logs for potential legal disputes or quality assurance reviews.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Storage duration:</strong> Audit logs are automatically deleted after 2 years through 
-              database triggers. Every time a new log entry is created, the system automatically removes all 
-              logs older than 2 years, ensuring continuous GDPR compliance. This retention 
-              period is necessary to maintain evidence for potential legal claims and quality monitoring.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Legitimate interest in maintaining evidence of proper 
-              operational conduct, preventing liability claims, and ensuring AI service quality. This logging is 
-              necessary to demonstrate that we operate our AI services responsibly and algorithmically, without manual 
-              intervention in recommendations.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Your rights:</strong> You can request access to your audit log data or object to this processing 
-              by contacting us at mail@wealthconomy.com. Please note that objecting to audit logging may result in 
-              the termination of your access to AI-powered features, as we require this logging to demonstrate 
-              responsible service operation.
-            </p>
           </section>
 
           <section className="mb-8">
@@ -1099,12 +1059,6 @@ const PrivacyPolicy = () => {
                     technically determined period and then permanently deleted. We do not have direct control over the 
                     backup infrastructure or retention periods, which are determined by our hosting provider's 
                     technical capabilities.
-                  </li>
-                  <li>
-                    Audit logs in the <code>ai_request_logs</code> table (created for legal compliance and quality 
-                    assurance) are retained for up to 2 years after creation, even after account deletion. This 
-                    retention is necessary under Art. 17(3)(e) GDPR (establishment, exercise, or defense of legal 
-                    claims) and Art. 6(1)(f) GDPR (legitimate interest in demonstrating responsible AI operation).
                   </li>
                   <li>
                     We recommend downloading your data before deletion if you need to retain it.

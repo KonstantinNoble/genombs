@@ -250,16 +250,16 @@ const Auth = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/20">
               <Mail className="h-8 w-8 text-secondary" />
             </div>
-            <AlertDialogTitle className="text-2xl text-center">Überprüfen Sie Ihre E-Mails!</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl text-center">Check Your Email!</AlertDialogTitle>
             <AlertDialogDescription className="text-center space-y-3">
               <p className="text-base">
-                Wir haben Ihnen einen Bestätigungslink gesendet.
+                We've sent you a confirmation link.
               </p>
               <p className="text-base font-semibold text-foreground">
-                Bitte klicken Sie auf den Link in Ihrer E-Mail, um Ihr Konto zu aktivieren.
+                Please click the link in your email to activate your account.
               </p>
               <p className="text-sm text-muted-foreground">
-                (Überprüfen Sie auch Ihren Spam-Ordner)
+                (Check your spam folder too)
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -270,7 +270,7 @@ const Auth = () => {
             }}
             className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold"
           >
-            Verstanden
+            Got it
           </Button>
         </AlertDialogContent>
       </AlertDialog>

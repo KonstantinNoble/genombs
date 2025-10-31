@@ -625,9 +625,6 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Email verification links after registration</li>
-              <li>Password reset links</li>
-              <li>Re-verification emails</li>
-              <li>Account security notifications</li>
             </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Email Service Provider</h4>
@@ -726,8 +723,7 @@ const PrivacyPolicy = () => {
             </p>
             <p className="text-muted-foreground mb-4">
               If you do not wish to receive administrative emails, your only option is to delete your account through 
-              the account settings. Upon account deletion, we will send one final confirmation email, after which no 
-              further emails will be sent.
+              the account settings.
             </p>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Third-Party Links</h4>

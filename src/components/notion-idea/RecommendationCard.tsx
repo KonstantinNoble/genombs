@@ -43,30 +43,31 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-all duration-300 border-l-4" 
           style={{ borderLeftColor: type === 'tool' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-4">
-          <div className={`p-2 rounded-lg ${type === 'tool' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
+        <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <div className={`p-1.5 sm:p-2 rounded-lg ${type === 'tool' ? 'bg-primary/10' : 'bg-secondary/10'} shrink-0`}>
             {type === 'tool' ? (
-              <Wrench className="h-5 w-5 text-primary" />
+              <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             ) : (
-              <Lightbulb className="h-5 w-5 text-secondary" />
+              <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
             )}
           </div>
-          <div className="flex-1">
-            <h4 className="text-lg font-semibold mb-2">{name}</h4>
-            <div className="flex flex-wrap gap-2">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-base sm:text-lg font-semibold mb-2 break-words">{name}</h4>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {timeline && (
-                <Badge className={getTimelineBadgeColor(timeline)}>
-                  <Clock className="h-3 w-3 mr-1" />
-                  {timeline.split('-').map(word => 
+                <Badge className={`${getTimelineBadgeColor(timeline)} text-xs`}>
+                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                  <span className="hidden sm:inline">{timeline.split('-').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
+                  ).join(' ')}</span>
+                  <span className="sm:hidden">{timeline.includes('quick') ? 'Quick' : timeline.includes('medium') ? 'Medium' : 'Long'}</span>
                 </Badge>
               )}
               {cost && (
-                <Badge variant="outline">
-                  <DollarSign className="h-3 w-3 mr-1" />
+                <Badge variant="outline" className="text-xs">
+                  <DollarSign className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
                   {cost}
                 </Badge>
               )}
@@ -75,30 +76,31 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </div>
 
         {/* Rationale */}
-        <div className="mb-4 p-4 rounded-lg bg-muted/50">
-          <p className="text-sm leading-relaxed text-muted-foreground">{rationale}</p>
+        <div className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg bg-muted/50">
+          <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{rationale}</p>
         </div>
 
         {/* Source Info */}
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            <span>{format(new Date(sourceDate), 'MMM dd, yyyy')}</span>
+            <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span className="hidden sm:inline">{format(new Date(sourceDate), 'MMM dd, yyyy')}</span>
+            <span className="sm:hidden">{format(new Date(sourceDate), 'MMM dd')}</span>
           </div>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <div className="flex items-center gap-1">
-            <Building className="h-3 w-3" />
-            <span>{sourceIndustry}</span>
+            <Building className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span className="truncate max-w-[100px] sm:max-w-none">{sourceIndustry}</span>
           </div>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <div className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
-            <span>{sourceTeamSize}</span>
+            <Users className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span className="truncate max-w-[80px] sm:max-w-none">{sourceTeamSize}</span>
           </div>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <div className="flex items-center gap-1">
-            <Wallet className="h-3 w-3" />
-            <span>{sourceBudget}</span>
+            <Wallet className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span className="truncate max-w-[80px] sm:max-w-none">{sourceBudget}</span>
           </div>
         </div>
       </CardContent>

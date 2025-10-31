@@ -42,26 +42,26 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
   };
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
+      <div className="text-center mb-6 sm:mb-8 px-2">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
           Import Your AI Recommendations
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Select the analyses you want to organize in your Notion Idea board
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
         {/* Tools Column */}
         {toolsHistory.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-primary" />
-                <h2 className="text-2xl font-semibold">Tools Analyses</h2>
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
               </div>
-              <Button variant="outline" size="sm" onClick={selectAllTools}>
+              <Button variant="outline" size="sm" onClick={selectAllTools} className="text-xs sm:text-sm">
                 Select All
               </Button>
             </div>
@@ -114,13 +114,13 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
 
         {/* Ideas Column */}
         {ideasHistory.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-secondary" />
-                <h2 className="text-2xl font-semibold">Ideas Analyses</h2>
+                <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+                <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
               </div>
-              <Button variant="outline" size="sm" onClick={selectAllIdeas}>
+              <Button variant="outline" size="sm" onClick={selectAllIdeas} className="text-xs sm:text-sm">
                 Select All
               </Button>
             </div>

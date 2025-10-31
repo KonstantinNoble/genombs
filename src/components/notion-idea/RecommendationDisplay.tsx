@@ -93,63 +93,67 @@ const RecommendationDisplay = ({
   }, [recommendations]);
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in">
+    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div className="w-full sm:w-auto">
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
               Your Business Roadmap
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Organized recommendations from {recommendations.length} total items
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onBackToSelection}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Import More
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm">
+              <ArrowLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Import More</span>
+              <span className="sm:hidden">Import</span>
             </Button>
-            <Button variant="destructive" onClick={onClearAll}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Clear All
+            <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-none text-xs sm:text-sm">
+              <Trash2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Clear All</span>
+              <span className="sm:hidden">Clear</span>
             </Button>
           </div>
         </div>
 
         {/* Filters and Sorting */}
-        <div className="flex flex-wrap gap-4 items-center">
-          <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="tools">Tools Only</TabsTrigger>
-              <TabsTrigger value="ideas">Ideas Only</TabsTrigger>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="w-full sm:w-auto">
+            <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+              <TabsTrigger value="tools" className="text-xs sm:text-sm">Tools</TabsTrigger>
+              <TabsTrigger value="ideas" className="text-xs sm:text-sm">Ideas</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)}>
-            <TabsList>
-              <TabsTrigger value="all">All Timeline</TabsTrigger>
-              <TabsTrigger value="quick">Quick Wins</TabsTrigger>
-              <TabsTrigger value="medium">Medium-Term</TabsTrigger>
-              <TabsTrigger value="long">Long-Term</TabsTrigger>
+          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)} className="w-full sm:w-auto">
+            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+              <TabsTrigger value="quick" className="text-xs sm:text-sm">Quick</TabsTrigger>
+              <TabsTrigger value="medium" className="text-xs sm:text-sm">Medium</TabsTrigger>
+              <TabsTrigger value="long" className="text-xs sm:text-sm">Long</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="category">By Category</SelectItem>
-              <SelectItem value="cost">By Cost</SelectItem>
-              <SelectItem value="date">By Date</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+              <SelectTrigger className="w-full sm:w-[180px] text-xs sm:text-sm">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="category">By Category</SelectItem>
+                <SelectItem value="cost">By Cost</SelectItem>
+                <SelectItem value="date">By Date</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Badge variant="secondary" className="ml-auto">
-            {filteredRecommendations.length} recommendations
-          </Badge>
+            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap">
+              {filteredRecommendations.length} items
+            </Badge>
+          </div>
         </div>
       </div>
 

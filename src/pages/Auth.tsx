@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const signUpSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -27,6 +28,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showEmailVerificationDialog, setShowEmailVerificationDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -90,11 +92,7 @@ const Auth = () => {
       if (error) throw error;
 
       if (data.user) {
-        toast({
-          title: "Registration successful!",
-          description: "Please check your email to verify your account.",
-        });
-        setIsLogin(true);
+        setShowEmailVerificationDialog(true);
         setEmail("");
         setPassword("");
       }
@@ -245,7 +243,39 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/95 to-primary/90 p-4 relative overflow-hidden">
+    <>
+      <AlertDialog open={showEmailVerificationDialog} onOpenChange={setShowEmailVerificationDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/20">
+              <Mail className="h-8 w-8 text-secondary" />
+            </div>
+            <AlertDialogTitle className="text-2xl text-center">Überprüfen Sie Ihre E-Mails!</AlertDialogTitle>
+            <AlertDialogDescription className="text-center space-y-3">
+              <p className="text-base">
+                Wir haben Ihnen einen Bestätigungslink gesendet.
+              </p>
+              <p className="text-base font-semibold text-foreground">
+                Bitte klicken Sie auf den Link in Ihrer E-Mail, um Ihr Konto zu aktivieren.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                (Überprüfen Sie auch Ihren Spam-Ordner)
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Button
+            onClick={() => {
+              setShowEmailVerificationDialog(false);
+              setIsLogin(true);
+            }}
+            className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold"
+          >
+            Verstanden
+          </Button>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/95 to-primary/90 p-4 relative overflow-hidden">
       {/* Animated gradient orbs */}
       <div className="absolute top-20 left-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -355,6 +385,7 @@ const Auth = () => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

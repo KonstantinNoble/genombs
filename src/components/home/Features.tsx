@@ -5,7 +5,7 @@ const features = [
   {
     icon: Sparkles,
     title: "AI-Powered Insights",
-    description: "Get intelligent business tool recommendations based on your unique needs and goals.",
+    description: "Get intelligent business tool recommendations and strategic insights based on your unique needs and goals.",
     gradient: "from-secondary/20 to-secondary/5"
   },
   {
@@ -54,7 +54,7 @@ const Features = () => {
             Everything You Need to Succeed
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground px-4">
-            Powerful features designed to accelerate your business growth
+            AI-powered features designed to accelerate your business growth and optimize workflows
           </p>
         </div>
         

@@ -27,20 +27,15 @@ const Hero = () => {
             className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-tight animate-fade-in-up px-4"
             style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
           >
-            Transform Your Business{" "}
-            <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-secondary via-[hsl(30,100%,60%)] to-[hsl(340,85%,65%)] bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent">
-                With AI Intelligence
-              </span>
-            </span>
+            Transform Your Business With AI-Powered Intelligence
           </h1>
 
           <p
             className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-3xl mx-auto animate-fade-in-up px-4"
             style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
           >
-            Discover the perfect tools for your business. Get personalized AI recommendations tailored to your industry,
-            team size, and growth ambitions—in seconds.
+            Get personalized AI business tool recommendations and strategic insights tailored to your industry,
+            team size, and growth goals. Start your free analysis today—no credit card required.
           </p>
 
           <div

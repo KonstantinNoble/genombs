@@ -1,24 +1,29 @@
-import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { Lightbulb, Rocket, Target, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { WebPageSchema } from "@/components/seo/StructuredData";
 
 const About = () => {
-  useEffect(() => {
-    document.title = "About - Wealthconomy | Our Mission to Empower Your Success";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        "content",
-        "Discover why Wealthconomy exists: to help you find direction in life, start successful businesses, and take control of your future. It's never too late to begin."
-      );
-    }
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>About Us - Wealthconomy | Empowering Entrepreneurs & Business Growth</title>
+        <meta 
+          name="description" 
+          content="Discover Wealthconomy's mission to help entrepreneurs find direction, start successful businesses, and achieve their dreams. AI-powered guidance for business success. It's never too late to begin." 
+        />
+        <meta name="keywords" content="entrepreneurship, business guidance, startup support, business direction, entrepreneur tools, business empowerment, AI business mentor" />
+        <link rel="canonical" href="https://wealthconomy.com/about" />
+      </Helmet>
+      <WebPageSchema
+        name="About Wealthconomy - Empowering Entrepreneurs"
+        description="Discover Wealthconomy's mission to help entrepreneurs find direction, start successful businesses, and achieve their dreams with AI-powered guidance."
+        url="https://wealthconomy.com/about"
+      />
       <Navbar />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-24">
@@ -28,7 +33,7 @@ const About = () => {
           </div>
 
           {/* Hero Section */}
-          <div className="max-w-4xl mx-auto text-center mb-16">
+          <header className="max-w-4xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2 rounded-full mb-6">
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold text-primary">Our Mission</span>
@@ -39,7 +44,7 @@ const About = () => {
             <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
               We believe everyone deserves the opportunity to find their path, build meaningful businesses, and achieve their dreams.
             </p>
-          </div>
+          </header>
 
           {/* Why We Exist */}
           <div className="max-w-4xl mx-auto mb-16">

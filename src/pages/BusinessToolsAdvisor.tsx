@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -384,6 +385,15 @@ const BusinessToolsAdvisor = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col">
+        <Helmet>
+          <title>Business AI Advisor - Get Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+          <meta 
+            name="description" 
+            content="Get AI-powered business tool recommendations and strategic insights tailored to your industry, team size, and budget. Free business analysis and personalized growth strategies." 
+          />
+          <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth, AI consultant" />
+          <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
+        </Helmet>
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
@@ -460,6 +470,15 @@ const BusinessToolsAdvisor = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
+      <Helmet>
+        <title>Business AI Advisor - Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+        <meta 
+          name="description" 
+          content="Get AI-powered business tool recommendations and strategic insights. Personalized analysis based on your industry, team size, and budget. 2 free analyses per day." 
+        />
+        <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth" />
+        <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
+      </Helmet>
       <Navbar />
       <div className="container mx-auto px-4 py-6">
         <ShopifyAffiliateBanner />

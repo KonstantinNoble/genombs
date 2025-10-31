@@ -106,12 +106,27 @@ const NotionIdea = () => {
     }
   }, [user]);
 
+  // When the user logs out, clear sensitive state and localStorage
+  useEffect(() => {
+    if (!user) {
+      setToolsHistory([]);
+      setIdeasHistory([]);
+      setImportedRecommendations([]);
+      setViewMode('landing');
+      try {
+        localStorage.removeItem('notion-idea-recommendations');
+        localStorage.removeItem('notion-idea-viewmode');
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [user]);
+
   // Persist state to localStorage
   useEffect(() => {
     localStorage.setItem('notion-idea-recommendations', JSON.stringify(importedRecommendations));
     localStorage.setItem('notion-idea-viewmode', viewMode);
   }, [importedRecommendations, viewMode]);
-
   const fetchAnalysesHistory = async () => {
     if (!user) return;
 
@@ -256,11 +271,13 @@ const NotionIdea = () => {
     );
   }
 
+  const effectiveViewMode = user ? viewMode : 'landing';
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
-        {viewMode === 'landing' && (
+        {effectiveViewMode === 'landing' && (
           <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-6 sm:py-16">
             <div className="space-y-4 sm:space-y-6 px-4 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 blur-3xl" />
@@ -391,7 +408,7 @@ const NotionIdea = () => {
         )}
         
         
-        {viewMode === 'select' && (
+        {effectiveViewMode === 'select' && (
           <AnalysisSelector
             toolsHistory={toolsHistory}
             ideasHistory={ideasHistory}
@@ -399,7 +416,7 @@ const NotionIdea = () => {
           />
         )}
         
-        {viewMode === 'display' && (
+        {effectiveViewMode === 'display' && (
           <RecommendationDisplay
             recommendations={importedRecommendations}
             onBackToSelection={handleBackToSelection}
@@ -407,7 +424,7 @@ const NotionIdea = () => {
           />
         )}
         
-        {viewMode === 'landing' && (
+        {effectiveViewMode === 'landing' && (
           <div className="mt-8">
             <ShopifyAffiliateBanner />
           </div>

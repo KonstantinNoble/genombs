@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.76.1";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,16 +15,22 @@ serve(async (req) => {
   try {
     const { email } = await req.json();
 
-    if (!email) {
+    // Server-side email validation
+    const emailSchema = z.string().email().max(255);
+    
+    let validatedEmail: string;
+    try {
+      validatedEmail = emailSchema.parse(email);
+    } catch (error) {
       return new Response(
-        JSON.stringify({ available: false, reason: "Email is required" }),
+        JSON.stringify({ available: false, reason: "Invalid email format" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
     // Hash email using SHA-256
     const encoder = new TextEncoder();
-    const emailData = encoder.encode(email.toLowerCase().trim());
+    const emailData = encoder.encode(validatedEmail.toLowerCase().trim());
     const hashBuffer = await crypto.subtle.digest('SHA-256', emailData);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const emailHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');

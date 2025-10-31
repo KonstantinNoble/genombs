@@ -46,7 +46,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log(`Business tools request from user: ${user.id}`);
+    console.log('Business tools request received');
 
     // Step 1: Check credits BEFORE AI call (read-only)
     const { data: creditsData, error: creditsError } = await supabase
@@ -64,7 +64,7 @@ serve(async (req) => {
     let currentCount = creditsData?.analysis_count ?? 0;
     let windowStart = creditsData?.analysis_window_start ? new Date(creditsData.analysis_window_start) : null;
 
-    console.log(`Current credits: count=${currentCount}, window_start=${windowStart?.toISOString()}`);
+    // Credit check performed
 
     // Check if window expired
     if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
@@ -106,7 +106,7 @@ serve(async (req) => {
 
     const { industry, teamSize, budgetRange, businessGoals } = validatedInput;
 
-    console.log('Input validated:', { industry, teamSize, budgetRange, businessGoals: businessGoals.substring(0, 50) + '...' });
+    console.log('Input validated successfully');
 
     // Step 3: Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -261,7 +261,7 @@ Please provide personalized business tool recommendations based on this informat
       console.error('Error updating credits:', updateError);
       // Non-fatal - we already saved the result
     } else {
-      console.log(`Credits updated: ${newCount}/2 in window starting ${newWindowStart.toISOString()}`);
+      console.log('Credits updated successfully');
     }
 
     return new Response(

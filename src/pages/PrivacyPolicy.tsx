@@ -904,7 +904,7 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 Combined credit tracking data (total analysis count across both features, analysis window start 
-                timestamp, last analysis timestamp, 25-hour usage limit enforcement data)
+                timestamp, last analysis timestamp, 24-hour usage limit enforcement data)
               </li>
               <li>
                 Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 

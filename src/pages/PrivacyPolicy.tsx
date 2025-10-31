@@ -638,7 +638,9 @@ const PrivacyPolicy = () => {
               the logs for potential legal disputes or quality assurance reviews.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Storage duration:</strong> Audit logs are automatically deleted after 2 years. This retention 
+              <strong>Storage duration:</strong> Audit logs are automatically deleted after 2 years through 
+              database triggers. Every time a new log entry is created, the system automatically removes all 
+              logs older than 2 years, ensuring continuous GDPR compliance. This retention 
               period is necessary to maintain evidence for potential legal claims and quality monitoring.
             </p>
             <p className="text-muted-foreground mb-4">

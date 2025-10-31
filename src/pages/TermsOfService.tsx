@@ -408,6 +408,42 @@ const TermsOfService = () => {
                 <li>Your violation of any third-party rights (intellectual property, privacy, etc.)</li>
                 <li>Any business decisions or actions you take based on our service</li>
               </ul>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">6.6 Duty to Mitigate Damages</h3>
+              <p className="mb-4">
+                Users acknowledge that AI-generated recommendations provided through our Business Tools Advisor and 
+                Business Ideas Advisor features are general in nature and must be independently verified before 
+                implementation. Users are obligated to:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>
+                  Consult qualified professional advisors (lawyers, accountants, business consultants, or industry 
+                  experts) before acting on AI recommendations
+                </li>
+                <li>
+                  Conduct independent research and due diligence for any business decisions, investments, or 
+                  strategic implementations
+                </li>
+                <li>
+                  Take reasonable steps to minimize potential financial, operational, or reputational damages
+                </li>
+                <li>
+                  Immediately notify Wealthconomy at{" "}
+                  <a href="mailto:support@wealthconomy.de" className="text-primary hover:underline">
+                    support@wealthconomy.de
+                  </a>{" "}
+                  if they identify errors, inaccuracies, or problematic recommendations
+                </li>
+                <li>
+                  Understand that failure to independently verify AI recommendations before implementation may 
+                  constitute contributory negligence and limit the ability to claim damages
+                </li>
+              </ul>
+              <p className="mb-4">
+                <strong>Acknowledgment:</strong> By using our AI-powered features, you confirm that you understand 
+                these recommendations are educational tools only and that you bear sole responsibility for any 
+                business decisions made based on them.
+              </p>
             </section>
 
             {/* Section VII */}

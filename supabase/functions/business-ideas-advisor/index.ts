@@ -243,6 +243,33 @@ Please provide personalized business ideas based on this information.`;
 
     console.log('History saved successfully');
 
+    // Step 5b: ZUSÄTZLICH in Admin-Log speichern (unveränderlich, für Beweissicherung)
+    try {
+      const { error: logError } = await supabase
+        .from('ai_request_logs')
+        .insert({
+          user_id: user.id,
+          function_name: 'business-ideas-advisor',
+          request_payload: {
+            industry,
+            teamSize,
+            budgetRange,
+            businessContext
+          },
+          response_payload: parsedResult
+        });
+
+      if (logError) {
+        console.error('Error saving admin log (non-fatal):', logError);
+        // Non-fatal - wir haben bereits die User-History gespeichert
+      } else {
+        console.log('Admin log saved successfully');
+      }
+    } catch (logErr) {
+      console.error('Exception saving admin log (non-fatal):', logErr);
+      // Non-fatal - Service läuft weiter
+    }
+
     // Step 6: Update credits AFTER successful insert
     const newWindowStart = windowStart ?? now;
     const newCount = currentCount + 1;

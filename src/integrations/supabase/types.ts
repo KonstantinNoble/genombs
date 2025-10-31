@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_request_logs: {
+        Row: {
+          created_at: string
+          function_name: string
+          id: string
+          request_payload: Json
+          response_payload: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          function_name: string
+          id?: string
+          request_payload: Json
+          response_payload: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          function_name?: string
+          id?: string
+          request_payload?: Json
+          response_payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_ideas_history: {
         Row: {
           budget_range: string
@@ -174,6 +201,8 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
+      cleanup_unconfirmed_users: { Args: never; Returns: undefined }
+      delete_old_ai_logs: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

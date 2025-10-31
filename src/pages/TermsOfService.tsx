@@ -65,7 +65,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">1.5 Age Requirement</h3>
               <p className="mb-4">
-                Users must be at least 18 years old to create an account. Users under 18 may only use the service with verifiable parental or guardian consent.
+                You must be at least 18 years old to create an account and use our services. By creating an account, you represent and warrant that you are 18 years of age or older. We do not knowingly collect information from or allow registration by individuals under the age of 18.
               </p>
             </section>
 

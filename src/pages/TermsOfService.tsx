@@ -377,6 +377,11 @@ const TermsOfService = () => {
   </li>
                 <li>Damages caused by force majeure events (wars, natural disasters, pandemics, government actions, internet outages, etc.)</li>
                 <li>Damages from unauthorized access to your account due to your failure to maintain credential security</li>
+                <li>
+                  Punitive damages, exemplary damages, treble damages, statutory damages, or any other forms of 
+                  non-compensatory damages, regardless of the cause of action. Our liability is limited to 
+                  compensatory damages as recognized under German law.
+                </li>
               </ul>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">6.4 Third-Party Services</h3>
@@ -626,6 +631,11 @@ const TermsOfService = () => {
               </p>
               <p className="mb-4">
                 <strong>For Consumers:</strong> This choice of law does not affect the application of mandatory provisions of the law of the country in which you have your habitual residence.
+              </p>
+              <p className="mb-4">
+                <strong>For Users Outside the EU/EEA:</strong> If you reside outside the European Union or European Economic Area, 
+                you expressly agree to the application of German law. To the extent permitted by applicable international private law rules, 
+                you waive the application of any mandatory consumer protection laws of your country of residence that would otherwise apply.
               </p>
               <p className="mb-4">
                 The <strong>United Nations Convention on Contracts for the International Sale of Goods (CISG)</strong> is expressly excluded and does not apply to these Terms.

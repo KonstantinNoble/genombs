@@ -210,11 +210,11 @@ const PrivacyPolicy = () => {
             <h3 className="text-xl font-semibold mb-3 mt-6">Email Hash Storage for Abuse Prevention</h3>
             <p className="text-muted-foreground mb-4">
               To prevent abuse and protect against accidental re-registration, we create a cryptographic hash (SHA-256) 
-              of your email address and store it temporarily for up to 25 hours after account deletion. This hash is a 
+              of your email address and store it temporarily for up to 24 hours after account deletion. This hash is a 
               one-way encryption that cannot be reversed to reveal your email address.
             </p>
             <p className="text-muted-foreground mb-4">
-              During this period (up to 25 hours), the same email address cannot be used to create a new account. This prevents:
+              During this period (up to 24 hours), the same email address cannot be used to create a new account. This prevents:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Accidental duplicate registrations immediately after deletion</li>
@@ -879,7 +879,7 @@ const PrivacyPolicy = () => {
               <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
               <li>
                 Email hash data (SHA-256 cryptographic hash of deleted account email addresses, stored temporarily 
-                for up to 25 hours to prevent abuse and accidental re-registration)
+                for up to 24 hours to prevent abuse and accidental re-registration)
               </li>
               <li>
                 Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -56,6 +56,18 @@ const Hero = () => {
                 <span className="relative z-10">Start Free Analysis</span>
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 group-hover:translate-x-2 relative z-10" />
                 <div className="absolute inset-0 bg-gradient-to-r from-[hsl(30,100%,60%)] to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Link>
+            </Button>
+            
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto border-2 border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 hover:border-white/50 hover:scale-110 transition-all duration-300 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 group backdrop-blur-sm"
+              asChild
+            >
+              <Link to="/notion-idea">
+                <Lightbulb className="mr-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 group-hover:rotate-12" />
+                <span>Get Business Ideas</span>
               </Link>
             </Button>
           </div>

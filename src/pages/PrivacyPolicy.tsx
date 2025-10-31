@@ -90,15 +90,15 @@ const PrivacyPolicy = () => {
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong> The use of this cookie is based on our legitimate interest (Art. 6(1)(f) GDPR) 
-              in providing a functional and user-friendly website. In addition, this use is permitted under Section 25 (2) 
-              No. 2 TTDSG, as the cookie is technically necessary for the operation of the website.
+              in providing a functional and user-friendly website. In addition, this use is permitted under § 25 Abs. 2 
+              Nr. 2 TTDSG, as the cookie is technically necessary for the operation of the website.
             </p>
             
             <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Authentication Session Management</h3>
             <p className="text-muted-foreground mb-4">
               When you log in to your account, we store a session token (JWT) in your browser's local storage to maintain 
-              your logged-in state. This token is technically necessary for authentication and is covered by Section 25 (2) 
-              No. 2 TTDSG, as it is essential for providing the requested service.
+              your logged-in state. This token is technically necessary for authentication and is covered by § 25 Abs. 2 
+              Nr. 2 TTDSG, as it is essential for providing the requested service.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance) and Art. 6(1)(f) GDPR 
@@ -607,41 +607,60 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Administrative Email Communication</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails (Authentication System)</h3>
             <p className="text-muted-foreground mb-4">
-              To ensure proper functionality and security of our service, we may send administrative and transactional 
-              emails to registered users. These emails are essential for the operation of your account and the service.
-            </p>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Types of Administrative Emails</h3>
-            <p className="text-muted-foreground mb-4">
-              We may send the following types of administrative emails:
+              Our authentication system (operated through Lovable Cloud) sends the following essential transactional emails:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Account-related notifications:</strong> Account creation confirmation, password reset requests, 
-              email verification, account deletion confirmation</li>
-              <li><strong>Security notifications:</strong> Unusual login activity, security updates, mandatory password changes</li>
-              <li><strong>Service notifications:</strong> Important changes to our Terms of Service or Privacy Policy, 
-              service disruptions, scheduled maintenance</li>
-              <li><strong>Technical notifications:</strong> Credit limit reached, quota reset notifications, error reports 
-              affecting your account</li>
+              <li>Email verification links after registration</li>
+              <li>Password reset links</li>
+              <li>Re-verification emails</li>
+              <li>Account security notifications</li>
             </ul>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Email Service Provider: Resend</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Email Service Provider</h4>
             <p className="text-muted-foreground mb-4">
-              For sending administrative emails, we use <strong>Resend</strong> (Plus Five Five, Inc.), a specialized 
-              email delivery service provider based in the United States.
+              <strong>Provider:</strong> Supabase Auth (Supabase Inc., San Francisco, USA)
             </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data processed:</strong> Email address, verification tokens, timestamps
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance - account creation and 
+              authentication services)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Third-country transfer:</strong> Data transfers to the USA are secured by Standard Contractual 
+              Clauses (SCCs) approved by the European Commission. Supabase maintains GDPR-compliant data processing 
+              practices and provides appropriate safeguards for international data transfers.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Your Rights:</strong> These transactional emails are essential for account security and cannot be 
+              opted out of while maintaining an active account. They are necessary to provide the authentication service 
+              you requested.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Administrative Service Updates (Resend)</h3>
+            <p className="text-muted-foreground mb-4">
+              For important service communications, we use Resend (Plus Five Five, Inc., USA) to send:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Terms of Service updates</li>
+              <li>Privacy Policy changes</li>
+              <li>Critical service announcements</li>
+            </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed by Resend</h4>
             <p className="text-muted-foreground mb-4">
-              When we send administrative emails through Resend, the following data is transmitted:
+              When we send service update notifications through Resend, the following data is transmitted:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Your email address (recipient address)</li>
-              <li>Email content (transactional message content)</li>
-              <li>Technical metadata (timestamps, delivery status, bounce information)</li>
-              <li>Your name/username (if included in the email)</li>
+              <li>Your name/username (if included in the notification)</li>
+              <li>Email content (service update notifications)</li>
+              <li>Technical metadata (timestamps, delivery status)</li>
             </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">GDPR Compliance and Data Protection</h4>
@@ -675,29 +694,24 @@ const PrivacyPolicy = () => {
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis for Processing</h4>
             <p className="text-muted-foreground mb-4">
-              The processing of your email address and related data for administrative emails is based on:
+              The processing of your email address and related data for service update notifications is based on:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Art. 6(1)(b) GDPR – Contract performance:</strong> Administrative and transactional emails 
-                are necessary for the performance of our contract with you (e.g., account verification, password 
-                resets, service-critical notifications)
+                <strong>Art. 6(1)(c) GDPR – Legal obligation:</strong> For mandatory privacy policy notifications 
+                required under GDPR
               </li>
               <li>
-                <strong>Art. 6(1)(f) GDPR – Legitimate interests:</strong> We have a legitimate interest in 
-                maintaining the security and integrity of our service, preventing fraud, and keeping you informed 
-                about important changes that affect your rights or the service functionality
-              </li>
-              <li>
-                <strong>Art. 6(1)(c) GDPR – Legal obligation:</strong> In some cases, we are legally required to 
-                send certain notifications (e.g., data breach notifications under Art. 34 GDPR)
+                <strong>Art. 6(1)(f) GDPR – Legitimate interest:</strong> We have a legitimate interest in keeping 
+                users informed about significant changes to Terms of Service and service announcements that affect 
+                your rights or service functionality
               </li>
             </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Your Rights</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Important note:</strong> Administrative emails are essential for account security and service 
-              operation and <strong>cannot be opted out of</strong> while maintaining an active account. These are 
+              <strong>Important note:</strong> Service update emails are sent only when legally required or when 
+              significant changes affect your rights. These cannot be opted out of while maintaining an active account. These are
               transactional emails required for the service, not marketing communications.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -943,7 +957,15 @@ const PrivacyPolicy = () => {
                 Contractual Clauses
               </li>
               <li>
-                <strong>Email provider:</strong> IONOS SE (Montabaur, Germany) – general email communication
+                <strong>Email providers:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>IONOS SE (Montabaur, Germany) – general correspondence</li>
+                  <li>Resend (Plus Five Five Inc., USA) – service update notifications</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Authentication email provider:</strong> Supabase Auth (Supabase Inc., USA) – transactional 
+                emails (as part of Lovable Cloud hosting)
               </li>
               <li>
                 <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Shopify – tracking
@@ -1026,10 +1048,6 @@ const PrivacyPolicy = () => {
               <li>
                 <strong>Right to restriction of processing (Art. 18 GDPR)</strong> – You have the right to request the
                 restriction of processing under certain circumstances.
-              </li>
-              <li>
-                {" "}
-                <strong> Right to object to automated processing (Art. 21 GDPR)</strong>
               </li>
               <li>
                 <strong>Right to data portability (Art. 20 GDPR)</strong> – You have the right to receive your personal

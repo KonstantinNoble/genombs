@@ -31,6 +31,13 @@ const Imprint = () => {
           </section>
 
           <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">VAT Information</h2>
+            <p className="text-muted-foreground mb-2">
+              Small business according to § 19 UStG (German VAT Act) - No VAT ID required
+            </p>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Responsible for Content</h2>
             <p className="text-muted-foreground mb-2">Muhammed Kagan Yilmaz</p>
             <p className="text-muted-foreground mb-2">Aroser Allee 50, 13407 Berlin, Germany</p>

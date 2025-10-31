@@ -18,31 +18,22 @@ const Imprint = () => {
           <h1 className="text-4xl font-bold mb-8">Imprint</h1>
           
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Company Information</h2>
-            <p className="text-muted-foreground mb-2">Investment Platform Inc.</p>
-            <p className="text-muted-foreground mb-2">123 Finance Street</p>
-            <p className="text-muted-foreground mb-2">New York, NY 10001</p>
-            <p className="text-muted-foreground mb-2">United States</p>
+            <h2 className="text-2xl font-semibold mb-4">Information according to § 5 TMG</h2>
+            <p className="text-muted-foreground mb-2">Muhammed Kagan Yilmaz</p>
+            <p className="text-muted-foreground mb-2">Aroser Allee 50</p>
+            <p className="text-muted-foreground mb-2">13407 Berlin</p>
+            <p className="text-muted-foreground mb-2">Germany</p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Contact</h2>
-            <p className="text-muted-foreground mb-2">Email: info@investment.com</p>
-            <p className="text-muted-foreground mb-2">Phone: +1 (555) 123-4567</p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Regulatory Information</h2>
-            <p className="text-muted-foreground mb-4">
-              Investment Platform Inc. is registered with the Securities and Exchange Commission (SEC) 
-              under registration number SEC-12345.
-            </p>
+            <p className="text-muted-foreground mb-2">Email: mail@wealthconomy.com</p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Responsible for Content</h2>
-            <p className="text-muted-foreground mb-2">John Smith, CEO</p>
-            <p className="text-muted-foreground mb-2">Investment Platform Inc.</p>
+            <p className="text-muted-foreground mb-2">Muhammed Kagan Yilmaz</p>
+            <p className="text-muted-foreground mb-2">Aroser Allee 50, 13407 Berlin, Germany</p>
           </section>
 
           <section className="mb-8">

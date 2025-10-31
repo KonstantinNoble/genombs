@@ -788,10 +788,10 @@ const PrivacyPolicy = () => {
               inquiry. The processing is based on our legitimate interest (Art. 6(1)(f) GDPR) in handling such requests.
             </p>
             <p className="text-muted-foreground mb-4">
-              We use IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany, as our email and hosting provider. Data
-              are stored on servers within the European Union, and no data are transferred to third countries. A Data
-              Processing Agreement pursuant to Art. 28 GDPR has been concluded with IONOS to ensure GDPR-compliant data
-              handling.
+              We use IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany, as our email provider for general 
+              correspondence. Data are stored on servers within the European Union, and no data are transferred to 
+              third countries. A Data Processing Agreement pursuant to Art. 28 GDPR has been concluded with IONOS to 
+              ensure GDPR-compliant data handling.
             </p>
             <p className="text-muted-foreground mb-4">
               Once your request has been completed, your data will be deleted unless legal obligations require
@@ -943,7 +943,7 @@ const PrivacyPolicy = () => {
                 Contractual Clauses
               </li>
               <li>
-                <strong>Email and domain provider:</strong> IONOS SE (Montabaur, Germany) – general email communication
+                <strong>Email provider:</strong> IONOS SE (Montabaur, Germany) – general email communication
               </li>
               <li>
                 <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Shopify – tracking
@@ -1073,7 +1073,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Browser-Based Data Storage (localStorage)</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Browser-Based Data Storage (localStorage)</h2>
             <p className="text-muted-foreground mb-4">
               We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
               recommendations locally on your device. This technology allows the application to remember your workspace 
@@ -1149,7 +1149,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> October 29, 2024
+              <strong>Last updated:</strong> October 31, 2025
             </p>
           </section>
         </article>

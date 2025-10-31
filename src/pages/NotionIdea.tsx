@@ -277,6 +277,10 @@ const NotionIdea = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+        <div className="mb-8">
+          <ShopifyAffiliateBanner />
+        </div>
+        
         {effectiveViewMode === 'landing' && (
           <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-6 sm:py-16">
             <div className="space-y-4 sm:space-y-6 px-4 relative">
@@ -443,12 +447,6 @@ const NotionIdea = () => {
           />
         </>
       )}
-        
-        {effectiveViewMode === 'landing' && (
-          <div className="mt-8">
-            <ShopifyAffiliateBanner />
-          </div>
-        )}
       </main>
       <Footer />
     </div>

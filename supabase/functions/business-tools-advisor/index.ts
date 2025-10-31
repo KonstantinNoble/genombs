@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +14,14 @@ interface ToolRecommendation {
   estimatedCost: string;
   rationale: string;
 }
+
+// Input validation schema
+const inputSchema = z.object({
+  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
+  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
+  businessGoals: z.string().trim().min(1, "Business goals are required").max(1000, "Business goals must be less than 1000 characters")
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -75,14 +84,29 @@ serve(async (req) => {
 
     console.log('Limit check passed, proceeding with AI call');
 
-    // Step 2: Parse input
-    const { industry, teamSize, budgetRange, businessGoals } = await req.json();
-
-    if (!industry || !teamSize || !budgetRange || !businessGoals) {
-      throw new Error('Missing required fields');
+    // Step 2: Parse and validate input
+    const requestBody = await req.json();
+    
+    let validatedInput;
+    try {
+      validatedInput = inputSchema.parse(requestBody);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('Validation error:', error.errors);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid input', 
+            details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw error;
     }
 
-    console.log('Input:', { industry, teamSize, budgetRange, businessGoals: businessGoals.substring(0, 50) + '...' });
+    const { industry, teamSize, budgetRange, businessGoals } = validatedInput;
+
+    console.log('Input validated:', { industry, teamSize, budgetRange, businessGoals: businessGoals.substring(0, 50) + '...' });
 
     // Step 3: Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Scale } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 
 const Footer = () => {
   return (
@@ -9,7 +10,7 @@ const Footer = () => {
           <div className="flex items-center justify-center gap-3">
             <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md">
               <img 
-                src="/favicon.jpg" 
+                src={logo} 
                 alt="Wealthconomy Logo" 
                 className="w-full h-full object-cover"
               />

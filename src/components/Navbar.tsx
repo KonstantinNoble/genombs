@@ -4,6 +4,7 @@ import { User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import logo from "@/assets/logo.jpg";
 
 const Navbar = () => {
   const location = useLocation();
@@ -58,7 +59,7 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-3 transition-all duration-300 hover:scale-105 group">
           <div className="relative w-8 h-8 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
             <img 
-              src="/favicon.jpg" 
+              src={logo} 
               alt="Wealthconomy Logo" 
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />

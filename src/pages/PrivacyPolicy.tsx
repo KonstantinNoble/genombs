@@ -65,13 +65,104 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">3. Cookies</h2>
+            <h2 className="text-2xl font-semibold mb-4">3. Hosting Services</h2>
+            <p className="text-muted-foreground mb-4">
+              Our website infrastructure is split between frontend and backend services, operated by different providers 
+              to ensure optimal performance and reliability.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.1 Frontend Hosting (Netlify)</h3>
+            <p className="text-muted-foreground mb-4">
+              The user-facing frontend of our website (HTML, CSS, JavaScript files) is hosted by Netlify, Inc., 
+              2325 3rd Street, Suite 215, San Francisco, CA 94107, USA.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing by Netlify</h4>
+            <p className="text-muted-foreground mb-4">
+              When you visit our website, Netlify processes the following technical data necessary to deliver the 
+              website content to your browser:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>IP address</li>
+              <li>Browser type and version</li>
+              <li>Operating system</li>
+              <li>Date and time of access</li>
+              <li>Requested pages and files</li>
+              <li>Referrer URL (page from which you accessed our site)</li>
+              <li>Amount of data transferred</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Purpose:</strong> Hosting and delivering the website frontend, ensuring availability, performance, 
+              and security of the service.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing a reliable, fast, 
+              and secure website infrastructure for our users.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Country Transfer</h4>
+            <p className="text-muted-foreground mb-4">
+              Netlify operates servers in the United States. Data transfers to the USA are secured by Standard 
+              Contractual Clauses (SCCs) approved by the European Commission pursuant to Art. 46 GDPR, ensuring an 
+              adequate level of data protection.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing Agreement</h4>
+            <p className="text-muted-foreground mb-4">
+              Netlify acts as a data processor under Art. 28 GDPR on behalf of our website. A Data Processing Agreement 
+              (DPA) including Standard Contractual Clauses has been established to ensure GDPR-compliant data handling.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">More Information</h4>
+            <p className="text-muted-foreground mb-4">
+              Netlify Privacy Policy:{" "}
+              <a
+                href="https://www.netlify.com/privacy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://www.netlify.com/privacy/
+              </a>
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Netlify GDPR Compliance:{" "}
+              <a
+                href="https://www.netlify.com/gdpr-ccpa/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://www.netlify.com/gdpr-ccpa/
+              </a>
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Backend Services (Lovable Cloud)</h3>
+            <p className="text-muted-foreground mb-4">
+              Our backend infrastructure (database, authentication, serverless functions, realtime data synchronization) 
+              is operated separately through Lovable Cloud and its sub-processors. Backend services are NOT hosted on 
+              Netlify infrastructure.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              For details about backend data processing, please refer to the following sections of this Privacy Policy:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Section 4: User Authentication (Login & Registration)</li>
+              <li>Section 5: AI-Powered Features</li>
+              <li>Section 7: Backend Hosting and Data Transfers</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">4. Cookies</h2>
             <p className="text-muted-foreground mb-4">
               Our website uses cookies to provide essential functionality and maintain your user session. Below we 
               explain what cookies are used and for what purpose:
             </p>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">3.1 Session Cookie</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Session Cookie</h3>
             <p className="text-muted-foreground mb-4">
               <strong>Cookie name:</strong> session-id
             </p>
@@ -94,7 +185,7 @@ const PrivacyPolicy = () => {
               Nr. 2 TTDSG, as the cookie is technically necessary for the operation of the website.
             </p>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Authentication Session Management</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Authentication Session Management</h3>
             <p className="text-muted-foreground mb-4">
               When you log in to your account, we store a session token (JWT) in your browser's local storage to maintain 
               your logged-in state. This token is technically necessary for authentication and is covered by § 25 Abs. 2 
@@ -107,7 +198,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. User Authentication (Login & Registration)</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. User Authentication (Login & Registration)</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers a user authentication system that allows you to create an account and log in to access
               premium features. When you register, we collect the following personal data:
@@ -241,7 +332,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. AI-Powered Features</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. AI-Powered Features</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers AI-powered features that provide personalized recommendations for business tools,
               software, strategies, and business ideas based on your stated business context and goals. These features 
@@ -256,7 +347,7 @@ const PrivacyPolicy = () => {
               your specific business situation.
             </p>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Business Tools Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Business Tools Advisor</h3>
             <p className="text-muted-foreground mb-4">
               The Business Tools Advisor provides personalized recommendations for business tools, software, and 
               strategies based on your business profile.
@@ -425,7 +516,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Business Ideas Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Business Ideas Advisor</h3>
             <p className="text-muted-foreground mb-4">
               The Business Ideas Advisor provides personalized business idea recommendations and startup concepts 
               based on your market interests and constraints.
@@ -468,7 +559,7 @@ const PrivacyPolicy = () => {
               interest in providing innovative AI-powered features).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Combined Credit System</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.3 Combined Credit System</h3>
             <p className="text-muted-foreground mb-4">
               To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor share 
               a unified quota system. You can perform a combined total of 2 analyses per 24-hour period across both 
@@ -499,7 +590,7 @@ const PrivacyPolicy = () => {
               service access for all users).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Notion Idea Board</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.4 Notion Idea Board</h3>
             <p className="text-muted-foreground mb-4">
               The Notion Idea Board feature allows you to import, organize, and visualize AI-generated recommendations 
               from both the Business Tools Advisor and Business Ideas Advisor in a unified workspace interface.
@@ -617,9 +708,9 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
+            <h2 className="text-2xl font-semibold mb-4">7. Email Communication</h2>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails (Authentication System)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.1 Transactional Emails (Authentication System)</h3>
             <p className="text-muted-foreground mb-4">
               Our authentication system (operated through Lovable Cloud) sends the following essential transactional emails:
             </p>
@@ -649,7 +740,7 @@ const PrivacyPolicy = () => {
               you requested.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Administrative Service Updates (Resend)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.2 Administrative Service Updates (Resend)</h3>
             <p className="text-muted-foreground mb-4">
               For important service communications, we use Resend (Plus Five Five, Inc., USA) to send:
             </p>
@@ -765,11 +856,12 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Hosting and Data Transfers</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Backend Hosting and Data Transfers</h2>
             <p className="text-muted-foreground mb-4">
-              Our website is hosted by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to
-              servers located outside the European Union (e.g., in the United States). The transfer is based on Standard
-              Contractual Clauses (SCCs) approved by the European Commission, which ensure an adequate level of data
+              Our backend infrastructure (database, authentication, serverless functions, realtime data synchronization) 
+              is operated by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to servers 
+              located outside the European Union (e.g., in the United States). The transfer is based on Standard 
+              Contractual Clauses (SCCs) approved by the European Commission, which ensure an adequate level of data 
               protection.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -802,7 +894,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Contact</h2>
+            <h2 className="text-2xl font-semibold mb-4">9. Contact</h2>
             <p className="text-muted-foreground mb-4">
               If you contact us (e.g., by email), we process the personal data you provide solely to respond to your
               inquiry. The processing is based on our legitimate interest (Art. 6(1)(f) GDPR) in handling such requests.
@@ -829,7 +921,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. External Links</h2>
+            <h2 className="text-2xl font-semibold mb-4">10. External Links</h2>
             <p className="text-muted-foreground mb-4">
               Our website may contain links to external websites or social media platforms such as Twitter (X). When you
               click on these links, you will be redirected to the respective external platform. Please note that we have
@@ -838,7 +930,7 @@ const PrivacyPolicy = () => {
           </section>
 
 <section className="mb-8">
-  <h2 className="text-2xl font-semibold mb-4">10. Affiliate Marketing (Impact.com / Shopify)</h2>
+  <h2 className="text-2xl font-semibold mb-4">11. Affiliate Marketing (Impact.com / Shopify)</h2>
   <p className="text-muted-foreground mb-4">
     We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
     program, we include affiliate links to products or services offered by **Shopify**.
@@ -867,7 +959,7 @@ const PrivacyPolicy = () => {
 </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Categories of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Categories of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Contact data (email address, if you contact us)</li>
               <li>User account data (email, user ID, timestamps)</li>
@@ -922,11 +1014,18 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
-                infrastructure, and processes technical connection data (IP addresses, server logs)
+                <strong>Frontend hosting provider:</strong> Netlify, Inc. (San Francisco, CA, USA) – hosts website 
+                frontend, delivers static assets, and processes technical connection data (IP addresses, browser 
+                information, server logs). Data transfers to the USA are secured by Standard Contractual Clauses (SCCs) 
+                pursuant to Art. 46 GDPR.
+              </li>
+              <li>
+                <strong>Backend hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – operates backend 
+                infrastructure (database, authentication, serverless functions) and processes user data, business profile 
+                data, and technical connection data
               </li>
               <li>
                 <strong>Backend services:</strong> Operated by Lovable.dev and their GDPR-compliant sub-processors
@@ -989,7 +1088,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Obligation to Provide Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Obligation to Provide Data</h2>
             <p className="text-muted-foreground mb-4">
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
@@ -1001,7 +1100,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Automated Decision-Making / Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
               <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
               (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
@@ -1026,7 +1125,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Data Security</h2>
             <p className="text-muted-foreground mb-4">
               We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
               restricted server access, and regular security reviews by our hosting provider.
@@ -1034,7 +1133,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Your Rights</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Your Rights</h2>
             <p className="text-muted-foreground mb-4">You have the following rights under the GDPR:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -1106,7 +1205,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">17. Browser-Based Data Storage (localStorage)</h2>
+            <h2 className="text-2xl font-semibold mb-4">18. Browser-Based Data Storage (localStorage)</h2>
             <p className="text-muted-foreground mb-4">
               We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
               recommendations locally on your device. This technology allows the application to remember your workspace 
@@ -1176,7 +1275,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">18. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">19. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.

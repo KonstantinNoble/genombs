@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
+import BlogCTA from "@/components/home/BlogCTA";
 import Footer from "@/components/Footer";
 import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { WebPageSchema } from "@/components/seo/StructuredData";
@@ -87,6 +88,7 @@ const Home = () => {
         <ShopifyAffiliateBanner />
       </div>
       <Features />
+      <BlogCTA />
       <CTA />
       </main>
       <Footer />

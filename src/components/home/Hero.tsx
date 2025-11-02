@@ -48,7 +48,7 @@ const Hero = () => {
             style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
           >
             Get personalized AI business tool recommendations and strategic insights tailored to your industry, team
-            size, and growth goals. Start your free analysis today—no credit card required.
+            size, and growth goals. Start your analysis today.
           </p>
 
           <div

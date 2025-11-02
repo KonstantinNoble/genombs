@@ -29,11 +29,11 @@ const Blog = () => {
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        
+
         <main className="container mx-auto px-4 py-16 md:py-24">
           <header className="text-center mb-16 max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Insights & Resources
+              Blogs & Resources
             </h1>
             <p className="text-lg text-muted-foreground">
               Expert guidance on building successful businesses with AI-powered tools and strategies

@@ -10,7 +10,6 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
-import About from "./pages/About";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -32,7 +31,6 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
           <Route path="/notion-idea" element={<NotionIdea />} />
-          <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

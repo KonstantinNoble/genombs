@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { blogPosts } from "@/data/blogPosts";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
+import { Clock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { WebPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -67,16 +67,6 @@ const BlogPost = () => {
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <time dateTime={post.date}>
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-              </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>{post.readTime}</span>

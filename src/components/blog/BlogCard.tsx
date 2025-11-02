@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { BlogPost } from "@/data/blogPosts";
 
 interface BlogCardProps {
@@ -25,16 +25,6 @@ export const BlogCard = ({ post }: BlogCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              <time dateTime={post.date}>
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </time>
-            </div>
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>{post.readTime}</span>

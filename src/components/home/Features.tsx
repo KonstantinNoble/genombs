@@ -48,7 +48,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="py-12 sm:py-20 md:py-32 bg-gradient-to-b from-background via-[hsl(260,30%,96%)] to-background relative overflow-hidden" aria-label="Platform features">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-background via-[hsl(260,30%,96%)] to-background relative overflow-hidden" aria-label="Platform features">
       {/* Subtle gradient orbs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[hsl(280,85%,65%)]/5 rounded-full blur-[100px]" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[hsl(340,85%,65%)]/5 rounded-full blur-[100px]" />

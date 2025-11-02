@@ -84,7 +84,7 @@ const Home = () => {
       <Navbar />
       <main>
       <Hero />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-8 pb-4">
         <ShopifyAffiliateBanner />
       </div>
       <Features />

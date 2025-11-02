@@ -99,6 +99,16 @@ const Navbar = () => {
             Notion Idea
           </Link>
           <Link 
+            to="/blog" 
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
+              isActive("/blog") 
+                ? "text-primary after:w-full shadow-sm" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
+            }`}
+          >
+            Blog
+          </Link>
+          <Link 
             to="/about" 
             className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/about") 
@@ -156,6 +166,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Notion Idea
+            </Link>
+            <Link
+              to="/blog"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+              onClick={() => setIsOpen(false)}
+            >
+              Blog
             </Link>
             <Link
               to="/about"

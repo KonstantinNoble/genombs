@@ -11,6 +11,8 @@ import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
 import About from "./pages/About";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
           <Route path="/notion-idea" element={<NotionIdea />} />
           <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/imprint" element={<Imprint />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />

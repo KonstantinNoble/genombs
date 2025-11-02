@@ -27,7 +27,7 @@ const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
           <div className="inline-block px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-secondary/20 to-accent/20 border border-secondary/40 rounded-full text-white font-semibold text-xs sm:text-sm mb-6 animate-fade-in-up backdrop-blur-md shadow-[0_0_30px_hsl(280,85%,65%,0.3)]">
-            ✨ Powered by Advanced AI Technology
+            Powered by Advanced AI Technology
           </div>
 
           <h1
@@ -47,8 +47,8 @@ const Hero = () => {
             className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/70 font-light max-w-3xl mx-auto animate-fade-in-up px-4 leading-relaxed"
             style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
           >
-            Get personalized AI business tool recommendations and strategic insights tailored to your industry,
-            team size, and growth goals. Start your free analysis today—no credit card required.
+            Get personalized AI business tool recommendations and strategic insights tailored to your industry, team
+            size, and growth goals. Start your free analysis today—no credit card required.
           </p>
 
           <div
@@ -66,7 +66,7 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-[hsl(340,85%,65%)] to-[hsl(260,90%,60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Link>
             </Button>
-            
+
             <Button
               size="lg"
               variant="outline"

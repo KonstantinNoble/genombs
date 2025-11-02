@@ -31,7 +31,7 @@ const CTA = () => {
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 sm:space-y-10 animate-fade-in-up">
           <div className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-secondary/25 to-accent/25 border border-white/30 rounded-full text-white font-semibold text-xs sm:text-sm backdrop-blur-md shadow-[0_0_40px_hsl(280,85%,65%,0.4)]">
-            🚀 Start Your Journey Today
+            Start Your Journey Today
           </div>
 
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] px-4">
@@ -64,7 +64,12 @@ const CTA = () => {
 
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 pt-4 sm:pt-6 text-white/60 text-xs sm:text-sm px-4">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -74,7 +79,12 @@ const CTA = () => {
               <span>Free Plan</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -84,7 +94,12 @@ const CTA = () => {
               <span>No Credit Card</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"

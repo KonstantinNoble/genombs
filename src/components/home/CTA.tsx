@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CTA = () => {
@@ -56,7 +55,6 @@ const CTA = () => {
             >
               <Link to="/business-tools">
                 <span className="relative z-10">Get Started</span>
-                <ArrowRight className="ml-3 h-6 w-6 sm:h-7 sm:w-7 transition-transform duration-300 group-hover:translate-x-2 relative z-10" />
                 <div className="absolute inset-0 bg-gradient-to-r from-[hsl(340,85%,65%)] to-[hsl(260,90%,60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Link>
             </Button>

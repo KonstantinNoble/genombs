@@ -1,34 +1,27 @@
-import { Sparkles, Brain, Zap, TrendingUp, Target, Rocket } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    icon: Sparkles,
     title: "AI-Powered Insights",
     description: "Intelligent business tool recommendations based on your unique needs and goals.",
   },
   {
-    icon: Brain,
     title: "Smart Analysis",
     description: "Advanced AI analyzes your business context to deliver precision-matched solutions.",
   },
   {
-    icon: Zap,
     title: "Instant Results",
     description: "Receive comprehensive recommendations in seconds.",
   },
   {
-    icon: TrendingUp,
     title: "Growth Focused",
     description: "Tools and strategies tailored to scale your business.",
   },
   {
-    icon: Target,
     title: "Precision Matching",
     description: "Industry-specific recommendations that align with your team size and budget.",
   },
   {
-    icon: Rocket,
     title: "Free to Start",
     description: "Begin your optimization journey with free daily analysis.",
   },
@@ -73,12 +66,6 @@ const Features = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <CardContent className="relative pt-8 pb-8 px-6 space-y-4">
-                <div 
-                  className="h-14 w-14 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg"
-                  style={{ boxShadow: "var(--shadow-card)" }}
-                >
-                  <feature.icon className="h-7 w-7 text-white" />
-                </div>
                 <h3 className="text-xl font-bold text-foreground group-hover:text-secondary transition-colors duration-300">
                   {feature.title}
                 </h3>

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Scale } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 
 const Footer = () => {
@@ -19,10 +18,7 @@ const Footer = () => {
           </div>
           
           <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4 justify-center">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center shadow-sm">
-                <Scale className="h-4 w-4 text-secondary" />
-              </div>
+            <div className="mb-4 text-center">
               <h3 className="font-bold text-base sm:text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Legal</h3>
             </div>
             <nav className="flex flex-col space-y-3 items-center" aria-label="Legal links">

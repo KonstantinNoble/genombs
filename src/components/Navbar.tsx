@@ -108,17 +108,20 @@ const Navbar = () => {
             Blog
           </Link>
           {user ? (
-            <Link to="/profile">
-              <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300">
-                Profile
-              </Button>
-            </Link>
+            <Button
+              size="sm"
+              asChild
+            >
+              <Link to="/profile">Profile</Link>
+            </Button>
           ) : (
-            <Link to="/auth">
-              <Button size="sm" className="bg-gradient-to-r from-secondary to-secondary/80 text-primary font-semibold shadow-elegant hover:shadow-hover hover:scale-105 transition-all duration-300">
-                Sign In
-              </Button>
-            </Link>
+            <Button
+              size="sm"
+              variant="outline"
+              asChild
+            >
+              <Link to="/auth">Sign In</Link>
+            </Button>
           )}
         </div>
 
@@ -171,17 +174,24 @@ const Navbar = () => {
               Blog
             </Link>
             {user ? (
-              <Link to="/profile" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-elegant hover:shadow-hover transition-all duration-300">
-                  Profile
-                </Button>
-              </Link>
+              <Button
+                size="sm"
+                className="w-full"
+                onClick={() => setIsOpen(false)}
+                asChild
+              >
+                <Link to="/profile">Profile</Link>
+              </Button>
             ) : (
-              <Link to="/auth" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-semibold shadow-elegant hover:shadow-hover transition-all duration-300">
-                  Sign In
-                </Button>
-              </Link>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsOpen(false)}
+                asChild
+              >
+                <Link to="/auth">Sign In</Link>
+              </Button>
             )}
           </div>
         </div>

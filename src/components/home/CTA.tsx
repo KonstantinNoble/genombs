@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
-    <section className="py-20 sm:py-24 md:py-32 bg-background border-t">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
+    <section className="py-20 sm:py-24 md:py-32 bg-gradient-to-br from-primary/10 via-background to-accent/10 border-t relative overflow-hidden">
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-secondary/20 animate-pulse opacity-40" />
+      
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+          <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Ready to Get Started?
           </h2>
 
@@ -17,7 +20,7 @@ const CTA = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button
               size="lg"
-              className="text-base px-8"
+              className="text-base px-8 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
               asChild
             >
               <Link to="/business-tools">
@@ -27,9 +30,18 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">
-            <span>✓ Free Plan</span>
-            <span>✓ No Credit Card</span>
-            <span>✓ Instant Access</span>
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              Free Plan
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: '0.3s' }} />
+              No Credit Card
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" style={{ animationDelay: '0.6s' }} />
+              Instant Access
+            </span>
           </div>
         </div>
       </div>

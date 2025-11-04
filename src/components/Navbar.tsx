@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/synoptas-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -56,14 +56,14 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300 shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 animate-fade-in-up">
         <Link to="/" className="flex items-center gap-3 transition-all duration-300 hover:scale-105 group">
-          <div className="relative w-8 h-8 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
+          <div className="relative w-10 h-10 overflow-hidden transition-all duration-300 group-hover:rotate-12">
             <img 
               src={logo} 
-              alt="Wealthconomy Logo" 
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              alt="Synoptas Logo" 
+              className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-xl font-bold font-serif bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">Wealthconomy</span>
+          <span className="text-xl font-bold font-serif bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Synoptas</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">

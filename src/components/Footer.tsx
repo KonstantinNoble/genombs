@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/synoptas-logo.png";
 
 const Footer = () => {
   return (
@@ -7,14 +7,14 @@ const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-md mx-auto space-y-8">
           <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md">
+            <div className="w-12 h-12 overflow-hidden">
               <img 
                 src={logo} 
-                alt="Wealthconomy Logo" 
-                className="w-full h-full object-cover"
+                alt="Synoptas Logo" 
+                className="w-full h-full object-contain"
               />
             </div>
-            <span className="font-serif font-bold text-xl bg-gradient-to-r from-primary via-secondary to-primary/80 bg-clip-text text-transparent">Wealthconomy</span>
+            <span className="font-serif font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Synoptas</span>
           </div>
           
           <div className="space-y-4">
@@ -37,7 +37,7 @@ const Footer = () => {
         
         <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border/50 text-center">
           <p className="text-xs sm:text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Wealthconomy. All rights reserved.
+            © {new Date().getFullYear()} Synoptas. All rights reserved.
           </p>
         </div>
       </div>

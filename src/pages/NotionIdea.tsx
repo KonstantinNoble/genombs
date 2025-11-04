@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Loader2, BookOpen, TrendingUp, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -266,7 +265,7 @@ const NotionIdea = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
         </div>
       </div>
     );
@@ -284,45 +283,31 @@ const NotionIdea = () => {
         
         {effectiveViewMode === 'landing' && (
           <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-6 sm:py-16">
-            <div className="space-y-4 sm:space-y-6 px-4 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 blur-3xl" />
-              <div className="relative inline-block mb-2 sm:mb-4">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-primary/20 blur-2xl animate-pulse" />
-                <Sparkles className="relative h-12 w-12 sm:h-16 sm:w-16 mx-auto text-primary animate-pulse" />
-              </div>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight px-2">
+            <div className="space-y-4 sm:space-y-6 px-4">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight px-2">
                 Notion Idea Board
               </h1>
-              <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-3xl mx-auto leading-relaxed px-2">
+              <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
                 Collect and organize your <span className="text-primary font-semibold">AI-generated</span> business recommendations in a clear, visual workspace
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-6 sm:my-10 px-4">
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-elegant hover:scale-105 hover:border-primary/40 transition-all duration-500 group">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-                </div>
+              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
                 <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Import Analyses</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Import recommendations from your Business Tools & Ideas analyses
                 </p>
               </div>
               
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-elegant hover:scale-105 hover:border-primary/40 transition-all duration-500 group">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <TrendingUp className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-                </div>
+              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
                 <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Organize</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Filter, sort, and group recommendations by categories
                 </p>
               </div>
               
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 hover:shadow-elegant hover:scale-105 hover:border-primary/40 transition-all duration-500 group">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-3 sm:mb-4 mx-auto shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-                </div>
+              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
                 <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Execute</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Build your business roadmap with clear, actionable insights
@@ -335,17 +320,13 @@ const NotionIdea = () => {
                 <Button 
                   size="lg" 
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-105 transition-all text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 font-bold w-full sm:w-auto"
+                  className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 font-bold w-full sm:w-auto"
                 >
-                  <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Get Started
                 </Button>
                 {(toolsHistory.length === 0 && ideasHistory.length === 0) && (
-                  <div className="mt-8 p-6 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 shadow-lg">
+                  <div className="mt-8 p-6 sm:p-8 rounded-2xl border-2 border-border bg-card shadow-lg">
                     <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shrink-0">
-                        <TrendingUp className="h-6 w-6 text-primary" />
-                      </div>
                       <p className="text-base sm:text-lg text-foreground font-semibold text-center sm:text-left">
                         Ready to start your business journey?
                       </p>
@@ -358,8 +339,7 @@ const NotionIdea = () => {
                       variant="outline"
                       className="gap-2 w-full sm:w-auto border-2 border-primary/30 hover:bg-primary/10 font-semibold"
                     >
-                      Go to Business AI
-                      <ArrowRight className="h-4 w-4" />
+                      Go to Business AI →
                     </Button>
                   </div>
                 )}
@@ -370,27 +350,26 @@ const NotionIdea = () => {
                   <Button 
                     size="lg" 
                     onClick={() => navigate('/auth')}
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-elegant hover:scale-110 transition-all text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 font-bold w-full sm:w-auto shadow-lg"
+                    className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 font-bold w-full sm:w-auto shadow-lg"
                   >
-                    <Sparkles className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
                     Sign In to Get Started
                   </Button>
                   <p className="text-sm text-muted-foreground mt-3 text-center sm:text-left">Start organizing your ideas now - it's free</p>
                 </div>
 
-                <div className="p-6 sm:p-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-card to-card shadow-elegant max-w-2xl mx-auto">
-                  <h3 className="font-bold mb-6 text-xl sm:text-2xl text-center bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">How it works:</h3>
+                <div className="p-6 sm:p-8 rounded-2xl border-2 border-border bg-card shadow-lg max-w-2xl mx-auto">
+                  <h3 className="font-bold mb-6 text-xl sm:text-2xl text-center text-foreground">How it works:</h3>
                   <ol className="text-left space-y-4 text-sm sm:text-base">
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300">
-                      <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">1</div>
+                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
+                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">1</div>
                       <span className="text-foreground leading-relaxed">Create Business Tool or Idea analyses using our AI Advisor</span>
                     </li>
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300">
-                      <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">2</div>
+                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
+                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">2</div>
                       <span className="text-foreground leading-relaxed">Import the recommendations into your Notion Idea Board</span>
                     </li>
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300">
-                      <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">3</div>
+                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
+                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">3</div>
                       <span className="text-foreground leading-relaxed">Organize and prioritize your business strategy</span>
                     </li>
                   </ol>
@@ -403,8 +382,7 @@ const NotionIdea = () => {
                     onClick={() => navigate('/business-tools')}
                     className="gap-2 text-lg px-10 py-7 font-semibold w-full border-2 border-primary/30 hover:bg-primary/10"
                   >
-                    Go to Business AI Advisor
-                    <ArrowRight className="h-5 w-5" />
+                    Go to Business AI Advisor →
                   </Button>
                 </div>
               </div>

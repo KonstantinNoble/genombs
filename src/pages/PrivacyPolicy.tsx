@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 
@@ -9,8 +8,7 @@ const PrivacyPolicy = () => {
       <div className="container mx-auto px-4 py-8">
         <Link to="/">
           <Button variant="ghost" className="mb-8">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
+            ← Back to Home
           </Button>
         </Link>
 

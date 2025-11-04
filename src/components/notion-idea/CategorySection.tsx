@@ -2,73 +2,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { CombinedRecommendation } from "@/pages/NotionIdea";
 import RecommendationCard from "./RecommendationCard";
-import { 
-  Wrench, 
-  Megaphone, 
-  TrendingUp, 
-  DollarSign, 
-  Users, 
-  Settings,
-  Target,
-  Package,
-  Briefcase,
-  Cloud,
-  Globe,
-  MessageSquare,
-  ShoppingCart,
-  Lightbulb
-} from "lucide-react";
 
 interface CategorySectionProps {
   category: string;
   recommendations: CombinedRecommendation[];
 }
 
-const getCategoryIcon = (category: string) => {
-  const icons: { [key: string]: any } = {
-    productivity: Wrench,
-    marketing: Megaphone,
-    sales: TrendingUp,
-    finance: DollarSign,
-    hr: Users,
-    operations: Settings,
-    strategy: Target,
-    product: Package,
-    service: Briefcase,
-    saas: Cloud,
-    marketplace: Globe,
-    content: MessageSquare,
-    ecommerce: ShoppingCart,
-    consulting: Lightbulb
-  };
-  
-  return icons[category.toLowerCase()] || Package;
-};
-
-const getCategoryColor = (category: string): string => {
-  const colors: { [key: string]: string } = {
-    productivity: "hsl(var(--primary))",
-    marketing: "hsl(var(--secondary))",
-    sales: "hsl(142, 76%, 36%)",
-    finance: "hsl(221, 83%, 53%)",
-    hr: "hsl(280, 65%, 60%)",
-    operations: "hsl(24, 80%, 50%)",
-    strategy: "hsl(340, 82%, 52%)",
-    product: "hsl(262, 83%, 58%)",
-    service: "hsl(199, 89%, 48%)",
-    saas: "hsl(142, 71%, 45%)",
-    marketplace: "hsl(45, 93%, 47%)",
-    content: "hsl(280, 67%, 55%)",
-    ecommerce: "hsl(24, 95%, 53%)",
-    consulting: "hsl(217, 91%, 60%)"
-  };
-  
-  return colors[category.toLowerCase()] || "hsl(var(--primary))";
-};
-
 const CategorySection = ({ category, recommendations }: CategorySectionProps) => {
-  const Icon = getCategoryIcon(category);
-  const color = getCategoryColor(category);
   const toolCount = recommendations.filter(r => r.type === 'tool').length;
   const ideaCount = recommendations.filter(r => r.type === 'idea').length;
 
@@ -77,12 +17,6 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
       <AccordionItem value={category} className="border rounded-lg">
         <AccordionTrigger className="px-6 hover:no-underline group">
           <div className="flex items-center gap-3 flex-1">
-            <div 
-              className="p-2 rounded-lg transition-transform group-hover:scale-110"
-              style={{ backgroundColor: `${color}15` }}
-            >
-              <Icon className="h-5 w-5" style={{ color }} />
-            </div>
             <div className="flex items-center gap-3 flex-1">
               <h3 className="text-lg font-semibold capitalize">{category}</h3>
               <div className="flex gap-2">

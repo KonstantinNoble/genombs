@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Trash2, Sparkles } from "lucide-react";
 import { CombinedRecommendation } from "@/pages/NotionIdea";
 import CategorySection from "./CategorySection";
 
@@ -107,12 +106,10 @@ const RecommendationDisplay = ({
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm">
-              <ArrowLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Import More</span>
-              <span className="sm:hidden">Import</span>
+              <span className="hidden sm:inline">← Import More</span>
+              <span className="sm:hidden">← Import</span>
             </Button>
             <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-none text-xs sm:text-sm">
-              <Trash2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Clear All</span>
               <span className="sm:hidden">Clear</span>
             </Button>
@@ -171,10 +168,7 @@ const RecommendationDisplay = ({
       {/* General Advice Section */}
       {generalAdviceItems.length > 0 && (
         <div className="mt-12">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-6 w-6 text-secondary" />
-            <h2 className="text-2xl font-semibold">General Advice</h2>
-          </div>
+          <h2 className="text-2xl font-semibold mb-4">General Advice</h2>
           <div className="space-y-4">
             {generalAdviceItems.map((item, index) => (
               <div

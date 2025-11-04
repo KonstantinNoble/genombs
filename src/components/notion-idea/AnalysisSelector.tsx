@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Lightbulb, Calendar } from "lucide-react";
 import { ToolHistoryItem, IdeaHistoryItem } from "@/pages/NotionIdea";
 import { format } from "date-fns";
 
@@ -57,10 +56,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         {toolsHistory.length > 0 && (
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
-              </div>
+              <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
               <Button variant="outline" size="sm" onClick={selectAllTools} className="text-xs sm:text-sm">
                 Select All
               </Button>
@@ -86,8 +82,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <div className="mb-2">
                             <span className="text-sm text-muted-foreground">
                               {format(new Date(tool.created_at), 'MMM dd, yyyy')}
                             </span>
@@ -116,10 +111,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         {ideasHistory.length > 0 && (
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-                <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
-              </div>
+              <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
               <Button variant="outline" size="sm" onClick={selectAllIdeas} className="text-xs sm:text-sm">
                 Select All
               </Button>
@@ -145,8 +137,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <div className="mb-2">
                             <span className="text-sm text-muted-foreground">
                               {format(new Date(idea.created_at), 'MMM dd, yyyy')}
                             </span>

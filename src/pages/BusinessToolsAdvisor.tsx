@@ -550,7 +550,7 @@ const BusinessToolsAdvisor = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
-                className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-primary transition-all duration-300"
+                className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-white transition-all duration-300"
               >
                 
                 <span className="hidden sm:inline">Business </span>Ideas
@@ -690,7 +690,7 @@ const BusinessToolsAdvisor = () => {
                                   </Button>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-medium shadow-sm">
+                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-secondary text-white font-medium shadow-sm">
                                     {rec.category}
                                   </span>
                                   <span className={`text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.implementation)}`}>
@@ -794,7 +794,7 @@ const BusinessToolsAdvisor = () => {
                   <Button
                     onClick={handleAnalyze}
                     disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessContext.trim()}
-                    className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-primary transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className="w-full bg-secondary hover:bg-secondary/90 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
                     size="lg"
                   >
                     {analyzing ? (
@@ -856,7 +856,7 @@ const BusinessToolsAdvisor = () => {
                                   </Button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-secondary to-secondary/80 text-primary font-medium shadow-sm">
+                                  <span className="text-xs px-3 py-1.5 rounded-full bg-secondary text-white font-medium shadow-sm">
                                     {rec.category}
                                   </span>
                                   <span className={`text-xs px-3 py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.viability)}`}>

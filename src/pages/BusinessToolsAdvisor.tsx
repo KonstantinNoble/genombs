@@ -397,10 +397,7 @@ const BusinessToolsAdvisor = () => {
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
             <div className="space-y-4 sm:space-y-6 px-2">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl animate-pulse" />
-                <Sparkles className="relative h-12 w-12 sm:h-20 sm:w-20 mx-auto text-primary animate-pulse" />
-              </div>
+              <div className="h-2" />
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
                 Business AI Advisor
               </h1>
@@ -415,7 +412,7 @@ const BusinessToolsAdvisor = () => {
                 onClick={() => navigate('/auth')}
                 className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
               >
-                <LogIn className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
+                
                 Sign in to get started
               </Button>
               <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start your free analysis now</p>
@@ -425,9 +422,6 @@ const BusinessToolsAdvisor = () => {
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardHeader className="relative">
                 <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
-                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                  </div>
                   How it works
                 </CardTitle>
               </CardHeader>
@@ -488,21 +482,12 @@ const BusinessToolsAdvisor = () => {
         <aside className="w-full lg:w-80 shrink-0 space-y-4 animate-fade-in order-2 lg:order-1">
           <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card via-card to-primary/5">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-secondary/10">
-                  <BookOpen className="h-5 w-5 text-secondary" />
-                </div>
-                <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Previous Recommendations
-                </span>
-              </CardTitle>
+              <CardTitle className="text-lg">Previous Recommendations</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-96 lg:max-h-[calc(100vh-200px)] overflow-y-auto">
               {currentHistory.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-muted-foreground" />
-                  </div>
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-muted" />
                   <p className="text-sm text-muted-foreground">No history yet</p>
                   <p className="text-xs text-muted-foreground mt-1">Your analyses will appear here</p>
                 </div>
@@ -516,23 +501,20 @@ const BusinessToolsAdvisor = () => {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.industry}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {new Date(item.created_at).toLocaleDateString()}
                           </p>
-                        </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 shrink-0 hover:bg-destructive/10 hover:text-destructive transition-all"
+                        className="opacity-0 group-hover:opacity-100 h-6 w-auto px-2 shrink-0 hover:bg-destructive/10 hover:text-destructive transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(item.id);
                         }}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        Delete
                       </Button>
                     </div>
                   </div>
@@ -546,7 +528,6 @@ const BusinessToolsAdvisor = () => {
         <main className="flex-1 w-full min-w-0 space-y-4 sm:space-y-6 animate-fade-in order-1 lg:order-2" style={{ animationDelay: '0.1s' }}>
           <div className="text-center px-2 space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
-              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-secondary animate-pulse" />
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
@@ -564,14 +545,14 @@ const BusinessToolsAdvisor = () => {
                 value="tools" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
-                <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4" />
+                
                 <span className="hidden sm:inline">Business </span>Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-primary transition-all duration-300"
               >
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
+                
                 <span className="hidden sm:inline">Business </span>Ideas
               </TabsTrigger>
             </TabsList>
@@ -580,12 +561,7 @@ const BusinessToolsAdvisor = () => {
             <TabsContent value="tools" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
-                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                    </div>
-                    <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
-                  </div>
+                  <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
@@ -656,17 +632,14 @@ const BusinessToolsAdvisor = () => {
                     size="lg"
                   >
                     {analyzing ? (
-                      <><Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" /><span className="truncate">Analyzing your business needs...</span></>
+                      <><span className="inline-block h-4 w-4 sm:h-5 sm:w-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" /><span className="truncate">Analyzing your business needs...</span></>
                     ) : !canAnalyze ? (
-                      <><Clock className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /><span className="truncate">Next in {getTimeUntilNextAnalysis()}</span></>
+                      <span className="truncate">Next in {getTimeUntilNextAnalysis()}</span>
                     ) : (
-                      <><Lightbulb className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />Get AI Tool Recommendations</>
+                      <>Get AI Tool Recommendations</>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1 flex-wrap">
-                    <Sparkles className="h-3 w-3 shrink-0" />
-                    <span>You can request new recommendations once every 24 hours</span>
-                  </p>
+                  <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
                 </CardContent>
               </Card>
 
@@ -676,9 +649,6 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-card to-secondary/5 shadow-elegant">
                     <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl">
-                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
-                          <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
-                        </div>
                         <span>Strategic Overview</span>
                       </CardTitle>
                     </CardHeader>
@@ -715,7 +685,6 @@ const BusinessToolsAdvisor = () => {
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                                       <span>Search</span>
                                     </a>
                                   </Button>
@@ -727,8 +696,8 @@ const BusinessToolsAdvisor = () => {
                                   <span className={`text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.implementation)}`}>
                                     {rec.implementation.replace('-', ' ')}
                                   </span>
-                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-0.5 sm:gap-1 font-medium shadow-sm">
-                                    <DollarSign className="h-3 w-3" />{rec.estimatedCost}
+                                  <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-accent text-accent-foreground font-medium shadow-sm">
+                                    {rec.estimatedCost}
                                   </span>
                                 </div>
                               </div>
@@ -759,12 +728,7 @@ const BusinessToolsAdvisor = () => {
             <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-secondary/10 bg-gradient-to-br from-card to-secondary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 sm:p-2 rounded-lg bg-secondary/10">
-                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-                    </div>
                     <CardTitle className="text-base sm:text-xl">Tell us about your context</CardTitle>
-                  </div>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -834,17 +798,14 @@ const BusinessToolsAdvisor = () => {
                     size="lg"
                   >
                     {analyzing ? (
-                      <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Analyzing market opportunities...</>
+                      <>Analyzing market opportunities...</>
                     ) : !canAnalyze ? (
-                      <><Clock className="mr-2 h-5 w-5" />Next recommendation in {getTimeUntilNextAnalysis()}</>
+                      <>Next recommendation in {getTimeUntilNextAnalysis()}</>
                     ) : (
-                      <><Sparkles className="mr-2 h-5 w-5" />Get AI Business Ideas</>
+                      <>Get AI Business Ideas</>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-                    <Sparkles className="h-3 w-3" />
-                    You can request new recommendations once every 24 hours
-                  </p>
+                  <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
                 </CardContent>
               </Card>
 
@@ -854,9 +815,6 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">
-                        <div className="p-2 rounded-lg bg-secondary/10">
-                          <TrendingUp className="h-6 w-6 text-secondary" />
-                        </div>
                         <span>Market Insights</span>
                       </CardTitle>
                     </CardHeader>
@@ -893,8 +851,7 @@ const BusinessToolsAdvisor = () => {
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <ExternalLink className="h-4 w-4" />
-                                      <span className="text-xs">Search</span>
+                                        <span className="text-xs">Search</span>
                                     </a>
                                   </Button>
                                 </div>
@@ -905,9 +862,9 @@ const BusinessToolsAdvisor = () => {
                                   <span className={`text-xs px-3 py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.viability)}`}>
                                     {rec.viability.replace('-', ' ')}
                                   </span>
-                                  <span className="text-xs px-3 py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-1 font-medium shadow-sm">
-                                    <DollarSign className="h-3 w-3" />{rec.estimatedInvestment}
-                                  </span>
+                                    <span className="text-xs px-3 py-1.5 rounded-full bg-accent text-accent-foreground font-medium shadow-sm">
+                                      {rec.estimatedInvestment}
+                                    </span>
                                 </div>
                               </div>
                             </div>
@@ -941,7 +898,6 @@ const BusinessToolsAdvisor = () => {
                           </div>
                           <Button asChild variant="default" className="bg-gradient-to-r from-primary to-secondary whitespace-nowrap">
                             <Link to="/notion-idea">
-                              <BookOpen className="mr-2 h-4 w-4" />
                               Open Notion Idea
                             </Link>
                           </Button>

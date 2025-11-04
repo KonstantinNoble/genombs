@@ -29,22 +29,16 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="py-16 sm:py-20 md:py-24 relative overflow-hidden" aria-label="Platform features" style={{ background: "var(--gradient-subtle)" }}>
-      {/* Subtle decorative elements */}
-      <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px]" />
-      <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
-      
-      <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 sm:py-20 md:py-24 bg-background" aria-label="Platform features">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 animate-fade-in-up">
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-secondary/10 to-accent/10 border border-secondary/20 rounded-full text-sm mb-6">
-            <span className="bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent font-semibold">
+          <div className="inline-flex items-center px-4 py-2 bg-muted border border-border rounded-full text-sm mb-6">
+            <span className="text-foreground font-medium">
               Why Wealthconomy
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 px-4">
-            <span className="bg-gradient-to-r from-foreground via-secondary/80 to-foreground bg-clip-text text-transparent">
-              Everything You Need to Succeed
-            </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 px-4 text-foreground">
+            Everything You Need to Succeed
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground px-4">
             AI-powered features designed to accelerate your business growth
@@ -55,18 +49,14 @@ const Features = () => {
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className="group border-border/40 bg-card/60 backdrop-blur-sm hover:border-secondary/30 transition-all duration-500 hover:-translate-y-2 animate-scale-in relative overflow-hidden"
+              className="group border-border bg-card hover:shadow-elegant transition-all duration-300 animate-scale-in"
               style={{ 
                 animationDelay: `${index * 0.1}s`, 
-                animationFillMode: "backwards",
-                boxShadow: "var(--shadow-elegant)"
+                animationFillMode: "backwards"
               }}
             >
-              {/* Subtle gradient on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <CardContent className="relative pt-8 pb-8 px-6 space-y-4">
-                <h3 className="text-xl font-bold text-foreground group-hover:text-secondary transition-colors duration-300">
+              <CardContent className="pt-8 pb-8 px-6 space-y-4">
+                <h3 className="text-xl font-semibold text-foreground">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">

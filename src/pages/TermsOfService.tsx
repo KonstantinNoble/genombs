@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 
 const TermsOfService = () => {
@@ -9,7 +10,8 @@ const TermsOfService = () => {
           to="/"
           className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors"
         >
-          ← Back to Home
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Home
         </Link>
 
         <div className="max-w-4xl mx-auto prose prose-invert">

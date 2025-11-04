@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { blogPosts } from "@/data/blogPosts";
 import { Badge } from "@/components/ui/badge";
+import { Clock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { WebPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -52,7 +53,8 @@ const BlogPost = () => {
         <article className="container mx-auto px-4 py-16 md:py-24 max-w-4xl">
           <Link to="/blog">
             <Button variant="ghost" className="mb-8 group">
-              ← Back to Blog
+              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Blog
             </Button>
           </Link>
 
@@ -66,7 +68,10 @@ const BlogPost = () => {
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-              <span>{post.readTime}</span>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>{post.readTime}</span>
+              </div>
               <span>By {post.author}</span>
             </div>
 

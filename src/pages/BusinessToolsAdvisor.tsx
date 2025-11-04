@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Trash2, LogIn } from "lucide-react";
+import { Loader2, Lightbulb, TrendingUp, Clock, DollarSign, Trash2, LogIn, ExternalLink, Sparkles, BookOpen } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -397,10 +397,14 @@ const BusinessToolsAdvisor = () => {
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
-              <div className="space-y-4 sm:space-y-6 px-2">
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
-                  Business AI Advisor
-                </h1>
+            <div className="space-y-4 sm:space-y-6 px-2">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl animate-pulse" />
+                <Sparkles className="relative h-12 w-12 sm:h-20 sm:w-20 mx-auto text-primary animate-pulse" />
+              </div>
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
+                Business AI Advisor
+              </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
                 Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
               </p>
@@ -422,7 +426,9 @@ const BusinessToolsAdvisor = () => {
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardHeader className="relative">
                 <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 sm:gap-3">
-                  <span className="text-2xl">📈</span>
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  </div>
                   How it works
                 </CardTitle>
               </CardHeader>
@@ -484,7 +490,9 @@ const BusinessToolsAdvisor = () => {
           <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card via-card to-primary/5">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <span className="text-xl">📚</span>
+                <div className="p-2 rounded-lg bg-secondary/10">
+                  <BookOpen className="h-5 w-5 text-secondary" />
+                </div>
                 <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
                   Previous Recommendations
                 </span>
@@ -494,7 +502,7 @@ const BusinessToolsAdvisor = () => {
               {currentHistory.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-3xl">📚</span>
+                    <BookOpen className="h-8 w-8 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-muted-foreground">No history yet</p>
                   <p className="text-xs text-muted-foreground mt-1">Your analyses will appear here</p>
@@ -509,9 +517,12 @@ const BusinessToolsAdvisor = () => {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.industry}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(item.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
                       <Button
                         variant="ghost"
@@ -536,7 +547,7 @@ const BusinessToolsAdvisor = () => {
         <main className="flex-1 w-full min-w-0 space-y-4 sm:space-y-6 animate-fade-in order-1 lg:order-2" style={{ animationDelay: '0.1s' }}>
           <div className="text-center px-2 space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
-              <span className="text-xl">✨</span>
+              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-secondary animate-pulse" />
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
@@ -554,12 +565,14 @@ const BusinessToolsAdvisor = () => {
                 value="tools" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
+                <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Business </span>Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-primary transition-all duration-300"
               >
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Business </span>Ideas
               </TabsTrigger>
             </TabsList>
@@ -569,7 +582,9 @@ const BusinessToolsAdvisor = () => {
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">💡</span>
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    </div>
                     <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
                   </div>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
@@ -644,12 +659,13 @@ const BusinessToolsAdvisor = () => {
                     {analyzing ? (
                       <><Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" /><span className="truncate">Analyzing your business needs...</span></>
                     ) : !canAnalyze ? (
-                      <><span className="truncate">Next in {getTimeUntilNextAnalysis()}</span></>
+                      <><Clock className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /><span className="truncate">Next in {getTimeUntilNextAnalysis()}</span></>
                     ) : (
-                      <>Get AI Tool Recommendations</>
+                      <><Lightbulb className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />Get AI Tool Recommendations</>
                     )}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1 flex-wrap">
+                    <Sparkles className="h-3 w-3 shrink-0" />
                     <span>You can request new recommendations once every 24 hours</span>
                   </p>
                 </CardContent>
@@ -661,7 +677,9 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-card to-secondary/5 shadow-elegant">
                     <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl">
-                        <span className="text-2xl">📈</span>
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                          <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
+                        </div>
                         <span>Strategic Overview</span>
                       </CardTitle>
                     </CardHeader>
@@ -698,7 +716,8 @@ const BusinessToolsAdvisor = () => {
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <span>→ Search</span>
+                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                                      <span>Search</span>
                                     </a>
                                   </Button>
                                 </div>
@@ -710,7 +729,7 @@ const BusinessToolsAdvisor = () => {
                                     {rec.implementation.replace('-', ' ')}
                                   </span>
                                   <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-0.5 sm:gap-1 font-medium shadow-sm">
-                                    ${rec.estimatedCost}
+                                    <DollarSign className="h-3 w-3" />{rec.estimatedCost}
                                   </span>
                                 </div>
                               </div>
@@ -742,7 +761,9 @@ const BusinessToolsAdvisor = () => {
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-secondary/10 bg-gradient-to-br from-card to-secondary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">✨</span>
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-secondary/10">
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+                    </div>
                     <CardTitle className="text-base sm:text-xl">Tell us about your context</CardTitle>
                   </div>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
@@ -816,12 +837,13 @@ const BusinessToolsAdvisor = () => {
                     {analyzing ? (
                       <><Loader2 className="mr-2 h-5 w-5 animate-spin" />Analyzing market opportunities...</>
                     ) : !canAnalyze ? (
-                      <>Next recommendation in {getTimeUntilNextAnalysis()}</>
+                      <><Clock className="mr-2 h-5 w-5" />Next recommendation in {getTimeUntilNextAnalysis()}</>
                     ) : (
-                      <>Get AI Business Ideas</>
+                      <><Sparkles className="mr-2 h-5 w-5" />Get AI Business Ideas</>
                     )}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+                    <Sparkles className="h-3 w-3" />
                     You can request new recommendations once every 24 hours
                   </p>
                 </CardContent>
@@ -833,7 +855,9 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">
-                        <span className="text-2xl">📈</span>
+                        <div className="p-2 rounded-lg bg-secondary/10">
+                          <TrendingUp className="h-6 w-6 text-secondary" />
+                        </div>
                         <span>Market Insights</span>
                       </CardTitle>
                     </CardHeader>
@@ -870,7 +894,8 @@ const BusinessToolsAdvisor = () => {
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
                                     >
-                                      <span className="text-xs">→ Search</span>
+                                      <ExternalLink className="h-4 w-4" />
+                                      <span className="text-xs">Search</span>
                                     </a>
                                   </Button>
                                 </div>
@@ -882,7 +907,7 @@ const BusinessToolsAdvisor = () => {
                                     {rec.viability.replace('-', ' ')}
                                   </span>
                                   <span className="text-xs px-3 py-1.5 rounded-full bg-accent text-accent-foreground flex items-center gap-1 font-medium shadow-sm">
-                                    ${rec.estimatedInvestment}
+                                    <DollarSign className="h-3 w-3" />{rec.estimatedInvestment}
                                   </span>
                                 </div>
                               </div>
@@ -917,6 +942,7 @@ const BusinessToolsAdvisor = () => {
                           </div>
                           <Button asChild variant="default" className="bg-gradient-to-r from-primary to-secondary whitespace-nowrap">
                             <Link to="/notion-idea">
+                              <BookOpen className="mr-2 h-4 w-4" />
                               Open Notion Idea
                             </Link>
                           </Button>

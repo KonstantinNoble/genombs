@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { BookOpen, ArrowRight } from "lucide-react";
 
 const BlogCTA = () => {
   return (
@@ -17,7 +18,11 @@ const BlogCTA = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[hsl(280,85%,65%)] to-[hsl(340,85%,65%)] opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
           
           <div className="relative z-10 p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[hsl(280,85%,65%)] to-[hsl(340,85%,65%)] mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+              <BookOpen className="w-8 h-8 text-white" />
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 group-hover:bg-gradient-to-r group-hover:from-[hsl(280,85%,65%)] group-hover:to-[hsl(340,85%,65%)] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
               Insights & Strategies for Entrepreneurs
             </h2>
             
@@ -26,8 +31,9 @@ const BlogCTA = () => {
             </p>
             
             <Link to="/blog">
-              <Button size="lg" className="shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+              <Button size="lg" className="group/btn shadow-lg hover:shadow-[0_10px_40px_hsl(280,85%,65%/0.3)] transition-all duration-300">
                 Explore Our Blog
+                <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>

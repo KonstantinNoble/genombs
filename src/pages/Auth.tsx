@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-
+import { ArrowLeft, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -247,8 +247,8 @@ const Auth = () => {
       <AlertDialog open={showEmailVerificationDialog} onOpenChange={setShowEmailVerificationDialog}>
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
-              <span className="text-4xl">📧</span>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/20">
+              <Mail className="h-8 w-8 text-secondary" />
             </div>
             <AlertDialogTitle className="text-2xl text-center">Check Your Email!</AlertDialogTitle>
             <AlertDialogDescription className="text-center space-y-3">
@@ -286,7 +286,8 @@ const Auth = () => {
           onClick={() => navigate("/")}
           className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
         >
-          ← Back
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
         </Button>
       </div>
       <Card className="w-full max-w-md bg-card border-border shadow-2xl relative z-10 animate-scale-in">

@@ -3,7 +3,7 @@ import logo from "@/assets/synoptas-logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-background to-muted/20 border-t border-border/50">
+    <footer className="bg-background border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-md mx-auto space-y-8">
           <div className="flex items-center justify-center gap-3">
@@ -14,12 +14,12 @@ const Footer = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="font-serif font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Synoptas</span>
+            <span className="font-sans font-bold text-xl text-primary">Synoptas</span>
           </div>
           
           <div className="space-y-4">
             <div className="mb-4 text-center">
-              <h3 className="font-bold text-base sm:text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Legal</h3>
+              <h3 className="font-bold text-base sm:text-lg text-foreground">Legal</h3>
             </div>
             <nav className="flex flex-col space-y-3 items-center" aria-label="Legal links">
               <Link to="/privacy-policy" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">

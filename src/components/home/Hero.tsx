@@ -4,15 +4,12 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <section
-      className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 py-20 sm:py-24 md:py-32 overflow-hidden"
+      className="relative min-h-[85vh] flex items-center justify-center bg-background py-20 sm:py-24 md:py-32"
       aria-label="Hero section"
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-pulse opacity-50" />
-      
-      <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent animate-scale-in">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight text-foreground animate-scale-in">
             AI-Powered Business Tool Recommendations
           </h1>
 
@@ -23,7 +20,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button
               size="lg"
-              className="text-base px-8 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
               <Link to="/business-tools">
@@ -49,7 +46,7 @@ const Hero = () => {
               No Credit Card Required
             </span>
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: '0.5s' }} />
+              <span className="w-2 h-2 rounded-full bg-primary" />
               Free Daily Analysis
             </span>
           </div>

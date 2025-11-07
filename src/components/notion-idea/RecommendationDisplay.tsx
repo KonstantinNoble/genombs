@@ -97,7 +97,7 @@ const RecommendationDisplay = ({
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div className="w-full sm:w-auto">
-            <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
               Your Business Roadmap
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">

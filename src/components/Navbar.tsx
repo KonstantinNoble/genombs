@@ -53,7 +53,7 @@ const Navbar = () => {
   }, []);
   
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-all duration-300 shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 animate-fade-in-up">
         <Link to="/" className="flex items-center gap-3 transition-all duration-300 hover:scale-105 group">
           <div className="relative w-10 h-10 overflow-hidden transition-all duration-300 group-hover:rotate-12">
@@ -63,15 +63,15 @@ const Navbar = () => {
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-xl font-bold font-sans text-primary">Synoptas</span>
+          <span className="text-xl font-bold font-serif bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Synoptas</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">
           <Link 
             to="/" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/") 
-                ? "text-primary after:w-full" 
+                ? "text-primary after:w-full shadow-sm" 
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
@@ -79,9 +79,9 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/business-tools"
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/business-tools") 
-                ? "text-primary after:w-full" 
+                ? "text-primary after:w-full shadow-sm" 
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
@@ -89,9 +89,9 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/notion-idea" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/notion-idea") 
-                ? "text-primary after:w-full" 
+                ? "text-primary after:w-full shadow-sm" 
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
@@ -99,9 +99,9 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/blog" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-all after:duration-300 ${
               isActive("/blog") 
-                ? "text-primary after:w-full" 
+                ? "text-primary after:w-full shadow-sm" 
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
@@ -143,7 +143,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-background">
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm shadow-lg">
           <div className="container mx-auto px-4 py-4 space-y-3 animate-fade-in">
             <Link
               to="/"

@@ -43,7 +43,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
   return (
     <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
       <div className="text-center mb-6 sm:mb-8 px-2">
-        <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
           Import Your AI Recommendations
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground">
@@ -168,7 +168,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
           size="lg"
           onClick={handleImport}
           disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
-          className="bg-primary hover:shadow-lg transition-all"
+          className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all"
         >
           Import Selected ({selectedToolIds.length + selectedIdeaIds.length})
         </Button>

@@ -384,7 +384,7 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Helmet>
-          <title>AI Services Advisor - Get Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+          <title>AI Advisor - Get Personalized Tools & Strategy Recommendations | Wealthconomy</title>
           <meta 
             name="description" 
             content="Get AI-powered business tool recommendations and strategic insights tailored to your industry, team size, and budget. Free business analysis and personalized growth strategies." 
@@ -398,7 +398,7 @@ const BusinessToolsAdvisor = () => {
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
-                AI Services Advisor
+                AI Advisor
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
                 Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
@@ -463,7 +463,7 @@ const BusinessToolsAdvisor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Helmet>
-        <title>AI Services Advisor - Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+        <title>AI Advisor - Personalized Tools & Strategy Recommendations | Wealthconomy</title>
         <meta 
           name="description" 
           content="Get AI-powered business tool recommendations and strategic insights. Personalized analysis based on your industry, team size, and budget. 2 free analyses per day." 
@@ -527,7 +527,7 @@ const BusinessToolsAdvisor = () => {
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
-              AI Services Advisor
+              AI Advisor
             </h1>
             <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Get personalized AI-powered recommendations to grow your business with data-driven insights

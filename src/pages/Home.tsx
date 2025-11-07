@@ -9,7 +9,7 @@ import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 
 import Footer from "@/components/Footer";
-
+import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
 const Home = () => {
@@ -84,6 +84,9 @@ const Home = () => {
       <Navbar />
       <main>
       <Hero />
+      <div className="container mx-auto px-4 pt-8 pb-4">
+        <ShopifyAffiliateBanner />
+      </div>
       <Features />
       <CTA />
       </main>

@@ -267,33 +267,32 @@ const Auth = () => {
               setShowEmailVerificationDialog(false);
               setIsLogin(true);
             }}
-            className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold"
+            className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold hover:bg-slate-800 dark:hover:bg-slate-200"
           >
             Got it
           </Button>
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/95 to-primary/90 p-4 relative overflow-hidden">
-      {/* Animated gradient orbs */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-grid-slate-200/50 dark:bg-grid-slate-700/25 [mask-image:linear-gradient(0deg,transparent,black)] opacity-30" />
       
       <div className="absolute top-8 left-8 z-10">
         <Button
           variant="outline"
           onClick={() => navigate("/")}
-          className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
+          className="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-300 shadow-md"
         >
           ← Back
         </Button>
       </div>
-      <Card className="w-full max-w-md bg-card border-border shadow-2xl relative z-10 animate-scale-in">
+      <Card className="w-full max-w-md bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xl relative z-10 animate-scale-in">
         <CardHeader className="space-y-3">
-          <CardTitle className="text-4xl font-bold text-center bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <CardTitle className="text-4xl font-bold text-center text-slate-900 dark:text-slate-100">
             {isLogin ? "Welcome Back" : "Create Account"}
           </CardTitle>
-          <CardDescription className="text-center text-base">
+          <CardDescription className="text-center text-base text-slate-600 dark:text-slate-400">
             {isLogin ? "Sign in to access your AI-powered business insights" : "Join us and unlock intelligent business recommendations"}
           </CardDescription>
         </CardHeader>
@@ -346,7 +345,7 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-secondary to-[hsl(38,100%,50%)] text-primary font-semibold hover:shadow-glow hover:scale-105 transition-all duration-300"
+              className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold hover:bg-slate-800 dark:hover:bg-slate-200 shadow-lg hover:shadow-xl transition-all duration-300"
               disabled={loading}
             >
               {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
@@ -374,10 +373,10 @@ const Auth = () => {
                 setEmail("");
                 setAcceptedTerms(false);
               }}
-              className="text-base sm:text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
+              className="text-base sm:text-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors py-2"
             >
               {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <span className="text-secondary font-bold text-lg sm:text-xl">{isLogin ? "Sign Up" : "Sign In"}</span>
+              <span className="text-slate-900 dark:text-slate-100 font-bold text-lg sm:text-xl">{isLogin ? "Sign Up" : "Sign In"}</span>
             </button>
           </div>
         </CardContent>

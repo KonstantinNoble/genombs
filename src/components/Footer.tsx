@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/synoptas-logo.png";
+import logo from "/Tech Company Logo with Stylized 'S'.png";
 
 const Footer = () => {
   return (

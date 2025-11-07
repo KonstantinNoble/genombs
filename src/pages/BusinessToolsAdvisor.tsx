@@ -526,7 +526,7 @@ const BusinessToolsAdvisor = () => {
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-2 sm:mb-3 text-foreground leading-tight drop-shadow-[0_0_18px_hsl(var(--primary)/0.25)]">
               AI Advisor
             </h1>
             <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">

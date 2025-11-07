@@ -9,7 +9,6 @@ import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 
 import Footer from "@/components/Footer";
-import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
 const Home = () => {

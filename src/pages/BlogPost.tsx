@@ -2,7 +2,6 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { blogPosts } from "@/data/blogPosts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,10 +122,6 @@ const BlogPost = () => {
             </div>
           </footer>
         </article>
-
-        <div className="container mx-auto px-4 py-12 max-w-4xl">
-          <ShopifyAffiliateBanner />
-        </div>
 
         <Footer />
       </div>

@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ShopifyAffiliateBanner from "@/components/ShopifyAffiliateBanner";
 import { User } from "@supabase/supabase-js";
 
 interface ToolRecommendation {
@@ -473,9 +472,6 @@ const BusinessToolsAdvisor = () => {
         <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
       </Helmet>
       <Navbar />
-      <div className="container mx-auto px-4 py-6">
-        <ShopifyAffiliateBanner />
-      </div>
       <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Sidebar - History */}

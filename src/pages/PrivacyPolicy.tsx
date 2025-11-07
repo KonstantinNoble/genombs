@@ -903,10 +903,6 @@ const PrivacyPolicy = () => {
                 Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 
                 preferences – stored locally on your device only, not transmitted to our servers)
               </li>
-              <li>
-                Affiliate tracking data (only processed on Impact.com / Shopify websites, not on our
-                servers)
-              </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
               <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
@@ -970,10 +966,6 @@ const PrivacyPolicy = () => {
               <li>
                 <strong>Authentication email provider:</strong> Supabase Auth (Supabase Inc., USA) – transactional 
                 emails (as part of Lovable Cloud hosting)
-              </li>
-              <li>
-                <strong>Affiliate partners:</strong> Impact Tech, Inc. (Impact.com) and Shopify – tracking
-                only occurs on their websites after you click affiliate links
               </li>
               <li>
                 <strong>Public authorities:</strong> Only if legally required by applicable law

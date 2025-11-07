@@ -10,11 +10,11 @@ const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight text-foreground animate-scale-in">
-            AI-Powered Business Tool Recommendations
+            AI-Powered Website Tool Recommendations
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Get personalized tool recommendations and strategic insights tailored to your industry, team size, and growth goals.
+            Get personalized tool recommendations and strategic insights tailored to your website type, stage, and goals.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -23,7 +23,7 @@ const Hero = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/business-tools">
+              <Link to="/website-tools">
                 Start Free Analysis
               </Link>
             </Button>

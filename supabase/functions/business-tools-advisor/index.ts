@@ -1,11 +1,10 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from 'npm:@supabase/supabase-js@2.76.1';
-import { z } from 'npm:zod@3.22.4';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 interface ToolRecommendation {
@@ -18,13 +17,13 @@ interface ToolRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  team_size: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  business_goals: z.string().trim().min(1, "Business goals are required").max(1500, "Business goals must be less than 1500 characters")
+  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1500, "Website goals must be less than 1500 characters")
 });
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -105,7 +104,7 @@ Deno.serve(async (req) => {
       throw error;
     }
 
-    const { industry, team_size, budgetRange, business_goals } = validatedInput;
+    const { websiteType, websiteSize, budgetRange, websiteGoals } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -126,10 +125,10 @@ CRITICAL REQUIREMENTS:
 
 Use the suggest_tools function to return your recommendations.`;
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${team_size}
+    const userPrompt = `Website Type: ${websiteType}
+Website Size: ${websiteSize}
 Budget Range: ${budgetRange}
-Business Goals: ${business_goals}
+Website Goals: ${websiteGoals}
 
 Please provide personalized website tool and optimization recommendations based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
 
@@ -235,10 +234,10 @@ Please provide personalized website tool and optimization recommendations based 
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        industry: industry,
-        team_size: team_size,
+        website_type: websiteType,
+        website_size: websiteSize,
         budget_range: budgetRange,
-        business_goals: business_goals,
+        website_goals: websiteGoals,
         result: parsedResult
       });
 

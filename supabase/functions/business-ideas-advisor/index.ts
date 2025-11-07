@@ -1,11 +1,10 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from 'npm:@supabase/supabase-js@2.76.1';
-import { z } from 'npm:zod@3.22.4';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 interface IdeaRecommendation {
@@ -18,13 +17,13 @@ interface IdeaRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  team_size: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  business_context: z.string().trim().min(1, "Business context is required").max(1500, "Business context must be less than 1500 characters")
+  websiteContext: z.string().trim().min(1, "Website context is required").max(1500, "Website context must be less than 1500 characters")
 });
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -105,7 +104,7 @@ Deno.serve(async (req) => {
       throw error;
     }
 
-    const { industry, team_size, budgetRange, business_context } = validatedInput;
+    const { websiteType, websiteSize, budgetRange, websiteContext } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -143,10 +142,10 @@ Return a JSON object with:
 
 Provide 7-10 concrete, actionable website feature ideas tailored to their specific situation.`;
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${team_size}
+    const userPrompt = `Website Type: ${websiteType}
+Website Size: ${websiteSize}
 Budget Range: ${budgetRange}
-Business Context: ${business_context}
+Website Context: ${websiteContext}
 
 Please provide personalized website feature and enhancement ideas based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
 
@@ -237,10 +236,10 @@ Please provide personalized website feature and enhancement ideas based on this 
       .from('business_ideas_history')
       .insert({
         user_id: user.id,
-        industry: industry,
-        team_size: team_size,
+        website_type: websiteType,
+        website_size: websiteSize,
         budget_range: budgetRange,
-        business_context: business_context,
+        website_context: websiteContext,
         result: parsedResult
       });
 

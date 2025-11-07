@@ -397,10 +397,10 @@ const BusinessToolsAdvisor = () => {
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-primary leading-tight tracking-tight drop-shadow-lg">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(79,209,131,0.3)]">
                 AI Advisor
               </h1>
-              <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
               </p>
             </div>

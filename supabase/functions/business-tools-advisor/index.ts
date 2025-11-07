@@ -9,7 +9,7 @@ const corsHeaders = {
 
 interface ToolRecommendation {
   name: string;
-  category: "performance" | "seo" | "conversion" | "analytics" | "accessibility" | "hosting" | "design";
+  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy";
   implementation: "quick-win" | "medium-term" | "strategic";
   estimatedCost: string;
   rationale: string;
@@ -17,10 +17,10 @@ interface ToolRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
-  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
+  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
+  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1500, "Website goals must be less than 1500 characters")
+  businessGoals: z.string().trim().min(1, "Business goals are required").max(1000, "Business goals must be less than 1000 characters")
 });
 
 serve(async (req) => {
@@ -104,7 +104,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteSize, budgetRange, websiteGoals } = validatedInput;
+    const { industry, teamSize, budgetRange, businessGoals } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -114,23 +114,16 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a website optimization advisor. Analyze the user's website context and provide personalized tool and optimization recommendations.
-
-CRITICAL REQUIREMENTS:
-- Provide 7-10 detailed recommendations
-- Each recommendation's rationale must be at least 150 words
-- Include specific implementation details
-- Focus on website performance, SEO, conversion, analytics, accessibility, hosting, and design
-- Provide actionable steps and expected outcomes
+    const systemPrompt = `You are a business tools advisor. Analyze the user's business context and provide personalized tool and strategy recommendations.
 
 Use the suggest_tools function to return your recommendations.`;
 
-    const userPrompt = `Website Type: ${websiteType}
-Website Size: ${websiteSize}
+    const userPrompt = `Industry: ${industry}
+Team Size: ${teamSize}
 Budget Range: ${budgetRange}
-Website Goals: ${websiteGoals}
+Business Goals: ${businessGoals}
 
-Please provide personalized website tool and optimization recommendations based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
+Please provide personalized business tool recommendations based on this information.`;
 
     console.log('Calling Lovable AI for business tools...');
 
@@ -151,7 +144,7 @@ Please provide personalized website tool and optimization recommendations based 
             type: "function",
             function: {
               name: "suggest_tools",
-              description: "Return 7-10 website tool and optimization recommendations with detailed explanations",
+              description: "Return 5-7 business tool and strategy recommendations",
               parameters: {
                 type: "object",
                 properties: {
@@ -160,17 +153,17 @@ Please provide personalized website tool and optimization recommendations based 
                     items: {
                       type: "object",
                       properties: {
-                        name: { type: "string", description: "Website tool or optimization strategy name" },
-                        category: {
+                        name: { type: "string", description: "Tool or strategy name" },
+                        category: { 
                           type: "string",
-                          enum: ["performance", "seo", "conversion", "analytics", "accessibility", "hosting", "design"]
+                          enum: ["productivity", "marketing", "sales", "finance", "hr", "operations", "strategy"]
                         },
                         implementation: {
                           type: "string",
                           enum: ["quick-win", "medium-term", "strategic"]
                         },
                         estimatedCost: { type: "string", description: "Cost range like $0-$50/month" },
-                        rationale: { type: "string", description: "Detailed explanation (minimum 150 words) covering why this tool fits their website, implementation steps, expected outcomes, and specific benefits" }
+                        rationale: { type: "string", description: "Why this tool fits their context" }
                       },
                       required: ["name", "category", "implementation", "estimatedCost", "rationale"],
                       additionalProperties: false
@@ -178,7 +171,7 @@ Please provide personalized website tool and optimization recommendations based 
                   },
                   generalAdvice: {
                     type: "string",
-                    description: "Comprehensive strategic roadmap (200+ words) for website optimization including prioritization, timeline, and key milestones. Break into clear sections with actionable steps."
+                    description: "Strategic advice based on their industry and goals"
                   }
                 },
                 required: ["recommendations", "generalAdvice"],
@@ -234,10 +227,10 @@ Please provide personalized website tool and optimization recommendations based 
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        website_type: websiteType,
-        website_size: websiteSize,
+        industry,
+        team_size: teamSize,
         budget_range: budgetRange,
-        website_goals: websiteGoals,
+        business_goals: businessGoals,
         result: parsedResult
       });
 

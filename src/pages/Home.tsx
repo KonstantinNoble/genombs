@@ -83,9 +83,6 @@ const Home = () => {
       <Navbar />
       <main>
       <Hero />
-      <div className="container mx-auto px-4 pt-8 pb-4">
-        <ShopifyAffiliateBanner />
-      </div>
       <Features />
       <CTA />
       </main>

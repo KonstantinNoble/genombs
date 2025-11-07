@@ -14,7 +14,7 @@ import { User } from "@supabase/supabase-js";
 
 interface ToolRecommendation {
   name: string;
-  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy";
+  category: "performance" | "seo" | "conversion" | "analytics" | "accessibility" | "hosting" | "design";
   implementation: "quick-win" | "medium-term" | "strategic";
   estimatedCost: string;
   rationale: string;
@@ -22,7 +22,7 @@ interface ToolRecommendation {
 
 interface IdeaRecommendation {
   name: string;
-  category: "product" | "service" | "saas" | "marketplace" | "content" | "consulting" | "ecommerce";
+  category: "landing-page" | "web-app" | "membership-site" | "directory" | "blog-system" | "booking-system" | "shop-features";
   viability: "quick-launch" | "medium-term" | "long-term";
   estimatedInvestment: string;
   rationale: string;
@@ -40,20 +40,20 @@ interface IdeaAdvisorResult {
 
 interface ToolHistoryItem {
   id: string;
-  industry: string;
-  team_size: string;
+  website_type: string;
+  website_size: string;
   budget_range: string;
-  business_goals: string;
+  website_goals: string;
   result: ToolAdvisorResult;
   created_at: string;
 }
 
 interface IdeaHistoryItem {
   id: string;
-  industry: string;
-  team_size: string;
+  website_type: string;
+  website_size: string;
   budget_range: string;
-  business_context: string;
+  website_context: string;
   result: IdeaAdvisorResult;
   created_at: string;
 }
@@ -74,11 +74,11 @@ const BusinessToolsAdvisor = () => {
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
 
-  const [industry, setIndustry] = useState("");
-  const [teamSize, setTeamSize] = useState("");
+  const [websiteType, setWebsiteType] = useState("");
+  const [websiteSize, setWebsiteSize] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
-  const [businessGoals, setBusinessGoals] = useState("");
-  const [businessContext, setBusinessContext] = useState("");
+  const [websiteGoals, setWebsiteGoals] = useState("");
+  const [websiteContext, setWebsiteContext] = useState("");
 
   const { toast } = useToast();
   
@@ -226,16 +226,16 @@ const BusinessToolsAdvisor = () => {
     if (!user) {
       toast({
         title: "Authentication required",
-        description: `Please sign in to get business ${activeTab} recommendations`,
+        description: `Please sign in to get website ${activeTab} recommendations`,
         variant: "destructive",
       });
       return;
     }
 
     const isTools = activeTab === "tools";
-    const inputText = isTools ? businessGoals.trim() : businessContext.trim();
+    const inputText = isTools ? websiteGoals.trim() : websiteContext.trim();
 
-    if (!industry || !teamSize || !budgetRange || !inputText) {
+    if (!websiteType || !websiteSize || !budgetRange || !inputText) {
       toast({
         title: "Missing information",
         description: "Please fill in all fields",
@@ -253,9 +253,9 @@ const BusinessToolsAdvisor = () => {
 
     try {
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
-      const body = isTools 
-        ? { industry, teamSize, budgetRange, businessGoals: inputText }
-        : { industry, teamSize, budgetRange, businessContext: inputText };
+      const body = isTools
+        ? { websiteType, websiteSize, budgetRange, websiteGoals: inputText }
+        : { websiteType, websiteSize, budgetRange, websiteContext: inputText };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
@@ -292,7 +292,7 @@ const BusinessToolsAdvisor = () => {
       
       toast({
         title: "Recommendations generated",
-        description: `Your personalized business ${activeTab} are ready`,
+        description: `Your personalized website ${activeTab} are ready`,
       });
     } catch (error) {
       console.error('Error getting recommendations:', error);
@@ -384,12 +384,12 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Helmet>
-          <title>AI Advisor - Get Personalized Tools & Strategy Recommendations | Wealthconomy</title>
-          <meta 
-            name="description" 
-            content="Get AI-powered business tool recommendations and strategic insights tailored to your industry, team size, and budget. Free business analysis and personalized growth strategies." 
+          <title>Website Advisor - Get AI-Powered Website Optimization Recommendations | Wealthconomy</title>
+          <meta
+            name="description"
+            content="Get AI-powered website optimization recommendations tailored to your website type, size, and goals. Improve performance, SEO, conversion rates, and user experience with personalized insights."
           />
-          <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth, AI consultant" />
+          <meta name="keywords" content="website advisor, AI website optimization, website tools, SEO recommendations, website performance, conversion optimization, website strategy, UX improvement" />
           <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
         </Helmet>
         <Navbar />
@@ -398,10 +398,10 @@ const BusinessToolsAdvisor = () => {
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
-                AI Advisor
+                Website Advisor
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
-                Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
+                Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">features</span> to optimize your website performance
               </p>
             </div>
 
@@ -428,22 +428,22 @@ const BusinessToolsAdvisor = () => {
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
                   <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">1</div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your business context</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your industry, team size, budget, and goals</p>
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your website details</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your website type, size, budget, and goals</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
                   <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">2</div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Get personalized recommendations</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Receive 7-10 detailed tool and feature suggestions with comprehensive explanations</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
                   <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">3</div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Implement and grow</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to optimize your business operations</p>
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Implement and optimize</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to improve your website performance and user experience</p>
                   </div>
                 </div>
               </CardContent>
@@ -463,12 +463,12 @@ const BusinessToolsAdvisor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Helmet>
-        <title>AI Advisor - Personalized Tools & Strategy Recommendations | Wealthconomy</title>
-        <meta 
-          name="description" 
-          content="Get AI-powered business tool recommendations and strategic insights. Personalized analysis based on your industry, team size, and budget. 2 free analyses per day." 
+        <title>Website Advisor - Personalized Website Optimization & Feature Recommendations | Wealthconomy</title>
+        <meta
+          name="description"
+          content="Get AI-powered website optimization recommendations and feature suggestions. Personalized analysis based on your website type, size, and goals. 2 free analyses per day."
         />
-        <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth" />
+        <meta name="keywords" content="website advisor, AI website optimization, website tools, SEO recommendations, website performance, conversion optimization, website features" />
         <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
       </Helmet>
       <Navbar />
@@ -496,7 +496,7 @@ const BusinessToolsAdvisor = () => {
                   >
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.industry}</p>
+                        <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.website_type || item.industry}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {new Date(item.created_at).toLocaleDateString()}
                           </p>
@@ -524,13 +524,13 @@ const BusinessToolsAdvisor = () => {
         <main className="flex-1 w-full min-w-0 space-y-4 sm:space-y-6 animate-fade-in order-1 lg:order-2" style={{ animationDelay: '0.1s' }}>
           <div className="text-center px-2 space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
-              <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
+              <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Website Intelligence</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
-              AI Advisor
+              Website Advisor
             </h1>
             <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Get personalized AI-powered recommendations to grow your business with data-driven insights
+              Get personalized AI-powered recommendations to optimize your website with data-driven insights
             </p>
           </div>
 
@@ -542,14 +542,14 @@ const BusinessToolsAdvisor = () => {
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
                 
-                <span className="hidden sm:inline">Business </span>Tools
+                <span className="hidden sm:inline">Website </span>Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-white transition-all duration-300"
               >
                 
-                <span className="hidden sm:inline">Business </span>Ideas
+                <span className="hidden sm:inline">Website </span>Features
               </TabsTrigger>
             </TabsList>
 
@@ -557,47 +557,46 @@ const BusinessToolsAdvisor = () => {
             <TabsContent value="tools" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                  <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
+                  <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-xs sm:text-sm font-medium">Industry</label>
-                      <Select value={industry} onValueChange={setIndustry}>
-                        <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
+                      <label className="text-xs sm:text-sm font-medium">Website Type</label>
+                      <Select value={websiteType} onValueChange={setWebsiteType}>
+                        <SelectTrigger><SelectValue placeholder="Select website type" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="technology">Technology</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="consulting">Consulting</SelectItem>
-                          <SelectItem value="marketing">Marketing Agency</SelectItem>
-                          <SelectItem value="retail">Retail</SelectItem>
-                          <SelectItem value="healthcare">Healthcare</SelectItem>
-                          <SelectItem value="education">Education</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
-                          <SelectItem value="real-estate">Real Estate</SelectItem>
-                          <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                          <SelectItem value="hospitality">Hospitality</SelectItem>
+                          <SelectItem value="ecommerce-shop">E-Commerce Shop</SelectItem>
+                          <SelectItem value="corporate-website">Corporate Website</SelectItem>
+                          <SelectItem value="blog-content">Blog/Content Site</SelectItem>
+                          <SelectItem value="portfolio">Portfolio</SelectItem>
+                          <SelectItem value="saas-landing">SaaS Landing Page</SelectItem>
+                          <SelectItem value="community-forum">Community/Forum</SelectItem>
+                          <SelectItem value="online-magazine">Online Magazine</SelectItem>
+                          <SelectItem value="booking-platform">Booking Platform</SelectItem>
+                          <SelectItem value="directory">Directory/Listing Site</SelectItem>
+                          <SelectItem value="educational">Educational Platform</SelectItem>
+                          <SelectItem value="membership">Membership Site</SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-xs sm:text-sm font-medium">Team Size</label>
-                      <Select value={teamSize} onValueChange={setTeamSize}>
-                        <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
+                      <label className="text-xs sm:text-sm font-medium">Website Size</label>
+                      <Select value={websiteSize} onValueChange={setWebsiteSize}>
+                        <SelectTrigger><SelectValue placeholder="Select website size" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="solo">Solo (1 person)</SelectItem>
-                          <SelectItem value="small">Small (2-10 people)</SelectItem>
-                          <SelectItem value="medium">Medium (11-50 people)</SelectItem>
-                          <SelectItem value="large">Large (51-200 people)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise (200+ people)</SelectItem>
+                          <SelectItem value="small">Small (1-10 pages)</SelectItem>
+                          <SelectItem value="medium">Medium (11-50 pages)</SelectItem>
+                          <SelectItem value="large">Large (51-200 pages)</SelectItem>
+                          <SelectItem value="enterprise">Enterprise (200+ pages)</SelectItem>
+                          <SelectItem value="dynamic">Dynamic/Database-driven</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
-                      <label className="text-xs sm:text-sm font-medium">Monthly Budget for Tools</label>
+                      <label className="text-xs sm:text-sm font-medium">Monthly Website Budget</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
                         <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -611,28 +610,29 @@ const BusinessToolsAdvisor = () => {
                     </div>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <label className="text-xs sm:text-sm font-medium">Primary Business Goals</label>
+                    <label className="text-xs sm:text-sm font-medium">Primary Website Goals</label>
                     <Textarea
-                      placeholder="E.g., Increase sales by 30%, improve team collaboration, automate repetitive tasks, reduce operational costs..."
-                      value={businessGoals}
-                      onChange={(e) => setBusinessGoals(e.target.value)}
-                      rows={3}
+                      placeholder="E.g., Increase organic traffic by 50%, improve page load speed to under 2 seconds, boost conversion rate, enhance mobile user experience, improve SEO rankings, reduce bounce rate..."
+                      value={websiteGoals}
+                      onChange={(e) => setWebsiteGoals(e.target.value)}
+                      rows={4}
                       className="text-sm sm:text-base resize-none"
-                      maxLength={500}
+                      maxLength={1500}
                     />
+                    <p className="text-xs text-muted-foreground">{websiteGoals.length}/1500 characters</p>
                   </div>
                   <Button
                     onClick={handleAnalyze}
-                    disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessGoals.trim()}
+                    disabled={analyzing || !canAnalyze || !websiteType || !websiteSize || !budgetRange || !websiteGoals.trim()}
                     className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
                     size="lg"
                   >
                     {analyzing ? (
-                      <><span className="inline-block h-4 w-4 sm:h-5 sm:w-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" /><span className="truncate">Analyzing your business needs...</span></>
+                      <><span className="inline-block h-4 w-4 sm:h-5 sm:w-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" /><span className="truncate">Analyzing your website...</span></>
                     ) : !canAnalyze ? (
                       <span className="truncate">Next in {getTimeUntilNextAnalysis()}</span>
                     ) : (
-                      <>Get AI Tool Recommendations</>
+                      <>Get Website Tool Recommendations</>
                     )}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
@@ -649,7 +649,7 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm sm:text-base text-foreground leading-relaxed">{toolResult.generalAdvice}</p>
+                      <div className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-line">{toolResult.generalAdvice}</div>
                     </CardContent>
                   </Card>
 
@@ -700,7 +700,7 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-xs sm:text-sm text-foreground leading-relaxed">{rec.rationale}</p>
+                            <div className="text-xs sm:text-sm lg:text-base text-foreground leading-relaxed whitespace-pre-line">{rec.rationale}</div>
                           </CardContent>
                         </Card>
                       ))}
@@ -710,9 +710,9 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-yellow-200 bg-yellow-50">
                     <CardContent className="pt-6">
                       <p className="text-sm text-yellow-800">
-                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general business best practices. 
-                        Each business is unique - please evaluate these suggestions based on your specific needs, compliance requirements, 
-                        and circumstances. This does not constitute professional consulting advice.
+                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general website optimization best practices.
+                        Each website is unique - please evaluate these suggestions based on your specific technical requirements, target audience,
+                        and circumstances. This does not constitute professional web development or SEO consulting advice.
                       </p>
                     </CardContent>
                   </Card>
@@ -724,47 +724,46 @@ const BusinessToolsAdvisor = () => {
             <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-secondary/10 bg-gradient-to-br from-card to-secondary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                    <CardTitle className="text-base sm:text-xl">Tell us about your context</CardTitle>
-                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
+                  <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored website feature recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Industry</label>
-                      <Select value={industry} onValueChange={setIndustry}>
-                        <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
+                      <label className="text-sm font-medium">Website Type</label>
+                      <Select value={websiteType} onValueChange={setWebsiteType}>
+                        <SelectTrigger><SelectValue placeholder="Select website type" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="technology">Technology</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="consulting">Consulting</SelectItem>
-                          <SelectItem value="marketing">Marketing Agency</SelectItem>
-                          <SelectItem value="retail">Retail</SelectItem>
-                          <SelectItem value="healthcare">Healthcare</SelectItem>
-                          <SelectItem value="education">Education</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
-                          <SelectItem value="real-estate">Real Estate</SelectItem>
-                          <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                          <SelectItem value="hospitality">Hospitality</SelectItem>
+                          <SelectItem value="ecommerce-shop">E-Commerce Shop</SelectItem>
+                          <SelectItem value="corporate-website">Corporate Website</SelectItem>
+                          <SelectItem value="blog-content">Blog/Content Site</SelectItem>
+                          <SelectItem value="portfolio">Portfolio</SelectItem>
+                          <SelectItem value="saas-landing">SaaS Landing Page</SelectItem>
+                          <SelectItem value="community-forum">Community/Forum</SelectItem>
+                          <SelectItem value="online-magazine">Online Magazine</SelectItem>
+                          <SelectItem value="booking-platform">Booking Platform</SelectItem>
+                          <SelectItem value="directory">Directory/Listing Site</SelectItem>
+                          <SelectItem value="educational">Educational Platform</SelectItem>
+                          <SelectItem value="membership">Membership Site</SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Team Size</label>
-                      <Select value={teamSize} onValueChange={setTeamSize}>
-                        <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
+                      <label className="text-sm font-medium">Website Size</label>
+                      <Select value={websiteSize} onValueChange={setWebsiteSize}>
+                        <SelectTrigger><SelectValue placeholder="Select website size" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="solo">Solo (1 person)</SelectItem>
-                          <SelectItem value="small">Small (2-10 people)</SelectItem>
-                          <SelectItem value="medium">Medium (11-50 people)</SelectItem>
-                          <SelectItem value="large">Large (51-200 people)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise (200+ people)</SelectItem>
+                          <SelectItem value="small">Small (1-10 pages)</SelectItem>
+                          <SelectItem value="medium">Medium (11-50 pages)</SelectItem>
+                          <SelectItem value="large">Large (51-200 pages)</SelectItem>
+                          <SelectItem value="enterprise">Enterprise (200+ pages)</SelectItem>
+                          <SelectItem value="dynamic">Dynamic/Database-driven</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Available Startup Budget</label>
+                      <label className="text-sm font-medium">Monthly Website Budget</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
                         <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -778,27 +777,28 @@ const BusinessToolsAdvisor = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Business Context & Goals</label>
+                    <label className="text-sm font-medium">Website Context & Goals</label>
                     <Textarea
-                      placeholder="E.g., Looking to start a side business, have expertise in digital marketing, interested in sustainable products..."
-                      value={businessContext}
-                      onChange={(e) => setBusinessContext(e.target.value)}
+                      placeholder="E.g., Need to add payment processing, want to improve mobile experience, looking to implement user authentication, need better content management..."
+                      value={websiteContext}
+                      onChange={(e) => setWebsiteContext(e.target.value)}
                       rows={4}
-                      maxLength={50}
+                      maxLength={1500}
                     />
+                    <p className="text-xs text-muted-foreground">{websiteContext.length}/1500 characters</p>
                   </div>
                   <Button
                     onClick={handleAnalyze}
-                    disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessContext.trim()}
+                    disabled={analyzing || !canAnalyze || !websiteType || !websiteSize || !budgetRange || !websiteContext.trim()}
                     className="w-full bg-secondary hover:bg-secondary/90 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
                     size="lg"
                   >
                     {analyzing ? (
-                      <>Analyzing market opportunities...</>
+                      <>Analyzing website opportunities...</>
                     ) : !canAnalyze ? (
                       <>Next recommendation in {getTimeUntilNextAnalysis()}</>
                     ) : (
-                      <>Get AI Business Ideas</>
+                      <>Get Website Feature Ideas</>
                     )}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
@@ -815,14 +815,14 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-base text-foreground leading-relaxed">{ideaResult.generalAdvice}</p>
+                      <div className="text-base text-foreground leading-relaxed whitespace-pre-line">{ideaResult.generalAdvice}</div>
                     </CardContent>
                   </Card>
 
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="h-1 flex-1 bg-gradient-to-r from-secondary via-primary to-secondary/30 rounded-full" />
-                      <h2 className="text-2xl font-bold whitespace-nowrap">Recommended Business Ideas</h2>
+                      <h2 className="text-2xl font-bold whitespace-nowrap">Recommended Website Features</h2>
                       <div className="h-1 flex-1 bg-gradient-to-l from-secondary via-primary to-secondary/30 rounded-full" />
                     </div>
                     <div className="grid gap-4">
@@ -842,7 +842,7 @@ const BusinessToolsAdvisor = () => {
                                   </CardTitle>
                                   <Button asChild size="sm" variant="outline" className="gap-2 h-8 w-fit shrink-0 hover:bg-secondary/10 hover:border-secondary transition-all">
                                     <a
-                                      href={`https://www.google.com/search?q=${encodeURIComponent(rec.name + " business idea")}`}
+                                      href={`https://www.google.com/search?q=${encodeURIComponent(rec.name + " website feature")}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title={`Search for ${rec.name} on Google`}
@@ -866,7 +866,7 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-foreground leading-relaxed">{rec.rationale}</p>
+                            <div className="text-sm lg:text-base text-foreground leading-relaxed whitespace-pre-line">{rec.rationale}</div>
                           </CardContent>
                         </Card>
                       ))}
@@ -876,8 +876,8 @@ const BusinessToolsAdvisor = () => {
                   <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
                     <CardContent className="pt-6">
                       <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general market trends and business practices. 
-                        Each business idea requires thorough market research, validation, and planning. This does not constitute professional business consulting advice.
+                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general website development trends and best practices.
+                        Each website feature requires thorough technical evaluation, user testing, and planning. This does not constitute professional web development consulting advice.
                       </p>
                     </CardContent>
                   </Card>

@@ -9,7 +9,7 @@ const corsHeaders = {
 
 interface IdeaRecommendation {
   name: string;
-  category: "product" | "service" | "saas" | "marketplace" | "content" | "consulting" | "ecommerce";
+  category: "landing-page" | "web-app" | "membership-site" | "directory" | "blog-system" | "booking-system" | "shop-features";
   viability: "quick-launch" | "medium-term" | "long-term";
   estimatedInvestment: string;
   rationale: string;
@@ -17,10 +17,10 @@ interface IdeaRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters")
+  websiteContext: z.string().trim().min(1, "Website context is required").max(1500, "Website context must be less than 1500 characters")
 });
 
 serve(async (req) => {
@@ -104,7 +104,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessContext } = validatedInput;
+    const { websiteType, websiteSize, budgetRange, websiteContext } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -114,7 +114,14 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a business ideas advisor. Analyze the user's business context and provide personalized business ideas.
+    const systemPrompt = `You are a website features and optimization advisor. Analyze the user's website context and provide personalized website feature and enhancement ideas.
+
+CRITICAL REQUIREMENTS:
+- Provide 7-10 detailed feature recommendations
+- Each recommendation's rationale must be at least 150 words
+- Include specific implementation considerations
+- Focus on landing pages, web apps, membership features, directories, blog systems, booking systems, and e-commerce features
+- Provide technical requirements and expected benefits
 
 CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
 Your response must be a raw JSON object starting with { and ending with }.
@@ -123,24 +130,24 @@ Return a JSON object with:
 {
   "recommendations": [
     {
-      "name": "Idea name",
-      "category": "product|service|saas|marketplace|content|consulting|ecommerce",
+      "name": "Feature/Enhancement name",
+      "category": "landing-page|web-app|membership-site|directory|blog-system|booking-system|shop-features",
       "viability": "quick-launch|medium-term|long-term",
       "estimatedInvestment": "$X-$Y",
-      "rationale": "Why this idea fits their context"
+      "rationale": "Detailed explanation (minimum 150 words) covering why this feature fits their website, technical implementation details, user benefits, and expected outcomes"
     }
   ],
-  "generalAdvice": "Strategic advice based on their industry and budget"
+  "generalAdvice": "Comprehensive strategic roadmap (200+ words) for website feature development including prioritization, timeline, technical stack recommendations, and key milestones"
 }
 
-Provide 5-7 concrete, actionable ideas tailored to their specific situation.`;
+Provide 7-10 concrete, actionable website feature ideas tailored to their specific situation.`;
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${teamSize}
+    const userPrompt = `Website Type: ${websiteType}
+Website Size: ${websiteSize}
 Budget Range: ${budgetRange}
-Business Context: ${businessContext}
+Website Context: ${websiteContext}
 
-Please provide personalized business ideas based on this information.`;
+Please provide personalized website feature and enhancement ideas based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
 
     console.log('Calling Lovable AI for business ideas...');
 
@@ -229,10 +236,10 @@ Please provide personalized business ideas based on this information.`;
       .from('business_ideas_history')
       .insert({
         user_id: user.id,
-        industry,
-        team_size: teamSize,
+        website_type: websiteType,
+        website_size: websiteSize,
         budget_range: budgetRange,
-        business_context: businessContext,
+        website_context: websiteContext,
         result: parsedResult
       });
 

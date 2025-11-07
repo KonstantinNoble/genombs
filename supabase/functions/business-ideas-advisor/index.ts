@@ -17,10 +17,10 @@ interface IdeaRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
-  teamSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessContext: z.string().trim().min(1, "Website context is required").max(1500, "Website context must be less than 1500 characters")
+  websiteContext: z.string().trim().min(1, "Website context is required").max(1500, "Website context must be less than 1500 characters")
 });
 
 serve(async (req) => {
@@ -104,7 +104,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessContext } = validatedInput;
+    const { websiteType, websiteSize, budgetRange, websiteContext } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -142,10 +142,10 @@ Return a JSON object with:
 
 Provide 7-10 concrete, actionable website feature ideas tailored to their specific situation.`;
 
-    const userPrompt = `Website Type: ${industry}
-Website Size: ${teamSize}
+    const userPrompt = `Website Type: ${websiteType}
+Website Size: ${websiteSize}
 Budget Range: ${budgetRange}
-Website Context: ${businessContext}
+Website Context: ${websiteContext}
 
 Please provide personalized website feature and enhancement ideas based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
 
@@ -236,10 +236,10 @@ Please provide personalized website feature and enhancement ideas based on this 
       .from('business_ideas_history')
       .insert({
         user_id: user.id,
-        industry,
-        team_size: teamSize,
+        website_type: websiteType,
+        website_size: websiteSize,
         budget_range: budgetRange,
-        business_context: businessContext,
+        website_context: websiteContext,
         result: parsedResult
       });
 

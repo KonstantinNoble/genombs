@@ -9,7 +9,6 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
-import WebsiteToolsAdvisor from "./pages/WebsiteToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -31,7 +30,6 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
-          <Route path="/website-tools" element={<WebsiteToolsAdvisor />} />
           <Route path="/notion-idea" element={<NotionIdea />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />

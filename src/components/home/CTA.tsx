@@ -20,7 +20,7 @@ const CTA = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/website-tools">
+              <Link to="/business-tools">
                 Get Started
               </Link>
             </Button>

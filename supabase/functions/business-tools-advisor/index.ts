@@ -17,10 +17,10 @@ interface ToolRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
-  websiteSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
+  industry: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  teamSize: z.string().trim().min(1, "Website size is required").max(50, "Website size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1500, "Website goals must be less than 1500 characters")
+  businessGoals: z.string().trim().min(1, "Website goals are required").max(1500, "Website goals must be less than 1500 characters")
 });
 
 serve(async (req) => {
@@ -104,7 +104,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteSize, budgetRange, websiteGoals } = validatedInput;
+    const { industry, teamSize, budgetRange, businessGoals } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -125,10 +125,10 @@ CRITICAL REQUIREMENTS:
 
 Use the suggest_tools function to return your recommendations.`;
 
-    const userPrompt = `Website Type: ${websiteType}
-Website Size: ${websiteSize}
+    const userPrompt = `Website Type: ${industry}
+Website Size: ${teamSize}
 Budget Range: ${budgetRange}
-Website Goals: ${websiteGoals}
+Website Goals: ${businessGoals}
 
 Please provide personalized website tool and optimization recommendations based on this information. Remember to provide 7-10 recommendations with detailed explanations (minimum 150 words each).`;
 
@@ -234,10 +234,10 @@ Please provide personalized website tool and optimization recommendations based 
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        website_type: websiteType,
-        website_size: websiteSize,
+        industry,
+        team_size: teamSize,
         budget_range: budgetRange,
-        website_goals: websiteGoals,
+        business_goals: businessGoals,
         result: parsedResult
       });
 

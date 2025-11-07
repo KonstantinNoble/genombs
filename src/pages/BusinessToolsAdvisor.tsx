@@ -40,20 +40,20 @@ interface IdeaAdvisorResult {
 
 interface ToolHistoryItem {
   id: string;
-  website_type: string;
-  website_size: string;
+  industry: string;
+  team_size: string;
   budget_range: string;
-  website_goals: string;
+  business_goals: string;
   result: ToolAdvisorResult;
   created_at: string;
 }
 
 interface IdeaHistoryItem {
   id: string;
-  website_type: string;
-  website_size: string;
+  industry: string;
+  team_size: string;
   budget_range: string;
-  website_context: string;
+  business_context: string;
   result: IdeaAdvisorResult;
   created_at: string;
 }
@@ -254,8 +254,8 @@ const BusinessToolsAdvisor = () => {
     try {
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body = isTools
-        ? { websiteType, websiteSize, budgetRange, websiteGoals: inputText }
-        : { websiteType, websiteSize, budgetRange, websiteContext: inputText };
+        ? { industry: websiteType, teamSize: websiteSize, budgetRange, businessGoals: inputText }
+        : { industry: websiteType, teamSize: websiteSize, budgetRange, businessContext: inputText };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
@@ -496,7 +496,7 @@ const BusinessToolsAdvisor = () => {
                   >
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.website_type || item.industry}</p>
+                        <p className="font-medium text-sm truncate group-hover:text-secondary transition-colors">{item.industry}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {new Date(item.created_at).toLocaleDateString()}
                           </p>

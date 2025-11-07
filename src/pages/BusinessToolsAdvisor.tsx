@@ -397,7 +397,7 @@ const BusinessToolsAdvisor = () => {
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-fade-in leading-tight">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-primary leading-tight tracking-tight drop-shadow-lg">
                 AI Advisor
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">

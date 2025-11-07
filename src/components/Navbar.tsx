@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import logo from "/Tech Company Logo with Stylized 'S'.png";
+import logo from "@/assets/synoptas-logo.png";
 
 const Navbar = () => {
   const location = useLocation();

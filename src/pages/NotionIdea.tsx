@@ -327,14 +327,14 @@ const NotionIdea = () => {
                       </p>
                     </div>
                     <p className="text-sm sm:text-base text-muted-foreground mb-6 text-center sm:text-left">
-                      You haven't created any analyses yet. Use the Business AI Advisor to get personalized recommendations!
+                      You haven't created any analyses yet. Use the AI Services Advisor to get personalized recommendations!
                     </p>
                     <Button 
                       onClick={() => navigate('/business-tools')}
                       variant="outline"
                       className="gap-2 w-full sm:w-auto border-2 border-primary/30 hover:bg-primary/10 font-semibold"
                     >
-                      Go to Business AI →
+                      Go to AI Services →
                     </Button>
                   </div>
                 )}
@@ -377,7 +377,7 @@ const NotionIdea = () => {
                     onClick={() => navigate('/business-tools')}
                     className="gap-2 text-lg px-10 py-7 font-semibold w-full border-2 border-primary/30 hover:bg-primary/10"
                   >
-                    Go to Business AI Advisor →
+                    Go to AI Services Advisor →
                   </Button>
                 </div>
               </div>

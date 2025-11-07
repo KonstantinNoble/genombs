@@ -85,7 +85,7 @@ const Navbar = () => {
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
-            Business AI
+            AI Services
           </Link>
           <Link 
             to="/notion-idea" 
@@ -157,7 +157,7 @@ const Navbar = () => {
               className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
-              Business AI
+              AI Services
             </Link>
             <Link
               to="/notion-idea"

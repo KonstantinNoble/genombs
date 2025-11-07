@@ -32,10 +32,10 @@ const Blog = () => {
 
         <main className="container mx-auto px-4 py-16 md:py-24">
           <header className="text-center mb-16 max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-emerald-700 dark:text-emerald-500">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
               Educational content & Resources
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
+            <p className="text-lg text-muted-foreground">
               Expert insights on AI-powered entrepreneurship, financial planning, and business strategy
             </p>
           </header>

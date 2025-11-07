@@ -114,7 +114,7 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a business ideas advisor. Analyze the user's business context and provide personalized business ideas.
+    const systemPrompt = `You are a business improvement advisor. Analyze the user's EXISTING business and provide personalized recommendations to improve and grow it.
 
 CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
 Your response must be a raw JSON object starting with { and ending with }.
@@ -123,26 +123,32 @@ Return a JSON object with:
 {
   "recommendations": [
     {
-      "name": "Idea name",
+      "name": "Improvement idea name",
       "category": "product|service|saas|marketplace|content|consulting|ecommerce",
       "viability": "quick-launch|medium-term|long-term",
       "estimatedInvestment": "$X-$Y",
-      "rationale": "Why this idea fits their context"
+      "rationale": "Why this improvement fits their business context and how it will help them grow"
     }
   ],
-  "generalAdvice": "Strategic advice based on their industry and budget"
+  "generalAdvice": "Strategic advice for improving their existing business based on their industry and budget"
 }
 
-Provide 5-7 concrete, actionable ideas tailored to their specific situation.`;
+Provide 5-7 concrete, actionable improvement ideas tailored to their specific existing business situation. Focus on:
+- Revenue growth opportunities
+- Operational efficiency improvements
+- Customer experience enhancements
+- Market expansion possibilities
+- Cost reduction strategies
+- Digital transformation opportunities`;
 
     const userPrompt = `Industry: ${industry}
 Team Size: ${teamSize}
 Budget Range: ${budgetRange}
-Business Context: ${businessContext}
+Current Business Context: ${businessContext}
 
-Please provide personalized business ideas based on this information.`;
+Please provide personalized improvement recommendations to help grow and optimize this EXISTING business.`;
 
-    console.log('Calling Lovable AI for business ideas...');
+    console.log('Calling Lovable AI for business improvement ideas...');
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

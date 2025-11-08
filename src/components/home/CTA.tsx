@@ -20,8 +20,8 @@ const CTA = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/business-tools">
-                Get Started
+              <Link to="/pricing">
+                Get Premium Access
               </Link>
             </Button>
           </div>
@@ -29,15 +29,15 @@ const CTA = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Free Plan
+              Unlimited Analyses
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              No Credit Card
+              Priority Support
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Instant Access
+              Cancel Anytime
             </span>
           </div>
         </div>

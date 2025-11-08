@@ -66,33 +66,14 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!user) return;
-
-    setDeleting(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("delete-account", {
-        method: "POST",
-        body: {},
-      });
-      if (error) throw error;
-
-      await supabase.auth.signOut();
-
-      toast({
-        title: "Account deleted",
-        description: "Your account and all data have been permanently deleted.",
-      });
-
-      navigate("/");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete account",
-        variant: "destructive",
-      });
-      setDeleting(false);
-    }
+    // For Whop users, redirect to subscription management
+    toast({
+      title: "Account Deletion",
+      description: "Please cancel your subscription on Whop first, then contact support to delete your account.",
+      variant: "destructive",
+      duration: 6000,
+    });
+    window.open('https://whop.com/hub', '_blank');
   };
 
   if (!user) {

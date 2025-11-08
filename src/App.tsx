@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
@@ -17,6 +16,7 @@ import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
 import RefundPolicy from "./pages/RefundPolicy";
 import Pricing from "./pages/Pricing";
+import WelcomePremium from "./pages/WelcomePremium";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +29,6 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
           <Route path="/notion-idea" element={<NotionIdea />} />
@@ -40,6 +39,7 @@ const App = () => (
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/welcome-premium" element={<WelcomePremium />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

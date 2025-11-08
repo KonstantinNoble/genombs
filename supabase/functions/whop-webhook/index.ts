@@ -120,6 +120,22 @@ async function handleMembershipActivated(supabase: any, event: WhopWebhookEvent)
     }
     
     user = newUser.user;
+    
+    // Generate and send magic link for auto-login
+    const redirectUrl = Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovable.app') || 'https://synoptas.com';
+    const { data: magicLinkData, error: magicLinkError } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email: whopData.user.email,
+      options: {
+        redirectTo: `${redirectUrl}/`
+      }
+    });
+    
+    if (magicLinkError) {
+      console.error('Error generating magic link:', magicLinkError);
+    } else {
+      console.log('✅ Magic link sent to:', whopData.user.email);
+    }
   }
   
   // Upsert membership data

@@ -16,52 +16,51 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Handle email verification redirect
-    const handleEmailVerification = async () => {
-      // Check if there's a hash fragment (email verification)
+    // Handle magic link login from Whop Premium purchase
+    const handleMagicLinkLogin = async () => {
       if (window.location.hash) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
         const type = hashParams.get('type');
-        
-        if (type === 'signup') {
-          // Check if user is now logged in after verification
+
+        if (accessToken && type === 'magiclink') {
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session?.user) {
-            // Frontend fallback: Ensure profile and credits exist
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('id')
-              .eq('id', session.user.id)
+            // Check if user is premium
+            const { data: userCredit } = await supabase
+              .from('user_credits')
+              .select('is_premium')
+              .eq('user_id', session.user.id)
               .single();
-            
-            if (!profile) {
-              console.log('Creating missing profile for user:', session.user.id);
-              
-              // Create profile
-              await supabase.from('profiles').insert({
-                id: session.user.id,
-                email: session.user.email
+
+            if (userCredit?.is_premium) {
+              toast({
+                title: "Welcome Premium Member! ✨",
+                description: "You now have unlimited AI analyses. Let's get started!",
               });
               
-              // Create user credits
-              await supabase.from('user_credits').insert({
-                user_id: session.user.id
+              // Clean up URL first
+              window.history.replaceState({}, document.title, window.location.pathname);
+              
+              // Redirect to Business Tools after a short delay
+              setTimeout(() => {
+                navigate('/business-tools');
+              }, 2000);
+            } else {
+              // Regular user login via magic link
+              toast({
+                title: "Welcome back!",
+                description: "You're now logged in.",
               });
+              window.history.replaceState({}, document.title, window.location.pathname);
             }
-            
-            toast({
-              title: "Email verified!",
-              description: "Your account has been activated. Welcome!",
-            });
-            // Clean up URL
-            window.history.replaceState({}, document.title, window.location.pathname);
           }
         }
       }
     };
 
-    handleEmailVerification();
+    handleMagicLinkLogin();
   }, [toast, navigate]);
 
   return (

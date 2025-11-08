@@ -86,47 +86,54 @@ const Pricing = () => {
               </CardFooter>
             </Card>
 
-            {/* Premium Plan - Coming Soon */}
-            <Card className="border-2 opacity-75">
-              <CardHeader>
+            {/* Premium Plan */}
+            <Card className="border-2 border-primary/50 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-gradient-to-l from-primary to-primary/80 text-primary-foreground px-4 py-1 text-sm font-semibold">
+                Most Popular
+              </div>
+              <CardHeader className="pt-8">
                 <CardTitle className="text-3xl">Premium Plan</CardTitle>
-                <CardDescription className="text-lg">Coming Soon</CardDescription>
+                <CardDescription className="text-lg">Unlimited AI insights</CardDescription>
                 <div className="mt-4">
-                  <span className="text-5xl font-bold text-foreground">TBA</span>
+                  <span className="text-5xl font-bold text-foreground">€9.99</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">Unlimited AI analyses</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80 font-semibold">Unlimited AI analyses ✨</span>
                   </li>
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">Priority support</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80">Priority support</span>
                   </li>
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">Advanced analytics</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80">Advanced analytics</span>
                   </li>
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">Custom recommendations</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80">Custom recommendations</span>
                   </li>
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">API access</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80">Export reports</span>
                   </li>
                   <li className="flex items-start">
-                    <Check className="mr-2 h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/60">Export reports</span>
+                    <Check className="mr-2 h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground/80">All future features</span>
                   </li>
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" size="lg" disabled>
-                  Coming Soon
+                <Button 
+                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all" 
+                  size="lg"
+                  onClick={() => window.location.href = 'https://whop.com/checkout/plan_8No5bGObMXwvq?d2c=true'}
+                >
+                  Get Premium
                 </Button>
               </CardFooter>
             </Card>

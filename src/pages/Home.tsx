@@ -35,18 +35,31 @@ const Home = () => {
               .single();
 
             if (userCredit?.is_premium) {
-              toast({
-                title: "Welcome Premium Member! ✨",
-                description: "You now have unlimited AI analyses. Let's get started!",
-              });
-              
               // Clean up URL first
               window.history.replaceState({}, document.title, window.location.pathname);
               
-              // Redirect to Business Tools after a short delay
-              setTimeout(() => {
-                navigate('/business-tools');
-              }, 2000);
+              // Check if password setup is required
+              const passwordSetupRequired = session.user.user_metadata?.password_setup_required;
+              
+              if (passwordSetupRequired) {
+                toast({
+                  title: "Welcome Premium Member! ✨",
+                  description: "Please set up your password to complete registration.",
+                });
+                
+                setTimeout(() => {
+                  navigate('/setup-password');
+                }, 1500);
+              } else {
+                toast({
+                  title: "Welcome Premium Member! ✨",
+                  description: "You now have unlimited AI analyses. Let's get started!",
+                });
+                
+                setTimeout(() => {
+                  navigate('/business-tools');
+                }, 2000);
+              }
             } else {
               // Regular user login via magic link
               toast({

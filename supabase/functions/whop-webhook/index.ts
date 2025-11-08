@@ -122,6 +122,7 @@ async function handleMembershipActivated(supabase: any, event: WhopWebhookEvent)
       user_metadata: {
         whop_user_id: whopData.user.id,
         whop_username: whopData.user.username,
+        password_setup_required: true
       }
     });
     

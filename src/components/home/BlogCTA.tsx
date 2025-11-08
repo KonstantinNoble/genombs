@@ -14,7 +14,7 @@ const BlogCTA = () => {
             </h2>
             
             <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover expert articles on AI, business automation, and growth strategies to help you stay ahead of the curve.
+              Discover expert articles on AI, business automation, and growth strategies. Premium members get unlimited access to AI-powered insights.
             </p>
             
             <Link to="/blog">

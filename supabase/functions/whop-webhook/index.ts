@@ -61,7 +61,26 @@ serve(async (req) => {
     
     // Parse event
     const event: WhopWebhookEvent = JSON.parse(body);
-    console.log('Webhook event:', { type: event.type, action: event.action, userId: event.data.user.id });
+    
+    // Validate webhook data
+    if (!event.data || !event.data.user) {
+      console.error('❌ Invalid webhook data - missing user information:', JSON.stringify(event, null, 2));
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid webhook data', 
+          details: 'Missing user information in event.data',
+          received: { type: event.type, action: event.action }
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    console.log('Webhook event:', { 
+      type: event.type, 
+      action: event.action, 
+      userId: event.data?.user?.id ?? 'unknown',
+      userEmail: event.data?.user?.email ?? 'unknown'
+    });
 
     // Handle different event types
     const eventType = event.action || event.type;

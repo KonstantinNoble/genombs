@@ -74,10 +74,10 @@ const BusinessToolsAdvisor = () => {
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
 
-  const [industry, setIndustry] = useState("");
-  const [teamSize, setTeamSize] = useState("");
+  const [websiteType, setWebsiteType] = useState("");
+  const [websiteStatus, setWebsiteStatus] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
-  const [businessGoals, setBusinessGoals] = useState("");
+  const [websiteGoals, setWebsiteGoals] = useState("");
   const [businessContext, setBusinessContext] = useState("");
 
   const { toast } = useToast();
@@ -233,9 +233,9 @@ const BusinessToolsAdvisor = () => {
     }
 
     const isTools = activeTab === "tools";
-    const inputText = isTools ? businessGoals.trim() : businessContext.trim();
+    const inputText = isTools ? websiteGoals.trim() : businessContext.trim();
 
-    if (!industry || !teamSize || !budgetRange || !inputText) {
+    if (!websiteType || !websiteStatus || !budgetRange || !inputText) {
       toast({
         title: "Missing information",
         description: "Please fill in all fields",
@@ -254,8 +254,8 @@ const BusinessToolsAdvisor = () => {
     try {
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body = isTools 
-        ? { industry, teamSize, budgetRange, businessGoals: inputText }
-        : { industry, teamSize, budgetRange, businessContext: inputText };
+        ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
+        : { websiteType, websiteStatus, budgetRange, businessContext: inputText };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
@@ -563,59 +563,57 @@ const BusinessToolsAdvisor = () => {
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-xs sm:text-sm font-medium">Industry</label>
-                      <Select value={industry} onValueChange={setIndustry}>
-                        <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
+                      <label className="text-xs sm:text-sm font-medium">Website-Typ</label>
+                      <Select value={websiteType} onValueChange={setWebsiteType}>
+                        <SelectTrigger><SelectValue placeholder="Wähle Website-Typ" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="technology">Technology</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="consulting">Consulting</SelectItem>
-                          <SelectItem value="marketing">Marketing Agency</SelectItem>
-                          <SelectItem value="retail">Retail</SelectItem>
-                          <SelectItem value="healthcare">Healthcare</SelectItem>
-                          <SelectItem value="education">Education</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
-                          <SelectItem value="real-estate">Real Estate</SelectItem>
-                          <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                          <SelectItem value="hospitality">Hospitality</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value="business-website">Business Website</SelectItem>
+                          <SelectItem value="online-shop">Online Shop</SelectItem>
+                          <SelectItem value="blog">Blog / Content Site</SelectItem>
+                          <SelectItem value="portfolio">Portfolio</SelectItem>
+                          <SelectItem value="landing-page">Landing Page</SelectItem>
+                          <SelectItem value="saas-platform">SaaS Plattform</SelectItem>
+                          <SelectItem value="community">Community / Forum</SelectItem>
+                          <SelectItem value="marketplace">Marketplace</SelectItem>
+                          <SelectItem value="educational">Lern-/Kursplattform</SelectItem>
+                          <SelectItem value="other">Andere</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-xs sm:text-sm font-medium">Team Size</label>
-                      <Select value={teamSize} onValueChange={setTeamSize}>
-                        <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
+                      <label className="text-xs sm:text-sm font-medium">Website Status</label>
+                      <Select value={websiteStatus} onValueChange={setWebsiteStatus}>
+                        <SelectTrigger><SelectValue placeholder="Wähle aktuellen Status" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="solo">Solo (1 person)</SelectItem>
-                          <SelectItem value="small">Small (2-10 people)</SelectItem>
-                          <SelectItem value="medium">Medium (11-50 people)</SelectItem>
-                          <SelectItem value="large">Large (51-200 people)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise (200+ people)</SelectItem>
+                          <SelectItem value="planning">In Planung</SelectItem>
+                          <SelectItem value="development">In Entwicklung</SelectItem>
+                          <SelectItem value="new">Live (0-6 Monate)</SelectItem>
+                          <SelectItem value="established">Etabliert (6-24 Monate)</SelectItem>
+                          <SelectItem value="mature">Reif (2+ Jahre)</SelectItem>
+                          <SelectItem value="redesign">Wird überarbeitet</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
-                      <label className="text-xs sm:text-sm font-medium">Monthly Budget for Tools</label>
+                      <label className="text-xs sm:text-sm font-medium">Monatliches Budget für Website-Tools</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
-                        <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Wähle Budgetbereich" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="minimal">Minimal ($0-$100/month)</SelectItem>
-                          <SelectItem value="low">Low ($100-$500/month)</SelectItem>
-                          <SelectItem value="medium">Medium ($500-$2,000/month)</SelectItem>
-                          <SelectItem value="high">High ($2,000-$10,000/month)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise ($10,000+/month)</SelectItem>
+                          <SelectItem value="minimal">Minimal ($0-$50/Monat)</SelectItem>
+                          <SelectItem value="low">Niedrig ($50-$200/Monat)</SelectItem>
+                          <SelectItem value="medium">Mittel ($200-$1,000/Monat)</SelectItem>
+                          <SelectItem value="high">Hoch ($1,000-$5,000/Monat)</SelectItem>
+                          <SelectItem value="enterprise">Enterprise ($5,000+/Monat)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <label className="text-xs sm:text-sm font-medium">Primary Business Goals</label>
+                    <label className="text-xs sm:text-sm font-medium">Website-Ziele</label>
                     <Textarea
-                      placeholder="E.g., Increase sales by 30%, improve team collaboration, automate repetitive tasks, reduce operational costs..."
-                      value={businessGoals}
-                      onChange={(e) => setBusinessGoals(e.target.value)}
+                      placeholder="z.B. Mehr Besucher generieren, Conversion-Rate erhöhen, besseres SEO-Ranking, schnellere Ladezeiten..."
+                      value={websiteGoals}
+                      onChange={(e) => setWebsiteGoals(e.target.value)}
                       rows={3}
                       className="text-sm sm:text-base resize-none"
                       maxLength={500}
@@ -623,7 +621,7 @@ const BusinessToolsAdvisor = () => {
                   </div>
                   <Button
                     onClick={handleAnalyze}
-                    disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessGoals.trim()}
+                    disabled={analyzing || !canAnalyze || !websiteType || !websiteStatus || !budgetRange || !websiteGoals.trim()}
                     className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
                     size="lg"
                   >
@@ -730,36 +728,34 @@ const BusinessToolsAdvisor = () => {
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Industry</label>
-                      <Select value={industry} onValueChange={setIndustry}>
-                        <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
+                      <label className="text-sm font-medium">Website-Typ</label>
+                      <Select value={websiteType} onValueChange={setWebsiteType}>
+                        <SelectTrigger><SelectValue placeholder="Wähle Website-Typ" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="technology">Technology</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="consulting">Consulting</SelectItem>
-                          <SelectItem value="marketing">Marketing Agency</SelectItem>
-                          <SelectItem value="retail">Retail</SelectItem>
-                          <SelectItem value="healthcare">Healthcare</SelectItem>
-                          <SelectItem value="education">Education</SelectItem>
-                          <SelectItem value="finance">Finance</SelectItem>
-                          <SelectItem value="real-estate">Real Estate</SelectItem>
-                          <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                          <SelectItem value="hospitality">Hospitality</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value="business-website">Business Website</SelectItem>
+                          <SelectItem value="online-shop">Online Shop</SelectItem>
+                          <SelectItem value="blog">Blog / Content Site</SelectItem>
+                          <SelectItem value="portfolio">Portfolio</SelectItem>
+                          <SelectItem value="landing-page">Landing Page</SelectItem>
+                          <SelectItem value="saas-platform">SaaS Plattform</SelectItem>
+                          <SelectItem value="community">Community / Forum</SelectItem>
+                          <SelectItem value="marketplace">Marketplace</SelectItem>
+                          <SelectItem value="educational">Lern-/Kursplattform</SelectItem>
+                          <SelectItem value="other">Andere</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Team Size</label>
-                      <Select value={teamSize} onValueChange={setTeamSize}>
-                        <SelectTrigger><SelectValue placeholder="Select team size" /></SelectTrigger>
+                      <label className="text-sm font-medium">Website Status</label>
+                      <Select value={websiteStatus} onValueChange={setWebsiteStatus}>
+                        <SelectTrigger><SelectValue placeholder="Wähle aktuellen Status" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="solo">Solo (1 person)</SelectItem>
-                          <SelectItem value="small">Small (2-10 people)</SelectItem>
-                          <SelectItem value="medium">Medium (11-50 people)</SelectItem>
-                          <SelectItem value="large">Large (51-200 people)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise (200+ people)</SelectItem>
+                          <SelectItem value="planning">In Planung</SelectItem>
+                          <SelectItem value="development">In Entwicklung</SelectItem>
+                          <SelectItem value="new">Live (0-6 Monate)</SelectItem>
+                          <SelectItem value="established">Etabliert (6-24 Monate)</SelectItem>
+                          <SelectItem value="mature">Reif (2+ Jahre)</SelectItem>
+                          <SelectItem value="redesign">Wird überarbeitet</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -789,7 +785,7 @@ const BusinessToolsAdvisor = () => {
                   </div>
                   <Button
                     onClick={handleAnalyze}
-                    disabled={analyzing || !canAnalyze || !industry || !teamSize || !budgetRange || !businessContext.trim()}
+                    disabled={analyzing || !canAnalyze || !websiteType || !websiteStatus || !budgetRange || !businessContext.trim()}
                     className="w-full bg-secondary hover:bg-secondary/90 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
                     size="lg"
                   >

@@ -17,10 +17,10 @@ interface ToolRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessGoals: z.string().trim().min(1, "Business goals are required").max(1000, "Business goals must be less than 1000 characters")
+  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters")
 });
 
 serve(async (req) => {
@@ -104,7 +104,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessGoals } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -114,18 +114,28 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a business tools advisor. Analyze the user's business context and provide personalized tool and strategy recommendations.
+    const systemPrompt = `Du bist ein Website-Tools-Berater. Analysiere die Website-Details des Nutzers und empfehle personalisierte Tools und Strategien speziell für Webseiten.
 
-Use the suggest_tools function to return your recommendations.`;
+Konzentriere dich AUSSCHLIESSLICH auf Tools und Services, die für Webseiten relevant sind:
+- Website-Builder und CMS (z.B. WordPress, Webflow, Framer)
+- Analytics und Tracking-Tools (z.B. Google Analytics, Plausible)
+- SEO-Tools (z.B. Ahrefs, SEMrush, Yoast)
+- Performance-Optimierung (z.B. Cloudflare, CDN-Services)
+- Conversion-Optimierung (z.B. Hotjar, OptinMonster)
+- E-Commerce-Plattformen (z.B. Shopify, WooCommerce)
+- Design und UX-Tools
+- Marketing-Automatisierung für Webseiten
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${teamSize}
-Budget Range: ${budgetRange}
-Business Goals: ${businessGoals}
+Verwende die suggest_tools-Funktion, um deine Empfehlungen zurückzugeben.`;
 
-Please provide personalized business tool recommendations based on this information.`;
+    const userPrompt = `Website-Typ: ${websiteType}
+Website-Status: ${websiteStatus}
+Monatliches Budget: ${budgetRange}
+Website-Ziele: ${websiteGoals}
 
-    console.log('Calling Lovable AI for business tools...');
+Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurück.`;
+
+    console.log('Calling Lovable AI for website tools...');
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -144,7 +154,7 @@ Please provide personalized business tool recommendations based on this informat
             type: "function",
             function: {
               name: "suggest_tools",
-              description: "Return 5-7 business tool and strategy recommendations",
+              description: "Gebe 5-7 Website-Tool-Empfehlungen zurück",
               parameters: {
                 type: "object",
                 properties: {
@@ -153,17 +163,17 @@ Please provide personalized business tool recommendations based on this informat
                     items: {
                       type: "object",
                       properties: {
-                        name: { type: "string", description: "Tool or strategy name" },
+                        name: { type: "string", description: "Tool- oder Service-Name" },
                         category: { 
                           type: "string",
-                          enum: ["productivity", "marketing", "sales", "finance", "hr", "operations", "strategy"]
+                          enum: ["analytics", "seo", "performance", "design", "marketing", "ecommerce", "cms", "conversion"]
                         },
                         implementation: {
                           type: "string",
                           enum: ["quick-win", "medium-term", "strategic"]
                         },
-                        estimatedCost: { type: "string", description: "Cost range like $0-$50/month" },
-                        rationale: { type: "string", description: "Why this tool fits their context" }
+                        estimatedCost: { type: "string", description: "Kostenbereich wie $0-$50/Monat" },
+                        rationale: { type: "string", description: "Warum dieses Tool zur Website passt" }
                       },
                       required: ["name", "category", "implementation", "estimatedCost", "rationale"],
                       additionalProperties: false
@@ -171,7 +181,7 @@ Please provide personalized business tool recommendations based on this informat
                   },
                   generalAdvice: {
                     type: "string",
-                    description: "Strategic advice based on their industry and goals"
+                    description: "Strategische Beratung basierend auf Website-Typ und Zielen auf Deutsch"
                   }
                 },
                 required: ["recommendations", "generalAdvice"],
@@ -227,10 +237,10 @@ Please provide personalized business tool recommendations based on this informat
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        industry,
-        team_size: teamSize,
+        industry: websiteType,
+        team_size: websiteStatus,
         budget_range: budgetRange,
-        business_goals: businessGoals,
+        business_goals: websiteGoals,
         result: parsedResult
       });
 

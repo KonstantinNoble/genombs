@@ -563,55 +563,55 @@ const BusinessToolsAdvisor = () => {
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-xs sm:text-sm font-medium">Website-Typ</label>
+                      <label className="text-xs sm:text-sm font-medium">Website Type</label>
                       <Select value={websiteType} onValueChange={setWebsiteType}>
-                        <SelectTrigger><SelectValue placeholder="Wähle Website-Typ" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select website type" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
                           <SelectItem value="business-website">Business Website</SelectItem>
                           <SelectItem value="online-shop">Online Shop</SelectItem>
                           <SelectItem value="blog">Blog / Content Site</SelectItem>
                           <SelectItem value="portfolio">Portfolio</SelectItem>
                           <SelectItem value="landing-page">Landing Page</SelectItem>
-                          <SelectItem value="saas-platform">SaaS Plattform</SelectItem>
+                          <SelectItem value="saas-platform">SaaS Platform</SelectItem>
                           <SelectItem value="community">Community / Forum</SelectItem>
                           <SelectItem value="marketplace">Marketplace</SelectItem>
-                          <SelectItem value="educational">Lern-/Kursplattform</SelectItem>
-                          <SelectItem value="other">Andere</SelectItem>
+                          <SelectItem value="educational">Learning Platform</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2">
                       <label className="text-xs sm:text-sm font-medium">Website Status</label>
                       <Select value={websiteStatus} onValueChange={setWebsiteStatus}>
-                        <SelectTrigger><SelectValue placeholder="Wähle aktuellen Status" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select current status" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="planning">In Planung</SelectItem>
-                          <SelectItem value="development">In Entwicklung</SelectItem>
-                          <SelectItem value="new">Live (0-6 Monate)</SelectItem>
-                          <SelectItem value="established">Etabliert (6-24 Monate)</SelectItem>
-                          <SelectItem value="mature">Reif (2+ Jahre)</SelectItem>
-                          <SelectItem value="redesign">Wird überarbeitet</SelectItem>
+                          <SelectItem value="planning">Planning</SelectItem>
+                          <SelectItem value="development">In Development</SelectItem>
+                          <SelectItem value="new">Live (0-6 months)</SelectItem>
+                          <SelectItem value="established">Established (6-24 months)</SelectItem>
+                          <SelectItem value="mature">Mature (2+ years)</SelectItem>
+                          <SelectItem value="redesign">Being Redesigned</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
-                      <label className="text-xs sm:text-sm font-medium">Monatliches Budget für Website-Tools</label>
+                      <label className="text-xs sm:text-sm font-medium">Monthly Budget for Website Tools</label>
                       <Select value={budgetRange} onValueChange={setBudgetRange}>
-                        <SelectTrigger><SelectValue placeholder="Wähle Budgetbereich" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select budget range" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="minimal">Minimal ($0-$50/Monat)</SelectItem>
-                          <SelectItem value="low">Niedrig ($50-$200/Monat)</SelectItem>
-                          <SelectItem value="medium">Mittel ($200-$1,000/Monat)</SelectItem>
-                          <SelectItem value="high">Hoch ($1,000-$5,000/Monat)</SelectItem>
-                          <SelectItem value="enterprise">Enterprise ($5,000+/Monat)</SelectItem>
+                          <SelectItem value="minimal">Minimal ($0-$50/month)</SelectItem>
+                          <SelectItem value="low">Low ($50-$200/month)</SelectItem>
+                          <SelectItem value="medium">Medium ($200-$1,000/month)</SelectItem>
+                          <SelectItem value="high">High ($1,000-$5,000/month)</SelectItem>
+                          <SelectItem value="enterprise">Enterprise ($5,000+/month)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <label className="text-xs sm:text-sm font-medium">Website-Ziele</label>
+                    <label className="text-xs sm:text-sm font-medium">Website Goals</label>
                     <Textarea
-                      placeholder="z.B. Mehr Besucher generieren, Conversion-Rate erhöhen, besseres SEO-Ranking, schnellere Ladezeiten..."
+                      placeholder="E.g., Generate more visitors, increase conversion rate, improve SEO ranking, faster load times..."
                       value={websiteGoals}
                       onChange={(e) => setWebsiteGoals(e.target.value)}
                       rows={3}
@@ -728,34 +728,34 @@ const BusinessToolsAdvisor = () => {
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Website-Typ</label>
+                      <label className="text-sm font-medium">Website Type</label>
                       <Select value={websiteType} onValueChange={setWebsiteType}>
-                        <SelectTrigger><SelectValue placeholder="Wähle Website-Typ" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select website type" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
                           <SelectItem value="business-website">Business Website</SelectItem>
                           <SelectItem value="online-shop">Online Shop</SelectItem>
                           <SelectItem value="blog">Blog / Content Site</SelectItem>
                           <SelectItem value="portfolio">Portfolio</SelectItem>
                           <SelectItem value="landing-page">Landing Page</SelectItem>
-                          <SelectItem value="saas-platform">SaaS Plattform</SelectItem>
+                          <SelectItem value="saas-platform">SaaS Platform</SelectItem>
                           <SelectItem value="community">Community / Forum</SelectItem>
                           <SelectItem value="marketplace">Marketplace</SelectItem>
-                          <SelectItem value="educational">Lern-/Kursplattform</SelectItem>
-                          <SelectItem value="other">Andere</SelectItem>
+                          <SelectItem value="educational">Learning Platform</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Website Status</label>
                       <Select value={websiteStatus} onValueChange={setWebsiteStatus}>
-                        <SelectTrigger><SelectValue placeholder="Wähle aktuellen Status" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select current status" /></SelectTrigger>
                         <SelectContent className="max-h-[200px]">
-                          <SelectItem value="planning">In Planung</SelectItem>
-                          <SelectItem value="development">In Entwicklung</SelectItem>
-                          <SelectItem value="new">Live (0-6 Monate)</SelectItem>
-                          <SelectItem value="established">Etabliert (6-24 Monate)</SelectItem>
-                          <SelectItem value="mature">Reif (2+ Jahre)</SelectItem>
-                          <SelectItem value="redesign">Wird überarbeitet</SelectItem>
+                          <SelectItem value="planning">Planning</SelectItem>
+                          <SelectItem value="development">In Development</SelectItem>
+                          <SelectItem value="new">Live (0-6 months)</SelectItem>
+                          <SelectItem value="established">Established (6-24 months)</SelectItem>
+                          <SelectItem value="mature">Mature (2+ years)</SelectItem>
+                          <SelectItem value="redesign">Being Redesigned</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

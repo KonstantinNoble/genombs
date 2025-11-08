@@ -114,26 +114,26 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `Du bist ein Website-Tools-Berater. Analysiere die Website-Details des Nutzers und empfehle personalisierte Tools und Strategien speziell für Webseiten.
+    const systemPrompt = `You are a website tools advisor. Analyze the user's website details and provide personalized tool and strategy recommendations specifically for websites.
 
-Konzentriere dich AUSSCHLIESSLICH auf Tools und Services, die für Webseiten relevant sind:
-- Website-Builder und CMS (z.B. WordPress, Webflow, Framer)
-- Analytics und Tracking-Tools (z.B. Google Analytics, Plausible)
-- SEO-Tools (z.B. Ahrefs, SEMrush, Yoast)
-- Performance-Optimierung (z.B. Cloudflare, CDN-Services)
-- Conversion-Optimierung (z.B. Hotjar, OptinMonster)
-- E-Commerce-Plattformen (z.B. Shopify, WooCommerce)
-- Design und UX-Tools
-- Marketing-Automatisierung für Webseiten
+Focus EXCLUSIVELY on tools and services relevant for websites:
+- Website builders and CMS (e.g., WordPress, Webflow, Framer)
+- Analytics and tracking tools (e.g., Google Analytics, Plausible)
+- SEO tools (e.g., Ahrefs, SEMrush, Yoast)
+- Performance optimization (e.g., Cloudflare, CDN services)
+- Conversion optimization (e.g., Hotjar, OptinMonster)
+- E-commerce platforms (e.g., Shopify, WooCommerce)
+- Design and UX tools
+- Marketing automation for websites
 
-Verwende die suggest_tools-Funktion, um deine Empfehlungen zurückzugeben.`;
+Use the suggest_tools function to return your recommendations.`;
 
-    const userPrompt = `Website-Typ: ${websiteType}
-Website-Status: ${websiteStatus}
-Monatliches Budget: ${budgetRange}
-Website-Ziele: ${websiteGoals}
+    const userPrompt = `Website Type: ${websiteType}
+Website Status: ${websiteStatus}
+Monthly Budget: ${budgetRange}
+Website Goals: ${websiteGoals}
 
-Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurück.`;
+Please provide personalized website tool recommendations based on this information.`;
 
     console.log('Calling Lovable AI for website tools...');
 
@@ -154,7 +154,7 @@ Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurü
             type: "function",
             function: {
               name: "suggest_tools",
-              description: "Gebe 5-7 Website-Tool-Empfehlungen zurück",
+              description: "Return 5-7 website tool recommendations",
               parameters: {
                 type: "object",
                 properties: {
@@ -163,7 +163,7 @@ Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurü
                     items: {
                       type: "object",
                       properties: {
-                        name: { type: "string", description: "Tool- oder Service-Name" },
+                        name: { type: "string", description: "Tool or service name" },
                         category: { 
                           type: "string",
                           enum: ["analytics", "seo", "performance", "design", "marketing", "ecommerce", "cms", "conversion"]
@@ -172,8 +172,8 @@ Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurü
                           type: "string",
                           enum: ["quick-win", "medium-term", "strategic"]
                         },
-                        estimatedCost: { type: "string", description: "Kostenbereich wie $0-$50/Monat" },
-                        rationale: { type: "string", description: "Warum dieses Tool zur Website passt" }
+                        estimatedCost: { type: "string", description: "Cost range like $0-$50/month" },
+                        rationale: { type: "string", description: "Why this tool fits the website" }
                       },
                       required: ["name", "category", "implementation", "estimatedCost", "rationale"],
                       additionalProperties: false
@@ -181,7 +181,7 @@ Bitte gib personalisierte Tool-Empfehlungen für diese Website auf Deutsch zurü
                   },
                   generalAdvice: {
                     type: "string",
-                    description: "Strategische Beratung basierend auf Website-Typ und Zielen auf Deutsch"
+                    description: "Strategic advice based on website type and goals"
                   }
                 },
                 required: ["recommendations", "generalAdvice"],

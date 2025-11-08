@@ -17,7 +17,7 @@ const AuthCallback = () => {
         if (sessionError) throw sessionError;
         
         if (!session?.user) {
-          toast.error("Authentifizierung fehlgeschlagen");
+          toast.error("Authentication failed");
           navigate("/auth");
           return;
         }
@@ -45,7 +45,7 @@ const AuthCallback = () => {
             
             const hoursRemaining = data.reason?.match(/(\d+)/)?.[1] || "24";
             toast.error(
-              `Diese Email-Adresse kann für weitere ${hoursRemaining} Stunden nicht verwendet werden.`,
+              `This email address cannot be used for another ${hoursRemaining} hours.`,
               { duration: 6000 }
             );
             navigate("/auth");
@@ -54,12 +54,12 @@ const AuthCallback = () => {
         }
 
         // All checks passed or existing user - redirect to home
-        toast.success("Erfolgreich angemeldet!");
+        toast.success("Successfully signed in!");
         navigate("/");
         
       } catch (error) {
         console.error("Auth callback error:", error);
-        toast.error("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+        toast.error("An error occurred. Please try again.");
         navigate("/auth");
       } finally {
         setIsProcessing(false);
@@ -73,7 +73,7 @@ const AuthCallback = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-        <p className="text-muted-foreground">Authentifizierung wird verarbeitet...</p>
+        <p className="text-muted-foreground">Processing authentication...</p>
       </div>
     </div>
   );

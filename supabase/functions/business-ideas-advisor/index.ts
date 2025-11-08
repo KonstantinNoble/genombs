@@ -20,7 +20,8 @@ const inputSchema = z.object({
   industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
   teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters")
+  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters"),
+  imageUrls: z.array(z.string().url()).max(2).optional()
 });
 
 serve(async (req) => {
@@ -104,7 +105,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessContext } = validatedInput;
+    const { industry, teamSize, budgetRange, businessContext, imageUrls = [] } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -118,6 +119,8 @@ serve(async (req) => {
 
 CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
 Your response must be a raw JSON object starting with { and ending with }.
+
+${imageUrls.length > 0 ? 'IMPORTANT: Analyze the provided website/business screenshots to better understand the current state, branding, user experience, and visual presentation. Base your recommendations on what you observe in the screenshots, such as design quality, messaging, professionalism, or opportunities for improvement.' : ''}
 
 Return a JSON object with:
 {
@@ -139,16 +142,51 @@ Provide 5-7 concrete, actionable improvement ideas tailored to their specific ex
 - Customer experience enhancements
 - Market expansion possibilities
 - Cost reduction strategies
-- Digital transformation opportunities`;
+- Digital transformation opportunities
+${imageUrls.length > 0 ? '- Visual and branding improvements based on the screenshots' : ''}`;
 
     const userPrompt = `Industry: ${industry}
 Team Size: ${teamSize}
 Budget Range: ${budgetRange}
 Current Business Context: ${businessContext}
+${imageUrls.length > 0 ? `\n\nI have provided ${imageUrls.length} screenshot(s) of the business/website. Please analyze the visual presentation, branding, design quality, and any visible aspects to inform your improvement recommendations.` : ''}
 
 Please provide personalized improvement recommendations to help grow and optimize this EXISTING business.`;
 
     console.log('Calling Lovable AI for business improvement ideas...');
+
+    // Convert storage URLs to base64 data URLs if images are provided
+    const imageDataUrls: string[] = [];
+    if (imageUrls.length > 0) {
+      console.log(`Processing ${imageUrls.length} image(s)...`);
+      for (const url of imageUrls) {
+        try {
+          const imageResponse = await fetch(url);
+          if (!imageResponse.ok) {
+            console.error(`Failed to fetch image from ${url}`);
+            continue;
+          }
+          const imageBlob = await imageResponse.blob();
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+          const mimeType = imageBlob.type || 'image/jpeg';
+          imageDataUrls.push(`data:${mimeType};base64,${base64}`);
+          console.log(`Successfully converted image to base64 (${mimeType})`);
+        } catch (error) {
+          console.error('Error converting image:', error);
+        }
+      }
+    }
+
+    const userMessageContent: any = imageDataUrls.length > 0
+      ? [
+          { type: "text", text: userPrompt },
+          ...imageDataUrls.map(dataUrl => ({
+            type: "image_url",
+            image_url: { url: dataUrl }
+          }))
+        ]
+      : userPrompt;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -157,10 +195,10 @@ Please provide personalized improvement recommendations to help grow and optimiz
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: imageDataUrls.length > 0 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userMessageContent }
         ],
         response_format: { type: "json_object" }
       }),
@@ -239,7 +277,8 @@ Please provide personalized improvement recommendations to help grow and optimiz
         team_size: teamSize,
         budget_range: budgetRange,
         business_context: businessContext,
-        result: parsedResult
+        result: parsedResult,
+        screenshot_urls: imageUrls
       });
 
     if (historyError) {

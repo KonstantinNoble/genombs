@@ -81,7 +81,7 @@ const Pricing = () => {
                 <Button 
                   className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all" 
                   size="lg"
-                  onClick={() => window.location.href = 'https://whop.com/checkout/plan_8No5bGObMXwvq?d2c=true'}
+                  onClick={() => window.location.href = 'https://whop.com/checkout/plan_fIPIQB9r5qgPC?d2c=true'}
                 >
                   Get Premium
                 </Button>

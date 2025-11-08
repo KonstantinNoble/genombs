@@ -10,11 +10,11 @@ const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight text-foreground animate-scale-in">
-            AI-Powered Business Tool Recommendations
+            AI Website Advisor
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Get personalized tool recommendations and strategic insights tailored to your industry, team size, and growth goals.
+            Optimiere deine Website mit KI-gestützten Tool-Empfehlungen und strategischen Geschäftsideen. Speziell entwickelt für Website-Betreiber, die ihr Online-Business auf das nächste Level bringen möchten.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -24,7 +24,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/business-tools">
-                Start Free Analysis
+                Website-Tools analysieren
               </Link>
             </Button>
 
@@ -35,7 +35,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/notion-idea">
-                Get Business Ideas
+                Website-Ideen generieren
               </Link>
             </Button>
           </div>
@@ -43,11 +43,11 @@ const Hero = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              No Credit Card Required
+              Keine Kreditkarte erforderlich
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Free Daily Analysis
+              Kostenlose tägliche Analyse
             </span>
           </div>
         </div>

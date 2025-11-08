@@ -2,28 +2,28 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    title: "AI-Powered Insights",
-    description: "Intelligent business tool recommendations based on your unique needs and goals.",
+    title: "Website-Tools Empfehlungen",
+    description: "KI-gestützte Analyse deiner Website mit maßgeschneiderten Tool-Vorschlägen zur Optimierung.",
   },
   {
-    title: "Smart Analysis",
-    description: "Advanced AI analyzes your business context to deliver precision-matched solutions.",
+    title: "Website-Geschäftsideen",
+    description: "Innovative Geschäftsmodelle und Monetarisierungsstrategien speziell für deine Website.",
   },
   {
-    title: "Instant Results",
-    description: "Receive comprehensive recommendations in seconds.",
+    title: "Screenshot-Analyse",
+    description: "Lade Screenshots deiner Website hoch - die KI analysiert Design, Struktur und Optimierungspotenzial.",
   },
   {
-    title: "Growth Focused",
-    description: "Tools and strategies tailored to scale your business.",
+    title: "Website-Typ spezifisch",
+    description: "Empfehlungen basierend auf deinem Website-Typ - E-Commerce, Blog, SaaS, Portfolio oder mehr.",
   },
   {
-    title: "Precision Matching",
-    description: "Industry-specific recommendations that align with your team size and budget.",
+    title: "Budget-orientiert",
+    description: "Tool- und Ideen-Vorschläge passend zu deinem monatlichen Budget und Website-Status.",
   },
   {
-    title: "Free to Start",
-    description: "Begin your optimization journey with free daily analysis.",
+    title: "Sofortige Ergebnisse",
+    description: "Detaillierte Analyse mit konkreten Handlungsempfehlungen in Sekunden.",
   },
 ];
 
@@ -36,10 +36,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Why Choose Our Platform
+            Dein AI Website Advisor
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Make informed decisions with AI-powered insights tailored to your business needs.
+            Zwei leistungsstarke KI-Funktionen: Finde die perfekten Tools für deine Website und entdecke profitable Geschäftsideen - alles auf Basis deiner Website-Screenshots und -Ziele.
           </p>
         </div>
 

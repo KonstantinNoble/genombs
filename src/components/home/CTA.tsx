@@ -7,17 +7,17 @@ const CTA = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            Ready to Get Started?
+            Start Your Premium Journey
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join businesses making smarter decisions with AI. Start your free analysis now—no credit card required.
+            Unlimited AI analyses, advanced tools, and priority support for $19.99/month.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+          <div className="pt-4">
             <Button
               size="lg"
-              className="text-base px-8 transition-all duration-300 hover:scale-105"
+              className="text-lg px-12 py-6 h-auto transition-all duration-300 hover:scale-105 shadow-xl"
               asChild
             >
               <Link to="/pricing">
@@ -26,18 +26,14 @@ const CTA = () => {
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-8 pt-6 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Unlimited Analyses
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary" />
-              Priority Support
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary" />
               Cancel Anytime
+            </span>
+            <span className="flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              Instant Access
             </span>
           </div>
         </div>

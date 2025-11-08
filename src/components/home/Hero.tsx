@@ -10,48 +10,37 @@ const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight text-foreground animate-scale-in">
-            AI Website Advisor
+            Unlock AI-Powered Business Insights
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Optimize your website with AI-powered tool recommendations and strategic business ideas. Specifically designed for website owners looking to take their online business to the next level.
+            Premium AI tools for website optimization and strategic business growth. Join now for unlimited analyses.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+          <div className="pt-4">
             <Button
               size="lg"
-              className="text-base px-8 transition-all duration-300 hover:scale-105"
+              className="text-lg px-12 py-6 h-auto transition-all duration-300 hover:scale-105 shadow-xl"
               asChild
             >
               <Link to="/pricing">
-                Get Premium Access
-              </Link>
-            </Button>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/5 hover:border-primary"
-              asChild
-            >
-              <Link to="/pricing">
-                View Pricing
+                Get Premium - $19.99/month
               </Link>
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Unlimited Analyses
+              Unlimited AI Analyses
             </span>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              $19.99/month
+              Advanced Tools
             </span>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 font-medium">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Cancel Anytime
+              Priority Support
             </span>
           </div>
         </div>

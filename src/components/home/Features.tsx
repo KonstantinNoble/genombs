@@ -36,10 +36,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Your AI Website Advisor
+            Premium AI Features
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Two powerful AI features: Find the perfect tools for your website and discover profitable business ideas - all based on your website screenshots and goals.
+            Advanced AI-powered tools and insights for your business growth.
           </p>
         </div>
 

@@ -10,11 +10,11 @@ const BlogCTA = () => {
           
           <div className="p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Insights & Strategies for Entrepreneurs
+              Expert Insights & Strategies
             </h2>
             
             <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover expert articles on AI, business automation, and growth strategies. Premium members get unlimited access to AI-powered insights.
+              Learn from AI-powered business automation and growth strategies.
             </p>
             
             <Link to="/blog">

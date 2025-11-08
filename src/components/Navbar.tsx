@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import logo from "@/assets/synoptas-logo.png";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -59,11 +59,11 @@ const Navbar = () => {
           <div className="relative w-10 h-10 overflow-hidden transition-all duration-300 group-hover:rotate-12">
             <img 
               src={logo} 
-              alt="Synoptas Logo" 
+              alt="Wealthconomy Logo" 
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-xl font-bold font-sans text-primary">Synoptas</span>
+          <span className="text-xl font-bold font-sans text-primary">Wealthconomy</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">

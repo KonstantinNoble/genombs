@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Upload, X } from "lucide-react";
+import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
@@ -80,8 +80,6 @@ const BusinessToolsAdvisor = () => {
   const [budgetRange, setBudgetRange] = useState("");
   const [websiteGoals, setWebsiteGoals] = useState("");
   const [businessContext, setBusinessContext] = useState("");
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
 
   const { toast } = useToast();
   
@@ -225,61 +223,6 @@ const BusinessToolsAdvisor = () => {
     setIdeaHistory((data || []) as unknown as IdeaHistoryItem[]);
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    
-    if (files.length + selectedImages.length > 2) {
-      toast({ title: "Maximum 2 images allowed", variant: "destructive" });
-      return;
-    }
-
-    const validFiles = files.filter(file => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: `${file.name} is too large (max 5MB)`, variant: "destructive" });
-        return false;
-      }
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        toast({ title: `${file.name} is not a valid image format`, variant: "destructive" });
-        return false;
-      }
-      return true;
-    });
-
-    setSelectedImages([...selectedImages, ...validFiles].slice(0, 2));
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setSelectedImages(selectedImages.filter((_, i) => i !== index));
-  };
-
-  const uploadImages = async (): Promise<string[]> => {
-    if (!user || selectedImages.length === 0) return [];
-
-    const urls: string[] = [];
-    for (const image of selectedImages) {
-      const timestamp = Date.now();
-      const fileName = `${user.id}/${timestamp}_${image.name}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('website-screenshots')
-        .upload(fileName, image);
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        toast({ title: `Failed to upload ${image.name}`, variant: "destructive" });
-        continue;
-      }
-
-      const { data: urlData } = await supabase.storage
-        .from('website-screenshots')
-        .createSignedUrl(fileName, 86400);
-
-      if (urlData?.signedUrl) {
-        urls.push(urlData.signedUrl);
-      }
-    }
-    return urls;
-  };
 
   const handleAnalyze = async () => {
     if (!user) {
@@ -311,13 +254,10 @@ const BusinessToolsAdvisor = () => {
     }
 
     try {
-      const imageUrls = await uploadImages();
-      setUploadedImageUrls(imageUrls);
-
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body = isTools 
-        ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText, imageUrls }
-        : { websiteType, websiteStatus, budgetRange, businessContext: inputText, imageUrls };
+        ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
+        : { websiteType, websiteStatus, budgetRange, businessContext: inputText };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
@@ -350,7 +290,6 @@ const BusinessToolsAdvisor = () => {
         await loadIdeaHistory();
       }
       
-      setSelectedImages([]);
       await loadAnalysisLimit();
       
       toast({
@@ -488,11 +427,11 @@ const BusinessToolsAdvisor = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 sm:space-y-6 relative">
-                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
+                  <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
                   <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">1</div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your website details</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your website type, status, budget, goals, and upload screenshots</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your website type, status, budget, and goals</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
@@ -683,60 +622,6 @@ const BusinessToolsAdvisor = () => {
                     />
                   </div>
 
-                  {/* Image Upload Section */}
-                  <div className="space-y-2">
-                    <label className="text-xs sm:text-sm font-medium">Website Screenshots (Optional)</label>
-                    <div className="space-y-3">
-                      <label className="cursor-pointer block">
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary/50 transition-colors text-center">
-                          <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
-                          <p className="text-xs text-muted-foreground">
-                            Upload up to 2 screenshots (max 5MB each)
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            JPG, PNG, or WebP
-                          </p>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          multiple
-                          onChange={handleImageSelect}
-                          className="hidden"
-                          disabled={selectedImages.length >= 2}
-                        />
-                      </label>
-                      
-                      {selectedImages.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3">
-                          {selectedImages.map((image, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={URL.createObjectURL(image)}
-                                alt={`Screenshot ${index + 1}`}
-                                className="w-full h-24 object-cover rounded-lg border border-border"
-                              />
-                              <button
-                                onClick={() => handleRemoveImage(index)}
-                                className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                              <p className="text-xs text-muted-foreground mt-1 truncate">
-                                {image.name}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {selectedImages.length > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          {selectedImages.length}/2 images selected
-                        </p>
-                      )}
-                    </div>
-                  </div>
 
                   <Button
                     onClick={handleAnalyze}
@@ -903,60 +788,6 @@ const BusinessToolsAdvisor = () => {
                     />
                   </div>
 
-                  {/* Image Upload Section */}
-                  <div className="space-y-2">
-                    <label className="text-xs sm:text-sm font-medium">Website/Business Screenshots (Optional)</label>
-                    <div className="space-y-3">
-                      <label className="cursor-pointer block">
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-secondary/50 transition-colors text-center">
-                          <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
-                          <p className="text-xs text-muted-foreground">
-                            Upload up to 2 screenshots (max 5MB each)
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            JPG, PNG, or WebP
-                          </p>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          multiple
-                          onChange={handleImageSelect}
-                          className="hidden"
-                          disabled={selectedImages.length >= 2}
-                        />
-                      </label>
-                      
-                      {selectedImages.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3">
-                          {selectedImages.map((image, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={URL.createObjectURL(image)}
-                                alt={`Screenshot ${index + 1}`}
-                                className="w-full h-24 object-cover rounded-lg border border-border"
-                              />
-                              <button
-                                onClick={() => handleRemoveImage(index)}
-                                className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                              <p className="text-xs text-muted-foreground mt-1 truncate">
-                                {image.name}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {selectedImages.length > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          {selectedImages.length}/2 images selected
-                        </p>
-                      )}
-                    </div>
-                  </div>
 
                   <Button
                     onClick={handleAnalyze}

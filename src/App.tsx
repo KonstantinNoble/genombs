@@ -7,6 +7,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
@@ -28,6 +29,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
           <Route path="/notion-idea" element={<NotionIdea />} />

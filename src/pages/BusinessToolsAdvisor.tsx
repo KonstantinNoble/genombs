@@ -502,13 +502,12 @@ const BusinessToolsAdvisor = () => {
             <div className="py-4 sm:py-6">
               <Button 
                 size="lg" 
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/pricing')}
                 className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
               >
-                
-                Sign in to get started
+                Get Premium Access
               </Button>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start your free analysis now</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Unlimited analyses for $19.99/month</p>
             </div>
 
             <Card className="relative text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">

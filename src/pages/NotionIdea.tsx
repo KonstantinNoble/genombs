@@ -160,7 +160,7 @@ const NotionIdea = () => {
 
   const handleImport = (selectedToolIds: string[], selectedIdeaIds: string[]) => {
     if (!user) {
-      navigate('/auth');
+      navigate('/pricing');
       return;
     }
     
@@ -247,7 +247,7 @@ const NotionIdea = () => {
 
   const handleGetStarted = () => {
     if (!user) {
-      navigate('/auth');
+      navigate('/pricing');
       return;
     }
     
@@ -344,12 +344,12 @@ const NotionIdea = () => {
                 <div className="py-4 sm:py-6">
                   <Button 
                     size="lg" 
-                    onClick={() => navigate('/auth')}
+                    onClick={() => navigate('/pricing')}
                     className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 font-bold w-full sm:w-auto shadow-lg"
                   >
-                    Sign In to Get Started
+                    Get Premium Access
                   </Button>
-                  <p className="text-sm text-muted-foreground mt-3 text-center sm:text-left">Start organizing your ideas now - it's free</p>
+                  <p className="text-sm text-muted-foreground mt-3 text-center sm:text-left">Unlock unlimited AI-powered insights - $19.99/month</p>
                 </div>
 
                 <div className="p-6 sm:p-8 rounded-2xl border-2 border-border bg-card shadow-lg max-w-2xl mx-auto">

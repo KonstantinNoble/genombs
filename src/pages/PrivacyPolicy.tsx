@@ -94,9 +94,9 @@ const PrivacyPolicy = () => {
             
             <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Authentication Session Management</h3>
             <p className="text-muted-foreground mb-4">
-              When you log in to your account, we store a session token (JWT) in your browser's local storage to maintain 
-              your logged-in state. This token is technically necessary for authentication and is covered by § 25 Abs. 2 
-              Nr. 2 TTDSG, as it is essential for providing the requested service.
+              When you log in to your account via Google OAuth, we store a session token in your browser's local storage to maintain 
+              your logged-in state. This token originates from Google's authentication service and is technically necessary for 
+              authentication. This is covered by § 25 Abs. 2 Nr. 2 TTDSG, as it is essential for providing the requested service.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance) and Art. 6(1)(f) GDPR 
@@ -105,50 +105,107 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. User Authentication (Login & Registration)</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. User Authentication (Google OAuth)</h2>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Authentication Method</h3>
             <p className="text-muted-foreground mb-4">
-              Our website offers a user authentication system that allows you to create an account and log in to access
-              premium features. When you register, we collect the following personal data:
+              Our website uses Google OAuth exclusively for user authentication. This means you log in using your existing 
+              Google account instead of creating a separate password for our website. This authentication method offers 
+              enhanced security through Google's infrastructure and provides a seamless login experience.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Why Google OAuth?</strong>
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Email address</li>
-              <li>Password (stored in hashed and encrypted form only)</li>
-              <li>Timestamps (account creation date etc.)</li>
+              <li>Enhanced security through Google's proven authentication infrastructure</li>
+              <li>No need to remember additional passwords</li>
+              <li>Two-factor authentication and advanced security features from Google</li>
+              <li>Streamlined login process across devices</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Data Received from Google</h3>
+            <p className="text-muted-foreground mb-4">
+              When you authenticate via Google OAuth, we receive the following data from your Google account:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Email address</strong> (required) – Used as your primary account identifier and for communications</li>
+              <li><strong>Name</strong> (optional) – If provided by your Google profile, used for personalization</li>
+              <li><strong>Google User ID</strong> – A unique identifier from Google to link your account</li>
+              <li><strong>Profile picture URL</strong> (optional) – If available from your Google account</li>
+              <li><strong>Timestamps</strong> – Account creation date and last login time</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong>
+              We do NOT receive or store your Google password. Authentication is handled entirely by Google's secure 
+              infrastructure.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Legal Basis</h3>
+            <p className="text-muted-foreground mb-4">
+              The processing of your Google OAuth data is based on:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                Art. 6(1)(b) GDPR – The processing is necessary for the performance of the contract (providing
-                user-specific features and services).
+                <strong>Art. 6(1)(b) GDPR</strong> – Processing is necessary for the performance of the contract. 
+                Authentication is required to provide you with user-specific features and services.
               </li>
-              <li>Art. 6(1)(f) GDPR – Our legitimate interest in offering secure and personalized services.</li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR</strong> – Our legitimate interest in offering secure, convenient, and 
+                personalized services while protecting user accounts against unauthorized access.
+              </li>
             </ul>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">Password Requirements</h3>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Google as Third Party</h3>
             <p className="text-muted-foreground mb-4">
-              Passwords must be at least 8 characters long. While we recommend using strong passwords with a mix of 
-              uppercase letters, lowercase letters, numbers, and symbols, the system enforces only the minimum length 
-              requirement to balance security with user convenience.
-            </p>
-            
-            <p className="text-muted-foreground mb-4">
-              <strong>Email confirmation:</strong> To ensure the security of your account and verify your email address,
-              we require you to confirm your email after registration by clicking on a confirmation link sent to your
-              provided email address.
+              <strong>Service provider:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Backend infrastructure:</strong> User authentication and data storage are handled through a secure
-              backend infrastructure. Authentication data are encrypted during transmission (SSL/TLS) and passwords are
-              stored using industry-standard cryptographic hashing algorithms. The backend infrastructure is hosted on
-              servers that comply with GDPR requirements, with data transfers to third countries secured by Standard
-              Contractual Clauses (SCCs).
+              <strong>Data transfer to USA:</strong> When you use Google OAuth, your authentication data is processed 
+              by Google LLC in the United States. This involves a data transfer to a third country outside the European 
+              Economic Area (EEA).
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Storage duration:</strong> Your account data is stored as long as your account remains active. You
-              may delete your account at any time through your account settings or by contacting us directly. When you
-              delete your account:
+              <strong>Legal basis for third-country transfer:</strong> Art. 45 GDPR (Adequacy Decision)
+              <br />
+              Google LLC is certified under the EU-U.S. Data Privacy Framework (DPF). The European Commission has 
+              recognized the DPF as providing an adequate level of data protection equivalent to EU law. Therefore, 
+              data transfers to Google for authentication purposes are based on the adequacy decision pursuant to 
+              Art. 45 GDPR and do not require additional safeguards such as Standard Contractual Clauses.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Google Privacy Policy:</strong>{" "}
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://policies.google.com/privacy
+              </a>
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Google DPF Certification:</strong>{" "}
+              <a
+                href="https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt000000001L5AAI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Data Privacy Framework
+              </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.5 Backend Infrastructure</h3>
+            <p className="text-muted-foreground mb-4">
+              User authentication and data storage are handled through a secure backend infrastructure. All authentication 
+              data and OAuth tokens are encrypted during transmission using industry-standard SSL/TLS protocols. The 
+              backend infrastructure is hosted on servers that comply with GDPR requirements, with data transfers to 
+              third countries secured through appropriate safeguards including adequacy decisions and Standard 
+              Contractual Clauses (SCCs) where applicable.
+            </p>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.6 Storage Duration</h3>
+            <p className="text-muted-foreground mb-4">
+              Your account data is stored as long as your account remains active. You may delete your account at any 
+              time through your account settings or by contacting us directly. When you delete your account:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Your personal data is immediately and permanently removed from our production database</li>
@@ -168,23 +225,24 @@ const PrivacyPolicy = () => {
               </li>
               <li>Legal retention obligations may require us to keep certain records beyond this period</li>
             </ul>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.7 Account Management</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>Account management:</strong> You can access your account information at any time by navigating to
-              your profile page while logged in. This page displays your profile information, including your name, email
-              address, and account creation date.
+              You can access your account information at any time by navigating to your profile page while logged in. 
+              This page displays your profile information, including your email address and account creation date.
             </p>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.8 Account Deletion</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>Account deletion:</strong> You have the right to delete your account and all associated personal
-              data at any time. Our website provides a self-service account deletion feature accessible through your
-              account settings. When you initiate account deletion:
+              You have the right to delete your account and all associated personal data at any time. Our website 
+              provides a self-service account deletion feature accessible through your account settings. When you 
+              initiate account deletion:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                Your profile data (email, timestamps) is immediately and permanently deleted from our production
+                Your profile data (email, name, timestamps) is immediately and permanently deleted from our production
                 database
               </li>
               <li>
-                All authentication data (login credentials, session tokens) are invalidated and removed from active
+                All authentication data (Google OAuth tokens, session tokens) are invalidated and removed from active
                 systems
               </li>
               <li>The deletion is irreversible and cannot be undone once processed</li>
@@ -205,7 +263,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">Email Hash Storage for Abuse Prevention</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.9 Email Hash Storage for Abuse Prevention</h3>
             <p className="text-muted-foreground mb-4">
               To prevent abuse and protect against accidental re-registration, we create a cryptographic hash (SHA-256) 
               of your email address and store it temporarily for up to 24 hours after account deletion. This hash is a 

@@ -22,6 +22,7 @@ export type Database = {
           id: string
           industry: string
           result: Json
+          screenshot_urls: string[] | null
           team_size: string
           user_id: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           id?: string
           industry: string
           result: Json
+          screenshot_urls?: string[] | null
           team_size: string
           user_id: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           id?: string
           industry?: string
           result?: Json
+          screenshot_urls?: string[] | null
           team_size?: string
           user_id?: string
         }
@@ -55,6 +58,7 @@ export type Database = {
           id: string
           industry: string
           result: Json
+          screenshot_urls: string[] | null
           team_size: string
           user_id: string
         }
@@ -65,6 +69,7 @@ export type Database = {
           id?: string
           industry: string
           result: Json
+          screenshot_urls?: string[] | null
           team_size: string
           user_id: string
         }
@@ -75,6 +80,7 @@ export type Database = {
           id?: string
           industry?: string
           result?: Json
+          screenshot_urls?: string[] | null
           team_size?: string
           user_id?: string
         }

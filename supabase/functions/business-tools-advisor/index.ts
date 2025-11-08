@@ -20,7 +20,8 @@ const inputSchema = z.object({
   websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
   websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters")
+  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters"),
+  imageUrls: z.array(z.string().url()).max(2).optional()
 });
 
 serve(async (req) => {
@@ -104,7 +105,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, imageUrls = [] } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -126,16 +127,29 @@ Focus EXCLUSIVELY on tools and services relevant for websites:
 - Design and UX tools
 - Marketing automation for websites
 
+${imageUrls.length > 0 ? 'IMPORTANT: Analyze the provided website screenshots to better understand the current design, UX, and functionality. Base your recommendations on visual aspects you observe in the screenshots, such as layout issues, missing elements, design quality, mobile responsiveness indicators, or opportunities for improvement.' : ''}
+
 Use the suggest_tools function to return your recommendations.`;
 
     const userPrompt = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Monthly Budget: ${budgetRange}
 Website Goals: ${websiteGoals}
+${imageUrls.length > 0 ? `\n\nI have provided ${imageUrls.length} screenshot(s) of the website. Please analyze the visual design, user interface, layout, and any visible functionality to inform your tool recommendations. Look for areas that could be improved with specific tools.` : ''}
 
 Please provide personalized website tool recommendations based on this information.`;
 
     console.log('Calling Lovable AI for website tools...');
+
+    const userMessageContent: any = imageUrls.length > 0
+      ? [
+          { type: "text", text: userPrompt },
+          ...imageUrls.map(url => ({
+            type: "image_url",
+            image_url: { url }
+          }))
+        ]
+      : userPrompt;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -144,10 +158,10 @@ Please provide personalized website tool recommendations based on this informati
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: imageUrls.length > 0 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userMessageContent }
         ],
         tools: [
           {
@@ -241,7 +255,8 @@ Please provide personalized website tool recommendations based on this informati
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_goals: websiteGoals,
-        result: parsedResult
+        result: parsedResult,
+        screenshot_urls: imageUrls
       });
 
     if (historyError) {

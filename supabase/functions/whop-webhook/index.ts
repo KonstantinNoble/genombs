@@ -28,6 +28,7 @@ interface WhopWebhookEvent {
     valid: boolean;
     cancel_at_period_end: boolean;
     expires_at?: string;
+    valid_until?: string;
     metadata?: Record<string, any>;
   };
 }
@@ -71,6 +72,16 @@ serve(async (req) => {
     } else if (eventType === 'membership.went_invalid' || eventType === 'membership.was_deleted') {
       // User cancelled or subscription expired
       await handleMembershipDeactivated(supabase, event);
+    } else if (eventType === 'payment.refunded') {
+      // User requested refund - CRITICAL: Remove premium immediately
+      await handleRefund(supabase, event);
+    } else if (eventType === 'payment.failed') {
+      // Payment failed - log and monitor
+      await handlePaymentFailed(supabase, event);
+    } else {
+      // Unknown event - log for monitoring
+      console.warn('⚠️ UNHANDLED WEBHOOK EVENT:', eventType);
+      console.warn('Event data:', JSON.stringify(event, null, 2));
     }
 
     return new Response(
@@ -188,11 +199,15 @@ async function handleMembershipDeactivated(supabase: any, event: WhopWebhookEven
   
   console.log('Deactivating membership for:', whopData.user.email);
   
+  // Check if membership is cancelled or expired
+  const isCancelled = event.action === 'membership.was_deleted';
+  const isExpired = event.action === 'membership.went_invalid';
+  
   // Update membership status
   const { error: membershipError } = await supabase
     .from('whop_memberships')
     .update({
-      status: event.action === 'membership.was_deleted' ? 'cancelled' : 'expired',
+      status: isCancelled ? 'cancelled' : 'expired',
       updated_at: new Date().toISOString()
     })
     .eq('whop_membership_id', whopData.id);
@@ -202,7 +217,58 @@ async function handleMembershipDeactivated(supabase: any, event: WhopWebhookEven
     throw new Error('Failed to update membership');
   }
   
-  // Find user by email and remove premium status
+  // ✅ FIX: Only remove premium if EXPIRED or no valid_until date
+  // If cancelled but still valid, keep premium until expiration
+  const shouldRemovePremium = isExpired || !whopData.valid_until || new Date(whopData.valid_until) <= new Date();
+  
+  if (shouldRemovePremium) {
+    const { data: existingUser } = await supabase.auth.admin.listUsers();
+    const user = existingUser?.users.find((u: any) => u.email === whopData.user.email);
+    
+    if (user) {
+      const { error: creditsError } = await supabase
+        .from('user_credits')
+        .update({
+          is_premium: false,
+          premium_source: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id);
+      
+      if (creditsError) {
+        console.error('Error updating credits:', creditsError);
+        throw new Error('Failed to update credits');
+      }
+      
+      console.log('✅ Premium removed for:', whopData.user.email);
+    }
+  } else {
+    console.log(`⏰ Membership cancelled but still valid until: ${whopData.valid_until}`);
+  }
+  
+  console.log('✅ Membership deactivated successfully for:', whopData.user.email);
+}
+
+async function handleRefund(supabase: any, event: WhopWebhookEvent) {
+  const { data: whopData } = event;
+  
+  console.log('🚨 REFUND DETECTED for:', whopData.user.email);
+  
+  // Update membership to refunded status
+  const { error: membershipError } = await supabase
+    .from('whop_memberships')
+    .update({
+      status: 'refunded',
+      updated_at: new Date().toISOString()
+    })
+    .eq('whop_membership_id', whopData.id);
+  
+  if (membershipError) {
+    console.error('Error updating membership:', membershipError);
+    throw new Error('Failed to update membership');
+  }
+  
+  // CRITICAL: Remove premium immediately on refund
   const { data: existingUser } = await supabase.auth.admin.listUsers();
   const user = existingUser?.users.find((u: any) => u.email === whopData.user.email);
   
@@ -222,5 +288,15 @@ async function handleMembershipDeactivated(supabase: any, event: WhopWebhookEven
     }
   }
   
-  console.log('✅ Membership deactivated successfully for:', whopData.user.email);
+  console.log('✅ Premium removed due to refund:', whopData.user.email);
+}
+
+async function handlePaymentFailed(supabase: any, event: WhopWebhookEvent) {
+  const { data: whopData } = event;
+  
+  console.log('💳 Payment failed for:', whopData.user.email);
+  console.log('⚠️ Payment failed - membership will remain active until valid_until expires');
+  
+  // Note: Premium remains active until Whop sends membership.went_invalid
+  // This gives the user time to update payment method
 }

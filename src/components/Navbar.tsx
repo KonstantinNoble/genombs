@@ -115,21 +115,13 @@ const Navbar = () => {
               <Link to="/profile">Profile</Link>
             </Button>
           ) : (
-            <div className="flex items-center gap-3">
-              <Button
-                size="sm"
-                variant="outline"
-                asChild
-              >
-                <Link to="/auth">Login</Link>
-              </Button>
-              <Button
-                size="sm"
-                asChild
-              >
-                <Link to="/pricing">Get Premium</Link>
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              asChild
+            >
+              <Link to="/auth">Sign In</Link>
+            </Button>
           )}
         </div>
 
@@ -191,25 +183,15 @@ const Navbar = () => {
                 <Link to="/profile">Profile</Link>
               </Button>
             ) : (
-              <div className="space-y-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
-                  asChild
-                >
-                  <Link to="/auth">Login</Link>
-                </Button>
-                <Button
-                  size="sm"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
-                  asChild
-                >
-                  <Link to="/pricing">Get Premium</Link>
-                </Button>
-              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsOpen(false)}
+                asChild
+              >
+                <Link to="/auth">Sign In</Link>
+              </Button>
             )}
           </div>
         </div>

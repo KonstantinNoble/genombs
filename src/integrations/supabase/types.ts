@@ -133,10 +133,8 @@ export type Database = {
           id: string
           ideas_count: number | null
           ideas_window_start: string | null
-          is_premium: boolean | null
           last_analysis_at: string | null
           last_reset_date: string
-          premium_source: string | null
           tools_count: number | null
           tools_window_start: string | null
           updated_at: string
@@ -149,10 +147,8 @@ export type Database = {
           id?: string
           ideas_count?: number | null
           ideas_window_start?: string | null
-          is_premium?: boolean | null
           last_analysis_at?: string | null
           last_reset_date?: string
-          premium_source?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string
@@ -165,53 +161,12 @@ export type Database = {
           id?: string
           ideas_count?: number | null
           ideas_window_start?: string | null
-          is_premium?: boolean | null
           last_analysis_at?: string | null
           last_reset_date?: string
-          premium_source?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      whop_memberships: {
-        Row: {
-          created_at: string
-          id: string
-          metadata: Json | null
-          plan_id: string
-          status: string
-          updated_at: string
-          user_id: string
-          valid_until: string | null
-          whop_membership_id: string
-          whop_user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          plan_id: string
-          status?: string
-          updated_at?: string
-          user_id: string
-          valid_until?: string | null
-          whop_membership_id: string
-          whop_user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          plan_id?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-          valid_until?: string | null
-          whop_membership_id?: string
-          whop_user_id?: string | null
         }
         Relationships: []
       }

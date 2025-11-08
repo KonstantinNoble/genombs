@@ -22,17 +22,11 @@ const Footer = () => {
               <h3 className="font-bold text-base sm:text-lg text-foreground">Legal</h3>
             </div>
             <nav className="flex flex-col space-y-3 items-center" aria-label="Legal links">
-              <Link to="/pricing" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
-                → Pricing
-              </Link>
               <Link to="/privacy-policy" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
                 → Privacy Policy
               </Link>
               <Link to="/terms-of-service" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
                 → Terms of Service
-              </Link>
-              <Link to="/refund-policy" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
-                → Refund Policy
               </Link>
               <Link to="/imprint" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
                 → Imprint

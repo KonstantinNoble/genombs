@@ -12,7 +12,6 @@ import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Upload, X } 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
-import { UpgradeModal } from "@/components/ui/upgrade-modal";
 
 interface ToolRecommendation {
   name: string;
@@ -66,7 +65,6 @@ const BusinessToolsAdvisor = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState<"tools" | "ideas">("tools");
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
   const [toolResult, setToolResult] = useState<ToolAdvisorResult | null>(null);
   const [toolHistory, setToolHistory] = useState<ToolHistoryItem[]>([]);
@@ -76,7 +74,6 @@ const BusinessToolsAdvisor = () => {
   
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
-  const [isPremium, setIsPremium] = useState(false);
 
   const [websiteType, setWebsiteType] = useState("");
   const [websiteStatus, setWebsiteStatus] = useState("");
@@ -109,7 +106,6 @@ const BusinessToolsAdvisor = () => {
       loadToolHistory();
       loadIdeaHistory();
       loadAnalysisLimit();
-      loadPremiumStatus();
 
       const channel = supabase
         .channel('user_credits_changes')
@@ -123,7 +119,6 @@ const BusinessToolsAdvisor = () => {
           },
           () => {
             loadAnalysisLimit();
-            loadPremiumStatus();
           }
         )
         .subscribe();
@@ -133,20 +128,6 @@ const BusinessToolsAdvisor = () => {
       };
     }
   }, [user]);
-
-  const loadPremiumStatus = async () => {
-    if (!user) return;
-    
-    const { data, error } = await supabase
-      .from('user_credits')
-      .select('is_premium')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    
-    if (!error && data) {
-      setIsPremium(data.is_premium || false);
-    }
-  };
 
   const syncCredits = async () => {
     if (!user) return;
@@ -310,12 +291,6 @@ const BusinessToolsAdvisor = () => {
       return;
     }
 
-    // Premium users skip credit check
-    if (!isPremium && !canAnalyze) {
-      setShowUpgradeModal(true);
-      return;
-    }
-
     const isTools = activeTab === "tools";
     const inputText = isTools ? websiteGoals.trim() : businessContext.trim();
 
@@ -348,18 +323,12 @@ const BusinessToolsAdvisor = () => {
 
       if (error) {
         if (error.message?.includes('Daily limit reached') || error.message?.includes('429')) {
-          // Free users hit their limit - show upgrade modal
-          if (!isPremium) {
-            setShowUpgradeModal(true);
-            await syncCredits();
-            return;
-          }
-          
           toast({
             title: "Daily limit reached",
             description: "Syncing your usage data...",
             variant: "destructive",
           });
+          // Sync credits to fix any discrepancies
           await syncCredits();
         } else if (error.message?.includes('Rate limit') || error.message?.includes('402')) {
           toast({
@@ -502,12 +471,13 @@ const BusinessToolsAdvisor = () => {
             <div className="py-4 sm:py-6">
               <Button 
                 size="lg" 
-                onClick={() => navigate('/pricing')}
+                onClick={() => navigate('/auth')}
                 className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
               >
-                Get Premium Access
+                
+                Sign in to get started
               </Button>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Unlimited analyses for $19.99/month</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start your free analysis now</p>
             </div>
 
             <Card className="relative text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">
@@ -1110,11 +1080,6 @@ const BusinessToolsAdvisor = () => {
         </div>
       </div>
       <Footer />
-      
-      <UpgradeModal 
-        open={showUpgradeModal} 
-        onOpenChange={setShowUpgradeModal} 
-      />
     </div>
   );
 };

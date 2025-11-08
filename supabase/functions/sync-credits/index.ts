@@ -31,25 +31,6 @@ serve(async (req) => {
 
     console.log(`Syncing credits for user: ${user.id}`);
 
-    // Check if user is premium - if so, no need to sync credits
-    const { data: userCredit } = await supabase
-      .from('user_credits')
-      .select('is_premium')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (userCredit?.is_premium) {
-      console.log('Premium user - unlimited analyses, skipping credit sync');
-      return new Response(
-        JSON.stringify({
-          success: true,
-          unlimited: true,
-          message: 'Premium user - unlimited analyses'
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const now = new Date();
     const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 

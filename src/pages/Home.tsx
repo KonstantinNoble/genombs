@@ -16,64 +16,52 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Handle magic link login from Whop Premium purchase
-    const handleMagicLinkLogin = async () => {
+    // Handle email verification redirect
+    const handleEmailVerification = async () => {
+      // Check if there's a hash fragment (email verification)
       if (window.location.hash) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
         const type = hashParams.get('type');
-
-        if (accessToken && type === 'magiclink') {
+        
+        if (type === 'signup') {
+          // Check if user is now logged in after verification
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session?.user) {
-            // Check if user is premium
-            const { data: userCredit } = await supabase
-              .from('user_credits')
-              .select('is_premium')
-              .eq('user_id', session.user.id)
+            // Frontend fallback: Ensure profile and credits exist
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', session.user.id)
               .single();
-
-            if (userCredit?.is_premium) {
-              // Clean up URL first
-              window.history.replaceState({}, document.title, window.location.pathname);
+            
+            if (!profile) {
+              console.log('Creating missing profile for user:', session.user.id);
               
-              // Check if password setup is required
-              const passwordSetupRequired = session.user.user_metadata?.password_setup_required;
-              
-              if (passwordSetupRequired) {
-                toast({
-                  title: "Welcome Premium Member! ✨",
-                  description: "Please set up your password to complete registration.",
-                });
-                
-                setTimeout(() => {
-                  navigate('/setup-password');
-                }, 1500);
-              } else {
-                toast({
-                  title: "Welcome Premium Member! ✨",
-                  description: "You now have unlimited AI analyses. Let's get started!",
-                });
-                
-                setTimeout(() => {
-                  navigate('/business-tools');
-                }, 2000);
-              }
-            } else {
-              // Regular user login via magic link
-              toast({
-                title: "Welcome back!",
-                description: "You're now logged in.",
+              // Create profile
+              await supabase.from('profiles').insert({
+                id: session.user.id,
+                email: session.user.email
               });
-              window.history.replaceState({}, document.title, window.location.pathname);
+              
+              // Create user credits
+              await supabase.from('user_credits').insert({
+                user_id: session.user.id
+              });
             }
+            
+            toast({
+              title: "Email verified!",
+              description: "Your account has been activated. Welcome!",
+            });
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
           }
         }
       }
     };
 
-    handleMagicLinkLogin();
+    handleEmailVerification();
   }, [toast, navigate]);
 
   return (

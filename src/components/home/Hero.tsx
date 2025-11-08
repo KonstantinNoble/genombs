@@ -14,7 +14,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Optimiere deine Website mit KI-gestützten Tool-Empfehlungen und strategischen Geschäftsideen. Speziell entwickelt für Website-Betreiber, die ihr Online-Business auf das nächste Level bringen möchten.
+            Optimize your website with AI-powered tool recommendations and strategic business ideas. Specifically designed for website owners looking to take their online business to the next level.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -24,7 +24,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/business-tools">
-                Website-Tools analysieren
+                Analyze Website Tools
               </Link>
             </Button>
 
@@ -35,7 +35,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/notion-idea">
-                Website-Ideen generieren
+                Generate Website Ideas
               </Link>
             </Button>
           </div>
@@ -43,11 +43,11 @@ const Hero = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Keine Kreditkarte erforderlich
+              No Credit Card Required
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Kostenlose tägliche Analyse
+              Free Daily Analysis
             </span>
           </div>
         </div>

@@ -2,28 +2,28 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    title: "Website-Tools Empfehlungen",
-    description: "KI-gestützte Analyse deiner Website mit maßgeschneiderten Tool-Vorschlägen zur Optimierung.",
+    title: "Website Tool Recommendations",
+    description: "AI-powered analysis of your website with tailored tool suggestions for optimization.",
   },
   {
-    title: "Website-Geschäftsideen",
-    description: "Innovative Geschäftsmodelle und Monetarisierungsstrategien speziell für deine Website.",
+    title: "Website Business Ideas",
+    description: "Innovative business models and monetization strategies specifically for your website.",
   },
   {
-    title: "Screenshot-Analyse",
-    description: "Lade Screenshots deiner Website hoch - die KI analysiert Design, Struktur und Optimierungspotenzial.",
+    title: "Screenshot Analysis",
+    description: "Upload screenshots of your website - AI analyzes design, structure, and optimization potential.",
   },
   {
-    title: "Website-Typ spezifisch",
-    description: "Empfehlungen basierend auf deinem Website-Typ - E-Commerce, Blog, SaaS, Portfolio oder mehr.",
+    title: "Website Type Specific",
+    description: "Recommendations based on your website type - E-commerce, Blog, SaaS, Portfolio, and more.",
   },
   {
-    title: "Budget-orientiert",
-    description: "Tool- und Ideen-Vorschläge passend zu deinem monatlichen Budget und Website-Status.",
+    title: "Budget Oriented",
+    description: "Tool and idea suggestions matching your monthly budget and website status.",
   },
   {
-    title: "Sofortige Ergebnisse",
-    description: "Detaillierte Analyse mit konkreten Handlungsempfehlungen in Sekunden.",
+    title: "Instant Results",
+    description: "Detailed analysis with concrete action recommendations in seconds.",
   },
 ];
 
@@ -36,10 +36,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Dein AI Website Advisor
+            Your AI Website Advisor
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Zwei leistungsstarke KI-Funktionen: Finde die perfekten Tools für deine Website und entdecke profitable Geschäftsideen - alles auf Basis deiner Website-Screenshots und -Ziele.
+            Two powerful AI features: Find the perfect tools for your website and discover profitable business ideas - all based on your website screenshots and goals.
           </p>
         </div>
 

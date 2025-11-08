@@ -447,13 +447,13 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Helmet>
-          <title>AI Advisor - Get Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+          <title>AI Website Advisor - Get Website Tool Recommendations & Business Ideas | Wealthconomy</title>
           <meta 
             name="description" 
-            content="Get AI-powered business tool recommendations and strategic insights tailored to your industry, team size, and budget. Free business analysis and personalized growth strategies." 
+            content="Get AI-powered website tool recommendations and business ideas tailored to your website type, status, and budget. Free website analysis with screenshot support." 
           />
-          <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth, AI consultant" />
-          <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
+          <meta name="keywords" content="website advisor, AI website tools, website optimization, website business ideas, website analysis, screenshot analysis, website monetization, online business growth" />
+          <link rel="canonical" href="https://wealthconomy.com/business-tools" />
         </Helmet>
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
@@ -461,10 +461,10 @@ const BusinessToolsAdvisor = () => {
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(79,209,131,0.3)]">
-                AI Advisor
+                AI Website Advisor
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Get AI-powered recommendations for <span className="text-primary font-semibold">tools</span> and <span className="text-primary font-semibold">strategies</span> to supercharge your business growth
+                Get AI-powered recommendations for <span className="text-primary font-semibold">website tools</span> and <span className="text-primary font-semibold">business ideas</span> to optimize your online presence and revenue
               </p>
             </div>
 
@@ -491,8 +491,8 @@ const BusinessToolsAdvisor = () => {
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
                   <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">1</div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your business context</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your industry, team size, budget, and goals</p>
+                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your website details</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your website type, status, budget, goals, and upload screenshots</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
@@ -605,23 +605,23 @@ const BusinessToolsAdvisor = () => {
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
                 
-                <span className="hidden sm:inline">Business </span>Tools
+                <span className="hidden sm:inline">Website </span>Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-white transition-all duration-300"
               >
                 
-                <span className="hidden sm:inline">Business </span>Ideas
+                <span className="hidden sm:inline">Website </span>Ideas
               </TabsTrigger>
             </TabsList>
 
             {/* Tools Tab */}
             <TabsContent value="tools" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
-                <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                  <CardTitle className="text-base sm:text-xl">Tell us about your business</CardTitle>
-                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored tool recommendations powered by AI</CardDescription>
+              <CardHeader className="space-y-2 pb-3 sm:pb-4">
+                  <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored website tool recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -841,8 +841,8 @@ const BusinessToolsAdvisor = () => {
             <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-secondary/10 bg-gradient-to-br from-card to-secondary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
-                    <CardTitle className="text-base sm:text-xl">Tell us about your context</CardTitle>
-                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored business idea recommendations powered by AI</CardDescription>
+                  <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Provide details to get tailored website business idea recommendations powered by AI</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">

@@ -67,17 +67,17 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Wealthconomy - AI Website Advisor | Tool-Empfehlungen & Geschäftsideen für Websites</title>
+        <title>Wealthconomy - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
         <meta 
           name="description" 
-          content="Optimiere deine Website mit KI-gestützten Tool-Empfehlungen und profitablen Geschäftsideen. Screenshot-Analyse, Website-spezifische Strategien. Kostenlos starten!" 
+          content="Optimize your website with AI-powered tool recommendations and profitable business ideas. Screenshot analysis, website-specific strategies. Start free!" 
         />
-        <meta name="keywords" content="AI Website Advisor, Website Tools, Website Geschäftsideen, Website Optimierung, KI Website Analyse, Website Screenshot Analyse, Website Monetarisierung, E-Commerce Tools, Blog Tools" />
+        <meta name="keywords" content="AI Website Advisor, Website Tools, Website Business Ideas, Website Optimization, AI Website Analysis, Website Screenshot Analysis, Website Monetization, E-Commerce Tools, Blog Tools" />
         <link rel="canonical" href="https://wealthconomy.com/" />
       </Helmet>
       <WebPageSchema
         name="Wealthconomy - AI Website Advisor"
-        description="Optimiere deine Website mit KI-gestützten Tool-Empfehlungen und profitablen Geschäftsideen. Screenshot-Analyse für Website-spezifische Strategien."
+        description="Optimize your website with AI-powered tool recommendations and profitable business ideas. Screenshot analysis for website-specific strategies."
         url="https://wealthconomy.com/"
       />
       <Navbar />

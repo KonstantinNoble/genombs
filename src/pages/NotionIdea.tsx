@@ -280,10 +280,10 @@ const NotionIdea = () => {
           <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-6 sm:py-16">
             <div className="space-y-4 sm:space-y-6 px-4">
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight px-2">
-                Notion Idea Board
+                Website Idea Board
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
-                Collect and organize your <span className="text-primary font-semibold">AI-generated</span> business recommendations in a clear, visual workspace
+                Collect and organize your <span className="text-primary font-semibold">AI-generated</span> website recommendations in a clear, visual workspace
               </p>
             </div>
 
@@ -291,7 +291,7 @@ const NotionIdea = () => {
               <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
                 <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Import Analyses</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  Import recommendations from your Business Tools & Ideas analyses
+                  Import recommendations from your Website Tools & Ideas analyses
                 </p>
               </div>
               
@@ -305,7 +305,7 @@ const NotionIdea = () => {
               <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
                 <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Execute</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  Build your business roadmap with clear, actionable insights
+                  Build your website roadmap with clear, actionable insights
                 </p>
               </div>
             </div>
@@ -323,18 +323,18 @@ const NotionIdea = () => {
                   <div className="mt-8 p-6 sm:p-8 rounded-2xl border-2 border-border bg-card shadow-lg">
                     <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                       <p className="text-base sm:text-lg text-foreground font-semibold text-center sm:text-left">
-                        Ready to start your business journey?
+                        Ready to start optimizing your website?
                       </p>
                     </div>
                     <p className="text-sm sm:text-base text-muted-foreground mb-6 text-center sm:text-left">
-                      You haven't created any analyses yet. Use the AI Advisor to get personalized recommendations!
+                      You haven't created any analyses yet. Use the AI Website Advisor to get personalized recommendations!
                     </p>
                     <Button 
                       onClick={() => navigate('/business-tools')}
                       variant="outline"
                       className="gap-2 w-full sm:w-auto border-2 border-primary/30 hover:bg-primary/10 font-semibold"
                     >
-                      Go to AI Services →
+                      Go to AI Website Advisor →
                     </Button>
                   </div>
                 )}

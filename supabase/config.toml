@@ -12,6 +12,9 @@ enable_confirmations = true
 [functions.delete-account]
 verify_jwt = true
 
+[functions.delete-blocked-account]
+verify_jwt = true
+
 [functions.stock-analysis]
 verify_jwt = true
 

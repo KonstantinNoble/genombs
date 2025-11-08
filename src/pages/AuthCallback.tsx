@@ -40,8 +40,15 @@ const AuthCallback = () => {
           }
 
           if (!data.available) {
-            // Email is blocked - delete the just-created account
-            await supabase.auth.signOut();
+            // Email is blocked - delete the just-created account properly
+            console.log("Email blocked, deleting newly created account");
+            
+            // Call edge function to delete the blocked account
+            const { error: deleteError } = await supabase.functions.invoke('delete-blocked-account');
+            
+            if (deleteError) {
+              console.error("Failed to delete blocked account:", deleteError);
+            }
             
             const hoursRemaining = data.reason?.match(/(\d+)/)?.[1] || "24";
             toast.error(

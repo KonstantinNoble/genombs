@@ -23,8 +23,8 @@ const Hero = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/business-tools">
-                Analyze Website Tools
+              <Link to="/pricing">
+                Get Premium Access
               </Link>
             </Button>
 
@@ -34,8 +34,8 @@ const Hero = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/5 hover:border-primary"
               asChild
             >
-              <Link to="/notion-idea">
-                Generate Website Ideas
+              <Link to="/pricing">
+                View Pricing
               </Link>
             </Button>
           </div>

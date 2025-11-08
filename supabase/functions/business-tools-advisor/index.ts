@@ -141,12 +141,35 @@ Please provide personalized website tool recommendations based on this informati
 
     console.log('Calling Lovable AI for website tools...');
 
-    const userMessageContent: any = imageUrls.length > 0
+    // Convert storage URLs to base64 data URLs if images are provided
+    const imageDataUrls: string[] = [];
+    if (imageUrls.length > 0) {
+      console.log(`Processing ${imageUrls.length} image(s)...`);
+      for (const url of imageUrls) {
+        try {
+          const imageResponse = await fetch(url);
+          if (!imageResponse.ok) {
+            console.error(`Failed to fetch image from ${url}`);
+            continue;
+          }
+          const imageBlob = await imageResponse.blob();
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+          const mimeType = imageBlob.type || 'image/jpeg';
+          imageDataUrls.push(`data:${mimeType};base64,${base64}`);
+          console.log(`Successfully converted image to base64 (${mimeType})`);
+        } catch (error) {
+          console.error('Error converting image:', error);
+        }
+      }
+    }
+
+    const userMessageContent: any = imageDataUrls.length > 0
       ? [
           { type: "text", text: userPrompt },
-          ...imageUrls.map(url => ({
+          ...imageDataUrls.map(dataUrl => ({
             type: "image_url",
-            image_url: { url }
+            image_url: { url: dataUrl }
           }))
         ]
       : userPrompt;
@@ -158,7 +181,7 @@ Please provide personalized website tool recommendations based on this informati
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: imageUrls.length > 0 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
+        model: imageDataUrls.length > 0 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessageContent }

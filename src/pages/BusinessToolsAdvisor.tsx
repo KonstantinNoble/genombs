@@ -316,8 +316,8 @@ const BusinessToolsAdvisor = () => {
 
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body = isTools 
-        ? { industry: websiteType, teamSize: websiteStatus, budgetRange, businessGoals: inputText, imageUrls }
-        : { industry: websiteType, teamSize: websiteStatus, budgetRange, businessContext: inputText, imageUrls };
+        ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText, imageUrls }
+        : { websiteType, websiteStatus, budgetRange, businessContext: inputText, imageUrls };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 

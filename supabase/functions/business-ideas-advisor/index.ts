@@ -17,8 +17,8 @@ interface IdeaRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
   businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters"),
   imageUrls: z.array(z.string().url()).max(2).optional()
@@ -105,7 +105,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessContext, imageUrls = [] } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, businessContext, imageUrls = [] } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -145,8 +145,8 @@ Provide 5-7 concrete, actionable improvement ideas tailored to their specific ex
 - Digital transformation opportunities
 ${imageUrls.length > 0 ? '- Visual and branding improvements based on the screenshots' : ''}`;
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${teamSize}
+    const userPrompt = `Website Type: ${websiteType}
+Website Status: ${websiteStatus}
 Budget Range: ${budgetRange}
 Current Business Context: ${businessContext}
 ${imageUrls.length > 0 ? `\n\nI have provided ${imageUrls.length} screenshot(s) of the business/website. Please analyze the visual presentation, branding, design quality, and any visible aspects to inform your improvement recommendations.` : ''}
@@ -273,8 +273,8 @@ Please provide personalized improvement recommendations to help grow and optimiz
       .from('business_ideas_history')
       .insert({
         user_id: user.id,
-        industry,
-        team_size: teamSize,
+        industry: websiteType,
+        team_size: websiteStatus,
         budget_range: budgetRange,
         business_context: businessContext,
         result: parsedResult,

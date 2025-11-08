@@ -17,10 +17,10 @@ interface ToolRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  industry: z.string().trim().min(1, "Industry is required").max(100, "Industry must be less than 100 characters"),
-  teamSize: z.string().trim().min(1, "Team size is required").max(50, "Team size must be less than 50 characters"),
+  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
+  websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessGoals: z.string().trim().min(1, "Business goals are required").max(1000, "Business goals must be less than 1000 characters"),
+  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters"),
   imageUrls: z.array(z.string().url()).max(2).optional()
 });
 
@@ -105,7 +105,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { industry, teamSize, budgetRange, businessGoals, imageUrls = [] } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, imageUrls = [] } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -131,13 +131,13 @@ ${imageUrls.length > 0 ? 'IMPORTANT: Analyze the provided website screenshots to
 
 Use the suggest_tools function to return your recommendations.`;
 
-    const userPrompt = `Industry: ${industry}
-Team Size: ${teamSize}
+    const userPrompt = `Website Type: ${websiteType}
+Website Status: ${websiteStatus}
 Monthly Budget: ${budgetRange}
-Business Goals: ${businessGoals}
-${imageUrls.length > 0 ? `\n\nI have provided ${imageUrls.length} screenshot(s) of the website/business. Please analyze the visual design, user interface, layout, and any visible functionality to inform your tool recommendations. Look for areas that could be improved with specific tools.` : ''}
+Website Goals: ${websiteGoals}
+${imageUrls.length > 0 ? `\n\nI have provided ${imageUrls.length} screenshot(s) of the website. Please analyze the visual design, user interface, layout, and any visible functionality to inform your tool recommendations. Look for areas that could be improved with specific tools.` : ''}
 
-Please provide personalized business tool recommendations based on this information.`;
+Please provide personalized website tool recommendations based on this information.`;
 
     console.log('Calling Lovable AI for website tools...');
 
@@ -274,10 +274,10 @@ Please provide personalized business tool recommendations based on this informat
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        industry: industry,
-        team_size: teamSize,
+        industry: websiteType,
+        team_size: websiteStatus,
         budget_range: budgetRange,
-        business_goals: businessGoals,
+        business_goals: websiteGoals,
         result: parsedResult,
         screenshot_urls: imageUrls
       });

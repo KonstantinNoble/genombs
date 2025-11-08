@@ -36,7 +36,7 @@ const Auth = () => {
       if (error) throw error;
     } catch (error: any) {
       console.error("Google sign in error:", error);
-      toast.error(error.message || "Anmeldung fehlgeschlagen");
+      toast.error(error.message || "Sign in failed");
       setLoading(false);
     }
   };
@@ -55,17 +55,17 @@ const Auth = () => {
           onClick={() => navigate("/")}
           className="transition-all duration-300"
         >
-          ← Zurück
+          ← Back
         </Button>
       </div>
 
       <Card className="w-full max-w-md shadow-2xl relative z-10 animate-scale-in border-border/50">
         <CardHeader className="space-y-3">
           <CardTitle className="text-4xl font-bold text-center">
-            Willkommen
+            Welcome
           </CardTitle>
           <CardDescription className="text-center text-base">
-            Melde dich mit deinem Google-Konto an, um Zugriff auf deine KI-gestützten Business-Einblicke zu erhalten
+            Sign in with your Google account to access your AI-powered business insights
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -77,7 +77,7 @@ const Auth = () => {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Bitte warten...
+                Please wait...
               </>
             ) : (
               <>
@@ -99,15 +99,15 @@ const Auth = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Mit Google anmelden
+                Sign in with Google
               </>
             )}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            Mit der Anmeldung akzeptierst du unsere{" "}
+            By signing in, you accept our{" "}
             <a href="/terms-of-service" target="_blank" className="text-primary hover:underline">
-              Nutzungsbedingungen
+              Terms of Service
             </a>
             .
           </p>

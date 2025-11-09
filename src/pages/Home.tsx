@@ -7,9 +7,9 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
-import AnimatedBackground from "@/components/home/AnimatedBackground";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
+import heroBackground from "@/assets/hero-background.jpg";
 
 const Home = () => {
   const { toast } = useToast();
@@ -66,7 +66,10 @@ const Home = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <AnimatedBackground />
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0"
+        style={{ backgroundImage: `url(${heroBackground})` }}
+      />
       <Helmet>
         <title>Synoptas - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
         <meta 

@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
-import FallingParticles from "@/components/home/FallingParticles";
+import AnimatedBackground from "@/components/home/AnimatedBackground";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
@@ -65,8 +65,8 @@ const Home = () => {
   }, [toast, navigate]);
 
   return (
-    <div className="min-h-screen relative">
-      <FallingParticles />
+    <div className="min-h-screen relative overflow-hidden">
+      <AnimatedBackground />
       <Helmet>
         <title>Synoptas - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
         <meta 

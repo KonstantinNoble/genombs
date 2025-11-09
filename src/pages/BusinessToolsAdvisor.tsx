@@ -376,7 +376,7 @@ const BusinessToolsAdvisor = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -384,7 +384,7 @@ const BusinessToolsAdvisor = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
         <Helmet>
           <title>AI Website Advisor - Get Website Tool Recommendations & Business Ideas | Synoptas</title>
           <meta 
@@ -395,7 +395,7 @@ const BusinessToolsAdvisor = () => {
           <link rel="canonical" href="https://synoptas.com/business-tools" />
         </Helmet>
         <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
+      <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-transparent">
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
             <div className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
@@ -463,7 +463,7 @@ const BusinessToolsAdvisor = () => {
   const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
+    <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <Helmet>
         <title>AI Advisor - Personalized Tools & Strategy Recommendations | Synoptas</title>
         <meta 

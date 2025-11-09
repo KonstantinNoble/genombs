@@ -261,7 +261,7 @@ const NotionIdea = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -273,7 +273,7 @@ const NotionIdea = () => {
   const effectiveViewMode = user ? viewMode : 'landing';
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         {effectiveViewMode === 'landing' && (

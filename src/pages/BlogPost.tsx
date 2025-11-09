@@ -45,7 +45,7 @@ const BlogPost = () => {
         ]}
       />
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background/80 backdrop-blur-[8px]">
         <Navbar />
 
         <article className="container mx-auto px-4 py-16 md:py-24 max-w-4xl">

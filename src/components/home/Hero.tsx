@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <section
-      className="relative min-h-[85vh] flex items-center justify-center bg-background/70 backdrop-blur-sm py-20 sm:py-24 md:py-32"
+      className="relative min-h-[85vh] flex items-center justify-center bg-background/40 backdrop-blur-sm py-20 sm:py-24 md:py-32"
       aria-label="Hero section"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

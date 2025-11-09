@@ -30,7 +30,7 @@ const features = [
 const Features = () => {
   return (
     <section
-      className="py-20 sm:py-24 md:py-32 bg-background/70 backdrop-blur-sm"
+      className="py-20 sm:py-24 md:py-32 bg-background/40 backdrop-blur-sm"
       aria-label="Features section"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

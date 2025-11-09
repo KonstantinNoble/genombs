@@ -96,6 +96,12 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "blob": {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(30px, -40px) scale(1.1)" },
+          "66%": { transform: "translate(-25px, 20px) scale(0.95)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -105,6 +111,11 @@ export default {
         "scale-in": "scale-in 0.4s ease-out",
         "slide-in": "slide-in 0.5s ease-out",
         "shimmer": "shimmer 3s ease-in-out infinite",
+        "blob": "blob 18s ease-in-out infinite",
+      },
+      animationDelay: {
+        '2000': '2s',
+        '4000': '4s',
       },
     },
   },

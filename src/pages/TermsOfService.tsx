@@ -31,8 +31,8 @@ const TermsOfService = () => {
                 <strong>Operator:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
                 <br />
                 <strong>Contact:</strong>{" "}
-                <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
-                  mail@wealthconomy.com
+                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
+                  mail@synoptas.com
                 </a>
               </p>
 
@@ -141,7 +141,7 @@ const TermsOfService = () => {
               <p className="mb-4">
                 <strong>Enforcement:</strong> We may warn, temporarily suspend (7-30 days), or permanently terminate
                 accounts for Terms violations. Serious violations result in immediate termination. You may appeal via
-                mail@wealthconomy.com.
+                mail@synoptas.com.
               </p>
             </section>
 
@@ -197,7 +197,7 @@ const TermsOfService = () => {
 
               <p className="mb-4">
                 Your contract continues indefinitely with no minimum commitment. You may terminate anytime via your
-                Profile page ("Delete Account" button) or by emailing mail@wealthconomy.com. Termination is immediate.
+                Profile page ("Delete Account" button) or by emailing mail@synoptas.com. Termination is immediate.
               </p>
 
               <p className="mb-4">
@@ -240,8 +240,8 @@ const TermsOfService = () => {
 
               <p className="mb-4">
                 To withdraw, send a clear statement to{" "}
-                <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
-                  mail@wealthconomy.com
+                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
+                  mail@synoptas.com
                 </a>
                 or Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany before the 14-day period expires.
               </p>
@@ -251,10 +251,10 @@ const TermsOfService = () => {
                 <p className="mb-2">
                   To: Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
                   <br />
-                  Email: mail@wealthconomy.com
+                  Email: mail@synoptas.com
                 </p>
                 <p className="mb-2">
-                  I/We (*) hereby withdraw from my/our (*) contract for Wealthconomy Platform Services.
+                  I/We (*) hereby withdraw from my/our (*) contract for Synoptas Platform Services.
                 </p>
                 <p className="mb-2">
                   Registered on: _______________
@@ -289,7 +289,7 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                <strong>Dispute Resolution:</strong> Contact us at mail@wealthconomy.com before legal proceedings. EU
+                <strong>Dispute Resolution:</strong> Contact us at mail@synoptas.com before legal proceedings. EU
                 consumers may use the ODR platform:{" "}
                 <a
                   href="https://ec.europa.eu/consumers/odr/"
@@ -332,8 +332,8 @@ const TermsOfService = () => {
 
               <p className="mb-4">
                 <strong>Contact:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany |{" "}
-                <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
-                  mail@wealthconomy.com
+                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
+                  mail@synoptas.com
                 </a>
               </p>
             </section>
@@ -341,7 +341,7 @@ const TermsOfService = () => {
             {/* Final Statement */}
             <section className="bg-muted/30 border border-border rounded-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">Acknowledgment</h3>
-              <p className="mb-4">By creating an account and using the Wealthconomy platform, you acknowledge that:</p>
+              <p className="mb-4">By creating an account and using the Synoptas platform, you acknowledge that:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>You have read and understood these Terms of Service in their entirety</li>
                 <li>You agree to be legally bound by these Terms</li>

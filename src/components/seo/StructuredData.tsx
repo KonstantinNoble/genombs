@@ -16,8 +16,8 @@ export const OrganizationSchema = ({ name, url, logo, description }: Organizatio
     "logo": logo,
     "description": description,
     "sameAs": [
-      "https://twitter.com/wealthconomy",
-      "https://www.linkedin.com/company/wealthconomy"
+      "https://twitter.com/synoptas",
+      "https://www.linkedin.com/company/synoptas"
     ]
   };
 
@@ -45,7 +45,7 @@ export const WebPageSchema = ({ name, description, url }: WebPageSchemaProps) =>
     "url": url,
     "publisher": {
       "@type": "Organization",
-      "name": "Wealthconomy",
+      "name": "Synoptas",
       "logo": {
         "@type": "ImageObject",
         "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/1V6ymqHAwYaZZhk3iJbk6DSvvY92/uploads/1761387705030-gemini-2.5-flash-image-preview_Ein_elegantes_minimalistisches_logo_von_einem_goldenen_pfeil_alles_gleichmäßig-0.jpg"

@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
-
+import FallingParticles from "@/components/home/FallingParticles";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
@@ -65,28 +65,31 @@ const Home = () => {
   }, [toast, navigate]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <FallingParticles />
       <Helmet>
-        <title>Wealthconomy - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
+        <title>Synoptas - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
         <meta 
           name="description" 
           content="Optimize your website with AI-powered tool recommendations and profitable business ideas. Screenshot analysis, website-specific strategies. Start free!" 
         />
         <meta name="keywords" content="AI Website Advisor, Website Tools, Website Business Ideas, Website Optimization, AI Website Analysis, Website Screenshot Analysis, Website Monetization, E-Commerce Tools, Blog Tools" />
-        <link rel="canonical" href="https://wealthconomy.com/" />
+        <link rel="canonical" href="https://synoptas.com/" />
       </Helmet>
       <WebPageSchema
-        name="Wealthconomy - AI Website Advisor"
+        name="Synoptas - AI Website Advisor"
         description="Optimize your website with AI-powered tool recommendations and profitable business ideas. Screenshot analysis for website-specific strategies."
-        url="https://wealthconomy.com/"
+        url="https://synoptas.com/"
       />
-      <Navbar />
-      <main>
-      <Hero />
-      <Features />
-      <CTA />
-      </main>
-      <Footer />
+      <div className="relative z-10">
+        <Navbar />
+        <main>
+          <Hero />
+          <Features />
+          <CTA />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 };

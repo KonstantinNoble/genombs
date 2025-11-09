@@ -9,7 +9,7 @@ const Blog = () => {
   return (
     <>
       <Helmet>
-        <title>Blog - Wealthconomy | AI Business & Finance Insights</title>
+        <title>Blog - Synoptas | AI Business & Finance Insights</title>
         <meta
           name="description"
           content="Discover expert insights on AI-powered entrepreneurship, financial planning, and business strategy. Learn how to leverage AI tools for business growth."
@@ -18,13 +18,13 @@ const Blog = () => {
           name="keywords"
           content="AI business blog, entrepreneurship insights, financial planning, AI tools, business automation, startup advice"
         />
-        <link rel="canonical" href="https://wealthconomy.com/blog" />
+        <link rel="canonical" href="https://synoptas.com/blog" />
       </Helmet>
 
       <WebPageSchema
-        name="Wealthconomy Blog"
+        name="Synoptas Blog"
         description="Expert insights on AI-powered entrepreneurship, financial planning, and business strategy"
-        url="https://wealthconomy.com/blog"
+        url="https://synoptas.com/blog"
       />
 
       <div className="min-h-screen bg-background">

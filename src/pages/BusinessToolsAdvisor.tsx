@@ -386,13 +386,13 @@ const BusinessToolsAdvisor = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Helmet>
-          <title>AI Website Advisor - Get Website Tool Recommendations & Business Ideas | Wealthconomy</title>
+          <title>AI Website Advisor - Get Website Tool Recommendations & Business Ideas | Synoptas</title>
           <meta 
             name="description" 
             content="Get AI-powered website tool recommendations and business ideas tailored to your website type, status, and budget. Free website analysis with screenshot support." 
           />
           <meta name="keywords" content="website advisor, AI website tools, website optimization, website business ideas, website analysis, screenshot analysis, website monetization, online business growth" />
-          <link rel="canonical" href="https://wealthconomy.com/business-tools" />
+          <link rel="canonical" href="https://synoptas.com/business-tools" />
         </Helmet>
         <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-gradient-to-b from-muted/30 via-primary/5 to-background">
@@ -465,13 +465,13 @@ const BusinessToolsAdvisor = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-muted/20 to-background">
       <Helmet>
-        <title>AI Advisor - Personalized Tools & Strategy Recommendations | Wealthconomy</title>
+        <title>AI Advisor - Personalized Tools & Strategy Recommendations | Synoptas</title>
         <meta 
           name="description" 
           content="Get AI-powered business tool recommendations and strategic insights. Personalized analysis based on your industry, team size, and budget. 2 free analyses per day." 
         />
         <meta name="keywords" content="business advisor, AI business tools, business strategy, tool recommendations, business ideas, startup advice, business growth" />
-        <link rel="canonical" href="https://wealthconomy.com/business-tools-advisor" />
+        <link rel="canonical" href="https://synoptas.com/business-tools-advisor" />
       </Helmet>
       <Navbar />
       <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 max-w-7xl">

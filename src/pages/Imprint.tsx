@@ -25,7 +25,7 @@ const Imprint = () => {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Contact</h2>
-            <p className="text-muted-foreground mb-2">Email: mail@wealthconomy.com</p>
+            <p className="text-muted-foreground mb-2">Email: mail@synoptas.com</p>
           </section>
 
           <section className="mb-8">

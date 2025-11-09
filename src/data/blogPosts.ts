@@ -49,7 +49,7 @@ As AI technology continues to evolve, the gap between AI-adopters and traditiona
 
 The future of entrepreneurship is here, and it's powered by artificial intelligence.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2025-01-15",
     readTime: "5 min read",
     category: "Entrepreneurship",
@@ -101,7 +101,7 @@ AI-powered financial tools are no longer optional—they're essential for compet
 
 The question isn't whether to adopt AI for financial planning, but how quickly you can integrate these tools into your business operations.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2025-01-10",
     readTime: "6 min read",
     category: "Finance",
@@ -161,7 +161,7 @@ The businesses that thrive in this new era will be those that embrace AI not as 
 
 The AI revolution isn't coming—it's here. The only question is whether your business will lead, follow, or be left behind.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2025-01-05",
     readTime: "7 min read",
     category: "Business Strategy",
@@ -257,7 +257,7 @@ AI investments should be treated like any business investment: with clear object
 
 The businesses that win with AI aren't necessarily those that invest the most—they're the ones that invest smartly and measure effectively.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2024-12-28",
     readTime: "8 min read",
     category: "Finance",
@@ -355,7 +355,7 @@ We're at the beginning of the AI revolution, not the end. The opportunities for 
 
 The future belongs to entrepreneurs who can combine human creativity and judgment with AI's computational power and scale. That future is being built today.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2024-12-20",
     readTime: "9 min read",
     category: "Entrepreneurship",
@@ -556,7 +556,7 @@ AI-powered financial forecasting isn't just a nice-to-have—it's becoming essen
 
 The question for entrepreneurs isn't whether to adopt AI forecasting, but how quickly you can integrate it into your financial planning process.
     `,
-    author: "Wealthconomy Team",
+    author: "Synoptas Team",
     date: "2024-12-15",
     readTime: "10 min read",
     category: "Finance",

@@ -66,11 +66,11 @@ const Navbar = () => {
           <div className="relative w-10 h-10 overflow-hidden transition-all duration-300 group-hover:rotate-12">
             <img 
               src={logo} 
-              alt="Wealthconomy Logo" 
+              alt="Synoptas Logo" 
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-xl font-bold font-sans text-primary">Wealthconomy</span>
+          <span className="text-xl font-bold font-sans text-primary">Synoptas</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-8">

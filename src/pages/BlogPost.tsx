@@ -19,10 +19,10 @@ const BlogPost = () => {
   return (
     <>
       <Helmet>
-        <title>{post.title} - Wealthconomy Blog</title>
+        <title>{post.title} - Synoptas Blog</title>
         <meta name="description" content={post.excerpt} />
         <meta name="keywords" content={post.keywords.join(", ")} />
-        <link rel="canonical" href={`https://wealthconomy.com/blog/${post.slug}`} />
+        <link rel="canonical" href={`https://synoptas.com/blog/${post.slug}`} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
@@ -34,14 +34,14 @@ const BlogPost = () => {
       <WebPageSchema
         name={post.title}
         description={post.excerpt}
-        url={`https://wealthconomy.com/blog/${post.slug}`}
+        url={`https://synoptas.com/blog/${post.slug}`}
       />
 
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://wealthconomy.com" },
-          { name: "Blog", url: "https://wealthconomy.com/blog" },
-          { name: post.title, url: `https://wealthconomy.com/blog/${post.slug}` },
+          { name: "Home", url: "https://synoptas.com" },
+          { name: "Blog", url: "https://synoptas.com/blog" },
+          { name: post.title, url: `https://synoptas.com/blog/${post.slug}` },
         ]}
       />
 

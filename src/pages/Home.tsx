@@ -9,7 +9,7 @@ import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
-import heroBackground from "@/assets/hero-background.jpg";
+
 
 const Home = () => {
   const { toast } = useToast();
@@ -66,10 +66,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <div 
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0"
-        style={{ backgroundImage: `url(${heroBackground})` }}
-      />
       <Helmet>
         <title>Synoptas - AI Website Advisor | Tool Recommendations & Business Ideas for Websites</title>
         <meta 
@@ -84,15 +80,13 @@ const Home = () => {
         description="Optimize your website with AI-powered tool recommendations and profitable business ideas. Screenshot analysis for website-specific strategies."
         url="https://synoptas.com/"
       />
-      <div className="relative z-10">
-        <Navbar />
-        <main>
-          <Hero />
-          <Features />
-          <CTA />
-        </main>
-        <Footer />
-      </div>
+      <Navbar />
+      <main>
+        <Hero />
+        <Features />
+        <CTA />
+      </main>
+      <Footer />
     </div>
   );
 };

@@ -340,46 +340,14 @@ const NotionIdea = () => {
                 )}
               </div>
             ) : (
-              <div className="space-y-6 sm:space-y-8 px-4">
-                <div className="py-4 sm:py-6">
-                  <Button 
-                    size="lg" 
-                    onClick={() => navigate('/auth')}
-                    className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 font-bold w-full sm:w-auto shadow-lg"
-                  >
-                    Sign In to Get Started
-                  </Button>
-                  <p className="text-sm text-muted-foreground mt-3 text-center sm:text-left">Start organizing your ideas now - it's free</p>
-                </div>
-
-                <div className="p-6 sm:p-8 rounded-2xl border-2 border-border bg-card shadow-lg max-w-2xl mx-auto">
-                  <h3 className="font-bold mb-6 text-xl sm:text-2xl text-center text-foreground">How it works:</h3>
-                  <ol className="text-left space-y-4 text-sm sm:text-base">
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
-                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">1</div>
-                      <span className="text-foreground leading-relaxed">Create Business Tool or Idea analyses using our AI Advisor</span>
-                    </li>
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
-                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">2</div>
-                      <span className="text-foreground leading-relaxed">Import the recommendations into your Notion Idea Board</span>
-                    </li>
-                    <li className="flex items-start gap-4 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-all duration-300">
-                      <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold shadow-md">3</div>
-                      <span className="text-foreground leading-relaxed">Organize and prioritize your business strategy</span>
-                    </li>
-                  </ol>
-                </div>
-                
-                <div className="max-w-md mx-auto">
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    onClick={() => navigate('/business-tools')}
-                    className="gap-2 text-lg px-10 py-7 font-semibold w-full border-2 border-primary/30 hover:bg-primary/10"
-                  >
-                    Go to AI Advisor →
-                  </Button>
-                </div>
+              <div className="px-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/auth')}
+                  className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 font-bold w-full sm:w-auto shadow-lg"
+                >
+                  Sign In to Get Started
+                </Button>
               </div>
             )}
           </div>

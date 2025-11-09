@@ -1,20 +1,12 @@
 import { Link } from "react-router-dom";
-import logo from "/Tech Company Logo with Stylized 'S'.png";
 
 const Footer = () => {
   return (
     <footer className="bg-background border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-md mx-auto space-y-8">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 overflow-hidden">
-              <img 
-                src={logo} 
-                alt="Synoptas Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <span className="font-sans font-bold text-xl text-primary">Synoptas</span>
+          <div className="flex items-center justify-center">
+            <span className="font-sans font-bold text-2xl text-primary">Synoptas</span>
           </div>
           
           <div className="space-y-4">

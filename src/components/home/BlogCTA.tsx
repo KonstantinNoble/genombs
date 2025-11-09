@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 
 const BlogCTA = () => {
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-background">
+    <section className="py-12 sm:py-16 md:py-20 bg-background/70 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <Card className="max-w-4xl mx-auto border-border bg-card hover:border-primary/50 transition-all duration-500 group">
           

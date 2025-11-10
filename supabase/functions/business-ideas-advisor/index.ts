@@ -20,7 +20,12 @@ const inputSchema = z.object({
   websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
   websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters")
+  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters"),
+  // Premium-only fields (optional)
+  targetAudience: z.string().optional(),
+  competitionLevel: z.string().optional(),
+  growthStage: z.string().optional(),
+  screenshotUrls: z.array(z.string()).optional()
 });
 
 serve(async (req) => {
@@ -51,7 +56,7 @@ serve(async (req) => {
     // Step 1: Check credits BEFORE AI call (read-only)
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
-      .select('analysis_count, analysis_window_start')
+      .select('is_premium, ideas_count, ideas_window_start')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -61,8 +66,10 @@ serve(async (req) => {
     }
 
     const now = new Date();
-    let currentCount = creditsData?.analysis_count ?? 0;
-    let windowStart = creditsData?.analysis_window_start ? new Date(creditsData.analysis_window_start) : null;
+    const isPremium = creditsData?.is_premium ?? false;
+    const limit = isPremium ? 8 : 2;
+    let currentCount = creditsData?.ideas_count ?? 0;
+    let windowStart = creditsData?.ideas_window_start ? new Date(creditsData.ideas_window_start) : null;
 
     // Credit check performed
 
@@ -74,10 +81,14 @@ serve(async (req) => {
     }
 
     // Block if limit reached
-    if (currentCount >= 2) {
-      console.log(`Limit reached: ${currentCount}/2 in current window`);
+    if (currentCount >= limit) {
+      console.log(`Limit reached: ${currentCount}/${limit} in current window`);
       return new Response(
-        JSON.stringify({ error: 'Daily limit reached. Please wait 24 hours before requesting new recommendations.' }),
+        JSON.stringify({ 
+          error: isPremium 
+            ? `Premium limit reached (${limit}/${limit}). Please wait 24 hours.` 
+            : `Free limit reached (${limit}/${limit}). Upgrade to Premium for 8 analyses per day.`
+        }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -104,7 +115,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, businessContext } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, screenshotUrls } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -114,7 +125,38 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a business improvement advisor. Analyze the user's EXISTING business and provide personalized recommendations to improve and grow it.
+    const systemPrompt = isPremium
+      ? `You are an ADVANCED business improvement advisor with access to additional context.
+${screenshotUrls?.length ? 'Analyze the provided screenshots thoroughly to understand the current business state and identify specific improvement areas.' : ''}
+${targetAudience ? `Target audience: ${targetAudience}` : ''}
+${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
+${growthStage ? `Growth stage: ${growthStage}` : ''}
+
+CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
+Your response must be a raw JSON object starting with { and ending with }.
+
+Return a JSON object with:
+{
+  "recommendations": [
+    {
+      "name": "Improvement idea name",
+      "category": "product|service|saas|marketplace|content|consulting|ecommerce",
+      "viability": "quick-launch|medium-term|long-term",
+      "estimatedInvestment": "$X-$Y",
+      "rationale": "Detailed explanation of why this improvement fits their business context and how it will help them grow"
+    }
+  ],
+  "generalAdvice": "In-depth strategic advice for improving their existing business based on their industry and budget"
+}
+
+Provide 7-10 DETAILED, actionable improvement ideas tailored to their specific existing business situation. Focus on:
+- Revenue growth opportunities with ROI projections
+- Operational efficiency improvements with implementation roadmaps
+- Customer experience enhancements with measurement metrics
+- Market expansion possibilities with competitive analysis
+- Cost reduction strategies with specific tactics
+- Digital transformation opportunities with technology recommendations`
+      : `You are a business improvement advisor. Analyze the user's EXISTING business and provide personalized recommendations to improve and grow it.
 
 CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
 Your response must be a raw JSON object starting with { and ending with }.
@@ -157,10 +199,21 @@ Please provide personalized improvement recommendations to help grow and optimiz
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          {
+            role: 'user',
+            content: screenshotUrls?.length 
+              ? [
+                  { type: 'text', text: userPrompt },
+                  ...screenshotUrls.map(url => ({
+                    type: 'image_url',
+                    image_url: { url }
+                  }))
+                ]
+              : userPrompt
+          }
         ],
         response_format: { type: "json_object" }
       }),
@@ -239,6 +292,7 @@ Please provide personalized improvement recommendations to help grow and optimiz
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_context: businessContext,
+        screenshot_urls: screenshotUrls ?? [],
         result: parsedResult
       });
 
@@ -257,8 +311,8 @@ Please provide personalized improvement recommendations to help grow and optimiz
       .from('user_credits')
       .upsert({
         user_id: user.id,
-        analysis_count: newCount,
-        analysis_window_start: newWindowStart.toISOString(),
+        ideas_count: newCount,
+        ideas_window_start: newWindowStart.toISOString(),
         last_analysis_at: now.toISOString(),
         updated_at: now.toISOString()
       }, {

@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb } from "lucide-react";
+import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, ImageIcon, X, Star } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
@@ -45,6 +47,7 @@ interface ToolHistoryItem {
   team_size: string;
   budget_range: string;
   business_goals: string;
+  screenshot_urls?: string[];
   result: ToolAdvisorResult;
   created_at: string;
 }
@@ -55,6 +58,7 @@ interface IdeaHistoryItem {
   team_size: string;
   budget_range: string;
   business_context: string;
+  screenshot_urls?: string[];
   result: IdeaAdvisorResult;
   created_at: string;
 }
@@ -80,6 +84,18 @@ const BusinessToolsAdvisor = () => {
   const [budgetRange, setBudgetRange] = useState("");
   const [websiteGoals, setWebsiteGoals] = useState("");
   const [businessContext, setBusinessContext] = useState("");
+  
+  // Premium-only state
+  const [isPremium, setIsPremium] = useState(false);
+  const [screenshots, setScreenshots] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [storageUsed, setStorageUsed] = useState(0);
+  const [storageLimit, setStorageLimit] = useState(50);
+  const [targetAudience, setTargetAudience] = useState("");
+  const [competitionLevel, setCompetitionLevel] = useState("");
+  const [growthStage, setGrowthStage] = useState("");
+  const [analysisCount, setAnalysisCount] = useState(0);
+  const [analysisLimit, setAnalysisLimit] = useState(2);
 
   const { toast } = useToast();
   
@@ -101,6 +117,8 @@ const BusinessToolsAdvisor = () => {
       // Sync credits on initial load to fix any discrepancies
       syncCredits();
       
+      checkPremiumStatus();
+      loadStorageUsage();
       loadToolHistory();
       loadIdeaHistory();
       loadAnalysisLimit();
@@ -117,6 +135,7 @@ const BusinessToolsAdvisor = () => {
           },
           () => {
             loadAnalysisLimit();
+            checkPremiumStatus();
           }
         )
         .subscribe();
@@ -144,6 +163,34 @@ const BusinessToolsAdvisor = () => {
     }
   };
 
+  const checkPremiumStatus = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('user_credits')
+      .select('is_premium')
+      .eq('user_id', user.id)
+      .single();
+    
+    const premium = data?.is_premium ?? false;
+    setIsPremium(premium);
+    setStorageLimit(premium ? 500 : 50);
+    setAnalysisLimit(premium ? 8 : 2);
+  };
+
+  const loadStorageUsage = async () => {
+    if (!user) return;
+    try {
+      const { data: files } = await supabase.storage
+        .from('website-screenshots')
+        .list(user.id);
+      
+      const totalSize = files?.reduce((sum, file) => sum + (file.metadata?.size ?? 0), 0) ?? 0;
+      setStorageUsed(totalSize / (1024 * 1024)); // Convert to MB
+    } catch (error) {
+      console.error('Error loading storage usage:', error);
+    }
+  };
+
   const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null): boolean => {
     const now = new Date();
     if (!windowStart) {
@@ -160,8 +207,9 @@ const BusinessToolsAdvisor = () => {
       return true;
     }
 
-    // Within window: allow if fewer than 2 analyses used
-    if ((analysisCount ?? 0) < 2) {
+    const limit = analysisLimit;
+    // Within window: allow if fewer than limit analyses used
+    if ((analysisCount ?? 0) < limit) {
       setNextAnalysisTime(null);
       return true;
     }
@@ -173,9 +221,14 @@ const BusinessToolsAdvisor = () => {
 
   const loadAnalysisLimit = async () => {
     if (!user) return;
+    
+    const isTools = activeTab === "tools";
+    const countColumn = isTools ? 'tools_count' : 'ideas_count';
+    const windowColumn = isTools ? 'tools_window_start' : 'ideas_window_start';
+    
     const { data, error } = await supabase
       .from('user_credits')
-      .select('analysis_count, analysis_window_start')
+      .select(`${countColumn}, ${windowColumn}, is_premium`)
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -184,7 +237,14 @@ const BusinessToolsAdvisor = () => {
       return;
     }
 
-    setCanAnalyze(checkCanAnalyze(data?.analysis_count ?? 0, data?.analysis_window_start ?? null));
+    const count = data?.[countColumn] ?? 0;
+    const windowStart = data?.[windowColumn] ?? null;
+    const premium = data?.is_premium ?? false;
+    
+    setAnalysisCount(count);
+    setIsPremium(premium);
+    setAnalysisLimit(premium ? 8 : 2);
+    setCanAnalyze(checkCanAnalyze(count, windowStart));
   };
 
   const loadToolHistory = async () => {
@@ -223,6 +283,59 @@ const BusinessToolsAdvisor = () => {
     setIdeaHistory((data || []) as unknown as IdeaHistoryItem[]);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(f => f.type.startsWith('image/'));
+    
+    if (screenshots.length + validFiles.length > 2) {
+      toast({
+        title: "Limit erreicht",
+        description: "Maximal 2 Screenshots erlaubt",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const totalSize = validFiles.reduce((sum, f) => sum + f.size, 0) / (1024 * 1024);
+    if (storageUsed + totalSize > storageLimit) {
+      toast({
+        title: "Speicherplatz überschritten",
+        description: `Noch ${(storageLimit - storageUsed).toFixed(1)}MB verfügbar`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setScreenshots([...screenshots, ...validFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setScreenshots(screenshots.filter((_, i) => i !== index));
+  };
+
+  const uploadScreenshots = async (): Promise<string[]> => {
+    if (screenshots.length === 0) return [];
+    
+    const uploadedUrls: string[] = [];
+    
+    for (const file of screenshots) {
+      const fileName = `${user!.id}/${Date.now()}_${file.name}`;
+      
+      const { data, error } = await supabase.storage
+        .from('website-screenshots')
+        .upload(fileName, file);
+      
+      if (error) throw error;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('website-screenshots')
+        .getPublicUrl(fileName);
+      
+      uploadedUrls.push(publicUrl);
+    }
+    
+    return uploadedUrls;
+  };
 
   const handleAnalyze = async () => {
     if (!user) {
@@ -254,10 +367,21 @@ const BusinessToolsAdvisor = () => {
     }
 
     try {
+      // Upload screenshots first if present
+      const screenshotUrls = await uploadScreenshots();
+      
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
-      const body = isTools 
+      const body: any = isTools 
         ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
         : { websiteType, websiteStatus, budgetRange, businessContext: inputText };
+      
+      // Add premium fields if available
+      if (isPremium) {
+        if (targetAudience) body.targetAudience = targetAudience;
+        if (competitionLevel) body.competitionLevel = competitionLevel;
+        if (growthStage) body.growthStage = growthStage;
+        if (screenshotUrls.length > 0) body.screenshotUrls = screenshotUrls;
+      }
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
@@ -527,6 +651,12 @@ const BusinessToolsAdvisor = () => {
           <div className="text-center px-2 space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
+              {isPremium && (
+                <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">
+                  <Star className="w-3 h-3 mr-1" />
+                  Premium
+                </Badge>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-2 sm:mb-3 text-foreground leading-tight drop-shadow-[0_0_18px_hsl(var(--primary)/0.25)]">
               AI Advisor
@@ -534,6 +664,20 @@ const BusinessToolsAdvisor = () => {
             <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Get personalized AI-powered recommendations to grow your business with data-driven insights
             </p>
+            {/* Usage Indicator */}
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <span className="text-muted-foreground">Usage Today:</span>
+              <span className="font-bold text-foreground">{analysisCount} / {analysisLimit}</span>
+              {!isPremium && (
+                <Button 
+                  variant="link" 
+                  className="text-xs p-0 h-auto"
+                  onClick={() => window.open('https://synoptas.com/pricing', '_blank')}
+                >
+                  Upgrade for 8/day
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Tab Selector */}
@@ -622,6 +766,93 @@ const BusinessToolsAdvisor = () => {
                     />
                   </div>
 
+                  {/* Premium-only fields */}
+                  {isPremium && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Target Audience
+                          </label>
+                          <Select value={targetAudience} onValueChange={setTargetAudience}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="b2b">B2B</SelectItem>
+                              <SelectItem value="b2c">B2C</SelectItem>
+                              <SelectItem value="both">Both</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Competition
+                          </label>
+                          <Select value={competitionLevel} onValueChange={setCompetitionLevel}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="low">Low</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="high">High</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Growth Stage
+                          </label>
+                          <Select value={growthStage} onValueChange={setGrowthStage}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="startup">Startup (0-2y)</SelectItem>
+                              <SelectItem value="growth">Growth (2-5y)</SelectItem>
+                              <SelectItem value="mature">Mature (5y+)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Screenshot Upload */}
+                      <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/20 dark:to-amber-950/20">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                            Upload Screenshots (Premium)
+                          </CardTitle>
+                          <CardDescription className="text-xs sm:text-sm">
+                            Upload up to 2 screenshots for AI analysis
+                            <span className="block text-xs mt-1 text-yellow-700 dark:text-yellow-500">
+                              Storage: {storageUsed.toFixed(1)}MB / {storageLimit}MB
+                            </span>
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileChange}
+                            disabled={screenshots.length >= 2}
+                            className="text-xs sm:text-sm"
+                          />
+                          {screenshots.length > 0 && (
+                            <div className="mt-3 space-y-2">
+                              {screenshots.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-2 bg-background/80 rounded border border-border">
+                                  <span className="text-xs sm:text-sm truncate flex-1">{file.name}</span>
+                                  <Button variant="ghost" size="sm" onClick={() => removeFile(idx)} className="h-6 w-6 p-0">
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </>
+                  )}
 
                   <Button
                     onClick={handleAnalyze}
@@ -709,10 +940,10 @@ const BusinessToolsAdvisor = () => {
                     </div>
                   </div>
 
-                  <Card className="border-yellow-200 bg-yellow-50">
+                  <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20">
                     <CardContent className="pt-6">
-                      <p className="text-sm text-yellow-800">
-                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general business best practices. 
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        <strong>Disclaimer:</strong> These recommendations are generated by AI ({isPremium ? 'Google Gemini 2.5 Pro' : 'Google Gemini 2.5 Flash'}) based on general business best practices. 
                         Each business is unique - please evaluate these suggestions based on your specific needs, compliance requirements, 
                         and circumstances. This does not constitute professional consulting advice.
                       </p>
@@ -788,6 +1019,93 @@ const BusinessToolsAdvisor = () => {
                     />
                   </div>
 
+                  {/* Premium-only fields for Ideas */}
+                  {isPremium && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Target Audience
+                          </label>
+                          <Select value={targetAudience} onValueChange={setTargetAudience}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="b2b">B2B</SelectItem>
+                              <SelectItem value="b2c">B2C</SelectItem>
+                              <SelectItem value="both">Both</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Competition
+                          </label>
+                          <Select value={competitionLevel} onValueChange={setCompetitionLevel}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="low">Low</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="high">High</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500" />
+                            Growth Stage
+                          </label>
+                          <Select value={growthStage} onValueChange={setGrowthStage}>
+                            <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="startup">Startup (0-2y)</SelectItem>
+                              <SelectItem value="growth">Growth (2-5y)</SelectItem>
+                              <SelectItem value="mature">Mature (5y+)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Screenshot Upload for Ideas */}
+                      <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/20 dark:to-amber-950/20">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                            Upload Screenshots (Premium)
+                          </CardTitle>
+                          <CardDescription className="text-xs sm:text-sm">
+                            Upload up to 2 screenshots for AI analysis
+                            <span className="block text-xs mt-1 text-yellow-700 dark:text-yellow-500">
+                              Storage: {storageUsed.toFixed(1)}MB / {storageLimit}MB
+                            </span>
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileChange}
+                            disabled={screenshots.length >= 2}
+                            className="text-xs sm:text-sm"
+                          />
+                          {screenshots.length > 0 && (
+                            <div className="mt-3 space-y-2">
+                              {screenshots.map((file, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-2 bg-background/80 rounded border border-border">
+                                  <span className="text-xs sm:text-sm truncate flex-1">{file.name}</span>
+                                  <Button variant="ghost" size="sm" onClick={() => removeFile(idx)} className="h-6 w-6 p-0">
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </>
+                  )}
 
                   <Button
                     onClick={handleAnalyze}

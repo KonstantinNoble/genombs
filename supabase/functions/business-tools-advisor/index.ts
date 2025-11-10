@@ -20,7 +20,12 @@ const inputSchema = z.object({
   websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
   websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
   budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters")
+  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters"),
+  // Premium-only fields (optional)
+  targetAudience: z.string().optional(),
+  competitionLevel: z.string().optional(),
+  growthStage: z.string().optional(),
+  screenshotUrls: z.array(z.string()).optional()
 });
 
 serve(async (req) => {
@@ -51,7 +56,7 @@ serve(async (req) => {
     // Step 1: Check credits BEFORE AI call (read-only)
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
-      .select('analysis_count, analysis_window_start')
+      .select('is_premium, tools_count, tools_window_start')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -61,8 +66,10 @@ serve(async (req) => {
     }
 
     const now = new Date();
-    let currentCount = creditsData?.analysis_count ?? 0;
-    let windowStart = creditsData?.analysis_window_start ? new Date(creditsData.analysis_window_start) : null;
+    const isPremium = creditsData?.is_premium ?? false;
+    const limit = isPremium ? 8 : 2;
+    let currentCount = creditsData?.tools_count ?? 0;
+    let windowStart = creditsData?.tools_window_start ? new Date(creditsData.tools_window_start) : null;
 
     // Credit check performed
 
@@ -74,10 +81,14 @@ serve(async (req) => {
     }
 
     // Block if limit reached
-    if (currentCount >= 2) {
-      console.log(`Limit reached: ${currentCount}/2 in current window`);
+    if (currentCount >= limit) {
+      console.log(`Limit reached: ${currentCount}/${limit} in current window`);
       return new Response(
-        JSON.stringify({ error: 'Daily limit reached. Please wait 24 hours before requesting new recommendations.' }),
+        JSON.stringify({ 
+          error: isPremium 
+            ? `Premium limit reached (${limit}/${limit}). Please wait 24 hours.` 
+            : `Free limit reached (${limit}/${limit}). Upgrade to Premium for 8 analyses per day.`
+        }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -104,7 +115,7 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, screenshotUrls } = validatedInput;
 
     console.log('Input validated successfully');
 
@@ -114,7 +125,24 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are a website tools advisor. Analyze the user's website details and provide personalized tool and strategy recommendations specifically for websites.
+    const systemPrompt = isPremium
+      ? `You are an ADVANCED website tools advisor with access to additional context.
+${screenshotUrls?.length ? 'Analyze the provided screenshots thoroughly to understand the current website state and identify specific improvement areas.' : ''}
+${targetAudience ? `Target audience: ${targetAudience}` : ''}
+${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
+${growthStage ? `Growth stage: ${growthStage}` : ''}
+
+Provide 7-10 DETAILED tool recommendations with deeper strategic insights and implementation roadmaps.
+
+Focus on:
+- Advanced website optimization tools
+- Enterprise-grade solutions
+- Integration opportunities
+- ROI projections
+- Strategic implementation timelines
+
+Use the suggest_tools function to return your recommendations.`
+      : `You are a website tools advisor. Analyze the user's website details and provide personalized tool and strategy recommendations specifically for websites.
 
 Focus EXCLUSIVELY on tools and services relevant for websites:
 - Website builders and CMS (e.g., WordPress, Webflow, Framer)
@@ -144,17 +172,28 @@ Please provide personalized website tool recommendations based on this informati
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          {
+            role: 'user',
+            content: screenshotUrls?.length 
+              ? [
+                  { type: 'text', text: userPrompt },
+                  ...screenshotUrls.map(url => ({
+                    type: 'image_url',
+                    image_url: { url }
+                  }))
+                ]
+              : userPrompt
+          }
         ],
         tools: [
           {
             type: "function",
             function: {
               name: "suggest_tools",
-              description: "Return 5-7 website tool recommendations",
+              description: isPremium ? "Return 7-10 detailed website tool recommendations" : "Return 5-7 website tool recommendations",
               parameters: {
                 type: "object",
                 properties: {
@@ -241,6 +280,7 @@ Please provide personalized website tool recommendations based on this informati
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_goals: websiteGoals,
+        screenshot_urls: screenshotUrls ?? [],
         result: parsedResult
       });
 
@@ -259,8 +299,8 @@ Please provide personalized website tool recommendations based on this informati
       .from('user_credits')
       .upsert({
         user_id: user.id,
-        analysis_count: newCount,
-        analysis_window_start: newWindowStart.toISOString(),
+        tools_count: newCount,
+        tools_window_start: newWindowStart.toISOString(),
         last_analysis_at: now.toISOString(),
         updated_at: now.toISOString()
       }, {

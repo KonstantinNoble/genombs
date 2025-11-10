@@ -64,8 +64,13 @@ const Auth = () => {
           <CardTitle className="text-4xl font-bold text-center">
             Welcome
           </CardTitle>
-          <CardDescription className="text-center text-base">
-            Sign in with your Google account to access your AI-powered business insights
+          <CardDescription className="text-center text-base space-y-2">
+            <span className="block">
+              Sign in with your Google account to access your AI-powered business insights
+            </span>
+            <span className="block text-sm text-amber-600 dark:text-amber-500 font-medium mt-3">
+              💡 Premium users: Please use the same email as your purchase
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

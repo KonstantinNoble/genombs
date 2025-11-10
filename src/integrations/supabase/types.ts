@@ -107,6 +107,33 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_premium: {
+        Row: {
+          created_at: string | null
+          email: string
+          freemius_customer_id: string
+          freemius_subscription_id: string
+          id: string
+          is_premium: boolean
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          freemius_customer_id: string
+          freemius_subscription_id: string
+          id?: string
+          is_premium?: boolean
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          freemius_customer_id?: string
+          freemius_subscription_id?: string
+          id?: string
+          is_premium?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

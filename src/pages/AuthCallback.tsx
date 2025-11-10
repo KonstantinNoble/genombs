@@ -60,6 +60,40 @@ const AuthCallback = () => {
           }
         }
 
+        // Check for pending premium activation
+        const { data: pendingPremium, error: pendingError } = await supabase
+          .from('pending_premium')
+          .select('*')
+          .ilike('email', user.email!)
+          .maybeSingle();
+
+        if (!pendingError && pendingPremium) {
+          console.log('Found pending premium for user, activating...');
+          
+          // Activate premium in user_credits
+          const { error: activateError } = await supabase
+            .from('user_credits')
+            .upsert({
+              user_id: user.id,
+              is_premium: true,
+              premium_since: new Date().toISOString(),
+              freemius_subscription_id: pendingPremium.freemius_subscription_id,
+              freemius_customer_id: pendingPremium.freemius_customer_id,
+            }, { onConflict: 'user_id' });
+
+          if (activateError) {
+            console.error('Failed to activate premium:', activateError);
+          } else {
+            // Delete from pending_premium
+            await supabase
+              .from('pending_premium')
+              .delete()
+              .eq('id', pendingPremium.id);
+            
+            toast.success('Premium status activated! 🎉', { duration: 5000 });
+          }
+        }
+
         // All checks passed or existing user - redirect to home
         toast.success("Successfully signed in!");
         navigate("/");

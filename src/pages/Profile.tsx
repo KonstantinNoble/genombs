@@ -13,6 +13,7 @@ import { User } from "@supabase/supabase-js";
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [credits, setCredits] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,6 +29,17 @@ const Profile = () => {
       }
 
       setUser(session.user);
+
+      // Fetch user credits/premium status
+      if (session.user) {
+        const { data } = await supabase
+          .from('user_credits')
+          .select('is_premium, premium_since')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        
+        setCredits(data);
+      }
     };
 
     getProfile();
@@ -117,6 +129,24 @@ const Profile = () => {
                 <p className="text-xs text-muted-foreground">
                   Your registered email address
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Premium Status</Label>
+                <div className="p-3 bg-muted rounded-md border border-border">
+                  {credits?.is_premium ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-green-600 dark:text-green-500 font-medium">✓ Premium Active</span>
+                      {credits.premium_since && (
+                        <span className="text-xs text-muted-foreground">
+                          Since {new Date(credits.premium_since).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Free Plan</span>
+                  )}
+                </div>
               </div>
 
               <div className="pt-6 border-t border-border space-y-4">

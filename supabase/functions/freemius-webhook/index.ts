@@ -135,10 +135,62 @@ serve(async (req) => {
     }
 
     if (!profile) {
-      console.log('User not found in database, will sync on first login:', userEmail);
-      // User hasn't registered yet - webhook will be resent or synced later
+      console.log('User not found in database, storing in pending_premium:', userEmail);
+      
+      // Determine premium status based on event type
+      let isPremiumPending = false;
+      let subscriptionIdPending: string | null = null;
+      let customerIdPending: string | null = null;
+
+      switch (event.type) {
+        case 'purchase.completed':
+        case 'subscription.created':
+        case 'subscription.activated':
+        case 'subscription.renewed':
+          isPremiumPending = true;
+          subscriptionIdPending = event.objects.subscription?.id || event.objects.purchase?.subscription_id || null;
+          customerIdPending = event.objects.user?.id || null;
+          break;
+        default:
+          // For other events (cancellation, expiry), don't create pending entry
+          return new Response(
+            JSON.stringify({ message: 'Event type not applicable for pending user' }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+      }
+
+      if (!isPremiumPending || !subscriptionIdPending || !customerIdPending) {
+        console.error('Missing required data for pending premium');
+        return new Response(
+          JSON.stringify({ error: 'Missing subscription data' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Store in pending_premium table
+      const { error: pendingError } = await supabase
+        .from('pending_premium')
+        .upsert({
+          freemius_customer_id: customerIdPending,
+          freemius_subscription_id: subscriptionIdPending,
+          email: userEmail,
+          is_premium: true,
+        }, { 
+          onConflict: 'freemius_customer_id',
+          ignoreDuplicates: false 
+        });
+
+      if (pendingError) {
+        console.error('Error storing pending premium:', pendingError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to store pending premium' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log('Successfully stored pending premium for:', userEmail);
       return new Response(
-        JSON.stringify({ message: 'User not found, will sync on login' }),
+        JSON.stringify({ message: 'Premium stored in pending, will activate on first login' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

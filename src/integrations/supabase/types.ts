@@ -130,11 +130,15 @@ export type Database = {
           analysis_count: number | null
           analysis_window_start: string | null
           created_at: string
+          freemius_customer_id: string | null
+          freemius_subscription_id: string | null
           id: string
           ideas_count: number | null
           ideas_window_start: string | null
+          is_premium: boolean
           last_analysis_at: string | null
           last_reset_date: string
+          premium_since: string | null
           tools_count: number | null
           tools_window_start: string | null
           updated_at: string
@@ -144,11 +148,15 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           created_at?: string
+          freemius_customer_id?: string | null
+          freemius_subscription_id?: string | null
           id?: string
           ideas_count?: number | null
           ideas_window_start?: string | null
+          is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          premium_since?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string
@@ -158,11 +166,15 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           created_at?: string
+          freemius_customer_id?: string | null
+          freemius_subscription_id?: string | null
           id?: string
           ideas_count?: number | null
           ideas_window_start?: string | null
+          is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          premium_since?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string

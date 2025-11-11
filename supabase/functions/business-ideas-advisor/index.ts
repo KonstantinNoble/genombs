@@ -161,12 +161,10 @@ serve(async (req) => {
     }
 
     const systemPrompt = isDeepMode
-      ? `You are an ADVANCED business improvement advisor.
+      ? `You are an ADVANCED business improvement advisor. Use the suggest_ideas function to provide detailed recommendations.
 ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
-
-CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
 
 Provide 8-10 DETAILED, actionable improvement ideas with:
 - detailedSteps: Array of concrete implementation steps
@@ -183,9 +181,7 @@ In generalAdvice, include:
 - 3-6 month roadmap
 
 Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`
-      : `You are a business improvement advisor. Analyze the EXISTING business and provide 5-7 concise, actionable improvement recommendations.
-
-CRITICAL: Return ONLY valid JSON without code fences or markdown.
+      : `You are a business improvement advisor. Use the suggest_ideas function to analyze the EXISTING business and provide 5-7 concise, actionable improvement recommendations.
 
 Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`;
 
@@ -195,6 +191,53 @@ Budget Range: ${budgetRange}
 Current Business Context: ${businessContext}
 
 Please provide personalized improvement recommendations to grow and optimize this EXISTING business.`;
+
+    // Define tool schema for structured output
+    const toolSchema = {
+      type: "object" as const,
+      properties: {
+        recommendations: {
+          type: "array" as const,
+          items: {
+            type: "object" as const,
+            properties: {
+              name: { type: "string" as const },
+              category: { type: "string" as const },
+              viability: { type: "string" as const },
+              estimatedInvestment: { type: "string" as const },
+              rationale: { type: "string" as const },
+              ...(isDeepMode ? {
+                detailedSteps: { 
+                  type: "array" as const, 
+                  items: { type: "string" as const } 
+                },
+                expectedROI: { type: "string" as const },
+                riskLevel: { 
+                  type: "string" as const, 
+                  enum: ["low", "medium", "high"] 
+                },
+                prerequisites: { 
+                  type: "array" as const, 
+                  items: { type: "string" as const } 
+                },
+                metrics: { 
+                  type: "array" as const, 
+                  items: { type: "string" as const } 
+                },
+                implementationTimeline: { type: "string" as const }
+              } : {})
+            },
+            required: isDeepMode 
+              ? ["name", "category", "viability", "estimatedInvestment", "rationale", "detailedSteps", "expectedROI", "riskLevel", "prerequisites", "metrics", "implementationTimeline"]
+              : ["name", "category", "viability", "estimatedInvestment", "rationale"],
+            additionalProperties: false
+          }
+        },
+        generalAdvice: { type: "string" as const }
+      },
+      required: ["recommendations", "generalAdvice"],
+      additionalProperties: false
+    };
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
@@ -218,7 +261,19 @@ Please provide personalized improvement recommendations to grow and optimize thi
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt },
           ],
-          response_format: { type: 'json_object' },
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "suggest_ideas",
+                description: isDeepMode 
+                  ? "Return 8-10 detailed business improvement ideas with comprehensive analysis"
+                  : "Return 5-7 concise business improvement recommendations",
+                parameters: toolSchema
+              }
+            }
+          ],
+          tool_choice: { type: "function", function: { name: "suggest_ideas" } }
         }),
         signal: abortController.signal,
       });
@@ -255,34 +310,24 @@ Please provide personalized improvement recommendations to grow and optimize thi
     const aiData = await aiResponse.json();
     console.log(`✅ AI response received (total time: ${Date.now() - startTime}ms)`);
 
-    let content = aiData.choices?.[0]?.message?.content;
-    if (!content) {
-      throw new Error('No content in AI response');
+    // Parse Tool Call response
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall || toolCall.function?.name !== 'suggest_ideas') {
+      console.error('No valid tool call in response');
+      throw new Error('Invalid response format from AI');
     }
 
-    // Robust JSON parsing with fence removal
     let parsedResult;
     try {
-      parsedResult = JSON.parse(content);
+      parsedResult = JSON.parse(toolCall.function.arguments);
     } catch (e) {
-      if (content.includes('```')) {
-        const fenceMatch = content.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
-        if (fenceMatch) {
-          content = fenceMatch[1].trim();
-        }
-      }
-      
-      try {
-        parsedResult = JSON.parse(content);
-      } catch (e2) {
-        console.error('Failed to parse JSON:', e2);
-        throw new Error('Invalid response format from AI');
-      }
+      console.error('Failed to parse tool call arguments:', e);
+      throw new Error('Invalid response format from AI');
     }
 
     // Validate structure
     if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
-      console.error('Invalid structure');
+      console.error('Invalid structure in tool call response');
       throw new Error('Invalid response format from AI');
     }
 

@@ -5,6 +5,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CombinedRecommendation } from "@/pages/NotionIdea";
 import CategorySection from "./CategorySection";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface RecommendationDisplayProps {
   recommendations: CombinedRecommendation[];
@@ -175,7 +177,45 @@ const RecommendationDisplay = ({
                 key={index}
                 className="p-6 rounded-lg border bg-card hover:shadow-md transition-shadow"
               >
-                <p className="text-sm leading-relaxed mb-3">{item.advice}</p>
+                <div className="prose prose-sm max-w-none mb-3">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ children }) => (
+                        <h1 className="text-xl font-bold text-foreground mb-4 mt-6">{children}</h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-lg font-bold text-foreground mb-3 mt-5">{children}</h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-base font-semibold text-foreground mb-2 mt-4">{children}</h3>
+                      ),
+                      h4: ({ children }) => (
+                        <h4 className="text-sm font-semibold text-foreground mb-2 mt-3">{children}</h4>
+                      ),
+                      p: ({ children }) => (
+                        <p className="text-sm leading-relaxed mb-3 text-foreground/90">{children}</p>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className="text-sm text-foreground/90">{children}</li>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="font-semibold text-foreground">{children}</strong>
+                      ),
+                      em: ({ children }) => (
+                        <em className="italic text-foreground/90">{children}</em>
+                      ),
+                    }}
+                  >
+                    {item.advice}
+                  </ReactMarkdown>
+                </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Badge variant="outline" className="text-xs">
                     {item.source.sourceIndustry}

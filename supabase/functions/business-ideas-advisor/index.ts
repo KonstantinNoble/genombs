@@ -192,6 +192,9 @@ Please provide personalized improvement recommendations to help grow and optimiz
 
     console.log('Calling Lovable AI for business improvement ideas...');
 
+    // Only include screenshots if they exist AND user is premium
+    const useScreenshots = isPremium && screenshotUrls && screenshotUrls.length > 0;
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -204,7 +207,7 @@ Please provide personalized improvement recommendations to help grow and optimiz
           { role: 'system', content: systemPrompt },
           {
             role: 'user',
-            content: screenshotUrls?.length 
+            content: useScreenshots
               ? [
                   { type: 'text', text: userPrompt },
                   ...screenshotUrls.map(url => ({

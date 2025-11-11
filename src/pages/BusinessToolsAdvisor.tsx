@@ -887,14 +887,44 @@ const BusinessToolsAdvisor = () => {
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? "⚡ Quick recommendations (5-7 items) in ~10s" 
-                                  : "🔍 Detailed analysis (8-10 items) with ROI, roadmap & risk assessment (~20-30s)"}
+                                  ? `⚡ Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                  : `🔍 Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
                               </p>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     </>
+                  )}
+
+                  {isPremium && (
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>
+                          <span className="font-medium">Deep Analysis:</span> {deepAnalysisCount}/{deepAnalysisLimit} used today
+                          {deepAnalysisCount >= deepAnalysisLimit && nextAnalysisTime && analysisMode === 'deep' && (
+                            <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-medium">Standard Analysis:</span> {standardAnalysisCount}/{standardAnalysisLimit} used today
+                          {standardAnalysisCount >= standardAnalysisLimit && nextAnalysisTime && analysisMode === 'standard' && (
+                            <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isPremium && (
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium">Standard Analysis:</span> {standardAnalysisCount}/{standardAnalysisLimit} used today
+                        {standardAnalysisCount >= standardAnalysisLimit && nextAnalysisTime && (
+                          <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                        )}
+                      </p>
+                    </div>
                   )}
 
                   <Button
@@ -1222,8 +1252,8 @@ const BusinessToolsAdvisor = () => {
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? "⚡ Quick recommendations (5-7 items) in ~10s" 
-                                  : "🔍 Detailed analysis (8-10 items) with ROI, roadmap & risk assessment (~20-30s)"}
+                                  ? `⚡ Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                  : `🔍 Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
                               </p>
                             </div>
                           </div>

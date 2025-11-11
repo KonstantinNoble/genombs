@@ -384,8 +384,8 @@ const BusinessToolsAdvisor = () => {
       await loadAnalysisLimit();
       
       toast({
-        title: "Analyse abgeschlossen",
-        description: `${analysisMode === 'deep' ? 'Detaillierte' : 'Schnelle'} Empfehlungen bereitgestellt (${activeTab === 'tools' ? 'Tools' : 'Ideen'})`,
+        title: "Analysis complete",
+        description: `${analysisMode === 'deep' ? 'Detailed' : 'Quick'} recommendations provided (${activeTab === 'tools' ? 'Tools' : 'Ideas'})`,
       });
     } catch (error) {
       console.error('Error getting recommendations:', error);
@@ -492,14 +492,14 @@ const BusinessToolsAdvisor = () => {
       URL.revokeObjectURL(url);
 
       toast({
-        title: "PDF exportiert",
-        description: "Ihr Bericht wurde erfolgreich heruntergeladen.",
+        title: "PDF exported",
+        description: "Your report has been downloaded successfully.",
       });
     } catch (error) {
       console.error('PDF export error:', error);
       toast({
-        title: "Export fehlgeschlagen",
-        description: "Der PDF-Export ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+        title: "Export failed",
+        description: "PDF export failed. Please try again.",
         variant: "destructive",
       });
     }
@@ -827,7 +827,7 @@ const BusinessToolsAdvisor = () => {
                           <div className="flex items-center gap-4">
                             <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold mb-2">Premium Analyse-Modus</p>
+                              <p className="font-semibold mb-2">Premium Analysis Mode</p>
                               <div className="flex gap-3">
                                 <Button
                                   variant={analysisMode === "standard" ? "default" : "outline"}
@@ -845,13 +845,13 @@ const BusinessToolsAdvisor = () => {
                                   className="flex-1"
                                 >
                                   <Lightbulb className="h-4 w-4 mr-2" />
-                                  Tiefe Analyse
+                                  Deep Analysis
                                 </Button>
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? "⚡ Schnelle Empfehlungen (5-7 Items) in ~10s" 
-                                  : "🔍 Detaillierte Analyse (8-10 Items) mit ROI, Roadmap & Risiko-Bewertung (~20-30s)"}
+                                  ? "⚡ Quick recommendations (5-7 items) in ~10s" 
+                                  : "🔍 Detailed analysis (8-10 items) with ROI, roadmap & risk assessment (~20-30s)"}
                               </p>
                             </div>
                           </div>
@@ -868,19 +868,19 @@ const BusinessToolsAdvisor = () => {
                     {analyzing ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {analysisMode === "deep" ? "Tiefe Analyse läuft..." : "Analysiere..."}
+                        {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
                       </>
                     ) : (
                       <>
                         <Sparkles className="mr-2 h-4 w-4" />
-                        Analyse starten
+                        Start Analysis
                       </>
                     )}
                   </Button>
 
                   {!canAnalyze && nextAnalysisTime && (
                     <p className="text-sm text-center text-muted-foreground">
-                      Nächste Analyse in: {getTimeUntilNextAnalysis()}
+                      Next analysis in: {getTimeUntilNextAnalysis()}
                     </p>
                   )}
                 </CardContent>
@@ -891,9 +891,9 @@ const BusinessToolsAdvisor = () => {
                 <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
-                      <CardTitle className="text-xl sm:text-2xl">Empfehlungen für Website Tools</CardTitle>
+                      <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
                       <CardDescription className="mt-2">
-                        {toolResult.recommendations.length} personalisierte Empfehlungen
+                        {toolResult.recommendations.length} personalized recommendations
                       </CardDescription>
                     </div>
                     <Button
@@ -1162,7 +1162,7 @@ const BusinessToolsAdvisor = () => {
                           <div className="flex items-center gap-4">
                             <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold mb-2">Premium Analyse-Modus</p>
+                              <p className="font-semibold mb-2">Premium Analysis Mode</p>
                               <div className="flex gap-3">
                                 <Button
                                   variant={analysisMode === "standard" ? "default" : "outline"}
@@ -1180,13 +1180,13 @@ const BusinessToolsAdvisor = () => {
                                   className="flex-1"
                                 >
                                   <Lightbulb className="h-4 w-4 mr-2" />
-                                  Tiefe Analyse
+                                  Deep Analysis
                                 </Button>
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? "⚡ Schnelle Empfehlungen (5-7 Items) in ~10s" 
-                                  : "🔍 Detaillierte Analyse (8-10 Items) mit ROI, Roadmap & Risiko-Bewertung (~20-30s)"}
+                                  ? "⚡ Quick recommendations (5-7 items) in ~10s" 
+                                  : "🔍 Detailed analysis (8-10 items) with ROI, roadmap & risk assessment (~20-30s)"}
                               </p>
                             </div>
                           </div>

@@ -81,29 +81,23 @@ interface IdeaHistoryItem {
   created_at: string;
 }
 
-// Aggressive Markdown normalization
+// Minimal Markdown normalization - only fix broken headings
 function normalizeMarkdown(md?: string) {
   if (!md) return "";
-  // 0) EOLs normalisieren
-  let s = md.replace(/\r\n/g, "\n").trim();
+  // Nur EOL normalisieren und trimmen – keine Umstrukturierungen!
+  let s = md.replace(/\r\n?/g, "\n").trim();
 
-  // 1) Falls eine Überschrift inline steht (nicht am Zeilenanfang), davor zwei Zeilenumbrüche einfügen
-  s = s.replace(/([^\n])\s*(#{1,6}\s)/g, "$1\n\n$2");
+  // Spezifische Reparatur:
+  // Falls direkt NACH einer Überschrift eine einzelne Buchstaben-Zeile steht,
+  // diese wieder an die Überschrift anhängen.
+  s = s.replace(/^(#{1,6}\s[^\n]+)\n([A-Za-zÄÖÜäöüß])\s*$/gm, "$1$2");
 
-  // 2) Nach jeder Überschrift genau eine Leerzeile sicherstellen (ohne Zeichen zu "verschieben")
-  s = s.replace(/^(#{1,6}\s[^\n]+)\n(?!\n)/gm, "$1\n\n");
-
-  // 3) Listenpunkte sicher auf eigene Zeile bringen (ohne aggressive Muster)
-  s = s.replace(/([^\n])\s*(-\s)/g, "$1\n$2");
-
-  // 4) Mehr als zwei Zeilenumbrüche auf genau zwei reduzieren
-  s = s.replace(/\n{3,}/g, "\n\n");
-
-  return s.trim();
+  return s;
 }
 
 // Markdown components for better readability
 const mdComponents = {
+  h1: ({ children }: any) => <h1 className="text-2xl sm:text-3xl font-bold mt-6 mb-4 text-foreground">{children}</h1>,
   h2: ({ children }: any) => <h2 className="text-xl sm:text-2xl font-bold mt-5 mb-3 text-foreground">{children}</h2>,
   h3: ({ children }: any) => <h3 className="text-lg sm:text-xl font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
   h4: ({ children }: any) => <h4 className="text-base sm:text-lg font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
@@ -998,7 +992,7 @@ const BusinessToolsAdvisor = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-base sm:text-lg">Strategic Overview</h3>
-                      <div className="prose prose-sm max-w-none">
+                      <div className="max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                           {normalizeMarkdown(toolResult.generalAdvice)}
                         </ReactMarkdown>
@@ -1023,7 +1017,7 @@ const BusinessToolsAdvisor = () => {
                                 </Badge>
                               )}
                             </div>
-                            <div className="prose prose-sm max-w-none">
+                            <div className="max-w-none">
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                                 {normalizeMarkdown(rec.rationale)}
                               </ReactMarkdown>
@@ -1068,7 +1062,7 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="prose prose-sm max-w-none">
+                      <div className="max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                           {normalizeMarkdown(ideaResult.generalAdvice)}
                         </ReactMarkdown>
@@ -1123,7 +1117,7 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="prose prose-sm max-w-none">
+                            <div className="max-w-none">
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                                 {normalizeMarkdown(rec.rationale)}
                               </ReactMarkdown>
@@ -1320,7 +1314,7 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="prose prose-sm max-w-none">
+                      <div className="max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                           {normalizeMarkdown(ideaResult.generalAdvice)}
                         </ReactMarkdown>
@@ -1375,7 +1369,7 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="prose prose-sm max-w-none">
+                            <div className="max-w-none">
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                                 {normalizeMarkdown(rec.rationale)}
                               </ReactMarkdown>

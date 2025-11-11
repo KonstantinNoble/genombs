@@ -684,7 +684,6 @@ const BusinessToolsAdvisor = () => {
               <span className="text-xs sm:text-sm font-semibold text-foreground">AI-Powered Business Intelligence</span>
               {isPremium && (
                 <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">
-                  <Star className="w-3 h-3 mr-1" />
                   Premium
                 </Badge>
               )}
@@ -731,15 +730,13 @@ const BusinessToolsAdvisor = () => {
                 value="tools" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
               >
-                
-                <span className="hidden sm:inline">Website </span>Tools
+                Website Tools
               </TabsTrigger>
               <TabsTrigger 
                 value="ideas" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-white transition-all duration-300"
               >
-                
-                <span className="hidden sm:inline">Website </span>Ideas
+                Website Ideas
               </TabsTrigger>
             </TabsList>
 
@@ -828,8 +825,7 @@ const BusinessToolsAdvisor = () => {
                           </Select>
                         </div>
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Competition
                           </label>
                           <Select value={competitionLevel} onValueChange={setCompetitionLevel}>
@@ -859,33 +855,31 @@ const BusinessToolsAdvisor = () => {
                       {/* Analysis Mode Toggle */}
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                         <CardContent className="pt-6">
-                          <div className="flex items-center gap-4">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold mb-2">Premium Analysis Mode</p>
-                              <div className="flex gap-3">
-                                <Button
-                                  variant={analysisMode === "standard" ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setAnalysisMode("standard")}
-                                  className="flex-1"
-                                >
-                                  Standard
-                                </Button>
-                                <Button
-                                  variant={analysisMode === "deep" ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setAnalysisMode("deep")}
-                                  className="flex-1"
-                                >
-                                  Deep Analysis
-                                </Button>
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {analysisMode === "standard" 
-                                  ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
-                                  : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
-                              </p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold mb-2">Premium Analysis Mode</p>
+                            <div className="flex gap-3">
+                              <Button
+                                variant={analysisMode === "standard" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("standard")}
+                                className="flex-1"
+                              >
+                                Standard
+                              </Button>
+                              <Button
+                                variant={analysisMode === "deep" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("deep")}
+                                className="flex-1"
+                              >
+                                Deep Analysis
+                              </Button>
                             </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {analysisMode === "standard" 
+                                ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
@@ -1216,33 +1210,31 @@ const BusinessToolsAdvisor = () => {
                       {/* Analysis Mode Toggle for Ideas */}
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                         <CardContent className="pt-6">
-                          <div className="flex items-center gap-4">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold mb-2">Premium Analysis Mode</p>
-                              <div className="flex gap-3">
-                                <Button
-                                  variant={analysisMode === "standard" ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setAnalysisMode("standard")}
-                                  className="flex-1"
-                                >
-                                  Standard
-                                </Button>
-                                <Button
-                                  variant={analysisMode === "deep" ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setAnalysisMode("deep")}
-                                  className="flex-1"
-                                >
-                                  Deep Analysis
-                                </Button>
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {analysisMode === "standard" 
-                                  ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
-                                  : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
-                              </p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold mb-2">Premium Analysis Mode</p>
+                            <div className="flex gap-3">
+                              <Button
+                                variant={analysisMode === "standard" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("standard")}
+                                className="flex-1"
+                              >
+                                Standard
+                              </Button>
+                              <Button
+                                variant={analysisMode === "deep" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("deep")}
+                                className="flex-1"
+                              >
+                                Deep Analysis
+                              </Button>
                             </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {analysisMode === "standard" 
+                                ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
+                            </p>
                           </div>
                         </CardContent>
                       </Card>

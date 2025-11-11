@@ -381,17 +381,18 @@ const BusinessToolsAdvisor = () => {
         ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
         : { websiteType, websiteStatus, budgetRange, businessContext: inputText };
       
-      // Add premium fields if available
-      if (isPremium) {
-        if (targetAudience) body.targetAudience = targetAudience;
-        if (competitionLevel) body.competitionLevel = competitionLevel;
-        if (growthStage) body.growthStage = growthStage;
-        if (screenshotUrls.length > 0) body.screenshotUrls = screenshotUrls;
-      }
-      
-      // For sandbox testing: force images if screenshots are present
-      if (screenshotUrls.length > 0 && !isPremium) {
+      // Add optional fields
+      if (targetAudience) body.targetAudience = targetAudience;
+      if (competitionLevel) body.competitionLevel = competitionLevel;
+      if (growthStage) body.growthStage = growthStage;
+
+      // Always send screenshots if present (signed URLs)
+      if (screenshotUrls.length > 0) body.screenshotUrls = screenshotUrls;
+
+      // Force image usage for testing when screenshots are provided (safe for premium + non-premium)
+      if (screenshotUrls.length > 0) {
         body.forceImages = true;
+        console.log('Sending screenshots with request', { count: screenshotUrls.length, forceImages: true });
       }
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
@@ -445,8 +446,8 @@ const BusinessToolsAdvisor = () => {
       await loadAnalysisLimit();
       
       toast({
-        title: "Recommendations generated",
-        description: `Your personalized business ${activeTab} are ready`,
+        title: "Analyse abgeschlossen",
+        description: `Empfehlungen ${screenshotUrls.length > 0 ? 'mit Screenshots ' : ''}bereitgestellt (${activeTab === 'tools' ? 'Tools' : 'Ideen'})`,
       });
     } catch (error) {
       console.error('Error getting recommendations:', error);

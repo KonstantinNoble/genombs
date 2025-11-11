@@ -146,6 +146,13 @@ const BusinessToolsAdvisor = () => {
     }
   }, [user]);
 
+  // Reload limit when switching tabs to get correct count for current tab
+  useEffect(() => {
+    if (user) {
+      loadAnalysisLimit();
+    }
+  }, [activeTab]);
+
   const syncCredits = async () => {
     if (!user) return;
     
@@ -191,7 +198,7 @@ const BusinessToolsAdvisor = () => {
     }
   };
 
-  const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null): boolean => {
+  const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null, limit: number): boolean => {
     const now = new Date();
     if (!windowStart) {
       setNextAnalysisTime(null);
@@ -207,7 +214,6 @@ const BusinessToolsAdvisor = () => {
       return true;
     }
 
-    const limit = analysisLimit;
     // Within window: allow if fewer than limit analyses used
     if ((analysisCount ?? 0) < limit) {
       setNextAnalysisTime(null);
@@ -241,10 +247,12 @@ const BusinessToolsAdvisor = () => {
     const windowStart = data?.[windowColumn] ?? null;
     const premium = data?.is_premium ?? false;
     
+    const computedLimit = premium ? 8 : 2;
+    
     setAnalysisCount(count);
     setIsPremium(premium);
-    setAnalysisLimit(premium ? 8 : 2);
-    setCanAnalyze(checkCanAnalyze(count, windowStart));
+    setAnalysisLimit(computedLimit);
+    setCanAnalyze(checkCanAnalyze(count, windowStart, computedLimit));
   };
 
   const loadToolHistory = async () => {

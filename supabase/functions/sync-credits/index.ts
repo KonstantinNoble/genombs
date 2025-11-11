@@ -34,6 +34,21 @@ serve(async (req) => {
     const now = new Date();
     const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+    // Get user's premium status to determine limits
+    const { data: creditsData, error: creditsError } = await supabase
+      .from('user_credits')
+      .select('is_premium')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (creditsError) {
+      console.error('Error fetching user credits:', creditsError);
+      throw new Error('Failed to fetch user credits');
+    }
+
+    const isPremium = creditsData?.is_premium ?? false;
+    const perFeatureLimit = isPremium ? 8 : 2;
+
     // Count successful tool generations in last 24h
     const { data: toolsData, error: toolsError } = await supabase
       .from('business_tools_history')
@@ -60,31 +75,38 @@ serve(async (req) => {
       throw new Error('Failed to sync credits');
     }
 
-    // Combine and sort all generations
+    // Calculate separate counts and window starts for each feature
+    const toolsCount = Math.min(toolsData?.length ?? 0, perFeatureLimit);
+    const ideasCount = Math.min(ideasData?.length ?? 0, perFeatureLimit);
+    
+    const toolsWindowStart = toolsData && toolsData.length > 0 ? toolsData[0].created_at : null;
+    const ideasWindowStart = ideasData && ideasData.length > 0 ? ideasData[0].created_at : null;
+
+    // Combined analysis count and window start
     const allGenerations = [
       ...(toolsData || []),
       ...(ideasData || [])
     ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-    const totalCount = allGenerations.length;
-    const actualCount = Math.min(totalCount, 2); // Cap at 2
+    const analysisCount = toolsCount + ideasCount;
+    const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
 
-    let newWindowStart = null;
-    if (allGenerations.length > 0) {
-      // Set window start to the oldest successful generation
-      newWindowStart = allGenerations[0].created_at;
-    }
+    console.log(`📊 Sync Results (Premium: ${isPremium}, Limit per feature: ${perFeatureLimit}):`);
+    console.log(`  Tools: ${toolsData?.length ?? 0} total → ${toolsCount} counted, window: ${toolsWindowStart}`);
+    console.log(`  Ideas: ${ideasData?.length ?? 0} total → ${ideasCount} counted, window: ${ideasWindowStart}`);
+    console.log(`  Combined: ${analysisCount}, window: ${analysisWindowStart}`);
 
-    console.log(`Found ${totalCount} successful generations in last 24h (counted as ${actualCount})`);
-    console.log(`New window start: ${newWindowStart}`);
-
-    // Update user_credits with the corrected values
+    // Update user_credits with separate counts
     const { error: updateError } = await supabase
       .from('user_credits')
       .upsert({
         user_id: user.id,
-        analysis_count: actualCount,
-        analysis_window_start: newWindowStart,
+        tools_count: toolsCount,
+        tools_window_start: toolsWindowStart,
+        ideas_count: ideasCount,
+        ideas_window_start: ideasWindowStart,
+        analysis_count: analysisCount,
+        analysis_window_start: analysisWindowStart,
         updated_at: now.toISOString()
       }, {
         onConflict: 'user_id'
@@ -95,13 +117,17 @@ serve(async (req) => {
       throw new Error('Failed to update credits');
     }
 
-    console.log('Credits synced successfully');
+    console.log('✅ Credits synced successfully');
 
     return new Response(
       JSON.stringify({
         success: true,
-        analysis_count: actualCount,
-        analysis_window_start: newWindowStart
+        tools_count: toolsCount,
+        tools_window_start: toolsWindowStart,
+        ideas_count: ideasCount,
+        ideas_window_start: ideasWindowStart,
+        analysis_count: analysisCount,
+        analysis_window_start: analysisWindowStart
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

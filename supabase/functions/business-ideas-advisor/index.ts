@@ -61,10 +61,14 @@ serve(async (req) => {
     const startTime = Date.now();
     console.log('Business ideas request received');
 
-    // Check credits
+    // Parse request early to get analysis mode
+    const requestBody = await req.json();
+    const isDeepMode = requestBody.analysisMode === "deep";
+
+    // Get user's premium status and mode-specific counts
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
-      .select('is_premium, ideas_count, ideas_window_start')
+      .select('is_premium, deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -73,37 +77,58 @@ serve(async (req) => {
       throw new Error('Failed to check credits');
     }
 
-    const now = new Date();
     const isPremium = creditsData?.is_premium ?? false;
-    const limit = isPremium ? 8 : 2;
-    let currentCount = creditsData?.ideas_count ?? 0;
-    let windowStart = creditsData?.ideas_window_start ? new Date(creditsData.ideas_window_start) : null;
+    
+    // Set limits based on premium status
+    const deepLimit = isPremium ? 2 : 0;
+    const standardLimit = isPremium ? 6 : 2;
 
-    // Check if window expired
-    if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
-      console.log('Window expired, resetting');
-      currentCount = 0;
-      windowStart = null;
-    }
-
-    // Block if limit reached
-    if (currentCount >= limit) {
-      console.log(`Limit reached: ${currentCount}/${limit}`);
-      return new Response(
-        JSON.stringify({ 
-          error: isPremium 
-            ? `Premium limit reached (${limit}/${limit}). Please wait 24 hours.` 
-            : `Free limit reached (${limit}/${limit}). Upgrade to Premium for 8 analyses per day.`
-        }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Check limit for the selected mode
+    if (isDeepMode) {
+      const currentDeepCount = creditsData?.deep_analysis_count ?? 0;
+      const deepWindowStart = creditsData?.deep_analysis_window_start;
+      
+      if (deepWindowStart) {
+        const windowEndsAt = new Date(new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000);
+        if (new Date() < windowEndsAt && currentDeepCount >= deepLimit) {
+          console.log(`⛔ Deep analysis limit reached: ${currentDeepCount}/${deepLimit}`);
+          console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
+          
+          return new Response(
+            JSON.stringify({ 
+              error: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Next available at ${windowEndsAt.toISOString()}.`
+            }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+      console.log(`✅ Deep analysis allowed. Current count: ${currentDeepCount}/${deepLimit}`);
+    } else {
+      const currentStandardCount = creditsData?.standard_analysis_count ?? 0;
+      const standardWindowStart = creditsData?.standard_analysis_window_start;
+      
+      if (standardWindowStart) {
+        const windowEndsAt = new Date(new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000);
+        if (new Date() < windowEndsAt && currentStandardCount >= standardLimit) {
+          console.log(`⛔ Standard analysis limit reached: ${currentStandardCount}/${standardLimit}`);
+          console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
+          
+          return new Response(
+            JSON.stringify({ 
+              error: isPremium 
+                ? `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try deep analysis or wait until ${windowEndsAt.toISOString()}.`
+                : `Free limit reached (${currentStandardCount}/${standardLimit}). Please wait 24 hours.`
+            }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+      console.log(`✅ Standard analysis allowed. Current count: ${currentStandardCount}/${standardLimit}`);
     }
 
     console.log('Limit check passed');
 
-    // Parse and validate input
-    const requestBody = await req.json();
-    
+    // Validate input (already parsed above)
     let validatedInput;
     try {
       validatedInput = inputSchema.parse(requestBody);
@@ -122,8 +147,6 @@ serve(async (req) => {
     }
 
     const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, analysisMode } = validatedInput;
-    
-    const isDeepMode = isPremium && analysisMode === "deep";
     
     console.log('📊 Analysis mode:', {
       isPremium,
@@ -265,7 +288,7 @@ Please provide personalized improvement recommendations to grow and optimize thi
 
     console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
 
-    // Insert into history
+    // Insert into history with analysis_mode
     const { error: historyError } = await supabase
       .from('business_ideas_history')
       .insert({
@@ -274,7 +297,8 @@ Please provide personalized improvement recommendations to grow and optimize thi
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_context: businessContext,
-        result: parsedResult
+        result: parsedResult,
+        analysis_mode: analysisMode || 'standard'
       });
 
     if (historyError) {
@@ -284,26 +308,61 @@ Please provide personalized improvement recommendations to grow and optimize thi
 
     console.log('History saved successfully');
 
-    // Update credits
-    const newWindowStart = windowStart ?? now;
-    const newCount = currentCount + 1;
-
-    const { error: updateError } = await supabase
-      .from('user_credits')
-      .upsert({
-        user_id: user.id,
-        ideas_count: newCount,
-        ideas_window_start: newWindowStart.toISOString(),
-        last_analysis_at: now.toISOString(),
-        updated_at: now.toISOString()
-      }, {
-        onConflict: 'user_id'
-      });
-
-    if (updateError) {
-      console.error('Error updating credits:', updateError);
+    // Increment the correct counter
+    const now = new Date();
+    
+    if (isDeepMode) {
+      const deepWindowStart = creditsData?.deep_analysis_window_start;
+      const deepCount = creditsData?.deep_analysis_count ?? 0;
+      
+      let newDeepCount = deepCount + 1;
+      let newDeepWindowStart = deepWindowStart;
+      
+      if (!deepWindowStart || new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
+        newDeepCount = 1;
+        newDeepWindowStart = now.toISOString();
+      }
+      
+      const { error: updateError } = await supabase
+        .from('user_credits')
+        .update({
+          deep_analysis_count: newDeepCount,
+          deep_analysis_window_start: newDeepWindowStart,
+          updated_at: now.toISOString()
+        })
+        .eq('user_id', user.id);
+        
+      if (updateError) {
+        console.error('Error updating deep analysis credits:', updateError);
+      } else {
+        console.log(`✅ Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
+      }
     } else {
-      console.log('Credits updated successfully');
+      const standardWindowStart = creditsData?.standard_analysis_window_start;
+      const standardCount = creditsData?.standard_analysis_count ?? 0;
+      
+      let newStandardCount = standardCount + 1;
+      let newStandardWindowStart = standardWindowStart;
+      
+      if (!standardWindowStart || new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
+        newStandardCount = 1;
+        newStandardWindowStart = now.toISOString();
+      }
+      
+      const { error: updateError } = await supabase
+        .from('user_credits')
+        .update({
+          standard_analysis_count: newStandardCount,
+          standard_analysis_window_start: newStandardWindowStart,
+          updated_at: now.toISOString()
+        })
+        .eq('user_id', user.id);
+        
+      if (updateError) {
+        console.error('Error updating standard analysis credits:', updateError);
+      } else {
+        console.log(`✅ Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
+      }
     }
 
     return new Response(

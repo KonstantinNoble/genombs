@@ -92,8 +92,12 @@ const BusinessToolsAdvisor = () => {
   const [ideaResult, setIdeaResult] = useState<IdeaAdvisorResult | null>(null);
   const [ideaHistory, setIdeaHistory] = useState<IdeaHistoryItem[]>([]);
   
+  const [deepAnalysisCount, setDeepAnalysisCount] = useState(0);
+  const [standardAnalysisCount, setStandardAnalysisCount] = useState(0);
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
+  const [deepAnalysisLimit, setDeepAnalysisLimit] = useState(0);
+  const [standardAnalysisLimit, setStandardAnalysisLimit] = useState(2);
 
   const [websiteType, setWebsiteType] = useState("");
   const [websiteStatus, setWebsiteStatus] = useState("");
@@ -107,8 +111,6 @@ const BusinessToolsAdvisor = () => {
   const [targetAudience, setTargetAudience] = useState("");
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
-  const [analysisCount, setAnalysisCount] = useState(0);
-  const [analysisLimit, setAnalysisLimit] = useState(2);
 
   const { toast } = useToast();
   
@@ -158,12 +160,12 @@ const BusinessToolsAdvisor = () => {
     }
   }, [user]);
 
-  // Reload limit when switching tabs to get correct count for current tab
+  // Re-check limits when analysis mode changes
   useEffect(() => {
     if (user) {
       loadAnalysisLimit();
     }
-  }, [activeTab]);
+  }, [activeTab, analysisMode]);
 
   const syncCredits = async () => {
     if (!user) return;
@@ -184,15 +186,25 @@ const BusinessToolsAdvisor = () => {
 
   const checkPremiumStatus = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('user_credits')
-      .select('is_premium')
-      .eq('user_id', user.id)
-      .single();
     
-    const premium = data?.is_premium ?? false;
-    setIsPremium(premium);
-    setAnalysisLimit(premium ? 8 : 2);
+    try {
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('is_premium')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      
+      const premium = data?.is_premium ?? false;
+      setIsPremium(premium);
+      
+      // Set mode-specific limits
+      setDeepAnalysisLimit(premium ? 2 : 0);
+      setStandardAnalysisLimit(premium ? 6 : 2);
+    } catch (error) {
+      console.error('Error checking premium status:', error);
+    }
   };
 
   const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null, limit: number): boolean => {
@@ -225,31 +237,43 @@ const BusinessToolsAdvisor = () => {
   const loadAnalysisLimit = async () => {
     if (!user) return;
     
-    const isTools = activeTab === "tools";
-    const countColumn = isTools ? 'tools_count' : 'ideas_count';
-    const windowColumn = isTools ? 'tools_window_start' : 'ideas_window_start';
-    
-    const { data, error } = await supabase
-      .from('user_credits')
-      .select(`${countColumn}, ${windowColumn}, is_premium`)
-      .eq('user_id', user.id)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start, is_premium')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (error) {
-      console.error('Error loading analysis limit:', error);
-      return;
+      if (error) {
+        console.error('Error loading analysis limit:', error);
+        return;
+      }
+
+      const deepCount = data?.deep_analysis_count ?? 0;
+      const deepWindowStart = data?.deep_analysis_window_start ?? null;
+      const standardCount = data?.standard_analysis_count ?? 0;
+      const standardWindowStart = data?.standard_analysis_window_start ?? null;
+      const premium = data?.is_premium ?? false;
+      
+      setDeepAnalysisCount(deepCount);
+      setStandardAnalysisCount(standardCount);
+      setIsPremium(premium);
+      
+      const deepLimit = premium ? 2 : 0;
+      const standardLimit = premium ? 6 : 2;
+      
+      setDeepAnalysisLimit(deepLimit);
+      setStandardAnalysisLimit(standardLimit);
+      
+      // Check if user can analyze based on selected mode
+      if (analysisMode === 'deep') {
+        setCanAnalyze(checkCanAnalyze(deepCount, deepWindowStart, deepLimit));
+      } else {
+        setCanAnalyze(checkCanAnalyze(standardCount, standardWindowStart, standardLimit));
+      }
+    } catch (error) {
+      console.error('Error in loadAnalysisLimit:', error);
     }
-
-    const count = data?.[countColumn] ?? 0;
-    const windowStart = data?.[windowColumn] ?? null;
-    const premium = data?.is_premium ?? false;
-    
-    const computedLimit = premium ? 8 : 2;
-    
-    setAnalysisCount(count);
-    setIsPremium(premium);
-    setAnalysisLimit(computedLimit);
-    setCanAnalyze(checkCanAnalyze(count, windowStart, computedLimit));
   };
 
   const loadToolHistory = async () => {
@@ -672,17 +696,30 @@ const BusinessToolsAdvisor = () => {
               Get personalized AI-powered recommendations to grow your business with data-driven insights
             </p>
             {/* Usage Indicator */}
-            <div className="flex items-center justify-center gap-2 text-sm">
-              <span className="text-muted-foreground">Usage Today:</span>
-              <span className="font-bold text-foreground">{analysisCount} / {analysisLimit}</span>
-              {!isPremium && (
-                <Button 
-                  variant="link" 
-                  className="text-xs p-0 h-auto"
-                  onClick={() => window.open('https://synoptas.com/pricing', '_blank')}
-                >
-                  Upgrade for 8/day
-                </Button>
+            <div className="flex flex-col items-center justify-center gap-2 text-sm">
+              {isPremium ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Deep Analysis:</span>
+                    <span className="font-bold text-foreground">{deepAnalysisCount} / {deepAnalysisLimit}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Standard Analysis:</span>
+                    <span className="font-bold text-foreground">{standardAnalysisCount} / {standardAnalysisLimit}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Standard Analysis:</span>
+                  <span className="font-bold text-foreground">{standardAnalysisCount} / {standardAnalysisLimit}</span>
+                  <Button 
+                    variant="link" 
+                    className="text-xs p-0 h-auto"
+                    onClick={() => window.open('https://synoptas.com/pricing', '_blank')}
+                  >
+                    Upgrade for 6 standard + 2 deep
+                  </Button>
+                </div>
               )}
             </div>
           </div>

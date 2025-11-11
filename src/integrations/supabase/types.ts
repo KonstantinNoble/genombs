@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       business_ideas_history: {
         Row: {
+          analysis_mode: string | null
           budget_range: string
           business_context: string
           created_at: string
@@ -27,6 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_mode?: string | null
           budget_range: string
           business_context: string
           created_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_mode?: string | null
           budget_range?: string
           business_context?: string
           created_at?: string
@@ -52,6 +55,7 @@ export type Database = {
       }
       business_tools_history: {
         Row: {
+          analysis_mode: string | null
           budget_range: string
           business_goals: string
           created_at: string
@@ -63,6 +67,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_mode?: string | null
           budget_range: string
           business_goals: string
           created_at?: string
@@ -74,6 +79,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_mode?: string | null
           budget_range?: string
           business_goals?: string
           created_at?: string
@@ -157,6 +163,8 @@ export type Database = {
           analysis_count: number | null
           analysis_window_start: string | null
           created_at: string
+          deep_analysis_count: number | null
+          deep_analysis_window_start: string | null
           freemius_customer_id: string | null
           freemius_subscription_id: string | null
           id: string
@@ -166,6 +174,8 @@ export type Database = {
           last_analysis_at: string | null
           last_reset_date: string
           premium_since: string | null
+          standard_analysis_count: number | null
+          standard_analysis_window_start: string | null
           tools_count: number | null
           tools_window_start: string | null
           updated_at: string
@@ -175,6 +185,8 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           created_at?: string
+          deep_analysis_count?: number | null
+          deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
@@ -184,6 +196,8 @@ export type Database = {
           last_analysis_at?: string | null
           last_reset_date?: string
           premium_since?: string | null
+          standard_analysis_count?: number | null
+          standard_analysis_window_start?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string
@@ -193,6 +207,8 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           created_at?: string
+          deep_analysis_count?: number | null
+          deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
@@ -202,6 +218,8 @@ export type Database = {
           last_analysis_at?: string | null
           last_reset_date?: string
           premium_since?: string | null
+          standard_analysis_count?: number | null
+          standard_analysis_window_start?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string

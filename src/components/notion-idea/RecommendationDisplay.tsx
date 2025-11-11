@@ -13,11 +13,17 @@ function normalizeMarkdown(md?: string) {
   if (!md) return "";
   let s = md.trim();
 
-  // Ensure each heading starts on its own line
-  s = s.replace(/\s*(#{1,6}\s)/g, "\n$1");
+  // Ensure each heading starts on its own line (even if originally inline)
+  s = s.replace(/(?:^|\s)(#{1,6}\s)/g, (_m, h) => `\n${h}`);
 
-  // Ensure each bullet starts on its own line
-  s = s.replace(/\s*(-\s)/g, "\n$1");
+  // Ensure a blank line after headings
+  s = s.replace(/(#{1,6}\s[^\n#]+)(?!\n)/g, "$1\n\n");
+
+  // Convert inline dashes into real list items when followed by bold label
+  s = s.replace(/[\s]+[\-–]\s+(?=\*\*)/g, "\n- ");
+
+  // Ensure list bullets start on their own line
+  s = s.replace(/\s(-\s)/g, "\n$1");
 
   // Collapse 3+ newlines to max 2
   s = s.replace(/\n{3,}/g, "\n\n");
@@ -25,16 +31,21 @@ function normalizeMarkdown(md?: string) {
   return s;
 }
 
-// Split by top-level ### sections
+// Split by any ### heading occurrence (not only at line start)
 function splitMarkdownSections(md: string) {
-  const normalized = normalizeMarkdown(md);
-  const parts = normalized.split(/\n(?=###\s)/g).filter(Boolean);
+  const raw = (md || "").trim();
+  if (!raw) return [] as { title: string; content: string }[];
 
-  return parts.map(part => {
-    const lines = part.split("\n");
-    const titleLine = lines[0].startsWith("### ") ? lines[0].slice(4).trim() : "Section";
-    const content = lines.slice(1).join("\n").trim();
-    return { title: titleLine, content };
+  const parts = raw.split(/(?=###\s)/g).filter(Boolean);
+
+  return parts.map((part) => {
+    const headingMatch = part.match(/^###\s+(.+?)(?:\s+-\s+|\n|$)/);
+    const title = headingMatch ? headingMatch[1].trim() : "Section";
+    let content = part.replace(/^###\s+(.+?)(?:\s+-\s+|\n|$)/, "").trim();
+
+    content = normalizeMarkdown(content);
+
+    return { title, content };
   });
 }
 

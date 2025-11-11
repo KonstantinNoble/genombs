@@ -16,6 +16,8 @@ import { ReportPDF } from '@/components/ReportPDF';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ToolRecommendation {
   name: string;
@@ -78,6 +80,43 @@ interface IdeaHistoryItem {
   result: IdeaAdvisorResult;
   created_at: string;
 }
+
+// Aggressive Markdown normalization
+function normalizeMarkdown(md?: string) {
+  if (!md) return "";
+  let s = md.trim();
+
+  // Force headings to new lines, even if inline
+  s = s.replace(/([^\n])(#{1,6}\s)/g, "$1\n\n$2");
+  s = s.replace(/(#{1,6}\s[^\n]+)([^\n])/g, "$1\n\n$2");
+  
+  // Convert "- **Label**: text" patterns to proper list items
+  s = s.replace(/([^\n])-\s+\*\*/g, "$1\n- **");
+  
+  // Ensure lists start on new line
+  s = s.replace(/([^\n])(\n-\s)/g, "$1\n$2");
+  
+  // Add space after headings
+  s = s.replace(/(#{1,6}\s[^\n]+)\n([^#\n])/g, "$1\n\n$2");
+  
+  // Collapse multiple newlines
+  s = s.replace(/\n{3,}/g, "\n\n");
+  
+  return s.trim();
+}
+
+// Markdown components for better readability
+const mdComponents = {
+  h2: ({ children }: any) => <h2 className="text-xl sm:text-2xl font-bold mt-5 mb-3 text-foreground">{children}</h2>,
+  h3: ({ children }: any) => <h3 className="text-lg sm:text-xl font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
+  h4: ({ children }: any) => <h4 className="text-base sm:text-lg font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
+  p: ({ children }: any) => <p className="text-sm sm:text-base leading-relaxed mb-3 text-foreground">{children}</p>,
+  ul: ({ children }: any) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>,
+  ol: ({ children }: any) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>,
+  li: ({ children }: any) => <li className="text-sm sm:text-base leading-relaxed">{children}</li>,
+  strong: ({ children }: any) => <strong className="font-semibold text-foreground">{children}</strong>,
+  em: ({ children }: any) => <em className="italic text-foreground">{children}</em>,
+};
 
 const BusinessToolsAdvisor = () => {
   const navigate = useNavigate();
@@ -962,7 +1001,11 @@ const BusinessToolsAdvisor = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-base sm:text-lg">Strategic Overview</h3>
-                      <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{toolResult.generalAdvice}</p>
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                          {normalizeMarkdown(toolResult.generalAdvice)}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                     <div className="border-t pt-4">
                       <h3 className="font-semibold mb-3 text-base sm:text-lg">Recommendations</h3>
@@ -983,7 +1026,11 @@ const BusinessToolsAdvisor = () => {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{rec.rationale}</p>
+                            <div className="prose prose-sm max-w-none">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                {normalizeMarkdown(rec.rationale)}
+                              </ReactMarkdown>
+                            </div>
                             {rec.expectedROI && (
                               <div className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
                                 <p className="text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-2">
@@ -1024,7 +1071,11 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm sm:text-base text-foreground leading-relaxed">{toolResult.generalAdvice}</p>
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                          {normalizeMarkdown(toolResult.generalAdvice)}
+                        </ReactMarkdown>
+                      </div>
                     </CardContent>
                   </Card>
 
@@ -1075,7 +1126,11 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-xs sm:text-sm text-foreground leading-relaxed">{rec.rationale}</p>
+                            <div className="prose prose-sm max-w-none">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                {normalizeMarkdown(rec.rationale)}
+                              </ReactMarkdown>
+                            </div>
                           </CardContent>
                         </Card>
                       ))}
@@ -1268,7 +1323,11 @@ const BusinessToolsAdvisor = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-base text-foreground leading-relaxed">{ideaResult.generalAdvice}</p>
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                          {normalizeMarkdown(ideaResult.generalAdvice)}
+                        </ReactMarkdown>
+                      </div>
                     </CardContent>
                   </Card>
 
@@ -1319,7 +1378,11 @@ const BusinessToolsAdvisor = () => {
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-foreground leading-relaxed">{rec.rationale}</p>
+                            <div className="prose prose-sm max-w-none">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                {normalizeMarkdown(rec.rationale)}
+                              </ReactMarkdown>
+                            </div>
                           </CardContent>
                         </Card>
                       ))}

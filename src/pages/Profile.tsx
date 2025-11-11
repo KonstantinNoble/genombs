@@ -148,7 +148,7 @@ const Profile = () => {
                       <span className="text-muted-foreground">Free Plan</span>
                       <Button
                         onClick={() => {
-                          const checkoutUrl = `https://checkout.freemius.com/mode/page/product/21698/plan/36191/?user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;
+                          const checkoutUrl = `https://checkout.freemius.com/mode/page/product/21698/plan/36191/?sandbox=true&user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;
                           window.open(checkoutUrl, '_blank');
                         }}
                         className="w-full"

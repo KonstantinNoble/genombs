@@ -110,10 +110,10 @@ serve(async (req) => {
     // Extract user email from event
     const userEmail = event.objects.user?.email?.toLowerCase();
     if (!userEmail) {
-      console.error('No user email in webhook event');
+      console.log(`Skipping event ${event.type} (ID: ${event.id}) - no user email provided`);
       return new Response(
-        JSON.stringify({ error: 'No user email provided' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ message: 'Event skipped - no user email' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

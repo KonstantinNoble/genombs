@@ -144,7 +144,18 @@ const Profile = () => {
                       )}
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">Free Plan</span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-muted-foreground">Free Plan</span>
+                      <Button
+                        onClick={() => {
+                          const checkoutUrl = `https://checkout.freemius.com/mode/page/product/21698/plan/36191/?user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;
+                          window.open(checkoutUrl, '_blank');
+                        }}
+                        className="w-full"
+                      >
+                        Upgrade to Premium
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>

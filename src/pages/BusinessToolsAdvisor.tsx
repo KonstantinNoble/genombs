@@ -815,8 +815,7 @@ const BusinessToolsAdvisor = () => {
                     <>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Target Audience
                           </label>
                           <Select value={targetAudience} onValueChange={setTargetAudience}>
@@ -843,8 +842,7 @@ const BusinessToolsAdvisor = () => {
                           </Select>
                         </div>
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Growth Stage
                           </label>
                           <Select value={growthStage} onValueChange={setGrowthStage}>
@@ -862,7 +860,6 @@ const BusinessToolsAdvisor = () => {
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                         <CardContent className="pt-6">
                           <div className="flex items-center gap-4">
-                            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold mb-2">Premium Analysis Mode</p>
                               <div className="flex gap-3">
@@ -872,7 +869,6 @@ const BusinessToolsAdvisor = () => {
                                   onClick={() => setAnalysisMode("standard")}
                                   className="flex-1"
                                 >
-                                  <TrendingUp className="h-4 w-4 mr-2" />
                                   Standard
                                 </Button>
                                 <Button
@@ -881,14 +877,13 @@ const BusinessToolsAdvisor = () => {
                                   onClick={() => setAnalysisMode("deep")}
                                   className="flex-1"
                                 >
-                                  <Lightbulb className="h-4 w-4 mr-2" />
                                   Deep Analysis
                                 </Button>
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? `⚡ Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
-                                  : `🔍 Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
+                                  ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                  : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
                               </p>
                             </div>
                           </div>
@@ -938,10 +933,7 @@ const BusinessToolsAdvisor = () => {
                         {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
                       </>
                     ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Start Analysis
-                      </>
+                      "Start Analysis"
                     )}
                   </Button>
 
@@ -1180,8 +1172,7 @@ const BusinessToolsAdvisor = () => {
                     <>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Target Audience
                           </label>
                           <Select value={targetAudience} onValueChange={setTargetAudience}>
@@ -1208,8 +1199,7 @@ const BusinessToolsAdvisor = () => {
                           </Select>
                         </div>
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Growth Stage
                           </label>
                           <Select value={growthStage} onValueChange={setGrowthStage}>
@@ -1227,7 +1217,6 @@ const BusinessToolsAdvisor = () => {
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                         <CardContent className="pt-6">
                           <div className="flex items-center gap-4">
-                            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold mb-2">Premium Analysis Mode</p>
                               <div className="flex gap-3">
@@ -1237,7 +1226,6 @@ const BusinessToolsAdvisor = () => {
                                   onClick={() => setAnalysisMode("standard")}
                                   className="flex-1"
                                 >
-                                  <TrendingUp className="h-4 w-4 mr-2" />
                                   Standard
                                 </Button>
                                 <Button
@@ -1246,14 +1234,13 @@ const BusinessToolsAdvisor = () => {
                                   onClick={() => setAnalysisMode("deep")}
                                   className="flex-1"
                                 >
-                                  <Lightbulb className="h-4 w-4 mr-2" />
                                   Deep Analysis
                                 </Button>
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">
                                 {analysisMode === "standard" 
-                                  ? `⚡ Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
-                                  : `🔍 Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
+                                  ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
+                                  : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
                               </p>
                             </div>
                           </div>

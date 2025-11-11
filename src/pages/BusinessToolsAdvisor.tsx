@@ -84,23 +84,21 @@ interface IdeaHistoryItem {
 // Aggressive Markdown normalization
 function normalizeMarkdown(md?: string) {
   if (!md) return "";
-  let s = md.trim();
+  // 0) EOLs normalisieren
+  let s = md.replace(/\r\n/g, "\n").trim();
 
-  // 1. Stelle sicher, dass Überschriften am Zeilenanfang stehen
-  s = s.replace(/([^\n])(#{1,6}\s)/g, "$1\n\n$2");
-  
-  // 2. Stelle sicher, dass nach Überschriften eine Leerzeile kommt
-  s = s.replace(/(#{1,6}\s+[^\n]+)(\n?)([^\n#])/g, "$1\n\n$3");
-  
-  // 3. Konvertiere inline "- **" zu echten Listenpunkten
-  s = s.replace(/([^\n])(- \*\*)/g, "$1\n$2");
-  
-  // 4. Stelle sicher, dass Listen Leerzeilen davor haben
-  s = s.replace(/([^\n])(\n- )/g, "$1\n$2");
-  
-  // 5. Kollabiere zu viele Leerzeilen auf maximal 2
+  // 1) Falls eine Überschrift inline steht (nicht am Zeilenanfang), davor zwei Zeilenumbrüche einfügen
+  s = s.replace(/([^\n])\s*(#{1,6}\s)/g, "$1\n\n$2");
+
+  // 2) Nach jeder Überschrift genau eine Leerzeile sicherstellen (ohne Zeichen zu "verschieben")
+  s = s.replace(/^(#{1,6}\s[^\n]+)\n(?!\n)/gm, "$1\n\n");
+
+  // 3) Listenpunkte sicher auf eigene Zeile bringen (ohne aggressive Muster)
+  s = s.replace(/([^\n])\s*(-\s)/g, "$1\n$2");
+
+  // 4) Mehr als zwei Zeilenumbrüche auf genau zwei reduzieren
   s = s.replace(/\n{3,}/g, "\n\n");
-  
+
   return s.trim();
 }
 

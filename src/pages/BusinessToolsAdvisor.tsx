@@ -803,7 +803,7 @@ const BusinessToolsAdvisor = () => {
                       onChange={(e) => setWebsiteGoals(e.target.value)}
                       rows={3}
                       className="text-sm sm:text-base resize-none"
-                      maxLength={500}
+                      maxLength={70}
                     />
                   </div>
 
@@ -1157,7 +1157,7 @@ const BusinessToolsAdvisor = () => {
                       value={businessContext}
                       onChange={(e) => setBusinessContext(e.target.value)}
                       rows={4}
-                      maxLength={500}
+                      maxLength={70}
                     />
                   </div>
 

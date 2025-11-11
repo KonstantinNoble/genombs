@@ -88,7 +88,7 @@ function normalizeMarkdown(md?: string) {
 
   // Force headings to new lines, even if inline
   s = s.replace(/([^\n])(#{1,6}\s)/g, "$1\n\n$2");
-  s = s.replace(/(#{1,6}\s[^\n]+)([^\n])/g, "$1\n\n$2");
+  s = s.replace(/(#{1,6}\s[^\n]+)(?=.)/g, "$1\n\n");
   
   // Convert "- **Label**: text" patterns to proper list items
   s = s.replace(/([^\n])-\s+\*\*/g, "$1\n- **");
@@ -1061,8 +1061,8 @@ const BusinessToolsAdvisor = () => {
             {/* Ideas Tab */}
             <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
 
-              {/* Tool Results */}
-              {toolResult && (
+              {/* Idea Results - Strategic Overview */}
+              {ideaResult && (
                 <div className="space-y-4 sm:space-y-6 animate-fade-in">
                   <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-card to-secondary/5 shadow-elegant">
                     <CardHeader className="pb-3 sm:pb-4">
@@ -1073,7 +1073,7 @@ const BusinessToolsAdvisor = () => {
                     <CardContent>
                       <div className="prose prose-sm max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                          {normalizeMarkdown(toolResult.generalAdvice)}
+                          {normalizeMarkdown(ideaResult.generalAdvice)}
                         </ReactMarkdown>
                       </div>
                     </CardContent>
@@ -1082,11 +1082,11 @@ const BusinessToolsAdvisor = () => {
                   <div className="space-y-3 sm:space-y-4">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="h-0.5 sm:h-1 flex-1 bg-gradient-to-r from-primary via-secondary to-primary/30 rounded-full" />
-                      <h2 className="text-base sm:text-xl lg:text-2xl font-bold whitespace-nowrap">Recommended Tools</h2>
+                      <h2 className="text-base sm:text-xl lg:text-2xl font-bold whitespace-nowrap">Business Context & Market Insights</h2>
                       <div className="h-0.5 sm:h-1 flex-1 bg-gradient-to-l from-primary via-secondary to-primary/30 rounded-full" />
                     </div>
                     <div className="grid gap-3 sm:gap-4">
-                      {toolResult.recommendations.map((rec, index) => (
+                      {ideaResult.recommendations.map((rec, index) => (
                         <Card 
                           key={index}
                           className="hover:shadow-hover transition-all duration-300 border-border hover:border-primary/30 bg-gradient-to-br from-card to-muted/20"
@@ -1115,11 +1115,11 @@ const BusinessToolsAdvisor = () => {
                                   <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-secondary text-white font-medium shadow-sm">
                                     {rec.category}
                                   </span>
-                                  <span className={`text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.implementation)}`}>
-                                    {rec.implementation.replace('-', ' ')}
+                                  <span className={`text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.viability)}`}>
+                                    {rec.viability.replace('-', ' ')}
                                   </span>
                                   <span className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-accent text-accent-foreground font-medium shadow-sm">
-                                    {rec.estimatedCost}
+                                    {rec.estimatedInvestment}
                                   </span>
                                 </div>
                               </div>

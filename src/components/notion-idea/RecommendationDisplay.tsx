@@ -218,21 +218,21 @@ const RecommendationDisplay = ({
               return (
                 <div key={index} className="space-y-4">
                   {sections.map((sec, i) => (
-                    <div key={i} className="p-5 sm:p-6 rounded-lg border bg-card/60 hover:bg-card transition-colors shadow-sm">
+                    <div key={i} className="p-5 sm:p-6 rounded-lg border-2 bg-card transition-colors shadow-md">
                       <h3 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">{sec.title}</h3>
                       <div className="prose prose-sm max-w-none">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            h2: ({ children }) => <h2 className="text-base sm:text-lg font-semibold mt-5 mb-3 text-foreground">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm sm:text-base font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
-                            h4: ({ children }) => <h4 className="text-sm font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
-                            p: ({ children }) => <p className="text-sm leading-relaxed mb-3 text-foreground/95">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground/95">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground/95">{children}</ol>,
-                            li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
+                            h2: ({ children }) => <h2 className="text-lg sm:text-xl font-semibold mt-5 mb-3 text-foreground">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-sm sm:text-base font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
+                            p: ({ children }) => <p className="text-sm sm:text-base leading-relaxed mb-3 text-foreground">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>,
+                            li: ({ children }) => <li className="text-sm sm:text-base leading-relaxed">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                            em: ({ children }) => <em className="italic text-foreground/95">{children}</em>,
+                            em: ({ children }) => <em className="italic text-foreground">{children}</em>,
                           }}
                         >
                           {normalizeMarkdown(sec.content)}

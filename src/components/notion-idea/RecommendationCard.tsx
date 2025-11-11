@@ -12,11 +12,17 @@ function normalizeMarkdown(md?: string) {
   if (!md) return "";
   let s = md.trim();
 
-  // Ensure each heading starts on its own line
-  s = s.replace(/\s*(#{1,6}\s)/g, "\n$1");
+  // Ensure each heading starts on its own line (even if originally inline)
+  s = s.replace(/(?:^|\s)(#{1,6}\s)/g, (_m, h) => `\n${h}`);
 
-  // Ensure each bullet starts on its own line
-  s = s.replace(/\s*(-\s)/g, "\n$1");
+  // Ensure a blank line after headings
+  s = s.replace(/(#{1,6}\s[^\n#]+)(?!\n)/g, "$1\n\n");
+
+  // Convert inline dashes into real list items when followed by bold label
+  s = s.replace(/[\s]+[\-–]\s+(?=\*\*)/g, "\n- ");
+
+  // Ensure list bullets start on their own line
+  s = s.replace(/\s(-\s)/g, "\n$1");
 
   // Collapse 3+ newlines to max 2
   s = s.replace(/\n{3,}/g, "\n\n");
@@ -104,23 +110,32 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
+                h2: ({ children }) => (
+                  <h2 className="text-lg sm:text-xl font-semibold mt-5 mb-3 text-foreground">{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h3>
+                ),
+                h4: ({ children }) => (
+                  <h4 className="text-sm sm:text-base font-semibold mt-3 mb-2 text-foreground">{children}</h4>
+                ),
                 p: ({ children }) => (
-                  <p className="text-xs sm:text-sm leading-relaxed text-foreground/90 mb-2 last:mb-0">{children}</p>
+                  <p className="text-sm sm:text-base leading-relaxed text-foreground mb-3 last:mb-0">{children}</p>
                 ),
                 strong: ({ children }) => (
                   <strong className="font-semibold text-foreground">{children}</strong>
                 ),
                 em: ({ children }) => (
-                  <em className="italic text-foreground/90">{children}</em>
+                  <em className="italic text-foreground">{children}</em>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-foreground/90">{children}</ul>
+                  <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-foreground/90">{children}</ol>
+                  <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>
                 ),
                 li: ({ children }) => (
-                  <li className="text-xs sm:text-sm">{children}</li>
+                  <li className="text-sm sm:text-base leading-relaxed">{children}</li>
                 ),
               }}
             >

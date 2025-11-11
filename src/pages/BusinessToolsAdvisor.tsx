@@ -1179,8 +1179,7 @@ const BusinessToolsAdvisor = () => {
                           </Select>
                         </div>
                         <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500" />
+                          <label className="text-xs sm:text-sm font-medium">
                             Competition
                           </label>
                           <Select value={competitionLevel} onValueChange={setCompetitionLevel}>

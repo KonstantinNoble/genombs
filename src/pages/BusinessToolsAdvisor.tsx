@@ -323,15 +323,21 @@ const BusinessToolsAdvisor = () => {
       
       const { data, error } = await supabase.storage
         .from('website-screenshots')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
       
       if (error) throw error;
       
-      const { data: { publicUrl } } = supabase.storage
+      // Use signed URL with 1 hour expiry for AI access
+      const { data: signedData, error: signedError } = await supabase.storage
         .from('website-screenshots')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 3600); // 1 hour validity
       
-      uploadedUrls.push(publicUrl);
+      if (signedError) throw signedError;
+      
+      uploadedUrls.push(signedData.signedUrl);
     }
     
     return uploadedUrls;

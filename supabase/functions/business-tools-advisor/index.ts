@@ -25,7 +25,8 @@ const inputSchema = z.object({
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  screenshotUrls: z.array(z.string()).optional()
+  screenshotUrls: z.array(z.string()).optional(),
+  forceImages: z.boolean().optional() // For sandbox testing
 });
 
 serve(async (req) => {
@@ -51,6 +52,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
+    const startTime = Date.now();
     console.log('Business tools request received');
 
     // Step 1: Check credits BEFORE AI call (read-only)
@@ -115,9 +117,15 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, screenshotUrls } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, screenshotUrls, forceImages } = validatedInput;
 
     console.log('Input validated successfully');
+    console.log('📊 Analysis Context:', {
+      isPremium,
+      screenshotCount: screenshotUrls?.length || 0,
+      hasForceImages: !!forceImages,
+      validationTime: `${Date.now() - startTime}ms`
+    });
 
     // Step 3: Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -132,7 +140,7 @@ ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
 
-Provide 7-10 DETAILED tool recommendations with deeper strategic insights and implementation roadmaps.
+Provide 6-8 DETAILED tool recommendations with deeper strategic insights and implementation roadmaps.
 
 Focus on:
 - Advanced website optimization tools
@@ -165,16 +173,23 @@ Please provide personalized website tool recommendations based on this informati
 
     console.log('Calling Lovable AI for website tools...');
 
-    // Only include screenshots if they exist AND user is premium
-    const useScreenshots = isPremium && screenshotUrls && screenshotUrls.length > 0;
+    // Only include screenshots if they exist AND user is premium OR forceImages is set
+    const includeImages = ((isPremium || forceImages) && screenshotUrls && screenshotUrls.length > 0);
+    
+    console.log('🖼️ Image Settings:', {
+      includeImages,
+      isPremium,
+      forceImages: !!forceImages,
+      screenshotCount: screenshotUrls?.length || 0
+    });
 
-    const buildBody = (includeImages: boolean) => ({
-      model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
+    const buildBody = (useImages: boolean, model: string) => ({
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         {
           role: 'user',
-          content: includeImages
+          content: useImages
             ? [
                 { type: 'text', text: userPrompt },
                 ...((screenshotUrls || []).map((url) => ({
@@ -191,7 +206,7 @@ Please provide personalized website tool recommendations based on this informati
           function: {
             name: 'suggest_tools',
             description: isPremium
-              ? 'Return 7-10 detailed website tool recommendations'
+              ? 'Return 6-8 detailed website tool recommendations'
               : 'Return 5-7 website tool recommendations',
             parameters: {
               type: 'object',
@@ -252,30 +267,68 @@ Please provide personalized website tool recommendations based on this informati
       tool_choice: { type: 'function', function: { name: 'suggest_tools' } },
     });
 
-    async function callAI(includeImages: boolean): Promise<Response> {
-      return await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    async function callAI(useImages: boolean, model: string, signal?: AbortSignal): Promise<Response> {
+      const aiStartTime = Date.now();
+      console.log(`🤖 Calling AI (model: ${model}, images: ${useImages})...`);
+      
+      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(buildBody(includeImages)),
+        body: JSON.stringify(buildBody(useImages, model)),
+        signal,
       });
+      
+      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
+      return response;
     }
 
-    // Try with images first (if available). If image extraction fails, retry without images.
-    let aiResponse = await callAI(!!useScreenshots);
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error('AI API error:', aiResponse.status, errorText);
+    // Try with primary model first, with timeout
+    const primaryModel = isPremium ? 'google/gemini-2.5-flash' : 'google/gemini-2.5-flash';
+    const fallbackModel = 'google/gemini-2.5-flash-lite';
+    const timeout = 35000; // 35 seconds
+    
+    let aiResponse: Response;
+    let abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-      if (
-        aiResponse.status === 400 &&
-        /Failed to extract .*image/gi.test(errorText) &&
-        useScreenshots
-      ) {
-        console.log('Image extraction failed. Retrying without images...');
-        aiResponse = await callAI(false);
+    try {
+      aiResponse = await callAI(includeImages, primaryModel, abortController.signal);
+      clearTimeout(timeoutId);
+      
+      if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        console.error('AI API error:', aiResponse.status, errorText);
+
+        if (
+          aiResponse.status === 400 &&
+          /Failed to extract .*image/gi.test(errorText) &&
+          includeImages
+        ) {
+          console.log('Image extraction failed. Retrying without images...');
+          abortController = new AbortController();
+          const retryTimeoutId = setTimeout(() => abortController.abort(), timeout);
+          aiResponse = await callAI(false, primaryModel, abortController.signal);
+          clearTimeout(retryTimeoutId);
+        }
+      }
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        console.log(`⏱️ Timeout after ${timeout}ms, falling back to ${fallbackModel}...`);
+        abortController = new AbortController();
+        const fallbackTimeoutId = setTimeout(() => abortController.abort(), timeout);
+        try {
+          aiResponse = await callAI(false, fallbackModel, abortController.signal);
+          clearTimeout(fallbackTimeoutId);
+        } catch (fallbackError) {
+          clearTimeout(fallbackTimeoutId);
+          throw new Error('AI request timed out even with fallback model');
+        }
+      } else {
+        throw error;
       }
     }
 
@@ -299,7 +352,7 @@ Please provide personalized website tool recommendations based on this informati
     }
 
     const aiData = await aiResponse.json();
-    console.log('AI response received');
+    console.log(`✅ AI response received (total time: ${Date.now() - startTime}ms)`);
 
     // Step 4: Parse tool call result
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];

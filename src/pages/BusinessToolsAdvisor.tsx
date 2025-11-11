@@ -388,26 +388,48 @@ const BusinessToolsAdvisor = () => {
         if (growthStage) body.growthStage = growthStage;
         if (screenshotUrls.length > 0) body.screenshotUrls = screenshotUrls;
       }
+      
+      // For sandbox testing: force images if screenshots are present
+      if (screenshotUrls.length > 0 && !isPremium) {
+        body.forceImages = true;
+      }
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
 
       if (error) {
+        console.error('Analysis error:', error);
+        
         if (error.message?.includes('Daily limit reached') || error.message?.includes('429')) {
           toast({
-            title: "Daily limit reached",
-            description: "Syncing your usage data...",
+            title: "Tageslimit erreicht",
+            description: "Bitte warten Sie 24 Stunden oder upgraden Sie auf Premium für mehr Analysen.",
             variant: "destructive",
           });
-          // Sync credits to fix any discrepancies
           await syncCredits();
-        } else if (error.message?.includes('Rate limit') || error.message?.includes('402')) {
+        } else if (error.message?.includes('Rate limit exceeded')) {
           toast({
-            title: "Service temporarily unavailable",
-            description: error.message || "Please try again later",
+            title: "Rate Limit überschritten",
+            description: "Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes('AI service quota exceeded') || error.message?.includes('402')) {
+          toast({
+            title: "Service vorübergehend nicht verfügbar",
+            description: "Das AI-Kontingent wurde überschritten. Bitte kontaktieren Sie den Support.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes('timed out')) {
+          toast({
+            title: "Zeitüberschreitung",
+            description: "Die Analyse dauert zu lange. Bitte versuchen Sie es ohne Screenshots erneut.",
             variant: "destructive",
           });
         } else {
-          throw error;
+          toast({
+            title: "Fehler bei der Analyse",
+            description: error.message || "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+            variant: "destructive",
+          });
         }
         return;
       }

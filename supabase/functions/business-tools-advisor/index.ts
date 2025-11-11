@@ -167,79 +167,122 @@ Please provide personalized website tool recommendations based on this informati
 
     // Only include screenshots if they exist AND user is premium
     const useScreenshots = isPremium && screenshotUrls && screenshotUrls.length > 0;
-    
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          {
-            role: 'user',
-            content: useScreenshots
-              ? [
-                  { type: 'text', text: userPrompt },
-                  ...screenshotUrls.map(url => ({
-                    type: 'image_url',
-                    image_url: { url }
-                  }))
-                ]
-              : userPrompt
-          }
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "suggest_tools",
-              description: isPremium ? "Return 7-10 detailed website tool recommendations" : "Return 5-7 website tool recommendations",
-              parameters: {
-                type: "object",
-                properties: {
-                  recommendations: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        name: { type: "string", description: "Tool or service name" },
-                        category: { 
-                          type: "string",
-                          enum: ["analytics", "seo", "performance", "design", "marketing", "ecommerce", "cms", "conversion"]
-                        },
-                        implementation: {
-                          type: "string",
-                          enum: ["quick-win", "medium-term", "strategic"]
-                        },
-                        estimatedCost: { type: "string", description: "Cost range like $0-$50/month" },
-                        rationale: { type: "string", description: "Why this tool fits the website" }
+
+    const buildBody = (includeImages: boolean) => ({
+      model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: includeImages
+            ? [
+                { type: 'text', text: userPrompt },
+                ...((screenshotUrls || []).map((url) => ({
+                  type: 'image_url',
+                  image_url: { url },
+                })))
+              ]
+            : userPrompt,
+        },
+      ],
+      tools: [
+        {
+          type: 'function',
+          function: {
+            name: 'suggest_tools',
+            description: isPremium
+              ? 'Return 7-10 detailed website tool recommendations'
+              : 'Return 5-7 website tool recommendations',
+            parameters: {
+              type: 'object',
+              properties: {
+                recommendations: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string', description: 'Tool or service name' },
+                      category: {
+                        type: 'string',
+                        enum: [
+                          'analytics',
+                          'seo',
+                          'performance',
+                          'design',
+                          'marketing',
+                          'ecommerce',
+                          'cms',
+                          'conversion',
+                        ],
                       },
-                      required: ["name", "category", "implementation", "estimatedCost", "rationale"],
-                      additionalProperties: false
-                    }
+                      implementation: {
+                        type: 'string',
+                        enum: ['quick-win', 'medium-term', 'strategic'],
+                      },
+                      estimatedCost: {
+                        type: 'string',
+                        description: 'Cost range like $0-$50/month',
+                      },
+                      rationale: {
+                        type: 'string',
+                        description: 'Why this tool fits the website',
+                      },
+                    },
+                    required: [
+                      'name',
+                      'category',
+                      'implementation',
+                      'estimatedCost',
+                      'rationale',
+                    ],
+                    additionalProperties: false,
                   },
-                  generalAdvice: {
-                    type: "string",
-                    description: "Strategic advice based on website type and goals"
-                  }
                 },
-                required: ["recommendations", "generalAdvice"],
-                additionalProperties: false
-              }
-            }
-          }
-        ],
-        tool_choice: { type: "function", function: { name: "suggest_tools" } }
-      }),
+                generalAdvice: {
+                  type: 'string',
+                  description: 'Strategic advice based on website type and goals',
+                },
+              },
+              required: ['recommendations', 'generalAdvice'],
+              additionalProperties: false,
+            },
+          },
+        },
+      ],
+      tool_choice: { type: 'function', function: { name: 'suggest_tools' } },
     });
 
+    async function callAI(includeImages: boolean): Promise<Response> {
+      return await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buildBody(includeImages)),
+      });
+    }
+
+    // Try with images first (if available). If image extraction fails, retry without images.
+    let aiResponse = await callAI(!!useScreenshots);
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error('AI API error:', aiResponse.status, errorText);
-      
+
+      if (
+        aiResponse.status === 400 &&
+        /Failed to extract .*image/gi.test(errorText) &&
+        useScreenshots
+      ) {
+        console.log('Image extraction failed. Retrying without images...');
+        aiResponse = await callAI(false);
+      }
+    }
+
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI API error after retry (if any):', aiResponse.status, errorText);
+
       if (aiResponse.status === 429) {
         return new Response(
           JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),

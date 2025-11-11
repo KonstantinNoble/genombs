@@ -195,36 +195,56 @@ Please provide personalized improvement recommendations to help grow and optimiz
     // Only include screenshots if they exist AND user is premium
     const useScreenshots = isPremium && screenshotUrls && screenshotUrls.length > 0;
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          {
-            role: 'user',
-            content: useScreenshots
-              ? [
-                  { type: 'text', text: userPrompt },
-                  ...screenshotUrls.map(url => ({
-                    type: 'image_url',
-                    image_url: { url }
-                  }))
-                ]
-              : userPrompt
-          }
-        ],
-        response_format: { type: "json_object" }
-      }),
+    const buildBody = (includeImages: boolean) => ({
+      model: isPremium ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: includeImages
+            ? [
+                { type: 'text', text: userPrompt },
+                ...((screenshotUrls || []).map((url) => ({
+                  type: 'image_url',
+                  image_url: { url },
+                })))
+              ]
+            : userPrompt,
+        },
+      ],
+      response_format: { type: 'json_object' },
     });
 
+    async function callAI(includeImages: boolean): Promise<Response> {
+      return await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buildBody(includeImages)),
+      });
+    }
+
+    // Try with images first (if available). If image extraction fails, retry without images.
+    let aiResponse = await callAI(!!useScreenshots);
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error('AI API error:', aiResponse.status, errorText);
+
+      if (
+        aiResponse.status === 400 &&
+        /Failed to extract .*image/gi.test(errorText) &&
+        useScreenshots
+      ) {
+        console.log('Image extraction failed. Retrying without images...');
+        aiResponse = await callAI(false);
+      }
+    }
+
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI API error after retry (if any):', aiResponse.status, errorText);
       
       if (aiResponse.status === 429) {
         return new Response(

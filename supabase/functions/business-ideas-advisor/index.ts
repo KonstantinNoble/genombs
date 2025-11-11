@@ -9,24 +9,30 @@ const corsHeaders = {
 
 interface IdeaRecommendation {
   name: string;
-  category: "product" | "service" | "saas" | "marketplace" | "content" | "consulting" | "ecommerce";
-  viability: "quick-launch" | "medium-term" | "long-term";
+  category: string;
+  viability: string;
   estimatedInvestment: string;
   rationale: string;
+  // Deep mode fields
+  detailedSteps?: string[];
+  expectedROI?: string;
+  riskLevel?: string;
+  prerequisites?: string[];
+  metrics?: string[];
+  implementationTimeline?: string;
 }
 
 // Input validation schema
 const inputSchema = z.object({
-  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
-  websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
-  budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  businessContext: z.string().trim().min(1, "Business context is required").max(1000, "Business context must be less than 1000 characters"),
-  // Premium-only fields (optional)
+  websiteType: z.string().trim().min(1).max(100),
+  websiteStatus: z.string().trim().min(1).max(50),
+  budgetRange: z.string().trim().min(1).max(50),
+  businessContext: z.string().trim().min(1).max(1000),
+  // Premium-only fields
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  screenshotUrls: z.array(z.string()).optional(),
-  forceImages: z.boolean().optional() // For sandbox testing
+  analysisMode: z.enum(["standard", "deep"]).optional()
 });
 
 serve(async (req) => {
@@ -55,7 +61,7 @@ serve(async (req) => {
     const startTime = Date.now();
     console.log('Business ideas request received');
 
-    // Step 1: Check credits BEFORE AI call (read-only)
+    // Check credits
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
       .select('is_premium, ideas_count, ideas_window_start')
@@ -73,18 +79,16 @@ serve(async (req) => {
     let currentCount = creditsData?.ideas_count ?? 0;
     let windowStart = creditsData?.ideas_window_start ? new Date(creditsData.ideas_window_start) : null;
 
-    // Credit check performed
-
     // Check if window expired
     if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
-      console.log('Window expired, resetting (in-memory check)');
+      console.log('Window expired, resetting');
       currentCount = 0;
       windowStart = null;
     }
 
     // Block if limit reached
     if (currentCount >= limit) {
-      console.log(`Limit reached: ${currentCount}/${limit} in current window`);
+      console.log(`Limit reached: ${currentCount}/${limit}`);
       return new Response(
         JSON.stringify({ 
           error: isPremium 
@@ -95,9 +99,9 @@ serve(async (req) => {
       );
     }
 
-    console.log('Limit check passed, proceeding with AI call');
+    console.log('Limit check passed');
 
-    // Step 2: Parse and validate input
+    // Parse and validate input
     const requestBody = await req.json();
     
     let validatedInput;
@@ -117,187 +121,98 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, screenshotUrls, forceImages } = validatedInput;
-
-    console.log('Input validated successfully');
-    console.log('📊 Analysis Context:', {
+    const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, analysisMode } = validatedInput;
+    
+    const isDeepMode = isPremium && analysisMode === "deep";
+    
+    console.log('📊 Analysis mode:', {
       isPremium,
-      screenshotCount: screenshotUrls?.length || 0,
-      hasForceImages: !!forceImages,
-      validationTime: `${Date.now() - startTime}ms`
+      analysisMode: analysisMode || 'standard',
+      isDeepMode
     });
 
-    // Step 3: Call Lovable AI
+    // Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = isPremium
-      ? `You are an ADVANCED business improvement advisor with access to additional context.
-${screenshotUrls?.length ? 'Analyze the provided screenshots thoroughly to understand the current business state and identify specific improvement areas.' : ''}
+    const systemPrompt = isDeepMode
+      ? `You are an ADVANCED business improvement advisor.
 ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
 
 CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
-Your response must be a raw JSON object starting with { and ending with }.
 
-Return a JSON object with:
-{
-  "recommendations": [
-    {
-      "name": "Improvement idea name",
-      "category": "product|service|saas|marketplace|content|consulting|ecommerce",
-      "viability": "quick-launch|medium-term|long-term",
-      "estimatedInvestment": "$X-$Y",
-      "rationale": "Detailed explanation of why this improvement fits their business context and how it will help them grow"
-    }
-  ],
-  "generalAdvice": "In-depth strategic advice for improving their existing business based on their industry and budget"
-}
+Provide 8-10 DETAILED, actionable improvement ideas with:
+- detailedSteps: Array of concrete implementation steps
+- expectedROI: ROI projection with specific timeframes
+- riskLevel: "low" | "medium" | "high"
+- prerequisites: What must be in place first
+- metrics: How to measure success
+- implementationTimeline: Time estimate
 
-Provide 6-8 DETAILED, actionable improvement ideas tailored to their specific existing business situation. Focus on:
-- Revenue growth opportunities with ROI projections
-- Operational efficiency improvements with implementation roadmaps
-- Customer experience enhancements with measurement metrics
-- Market expansion possibilities with competitive analysis
-- Cost reduction strategies with specific tactics
-- Digital transformation opportunities with technology recommendations`
-      : `You are a business improvement advisor. Analyze the user's EXISTING business and provide personalized recommendations to improve and grow it.
+In generalAdvice, include:
+- Prioritization matrix (Quick Wins first)
+- Industry-specific insights
+- Competitive analysis
+- 3-6 month roadmap
 
-CRITICAL: Return ONLY valid JSON without code fences, markdown, or any other formatting.
-Your response must be a raw JSON object starting with { and ending with }.
+Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`
+      : `You are a business improvement advisor. Analyze the EXISTING business and provide 5-7 concise, actionable improvement recommendations.
 
-Return a JSON object with:
-{
-  "recommendations": [
-    {
-      "name": "Improvement idea name",
-      "category": "product|service|saas|marketplace|content|consulting|ecommerce",
-      "viability": "quick-launch|medium-term|long-term",
-      "estimatedInvestment": "$X-$Y",
-      "rationale": "Why this improvement fits their business context and how it will help them grow"
-    }
-  ],
-  "generalAdvice": "Strategic advice for improving their existing business based on their industry and budget"
-}
+CRITICAL: Return ONLY valid JSON without code fences or markdown.
 
-Provide 5-7 concrete, actionable improvement ideas tailored to their specific existing business situation. Focus on:
-- Revenue growth opportunities
-- Operational efficiency improvements
-- Customer experience enhancements
-- Market expansion possibilities
-- Cost reduction strategies
-- Digital transformation opportunities`;
+Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`;
 
     const userPrompt = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Budget Range: ${budgetRange}
 Current Business Context: ${businessContext}
 
-Please provide personalized improvement recommendations to help grow and optimize this EXISTING business.`;
+Please provide personalized improvement recommendations to grow and optimize this EXISTING business.`;
 
-    console.log('Calling Lovable AI for business improvement ideas...');
+    console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
-    // Only include screenshots if they exist AND user is premium OR forceImages is set
-    const includeImages = ((isPremium || forceImages) && screenshotUrls && screenshotUrls.length > 0);
+    const timeout = isDeepMode ? 30000 : 20000;
     
-    console.log('🖼️ Image Settings:', {
-      includeImages,
-      isPremium,
-      forceImages: !!forceImages,
-      screenshotCount: screenshotUrls?.length || 0
-    });
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-    const buildBody = (useImages: boolean, model: string) => ({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: useImages
-            ? [
-                { type: 'text', text: userPrompt },
-                ...((screenshotUrls || []).map((url) => ({
-                  type: 'image_url',
-                  image_url: { url },
-                })))
-              ]
-            : userPrompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-    });
-
-    async function callAI(useImages: boolean, model: string, signal?: AbortSignal): Promise<Response> {
+    let aiResponse: Response;
+    try {
       const aiStartTime = Date.now();
-      console.log(`🤖 Calling AI (model: ${model}, images: ${useImages})...`);
-      
-      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(buildBody(useImages, model)),
-        signal,
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          response_format: { type: 'json_object' },
+        }),
+        signal: abortController.signal,
       });
       
-      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
-      return response;
-    }
-
-    // Try with primary model first, with timeout
-    const primaryModel = isPremium ? 'google/gemini-2.5-flash' : 'google/gemini-2.5-flash';
-    const fallbackModel = 'google/gemini-2.5-flash-lite';
-    const timeout = 35000; // 35 seconds
-    
-    let aiResponse: Response;
-    let abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), timeout);
-
-    try {
-      aiResponse = await callAI(includeImages, primaryModel, abortController.signal);
       clearTimeout(timeoutId);
-      
-      if (!aiResponse.ok) {
-        const errorText = await aiResponse.text();
-        console.error('AI API error:', aiResponse.status, errorText);
-
-        if (
-          aiResponse.status === 400 &&
-          /Failed to extract .*image/gi.test(errorText) &&
-          includeImages
-        ) {
-          console.log('Image extraction failed. Retrying without images...');
-          abortController = new AbortController();
-          const retryTimeoutId = setTimeout(() => abortController.abort(), timeout);
-          aiResponse = await callAI(false, primaryModel, abortController.signal);
-          clearTimeout(retryTimeoutId);
-        }
-      }
+      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
     } catch (error: any) {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
-        console.log(`⏱️ Timeout after ${timeout}ms, falling back to ${fallbackModel}...`);
-        abortController = new AbortController();
-        const fallbackTimeoutId = setTimeout(() => abortController.abort(), timeout);
-        try {
-          aiResponse = await callAI(false, fallbackModel, abortController.signal);
-          clearTimeout(fallbackTimeoutId);
-        } catch (fallbackError) {
-          clearTimeout(fallbackTimeoutId);
-          throw new Error('AI request timed out even with fallback model');
-        }
-      } else {
-        throw error;
+        throw new Error(`AI request timed out after ${timeout}ms`);
       }
+      throw error;
     }
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI API error after retry (if any):', aiResponse.status, errorText);
+      console.error('AI API error:', aiResponse.status, errorText);
       
       if (aiResponse.status === 429) {
         return new Response(
@@ -322,44 +237,35 @@ Please provide personalized improvement recommendations to help grow and optimiz
       throw new Error('No content in AI response');
     }
 
-    console.log('Raw AI content length:', content.length);
-
-    // Step 4: Robust JSON parsing with fence removal
+    // Robust JSON parsing with fence removal
     let parsedResult;
     try {
-      // Try direct parse first
       parsedResult = JSON.parse(content);
-      console.log('Direct JSON parse successful');
     } catch (e) {
-      console.log('Direct parse failed, attempting fence removal');
-      // Remove markdown code fences if present
       if (content.includes('```')) {
         const fenceMatch = content.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
         if (fenceMatch) {
           content = fenceMatch[1].trim();
-          console.log('Code fences removed, content length:', content.length);
         }
       }
       
       try {
         parsedResult = JSON.parse(content);
-        console.log('Parse after fence removal successful');
       } catch (e2) {
-        console.error('Failed to parse after fence removal:', e2);
-        console.error('Content preview:', content.substring(0, 500));
+        console.error('Failed to parse JSON:', e2);
         throw new Error('Invalid response format from AI');
       }
     }
 
     // Validate structure
     if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
-      console.error('Invalid structure - no recommendations array');
+      console.error('Invalid structure');
       throw new Error('Invalid response format from AI');
     }
 
     console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
 
-    // Step 5: Insert into history
+    // Insert into history
     const { error: historyError } = await supabase
       .from('business_ideas_history')
       .insert({
@@ -368,7 +274,6 @@ Please provide personalized improvement recommendations to help grow and optimiz
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_context: businessContext,
-        screenshot_urls: screenshotUrls ?? [],
         result: parsedResult
       });
 
@@ -379,7 +284,7 @@ Please provide personalized improvement recommendations to help grow and optimiz
 
     console.log('History saved successfully');
 
-    // Step 6: Update credits AFTER successful insert
+    // Update credits
     const newWindowStart = windowStart ?? now;
     const newCount = currentCount + 1;
 
@@ -397,7 +302,6 @@ Please provide personalized improvement recommendations to help grow and optimiz
 
     if (updateError) {
       console.error('Error updating credits:', updateError);
-      // Non-fatal - we already saved the result
     } else {
       console.log('Credits updated successfully');
     }

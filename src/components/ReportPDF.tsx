@@ -1,0 +1,138 @@
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+
+const styles = StyleSheet.create({
+  page: { padding: 40, fontFamily: 'Helvetica' },
+  header: { marginBottom: 20, borderBottom: 2, paddingBottom: 10, borderColor: '#2563eb' },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#1a1a1a' },
+  subtitle: { fontSize: 12, color: '#666', marginTop: 5 },
+  section: { marginTop: 20 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 10, color: '#2563eb' },
+  recommendation: { marginBottom: 15, padding: 10, backgroundColor: '#f9fafb', borderRadius: 4 },
+  recTitle: { fontSize: 14, fontWeight: 'bold', marginBottom: 5 },
+  recMeta: { fontSize: 10, color: '#666', marginBottom: 5 },
+  recText: { fontSize: 11, lineHeight: 1.4 },
+  deepField: { fontSize: 10, color: '#374151', marginTop: 5, marginLeft: 10 },
+  deepFieldTitle: { fontSize: 10, fontWeight: 'bold', color: '#1f2937', marginTop: 5 },
+  advice: { fontSize: 11, lineHeight: 1.6, color: '#374151' },
+  footer: { 
+    position: 'absolute', 
+    bottom: 30, 
+    left: 40, 
+    right: 40, 
+    textAlign: 'center', 
+    fontSize: 9, 
+    color: '#999' 
+  }
+});
+
+interface DeepRecommendation {
+  name: string;
+  category: string;
+  implementation?: string;
+  viability?: string;
+  estimatedCost?: string;
+  estimatedInvestment?: string;
+  rationale: string;
+  detailedSteps?: string[];
+  expectedROI?: string;
+  riskLevel?: string;
+  prerequisites?: string[];
+  metrics?: string[];
+  implementationTimeline?: string;
+}
+
+interface ReportPDFProps {
+  type: 'tools' | 'ideas';
+  result: {
+    recommendations: DeepRecommendation[];
+    generalAdvice: string;
+  };
+  metadata: {
+    websiteType: string;
+    websiteStatus: string;
+    budgetRange: string;
+    date: string;
+    analysisMode?: string;
+  };
+}
+
+export const ReportPDF = ({ type, result, metadata }: ReportPDFProps) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          {type === 'tools' ? 'Website Tools Report' : 'Business Ideas Report'}
+        </Text>
+        <Text style={styles.subtitle}>
+          {metadata.websiteType} • {metadata.websiteStatus} • {metadata.budgetRange}
+        </Text>
+        <Text style={styles.subtitle}>
+          Generated on {metadata.date}
+          {metadata.analysisMode === 'deep' && ' • Deep Analysis Mode'}
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          Recommendations ({result.recommendations.length})
+        </Text>
+        {result.recommendations.map((rec, i) => (
+          <View key={i} style={styles.recommendation}>
+            <Text style={styles.recTitle}>{i + 1}. {rec.name}</Text>
+            <Text style={styles.recMeta}>
+              {rec.category} • {rec.implementation || rec.viability} • {rec.estimatedCost || rec.estimatedInvestment}
+            </Text>
+            <Text style={styles.recText}>{rec.rationale}</Text>
+            
+            {/* Deep analysis fields */}
+            {rec.expectedROI && (
+              <Text style={styles.recMeta}>💰 Expected ROI: {rec.expectedROI}</Text>
+            )}
+            {rec.riskLevel && (
+              <Text style={styles.recMeta}>⚠️ Risk Level: {rec.riskLevel}</Text>
+            )}
+            {rec.implementationTimeline && (
+              <Text style={styles.recMeta}>⏱️ Timeline: {rec.implementationTimeline}</Text>
+            )}
+            
+            {rec.detailedSteps && rec.detailedSteps.length > 0 && (
+              <View>
+                <Text style={styles.deepFieldTitle}>Implementation Steps:</Text>
+                {rec.detailedSteps.map((step, idx) => (
+                  <Text key={idx} style={styles.deepField}>{idx + 1}. {step}</Text>
+                ))}
+              </View>
+            )}
+            
+            {rec.prerequisites && rec.prerequisites.length > 0 && (
+              <View>
+                <Text style={styles.deepFieldTitle}>Prerequisites:</Text>
+                {rec.prerequisites.map((prereq, idx) => (
+                  <Text key={idx} style={styles.deepField}>• {prereq}</Text>
+                ))}
+              </View>
+            )}
+            
+            {rec.metrics && rec.metrics.length > 0 && (
+              <View>
+                <Text style={styles.deepFieldTitle}>Success Metrics:</Text>
+                {rec.metrics.map((metric, idx) => (
+                  <Text key={idx} style={styles.deepField}>• {metric}</Text>
+                ))}
+              </View>
+            )}
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Strategic Advice</Text>
+        <Text style={styles.advice}>{result.generalAdvice}</Text>
+      </View>
+
+      <View style={styles.footer}>
+        <Text>Report generated by Wealthconomy • {new Date().toLocaleDateString()}</Text>
+      </View>
+    </Page>
+  </Document>
+);

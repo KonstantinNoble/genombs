@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, ImageIcon, X, Star } from "lucide-react";
+import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download } from "lucide-react";
+import { pdf } from '@react-pdf/renderer';
+import { ReportPDF } from '@/components/ReportPDF';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { User } from "@supabase/supabase-js";
@@ -21,6 +23,13 @@ interface ToolRecommendation {
   implementation: "quick-win" | "medium-term" | "strategic";
   estimatedCost: string;
   rationale: string;
+  // Deep analysis fields
+  detailedSteps?: string[];
+  expectedROI?: string;
+  riskLevel?: "low" | "medium" | "high";
+  prerequisites?: string[];
+  metrics?: string[];
+  implementationTimeline?: string;
 }
 
 interface IdeaRecommendation {
@@ -29,6 +38,13 @@ interface IdeaRecommendation {
   viability: "quick-launch" | "medium-term" | "long-term";
   estimatedInvestment: string;
   rationale: string;
+  // Deep analysis fields
+  detailedSteps?: string[];
+  expectedROI?: string;
+  riskLevel?: "low" | "medium" | "high";
+  prerequisites?: string[];
+  metrics?: string[];
+  implementationTimeline?: string;
 }
 
 interface ToolAdvisorResult {
@@ -87,10 +103,7 @@ const BusinessToolsAdvisor = () => {
   
   // Premium-only state
   const [isPremium, setIsPremium] = useState(false);
-  const [screenshots, setScreenshots] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [storageUsed, setStorageUsed] = useState(0);
-  const [storageLimit, setStorageLimit] = useState(50);
+  const [analysisMode, setAnalysisMode] = useState<"standard" | "deep">("standard");
   const [targetAudience, setTargetAudience] = useState("");
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
@@ -118,7 +131,6 @@ const BusinessToolsAdvisor = () => {
       syncCredits();
       
       checkPremiumStatus();
-      loadStorageUsage();
       loadToolHistory();
       loadIdeaHistory();
       loadAnalysisLimit();
@@ -180,22 +192,7 @@ const BusinessToolsAdvisor = () => {
     
     const premium = data?.is_premium ?? false;
     setIsPremium(premium);
-    setStorageLimit(premium ? 500 : 50);
     setAnalysisLimit(premium ? 8 : 2);
-  };
-
-  const loadStorageUsage = async () => {
-    if (!user) return;
-    try {
-      const { data: files } = await supabase.storage
-        .from('website-screenshots')
-        .list(user.id);
-      
-      const totalSize = files?.reduce((sum, file) => sum + (file.metadata?.size ?? 0), 0) ?? 0;
-      setStorageUsed(totalSize / (1024 * 1024)); // Convert to MB
-    } catch (error) {
-      console.error('Error loading storage usage:', error);
-    }
   };
 
   const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null, limit: number): boolean => {
@@ -291,66 +288,6 @@ const BusinessToolsAdvisor = () => {
     setIdeaHistory((data || []) as unknown as IdeaHistoryItem[]);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const validFiles = files.filter(f => f.type.startsWith('image/'));
-    
-    if (screenshots.length + validFiles.length > 2) {
-      toast({
-        title: "Limit erreicht",
-        description: "Maximal 2 Screenshots erlaubt",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const totalSize = validFiles.reduce((sum, f) => sum + f.size, 0) / (1024 * 1024);
-    if (storageUsed + totalSize > storageLimit) {
-      toast({
-        title: "Speicherplatz überschritten",
-        description: `Noch ${(storageLimit - storageUsed).toFixed(1)}MB verfügbar`,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setScreenshots([...screenshots, ...validFiles]);
-  };
-
-  const removeFile = (index: number) => {
-    setScreenshots(screenshots.filter((_, i) => i !== index));
-  };
-
-  const uploadScreenshots = async (): Promise<string[]> => {
-    if (screenshots.length === 0) return [];
-    
-    const uploadedUrls: string[] = [];
-    
-    for (const file of screenshots) {
-      const fileName = `${user!.id}/${Date.now()}_${file.name}`;
-      
-      const { data, error } = await supabase.storage
-        .from('website-screenshots')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-      
-      if (error) throw error;
-      
-      // Use signed URL with 1 hour expiry for AI access
-      const { data: signedData, error: signedError } = await supabase.storage
-        .from('website-screenshots')
-        .createSignedUrl(fileName, 3600); // 1 hour validity
-      
-      if (signedError) throw signedError;
-      
-      uploadedUrls.push(signedData.signedUrl);
-    }
-    
-    return uploadedUrls;
-  };
-
   const handleAnalyze = async () => {
     if (!user) {
       toast({
@@ -381,26 +318,19 @@ const BusinessToolsAdvisor = () => {
     }
 
     try {
-      // Upload screenshots first if present
-      const screenshotUrls = await uploadScreenshots();
-      
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body: any = isTools 
         ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
         : { websiteType, websiteStatus, budgetRange, businessContext: inputText };
       
-      // Add optional fields
+      // Add optional premium fields
       if (targetAudience) body.targetAudience = targetAudience;
       if (competitionLevel) body.competitionLevel = competitionLevel;
       if (growthStage) body.growthStage = growthStage;
 
-      // Always send screenshots if present (signed URLs)
-      if (screenshotUrls.length > 0) body.screenshotUrls = screenshotUrls;
-
-      // Force image usage for testing when screenshots are provided (safe for premium + non-premium)
-      if (screenshotUrls.length > 0) {
-        body.forceImages = true;
-        console.log('Sending screenshots with request', { count: screenshotUrls.length, forceImages: true });
+      // Add analysis mode for premium users
+      if (isPremium) {
+        body.analysisMode = analysisMode;
       }
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
@@ -455,7 +385,7 @@ const BusinessToolsAdvisor = () => {
       
       toast({
         title: "Analyse abgeschlossen",
-        description: `Empfehlungen ${screenshotUrls.length > 0 ? 'mit Screenshots ' : ''}bereitgestellt (${activeTab === 'tools' ? 'Tools' : 'Ideen'})`,
+        description: `${analysisMode === 'deep' ? 'Detaillierte' : 'Schnelle'} Empfehlungen bereitgestellt (${activeTab === 'tools' ? 'Tools' : 'Ideen'})`,
       });
     } catch (error) {
       console.error('Error getting recommendations:', error);
@@ -533,6 +463,46 @@ const BusinessToolsAdvisor = () => {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     
     return `${hours}h ${minutes}m`;
+  };
+
+  const handleExportPDF = async () => {
+    const result = activeTab === 'tools' ? toolResult : ideaResult;
+    if (!result) return;
+
+    const metadata = {
+      websiteType,
+      websiteStatus,
+      budgetRange,
+      date: new Date().toLocaleDateString('de-DE', { 
+        year: 'numeric', month: 'long', day: 'numeric' 
+      }),
+      analysisMode
+    };
+
+    try {
+      const blob = await pdf(
+        <ReportPDF type={activeTab} result={result} metadata={metadata} />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${activeTab}-report-${Date.now()}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "PDF exportiert",
+        description: "Ihr Bericht wurde erfolgreich heruntergeladen.",
+      });
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "Export fehlgeschlagen",
+        description: "Der PDF-Export ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -851,41 +821,40 @@ const BusinessToolsAdvisor = () => {
                         </div>
                       </div>
 
-                      {/* Screenshot Upload */}
-                      <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/20 dark:to-amber-950/20">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
-                            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-                            Upload Screenshots (Premium)
-                          </CardTitle>
-                          <CardDescription className="text-xs sm:text-sm">
-                            Upload up to 2 screenshots for AI analysis
-                            <span className="block text-xs mt-1 text-yellow-700 dark:text-yellow-500">
-                              Storage: {storageUsed.toFixed(1)}MB / {storageLimit}MB
-                            </span>
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleFileChange}
-                            disabled={screenshots.length >= 2}
-                            className="text-xs sm:text-sm"
-                          />
-                          {screenshots.length > 0 && (
-                            <div className="mt-3 space-y-2">
-                              {screenshots.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-2 bg-background/80 rounded border border-border">
-                                  <span className="text-xs sm:text-sm truncate flex-1">{file.name}</span>
-                                  <Button variant="ghost" size="sm" onClick={() => removeFile(idx)} className="h-6 w-6 p-0">
-                                    <X className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              ))}
+                      {/* Analysis Mode Toggle */}
+                      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                        <CardContent className="pt-6">
+                          <div className="flex items-center gap-4">
+                            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold mb-2">Premium Analyse-Modus</p>
+                              <div className="flex gap-3">
+                                <Button
+                                  variant={analysisMode === "standard" ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setAnalysisMode("standard")}
+                                  className="flex-1"
+                                >
+                                  <TrendingUp className="h-4 w-4 mr-2" />
+                                  Standard
+                                </Button>
+                                <Button
+                                  variant={analysisMode === "deep" ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setAnalysisMode("deep")}
+                                  className="flex-1"
+                                >
+                                  <Lightbulb className="h-4 w-4 mr-2" />
+                                  Tiefe Analyse
+                                </Button>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {analysisMode === "standard" 
+                                  ? "⚡ Schnelle Empfehlungen (5-7 Items) in ~10s" 
+                                  : "🔍 Detaillierte Analyse (8-10 Items) mit ROI, Roadmap & Risiko-Bewertung (~20-30s)"}
+                              </p>
                             </div>
-                          )}
+                          </div>
                         </CardContent>
                       </Card>
                     </>
@@ -894,20 +863,103 @@ const BusinessToolsAdvisor = () => {
                   <Button
                     onClick={handleAnalyze}
                     disabled={analyzing || !canAnalyze || !websiteType || !websiteStatus || !budgetRange || !websiteGoals.trim()}
-                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
-                    size="lg"
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
                     {analyzing ? (
-                      <><span className="inline-block h-4 w-4 sm:h-5 sm:w-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" /><span className="truncate">Analyzing your business needs...</span></>
-                    ) : !canAnalyze ? (
-                      <span className="truncate">Next in {getTimeUntilNextAnalysis()}</span>
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {analysisMode === "deep" ? "Tiefe Analyse läuft..." : "Analysiere..."}
+                      </>
                     ) : (
-                      <>Get AI Tool Recommendations</>
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Analyse starten
+                      </>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
+
+                  {!canAnalyze && nextAnalysisTime && (
+                    <p className="text-sm text-center text-muted-foreground">
+                      Nächste Analyse in: {getTimeUntilNextAnalysis()}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
+
+              {/* Results */}
+              {toolResult && (
+                <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+                  <CardHeader className="flex flex-row items-start justify-between">
+                    <div>
+                      <CardTitle className="text-xl sm:text-2xl">Empfehlungen für Website Tools</CardTitle>
+                      <CardDescription className="mt-2">
+                        {toolResult.recommendations.length} personalisierte Empfehlungen
+                      </CardDescription>
+                    </div>
+                    <Button
+                      onClick={handleExportPDF}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 flex-shrink-0"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">PDF</span>
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-base sm:text-lg">Strategic Overview</h3>
+                      <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{toolResult.generalAdvice}</p>
+                    </div>
+                    <div className="border-t pt-4">
+                      <h3 className="font-semibold mb-3 text-base sm:text-lg">Recommendations</h3>
+                      <div className="space-y-3">{toolResult.recommendations.map((rec, idx) => (
+                          <div key={idx} className="p-4 bg-muted/30 rounded-lg border">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <h4 className="font-semibold text-sm sm:text-base">{rec.name}</h4>
+                              <Badge className={getImplementationColor(rec.implementation)} variant="outline">
+                                {rec.implementation}
+                              </Badge>
+                            </div>
+                            <div className="flex gap-2 mb-2 flex-wrap">
+                              <Badge variant="secondary" className="text-xs">{rec.category}</Badge>
+                              <Badge variant="outline" className="text-xs">{rec.estimatedCost}</Badge>
+                              {rec.riskLevel && (
+                                <Badge variant={rec.riskLevel === 'low' ? 'default' : rec.riskLevel === 'medium' ? 'secondary' : 'destructive'} className="text-xs">
+                                  Risk: {rec.riskLevel}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{rec.rationale}</p>
+                            {rec.expectedROI && (
+                              <div className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                                <p className="text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-2">
+                                  <TrendingUp className="h-4 w-4" />
+                                  Expected ROI: {rec.expectedROI}
+                                </p>
+                              </div>
+                            )}
+                            {rec.detailedSteps && rec.detailedSteps.length > 0 && (
+                              <details className="mt-3">
+                                <summary className="cursor-pointer text-sm font-semibold">Implementation Steps</summary>
+                                <ol className="list-decimal list-inside mt-2 space-y-1 text-xs sm:text-sm text-muted-foreground">
+                                  {rec.detailedSteps.map((step, i) => (
+                                    <li key={i}>{step}</li>
+                                  ))}
+                                </ol>
+                              </details>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Ideas Tab */}
+            <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
 
               {/* Tool Results */}
               {toolResult && (
@@ -1104,41 +1156,40 @@ const BusinessToolsAdvisor = () => {
                         </div>
                       </div>
 
-                      {/* Screenshot Upload for Ideas */}
-                      <Card className="border-yellow-500/20 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/20 dark:to-amber-950/20">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
-                            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-                            Upload Screenshots (Premium)
-                          </CardTitle>
-                          <CardDescription className="text-xs sm:text-sm">
-                            Upload up to 2 screenshots for AI analysis
-                            <span className="block text-xs mt-1 text-yellow-700 dark:text-yellow-500">
-                              Storage: {storageUsed.toFixed(1)}MB / {storageLimit}MB
-                            </span>
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleFileChange}
-                            disabled={screenshots.length >= 2}
-                            className="text-xs sm:text-sm"
-                          />
-                          {screenshots.length > 0 && (
-                            <div className="mt-3 space-y-2">
-                              {screenshots.map((file, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-2 bg-background/80 rounded border border-border">
-                                  <span className="text-xs sm:text-sm truncate flex-1">{file.name}</span>
-                                  <Button variant="ghost" size="sm" onClick={() => removeFile(idx)} className="h-6 w-6 p-0">
-                                    <X className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              ))}
+                      {/* Analysis Mode Toggle for Ideas */}
+                      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                        <CardContent className="pt-6">
+                          <div className="flex items-center gap-4">
+                            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold mb-2">Premium Analyse-Modus</p>
+                              <div className="flex gap-3">
+                                <Button
+                                  variant={analysisMode === "standard" ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setAnalysisMode("standard")}
+                                  className="flex-1"
+                                >
+                                  <TrendingUp className="h-4 w-4 mr-2" />
+                                  Standard
+                                </Button>
+                                <Button
+                                  variant={analysisMode === "deep" ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setAnalysisMode("deep")}
+                                  className="flex-1"
+                                >
+                                  <Lightbulb className="h-4 w-4 mr-2" />
+                                  Tiefe Analyse
+                                </Button>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {analysisMode === "standard" 
+                                  ? "⚡ Schnelle Empfehlungen (5-7 Items) in ~10s" 
+                                  : "🔍 Detaillierte Analyse (8-10 Items) mit ROI, Roadmap & Risiko-Bewertung (~20-30s)"}
+                              </p>
                             </div>
-                          )}
+                          </div>
                         </CardContent>
                       </Card>
                     </>

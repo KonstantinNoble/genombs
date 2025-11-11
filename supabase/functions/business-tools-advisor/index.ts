@@ -9,24 +9,30 @@ const corsHeaders = {
 
 interface ToolRecommendation {
   name: string;
-  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy";
-  implementation: "quick-win" | "medium-term" | "strategic";
+  category: string;
+  implementation: string;
   estimatedCost: string;
   rationale: string;
+  // Deep mode fields
+  detailedSteps?: string[];
+  expectedROI?: string;
+  riskLevel?: string;
+  prerequisites?: string[];
+  metrics?: string[];
+  implementationTimeline?: string;
 }
 
 // Input validation schema
 const inputSchema = z.object({
-  websiteType: z.string().trim().min(1, "Website type is required").max(100, "Website type must be less than 100 characters"),
-  websiteStatus: z.string().trim().min(1, "Website status is required").max(50, "Website status must be less than 50 characters"),
-  budgetRange: z.string().trim().min(1, "Budget range is required").max(50, "Budget range must be less than 50 characters"),
-  websiteGoals: z.string().trim().min(1, "Website goals are required").max(1000, "Website goals must be less than 1000 characters"),
-  // Premium-only fields (optional)
+  websiteType: z.string().trim().min(1).max(100),
+  websiteStatus: z.string().trim().min(1).max(50),
+  budgetRange: z.string().trim().min(1).max(50),
+  websiteGoals: z.string().trim().min(1).max(1000),
+  // Premium-only fields
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  screenshotUrls: z.array(z.string()).optional(),
-  forceImages: z.boolean().optional() // For sandbox testing
+  analysisMode: z.enum(["standard", "deep"]).optional()
 });
 
 serve(async (req) => {
@@ -55,7 +61,7 @@ serve(async (req) => {
     const startTime = Date.now();
     console.log('Business tools request received');
 
-    // Step 1: Check credits BEFORE AI call (read-only)
+    // Check credits
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
       .select('is_premium, tools_count, tools_window_start')
@@ -73,18 +79,16 @@ serve(async (req) => {
     let currentCount = creditsData?.tools_count ?? 0;
     let windowStart = creditsData?.tools_window_start ? new Date(creditsData.tools_window_start) : null;
 
-    // Credit check performed
-
     // Check if window expired
     if (windowStart && (now.getTime() - windowStart.getTime()) > 24 * 60 * 60 * 1000) {
-      console.log('Window expired, resetting (in-memory check)');
+      console.log('Window expired, resetting');
       currentCount = 0;
       windowStart = null;
     }
 
     // Block if limit reached
     if (currentCount >= limit) {
-      console.log(`Limit reached: ${currentCount}/${limit} in current window`);
+      console.log(`Limit reached: ${currentCount}/${limit}`);
       return new Response(
         JSON.stringify({ 
           error: isPremium 
@@ -95,9 +99,9 @@ serve(async (req) => {
       );
     }
 
-    console.log('Limit check passed, proceeding with AI call');
+    console.log('Limit check passed');
 
-    // Step 2: Parse and validate input
+    // Parse and validate input
     const requestBody = await req.json();
     
     let validatedInput;
@@ -117,224 +121,148 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, screenshotUrls, forceImages } = validatedInput;
-
-    console.log('Input validated successfully');
-    console.log('📊 Analysis Context:', {
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, analysisMode } = validatedInput;
+    
+    const isDeepMode = isPremium && analysisMode === "deep";
+    
+    console.log('📊 Analysis mode:', {
       isPremium,
-      screenshotCount: screenshotUrls?.length || 0,
-      hasForceImages: !!forceImages,
-      validationTime: `${Date.now() - startTime}ms`
+      analysisMode: analysisMode || 'standard',
+      isDeepMode
     });
 
-    // Step 3: Call Lovable AI
+    // Call Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = isPremium
-      ? `You are an ADVANCED website tools advisor with access to additional context.
-${screenshotUrls?.length ? 'Analyze the provided screenshots thoroughly to understand the current website state and identify specific improvement areas.' : ''}
+    const systemPrompt = isDeepMode
+      ? `You are an ADVANCED website tools advisor.
 ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
 
-Provide 6-8 DETAILED tool recommendations with deeper strategic insights and implementation roadmaps.
+Provide 8-10 DETAILED tool recommendations with:
+- detailedSteps: Array of concrete implementation steps
+- expectedROI: ROI projection (e.g., "3-6 months to break-even")
+- riskLevel: "low" | "medium" | "high"
+- prerequisites: What must be in place first
+- metrics: How to measure success
+- implementationTimeline: Time estimate
 
-Focus on:
-- Advanced website optimization tools
-- Enterprise-grade solutions
-- Integration opportunities
-- ROI projections
-- Strategic implementation timelines
+In generalAdvice, include:
+- Prioritization matrix (Quick Wins first)
+- Industry-specific insights
+- Competitive positioning
+- 3-6 month roadmap
 
-Use the suggest_tools function to return your recommendations.`
-      : `You are a website tools advisor. Analyze the user's website details and provide personalized tool and strategy recommendations specifically for websites.
-
-Focus EXCLUSIVELY on tools and services relevant for websites:
-- Website builders and CMS (e.g., WordPress, Webflow, Framer)
-- Analytics and tracking tools (e.g., Google Analytics, Plausible)
-- SEO tools (e.g., Ahrefs, SEMrush, Yoast)
-- Performance optimization (e.g., Cloudflare, CDN services)
-- Conversion optimization (e.g., Hotjar, OptinMonster)
-- E-commerce platforms (e.g., Shopify, WooCommerce)
-- Design and UX tools
-- Marketing automation for websites
-
-Use the suggest_tools function to return your recommendations.`;
+Focus on tools for websites (analytics, SEO, performance, conversion, etc.).
+Use the suggest_tools function.`
+      : `You are a website tools advisor. Provide 5-7 concise tool recommendations.
+Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
+Use the suggest_tools function.`;
 
     const userPrompt = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Monthly Budget: ${budgetRange}
 Website Goals: ${websiteGoals}
 
-Please provide personalized website tool recommendations based on this information.`;
+Please provide personalized website tool recommendations.`;
 
-    console.log('Calling Lovable AI for website tools...');
+    console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
-    // Only include screenshots if they exist AND user is premium OR forceImages is set
-    const includeImages = ((isPremium || forceImages) && screenshotUrls && screenshotUrls.length > 0);
+    const toolProperties: any = {
+      name: { type: 'string', description: 'Tool or service name' },
+      category: {
+        type: 'string',
+        enum: ['analytics', 'seo', 'performance', 'design', 'marketing', 'ecommerce', 'cms', 'conversion'],
+      },
+      implementation: {
+        type: 'string',
+        enum: ['quick-win', 'medium-term', 'strategic'],
+      },
+      estimatedCost: { type: 'string', description: 'Cost range like $0-$50/month' },
+      rationale: { type: 'string', description: 'Why this tool fits the website' },
+    };
+
+    if (isDeepMode) {
+      toolProperties.detailedSteps = { type: 'array', items: { type: 'string' } };
+      toolProperties.expectedROI = { type: 'string' };
+      toolProperties.riskLevel = { type: 'string', enum: ['low', 'medium', 'high'] };
+      toolProperties.prerequisites = { type: 'array', items: { type: 'string' } };
+      toolProperties.metrics = { type: 'array', items: { type: 'string' } };
+      toolProperties.implementationTimeline = { type: 'string' };
+    }
+
+    const timeout = isDeepMode ? 30000 : 20000;
     
-    console.log('🖼️ Image Settings:', {
-      includeImages,
-      isPremium,
-      forceImages: !!forceImages,
-      screenshotCount: screenshotUrls?.length || 0
-    });
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-    const buildBody = (useImages: boolean, model: string) => ({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: useImages
-            ? [
-                { type: 'text', text: userPrompt },
-                ...((screenshotUrls || []).map((url) => ({
-                  type: 'image_url',
-                  image_url: { url },
-                })))
-              ]
-            : userPrompt,
-        },
-      ],
-      tools: [
-        {
-          type: 'function',
-          function: {
-            name: 'suggest_tools',
-            description: isPremium
-              ? 'Return 6-8 detailed website tool recommendations'
-              : 'Return 5-7 website tool recommendations',
-            parameters: {
-              type: 'object',
-              properties: {
-                recommendations: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      name: { type: 'string', description: 'Tool or service name' },
-                      category: {
-                        type: 'string',
-                        enum: [
-                          'analytics',
-                          'seo',
-                          'performance',
-                          'design',
-                          'marketing',
-                          'ecommerce',
-                          'cms',
-                          'conversion',
-                        ],
-                      },
-                      implementation: {
-                        type: 'string',
-                        enum: ['quick-win', 'medium-term', 'strategic'],
-                      },
-                      estimatedCost: {
-                        type: 'string',
-                        description: 'Cost range like $0-$50/month',
-                      },
-                      rationale: {
-                        type: 'string',
-                        description: 'Why this tool fits the website',
-                      },
-                    },
-                    required: [
-                      'name',
-                      'category',
-                      'implementation',
-                      'estimatedCost',
-                      'rationale',
-                    ],
-                    additionalProperties: false,
-                  },
-                },
-                generalAdvice: {
-                  type: 'string',
-                  description: 'Strategic advice based on website type and goals',
-                },
-              },
-              required: ['recommendations', 'generalAdvice'],
-              additionalProperties: false,
-            },
-          },
-        },
-      ],
-      tool_choice: { type: 'function', function: { name: 'suggest_tools' } },
-    });
-
-    async function callAI(useImages: boolean, model: string, signal?: AbortSignal): Promise<Response> {
+    let aiResponse: Response;
+    try {
       const aiStartTime = Date.now();
-      console.log(`🤖 Calling AI (model: ${model}, images: ${useImages})...`);
-      
-      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(buildBody(useImages, model)),
-        signal,
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          tools: [
+            {
+              type: 'function',
+              function: {
+                name: 'suggest_tools',
+                description: isDeepMode
+                  ? 'Return 8-10 detailed website tool recommendations'
+                  : 'Return 5-7 website tool recommendations',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    recommendations: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: toolProperties,
+                        required: isDeepMode 
+                          ? ['name', 'category', 'implementation', 'estimatedCost', 'rationale', 'expectedROI', 'riskLevel']
+                          : ['name', 'category', 'implementation', 'estimatedCost', 'rationale'],
+                        additionalProperties: false,
+                      },
+                    },
+                    generalAdvice: { type: 'string' },
+                  },
+                  required: ['recommendations', 'generalAdvice'],
+                  additionalProperties: false,
+                },
+              },
+            },
+          ],
+          tool_choice: { type: 'function', function: { name: 'suggest_tools' } },
+        }),
+        signal: abortController.signal,
       });
       
-      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
-      return response;
-    }
-
-    // Try with primary model first, with timeout
-    const primaryModel = isPremium ? 'google/gemini-2.5-flash' : 'google/gemini-2.5-flash';
-    const fallbackModel = 'google/gemini-2.5-flash-lite';
-    const timeout = 35000; // 35 seconds
-    
-    let aiResponse: Response;
-    let abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), timeout);
-
-    try {
-      aiResponse = await callAI(includeImages, primaryModel, abortController.signal);
       clearTimeout(timeoutId);
-      
-      if (!aiResponse.ok) {
-        const errorText = await aiResponse.text();
-        console.error('AI API error:', aiResponse.status, errorText);
-
-        if (
-          aiResponse.status === 400 &&
-          /Failed to extract .*image/gi.test(errorText) &&
-          includeImages
-        ) {
-          console.log('Image extraction failed. Retrying without images...');
-          abortController = new AbortController();
-          const retryTimeoutId = setTimeout(() => abortController.abort(), timeout);
-          aiResponse = await callAI(false, primaryModel, abortController.signal);
-          clearTimeout(retryTimeoutId);
-        }
-      }
+      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
     } catch (error: any) {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
-        console.log(`⏱️ Timeout after ${timeout}ms, falling back to ${fallbackModel}...`);
-        abortController = new AbortController();
-        const fallbackTimeoutId = setTimeout(() => abortController.abort(), timeout);
-        try {
-          aiResponse = await callAI(false, fallbackModel, abortController.signal);
-          clearTimeout(fallbackTimeoutId);
-        } catch (fallbackError) {
-          clearTimeout(fallbackTimeoutId);
-          throw new Error('AI request timed out even with fallback model');
-        }
-      } else {
-        throw error;
+        throw new Error(`AI request timed out after ${timeout}ms`);
       }
+      throw error;
     }
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI API error after retry (if any):', aiResponse.status, errorText);
+      console.error('AI API error:', aiResponse.status, errorText);
 
       if (aiResponse.status === 429) {
         return new Response(
@@ -354,7 +282,7 @@ Please provide personalized website tool recommendations based on this informati
     const aiData = await aiResponse.json();
     console.log(`✅ AI response received (total time: ${Date.now() - startTime}ms)`);
 
-    // Step 4: Parse tool call result
+    // Parse tool call result
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall || toolCall.function?.name !== 'suggest_tools') {
       console.error('No valid tool call in response');
@@ -364,13 +292,13 @@ Please provide personalized website tool recommendations based on this informati
     const parsedResult = JSON.parse(toolCall.function.arguments);
     
     if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
-      console.error('Invalid structure - no recommendations array');
+      console.error('Invalid structure');
       throw new Error('Invalid response format from AI');
     }
 
     console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
 
-    // Step 5: Insert into history
+    // Insert into history
     const { error: historyError } = await supabase
       .from('business_tools_history')
       .insert({
@@ -379,7 +307,6 @@ Please provide personalized website tool recommendations based on this informati
         team_size: websiteStatus,
         budget_range: budgetRange,
         business_goals: websiteGoals,
-        screenshot_urls: screenshotUrls ?? [],
         result: parsedResult
       });
 
@@ -390,7 +317,7 @@ Please provide personalized website tool recommendations based on this informati
 
     console.log('History saved successfully');
 
-    // Step 6: Update credits AFTER successful insert
+    // Update credits
     const newWindowStart = windowStart ?? now;
     const newCount = currentCount + 1;
 
@@ -408,7 +335,6 @@ Please provide personalized website tool recommendations based on this informati
 
     if (updateError) {
       console.error('Error updating credits:', updateError);
-      // Non-fatal - we already saved the result
     } else {
       console.log('Credits updated successfully');
     }

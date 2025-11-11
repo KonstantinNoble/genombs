@@ -1,10 +1,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { TrendingUp } from "lucide-react";
 import { CombinedRecommendation } from "@/pages/NotionIdea";
 import { format } from "date-fns";
 
 interface RecommendationCardProps {
-  recommendation: CombinedRecommendation;
+  recommendation: CombinedRecommendation & {
+    detailedSteps?: string[];
+    expectedROI?: string;
+    riskLevel?: "low" | "medium" | "high";
+    prerequisites?: string[];
+    metrics?: string[];
+    implementationTimeline?: string;
+  };
 }
 
 const getTimelineBadgeVariant = (timeline?: string): "default" | "secondary" | "outline" => {
@@ -74,6 +83,77 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         <div className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg bg-muted/50">
           <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{rationale}</p>
         </div>
+
+        {/* Deep Analysis Fields */}
+        {recommendation.expectedROI && (
+          <div className="mb-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+            <p className="text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Expected ROI: {recommendation.expectedROI}
+            </p>
+          </div>
+        )}
+
+        {recommendation.riskLevel && (
+          <div className="mb-3">
+            <Badge variant={
+              recommendation.riskLevel === 'low' ? 'default' : 
+              recommendation.riskLevel === 'medium' ? 'secondary' : 'destructive'
+            }>
+              Risk: {recommendation.riskLevel}
+            </Badge>
+            {recommendation.implementationTimeline && (
+              <Badge variant="outline" className="ml-2">
+                Timeline: {recommendation.implementationTimeline}
+              </Badge>
+            )}
+          </div>
+        )}
+
+        {recommendation.detailedSteps && recommendation.detailedSteps.length > 0 && (
+          <Accordion type="single" collapsible className="mb-3">
+            <AccordionItem value="steps">
+              <AccordionTrigger className="text-sm">Implementation Steps</AccordionTrigger>
+              <AccordionContent>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                  {recommendation.detailedSteps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
+
+        {recommendation.prerequisites && recommendation.prerequisites.length > 0 && (
+          <Accordion type="single" collapsible className="mb-3">
+            <AccordionItem value="prerequisites">
+              <AccordionTrigger className="text-sm">Prerequisites</AccordionTrigger>
+              <AccordionContent>
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                  {recommendation.prerequisites.map((prereq, i) => (
+                    <li key={i}>{prereq}</li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
+
+        {recommendation.metrics && recommendation.metrics.length > 0 && (
+          <Accordion type="single" collapsible className="mb-3">
+            <AccordionItem value="metrics">
+              <AccordionTrigger className="text-sm">Success Metrics</AccordionTrigger>
+              <AccordionContent>
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                  {recommendation.metrics.map((metric, i) => (
+                    <li key={i}>{metric}</li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
 
         {/* Source Info */}
         <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs text-muted-foreground">

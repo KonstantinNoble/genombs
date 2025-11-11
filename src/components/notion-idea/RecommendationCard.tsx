@@ -7,6 +7,23 @@ import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// Helper: bring headings and bullets to line starts, collapse extra blanks
+function normalizeMarkdown(md?: string) {
+  if (!md) return "";
+  let s = md.trim();
+
+  // Ensure each heading starts on its own line
+  s = s.replace(/\s*(#{1,6}\s)/g, "\n$1");
+
+  // Ensure each bullet starts on its own line
+  s = s.replace(/\s*(-\s)/g, "\n$1");
+
+  // Collapse 3+ newlines to max 2
+  s = s.replace(/\n{3,}/g, "\n\n");
+
+  return s;
+}
+
 interface RecommendationCardProps {
   recommendation: CombinedRecommendation & {
     detailedSteps?: string[];
@@ -88,26 +105,26 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
               remarkPlugins={[remarkGfm]}
               components={{
                 p: ({ children }) => (
-                  <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground mb-2 last:mb-0">{children}</p>
+                  <p className="text-xs sm:text-sm leading-relaxed text-foreground/90 mb-2 last:mb-0">{children}</p>
                 ),
                 strong: ({ children }) => (
                   <strong className="font-semibold text-foreground">{children}</strong>
                 ),
                 em: ({ children }) => (
-                  <em className="italic text-muted-foreground">{children}</em>
+                  <em className="italic text-foreground/90">{children}</em>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">{children}</ul>
+                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-foreground/90">{children}</ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">{children}</ol>
+                  <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-foreground/90">{children}</ol>
                 ),
                 li: ({ children }) => (
                   <li className="text-xs sm:text-sm">{children}</li>
                 ),
               }}
             >
-              {rationale}
+              {normalizeMarkdown(rationale)}
             </ReactMarkdown>
           </div>
         </div>

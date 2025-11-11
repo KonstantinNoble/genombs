@@ -174,12 +174,17 @@ Provide 8-10 DETAILED tool recommendations with:
 - metrics: How to measure success
 - implementationTimeline: Time estimate
 
-IMPORTANT - Markdown Formatting:
-- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+CRITICAL MARKDOWN FORMATTING RULES:
+- ALL headings (### or ####) MUST start at the beginning of a new line
+- NEVER place ### or #### inline within sentences
+- Put a blank line BEFORE and AFTER every heading
+- Put a blank line between paragraphs
+- Put a blank line before lists
+- For "rationale": Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
 - For "generalAdvice": Create a well-structured Markdown document with:
-  * Use ### for main section headings
-  * Use #### for subsection headings
-  * Use bullet points (-) for lists
+  * Use ### for main section headings (ALWAYS on its own line with blank lines before/after)
+  * Use #### for subsection headings (ALWAYS on its own line with blank lines before/after)
+  * Use bullet points (-) for lists, each on its own line
   * Use **bold** for emphasis on key points
   * Separate sections with blank lines for readability
   * Structure should include: Prioritization Matrix, Industry Insights, Competitive Positioning, Implementation Roadmap
@@ -188,9 +193,14 @@ Focus on tools for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`
       : `You are a website tools advisor. Provide 5-7 concise tool recommendations.
 
-IMPORTANT - Markdown Formatting:
-- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
-- For "generalAdvice": Use Markdown formatting with ### headings, bullet points (-), and **bold** for emphasis. Separate sections with blank lines.
+CRITICAL MARKDOWN FORMATTING RULES:
+- ALL headings (### or ####) MUST start at the beginning of a new line
+- NEVER place ### or #### inline within sentences
+- Put a blank line BEFORE and AFTER every heading
+- Put a blank line between paragraphs
+- Put a blank line before lists
+- For "rationale": Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+- For "generalAdvice": Use Markdown formatting with ### headings (ALWAYS on their own line with blank lines before/after), bullet points (-), and **bold** for emphasis. Separate sections with blank lines.
 
 Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`;

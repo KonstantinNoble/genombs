@@ -8,6 +8,36 @@ import CategorySection from "./CategorySection";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// Helper: bring headings and bullets to line starts, collapse extra blanks
+function normalizeMarkdown(md?: string) {
+  if (!md) return "";
+  let s = md.trim();
+
+  // Ensure each heading starts on its own line
+  s = s.replace(/\s*(#{1,6}\s)/g, "\n$1");
+
+  // Ensure each bullet starts on its own line
+  s = s.replace(/\s*(-\s)/g, "\n$1");
+
+  // Collapse 3+ newlines to max 2
+  s = s.replace(/\n{3,}/g, "\n\n");
+
+  return s;
+}
+
+// Split by top-level ### sections
+function splitMarkdownSections(md: string) {
+  const normalized = normalizeMarkdown(md);
+  const parts = normalized.split(/\n(?=###\s)/g).filter(Boolean);
+
+  return parts.map(part => {
+    const lines = part.split("\n");
+    const titleLine = lines[0].startsWith("### ") ? lines[0].slice(4).trim() : "Section";
+    const content = lines.slice(1).join("\n").trim();
+    return { title: titleLine, content };
+  });
+}
+
 interface RecommendationDisplayProps {
   recommendations: CombinedRecommendation[];
   onBackToSelection: () => void;
@@ -167,66 +197,50 @@ const RecommendationDisplay = ({
         ))}
       </div>
 
-      {/* General Advice Section */}
+      {/* Strategic Overview Section */}
       {generalAdviceItems.length > 0 && (
         <div className="mt-12">
-          <h2 className="text-2xl font-semibold mb-4">General Advice</h2>
-          <div className="space-y-4">
-            {generalAdviceItems.map((item, index) => (
-              <div
-                key={index}
-                className="p-6 rounded-lg border bg-card hover:shadow-md transition-shadow"
-              >
-                <div className="prose prose-sm max-w-none mb-3">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      h1: ({ children }) => (
-                        <h1 className="text-xl font-bold text-foreground mb-4 mt-6">{children}</h1>
-                      ),
-                      h2: ({ children }) => (
-                        <h2 className="text-lg font-bold text-foreground mb-3 mt-5">{children}</h2>
-                      ),
-                      h3: ({ children }) => (
-                        <h3 className="text-base font-semibold text-foreground mb-2 mt-4">{children}</h3>
-                      ),
-                      h4: ({ children }) => (
-                        <h4 className="text-sm font-semibold text-foreground mb-2 mt-3">{children}</h4>
-                      ),
-                      p: ({ children }) => (
-                        <p className="text-sm leading-relaxed mb-3 text-foreground/90">{children}</p>
-                      ),
-                      ul: ({ children }) => (
-                        <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>
-                      ),
-                      ol: ({ children }) => (
-                        <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>
-                      ),
-                      li: ({ children }) => (
-                        <li className="text-sm text-foreground/90">{children}</li>
-                      ),
-                      strong: ({ children }) => (
-                        <strong className="font-semibold text-foreground">{children}</strong>
-                      ),
-                      em: ({ children }) => (
-                        <em className="italic text-foreground/90">{children}</em>
-                      ),
-                    }}
-                  >
-                    {item.advice}
-                  </ReactMarkdown>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-foreground">Strategic Overview</h2>
+          <div className="space-y-6">
+            {generalAdviceItems.map((item, index) => {
+              const sections = splitMarkdownSections(item.advice);
+              return (
+                <div key={index} className="space-y-4">
+                  {sections.map((sec, i) => (
+                    <div key={i} className="p-5 sm:p-6 rounded-lg border bg-card/60 hover:bg-card transition-colors shadow-sm">
+                      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">{sec.title}</h3>
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            h2: ({ children }) => <h2 className="text-base sm:text-lg font-semibold mt-5 mb-3 text-foreground">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm sm:text-base font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-sm font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
+                            p: ({ children }) => <p className="text-sm leading-relaxed mb-3 text-foreground/95">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground/95">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground/95">{children}</ol>,
+                            li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
+                            strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                            em: ({ children }) => <em className="italic text-foreground/95">{children}</em>,
+                          }}
+                        >
+                          {normalizeMarkdown(sec.content)}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+                    <Badge variant="outline" className="text-xs">
+                      {item.source.sourceIndustry}
+                    </Badge>
+                    <span>•</span>
+                    <span>{item.source.sourceTeamSize}</span>
+                    <span>•</span>
+                    <span>{item.source.sourceBudget}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Badge variant="outline" className="text-xs">
-                    {item.source.sourceIndustry}
-                  </Badge>
-                  <span>•</span>
-                  <span>{item.source.sourceTeamSize}</span>
-                  <span>•</span>
-                  <span>{item.source.sourceBudget}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

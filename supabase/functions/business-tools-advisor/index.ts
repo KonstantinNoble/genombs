@@ -174,15 +174,24 @@ Provide 8-10 DETAILED tool recommendations with:
 - metrics: How to measure success
 - implementationTimeline: Time estimate
 
-In generalAdvice, include:
-- Prioritization matrix (Quick Wins first)
-- Industry-specific insights
-- Competitive positioning
-- 3-6 month roadmap
+IMPORTANT - Markdown Formatting:
+- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+- For "generalAdvice": Create a well-structured Markdown document with:
+  * Use ### for main section headings
+  * Use #### for subsection headings
+  * Use bullet points (-) for lists
+  * Use **bold** for emphasis on key points
+  * Separate sections with blank lines for readability
+  * Structure should include: Prioritization Matrix, Industry Insights, Competitive Positioning, Implementation Roadmap
 
 Focus on tools for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`
       : `You are a website tools advisor. Provide 5-7 concise tool recommendations.
+
+IMPORTANT - Markdown Formatting:
+- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+- For "generalAdvice": Use Markdown formatting with ### headings, bullet points (-), and **bold** for emphasis. Separate sections with blank lines.
+
 Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`;
 

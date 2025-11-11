@@ -4,6 +4,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { TrendingUp } from "lucide-react";
 import { CombinedRecommendation } from "@/pages/NotionIdea";
 import { format } from "date-fns";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface RecommendationCardProps {
   recommendation: CombinedRecommendation & {
@@ -81,7 +83,33 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
 
         {/* Rationale */}
         <div className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg bg-muted/50">
-          <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{rationale}</p>
+          <div className="prose prose-sm max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({ children }) => (
+                  <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground mb-2 last:mb-0">{children}</p>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-semibold text-foreground">{children}</strong>
+                ),
+                em: ({ children }) => (
+                  <em className="italic text-muted-foreground">{children}</em>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">{children}</ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">{children}</ol>
+                ),
+                li: ({ children }) => (
+                  <li className="text-xs sm:text-sm">{children}</li>
+                ),
+              }}
+            >
+              {rationale}
+            </ReactMarkdown>
+          </div>
         </div>
 
         {/* Deep Analysis Fields */}

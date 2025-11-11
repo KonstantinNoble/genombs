@@ -174,14 +174,22 @@ Provide 8-10 DETAILED, actionable improvement ideas with:
 - metrics: How to measure success
 - implementationTimeline: Time estimate
 
-In generalAdvice, include:
-- Prioritization matrix (Quick Wins first)
-- Industry-specific insights
-- Competitive analysis
-- 3-6 month roadmap
+IMPORTANT - Markdown Formatting:
+- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+- For "generalAdvice": Create a well-structured Markdown document with:
+  * Use ### for main section headings
+  * Use #### for subsection headings
+  * Use bullet points (-) for lists
+  * Use **bold** for emphasis on key points
+  * Separate sections with blank lines for readability
+  * Structure should include: Prioritization Matrix, Industry Insights, Competitive Analysis, Implementation Roadmap
 
 Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`
       : `You are a business improvement advisor. Use the suggest_ideas function to analyze the EXISTING business and provide 5-7 concise, actionable improvement recommendations.
+
+IMPORTANT - Markdown Formatting:
+- For each recommendation's "rationale" field: Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
+- For "generalAdvice": Use Markdown formatting with ### headings, bullet points (-), and **bold** for emphasis. Separate sections with blank lines.
 
 Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`;
 

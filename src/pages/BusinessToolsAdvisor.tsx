@@ -86,20 +86,19 @@ function normalizeMarkdown(md?: string) {
   if (!md) return "";
   let s = md.trim();
 
-  // Force headings to new lines, even if inline
+  // 1. Stelle sicher, dass Überschriften am Zeilenanfang stehen
   s = s.replace(/([^\n])(#{1,6}\s)/g, "$1\n\n$2");
-  s = s.replace(/(#{1,6}\s[^\n]+)(?=.)/g, "$1\n\n");
   
-  // Convert "- **Label**: text" patterns to proper list items
-  s = s.replace(/([^\n])-\s+\*\*/g, "$1\n- **");
+  // 2. Stelle sicher, dass nach Überschriften eine Leerzeile kommt
+  s = s.replace(/(#{1,6}\s+[^\n]+)(\n?)([^\n#])/g, "$1\n\n$3");
   
-  // Ensure lists start on new line
-  s = s.replace(/([^\n])(\n-\s)/g, "$1\n$2");
+  // 3. Konvertiere inline "- **" zu echten Listenpunkten
+  s = s.replace(/([^\n])(- \*\*)/g, "$1\n$2");
   
-  // Add space after headings
-  s = s.replace(/(#{1,6}\s[^\n]+)\n([^#\n])/g, "$1\n\n$2");
+  // 4. Stelle sicher, dass Listen Leerzeilen davor haben
+  s = s.replace(/([^\n])(\n- )/g, "$1\n$2");
   
-  // Collapse multiple newlines
+  // 5. Kollabiere zu viele Leerzeilen auf maximal 2
   s = s.replace(/\n{3,}/g, "\n\n");
   
   return s.trim();

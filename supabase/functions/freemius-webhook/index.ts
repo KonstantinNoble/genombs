@@ -107,6 +107,21 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check if event was already processed (prevent replay attacks)
+    const { data: existingEvent } = await supabase
+      .from('processed_webhook_events')
+      .select('event_id')
+      .eq('event_id', event.id)
+      .maybeSingle();
+
+    if (existingEvent) {
+      console.log(`Event ${event.id} already processed, returning success (idempotent)`);
+      return new Response(
+        JSON.stringify({ message: 'Event already processed' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Extract user email from event
     const userEmail = event.objects.user?.email?.toLowerCase();
     if (!userEmail) {
@@ -189,6 +204,15 @@ serve(async (req) => {
       }
 
       console.log('Successfully stored pending premium for:', userEmail);
+      
+      // Mark event as processed for pending users too
+      await supabase
+        .from('processed_webhook_events')
+        .insert({
+          event_id: event.id,
+          event_type: event.type,
+        });
+
       return new Response(
         JSON.stringify({ message: 'Premium stored in pending, will activate on first login' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -278,6 +302,19 @@ serve(async (req) => {
     }
 
     console.log('Successfully updated premium status for user:', profile.id);
+
+    // Mark event as processed
+    const { error: processedError } = await supabase
+      .from('processed_webhook_events')
+      .insert({
+        event_id: event.id,
+        event_type: event.type,
+      });
+
+    if (processedError) {
+      console.error('Error marking event as processed:', processedError);
+      // Don't fail the request - the update was successful
+    }
 
     return new Response(
       JSON.stringify({ 

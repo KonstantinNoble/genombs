@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.2</p>
+          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.3</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -842,34 +842,24 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails (Authentication System)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails</h3>
             <p className="text-muted-foreground mb-4">
-              Our authentication system (operated through Lovable Cloud) sends the following essential transactional emails:
+              We send emails that are essential for your use of the service. These include:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Email verification links after registration</li>
+              <li>Account security notifications</li>
+              <li>Payment confirmations and receipts (sent by Freemius)</li>
+              <li>Subscription status updates (sent by Freemius)</li>
             </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Email Service Provider</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Supabase Auth (Supabase Inc., San Francisco, USA)
+              <strong>Note:</strong> Email verification during registration is not required because we use Google OAuth for authentication, which verifies your email address through Google's secure infrastructure.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Data processed:</strong> Email address, verification tokens, timestamps
+              <strong>Legal Basis:</strong> These emails are necessary for contract fulfillment (GDPR Art. 6(1)(b))
+              or legitimate security interests (GDPR Art. 6(1)(f)).
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance - account creation and 
-              authentication services)
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Third-country transfer:</strong> Data transfers to the USA are secured by Standard Contractual 
-              Clauses (SCCs) approved by the European Commission. Supabase maintains GDPR-compliant data processing 
-              practices and provides appropriate safeguards for international data transfers.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Your Rights:</strong> These transactional emails are essential for account security and cannot be 
-              opted out of while maintaining an active account. They are necessary to provide the authentication service 
-              you requested.
+              <strong>Opt-Out:</strong> You cannot opt out of transactional emails as they are essential for the service.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Administrative Service Updates (Resend)</h3>
@@ -1193,7 +1183,7 @@ const PrivacyPolicy = () => {
                     <strong>DPA:</strong> Data Processing Agreement concluded pursuant to Art. 28 GDPR
                   </li>
                   <li>
-                    <strong>Privacy Policy:</strong> Freemius's privacy policy is provided during the checkout process and in your purchase confirmation email
+                    <strong>Privacy Policy:</strong> Available during checkout and in your purchase confirmation email
                   </li>
                 </ul>
               </li>
@@ -1269,7 +1259,7 @@ const PrivacyPolicy = () => {
               restricted server access, and regular security reviews by our hosting provider.
             </p>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.1 Storage Duration for Specific Data Categories</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">14.1 Storage Duration for Specific Data Categories</h3>
             <p className="text-muted-foreground mb-4">
               Different categories of personal data are stored for different periods depending on their purpose and 
               legal requirements:

@@ -579,7 +579,7 @@ const PrivacyPolicy = () => {
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Merchant of Record</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Freemius, Inc.</strong> (Wilmington, Delaware, USA) acts as the Merchant of Record for all 
+              <strong>Freemius, Inc.</strong> (251 Little Falls Drive, Wilmington, Delaware 19808, USA) acts as the Merchant of Record for all 
               premium subscriptions and payment processing. This means Freemius is the seller of record and handles 
               all payment-related matters including:
             </p>
@@ -684,30 +684,8 @@ const PrivacyPolicy = () => {
               Art. 28 GDPR ensuring GDPR-compliant data handling.
             </p>
             <p className="text-muted-foreground mb-4">
-              For more information about Freemius's data protection practices:
+              For more information about Freemius's data protection practices, please refer to the Freemius Privacy Policy and Terms of Service, which are made available to you during the checkout process and in your purchase confirmation email.
             </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <a 
-                  href="https://freemius.com/privacy/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Freemius Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://freemius.com/terms/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Freemius Terms of Service
-                </a>
-              </li>
-            </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Storage Duration</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
@@ -737,17 +715,10 @@ const PrivacyPolicy = () => {
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>How to request a refund:</strong> Refund requests must be submitted directly to Freemius 
-              through their support channels. We do not process refunds ourselves as Freemius is the seller of record.
+              through their customer portal or support channels. We do not process refunds ourselves as Freemius is the seller of record.
             </p>
             <p className="text-muted-foreground mb-4">
-              Contact Freemius Support: <a 
-                href="https://freemius.com/contact/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://freemius.com/contact/
-              </a>
+              Contact information for Freemius is provided in your purchase confirmation email and accessible through your Freemius customer account.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Notion Idea Board</h3>

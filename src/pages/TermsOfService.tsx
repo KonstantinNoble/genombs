@@ -44,16 +44,13 @@ const TermsOfService = () => {
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-2">⚡ Important Notice for Premium Subscriptions</p>
                 <p className="mb-2">
-                  For paid Premium subscriptions, <strong>Freemius, Inc.</strong> (351 King Street East, Suite 600, Toronto, ON M5A 0L6, Canada) acts as the <strong>Merchant of Record (MoR)</strong>.
+                  For paid Premium subscriptions, <strong>Freemius, Inc.</strong> (251 Little Falls Drive, Wilmington, Delaware 19808, USA) acts as the <strong>Merchant of Record (MoR)</strong>.
                 </p>
                 <p className="mb-2">
                   This means: All purchase contracts for Premium features are concluded <strong>directly between you and Freemius</strong> – not with Synoptas/Muhammed Kagan Yilmaz.
                 </p>
                 <p>
-                  For payment transactions, Freemius's terms additionally apply:{" "}
-                  <a href="https://freemius.com/terms/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
-                    https://freemius.com/terms/
-                  </a>
+                  For payment transactions, Freemius's own terms and conditions apply, which you accept during the checkout process.
                 </p>
               </div>
             </section>
@@ -186,7 +183,7 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>All payments are processed by <strong>Freemius</strong> (credit card, PayPal, etc.)</li>
-                <li>Freemius's payment terms apply: <a href="https://freemius.com/terms/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://freemius.com/terms/</a></li>
+                <li>Freemius's payment terms apply (accepted during checkout)</li>
                 <li>Prices are displayed during checkout (including VAT where applicable)</li>
                 <li>Subscriptions renew automatically (monthly or annually depending on your choice)</li>
                 <li>Invoices are sent by Freemius via email</li>
@@ -214,8 +211,8 @@ const TermsOfService = () => {
                 <strong>Canceling Subscription:</strong> You can cancel your Premium subscription anytime through Freemius:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Via your Freemius customer account (link in purchase email)</li>
-                <li>By email to Freemius support: <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://freemius.com/contact/</a></li>
+                <li>Via your Freemius customer account (access link provided in your purchase confirmation email)</li>
+                <li>By contacting Freemius support through their customer portal</li>
               </ul>
               <p className="mb-4">
                 After cancellation, your Premium access ends at the <strong>end of the paid period</strong>. No pro-rated refunds are provided unless legally required (see Right of Withdrawal).
@@ -323,10 +320,7 @@ const TermsOfService = () => {
                 <li>Delays in Premium activation due to Freemius system errors</li>
               </ul>
               <p className="mb-4">
-                All payment-related complaints must be directed to Freemius:{" "}
-                <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  https://freemius.com/contact/
-                </a>
+                All payment-related complaints must be directed to Freemius via their customer portal or support channels (contact information provided in your purchase confirmation email).
               </p>
             </section>
 
@@ -354,8 +348,8 @@ const TermsOfService = () => {
                   You must <strong>separately cancel your subscription through Freemius</strong> to stop future payments:
                 </p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>Via your Freemius customer account (link in purchase email)</li>
-                  <li>By email to Freemius: <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://freemius.com/contact/</a></li>
+                  <li>Via your Freemius customer account (access link provided in your purchase confirmation email)</li>
+                  <li>By contacting Freemius support through their customer portal</li>
                 </ul>
                 <p className="mt-2">
                   <strong>Otherwise, your subscription will continue and you will continue to be charged</strong> – even if you no longer have a Synoptas account!
@@ -406,7 +400,7 @@ const TermsOfService = () => {
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Your Synoptas account remains active (free features still usable)</li>
                 <li>Premium access ends at the <strong>end of the paid period</strong></li>
-                <li>Downgrade to Free Plan (2 Standard + 1 Deep Analysis per 24h)</li>
+                <li>Downgrade to Free Plan (2 Standard Analyses per 24h, Deep Analysis not available)</li>
                 <li>No pro-rated refund for unused Premium period</li>
               </ul>
             </section>
@@ -437,18 +431,18 @@ const TermsOfService = () => {
                 <strong>How to exercise your right of withdrawal:</strong>
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2">
-                <li>Send a clear statement to <strong>Freemius, Inc.</strong> (not to Synoptas)</li>
-                <li>Use the Freemius contact form: <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://freemius.com/contact/</a></li>
-                <li>Or send an email directly to Freemius support</li>
+                <li>Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to Synoptas)</li>
+                <li>Contact Freemius through their customer portal (access link provided in your purchase confirmation email)</li>
+                <li>Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA</li>
                 <li>Include your <strong>order number</strong> and <strong>email address</strong></li>
               </ol>
               
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4 font-mono text-sm">
                 <p className="font-semibold mb-2">Model Withdrawal Form</p>
                 <p className="mb-2">
-                  To: Freemius, Inc., 351 King Street East, Suite 600, Toronto, ON M5A 0L6, Canada
+                  To: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
                   <br />
-                  Contact: <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://freemius.com/contact/</a>
+                  (or via Freemius customer portal)
                 </p>
                 <p className="mb-2">
                   I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for Synoptas.
@@ -521,10 +515,7 @@ const TermsOfService = () => {
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4">
                 <p className="font-semibold mb-3">💳 Payment, Billing, and Refund Issues</p>
                 <p className="mb-2">
-                  Contact <strong>Freemius</strong>:{" "}
-                  <a href="https://freemius.com/contact/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                    https://freemius.com/contact/
-                  </a>
+                  Contact <strong>Freemius</strong> via their customer portal or support channels (contact information provided in your purchase confirmation email)
                 </p>
                 <p className="text-sm text-muted-foreground">
                   (Examples: Incorrect billing, missing refund, credit card problems, invoice corrections)
@@ -613,7 +604,7 @@ const TermsOfService = () => {
               <p className="text-sm text-muted-foreground">
                 Last updated: November 12, 2025
                 <br />
-                Version 2.0 (Premium Update)
+                Version 2.1 (Links & Address Update)
               </p>
             </div>
           </div>

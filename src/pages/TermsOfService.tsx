@@ -44,13 +44,16 @@ const TermsOfService = () => {
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-2">⚡ Important Notice for Premium Subscriptions</p>
                 <p className="mb-2">
-                  For paid Premium subscriptions, <strong>Freemius, Inc.</strong> (251 Little Falls Drive, Wilmington, Delaware 19808, USA) acts as the <strong>Merchant of Record (MoR)</strong>.
+                  For paid Premium subscriptions, <strong>Freemius, Inc.</strong> (251 Little Falls Drive, Wilmington,
+                  Delaware 19808, USA) acts as the <strong>Merchant of Record (MoR)</strong>.
                 </p>
                 <p className="mb-2">
-                  This means: All purchase contracts for Premium features are concluded <strong>directly between you and Freemius</strong> – not with Synoptas/Muhammed Kagan Yilmaz.
+                  This means: All purchase contracts for Premium features are concluded{" "}
+                  <strong>directly between you and Freemius</strong> – not with Synoptas/Muhammed Kagan Yilmaz.
                 </p>
                 <p>
-                  For payment transactions, Freemius's own terms and conditions apply, which you accept during the checkout process.
+                  For payment transactions, Freemius's own terms and conditions apply, which you accept during the
+                  checkout process.
                 </p>
               </div>
             </section>
@@ -75,7 +78,9 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mt-6 mb-3">2.1 Linking Premium Purchases</h3>
               <p className="mb-4">
-                If you purchase a Premium subscription <strong>before</strong> creating an account, you must register with the <strong>same email address</strong> used during the Freemius checkout. This is required for proper Premium status assignment.
+                If you purchase a Premium subscription <strong>before</strong> creating an account, you must register
+                with the <strong>same email address</strong> used during the Freemius checkout. This is required for
+                proper Premium status assignment.
               </p>
               <p className="mb-4">
                 For issues with Premium linking, contact{" "}
@@ -112,12 +117,14 @@ const TermsOfService = () => {
                 <strong>Usage Limits:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li><strong>Free Plan:</strong> 2 Standard Analyses per 24 hours (Deep Analysis not available)</li>
-                <li><strong>Premium Plan:</strong> 6 Standard Analyses + 2 Deep Analyses per 24 hours</li>
+                <li>
+                  <strong>Free Plan:</strong> 2 Standard Analyses per 24 hours (Deep Analysis not available)
+                </li>
+                <li>
+                  <strong>Premium Plan:</strong> 6 Standard Analyses + 2 Deep Analyses per 24 hours
+                </li>
               </ul>
-              <p className="mb-4">
-                Limits are subject to change – current values are displayed within the app. You will be notified of limit changes.
-              </p>
+              <p className="mb-4">Limits are subject to change – current values are displayed within the app.</p>
 
               <p className="mb-4">
                 <strong>Service Availability:</strong> We strive for reliable service but do not guarantee uninterrupted
@@ -127,103 +134,119 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mt-6 mb-3">III.A Premium Services</h3>
 
-              <p className="mb-4">
-                Premium users receive enhanced features:
-              </p>
+              <p className="mb-4">Premium users receive enhanced features:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor, Business Ideas Advisor</li>
+                <li>
+                  6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor, Business Ideas Advisor
+                </li>
                 <li>2 Deep Analyses per 24 hours (advanced AI-powered evaluations, not available in Free Plan)</li>
-                <li>Future Premium-exclusive features (announced upon introduction)</li>
+                <li>Future Premium-exclusive features </li>
               </ul>
 
               <p className="mb-4">
-                <strong>Feature Changes:</strong> We reserve the right to adjust, expand, or limit Premium features. Significant changes will be announced <strong>30 days in advance</strong> via email.
+                <strong>Feature Changes:</strong> We reserve the right to adjust, expand, or limit Premium features.
+                Significant changes will be announced <strong>30 days in advance</strong> via email.
               </p>
 
               <p className="mb-4">
-                <strong>Availability:</strong> Premium features are subject to the same availability clauses as free services (see above). We do not guarantee 100% uptime but strive for maximum reliability.
+                <strong>Availability:</strong> Premium features are subject to the same availability clauses as free
+                services (see above). We do not guarantee 100% uptime but strive for maximum reliability.
               </p>
             </section>
 
             {/* Section IV - Pricing */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">IV. Pricing and Payment Terms</h2>
-              
+
               <h3 className="text-xl font-semibold mb-3">4.1 Free Services</h3>
-              <p className="mb-4">
-                Basic features are available at no cost:
-              </p>
+              <p className="mb-4">Basic features are available at no cost:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Website browsing and public content</li>
                 <li>2 Standard Analyses per 24 hours</li>
                 <li>Deep Analysis feature requires Premium subscription</li>
               </ul>
-              
+
               <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Premium Subscriptions</h3>
-              
+
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-2">🔐 Important: Payment Processing by Freemius</p>
                 <p>
-                  Premium subscriptions are sold and processed by <strong>Freemius, Inc.</strong> as Merchant of Record (MoR). The purchase contract for Premium features is concluded between <strong>you and Freemius</strong> – NOT with Synoptas/Muhammed Kagan Yilmaz.
+                  Premium subscriptions are sold and processed by <strong>Freemius, Inc.</strong> as Merchant of Record
+                  (MoR). The purchase contract for Premium features is concluded between{" "}
+                  <strong>you and Freemius</strong> – NOT with Synoptas/Muhammed Kagan Yilmaz.
                 </p>
               </div>
-              
+
               <p className="mb-4">
                 <strong>Premium Features:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan)</li>
                 <li>2 Deep Analyses per 24 hours (not available in Free Plan)</li>
-                <li>Advanced AI-powered evaluations with detailed implementation steps, ROI projections, and risk assessments</li>
+                <li>
+                  Advanced AI-powered evaluations with detailed implementation steps, ROI projections, and risk
+                  assessments
+                </li>
                 <li>Future Premium-exclusive features</li>
               </ul>
-              
+
               <p className="mb-4">
                 <strong>Payment Processing:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>All payments are processed by <strong>Freemius</strong> (credit card, PayPal, etc.)</li>
+                <li>
+                  All payments are processed by <strong>Freemius</strong> (credit card, PayPal, etc.)
+                </li>
                 <li>Freemius's payment terms apply (accepted during checkout)</li>
                 <li>Prices are displayed during checkout (including VAT where applicable)</li>
-                <li>Subscriptions renew automatically (monthly or annually depending on your choice)</li>
+                <li>Subscriptions renew automatically </li>
                 <li>Invoices are sent by Freemius via email</li>
               </ul>
-              
+
               <p className="mb-4">
-                <strong>Price Changes:</strong> Freemius may adjust prices for future billing periods. You will be notified at least <strong>30 days in advance</strong> via email and may cancel before the price increase takes effect.
+                <strong>Price Changes:</strong> Freemius may adjust prices for future billing periods. You will be
+                notified at least <strong>30 days in advance</strong> via email and may cancel before the price increase
+                takes effect.
               </p>
-              
+
               <p className="mb-4">
-                <strong>Taxes:</strong> All prices are exclusive of applicable VAT/sales tax. Freemius automatically calculates the correct tax based on your location.
+                <strong>Taxes:</strong> All prices are exclusive of applicable VAT/sales tax. Freemius automatically
+                calculates the correct tax based on your location.
               </p>
-              
+
               <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Subscription Management and Billing</h3>
-              
+
               <p className="mb-4">
-                <strong>Activation:</strong> Premium features are activated within minutes after successful payment. For issues, contact mail@wealthconomy.com.
+                <strong>Activation:</strong> Premium features are activated within minutes after successful payment. For
+                issues, contact mail@wealthconomy.com.
               </p>
-              
+
               <p className="mb-4">
-                <strong>Recurring Billing:</strong> Your subscription automatically renews at the end of each billing period (monthly/annually) until you cancel. Freemius automatically charges your payment method on file.
+                <strong>Recurring Billing:</strong> Your subscription automatically renews at the end of each billing
+                period (monthly/annually) until you cancel. Freemius automatically charges your payment method on file.
               </p>
-              
+
               <p className="mb-4">
-                <strong>Canceling Subscription:</strong> You can cancel your Premium subscription anytime through Freemius:
+                <strong>Canceling Subscription:</strong> You can cancel your Premium subscription anytime through
+                Freemius:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Via your Freemius customer account (access link provided in your purchase confirmation email)</li>
                 <li>By contacting Freemius support through their customer portal</li>
               </ul>
               <p className="mb-4">
-                After cancellation, your Premium access ends at the <strong>end of the paid period</strong>. No pro-rated refunds are provided unless legally required (see Right of Withdrawal).
+                After cancellation, your Premium access ends at the <strong>end of the paid period</strong>. No
+                pro-rated refunds are provided unless legally required (see Right of Withdrawal).
               </p>
-              
+
               <p className="mb-4">
-                <strong>Failed Payments:</strong> If payment fails (e.g., expired credit card), Freemius will contact you via email. If payment is not corrected within 7 days, your Premium access will be deactivated (downgraded to Free Plan).
+                <strong>Failed Payments:</strong> If payment fails (e.g., expired credit card), Freemius will contact
+                you via email.
               </p>
-              
+
               <p className="mb-4">
-                <strong>Refunds:</strong> All refund requests (outside the Right of Withdrawal) must be directed to Freemius. Freemius decides on discretionary refunds according to their own policies.
+                <strong>Refunds:</strong> All refund requests (outside the Right of Withdrawal) must be directed to
+                Freemius. Freemius decides on discretionary refunds according to their own policies.
               </p>
             </section>
 
@@ -307,7 +330,8 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Liability for Third-Party Payment Processing</h3>
               <p className="mb-4">
-                For all aspects of payment processing, invoicing, refunds, and data privacy regarding Premium subscriptions, <strong>Freemius, Inc.</strong> is responsible as Merchant of Record.
+                For all aspects of payment processing, invoicing, refunds, and data privacy regarding Premium
+                subscriptions, <strong>Freemius, Inc.</strong> is responsible as Merchant of Record.
               </p>
               <p className="mb-4">
                 <strong>We (Synoptas/Muhammed Kagan Yilmaz) are NOT liable for:</strong>
@@ -320,7 +344,8 @@ const TermsOfService = () => {
                 <li>Delays in Premium activation due to Freemius system errors</li>
               </ul>
               <p className="mb-4">
-                All payment-related complaints must be directed to Freemius via their customer portal or support channels (contact information provided in your purchase confirmation email).
+                All payment-related complaints must be directed to Freemius via their customer portal or support
+                channels (contact information provided in your purchase confirmation email).
               </p>
             </section>
 
@@ -329,11 +354,17 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">VII. Termination</h2>
 
               <p className="mb-4">
-                Your contract to use the <strong>free platform</strong> continues indefinitely with no minimum commitment. You may terminate your <strong>Synoptas account</strong> anytime:
+                Your contract to use the <strong>free platform</strong> continues indefinitely with no minimum
+                commitment. You may terminate your <strong>Synoptas account</strong> anytime:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Via your Profile page ("Delete Account" button)</li>
-                <li>By email to <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">mail@wealthconomy.com</a></li>
+                <li>
+                  By email to{" "}
+                  <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                    mail@wealthconomy.com
+                  </a>
+                </li>
               </ul>
               <p className="mb-4">
                 Termination is <strong>immediate</strong> – your account and all data are permanently deleted.
@@ -342,17 +373,20 @@ const TermsOfService = () => {
               <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">⚠️ IMPORTANT for Premium Subscribers</p>
                 <p className="mb-2">
-                  Deleting your <strong>Synoptas account</strong> does <strong>NOT automatically cancel</strong> your <strong>Premium subscription with Freemius</strong>!
+                  Deleting your <strong>Synoptas account</strong> does <strong>NOT automatically cancel</strong> your{" "}
+                  <strong>Premium subscription with Freemius</strong>!
                 </p>
                 <p className="mb-2">
-                  You must <strong>separately cancel your subscription through Freemius</strong> to stop future payments:
+                  You must <strong>separately cancel your subscription through Freemius</strong> to stop future
+                  payments:
                 </p>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>Via your Freemius customer account (access link provided in your purchase confirmation email)</li>
                   <li>By contacting Freemius support through their customer portal</li>
                 </ul>
                 <p className="mt-2">
-                  <strong>Otherwise, your subscription will continue and you will continue to be charged</strong> – even if you no longer have a Synoptas account!
+                  <strong>Otherwise, your subscription will continue and you will continue to be charged</strong> – even
+                  if you no longer have a Synoptas account!
                 </p>
               </div>
 
@@ -388,7 +422,9 @@ const TermsOfService = () => {
                 <strong>When deleting your Synoptas account:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>You <strong>immediately</strong> lose access to all account features (free + Premium)</li>
+                <li>
+                  You <strong>immediately</strong> lose access to all account features (free + Premium)
+                </li>
                 <li>Your Freemius subscription continues and continues to be charged</li>
                 <li>You must separately cancel the subscription with Freemius</li>
                 <li>Refunds for already paid fees are excluded (except statutory right of withdrawal)</li>
@@ -399,7 +435,9 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Your Synoptas account remains active (free features still usable)</li>
-                <li>Premium access ends at the <strong>end of the paid period</strong></li>
+                <li>
+                  Premium access ends at the <strong>end of the paid period</strong>
+                </li>
                 <li>Downgrade to Free Plan (2 Standard Analyses per 24h, Deep Analysis not available)</li>
                 <li>No pro-rated refund for unused Premium period</li>
               </ul>
@@ -408,35 +446,50 @@ const TermsOfService = () => {
             {/* Section VIII - Right of Withdrawal */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">VIII. Right of Withdrawal</h2>
-              
+
               <h3 className="text-xl font-semibold mb-3">8.1 Right of Withdrawal for Free Services</h3>
               <p className="mb-4">
-                Since basic platform usage is free of charge, there is no statutory right of withdrawal in the sense of distance selling law. However, you may cancel your account anytime according to Section VII.
+                Since basic platform usage is free of charge, there is no statutory right of withdrawal in the sense of
+                distance selling law. However, you may cancel your account anytime according to Section VII.
               </p>
-              
-              <h3 className="text-xl font-semibold mb-3 mt-6">8.2 Right of Withdrawal for Premium Subscriptions (EU/EEA Consumers)</h3>
-              
+
+              <h3 className="text-xl font-semibold mb-3 mt-6">
+                8.2 Right of Withdrawal for Premium Subscriptions (EU/EEA Consumers)
+              </h3>
+
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">🔐 Important: Right of Withdrawal Lies with Freemius</p>
                 <p>
-                  The statutory right of withdrawal for Premium purchases lies with <strong>Freemius, Inc.</strong> as Merchant of Record – <strong>NOT with Synoptas/Muhammed Kagan Yilmaz</strong>.
+                  The statutory right of withdrawal for Premium purchases lies with <strong>Freemius, Inc.</strong> as
+                  Merchant of Record – <strong>NOT with Synoptas/Muhammed Kagan Yilmaz</strong>.
                 </p>
               </div>
-              
+
               <p className="mb-4">
-                As an EU/EEA consumer, you have a <strong>14-day right of withdrawal</strong> from the purchase date for Premium subscriptions.
+                As an EU/EEA consumer, you have a <strong>14-day right of withdrawal</strong> from the purchase date for
+                Premium subscriptions.
               </p>
-              
+
               <p className="mb-4">
                 <strong>How to exercise your right of withdrawal:</strong>
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2">
-                <li>Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to Synoptas)</li>
-                <li>Contact Freemius through their customer portal (access link provided in your purchase confirmation email)</li>
-                <li>Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA</li>
-                <li>Include your <strong>order number</strong> and <strong>email address</strong></li>
+                <li>
+                  Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to Synoptas)
+                </li>
+                <li>
+                  Contact Freemius through their customer portal (access link provided in your purchase confirmation
+                  email)
+                </li>
+                <li>
+                  Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware
+                  19808, USA
+                </li>
+                <li>
+                  Include your <strong>order number</strong> and <strong>email address</strong>
+                </li>
               </ol>
-              
+
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4 font-mono text-sm">
                 <p className="font-semibold mb-2">Model Withdrawal Form</p>
                 <p className="mb-2">
@@ -458,26 +511,27 @@ const TermsOfService = () => {
                 </p>
                 <p className="text-xs italic">(*) Delete as appropriate</p>
               </div>
-              
+
               <p className="mb-4">
                 <strong>Effects of withdrawal:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Freemius refunds all received payments within <strong>14 days</strong></li>
+                <li>
+                  Freemius refunds all received payments within <strong>14 days</strong>
+                </li>
                 <li>Your Premium access is terminated (downgraded to Free Plan)</li>
                 <li>Your Synoptas account remains active (free features still usable)</li>
               </ul>
-              
+
               <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">⚠️ Loss of Right of Withdrawal</p>
                 <p className="mb-2">
-                  For digital content (Premium features), the right of withdrawal expires once you begin using the service <strong>AND</strong> expressly agree that you lose your right of withdrawal.
+                  For digital content (Premium features), the right of withdrawal expires once you begin using the
+                  service <strong>AND</strong> expressly agree that you lose your right of withdrawal.
                 </p>
-                <p>
-                  This is clearly communicated in the Freemius checkout process ("I agree that the service begins immediately and I lose my right of withdrawal").
-                </p>
+                <p></p>
               </div>
-              
+
               <p className="mb-4">
                 <strong>Does not apply to:</strong> Business customers (B2B)
               </p>
@@ -515,7 +569,8 @@ const TermsOfService = () => {
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4">
                 <p className="font-semibold mb-3">💳 Payment, Billing, and Refund Issues</p>
                 <p className="mb-2">
-                  Contact <strong>Freemius</strong> via their customer portal or support channels (contact information provided in your purchase confirmation email)
+                  Contact <strong>Freemius</strong> via their customer portal or support channels (contact information
+                  provided in your purchase confirmation email)
                 </p>
                 <p className="text-sm text-muted-foreground">
                   (Examples: Incorrect billing, missing refund, credit card problems, invoice corrections)

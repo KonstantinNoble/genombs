@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025</p>
+          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.2</p>
 
           <div className="space-y-8">
             <section>
@@ -62,14 +62,14 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4">II. Registration</h2>
 
-              <p className="mb-4">To create an account, provide a valid email and password, then verify your email.</p>
+              <p className="mb-4">To create an account, sign in with your Google account. Google OAuth handles authentication securely through Google's infrastructure.</p>
 
               <p className="mb-4">You agree to:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Provide accurate information</li>
-                <li>Keep your credentials confidential</li>
-                <li>Accept responsibility for account activities</li>
-                <li>Notify us of unauthorized access immediately</li>
+                <li>Provide accurate information through your Google account</li>
+                <li>Maintain the security of your Google account</li>
+                <li>Accept responsibility for all activities under your account</li>
+                <li>Notify us immediately of any unauthorized access or security concerns</li>
               </ul>
 
               <p className="mb-4">
@@ -312,7 +312,7 @@ const TermsOfService = () => {
                 <li>Business decisions or investments based on AI recommendations</li>
                 <li>Lost profits, revenue, or business opportunities</li>
                 <li>Data loss if backups were not maintained before account deletion</li>
-                <li>Third-party services, affiliate links, force majeure events</li>
+                <li>Third-party services, external links, force majeure events</li>
                 <li>Unauthorized account access due to poor credential security</li>
                 <li>Punitive or non-compensatory damages</li>
               </ul>

@@ -14,6 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.2</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -1059,37 +1060,8 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-<section className="mb-8">
-  <h2 className="text-2xl font-semibold mb-4">10. Affiliate Marketing (Impact.com / Shopify)</h2>
-  <p className="text-muted-foreground mb-4">
-    We participate in the affiliate program operated by Impact Tech, Inc. ("Impact.com"). Through this
-    program, we include affiliate links to products or services offered by **Shopify**.
-  </p>
-  <p className="text-muted-foreground mb-4">
-    When you click such a link, you are redirected to the partner website. Impact.com and/or **Shopify** may use cookies or similar technologies to track sales or sign-ups for commission purposes.
-  </p>
-  <p className="text-muted-foreground mb-4">
-    We do not collect, store, or process any affiliate tracking data ourselves. Processing occurs exclusively
-    on the partner's website.
-  </p>
-  <p className="text-muted-foreground mb-4">
-    **Legal basis:** Art. 6(1)(a) GDPR – based on your consent given on the partner site.
-  </p>
-  <p className="text-muted-foreground mb-4">
-    For details on data processing by Impact.com, please refer to:{" "}
-    <a
-      href="https://impact.com/privacy-policy/"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary hover:underline"
-    >
-      https://impact.com/privacy-policy/
-    </a>
-  </p>
-</section>
-
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Categories of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Contact data (email address, if you contact us)</li>
               <li>User account data (email, user ID, timestamps)</li>
@@ -1164,7 +1136,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
@@ -1221,14 +1193,7 @@ const PrivacyPolicy = () => {
                     <strong>DPA:</strong> Data Processing Agreement concluded pursuant to Art. 28 GDPR
                   </li>
                   <li>
-                    Privacy Policy: <a 
-                      href="https://freemius.com/privacy/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      https://freemius.com/privacy/
-                    </a>
+                    <strong>Privacy Policy:</strong> Freemius's privacy policy is provided during the checkout process and in your purchase confirmation email
                   </li>
                 </ul>
               </li>
@@ -1261,7 +1226,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Obligation to Provide Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Data</h2>
             <p className="text-muted-foreground mb-4">
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
@@ -1273,7 +1238,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Automated Decision-Making / Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
               <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
               (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
@@ -1298,7 +1263,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Data Security</h2>
             <p className="text-muted-foreground mb-4">
               We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
               restricted server access, and regular security reviews by our hosting provider.
@@ -1363,7 +1328,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Your Rights</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Your Rights</h2>
             <p className="text-muted-foreground mb-4">You have the following rights under the GDPR:</p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -1435,7 +1400,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">17. Browser-Based Data Storage (localStorage)</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Browser-Based Data Storage (localStorage)</h2>
             <p className="text-muted-foreground mb-4">
               We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
               recommendations locally on your device. This technology allows the application to remember your workspace 
@@ -1505,7 +1470,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">18. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.

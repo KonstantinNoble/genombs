@@ -115,8 +115,8 @@ const TermsOfService = () => {
                 <strong>Usage Limits:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li><strong>Free Plan:</strong> 2 Standard Analyses + 1 Deep Analysis per 24 hours</li>
-                <li><strong>Premium Plan:</strong> Unlimited Standard Analyses + 10 Deep Analyses per 24 hours</li>
+                <li><strong>Free Plan:</strong> 2 Standard Analyses per 24 hours (Deep Analysis not available)</li>
+                <li><strong>Premium Plan:</strong> 6 Standard Analyses + 2 Deep Analyses per 24 hours</li>
               </ul>
               <p className="mb-4">
                 Limits are subject to change – current values are displayed within the app. You will be notified of limit changes.
@@ -134,8 +134,8 @@ const TermsOfService = () => {
                 Premium users receive enhanced features:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Unlimited Standard Analyses (Business Tools Advisor, Business Ideas Advisor)</li>
-                <li>10 Deep Analyses per 24 hours (advanced AI-powered evaluations)</li>
+                <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor, Business Ideas Advisor</li>
+                <li>2 Deep Analyses per 24 hours (advanced AI-powered evaluations, not available in Free Plan)</li>
                 <li>Future Premium-exclusive features (announced upon introduction)</li>
               </ul>
 
@@ -159,7 +159,7 @@ const TermsOfService = () => {
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Website browsing and public content</li>
                 <li>2 Standard Analyses per 24 hours</li>
-                <li>1 Deep Analysis per 24 hours</li>
+                <li>Deep Analysis feature requires Premium subscription</li>
               </ul>
               
               <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Premium Subscriptions</h3>
@@ -175,9 +175,9 @@ const TermsOfService = () => {
                 <strong>Premium Features:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Unlimited Standard Analyses</li>
-                <li>10 Deep Analyses per 24 hours (vs. 1 in Free Plan)</li>
-                <li>Advanced AI-powered evaluations</li>
+                <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan)</li>
+                <li>2 Deep Analyses per 24 hours (not available in Free Plan)</li>
+                <li>Advanced AI-powered evaluations with detailed implementation steps, ROI projections, and risk assessments</li>
                 <li>Future Premium-exclusive features</li>
               </ul>
               

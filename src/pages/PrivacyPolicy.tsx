@@ -524,25 +524,41 @@ const PrivacyPolicy = () => {
               interest in providing innovative AI-powered features).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Combined Credit System</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Enhanced Credit System for Premium Users</h3>
             <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor share 
-              a unified quota system. You can perform a combined total of 2 analyses per 24-hour period across both 
-              features.
+              To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor use 
+              a quota system. The available limits depend on your account type:
             </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Standard Users (Free)</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>2 standard analyses per 24-hour period (combined across both tools)</li>
+              <li>Standard analysis depth</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Premium Users</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Enhanced limits or expanded analysis capabilities (depending on your subscription plan)</li>
+              <li>Access to advanced analysis features</li>
+              <li>Premium status is managed via the <code className="text-sm">is_premium</code> flag in our database</li>
+            </ul>
+            
             <p className="text-muted-foreground mb-4">
               <strong>Credit tracking data processed:</strong>
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Total analysis count (combined counter for both tools and ideas advisors)</li>
+              <li>Standard analysis count (number of standard-depth analyses)</li>
+              <li>Deep analysis count (number of premium-depth analyses, for premium users)</li>
               <li>Analysis window start timestamp (when the current 24-hour period began)</li>
               <li>Last analysis timestamp (most recent analysis request)</li>
+              <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
+              <li>Freemius Customer ID (optional external reference for premium subscriptions)</li>
               <li>User ID (to associate credit tracking with your account)</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              The system automatically tracks your analysis count and enforces the 2-per-24-hour limit. Attempting to 
-              perform additional analyses within the 24-hour window will result in an error message indicating when 
-              the next analysis will be available.
+              The system automatically tracks your analysis count and enforces limits based on your account type. 
+              Attempting to exceed your limits will result in an error message indicating when the next analysis 
+              will be available.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Realtime synchronization:</strong> The application uses realtime database subscriptions to 
@@ -553,6 +569,185 @@ const PrivacyPolicy = () => {
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance and fair use 
               enforcement) and Art. 6(1)(f) GDPR (legitimate interest in preventing abuse and ensuring equitable 
               service access for all users).
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Premium Subscriptions and Payment Processing</h3>
+            <p className="text-muted-foreground mb-4">
+              We offer premium subscription plans that provide enhanced features and extended usage limits. Payment 
+              processing and subscription management are handled exclusively by our payment partner.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Merchant of Record</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Freemius, Inc.</strong> (Wilmington, Delaware, USA) acts as the Merchant of Record for all 
+              premium subscriptions and payment processing. This means Freemius is the seller of record and handles 
+              all payment-related matters including:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Payment processing and transaction handling</li>
+              <li>VAT/tax compliance (including EU VAT)</li>
+              <li>Invoice generation and delivery</li>
+              <li>Refund processing and management</li>
+              <li>Payment data security and PCI compliance</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed by Freemius</h4>
+            <p className="text-muted-foreground mb-4">
+              When you purchase a premium subscription, Freemius processes the following data:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Email address (to identify your account and send purchase confirmations)</li>
+              <li>Name (if provided during checkout)</li>
+              <li>Payment information (credit card details, PayPal account - processed securely by Freemius)</li>
+              <li>Billing address (for tax compliance purposes)</li>
+              <li>Subscription ID and Customer ID (assigned by Freemius)</li>
+              <li>Transaction data (purchase date, amount, subscription status, renewal dates)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important:</strong> We do NOT store or have access to your payment card details. Payment 
+              information is processed and secured entirely by Freemius using industry-standard PCI DSS compliance.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Webhook Data Processing and Security</h4>
+            <p className="text-muted-foreground mb-4">
+              To activate and manage your premium status, our system receives encrypted webhook notifications from 
+              Freemius about subscription events (e.g., new purchase, renewal, cancellation, refund). These webhooks 
+              contain:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Event ID (unique identifier for each webhook event)</li>
+              <li>Event type (e.g., "purchase.completed", "subscription.activated", "subscription.cancelled")</li>
+              <li>Subscription and Customer IDs (to link the payment to your account)</li>
+              <li>Email address (to identify which user account to update)</li>
+              <li>HMAC-SHA256 signature (cryptographic verification to prevent tampering)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Security measures:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Signature verification:</strong> Every webhook is cryptographically verified using HMAC-SHA256 
+                to ensure it genuinely comes from Freemius and has not been tampered with
+              </li>
+              <li>
+                <strong>Event deduplication:</strong> Webhook Event IDs are stored for 30 days to prevent replay 
+                attacks and ensure each event is processed only once
+              </li>
+              <li>
+                <strong>Encrypted transmission:</strong> All webhook data is transmitted over secure HTTPS connections
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Based on these webhook events, your premium status in our database is automatically activated, renewed, 
+              or deactivated as appropriate.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored in Our Database</h4>
+            <p className="text-muted-foreground mb-4">
+              After receiving a verified webhook from Freemius, we store the following data in our database:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
+              <li>Freemius Customer ID (external reference linking to your Freemius account)</li>
+              <li>Webhook Event IDs (stored for 30 days for deduplication, then automatically deleted)</li>
+              <li>Event processing timestamps</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Pending Premium Records:</strong> If you purchase a premium subscription before creating an 
+              account on our platform, your premium status is stored in a pending table 
+              (<code className="text-sm">pending_premium</code>) until you register with the same email address 
+              used during checkout. Once you log in for the first time, the premium status is automatically activated.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR</strong> – Processing is necessary for the performance of the contract 
+                (providing premium subscription services you purchased)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR</strong> – Legitimate interest in secure payment processing, fraud prevention, 
+                and accurate subscription management
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Country Data Transfer</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Service provider:</strong> Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis for data transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Data transfers to Freemius in the United States are safeguarded by Standard Contractual Clauses approved 
+              by the European Commission. Freemius has also concluded a Data Processing Agreement (DPA) pursuant to 
+              Art. 28 GDPR ensuring GDPR-compliant data handling.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              For more information about Freemius's data protection practices:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <a 
+                  href="https://freemius.com/privacy/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Freemius Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://freemius.com/terms/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Freemius Terms of Service
+                </a>
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Storage Duration</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Premium status data:</strong> Stored as long as your subscription is active. After 
+                cancellation or expiration, the premium flag is deactivated but the Freemius Customer ID may be 
+                retained for legal and accounting purposes (e.g., tax compliance, dispute resolution)
+              </li>
+              <li>
+                <strong>Webhook Event IDs:</strong> Automatically deleted after 30 days (security measure for 
+                deduplication)
+              </li>
+              <li>
+                <strong>Pending Premium Records:</strong> Stored until account activation or manual cleanup
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Refunds and Withdrawal Rights</h4>
+            <p className="text-muted-foreground mb-4">
+              As Freemius acts as the Merchant of Record, they are responsible for processing refunds and handling 
+              withdrawal requests in accordance with EU consumer protection laws.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>EU Withdrawal Right:</strong> Under EU law, you have a standard 14-day withdrawal right for 
+              online purchases. The specific refund policy (e.g., 7 days, 14 days, 30 days) depends on the 
+              subscription plan and is displayed during checkout.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>How to request a refund:</strong> Refund requests must be submitted directly to Freemius 
+              through their support channels. We do not process refunds ourselves as Freemius is the seller of record.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Contact Freemius Support: <a 
+                href="https://freemius.com/contact/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://freemius.com/contact/
+              </a>
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Notion Idea Board</h3>
@@ -954,8 +1149,32 @@ const PrivacyPolicy = () => {
                 </ul>
               </li>
               <li>
-                Combined credit tracking data (total analysis count across both features, analysis window start 
-                timestamp, last analysis timestamp, 24-hour usage limit enforcement data)
+                Credit tracking data:
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Standard analysis count (number of standard-depth analyses)</li>
+                  <li>Deep analysis count (number of premium-depth analyses)</li>
+                  <li>Analysis window start timestamp (when the current 24-hour period began)</li>
+                  <li>Last analysis timestamp (most recent analysis request)</li>
+                  <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
+                </ul>
+              </li>
+              <li>
+                Premium subscription data:
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
+                  <li>Freemius Customer ID (external reference for premium subscriptions)</li>
+                  <li>Standard and deep analysis counts (for quota management)</li>
+                  <li>Analysis window tracking data</li>
+                </ul>
+              </li>
+              <li>
+                Webhook processing data (for premium subscriptions):
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Event IDs (stored for 30 days for deduplication and security)</li>
+                  <li>Event types (e.g., purchase, renewal, cancellation, refund)</li>
+                  <li>Processing timestamps</li>
+                  <li>HMAC-SHA256 signatures (for cryptographic verification)</li>
+                </ul>
               </li>
               <li>
                 Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 
@@ -1007,6 +1226,40 @@ const PrivacyPolicy = () => {
                   the backend server's IP address is visible to Google. All transmissions are encrypted using TLS/SSL 
                   protocols.
                 </p>
+              </li>
+              <li>
+                <strong>Payment processor and Merchant of Record:</strong> Freemius, Inc. (Wilmington, Delaware, USA)
+                <ul className="list-disc pl-6 mt-2">
+                  <li>
+                    Processes payment transactions, manages premium subscriptions, handles refunds
+                  </li>
+                  <li>
+                    Acts as seller of record for all premium purchases
+                  </li>
+                  <li>
+                    Sends webhook notifications to activate/deactivate premium status
+                  </li>
+                  <li>
+                    <strong>Data transferred:</strong> Email address, name (if provided), payment information, 
+                    subscription/customer IDs, transaction data
+                  </li>
+                  <li>
+                    <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
+                  </li>
+                  <li>
+                    <strong>DPA:</strong> Data Processing Agreement concluded pursuant to Art. 28 GDPR
+                  </li>
+                  <li>
+                    Privacy Policy: <a 
+                      href="https://freemius.com/privacy/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      https://freemius.com/privacy/
+                    </a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <strong>Administrative email service provider:</strong> Resend (Plus Five Five, Inc., USA) – 
@@ -1078,6 +1331,63 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
               restricted server access, and regular security reviews by our hosting provider.
+            </p>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.1 Storage Duration for Specific Data Categories</h3>
+            <p className="text-muted-foreground mb-4">
+              Different categories of personal data are stored for different periods depending on their purpose and 
+              legal requirements:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Profile and Account Data:</strong> Stored as long as your account remains active. Permanently 
+                deleted when you delete your account (subject to backup retention periods as described in Section 4.6).
+              </li>
+              <li>
+                <strong>Analysis History:</strong> Business tools and business ideas recommendation history is stored 
+                until you delete your account or manually delete individual entries. You have full control to delete 
+                this data at any time.
+              </li>
+              <li>
+                <strong>User Credits and Quota Data:</strong> Analysis counts, window start timestamps, and last 
+                analysis timestamps are stored as long as your account is active. Deleted when you delete your account.
+              </li>
+              <li>
+                <strong>Premium Status:</strong> Premium status flag and Freemius Customer ID are stored as long as 
+                your subscription is active. After subscription expiration or cancellation, the premium flag is 
+                deactivated, but the Customer ID may be retained for legal and accounting purposes (e.g., tax 
+                compliance, dispute resolution) in accordance with applicable statutory retention periods.
+              </li>
+              <li>
+                <strong>Webhook Event IDs:</strong> Event IDs used for webhook deduplication are automatically deleted 
+                after 30 days. This is a security measure to prevent replay attacks while minimizing data storage.
+              </li>
+              <li>
+                <strong>Pending Premium Records:</strong> If you purchase a premium subscription before creating an 
+                account, your premium status is stored in the <code className="text-sm">pending_premium</code> table 
+                until you register and activate your account. These records may be manually cleaned up periodically if 
+                unclaimed.
+              </li>
+              <li>
+                <strong>Email Hashes (Account Deletion):</strong> SHA-256 cryptographic hashes of deleted account 
+                email addresses are stored for up to 24 hours to prevent abuse and accidental re-registration. 
+                Automatically deleted after this period.
+              </li>
+              <li>
+                <strong>Server Log Files:</strong> Technical log files (IP addresses, browser data, access times) are 
+                stored only for as long as necessary to ensure website stability and security, then automatically 
+                deleted or anonymized by our hosting provider.
+              </li>
+              <li>
+                <strong>Contact Correspondence:</strong> Email correspondence with our support is stored only as long 
+                as necessary to handle your inquiry, then deleted unless legal retention obligations apply.
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal Retention Obligations:</strong> In certain cases, we may be legally required to retain 
+              specific data for longer periods (e.g., tax records, accounting data, payment records). When applicable 
+              statutory retention periods apply, we will retain the necessary data only for the legally required 
+              duration and then permanently delete it.
             </p>
           </section>
 
@@ -1230,7 +1540,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> October 31, 2025
+              <strong>Last updated:</strong> November 12, 2025
             </p>
           </section>
         </article>

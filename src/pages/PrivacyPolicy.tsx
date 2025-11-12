@@ -28,7 +28,7 @@ const PrivacyPolicy = () => {
               <br />
               Aroser Allee 50, 13407 Berlin, Germany
               <br />
-              Email: mail@synoptas.com
+              Email: mail@wealthconomy.com
             </p>
             <p className="text-muted-foreground mb-4">
               No data protection officer has been appointed, as the legal requirements under Article 37 GDPR do not
@@ -292,7 +292,7 @@ const PrivacyPolicy = () => {
             </p>
             
             <p className="text-muted-foreground mb-4 mt-6">
-              Alternatively, you may also request account deletion by contacting us at mail@synoptas.com.
+              Alternatively, you may also request account deletion by contacting us at mail@wealthconomy.com.
             </p>
           </section>
 
@@ -1075,7 +1075,7 @@ const PrivacyPolicy = () => {
               <br />
               Aroser Allee 50, 13407 Berlin, Germany
               <br />
-              Email: mail@synoptas.com
+              Email: mail@wealthconomy.com
             </p>
           </section>
 

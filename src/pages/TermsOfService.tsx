@@ -28,12 +28,12 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">I. Geltungsbereich (Scope)</h2>
 
               <p className="mb-4">
-                <strong>Operator:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
-                <br />
-                <strong>Contact:</strong>{" "}
-                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
-                  mail@synoptas.com
-                </a>
+              <strong>Operator:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
+              <br />
+              <strong>Contact:</strong>{" "}
+              <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                mail@wealthconomy.com
+              </a>
               </p>
 
               <p className="mb-4">
@@ -139,9 +139,9 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                <strong>Enforcement:</strong> We may warn, temporarily suspend (7-30 days), or permanently terminate
-                accounts for Terms violations. Serious violations result in immediate termination. You may appeal via
-                mail@synoptas.com.
+              <strong>Enforcement:</strong> We may warn, temporarily suspend (7-30 days), or permanently terminate
+              accounts for Terms violations. Serious violations result in immediate termination. You may appeal via
+              mail@wealthconomy.com.
               </p>
             </section>
 
@@ -196,8 +196,8 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">VII. Kündigung (Termination)</h2>
 
               <p className="mb-4">
-                Your contract continues indefinitely with no minimum commitment. You may terminate anytime via your
-                Profile page ("Delete Account" button) or by emailing mail@synoptas.com. Termination is immediate.
+              Your contract continues indefinitely with no minimum commitment. You may terminate anytime via your
+              Profile page ("Delete Account" button) or by emailing mail@wealthconomy.com. Termination is immediate.
               </p>
 
               <p className="mb-4">
@@ -239,20 +239,20 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                To withdraw, send a clear statement to{" "}
-                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
-                  mail@synoptas.com
-                </a>
-                or Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany before the 14-day period expires.
+              To withdraw, send a clear statement to{" "}
+              <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                mail@wealthconomy.com
+              </a>
+              or Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany before the 14-day period expires.
               </p>
 
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4 font-mono text-sm">
                 <p className="font-semibold mb-2">Model Withdrawal Form</p>
-                <p className="mb-2">
-                  To: Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
-                  <br />
-                  Email: mail@synoptas.com
-                </p>
+              <p className="mb-2">
+                To: Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
+                <br />
+                Email: mail@wealthconomy.com
+              </p>
                 <p className="mb-2">
                   I/We (*) hereby withdraw from my/our (*) contract for Synoptas Platform Services.
                 </p>
@@ -289,8 +289,8 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                <strong>Dispute Resolution:</strong> Contact us at mail@synoptas.com before legal proceedings. EU
-                consumers may use the ODR platform:{" "}
+              <strong>Dispute Resolution:</strong> Contact us at mail@wealthconomy.com before legal proceedings. EU
+              consumers may use the ODR platform:{" "}
                 <a
                   href="https://ec.europa.eu/consumers/odr/"
                   target="_blank"
@@ -331,10 +331,10 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                <strong>Contact:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany |{" "}
-                <a href="mailto:mail@synoptas.com" className="text-primary hover:underline">
-                  mail@synoptas.com
-                </a>
+              <strong>Contact:</strong> Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany |{" "}
+              <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                mail@wealthconomy.com
+              </a>
               </p>
             </section>
 

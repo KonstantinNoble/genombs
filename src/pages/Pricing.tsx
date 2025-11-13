@@ -71,9 +71,9 @@ const PricingPage = () => {
     { name: "ROI Calculations", free: false, premium: true },
     { name: "Risk Assessment", free: false, premium: true },
     { name: "Implementation Timeline", free: false, premium: true },
-    { name: "Success Metrics", free: false, premium: true },
-    { name: "PDF Export", free: false, premium: true },
-    { name: "Priority Support", free: false, premium: true }
+    { name: "Prerequisites Analysis", free: false, premium: true },
+    { name: "Performance Metrics", free: false, premium: true },
+    { name: "PDF Export", free: false, premium: true }
   ];
 
   const faqs = [

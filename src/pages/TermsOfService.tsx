@@ -62,7 +62,10 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold mb-4">II. Registration</h2>
 
-              <p className="mb-4">To create an account, sign in with your Google account. Google OAuth handles authentication securely through Google's infrastructure.</p>
+              <p className="mb-4">
+                To create an account, sign in with your Google account. Google OAuth handles authentication securely
+                through Google's infrastructure.
+              </p>
 
               <p className="mb-4">You agree to:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
@@ -284,6 +287,7 @@ const TermsOfService = () => {
             </section>
 
             {/* Section VI - Liability */}
+            {/* Section VI - Liability */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">VI. Liability and Warranty</h2>
 
@@ -293,24 +297,43 @@ const TermsOfService = () => {
                 disclaim all implied warranties.
               </p>
 
+              {/* Start of revised legal clauses */}
+              <h3 className="text-xl font-semibold mb-3">Liability Limits (Applicable Law: German Law)</h3>
+
               <p className="mb-4">
-                <strong>Unlimited Liability:</strong> We remain fully liable for intentional misconduct (Vorsatz), gross
-                negligence (grobe Fahrlässigkeit), personal injury, violations of essential contractual obligations, and
-                mandatory statutory liability.
+                <strong>Unlimited Liability:</strong> We shall be fully liable without limitation for damages resulting
+                from <strong>intent (Vorsatz)</strong>, <strong>gross negligence (grobe Fahrlässigkeit)</strong>, injury
+                to <strong>life, body or health</strong>, or in case of mandatory statutory liability (e.g., Product
+                Liability Act).
               </p>
 
               <p className="mb-4">
-                <strong>Limited Liability:</strong> For simple negligence regarding non-essential obligations, liability
-                is limited to foreseeable, typical damages. We are not liable for indirect damages, loss of profits, or
-                special damages unless arising from breach of essential obligations.
-              </p>
-
-              <p className="mb-4">
-                <strong>Excluded Liability:</strong>
+                <strong>Limited Liability (Simple Negligence):</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>
+                  <strong>Breach of Essential Obligations (Kardinalpflichten):</strong> In case of a slightly negligent
+                  breach of an <strong>essential contractual obligation</strong> (an obligation whose fulfillment is
+                  essential for the proper execution of the contract and on whose compliance the user regularly relies
+                  and is entitled to rely), our liability shall be limited to the amount of the{" "}
+                  <strong>foreseeable, typical damage</strong> for this type of contract.
+                </li>
+                <li>
+                  <strong>Breach of Non-Essential Obligations:</strong> Any other liability for damages caused by simple
+                  negligence is **excluded**.
+                </li>
+              </ul>
+              {/* End of revised legal clauses */}
+
+              <p className="mb-4">
+                <strong>Excluded Damages:</strong> We are not liable for indirect damages, consequential damages, loss
+                of profits, loss of revenue, or special damages, unless these result from intent, gross negligence, or a
+                breach of life, body, or health.
+              </p>
+
+              <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Business decisions or investments based on AI recommendations</li>
-                <li>Lost profits, revenue, or business opportunities</li>
+                <li>Lost profits, revenue, or business opportunities (subject to the general limitation above)</li>
                 <li>Data loss if backups were not maintained before account deletion</li>
                 <li>Third-party services, external links, force majeure events</li>
                 <li>Unauthorized account access due to poor credential security</li>

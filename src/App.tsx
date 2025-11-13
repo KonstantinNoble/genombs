@@ -13,6 +13,7 @@ import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import NotionIdea from "./pages/NotionIdea";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import PricingPage from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
             <Route path="/notion-idea" element={<NotionIdea />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />

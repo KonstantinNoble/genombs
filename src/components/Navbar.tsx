@@ -107,7 +107,18 @@ const Navbar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
+          
+          <Link 
+            to="/pricing" 
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+              isActive("/pricing") 
+                ? "text-primary after:w-full" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
+            }`}
+          >
+            Pricing
+          </Link>
+          
           <Link 
             to="/blog" 
             className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
@@ -181,6 +192,14 @@ const Navbar = () => {
                 Notion Idea
               </Link>
             </div>
+
+            <Link
+              to="/pricing"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+              onClick={() => setIsOpen(false)}
+            >
+              Pricing
+            </Link>
 
             <Link
               to="/blog"

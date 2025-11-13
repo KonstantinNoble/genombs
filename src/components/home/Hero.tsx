@@ -10,11 +10,11 @@ const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight text-foreground animate-scale-in">
-            AI Website Advisor
+            AI-Powered Website Analysis
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Optimize your website with AI-powered tool recommendations and strategic business ideas. Specifically designed for website owners looking to take their online business to the next level.
+            Get personalized tool recommendations and strategic improvement ideas for your website. Powered by advanced AI analysis.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -24,7 +24,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/business-tools">
-                Analyze Website Tools
+                Start Free Analysis
               </Link>
             </Button>
 
@@ -32,11 +32,12 @@ const Hero = () => {
               size="lg"
               variant="outline"
               className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/5 hover:border-primary"
-              asChild
+              onClick={() => {
+                const pricingSection = document.getElementById('pricing-section');
+                pricingSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
-              <Link to="/notion-idea">
-                Generate Website Ideas
-              </Link>
+              View Pricing
             </Button>
           </div>
 
@@ -47,7 +48,11 @@ const Hero = () => {
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Free Daily Analysis
+              2 Free Analyses Daily
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              Instant Results
             </span>
           </div>
         </div>

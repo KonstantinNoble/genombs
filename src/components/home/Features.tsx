@@ -2,28 +2,34 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    title: "Website Tool Recommendations",
-    description: "AI-powered analysis of your website with tailored tool suggestions for optimization.",
+    title: "AI-Powered Tool Discovery",
+    description:
+      "Get personalized recommendations for analytics, SEO, performance, and marketing tools based on your website type and budget.",
   },
   {
-    title: "Website Business Ideas",
-    description: "Innovative business models and monetization strategies specifically for your website.",
+    title: "Strategic Improvement Ideas",
+    description:
+      "Discover actionable strategies to grow your website. Focus on revenue, efficiency, customer experience, and market expansion.",
   },
   {
-    title: "Screenshot Analysis",
-    description: "Upload screenshots of your website - AI analyzes design, structure, and optimization potential.",
+    title: "Budget-Friendly Recommendations",
+    description:
+      "Whether you're starting out or scaling up, get tool and strategy suggestions that fit your monthly budget.",
   },
   {
     title: "Website Type Specific",
-    description: "Recommendations based on your website type - E-commerce, Blog, SaaS, Portfolio, and more.",
+    description:
+      "Tailored advice for E-commerce, SaaS, Blogs, Portfolios, and more. AI understands your business model.",
   },
   {
-    title: "Budget Oriented",
-    description: "Tool and idea suggestions matching your monthly budget and website status.",
+    title: "Standard & Deep Analysis",
+    description:
+      "Choose between quick standard analysis or comprehensive deep analysis with ROI calculations and risk assessments.",
   },
   {
-    title: "Instant Results",
-    description: "Detailed analysis with concrete action recommendations in seconds.",
+    title: "Actionable Reports",
+    description:
+      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines.",
   },
 ];
 
@@ -36,10 +42,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Your AI Website Advisor
+            Everything You Need to Optimize Your Website
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Two powerful AI features: Find the perfect tools for your website and discover profitable business ideas - all based on your website screenshots and goals.
+            Comprehensive AI analysis for your website optimization needs
           </p>
         </div>
 

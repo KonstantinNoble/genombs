@@ -5,7 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
-const Pricing = () => {
+interface PricingProps {
+  compact?: boolean;
+}
+
+const Pricing = ({ compact = false }: PricingProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -46,7 +50,7 @@ const Pricing = () => {
   };
 
   return (
-    <section className="py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border">
+    <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border"}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-4 mb-16 animate-fade-in">

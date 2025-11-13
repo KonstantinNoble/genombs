@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -10,11 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download } from "lucide-react";
+import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download, Check } from "lucide-react";
 import { pdf } from '@react-pdf/renderer';
 import { ReportPDF } from '@/components/ReportPDF';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Pricing from "@/components/home/Pricing";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { User } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -128,6 +130,7 @@ const BusinessToolsAdvisor = () => {
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
   const [deepAnalysisLimit, setDeepAnalysisLimit] = useState(0);
   const [standardAnalysisLimit, setStandardAnalysisLimit] = useState(2);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   const [websiteType, setWebsiteType] = useState("");
   const [websiteStatus, setWebsiteStatus] = useState("");
@@ -570,6 +573,126 @@ const BusinessToolsAdvisor = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+        {/* Upgrade Dialog for Free Users at Limit */}
+        <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">Daily Limit Reached</DialogTitle>
+              <DialogDescription>
+                You've used all {standardAnalysisLimit} free analyses for today. Upgrade to Premium to get more analyses and unlock advanced features.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid md:grid-cols-2 gap-6 my-6">
+              <Card className="relative flex flex-col border border-border shadow-md opacity-60">
+                <CardHeader>
+                  <CardTitle className="text-2xl">Free Plan</CardTitle>
+                  <CardDescription>Perfect for getting started</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">2 AI Analyses per day</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Standard Analysis Mode</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Website Tool Recommendations</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Business Improvement Ideas</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Basic Analysis Report</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button disabled variant="outline" className="w-full">
+                    Current Plan
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              <Card className="relative flex flex-col border-2 border-primary shadow-lg">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                    Recommended
+                  </Badge>
+                </div>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Premium Plan</CardTitle>
+                  <CardDescription>For serious website optimization</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">$17.99</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm font-semibold">6 Standard Analyses per day</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm font-semibold">2 Deep Analyses per day</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Advanced Analysis with detailed steps</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">ROI & Risk Assessment</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Implementation Timeline</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">PDF Export</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">All Free Plan features included</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${user?.email}&readonly_user=true`;
+                      window.open(checkoutUrl, '_blank');
+                      setShowUpgradeDialog(false);
+                    }}
+                  >
+                    Upgrade to Premium
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setShowUpgradeDialog(false)}>
+                Maybe Later
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <Helmet>
           <title>AI Website Advisor - Get Website Tool Recommendations & Business Ideas | Synoptas</title>
           <meta 
@@ -592,49 +715,9 @@ const BusinessToolsAdvisor = () => {
               </p>
             </div>
 
-            <div className="py-4 sm:py-6">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 shadow-elegant hover:shadow-hover hover:scale-110 transition-all duration-300 w-full sm:w-auto"
-              >
-                
-                Sign in to get started
-              </Button>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start your free analysis now</p>
+            <div className="py-12">
+              <Pricing compact={true} />
             </div>
-
-            <Card className="relative text-left shadow-elegant hover:shadow-hover transition-all duration-500 border-primary/20 bg-gradient-to-br from-card to-card overflow-hidden group">
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <CardHeader className="relative">
-                <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 sm:gap-3">
-                  How it works
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 relative">
-                  <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">1</div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Share your website details</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Tell us about your website type, status, budget, and goals</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">2</div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Get personalized recommendations</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Receive 5-7 specific tool and strategy suggestions tailored to your needs</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group/item">
-                  <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover/item:scale-110 transition-transform duration-300 text-sm sm:text-base font-bold">3</div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-foreground">Implement and grow</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Follow our actionable advice to optimize your business operations</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
         <Footer />

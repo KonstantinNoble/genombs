@@ -27,7 +27,7 @@ const Auth = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -44,32 +44,27 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background/80 backdrop-blur-[8px] p-4 relative overflow-hidden">
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `radial-gradient(circle at 2px 2px, hsl(var(--border)) 1px, transparent 0)`,
-        backgroundSize: '32px 32px'
-      }} />
-      
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, hsl(var(--border)) 1px, transparent 0)`,
+          backgroundSize: "32px 32px",
+        }}
+      />
+
       <div className="absolute top-8 left-8 z-10">
-        <Button
-          variant="outline"
-          onClick={() => navigate("/")}
-          className="transition-all duration-300"
-        >
+        <Button variant="outline" onClick={() => navigate("/")} className="transition-all duration-300">
           ← Back
         </Button>
       </div>
 
       <Card className="w-full max-w-md shadow-2xl relative z-10 animate-scale-in border-border/50">
         <CardHeader className="space-y-3">
-          <CardTitle className="text-4xl font-bold text-center">
-            Welcome
-          </CardTitle>
+          <CardTitle className="text-4xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center text-base space-y-2">
-            <span className="block">
-              Sign in with your Google account to access your AI-powered business insights
-            </span>
+            <span className="block">Sign in with your Google account to access your AI-powered business insights</span>
             <span className="block text-sm text-amber-600 dark:text-amber-500 font-medium mt-3">
-              💡 Premium users: Please use the same email as your purchase
+              Premium users: Please use the same email as your purchase
             </span>
           </CardDescription>
         </CardHeader>

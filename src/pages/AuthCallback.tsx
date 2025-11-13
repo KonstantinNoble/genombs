@@ -90,13 +90,28 @@ const AuthCallback = () => {
               .delete()
               .eq('id', pendingPremium.id);
             
-            toast.success('Premium status activated! 🎉', { duration: 5000 });
+            toast.success('Premium status activated!', { duration: 5000 });
           }
         }
 
-        // All checks passed or existing user - redirect to home
-        toast.success("Successfully signed in!");
-        navigate("/");
+        // Check for stored intent
+        const storedIntent = localStorage.getItem('auth_intent');
+        localStorage.removeItem('auth_intent');
+        
+        if (storedIntent === 'premium') {
+          // Open Freemius checkout and navigate to profile
+          const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${user.email}&readonly_user=true`;
+          window.open(checkoutUrl, '_blank');
+          toast.success("Successfully signed in!");
+          navigate('/profile');
+        } else if (storedIntent === 'free') {
+          toast.success("Successfully signed in!");
+          navigate('/business-tools');
+        } else {
+          // All checks passed or existing user - redirect to home
+          toast.success("Successfully signed in!");
+          navigate("/");
+        }
         
       } catch (error) {
         console.error("Auth callback error:", error);

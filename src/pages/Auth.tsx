@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const intent = searchParams.get('intent');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +28,11 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      // Store intent in localStorage to handle after OAuth redirect
+      if (intent) {
+        localStorage.setItem('auth_intent', intent);
+      }
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -39,6 +46,15 @@ const Auth = () => {
       toast.error(error.message || "Sign in failed");
       setLoading(false);
     }
+  };
+  
+  const getIntentMessage = () => {
+    if (intent === 'premium') {
+      return 'Sign in to purchase Premium Plan and unlock Deep Analysis';
+    } else if (intent === 'free') {
+      return 'Sign in to start your free AI analysis';
+    }
+    return 'Sign in with your Google account to access your AI-powered business insights';
   };
 
   return (
@@ -62,10 +78,12 @@ const Auth = () => {
         <CardHeader className="space-y-3">
           <CardTitle className="text-4xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center text-base space-y-2">
-            <span className="block">Sign in with your Google account to access your AI-powered business insights</span>
-            <span className="block text-sm text-amber-600 dark:text-amber-500 font-medium mt-3">
-              Premium users: Please use the same email as your purchase
-            </span>
+            <span className="block">{getIntentMessage()}</span>
+            {!intent && (
+              <span className="block text-sm text-amber-600 dark:text-amber-500 font-medium mt-3">
+                Premium users: Please use the same email as your purchase
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

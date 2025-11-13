@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
+import Pricing from "@/components/home/Pricing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
@@ -84,6 +85,9 @@ const Home = () => {
       <main>
         <Hero />
         <Features />
+        <div id="pricing-section">
+          <Pricing />
+        </div>
         <CTA />
       </main>
       <Footer />

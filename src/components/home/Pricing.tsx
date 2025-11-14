@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,16 +14,40 @@ const Pricing = ({ compact = false }: PricingProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
+      
+      if (session) {
+        const { data } = await supabase
+          .from('user_credits')
+          .select('is_premium')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsPremium(data?.is_premium ?? false);
+      }
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setIsLoggedIn(!!session);
+      if (session) {
+        setTimeout(async () => {
+          const { data } = await supabase
+            .from('user_credits')
+            .select('is_premium')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          setIsPremium(data?.is_premium ?? false);
+        }, 0);
+      } else {
+        setIsPremium(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -48,6 +73,32 @@ const Pricing = ({ compact = false }: PricingProps) => {
       }
     }
   };
+
+  // If user is premium, show different view
+  if (isLoggedIn && isPremium) {
+    return (
+      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border"}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
+            <Badge className="bg-primary text-primary-foreground">Premium Member</Badge>
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
+              You're on the Premium Plan!
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Enjoy unlimited access to all premium features including deep analysis, ROI calculations, and detailed implementation strategies.
+            </p>
+            <Button 
+              size="lg" 
+              onClick={() => navigate('/business-tools')}
+              className="mt-6"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border"}>

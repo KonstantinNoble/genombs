@@ -13,16 +13,40 @@ import { useState, useEffect } from "react";
 const PricingPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
+      
+      if (session) {
+        const { data } = await supabase
+          .from('user_credits')
+          .select('is_premium')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsPremium(data?.is_premium ?? false);
+      }
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setIsLoggedIn(!!session);
+      if (session) {
+        setTimeout(async () => {
+          const { data } = await supabase
+            .from('user_credits')
+            .select('is_premium')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          setIsPremium(data?.is_premium ?? false);
+        }, 0);
+      } else {
+        setIsPremium(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -121,12 +145,14 @@ const PricingPage = () => {
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-            <Badge className="mb-4">Simple, Transparent Pricing</Badge>
+            <Badge className="mb-4">{isPremium && isLoggedIn ? "Premium Member" : "Simple, Transparent Pricing"}</Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-              Choose the Plan That Fits Your Needs
+              {isPremium && isLoggedIn ? "You're on the Premium Plan!" : "Choose the Plan That Fits Your Needs"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Start with our Free Plan and upgrade when you need advanced AI analysis. No hidden fees, no commitments.
+              {isPremium && isLoggedIn 
+                ? "Enjoy unlimited access to all premium features including deep analysis, ROI calculations, and detailed implementation strategies."
+                : "Start with our Free Plan and upgrade when you need advanced AI analysis. No hidden fees, no commitments."}
             </p>
           </div>
         </section>
@@ -253,18 +279,20 @@ const PricingPage = () => {
           <Card className="max-w-4xl mx-auto bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20">
             <CardContent className="text-center space-y-6 py-16 px-6">
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                Ready to Optimize Your Website?
+                {isPremium && isLoggedIn ? "Continue Your Analysis" : "Ready to Optimize Your Website?"}
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Start with our Free Plan today. No credit card required, get instant AI-powered recommendations.
+                {isPremium && isLoggedIn 
+                  ? "Access your premium features and continue optimizing your website with advanced AI analysis."
+                  : "Start with our Free Plan today. No credit card required, get instant AI-powered recommendations."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <Button 
                   size="lg"
-                  onClick={() => navigate(isLoggedIn ? '/business-tools' : '/auth?intent=free')}
+                  onClick={() => navigate(isPremium && isLoggedIn ? '/business-tools' : (isLoggedIn ? '/business-tools' : '/auth?intent=free'))}
                   className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
                 >
-                  Start Free Analysis
+                  {isPremium && isLoggedIn ? "Go to Dashboard" : "Start Free Analysis"}
                 </Button>
                 <Button 
                   size="lg"

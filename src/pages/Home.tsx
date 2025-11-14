@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,8 @@ import { WebPageSchema } from "@/components/seo/StructuredData";
 const Home = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     // Handle email verification redirect
@@ -62,7 +64,42 @@ const Home = () => {
       }
     };
 
+    const checkPremiumStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+      
+      if (session) {
+        const { data } = await supabase
+          .from('user_credits')
+          .select('is_premium')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsPremium(data?.is_premium ?? false);
+      }
+    };
+
     handleEmailVerification();
+    checkPremiumStatus();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsLoggedIn(!!session);
+      if (session) {
+        setTimeout(async () => {
+          const { data } = await supabase
+            .from('user_credits')
+            .select('is_premium')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          setIsPremium(data?.is_premium ?? false);
+        }, 0);
+      } else {
+        setIsPremium(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [toast, navigate]);
 
   return (
@@ -85,9 +122,11 @@ const Home = () => {
       <main>
         <Hero />
         <Features />
-        <div id="pricing-section">
-          <Pricing />
-        </div>
+        {(!isLoggedIn || !isPremium) && (
+          <div id="pricing-section">
+            <Pricing />
+          </div>
+        )}
         <CTA />
       </main>
       <Footer />

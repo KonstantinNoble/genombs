@@ -66,20 +66,26 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
               {toolsHistory.map(tool => (
                 <Card
                   key={tool.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`cursor-pointer transition-all hover:shadow-md touch-manipulation active:scale-[0.98] ${
                     selectedToolIds.includes(tool.id)
                       ? 'ring-2 ring-primary bg-primary/5'
                       : ''
                   }`}
                   onClick={() => toggleToolSelection(tool.id)}
+                  role="button"
+                  tabIndex={0}
                 >
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                      <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <Checkbox
                           checked={selectedToolIds.includes(tool.id)}
                           onCheckedChange={() => toggleToolSelection(tool.id)}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          className="pointer-events-auto"
                         />
                         <div className="flex-1">
                           <div className="mb-2">
@@ -121,20 +127,26 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
               {ideasHistory.map(idea => (
                 <Card
                   key={idea.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`cursor-pointer transition-all hover:shadow-md touch-manipulation active:scale-[0.98] ${
                     selectedIdeaIds.includes(idea.id)
                       ? 'ring-2 ring-secondary bg-secondary/5'
                       : ''
                   }`}
                   onClick={() => toggleIdeaSelection(idea.id)}
+                  role="button"
+                  tabIndex={0}
                 >
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                      <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <Checkbox
                           checked={selectedIdeaIds.includes(idea.id)}
                           onCheckedChange={() => toggleIdeaSelection(idea.id)}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          className="pointer-events-auto"
                         />
                         <div className="flex-1">
                           <div className="mb-2">

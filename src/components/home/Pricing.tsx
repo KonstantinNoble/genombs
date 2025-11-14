@@ -155,7 +155,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                   className="w-full"
                   onClick={() => handlePlanClick('free')}
                 >
-                  {isLoggedIn ? 'Start Free Analysis' : 'Get Started Free'}
+                  {isPremium ? 'Start Premium Analysis' : (isLoggedIn ? 'Start Free Analysis' : 'Get Started Free')}
                 </Button>
               </CardFooter>
             </Card>

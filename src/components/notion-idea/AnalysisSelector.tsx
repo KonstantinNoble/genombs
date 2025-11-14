@@ -16,6 +16,27 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
   const [selectedToolIds, setSelectedToolIds] = useState<string[]>([]);
   const [selectedIdeaIds, setSelectedIdeaIds] = useState<string[]>([]);
 
+  // Robust helpers to avoid runtime errors on mobile (undefined data, stringified JSON, invalid dates)
+  const getRecCount = (res: any) => {
+    try {
+      const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+      const recs = parsed?.recommendations;
+      return Array.isArray(recs) ? recs.length : 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return format(d, 'MMM dd, yyyy');
+    } catch {
+      return dateStr;
+    }
+  };
+
   const toggleToolSelection = (id: string) => {
     setSelectedToolIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
@@ -29,11 +50,11 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
   };
 
   const selectAllTools = () => {
-    setSelectedToolIds(toolsHistory.map(t => t.id));
+    setSelectedToolIds((toolsHistory || []).map(t => t.id));
   };
 
   const selectAllIdeas = () => {
-    setSelectedIdeaIds(ideasHistory.map(i => i.id));
+    setSelectedIdeaIds((ideasHistory || []).map(i => i.id));
   };
 
   const handleImport = () => {
@@ -52,18 +73,24 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
-        {/* Tools Column */}
-        {toolsHistory.length > 0 && (
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
-              <Button variant="outline" size="sm" onClick={selectAllTools} className="text-xs sm:text-sm">
-                Select All
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {toolsHistory.map(tool => (
+        {/* Tools Column - always render with fallback message */}
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-xl sm:text-2xl font-semibold">Tools Analyses</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={selectAllTools}
+              className="text-xs sm:text-sm"
+              disabled={(toolsHistory?.length ?? 0) === 0}
+            >
+              Select All
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {(toolsHistory?.length ?? 0) > 0 ? (
+              toolsHistory.map(tool => (
                 <Card
                   key={tool.id}
                   className={`cursor-pointer transition-all hover:shadow-md touch-manipulation active:scale-[0.98] ${
@@ -72,11 +99,17 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                       : ''
                   }`}
                   onClick={() => toggleToolSelection(tool.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleToolSelection(tool.id);
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
                 >
                   <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <Checkbox
                           checked={selectedToolIds.includes(tool.id)}
@@ -86,11 +119,12 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                             e.preventDefault();
                           }}
                           className="pointer-events-auto"
+                          aria-label="Select tool analysis"
                         />
                         <div className="flex-1">
                           <div className="mb-2">
                             <span className="text-sm text-muted-foreground">
-                              {format(new Date(tool.created_at), 'MMM dd, yyyy')}
+                              {formatDate(tool.created_at)}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -104,27 +138,35 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                   </CardHeader>
                   <CardContent className="pt-0">
                     <p className="text-sm font-medium text-primary">
-                      {tool.result.recommendations.length} recommendation{tool.result.recommendations.length !== 1 ? 's' : ''}
+                      {getRecCount(tool.result)} recommendation{getRecCount(tool.result) !== 1 ? 's' : ''}
                     </p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground px-2">Keine Tools-Analysen gefunden.</p>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Ideas Column */}
-        {ideasHistory.length > 0 && (
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
-              <Button variant="outline" size="sm" onClick={selectAllIdeas} className="text-xs sm:text-sm">
-                Select All
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {ideasHistory.map(idea => (
+        {/* Ideas Column - always render with fallback message */}
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-xl sm:text-2xl font-semibold">Ideas Analyses</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={selectAllIdeas}
+              className="text-xs sm:text-sm"
+              disabled={(ideasHistory?.length ?? 0) === 0}
+            >
+              Select All
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {(ideasHistory?.length ?? 0) > 0 ? (
+              ideasHistory.map(idea => (
                 <Card
                   key={idea.id}
                   className={`cursor-pointer transition-all hover:shadow-md touch-manipulation active:scale-[0.98] ${
@@ -133,11 +175,17 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                       : ''
                   }`}
                   onClick={() => toggleIdeaSelection(idea.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleIdeaSelection(idea.id);
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
                 >
                   <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <Checkbox
                           checked={selectedIdeaIds.includes(idea.id)}
@@ -147,11 +195,12 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                             e.preventDefault();
                           }}
                           className="pointer-events-auto"
+                          aria-label="Select idea analysis"
                         />
                         <div className="flex-1">
                           <div className="mb-2">
                             <span className="text-sm text-muted-foreground">
-                              {format(new Date(idea.created_at), 'MMM dd, yyyy')}
+                              {formatDate(idea.created_at)}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -165,14 +214,16 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
                   </CardHeader>
                   <CardContent className="pt-0">
                     <p className="text-sm font-medium text-secondary">
-                      {idea.result.recommendations.length} recommendation{idea.result.recommendations.length !== 1 ? 's' : ''}
+                      {getRecCount(idea.result)} recommendation{getRecCount(idea.result) !== 1 ? 's' : ''}
                     </p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground px-2">Keine Ideen-Analysen gefunden.</p>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       <div className="flex justify-center">

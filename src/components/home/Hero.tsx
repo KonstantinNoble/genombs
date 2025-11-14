@@ -70,17 +70,19 @@ const Hero = () => {
               </Link>
             </Button>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/5 hover:border-primary"
-              onClick={() => {
-                const pricingSection = document.getElementById('pricing-section');
-                pricingSection?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              View Pricing
-            </Button>
+            {(!isPremium || !isLoggedIn) && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/5 hover:border-primary"
+                onClick={() => {
+                  const pricingSection = document.getElementById('pricing-section');
+                  pricingSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                View Pricing
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">

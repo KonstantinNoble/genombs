@@ -70,7 +70,7 @@ const Hero = () => {
               </Link>
             </Button>
 
-            {(!isPremium || !isLoggedIn) && (
+            {!(isPremium && isLoggedIn) && (
               <Button
                 size="lg"
                 variant="outline"

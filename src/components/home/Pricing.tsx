@@ -2,9 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PricingProps {
   compact?: boolean;
@@ -12,51 +10,11 @@ interface PricingProps {
 
 const Pricing = ({ compact = false }: PricingProps) => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      
-      if (session) {
-        const { data } = await supabase
-          .from('user_credits')
-          .select('is_premium')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        setIsPremium(data?.is_premium ?? false);
-      }
-    };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        setTimeout(async () => {
-          const { data } = await supabase
-            .from('user_credits')
-            .select('is_premium')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setIsPremium(data?.is_premium ?? false);
-        }, 0);
-      } else {
-        setIsPremium(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, isPremium } = useAuth();
+  const isLoggedIn = !!user;
 
   const handlePlanClick = async (plan: 'free' | 'premium') => {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
+    if (!user) {
       // Not logged in
       if (plan === 'premium') {
         navigate('/auth?intent=premium');
@@ -66,7 +24,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
     } else {
       // Logged in
       if (plan === 'premium') {
-        const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${session.user.email}&readonly_user=true`;
+        const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${user.email}&readonly_user=true`;
         window.open(checkoutUrl, '_blank');
       } else {
         navigate('/business-tools');
@@ -77,7 +35,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
   // If user is premium, show different view
   if (isLoggedIn && isPremium) {
     return (
-      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border"}>
+      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
             <Badge className="bg-primary text-primary-foreground">Premium Member</Badge>
@@ -101,7 +59,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
   }
 
   return (
-    <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/60 backdrop-blur-sm border-y border-border"}>
+      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-4 mb-16 animate-fade-in">

@@ -1,52 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
-  const [isPremium, setIsPremium] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      
-      if (session) {
-        const { data } = await supabase
-          .from('user_credits')
-          .select('is_premium')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        setIsPremium(data?.is_premium ?? false);
-      }
-    };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        setTimeout(async () => {
-          const { data } = await supabase
-            .from('user_credits')
-            .select('is_premium')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setIsPremium(data?.is_premium ?? false);
-        }, 0);
-      } else {
-        setIsPremium(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, isPremium } = useAuth();
 
   return (
     <section
-      className="relative min-h-[85vh] flex items-center justify-center bg-background/40 backdrop-blur-sm py-20 sm:py-24 md:py-32"
+      className="relative min-h-[85vh] flex items-center justify-center bg-background/60 sm:bg-background/40 sm:backdrop-blur-sm py-20 sm:py-24 md:py-32"
       aria-label="Hero section"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,11 +27,11 @@ const Hero = () => {
               asChild
             >
               <Link to="/business-tools">
-                {isPremium && isLoggedIn ? "Start Premium Analysis" : "Start Free Analysis"}
+                {isPremium && user ? "Start Premium Analysis" : "Start Free Analysis"}
               </Link>
             </Button>
 
-            {!(isPremium && isLoggedIn) && (
+            {!(isPremium && user) && (
               <Button
                 size="lg"
                 variant="outline"
@@ -92,7 +53,7 @@ const Hero = () => {
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              {isPremium && isLoggedIn ? "Premium Member" : "2 Free Analyses Daily"}
+              {isPremium && user ? "Premium Member" : "2 Free Analyses Daily"}
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />

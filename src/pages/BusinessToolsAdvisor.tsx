@@ -150,20 +150,28 @@ const BusinessToolsAdvisor = () => {
 
   const { toast } = useToast();
 
-  // Auto-scroll to results after analysis completes
+  // Auto-scroll to results after analysis completes with offset
   useEffect(() => {
-    if (toolResult) {
+    if (toolResult && toolResultsRef.current) {
       setTimeout(() => {
-        toolResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
+        const element = toolResultsRef.current;
+        if (element) {
+          const top = element.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [toolResult]);
 
   useEffect(() => {
-    if (ideaResult) {
+    if (ideaResult && ideaResultsRef.current) {
       setTimeout(() => {
-        ideaResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
+        const element = ideaResultsRef.current;
+        if (element) {
+          const top = element.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [ideaResult]);
 
@@ -1074,7 +1082,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Results */}
               {toolResult && (
-                <Card ref={toolResultsRef} className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+                <Card ref={toolResultsRef} className="scroll-mt-20 shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
                       <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
@@ -1317,7 +1325,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Idea Results */}
               {ideaResult && (
-                <div ref={ideaResultsRef} className="space-y-6 animate-fade-in">
+                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6 animate-fade-in">
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">

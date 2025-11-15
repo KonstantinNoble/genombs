@@ -298,7 +298,7 @@ const NotionIdea = () => {
   const effectiveViewMode = user ? viewMode : 'landing';
 
   return (
-    <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+    <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         {effectiveViewMode === 'landing' && (

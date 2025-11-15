@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
@@ -28,10 +29,11 @@ const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
       <div 
-        className={`fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-500 transform-gpu ${
-          isHomePage ? 'sm:blur-[2px] blur-0' : 'sm:blur-[8px] blur-0'
+        className={`hidden sm:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-500 ${
+          isHomePage ? 'blur-[2px]' : 'blur-[8px]'
         }`}
         style={{ backgroundImage: `url(${heroBackground})` }}
+        aria-hidden="true"
       />
       <div className="relative z-10">
         {children}
@@ -48,22 +50,24 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <BackgroundWrapper>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
-            <Route path="/notion-idea" element={<NotionIdea />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/imprint" element={<Imprint />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
+              <Route path="/notion-idea" element={<NotionIdea />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/imprint" element={<Imprint />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
         </BackgroundWrapper>
       </BrowserRouter>
     </TooltipProvider>

@@ -23,7 +23,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error);
+    console.error('Component stack:', errorInfo.componentStack);
   }
 
   handleReload = () => {
@@ -39,17 +40,17 @@ class ErrorBoundary extends Component<Props, State> {
               <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
-              <CardTitle>Etwas ist schief gelaufen</CardTitle>
+              <CardTitle>Something went wrong</CardTitle>
               <CardDescription>
-                Die Anwendung hat einen unerwarteten Fehler festgestellt.
+                The application encountered an unexpected error.
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                Bitte laden Sie die Seite neu, um fortzufahren.
+                Please reload the page to continue.
               </p>
               <Button onClick={this.handleReload} className="w-full">
-                Seite neu laden
+                Reload Page
               </Button>
             </CardContent>
           </Card>

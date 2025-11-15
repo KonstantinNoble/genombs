@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { User as SupabaseUser } from "@supabase/supabase-js";
 import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,10 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const location = useLocation();
-  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
   const isActive = (path: string) => location.pathname === path;
@@ -23,7 +23,6 @@ const Navbar = () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data?.user) {
       await supabase.auth.signOut();
-      setUser(null);
       return;
     }
 
@@ -37,27 +36,22 @@ const Navbar = () => {
     if (profileError || !profile) {
       console.log('Profile deleted - invalidating session');
       await supabase.auth.signOut();
-      setUser(null);
     }
   };
 
   useEffect(() => {
-    const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      await validateSession();
-    };
-    init();
+    if (user) {
+      validateSession();
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
       if (session) {
         setTimeout(() => validateSession(), 0);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [user]);
   
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background">

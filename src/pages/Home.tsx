@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,13 +10,14 @@ import Pricing from "@/components/home/Pricing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
 import { WebPageSchema } from "@/components/seo/StructuredData";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 const Home = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+  const { user, isPremium } = useAuth();
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     // Handle email verification redirect
@@ -64,42 +65,7 @@ const Home = () => {
       }
     };
 
-    const checkPremiumStatus = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      
-      if (session) {
-        const { data } = await supabase
-          .from('user_credits')
-          .select('is_premium')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        setIsPremium(data?.is_premium ?? false);
-      }
-    };
-
     handleEmailVerification();
-    checkPremiumStatus();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        setTimeout(async () => {
-          const { data } = await supabase
-            .from('user_credits')
-            .select('is_premium')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setIsPremium(data?.is_premium ?? false);
-        }, 0);
-      } else {
-        setIsPremium(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [toast, navigate]);
 
   return (

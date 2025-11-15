@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -144,9 +144,29 @@ const BusinessToolsAdvisor = () => {
   const [targetAudience, setTargetAudience] = useState("");
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
+  
+  const toolResultsRef = useRef<HTMLDivElement | null>(null);
+  const ideaResultsRef = useRef<HTMLDivElement | null>(null);
 
   const { toast } = useToast();
-  
+
+  // Auto-scroll to results after analysis completes
+  useEffect(() => {
+    if (toolResult) {
+      setTimeout(() => {
+        toolResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }, [toolResult]);
+
+  useEffect(() => {
+    if (ideaResult) {
+      setTimeout(() => {
+        ideaResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }, [ideaResult]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -564,7 +584,7 @@ const BusinessToolsAdvisor = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex items-center justify-center">
+      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -572,7 +592,7 @@ const BusinessToolsAdvisor = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
         {/* Upgrade Dialog for Free Users at Limit */}
         <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
           <DialogContent className="max-w-4xl">
@@ -1054,7 +1074,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Results */}
               {toolResult && (
-                <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+                <Card ref={toolResultsRef} className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
                       <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
@@ -1297,7 +1317,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Idea Results */}
               {ideaResult && (
-                <div className="space-y-6 animate-fade-in">
+                <div ref={ideaResultsRef} className="space-y-6 animate-fade-in">
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">

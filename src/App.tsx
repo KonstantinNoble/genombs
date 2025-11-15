@@ -28,8 +28,8 @@ const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
       <div 
-        className={`fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-500 ${
-          isHomePage ? 'blur-[2px]' : 'blur-[8px]'
+        className={`fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-500 transform-gpu ${
+          isHomePage ? 'sm:blur-[2px] blur-0' : 'sm:blur-[8px] blur-0'
         }`}
         style={{ backgroundImage: `url(${heroBackground})` }}
       />

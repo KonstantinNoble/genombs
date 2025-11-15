@@ -74,12 +74,20 @@ const NotionIdea = () => {
   const [toolsHistory, setToolsHistory] = useState<ToolHistoryItem[]>([]);
   const [ideasHistory, setIdeasHistory] = useState<IdeaHistoryItem[]>([]);
   const [importedRecommendations, setImportedRecommendations] = useState<CombinedRecommendation[]>(() => {
-    const saved = localStorage.getItem('notion-idea-recommendations');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('notion-idea-recommendations');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
   const [viewMode, setViewMode] = useState<'landing' | 'select' | 'display'>(() => {
-    const saved = localStorage.getItem('notion-idea-viewmode');
-    return (saved as 'landing' | 'select' | 'display') || 'landing';
+    try {
+      const saved = localStorage.getItem('notion-idea-viewmode');
+      return saved === 'select' || saved === 'display' ? saved : 'landing';
+    } catch {
+      return 'landing';
+    }
   });
   
   const navigate = useNavigate();
@@ -123,8 +131,12 @@ const NotionIdea = () => {
 
   // Persist state to localStorage
   useEffect(() => {
-    localStorage.setItem('notion-idea-recommendations', JSON.stringify(importedRecommendations));
-    localStorage.setItem('notion-idea-viewmode', viewMode);
+    try {
+      localStorage.setItem('notion-idea-recommendations', JSON.stringify(importedRecommendations));
+      localStorage.setItem('notion-idea-viewmode', viewMode);
+    } catch {
+      // Ignore localStorage errors
+    }
   }, [importedRecommendations, viewMode]);
   const fetchAnalysesHistory = async () => {
     if (!user) return;
@@ -158,6 +170,17 @@ const NotionIdea = () => {
     }
   };
 
+  const parseResult = (res: any) => {
+    try {
+      const v = typeof res === 'string' ? JSON.parse(res) : res;
+      const recommendations = Array.isArray(v?.recommendations) ? v.recommendations : [];
+      const generalAdvice = typeof v?.generalAdvice === 'string' ? v.generalAdvice : '';
+      return { recommendations, generalAdvice };
+    } catch {
+      return { recommendations: [], generalAdvice: '' };
+    }
+  };
+
   const handleImport = (selectedToolIds: string[], selectedIdeaIds: string[]) => {
     if (!user) {
       navigate('/auth');
@@ -180,7 +203,8 @@ const NotionIdea = () => {
       const tool = toolsHistory.find(t => t.id === toolId);
       if (!tool) return;
 
-      tool.result.recommendations.forEach((rec, index) => {
+      const t = parseResult(tool.result);
+      t.recommendations.forEach((rec, index) => {
         recommendations.push({
           id: `tool-${toolId}-${index}`,
           type: 'tool',
@@ -193,7 +217,7 @@ const NotionIdea = () => {
           sourceIndustry: tool.industry,
           sourceBudget: tool.budget_range,
           sourceTeamSize: tool.team_size,
-          generalAdvice: tool.result.generalAdvice
+          generalAdvice: t.generalAdvice
         });
       });
     });
@@ -203,7 +227,8 @@ const NotionIdea = () => {
       const idea = ideasHistory.find(i => i.id === ideaId);
       if (!idea) return;
 
-      idea.result.recommendations.forEach((rec, index) => {
+      const i = parseResult(idea.result);
+      i.recommendations.forEach((rec, index) => {
         recommendations.push({
           id: `idea-${ideaId}-${index}`,
           type: 'idea',
@@ -216,7 +241,7 @@ const NotionIdea = () => {
           sourceIndustry: idea.industry,
           sourceBudget: idea.budget_range,
           sourceTeamSize: idea.team_size,
-          generalAdvice: idea.result.generalAdvice
+          generalAdvice: i.generalAdvice
         });
       });
     });
@@ -260,8 +285,8 @@ const NotionIdea = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+  return (
+    <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />

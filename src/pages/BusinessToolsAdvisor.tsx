@@ -731,7 +731,7 @@ const BusinessToolsAdvisor = () => {
   const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
 
   return (
-    <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+    <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
       <Helmet>
         <title>AI Advisor - Personalized Tools & Strategy Recommendations | Synoptas</title>
         <meta 

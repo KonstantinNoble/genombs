@@ -76,19 +76,19 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-all duration-300 border-l-4" 
           style={{ borderLeftColor: type === 'tool' ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-3 sm:p-6">
         {/* Header */}
-        <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant={type === 'tool' ? 'default' : 'secondary'} className="text-xs">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <Badge variant={type === 'tool' ? 'default' : 'secondary'} className="text-xs h-5 sm:h-6">
                 {type === 'tool' ? 'Tool' : 'Idea'}
               </Badge>
             </div>
-            <h4 className="text-base sm:text-lg font-semibold mb-2 break-words">{name}</h4>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            <h4 className="text-sm sm:text-lg font-semibold mb-1.5 sm:mb-2 break-words leading-tight">{name}</h4>
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {timeline && (
-                <Badge className={`${getTimelineBadgeColor(timeline)} text-xs`}>
+                <Badge className={`${getTimelineBadgeColor(timeline)} text-xs h-5 sm:h-6`}>
                   <span className="hidden sm:inline">{timeline.split('-').map(word => 
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ')}</span>
@@ -96,7 +96,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                 </Badge>
               )}
               {cost && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs h-5 sm:h-6">
                   {cost}
                 </Badge>
               )}
@@ -105,22 +105,22 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         </div>
 
         {/* Rationale */}
-        <div className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg bg-muted/50">
+        <div className="mb-2 sm:mb-4 p-2.5 sm:p-4 rounded-lg bg-muted/50">
           <div className="prose prose-sm max-w-none">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h2: ({ children }) => (
-                  <h2 className="text-lg sm:text-xl font-semibold mt-5 mb-3 text-foreground">{children}</h2>
+                  <h2 className="text-base sm:text-xl font-semibold mt-3 sm:mt-5 mb-2 sm:mb-3 text-foreground">{children}</h2>
                 ),
                 h3: ({ children }) => (
-                  <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h3>
+                  <h3 className="text-sm sm:text-lg font-semibold mt-2 sm:mt-4 mb-1.5 sm:mb-2 text-foreground">{children}</h3>
                 ),
                 h4: ({ children }) => (
-                  <h4 className="text-sm sm:text-base font-semibold mt-3 mb-2 text-foreground">{children}</h4>
+                  <h4 className="text-xs sm:text-base font-semibold mt-2 sm:mt-3 mb-1 sm:mb-2 text-foreground">{children}</h4>
                 ),
                 p: ({ children }) => (
-                  <p className="text-sm sm:text-base leading-relaxed text-foreground mb-3 last:mb-0">{children}</p>
+                  <p className="text-xs sm:text-base leading-relaxed text-foreground mb-2 sm:mb-3 last:mb-0">{children}</p>
                 ),
                 strong: ({ children }) => (
                   <strong className="font-semibold text-foreground">{children}</strong>
@@ -129,13 +129,13 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                   <em className="italic text-foreground">{children}</em>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>
+                  <ul className="list-disc pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>
+                  <ol className="list-decimal pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ol>
                 ),
                 li: ({ children }) => (
-                  <li className="text-sm sm:text-base leading-relaxed">{children}</li>
+                  <li className="text-xs sm:text-base leading-relaxed">{children}</li>
                 ),
               }}
             >
@@ -146,38 +146,40 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
 
         {/* Deep Analysis Fields */}
         {recommendation.expectedROI && (
-          <div className="mb-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-            <p className="text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Expected ROI: {recommendation.expectedROI}
+          <div className="mb-2 sm:mb-3 p-2 sm:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+            <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-1.5 sm:gap-2">
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Expected ROI: {recommendation.expectedROI}</span>
+              <span className="sm:hidden">ROI: {recommendation.expectedROI}</span>
             </p>
           </div>
         )}
 
         {recommendation.riskLevel && (
-          <div className="mb-3">
+          <div className="mb-2 sm:mb-3">
             <Badge variant={
               recommendation.riskLevel === 'low' ? 'default' : 
               recommendation.riskLevel === 'medium' ? 'secondary' : 'destructive'
-            }>
+            } className="text-xs h-5 sm:h-6">
               Risk: {recommendation.riskLevel}
             </Badge>
             {recommendation.implementationTimeline && (
-              <Badge variant="outline" className="ml-2">
-                Timeline: {recommendation.implementationTimeline}
+              <Badge variant="outline" className="ml-1.5 sm:ml-2 text-xs h-5 sm:h-6">
+                <span className="hidden sm:inline">Timeline: {recommendation.implementationTimeline}</span>
+                <span className="sm:hidden">{recommendation.implementationTimeline}</span>
               </Badge>
             )}
           </div>
         )}
 
         {recommendation.detailedSteps && recommendation.detailedSteps.length > 0 && (
-          <Accordion type="single" collapsible className="mb-3">
+          <Accordion type="single" collapsible className="mb-2 sm:mb-3">
             <AccordionItem value="steps">
-              <AccordionTrigger className="text-sm">Implementation Steps</AccordionTrigger>
+              <AccordionTrigger className="text-xs sm:text-sm py-2 sm:py-3">Implementation Steps</AccordionTrigger>
               <AccordionContent>
-                <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
                   {recommendation.detailedSteps.map((step, i) => (
-                    <li key={i}>{step}</li>
+                    <li key={i} className="leading-relaxed">{step}</li>
                   ))}
                 </ol>
               </AccordionContent>
@@ -186,13 +188,13 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         )}
 
         {recommendation.prerequisites && recommendation.prerequisites.length > 0 && (
-          <Accordion type="single" collapsible className="mb-3">
+          <Accordion type="single" collapsible className="mb-2 sm:mb-3">
             <AccordionItem value="prerequisites">
-              <AccordionTrigger className="text-sm">Prerequisites</AccordionTrigger>
+              <AccordionTrigger className="text-xs sm:text-sm py-2 sm:py-3">Prerequisites</AccordionTrigger>
               <AccordionContent>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
                   {recommendation.prerequisites.map((prereq, i) => (
-                    <li key={i}>{prereq}</li>
+                    <li key={i} className="leading-relaxed">{prereq}</li>
                   ))}
                 </ul>
               </AccordionContent>
@@ -201,13 +203,13 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         )}
 
         {recommendation.metrics && recommendation.metrics.length > 0 && (
-          <Accordion type="single" collapsible className="mb-3">
+          <Accordion type="single" collapsible className="mb-2 sm:mb-3">
             <AccordionItem value="metrics">
-              <AccordionTrigger className="text-sm">Success Metrics</AccordionTrigger>
+              <AccordionTrigger className="text-xs sm:text-sm py-2 sm:py-3">Success Metrics</AccordionTrigger>
               <AccordionContent>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
                   {recommendation.metrics.map((metric, i) => (
-                    <li key={i}>{metric}</li>
+                    <li key={i} className="leading-relaxed">{metric}</li>
                   ))}
                 </ul>
               </AccordionContent>
@@ -216,15 +218,15 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         )}
 
         {/* Source Info */}
-        <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-1 sm:gap-2 text-xs text-muted-foreground mt-2">
           <span className="hidden sm:inline">{format(new Date(sourceDate), 'MMM dd, yyyy')}</span>
           <span className="sm:hidden">{format(new Date(sourceDate), 'MMM dd')}</span>
           <span className="hidden sm:inline">•</span>
-          <span className="truncate max-w-[100px] sm:max-w-none">{sourceIndustry}</span>
+          <span className="truncate max-w-[80px] sm:max-w-none">{sourceIndustry}</span>
           <span className="hidden sm:inline">•</span>
-          <span className="truncate max-w-[80px] sm:max-w-none">{sourceTeamSize}</span>
+          <span className="hidden sm:inline">{sourceTeamSize}</span>
           <span className="hidden sm:inline">•</span>
-          <span className="truncate max-w-[80px] sm:max-w-none">{sourceBudget}</span>
+          <span className="hidden sm:inline">{sourceBudget}</span>
         </div>
       </CardContent>
     </Card>

@@ -137,22 +137,22 @@ const RecommendationDisplay = ({
   return (
     <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-          <div className="w-full sm:w-auto">
-            <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
+      <div className="mb-4 sm:mb-8">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4">
+          <div className="w-full">
+            <h1 className="text-xl sm:text-4xl font-bold mb-1 sm:mb-2 text-foreground">
               Your Business Roadmap
             </h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
+            <p className="text-xs sm:text-base text-muted-foreground">
               Organized recommendations from {recommendations.length} total items
             </p>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm">
+            <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm h-9 sm:h-10">
               <span className="hidden sm:inline">← Import More</span>
               <span className="sm:hidden">← Import</span>
             </Button>
-            <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-none text-xs sm:text-sm">
+            <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-none text-xs sm:text-sm h-9 sm:h-10">
               <span className="hidden sm:inline">Clear All</span>
               <span className="sm:hidden">Clear</span>
             </Button>
@@ -160,27 +160,27 @@ const RecommendationDisplay = ({
         </div>
 
         {/* Filters and Sorting */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
-          <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="w-full sm:w-auto">
-            <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+        <div className="flex flex-col gap-2 sm:gap-4">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="w-full">
+            <TabsList className="grid grid-cols-3 w-full h-9 sm:h-10">
               <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
               <TabsTrigger value="tools" className="text-xs sm:text-sm">Tools</TabsTrigger>
               <TabsTrigger value="ideas" className="text-xs sm:text-sm">Ideas</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)} className="w-full sm:w-auto">
-            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
-              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
-              <TabsTrigger value="quick" className="text-xs sm:text-sm">Quick</TabsTrigger>
-              <TabsTrigger value="medium" className="text-xs sm:text-sm">Medium</TabsTrigger>
-              <TabsTrigger value="long" className="text-xs sm:text-sm">Long</TabsTrigger>
+          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)} className="w-full">
+            <TabsList className="grid grid-cols-4 w-full h-9 sm:h-10">
+              <TabsTrigger value="all" className="text-xs sm:text-sm px-1 sm:px-3">All</TabsTrigger>
+              <TabsTrigger value="quick" className="text-xs sm:text-sm px-1 sm:px-3">Quick</TabsTrigger>
+              <TabsTrigger value="medium" className="text-xs sm:text-sm px-1 sm:px-3">Medium</TabsTrigger>
+              <TabsTrigger value="long" className="text-xs sm:text-sm px-1 sm:px-3">Long</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3 w-full">
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-              <SelectTrigger className="w-full sm:w-[180px] text-xs sm:text-sm">
+              <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px] text-xs sm:text-sm h-9 sm:h-10">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
@@ -190,15 +190,15 @@ const RecommendationDisplay = ({
               </SelectContent>
             </Select>
 
-            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap">
-              {filteredRecommendations.length} items
+            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap px-2 py-1">
+              {filteredRecommendations.length}
             </Badge>
           </div>
         </div>
       </div>
 
       {/* Recommendations by Category */}
-      <div className="space-y-6 mb-8">
+      <div className="space-y-3 sm:space-y-6 mb-6 sm:mb-8">
         {Object.entries(groupedByCategory).map(([category, recs]) => (
           <CategorySection
             key={category}
@@ -210,27 +210,27 @@ const RecommendationDisplay = ({
 
       {/* Strategic Overview Section */}
       {generalAdviceItems.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-foreground">Strategic Overview</h2>
-          <div className="space-y-6">
+        <div className="mt-8 sm:mt-12">
+          <h2 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-foreground">Strategic Overview</h2>
+          <div className="space-y-4 sm:space-y-6">
             {generalAdviceItems.map((item, index) => {
               const sections = splitMarkdownSections(item.advice);
               return (
-                <div key={index} className="space-y-4">
+                <div key={index} className="space-y-3 sm:space-y-4">
                   {sections.map((sec, i) => (
-                    <div key={i} className="p-5 sm:p-6 rounded-lg border-2 bg-card transition-colors shadow-md">
-                      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">{sec.title}</h3>
+                    <div key={i} className="p-3 sm:p-6 rounded-lg border-2 bg-card transition-colors shadow-md">
+                      <h3 className="text-base sm:text-xl font-semibold mb-3 sm:mb-4 text-foreground">{sec.title}</h3>
                       <div className="prose prose-sm max-w-none">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            h2: ({ children }) => <h2 className="text-lg sm:text-xl font-semibold mt-5 mb-3 text-foreground">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-base sm:text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
-                            h4: ({ children }) => <h4 className="text-sm sm:text-base font-semibold mt-3 mb-2 text-foreground">{children}</h4>,
-                            p: ({ children }) => <p className="text-sm sm:text-base leading-relaxed mb-3 text-foreground">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>,
-                            li: ({ children }) => <li className="text-sm sm:text-base leading-relaxed">{children}</li>,
+                            h2: ({ children }) => <h2 className="text-base sm:text-xl font-semibold mt-4 sm:mt-5 mb-2 sm:mb-3 text-foreground">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm sm:text-lg font-semibold mt-3 sm:mt-4 mb-2 text-foreground">{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-xs sm:text-base font-semibold mt-2 sm:mt-3 mb-1 sm:mb-2 text-foreground">{children}</h4>,
+                            p: ({ children }) => <p className="text-xs sm:text-base leading-relaxed mb-2 sm:mb-3 text-foreground">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ol>,
+                            li: ({ children }) => <li className="text-xs sm:text-base leading-relaxed">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
                             em: ({ children }) => <em className="italic text-foreground">{children}</em>,
                           }}
@@ -240,14 +240,14 @@ const RecommendationDisplay = ({
                       </div>
                     </div>
                   ))}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-muted-foreground mt-2">
                     <Badge variant="outline" className="text-xs">
                       {item.source.sourceIndustry}
                     </Badge>
-                    <span>•</span>
-                    <span>{item.source.sourceTeamSize}</span>
-                    <span>•</span>
-                    <span>{item.source.sourceBudget}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="text-xs">{item.source.sourceTeamSize}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="text-xs">{item.source.sourceBudget}</span>
                   </div>
                 </div>
               );

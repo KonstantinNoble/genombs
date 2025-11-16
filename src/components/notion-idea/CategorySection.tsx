@@ -15,27 +15,25 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
   return (
     <Accordion type="single" collapsible defaultValue={category}>
       <AccordionItem value={category} className="border rounded-lg bg-card">
-        <AccordionTrigger className="px-6 hover:no-underline group sm:transition-all">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="flex items-center gap-3 flex-1">
-              <h3 className="text-lg font-semibold capitalize">{category}</h3>
-              <div className="flex gap-2">
-                {toolCount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {toolCount} tool{toolCount !== 1 ? 's' : ''}
-                  </Badge>
-                )}
-                {ideaCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    {ideaCount} idea{ideaCount !== 1 ? 's' : ''}
-                  </Badge>
-                )}
-              </div>
+        <AccordionTrigger className="px-3 sm:px-6 py-3 sm:py-4 hover:no-underline group transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 text-left">
+            <h3 className="text-sm sm:text-lg font-semibold capitalize">{category}</h3>
+            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+              {toolCount > 0 && (
+                <Badge variant="secondary" className="text-xs h-5 sm:h-6">
+                  {toolCount} tool{toolCount !== 1 ? 's' : ''}
+                </Badge>
+              )}
+              {ideaCount > 0 && (
+                <Badge variant="outline" className="text-xs h-5 sm:h-6">
+                  {ideaCount} idea{ideaCount !== 1 ? 's' : ''}
+                </Badge>
+              )}
             </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="px-6 pb-6">
-          <div className="space-y-4 pt-4">
+        <AccordionContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+          <div className="space-y-3 sm:space-y-4 pt-2 sm:pt-4">
             {recommendations.map(rec => (
               <RecommendationCard key={rec.id} recommendation={rec} />
             ))}

@@ -219,12 +219,20 @@ CRITICAL MARKDOWN FORMATTING RULES:
 
 Focus on revenue growth, efficiency, customer experience, market expansion, cost reduction, and digital transformation.`;
 
-    const userPrompt = `Website Type: ${websiteType}
+    let userPromptText = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Budget Range: ${budgetRange}
-Current Business Context: ${businessContext}
+Current Business Context: ${businessContext}`;
 
-Please provide personalized improvement recommendations to grow and optimize this EXISTING business.`;
+    // Add premium fields to user prompt if available
+    if (targetAudience) userPromptText += `\nTarget Audience: ${targetAudience}`;
+    if (competitionLevel) userPromptText += `\nCompetition Level: ${competitionLevel}`;
+    if (growthStage) userPromptText += `\nGrowth Stage: ${growthStage}`;
+    if (customRequirements) userPromptText += `\n\n**Custom Requirements**: ${customRequirements}`;
+
+    userPromptText += `\n\nPlease provide personalized improvement recommendations to grow and optimize this EXISTING business.`;
+
+    const userPrompt = userPromptText;
 
     // Define tool schema for structured output
     const toolSchema = {

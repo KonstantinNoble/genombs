@@ -208,12 +208,20 @@ CRITICAL MARKDOWN FORMATTING RULES:
 Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`;
 
-    const userPrompt = `Website Type: ${websiteType}
+    let userPromptText = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Monthly Budget: ${budgetRange}
-Website Goals: ${websiteGoals}
+Website Goals: ${websiteGoals}`;
 
-Please provide personalized website tool recommendations.`;
+    // Add premium fields to user prompt if available
+    if (targetAudience) userPromptText += `\nTarget Audience: ${targetAudience}`;
+    if (competitionLevel) userPromptText += `\nCompetition Level: ${competitionLevel}`;
+    if (growthStage) userPromptText += `\nGrowth Stage: ${growthStage}`;
+    if (customRequirements) userPromptText += `\n\n**Custom Requirements**: ${customRequirements}`;
+
+    userPromptText += `\n\nPlease provide personalized website tool recommendations.`;
+
+    const userPrompt = userPromptText;
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 

@@ -143,7 +143,7 @@ const RecommendationDisplay = ({
             <h1 className="text-xl sm:text-4xl font-bold mb-1 sm:mb-2 text-foreground">
               Your Business Roadmap
             </h1>
-            <p className="text-xs sm:text-base text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               {recommendations.length} recommendations
             </p>
           </div>
@@ -169,24 +169,24 @@ const RecommendationDisplay = ({
         <div className="flex flex-col gap-2 sm:gap-3">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="w-full">
             <TabsList className="grid grid-cols-3 w-full h-9 sm:h-10">
-              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
-              <TabsTrigger value="tools" className="text-xs sm:text-sm">Tools</TabsTrigger>
-              <TabsTrigger value="ideas" className="text-xs sm:text-sm">Ideas</TabsTrigger>
+              <TabsTrigger value="all" className="text-sm">All</TabsTrigger>
+              <TabsTrigger value="tools" className="text-sm">Tools</TabsTrigger>
+              <TabsTrigger value="ideas" className="text-sm">Ideas</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)} className="w-full">
             <TabsList className="grid grid-cols-4 w-full h-9 sm:h-10">
-              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
-              <TabsTrigger value="quick" className="text-xs sm:text-sm">Quick</TabsTrigger>
-              <TabsTrigger value="medium" className="text-xs sm:text-sm">Med</TabsTrigger>
-              <TabsTrigger value="long" className="text-xs sm:text-sm">Long</TabsTrigger>
+              <TabsTrigger value="all" className="text-sm">All</TabsTrigger>
+              <TabsTrigger value="quick" className="text-sm">Quick</TabsTrigger>
+              <TabsTrigger value="medium" className="text-sm">Med</TabsTrigger>
+              <TabsTrigger value="long" className="text-sm">Long</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <div className="flex items-center gap-2 w-full">
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-              <SelectTrigger className="flex-1 text-xs sm:text-sm h-9 sm:h-10">
+              <SelectTrigger className="flex-1 text-sm h-9 sm:h-10">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
@@ -196,7 +196,7 @@ const RecommendationDisplay = ({
               </SelectContent>
             </Select>
 
-            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap px-2 py-1.5 h-9 flex items-center">
+            <Badge variant="secondary" className="text-sm whitespace-nowrap px-2 py-1.5 h-9 flex items-center">
               {filteredRecommendations.length}
             </Badge>
           </div>
@@ -224,19 +224,19 @@ const RecommendationDisplay = ({
               return (
                 <div key={index} className="space-y-3 sm:space-y-4">
                   {sections.map((sec, i) => (
-                    <div key={i} className="p-3 sm:p-6 rounded-lg border-2 bg-card transition-colors shadow-md">
+                    <div key={i} className="p-4 sm:p-6 rounded-lg border bg-card sm:bg-gradient-to-br sm:from-card sm:to-secondary/5 border-secondary/20 transition-colors shadow-md">
                       <h3 className="text-base sm:text-xl font-semibold mb-3 sm:mb-4 text-foreground">{sec.title}</h3>
                       <div className="prose prose-sm max-w-none">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            h2: ({ children }) => <h2 className="text-base sm:text-xl font-semibold mt-4 sm:mt-5 mb-2 sm:mb-3 text-foreground">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm sm:text-lg font-semibold mt-3 sm:mt-4 mb-2 text-foreground">{children}</h3>,
-                            h4: ({ children }) => <h4 className="text-xs sm:text-base font-semibold mt-2 sm:mt-3 mb-1 sm:mb-2 text-foreground">{children}</h4>,
-                            p: ({ children }) => <p className="text-xs sm:text-base leading-relaxed mb-2 sm:mb-3 text-foreground break-words">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ol>,
-                            li: ({ children }) => <li className="text-xs sm:text-base leading-relaxed break-words">{children}</li>,
+                            h2: ({ children }) => <h2 className="text-lg sm:text-xl font-semibold mt-4 mb-3 text-foreground">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-base sm:text-lg font-semibold mt-3 mb-2 text-foreground">{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-sm sm:text-base font-semibold mt-2 mb-2 text-foreground">{children}</h4>,
+                            p: ({ children }) => <p className="text-sm sm:text-base leading-relaxed mb-3 text-foreground break-words">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1.5 text-foreground text-sm sm:text-base">{children}</ol>,
+                            li: ({ children }) => <li className="text-sm sm:text-base leading-relaxed break-words">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
                             em: ({ children }) => <em className="italic text-foreground">{children}</em>,
                             a: ({ children, href }) => <a href={href} className="underline break-words text-primary" target="_blank" rel="noreferrer">{children}</a>,

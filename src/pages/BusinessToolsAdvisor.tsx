@@ -11,8 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download, Check } from "lucide-react";
-import { pdf } from '@react-pdf/renderer';
-import { ReportPDF } from '@/components/ReportPDF';
+// Lazy-load PDF generator when exporting to reduce bundle size on mobile
+// (imports moved into handleExportPDF)
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -565,6 +566,11 @@ const BusinessToolsAdvisor = () => {
     };
 
     try {
+      const [{ pdf }, { ReportPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/ReportPDF'),
+      ]);
+
       const blob = await pdf(
         <ReportPDF type={activeTab} result={result} metadata={metadata} />
       ).toBlob();

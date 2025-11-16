@@ -57,63 +57,9 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
     setSelectedIdeaIds((ideasHistory || []).map(i => i.id));
   };
 
-  const handleExportPDF = async () => {
-    const { pdf } = await import('@react-pdf/renderer');
-    const { ReportPDF } = await import('@/components/ReportPDF');
-    
-    // Combine selected analyses
-    const selectedTools = toolsHistory.filter(t => selectedToolIds.includes(t.id));
-    const selectedIdeas = ideasHistory.filter(i => selectedIdeaIds.includes(i.id));
-    
-    // Combine all recommendations
-    const allRecommendations = [
-      ...selectedTools.flatMap(t => {
-        const result = typeof t.result === 'string' ? JSON.parse(t.result) : t.result;
-        return (result?.recommendations || []).map((rec: any) => ({
-          ...rec,
-          source: `Tools Analysis - ${t.industry}`,
-        }));
-      }),
-      ...selectedIdeas.flatMap(i => {
-        const result = typeof i.result === 'string' ? JSON.parse(i.result) : i.result;
-        return (result?.recommendations || []).map((rec: any) => ({
-          ...rec,
-          source: `Ideas Analysis - ${i.industry}`,
-        }));
-      }),
-    ];
-
-    const combinedResult = {
-      recommendations: allRecommendations,
-      generalAdvice: `Combined analysis from ${selectedTools.length} tools and ${selectedIdeas.length} ideas analyses.`,
-    };
-
-    const metadata = {
-      websiteType: 'Combined Analysis',
-      websiteStatus: `${selectedTools.length + selectedIdeas.length} Analyses`,
-      budgetRange: 'Various',
-      date: formatDate(new Date().toISOString()),
-      analysisMode: 'combined',
-    };
-
-    const blob = await pdf(
-      ReportPDF({ 
-        type: 'tools', 
-        result: combinedResult, 
-        metadata 
-      })
-    ).toBlob();
-    
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `notion-idea-export-${new Date().toISOString().split('T')[0]}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4 pb-24 sm:pb-0">
+    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
           Import Your AI Recommendations
@@ -277,21 +223,6 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         </div>
       </div>
 
-      {/* Sticky Import Bar on mobile, centered on desktop */}
-      <div className="sm:static fixed inset-x-0 bottom-0 z-40 safe-area-inset-bottom">
-        <div className="px-4 py-3 sm:px-0 sm:py-0 bg-background/95 sm:bg-transparent border-t border-border sm:border-0 backdrop-blur-md sm:backdrop-blur-none">
-          <div className="max-w-7xl mx-auto flex justify-center">
-            <Button
-              size="lg"
-              onClick={handleExportPDF}
-              disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
-              className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all w-full sm:w-auto h-11 sm:h-12 text-sm sm:text-base font-semibold"
-            >
-              PDF exportieren ({selectedToolIds.length + selectedIdeaIds.length})
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

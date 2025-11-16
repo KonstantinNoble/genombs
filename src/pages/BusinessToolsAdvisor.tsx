@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download, Check } from "lucide-react";
+import { Sparkles, History, Trash2, Loader2, TrendingUp, Lightbulb, Star, Download, Check, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
 // Lazy-load PDF generator when exporting to reduce bundle size on mobile
 // (imports moved into handleExportPDF)
 
@@ -168,10 +169,21 @@ const BusinessToolsAdvisor = () => {
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
   
+  // Image upload state
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  
   const toolResultsRef = useRef<HTMLDivElement | null>(null);
   const ideaResultsRef = useRef<HTMLDivElement | null>(null);
 
   const { toast } = useToast();
+  
+  // Image upload validation constants
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
   // Auto-scroll to results after analysis completes with offset + iOS repaint fix
   useEffect(() => {
@@ -451,8 +463,26 @@ const BusinessToolsAdvisor = () => {
     } else {
       setIdeaResult(null);
     }
+    
+    let imageUrl: string | null = null;
 
     try {
+      // STEP 1: Upload image (if present) - only for ideas + deep mode + premium
+      if (!isTools && uploadedImage && isPremium && analysisMode === "deep") {
+        console.log('🖼️ Uploading image before analysis...');
+        imageUrl = await uploadImageToStorage(user.id);
+        
+        if (!imageUrl) {
+          // Upload failed - abort analysis
+          console.error('❌ Image upload failed, aborting analysis');
+          setAnalyzing(false);
+          return;
+        }
+        
+        console.log('✅ Image uploaded successfully, proceeding with analysis');
+      }
+      
+      // STEP 2: Call Edge Function
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
       const body: any = isTools 
         ? { websiteType, websiteStatus, budgetRange, websiteGoals: inputText }
@@ -466,6 +496,10 @@ const BusinessToolsAdvisor = () => {
       // Add analysis mode for premium users
       if (isPremium) {
         body.analysisMode = analysisMode;
+        // Add image URL if available
+        if (imageUrl) {
+          body.imageUrl = imageUrl;
+        }
       }
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
@@ -514,6 +548,8 @@ const BusinessToolsAdvisor = () => {
       } else {
         setIdeaResult(data);
         await loadIdeaHistory();
+        // Reset image after successful analysis
+        handleRemoveImage();
       }
       
       await loadAnalysisLimit();
@@ -531,6 +567,131 @@ const BusinessToolsAdvisor = () => {
       });
     } finally {
       setAnalyzing(false);
+    }
+  };
+  
+  // Image upload handlers
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageError(null);
+
+    // Validate file size
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageError('File too large. Maximum: 5MB');
+      toast({
+        title: "File Too Large",
+        description: "Please select an image under 5MB.",
+        variant: "destructive",
+      });
+      e.target.value = '';
+      return;
+    }
+
+    // Validate MIME type
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageError('Invalid format. Only JPG, PNG and WEBP allowed.');
+      toast({
+        title: "Invalid Format",
+        description: "Only JPG, PNG and WEBP files are allowed.",
+        variant: "destructive",
+      });
+      e.target.value = '';
+      return;
+    }
+
+    // Validate file extension
+    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+      setImageError('Invalid file extension.');
+      e.target.value = '';
+      return;
+    }
+
+    setUploadedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.onerror = () => {
+      setImageError('Error loading preview');
+      toast({
+        title: "Error",
+        description: "Could not create image preview.",
+        variant: "destructive",
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    setImagePreview(null);
+    setImageError(null);
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const uploadImageToStorage = async (userId: string): Promise<string | null> => {
+    if (!uploadedImage) return null;
+
+    setIsUploadingImage(true);
+    try {
+      const fileExt = uploadedImage.name.split('.').pop()?.toLowerCase();
+      const timestamp = Date.now();
+      const fileName = `${userId}/${timestamp}.${fileExt}`;
+      
+      console.log(`📤 Uploading image: ${fileName} (${(uploadedImage.size / 1024).toFixed(2)} KB)`);
+      
+      const { data, error } = await supabase.storage
+        .from('business-analysis-images')
+        .upload(fileName, uploadedImage, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: uploadedImage.type
+        });
+
+      if (error) {
+        console.error('❌ Storage upload error:', error);
+        throw error;
+      }
+
+      console.log('✅ Image uploaded successfully:', data.path);
+
+      // Create signed URL (valid for 2 hours for AI processing)
+      const { data: urlData, error: urlError } = await supabase.storage
+        .from('business-analysis-images')
+        .createSignedUrl(fileName, 7200);
+
+      if (urlError) {
+        console.error('❌ Signed URL error:', urlError);
+        throw urlError;
+      }
+
+      console.log('✅ Signed URL created');
+      return urlData?.signedUrl || null;
+
+    } catch (error: any) {
+      console.error('❌ Image upload failed:', error);
+      
+      let errorMessage = 'Image upload failed. Please try again.';
+      if (error.message?.includes('policy')) {
+        errorMessage = 'Permission denied. Premium required.';
+      } else if (error.message?.includes('size')) {
+        errorMessage = 'File too large (max 5MB).';
+      }
+      
+      toast({
+        title: "Upload Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -1378,6 +1539,106 @@ const BusinessToolsAdvisor = () => {
                         </CardContent>
                       </Card>
                     </>
+                  )}
+
+                  {/* Image Upload - Premium + Deep Analysis Only */}
+                  {isPremium && analysisMode === "deep" && (
+                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-purple-500/30 rounded-lg bg-purple-50/50 dark:bg-purple-950/20">
+                      {/* Header with Premium Badge */}
+                      <div className="flex items-center justify-between gap-2">
+                        <Label htmlFor="image-upload" className="text-sm font-semibold flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-purple-600" />
+                          Upload Image (Optional)
+                        </Label>
+                        <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                          Premium
+                        </Badge>
+                      </div>
+                      
+                      {/* Info Text */}
+                      <p className="text-xs text-muted-foreground">
+                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
+                      </p>
+
+                      {/* Upload Area */}
+                      <div className="space-y-2">
+                        {!imagePreview ? (
+                          // Upload Input
+                          <div className="relative">
+                            <Input
+                              id="image-upload"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              onChange={handleImageSelect}
+                              disabled={analyzing || isUploadingImage}
+                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            {isUploadingImage && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          // Image Preview with Remove Button
+                          <div className="relative group">
+                            <img 
+                              src={imagePreview} 
+                              alt="Uploaded preview" 
+                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-900"
+                            />
+                            {/* Remove Button - Mobile optimized */}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={handleRemoveImage}
+                              disabled={analyzing}
+                              className="absolute top-2 right-2 h-10 w-10 sm:h-9 sm:w-9 rounded-full shadow-lg opacity-90 hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            {/* File size display */}
+                            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                              {uploadedImage && `${(uploadedImage.size / 1024).toFixed(0)} KB`}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Error Display */}
+                        {imageError && (
+                          <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <span className="text-base">⚠️</span> {imageError}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Non-Premium User Upgrade Notice */}
+                  {!isPremium && analysisMode === "deep" && (
+                    <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg space-y-2">
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500">
+                            Deep Analysis + Image Upload is a Premium Feature
+                          </p>
+                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                            Get deeper insights through AI-powered image analysis. 
+                            Upgrade now for unlimited deep analyses.
+                          </p>
+                          <Button 
+                            asChild 
+                            size="sm" 
+                            className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 w-full sm:w-auto"
+                          >
+                            <Link to="/pricing">
+                              Upgrade to Premium
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   )}
 
                   <Button

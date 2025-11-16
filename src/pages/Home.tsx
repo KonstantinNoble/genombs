@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
-import TrustSection from "@/components/home/TrustSection";
+
 import Pricing from "@/components/home/Pricing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
@@ -87,9 +87,7 @@ const Home = () => {
       />
       <Navbar />
       <main>
-        <Hero />
         <Features />
-        <TrustSection />
         {(!isLoggedIn || !isPremium) && (
           <div id="pricing-section">
             <Pricing />

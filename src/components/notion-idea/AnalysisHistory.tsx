@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, Loader2, TrendingUp, Calendar, Download, Filter } from "lucide-react";
+import { Trash2, Loader2, TrendingUp, Calendar, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
@@ -155,94 +155,6 @@ const AnalysisHistory = () => {
     strong: ({ children }: any) => <strong className="font-semibold text-foreground">{children}</strong>,
   };
 
-  const handleExportPDF = async (item: AnalysisItem) => {
-    try {
-      const { Document, Page, Text, View, StyleSheet, pdf } = await import("@react-pdf/renderer");
-      
-      const styles = StyleSheet.create({
-        page: { padding: 30, fontFamily: "Helvetica" },
-        title: { fontSize: 24, marginBottom: 10, fontWeight: "bold" },
-        subtitle: { fontSize: 14, marginBottom: 20, color: "#666" },
-        section: { marginBottom: 15 },
-        sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 8 },
-        text: { fontSize: 12, marginBottom: 5, lineHeight: 1.5 },
-        badge: { fontSize: 10, color: "#4F46E5", marginBottom: 5 },
-        card: { marginBottom: 15, padding: 10, borderLeft: "4px solid #4F46E5", backgroundColor: "#F9FAFB" },
-        cardTitle: { fontSize: 14, fontWeight: "bold", marginBottom: 5 },
-      });
-
-      const PDFDocument = () => (
-        <Document>
-          <Page size="A4" style={styles.page}>
-            <Text style={styles.title}>AI Website Analysis Report</Text>
-            <Text style={styles.subtitle}>
-              Generated: {new Date().toLocaleDateString("de-DE")}
-            </Text>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Analysis Details</Text>
-              <Text style={styles.text}>Industry: {item.industry}</Text>
-              <Text style={styles.text}>Team Size: {item.team_size}</Text>
-              <Text style={styles.text}>Budget: {item.budget_range}</Text>
-              {item.analysis_mode && (
-                <Text style={styles.text}>Mode: {item.analysis_mode}</Text>
-              )}
-              <Text style={styles.text}>
-                Date: {new Date(item.created_at).toLocaleDateString("de-DE")}
-              </Text>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Business Goals</Text>
-              <Text style={styles.text}>{item.business_goals}</Text>
-            </View>
-
-            {item.result.generalAdvice && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>General Advice</Text>
-                <Text style={styles.text}>{item.result.generalAdvice}</Text>
-              </View>
-            )}
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                Recommendations ({item.result.recommendations?.length || 0})
-              </Text>
-              {item.result.recommendations?.map((rec, idx) => (
-                <View key={idx} style={styles.card}>
-                  <Text style={styles.cardTitle}>{rec.name}</Text>
-                  <Text style={styles.badge}>
-                    {rec.category} • {rec.implementation} • {rec.estimatedCost}
-                  </Text>
-                  <Text style={styles.text}>{rec.rationale}</Text>
-                </View>
-              ))}
-            </View>
-          </Page>
-        </Document>
-      );
-
-      const blob = await pdf(<PDFDocument />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `analysis-${item.industry.toLowerCase().replace(/\s+/g, "-")}-${new Date(item.created_at).toISOString().split("T")[0]}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
-
-      toast({
-        title: "Success",
-        description: "Analysis exported as PDF",
-      });
-    } catch (error) {
-      console.error("Error exporting PDF:", error);
-      toast({
-        title: "Error",
-        description: "Failed to export PDF",
-        variant: "destructive",
-      });
-    }
-  };
 
   if (loading) {
     return (
@@ -382,14 +294,6 @@ const AnalysisHistory = () => {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleExportPDF(item)}
-                      title="Als PDF exportieren"
-                    >
-                      <Download className="w-4 h-4 text-primary" />
-                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"

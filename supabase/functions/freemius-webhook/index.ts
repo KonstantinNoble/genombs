@@ -303,9 +303,14 @@ serve(async (req) => {
       }
       if (event.objects.subscription?.next_payment_date) {
         updateData.next_payment_date = new Date(event.objects.subscription.next_payment_date).toISOString();
+      }
+      
+      // Set auto_renew based on event type
+      // For subscription creation/activation/renewal, auto_renew should be true
+      if (event.type === 'subscription.created' || 
+          event.type === 'subscription.activated' || 
+          event.type === 'subscription.renewed') {
         updateData.auto_renew = true;
-      } else {
-        updateData.auto_renew = false;
       }
       
       // Set premium_since only if it's a new premium activation

@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.3</p>
+          <p className="text-muted-foreground mb-8">Effective Date: November 16, 2025 | Version 2.4</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -679,73 +679,6 @@ const PrivacyPolicy = () => {
               Contact information for Freemius is provided in your purchase confirmation email and accessible through your Freemius customer account.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Notion Idea Board</h3>
-            <p className="text-muted-foreground mb-4">
-              The Notion Idea Board feature allows you to organize and manage your business ideas in a unified workspace interface.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing</h4>
-            <p className="text-muted-foreground mb-4">
-              When you use the Notion Idea Board:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Browser localStorage:</strong> Your ideas, workspace preferences, and organization settings 
-                are stored locally in your web browser's localStorage to persist your workspace state across sessions
-              </li>
-              <li>
-                <strong>No server transmission:</strong> The Notion Idea Board state (ideas, organization preferences) 
-                is stored exclusively in your browser's localStorage and is NOT transmitted to our servers
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">localStorage Data</h4>
-            <p className="text-muted-foreground mb-4">
-              The following data is stored in your browser's localStorage:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your business ideas and notes</li>
-              <li>Workspace organization preferences (categories, priorities, status)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data persistence:</strong> localStorage data persists on your device until you manually clear 
-              it using the "Clear All" button in the application or clear your browser's cache/storage.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>User control:</strong> You have full control over your Notion Idea Board data:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Clear all imported data at any time via the "Clear All" button</li>
-              <li>Delete individual analyses from the board</li>
-              <li>Clear browser localStorage through your browser settings</li>
-              <li>Data is automatically cleared when you clear your browser cache</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Purpose:</strong> To provide a convenient workspace for organizing and visualizing your 
-              AI-generated business recommendations without requiring server-side storage of workspace state.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Art. 6(1)(b) GDPR – Processing is necessary for the performance of the contract (providing the 
-              workspace organization feature you requested)</li>
-              <li>Art. 6(1)(f) GDPR – Legitimate interest in providing a user-friendly interface that enhances 
-              your experience by persisting workspace preferences locally</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Privacy Implications</h4>
-            <p className="text-muted-foreground mb-4">
-              Since Notion Idea Board data is stored exclusively in your browser's localStorage:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The data never leaves your device</li>
-              <li>We cannot access, view, or process your Notion Idea Board workspace state</li>
-              <li>The data is only accessible from the specific browser and device where you use the feature</li>
-              <li>Clearing browser data or using a different browser/device will reset your Notion Idea Board</li>
-            </ul>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Data Storage and Retention (All AI Features)</h3>
             <p className="text-muted-foreground mb-4">
@@ -766,18 +699,13 @@ const PrivacyPolicy = () => {
               <li>Credit tracking data (analysis count, window start, last analysis timestamp)</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Browser localStorage:</strong> Notion Idea Board workspace data is stored locally in your 
-              browser and persists until cleared by you.
-            </p>
-            <p className="text-muted-foreground mb-4">
               This data remains stored as long as your account is active. You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>View your complete recommendation history at any time through your profile page</li>
               <li>Delete individual recommendation entries from tools history</li>
-              <li>Clear your Notion Idea Board workspace data using the "Clear All" button</li>
               <li>
-                Delete your entire account, which permanently removes all recommendation history and credit tracking 
+                Delete your entire account, which permanently removes all recommendation history and credit tracking
                 data from our production database
               </li>
             </ul>
@@ -1048,10 +976,6 @@ const PrivacyPolicy = () => {
                   <li>Processing timestamps</li>
                   <li>HMAC-SHA256 signatures (for cryptographic verification)</li>
                 </ul>
-              </li>
-              <li>
-                Browser localStorage data (Notion Idea Board workspace state, imported recommendations, view mode 
-                preferences – stored locally on your device only, not transmitted to our servers)
               </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
@@ -1329,75 +1253,6 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Browser-Based Data Storage (localStorage)</h2>
-            <p className="text-muted-foreground mb-4">
-              We use your web browser's localStorage feature to save your Notion Idea Board preferences and imported 
-              recommendations locally on your device. This technology allows the application to remember your workspace 
-              state across browser sessions without transmitting this data to our servers.
-            </p>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">What Data is Stored Locally</h3>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Imported recommendation data (derived from your existing analyses in the Business Tools Advisor and 
-              Business Ideas Advisor)</li>
-              <li>Notion Idea Board view mode state (whether you're in landing, select, or display view)</li>
-              <li>Workspace organization preferences and selected analyses</li>
-            </ul>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
-            <p className="text-muted-foreground mb-4">
-              <strong>Purpose:</strong> Enhance user experience by persisting your Notion Idea Board workspace state 
-              across sessions, eliminating the need to re-import and reorganize your recommendations each time you 
-              visit the page.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Legitimate interest in providing a user-friendly 
-              interface that improves usability and user experience.
-            </p>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">User Control and Data Management</h3>
-            <p className="text-muted-foreground mb-4">
-              You have full control over your localStorage data:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Clear via application:</strong> Use the "Clear All" button in the Notion Idea Board to 
-                immediately delete all imported recommendations and reset your workspace
-              </li>
-              <li>
-                <strong>Clear via browser settings:</strong> Access your browser's settings to clear localStorage, 
-                site data, or cache
-              </li>
-              <li>
-                <strong>Automatic clearing:</strong> localStorage data is automatically cleared when you clear your 
-                browser's cache or site data
-              </li>
-            </ul>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">Privacy Implications</h3>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>No transmission to servers:</strong> localStorage data remains on your device and is never 
-                transmitted to our servers
-              </li>
-              <li>
-                <strong>Device-specific:</strong> The data is only accessible from the specific browser and device 
-                where you use the Notion Idea Board
-              </li>
-              <li>
-                <strong>We cannot access it:</strong> We have no access to view, modify, or process your localStorage 
-                data
-              </li>
-              <li>
-                <strong>Persistence:</strong> Data persists until you manually clear it or clear your browser data
-              </li>
-              <li>
-                <strong>Cross-browser/device:</strong> Using a different browser or device will start with an empty 
-                Notion Idea Board (no synchronization across devices)
-              </li>
-            </ul>
-          </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>

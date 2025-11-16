@@ -71,7 +71,7 @@ const PricingPage = () => {
     {
       icon: <BarChart3 className="h-6 w-6" />,
       title: "Deep Analysis Mode",
-      description: "Premium exclusive: Get 8-10 detailed recommendations with prerequisites, metrics, and risk levels."
+      description: "Premium exclusive: Get 8-10 detailed recommendations with prerequisites, metrics, and risk levels. Add custom requirements to get AI recommendations tailored exactly to your specific needs."
     },
     {
       icon: <Target className="h-6 w-6" />,
@@ -91,6 +91,7 @@ const PricingPage = () => {
     { name: "Website Tool Recommendations", free: true, premium: true },
     { name: "Business Improvement Ideas", free: true, premium: true },
     { name: "Budget-Based Suggestions", free: true, premium: true },
+    { name: "Custom Requirements Input", free: false, premium: true },
     { name: "Detailed Implementation Steps", free: false, premium: true },
     { name: "ROI Calculations", free: false, premium: true },
     { name: "Risk Assessment", free: false, premium: true },

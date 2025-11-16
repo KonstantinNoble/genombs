@@ -128,7 +128,7 @@ const PricingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
+    <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <Helmet>
         <title>Pricing - AI Website Analysis Plans | Synoptas</title>
         <meta 

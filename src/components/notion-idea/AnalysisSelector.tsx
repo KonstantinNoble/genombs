@@ -59,7 +59,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
 
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
+    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4 pb-24 sm:pb-0">
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
           Import Your AI Recommendations
@@ -223,6 +223,21 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         </div>
       </div>
 
+      {/* Sticky Import Bar on mobile, centered on desktop */}
+      <div className="sm:static fixed inset-x-0 bottom-0 z-40 safe-area-inset-bottom">
+        <div className="px-4 py-3 sm:px-0 sm:py-0 bg-background/95 sm:bg-transparent border-t border-border sm:border-0 backdrop-blur-md sm:backdrop-blur-none">
+          <div className="max-w-7xl mx-auto flex justify-center">
+            <Button
+              size="lg"
+              onClick={() => onImport(selectedToolIds, selectedIdeaIds)}
+              disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
+              className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all w-full sm:w-auto h-11 sm:h-12 text-sm sm:text-base font-semibold"
+            >
+              Import to Board ({selectedToolIds.length + selectedIdeaIds.length})
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

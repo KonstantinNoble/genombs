@@ -74,16 +74,6 @@ interface ToolHistoryItem {
   created_at: string;
 }
 
-interface IdeaHistoryItem {
-  id: string;
-  industry: string;
-  team_size: string;
-  budget_range: string;
-  business_context: string;
-  screenshot_urls?: string[];
-  result: IdeaAdvisorResult;
-  created_at: string;
-}
 
 // Minimal Markdown normalization - only fix broken headings
 function normalizeMarkdown(md?: string) {
@@ -145,9 +135,6 @@ const BusinessToolsAdvisor = () => {
   const [toolResult, setToolResult] = useState<ToolAdvisorResult | null>(null);
   const [toolHistory, setToolHistory] = useState<ToolHistoryItem[]>([]);
   
-  const [ideaResult, setIdeaResult] = useState<IdeaAdvisorResult | null>(null);
-  const [ideaHistory, setIdeaHistory] = useState<IdeaHistoryItem[]>([]);
-  
   const [deepAnalysisCount, setDeepAnalysisCount] = useState(0);
   const [standardAnalysisCount, setStandardAnalysisCount] = useState(0);
   const [canAnalyze, setCanAnalyze] = useState(true);
@@ -174,7 +161,6 @@ const BusinessToolsAdvisor = () => {
   const [imageError, setImageError] = useState<string | null>(null);
   
   const toolResultsRef = useRef<HTMLDivElement | null>(null);
-  const ideaResultsRef = useRef<HTMLDivElement | null>(null);
 
   const { toast } = useToast();
   
@@ -202,23 +188,6 @@ const BusinessToolsAdvisor = () => {
     }
   }, [toolResult]);
 
-  useEffect(() => {
-    if (ideaResult && ideaResultsRef.current) {
-      setTimeout(() => {
-        const element = ideaResultsRef.current;
-        if (element) {
-          const top = element.getBoundingClientRect().top + window.scrollY - 80;
-          window.scrollTo({ top, behavior: 'smooth' });
-          // iOS repaint fix
-          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-          if (isiOS && element) {
-            element.style.transform = 'translateZ(0)';
-            requestAnimationFrame(() => { element.style.transform = ''; });
-          }
-        }
-      }, 100);
-    }
-  }, [ideaResult]);
 
   useEffect(() => {
     // Check for safe mode from URL or localStorage (guard for Safari private mode)
@@ -255,7 +224,6 @@ const BusinessToolsAdvisor = () => {
       
       checkPremiumStatus();
       loadToolHistory();
-      loadIdeaHistory();
       loadAnalysisLimit();
 
       const channel = supabase
@@ -415,23 +383,6 @@ const BusinessToolsAdvisor = () => {
     setToolHistory((data || []) as unknown as ToolHistoryItem[]);
   };
 
-  const loadIdeaHistory = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('business_ideas_history')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error('Error loading idea history:', error);
-      return;
-    }
-
-    setIdeaHistory((data || []) as unknown as IdeaHistoryItem[]);
-  };
 
   const handleAnalyze = async () => {
     if (!user) {
@@ -456,11 +407,7 @@ const BusinessToolsAdvisor = () => {
     }
 
     setAnalyzing(true);
-    if (isTools) {
-      setToolResult(null);
-    } else {
-      setIdeaResult(null);
-    }
+    setToolResult(null);
     
     let imageUrl: string | null = null;
 
@@ -536,9 +483,6 @@ const BusinessToolsAdvisor = () => {
       if (isTools) {
         setToolResult(data);
         await loadToolHistory();
-      } else {
-        setIdeaResult(data);
-        await loadIdeaHistory();
       }
       
       await loadAnalysisLimit();
@@ -581,27 +525,6 @@ const BusinessToolsAdvisor = () => {
     });
   };
 
-  const handleDeleteIdeaHistory = async (id: string) => {
-    const { error } = await supabase
-      .from('business_ideas_history')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete history item",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIdeaHistory(ideaHistory.filter(item => item.id !== id));
-    toast({
-      title: "Deleted",
-      description: "History item removed",
-    });
-  };
 
   const getImplementationColor = (implementation: string) => {
     const colors: Record<string, string> = {
@@ -626,7 +549,7 @@ const BusinessToolsAdvisor = () => {
   };
 
   const handleExportPDF = async () => {
-    const result = activeTab === 'tools' ? toolResult : ideaResult;
+    const result = toolResult;
     if (!result) return;
 
     const metadata = {
@@ -833,10 +756,10 @@ const BusinessToolsAdvisor = () => {
     );
   }
 
-  const currentHistory = activeTab === "tools" ? toolHistory : ideaHistory;
-  const currentResult = activeTab === "tools" ? toolResult : ideaResult;
-  const handleDelete = activeTab === "tools" ? handleDeleteToolHistory : handleDeleteIdeaHistory;
-  const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
+  const currentHistory = toolHistory;
+  const currentResult = toolResult;
+  const handleDelete = handleDeleteToolHistory;
+  const setCurrentResult = setToolResult;
 
   return (
     <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
@@ -1477,128 +1400,6 @@ const BusinessToolsAdvisor = () => {
                 </CardContent>
               </Card>
 
-              {/* Idea Results */}
-              {ideaResult && !isPlainMode && (
-                <div ref={ideaResultsRef} className="scroll-mt-20">
-                  {ideaResult.recommendations.map((idea, idx) => (
-                    <Card key={idx} className="mb-4 border-secondary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-secondary/5">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-base sm:text-lg">{idea.name}</CardTitle>
-                            <CardDescription className="mt-1 text-xs sm:text-sm">
-                              <Badge variant="outline" className="mr-2">{idea.category}</Badge>
-                              <Badge variant="outline" className="mr-2">{idea.viability}</Badge>
-                              <Badge variant="outline">{idea.estimatedInvestment}</Badge>
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3 sm:space-y-4">
-                        <div>
-                          <h4 className="font-semibold text-xs sm:text-sm mb-2">Rationale</h4>
-                          <div className="markdown-body text-xs sm:text-sm">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {normalizeMarkdown(idea.rationale)}
-                            </ReactMarkdown>
-                          </div>
-                        </div>
-                        
-                        {idea.detailedSteps && idea.detailedSteps.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Implementation Steps</h4>
-                            <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
-                              {idea.detailedSteps.map((step, i) => (
-                                <li key={i}>{step}</li>
-                              ))}
-                            </ol>
-                          </div>
-                        )}
-                        
-                        {idea.expectedROI && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Expected ROI</h4>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{idea.expectedROI}</p>
-                          </div>
-                        )}
-                        
-                        {idea.riskLevel && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Risk Level</h4>
-                            <Badge variant={idea.riskLevel === "low" ? "default" : idea.riskLevel === "medium" ? "secondary" : "destructive"}>
-                              {idea.riskLevel}
-                            </Badge>
-                          </div>
-                        )}
-                        
-                        {idea.prerequisites && idea.prerequisites.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Prerequisites</h4>
-                            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
-                              {idea.prerequisites.map((prereq, i) => (
-                                <li key={i}>{prereq}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        
-                        {idea.metrics && idea.metrics.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Success Metrics</h4>
-                            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
-                              {idea.metrics.map((metric, i) => (
-                                <li key={i}>{metric}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        
-                        {idea.implementationTimeline && (
-                          <div>
-                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Implementation Timeline</h4>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{idea.implementationTimeline}</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-
-                  {ideaResult.generalAdvice && (
-                    <Card className="mt-4 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">General Advice</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="markdown-body text-xs sm:text-sm">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {normalizeMarkdown(ideaResult.generalAdvice)}
-                          </ReactMarkdown>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
-              
-              {/* Plain Mode Idea Results */}
-              {ideaResult && isPlainMode && (
-                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-4 p-4 border rounded-lg bg-card">
-                  <h2 className="text-2xl font-bold">Business Ideas</h2>
-                  {ideaResult.recommendations.map((idea, idx) => (
-                    <div key={idx} className="border-l-4 border-secondary pl-4 py-2">
-                      <h3 className="text-lg font-semibold">{idea.name}</h3>
-                      <p className="text-sm text-muted-foreground">{idea.category} • {idea.viability} • {idea.estimatedInvestment}</p>
-                      <p className="mt-2">{idea.rationale}</p>
-                    </div>
-                  ))}
-                  {ideaResult.generalAdvice && (
-                    <div className="mt-6 p-4 border rounded bg-muted/50">
-                      <h3 className="font-semibold mb-2">General Advice</h3>
-                      <p className="whitespace-pre-wrap">{stripMarkdown(ideaResult.generalAdvice)}</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </TabsContent>
           </Tabs>
         </main>

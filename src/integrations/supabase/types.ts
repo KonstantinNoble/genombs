@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      business_ideas_history: {
-        Row: {
-          analysis_mode: string | null
-          budget_range: string
-          business_context: string
-          created_at: string
-          id: string
-          industry: string
-          result: Json
-          team_size: string
-          user_id: string
-        }
-        Insert: {
-          analysis_mode?: string | null
-          budget_range: string
-          business_context: string
-          created_at?: string
-          id?: string
-          industry: string
-          result: Json
-          team_size: string
-          user_id: string
-        }
-        Update: {
-          analysis_mode?: string | null
-          budget_range?: string
-          business_context?: string
-          created_at?: string
-          id?: string
-          industry?: string
-          result?: Json
-          team_size?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       business_tools_history: {
         Row: {
           analysis_mode: string | null
@@ -181,8 +145,6 @@ export type Database = {
           freemius_customer_id: string | null
           freemius_subscription_id: string | null
           id: string
-          ideas_count: number | null
-          ideas_window_start: string | null
           is_premium: boolean
           last_analysis_at: string | null
           last_reset_date: string
@@ -206,8 +168,6 @@ export type Database = {
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
-          ideas_count?: number | null
-          ideas_window_start?: string | null
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
@@ -231,8 +191,6 @@ export type Database = {
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
-          ideas_count?: number | null
-          ideas_window_start?: string | null
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string

@@ -190,10 +190,19 @@ const BusinessToolsAdvisor = () => {
   }, [ideaResult]);
 
   useEffect(() => {
-    // Check for safe mode from URL or localStorage
-    const params = new URLSearchParams(window.location.search);
+    // Check for safe mode from URL or localStorage (guard for Safari private mode)
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams('');
     const safeModeParam = params.get('safe');
-    const safeModeStorage = localStorage.getItem('safe-mode');
+
+    let safeModeStorage = 'false';
+    try {
+      safeModeStorage = localStorage.getItem('safe-mode') || 'false';
+    } catch (e) {
+      // localStorage may be blocked (Safari private mode)
+      console.warn('Safe mode storage not accessible:', e);
+      safeModeStorage = 'false';
+    }
+
     setIsPlainMode(safeModeParam === '1' || safeModeStorage === 'true');
     
     supabase.auth.getSession().then(({ data: { session } }) => {

@@ -283,7 +283,7 @@ Current Business Context: ${businessContext}`;
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
-    const timeout = (isDeepMode && validatedInput.imageUrl) ? 40000 : isDeepMode ? 30000 : 20000;
+    const timeout = (isDeepMode && validatedInput.imageUrl) ? 50000 : isDeepMode ? 45000 : 25000;
     
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
@@ -315,6 +315,7 @@ Current Business Context: ${businessContext}`;
         body: JSON.stringify({
           model: 'google/gemini-2.5-flash',
           messages: messages,
+          max_completion_tokens: isDeepMode ? 16000 : 8000,
           tools: [
             {
               type: "function",

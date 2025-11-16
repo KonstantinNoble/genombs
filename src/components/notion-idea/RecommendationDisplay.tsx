@@ -135,7 +135,7 @@ const RecommendationDisplay = ({
   }, [recommendations]);
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
+    <div className="max-w-7xl mx-auto animate-fade-in px-3 sm:px-4">
       {/* Header */}
       <div className="mb-4 sm:mb-8">
         <div className="flex flex-col gap-3 sm:gap-4 mb-4">
@@ -144,23 +144,29 @@ const RecommendationDisplay = ({
               Your Business Roadmap
             </h1>
             <p className="text-xs sm:text-base text-muted-foreground">
-              Organized recommendations from {recommendations.length} total items
+              {recommendations.length} recommendations
             </p>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button variant="outline" onClick={onBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm h-9 sm:h-10">
-              <span className="hidden sm:inline">← Import More</span>
-              <span className="sm:hidden">← Import</span>
+          <div className="flex gap-2 w-full">
+            <Button 
+              variant="outline" 
+              onClick={onBackToSelection} 
+              className="flex-1 text-xs sm:text-sm h-9 sm:h-10 px-3"
+            >
+              ← Import
             </Button>
-            <Button variant="destructive" onClick={onClearAll} className="flex-1 sm:flex-none text-xs sm:text-sm h-9 sm:h-10">
-              <span className="hidden sm:inline">Clear All</span>
-              <span className="sm:hidden">Clear</span>
+            <Button 
+              variant="destructive" 
+              onClick={onClearAll} 
+              className="flex-1 text-xs sm:text-sm h-9 sm:h-10 px-3 bg-red-600 hover:bg-red-700 text-white font-semibold"
+            >
+              Delete All
             </Button>
           </div>
         </div>
 
         {/* Filters and Sorting */}
-        <div className="flex flex-col gap-2 sm:gap-4">
+        <div className="flex flex-col gap-2 sm:gap-3">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="w-full">
             <TabsList className="grid grid-cols-3 w-full h-9 sm:h-10">
               <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
@@ -171,26 +177,26 @@ const RecommendationDisplay = ({
 
           <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as typeof timeFilter)} className="w-full">
             <TabsList className="grid grid-cols-4 w-full h-9 sm:h-10">
-              <TabsTrigger value="all" className="text-xs sm:text-sm px-1 sm:px-3">All</TabsTrigger>
-              <TabsTrigger value="quick" className="text-xs sm:text-sm px-1 sm:px-3">Quick</TabsTrigger>
-              <TabsTrigger value="medium" className="text-xs sm:text-sm px-1 sm:px-3">Medium</TabsTrigger>
-              <TabsTrigger value="long" className="text-xs sm:text-sm px-1 sm:px-3">Long</TabsTrigger>
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+              <TabsTrigger value="quick" className="text-xs sm:text-sm">Quick</TabsTrigger>
+              <TabsTrigger value="medium" className="text-xs sm:text-sm">Med</TabsTrigger>
+              <TabsTrigger value="long" className="text-xs sm:text-sm">Long</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-2 sm:gap-3 w-full">
+          <div className="flex items-center gap-2 w-full">
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-              <SelectTrigger className="flex-1 sm:flex-none sm:w-[180px] text-xs sm:text-sm h-9 sm:h-10">
+              <SelectTrigger className="flex-1 text-xs sm:text-sm h-9 sm:h-10">
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="category">By Category</SelectItem>
-                <SelectItem value="cost">By Cost</SelectItem>
-                <SelectItem value="date">By Date</SelectItem>
+                <SelectItem value="category">Category</SelectItem>
+                <SelectItem value="cost">Cost</SelectItem>
+                <SelectItem value="date">Date</SelectItem>
               </SelectContent>
             </Select>
 
-            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap px-2 py-1">
+            <Badge variant="secondary" className="text-xs sm:text-sm whitespace-nowrap px-2 py-1.5 h-9 flex items-center">
               {filteredRecommendations.length}
             </Badge>
           </div>

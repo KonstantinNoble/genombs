@@ -338,8 +338,8 @@ const NotionIdea = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl overflow-x-hidden">
         {effectiveViewMode === 'landing' && (
-          <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-4 sm:py-16">
-            <div className="space-y-3 sm:space-y-6 px-2 sm:px-4">
+          <div className="max-w-5xl mx-auto text-center space-y-4 sm:space-y-10 animate-fade-in py-4 sm:py-16 px-3 sm:px-4">
+            <div className="space-y-3 sm:space-y-6">
               <h1 className="text-2xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                 Website Idea Board
               </h1>
@@ -348,7 +348,7 @@ const NotionIdea = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 my-4 sm:my-10 px-2 sm:px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 my-4 sm:my-10">
               <div className="p-4 sm:p-8 rounded-xl sm:rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300">
                 <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-lg text-foreground">Import Analyses</h3>
                 <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
@@ -372,8 +372,8 @@ const NotionIdea = () => {
             </div>
 
             {user ? (
-              <div className="space-y-3 sm:space-y-6 px-2 sm:px-4">
-                <Button 
+              <div className="space-y-3 sm:space-y-6 px-3 sm:px-4">
+                <Button
                   size="lg" 
                   onClick={handleGetStarted}
                   className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-sm sm:text-lg px-6 sm:px-10 py-5 sm:py-7 font-bold w-full sm:w-auto"
@@ -424,17 +424,17 @@ const NotionIdea = () => {
         )}
         
       {effectiveViewMode === 'display' && !isPlainMode && (
-        <>
+        <div className="px-3 sm:px-4">
           {/* Phase 1: Haftungsausschluss-Banner */}
-          <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 mb-8 rounded-r-lg">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+          <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-3 sm:p-4 mb-6 sm:mb-8 rounded-r-lg">
+            <div className="flex gap-2 sm:gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-foreground">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-foreground leading-relaxed">
                   <strong>Important:</strong> These AI-generated recommendations are for educational and informational purposes only. 
                   They do not constitute professional business, legal, or financial advice. Please consult qualified professionals 
                   before implementing any suggestions.
@@ -448,16 +448,22 @@ const NotionIdea = () => {
             onBackToSelection={handleBackToSelection}
             onClearAll={handleClearAll}
           />
-        </>
+        </div>
       )}
       
       {effectiveViewMode === 'display' && isPlainMode && (
-        <div className="space-y-4 p-4 border rounded-lg bg-card">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Your Recommendations</h1>
+        <div className="space-y-4 p-3 sm:p-4 border rounded-lg bg-card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold">Your Recommendations</h1>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={handleBackToSelection}>Import More</Button>
-              <Button variant="destructive" onClick={handleClearAll}>Clear All</Button>
+              <Button variant="outline" onClick={handleBackToSelection} className="flex-1 sm:flex-none text-xs sm:text-sm">Import</Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleClearAll} 
+                className="flex-1 sm:flex-none text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white font-semibold"
+              >
+                Delete All
+              </Button>
             </div>
           </div>
           

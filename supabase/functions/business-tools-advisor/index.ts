@@ -248,7 +248,7 @@ Website Goals: ${websiteGoals}`;
       toolProperties.implementationTimeline = { type: 'string' };
     }
 
-    const timeout = isDeepMode ? 30000 : 20000;
+    const timeout = isDeepMode ? 45000 : 25000;
     
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
@@ -268,6 +268,7 @@ Website Goals: ${websiteGoals}`;
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt },
           ],
+          max_completion_tokens: isDeepMode ? 16000 : 8000,
           tools: [
             {
               type: 'function',

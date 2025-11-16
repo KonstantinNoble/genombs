@@ -473,13 +473,11 @@ const BusinessToolsAdvisor = () => {
         imageUrl = await uploadImageToStorage(user.id);
         
         if (!imageUrl) {
-          // Upload failed - abort analysis
-          console.error('❌ Image upload failed, aborting analysis');
+          console.error('❌ Bildupload fehlgeschlagen, Analyse abgebrochen');
           setAnalyzing(false);
           return;
         }
-        
-        console.log('✅ Image uploaded successfully, proceeding with analysis');
+        console.log('✅ Bild erfolgreich hochgeladen, Analyse wird fortgesetzt');
       }
       
       // STEP 2: Call Edge Function
@@ -579,10 +577,10 @@ const BusinessToolsAdvisor = () => {
 
     // Validate file size
     if (file.size > MAX_IMAGE_SIZE) {
-      setImageError('File too large. Maximum: 5MB');
+      setImageError('Datei zu groß. Maximal: 5MB');
       toast({
-        title: "File Too Large",
-        description: "Please select an image under 5MB.",
+        title: "Datei zu groß",
+        description: "Bitte wähle ein Bild unter 5MB.",
         variant: "destructive",
       });
       e.target.value = '';
@@ -591,10 +589,10 @@ const BusinessToolsAdvisor = () => {
 
     // Validate MIME type
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setImageError('Invalid format. Only JPG, PNG and WEBP allowed.');
+      setImageError('Ungültiges Format. Nur JPG, PNG und WEBP erlaubt.');
       toast({
-        title: "Invalid Format",
-        description: "Only JPG, PNG and WEBP files are allowed.",
+        title: "Ungültiges Format",
+        description: "Nur JPG, PNG und WEBP sind erlaubt.",
         variant: "destructive",
       });
       e.target.value = '';
@@ -604,7 +602,7 @@ const BusinessToolsAdvisor = () => {
     // Validate file extension
     const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
     if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
-      setImageError('Invalid file extension.');
+      setImageError('Ungültige Dateiendung.');
       e.target.value = '';
       return;
     }
@@ -617,10 +615,10 @@ const BusinessToolsAdvisor = () => {
       setImagePreview(reader.result as string);
     };
     reader.onerror = () => {
-      setImageError('Error loading preview');
+      setImageError('Fehler beim Laden der Vorschau');
       toast({
-        title: "Error",
-        description: "Could not create image preview.",
+        title: "Fehler",
+        description: "Vorschau konnte nicht erstellt werden.",
         variant: "destructive",
       });
     };
@@ -631,8 +629,10 @@ const BusinessToolsAdvisor = () => {
     setUploadedImage(null);
     setImagePreview(null);
     setImageError(null);
-    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    const fileInputIdeas = document.getElementById('image-upload') as HTMLInputElement | null;
+    const fileInputTools = document.getElementById('image-upload-tools') as HTMLInputElement | null;
+    if (fileInputIdeas) fileInputIdeas.value = '';
+    if (fileInputTools) fileInputTools.value = '';
   };
 
   const uploadImageToStorage = async (userId: string): Promise<string | null> => {
@@ -671,21 +671,21 @@ const BusinessToolsAdvisor = () => {
         throw urlError;
       }
 
-      console.log('✅ Signed URL created');
+      console.log('✅ Signierte URL erstellt');
       return urlData?.signedUrl || null;
 
     } catch (error: any) {
       console.error('❌ Image upload failed:', error);
       
-      let errorMessage = 'Image upload failed. Please try again.';
+      let errorMessage = 'Bildupload fehlgeschlagen. Bitte erneut versuchen.';
       if (error.message?.includes('policy')) {
-        errorMessage = 'Permission denied. Premium required.';
+        errorMessage = 'Zugriff verweigert. Premium erforderlich.';
       } else if (error.message?.includes('size')) {
-        errorMessage = 'File too large (max 5MB).';
+        errorMessage = 'Datei zu groß (max. 5MB).';
       }
       
       toast({
-        title: "Upload Failed",
+        title: "Upload fehlgeschlagen",
         description: errorMessage,
         variant: "destructive",
       });
@@ -1250,7 +1250,7 @@ const BusinessToolsAdvisor = () => {
                       <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="image-upload-tools" className="text-sm font-semibold flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-primary" />
-                          Upload Image (Optional)
+                          Bild hochladen (optional)
                         </Label>
                         <Badge className="bg-primary text-primary-foreground text-xs">
                           Premium
@@ -1259,7 +1259,7 @@ const BusinessToolsAdvisor = () => {
                       
                       {/* Info Text */}
                       <p className="text-xs text-muted-foreground">
-                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
+                        Füge ein Bild für eine tiefere visuelle Analyse hinzu (max. 5MB • JPG, PNG, WEBP)
                       </p>
 
                       {/* Upload Area */}
@@ -1648,7 +1648,7 @@ const BusinessToolsAdvisor = () => {
                       <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="image-upload" className="text-sm font-semibold flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-primary" />
-                          Upload Image (Optional)
+                          Bild hochladen (optional)
                         </Label>
                         <Badge className="bg-primary text-primary-foreground text-xs">
                           Premium
@@ -1657,7 +1657,7 @@ const BusinessToolsAdvisor = () => {
                       
                       {/* Info Text */}
                       <p className="text-xs text-muted-foreground">
-                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
+                        Füge ein Bild für eine tiefere visuelle Analyse hinzu (max. 5MB • JPG, PNG, WEBP)
                       </p>
 
                       {/* Upload Area */}

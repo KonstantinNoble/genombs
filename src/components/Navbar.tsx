@@ -84,6 +84,17 @@ const Navbar = () => {
           </Link>
           
           <Link 
+            to="/notion-idea" 
+            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+              isActive("/notion-idea") 
+                ? "text-primary after:w-full" 
+                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
+            }`}
+          >
+            Notion Idea
+          </Link>
+          
+          <Link 
             to="/pricing" 
             className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
               isActive("/pricing") 
@@ -156,6 +167,14 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               AI Website Advisor
+            </Link>
+            
+            <Link
+              to="/notion-idea"
+              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+              onClick={() => setIsOpen(false)}
+            >
+              Notion Idea
             </Link>
 
             <Link

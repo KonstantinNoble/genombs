@@ -480,6 +480,13 @@ const BusinessToolsAdvisor = () => {
       // Add analysis mode for premium users
       if (isPremium) {
         body.analysisMode = analysisMode;
+        
+        // Add custom requirements for deep mode
+        if (analysisMode === "deep" && customRequirements.trim()) {
+          body.customRequirements = customRequirements.trim();
+          console.log('✅ Custom requirements added to payload:', customRequirements.trim());
+        }
+        
         // Add image URL if available
         if (imageUrl) {
           body.imageUrl = imageUrl;

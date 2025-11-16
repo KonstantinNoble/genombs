@@ -180,6 +180,7 @@ export type Database = {
         Row: {
           analysis_count: number | null
           analysis_window_start: string | null
+          auto_renew: boolean | null
           created_at: string
           deep_analysis_count: number | null
           deep_analysis_window_start: string | null
@@ -191,9 +192,11 @@ export type Database = {
           is_premium: boolean
           last_analysis_at: string | null
           last_reset_date: string
+          next_payment_date: string | null
           premium_since: string | null
           standard_analysis_count: number | null
           standard_analysis_window_start: string | null
+          subscription_end_date: string | null
           tools_count: number | null
           tools_window_start: string | null
           updated_at: string
@@ -202,6 +205,7 @@ export type Database = {
         Insert: {
           analysis_count?: number | null
           analysis_window_start?: string | null
+          auto_renew?: boolean | null
           created_at?: string
           deep_analysis_count?: number | null
           deep_analysis_window_start?: string | null
@@ -213,9 +217,11 @@ export type Database = {
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          next_payment_date?: string | null
           premium_since?: string | null
           standard_analysis_count?: number | null
           standard_analysis_window_start?: string | null
+          subscription_end_date?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string
@@ -224,6 +230,7 @@ export type Database = {
         Update: {
           analysis_count?: number | null
           analysis_window_start?: string | null
+          auto_renew?: boolean | null
           created_at?: string
           deep_analysis_count?: number | null
           deep_analysis_window_start?: string | null
@@ -235,9 +242,11 @@ export type Database = {
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          next_payment_date?: string | null
           premium_since?: string | null
           standard_analysis_count?: number | null
           standard_analysis_window_start?: string | null
+          subscription_end_date?: string | null
           tools_count?: number | null
           tools_window_start?: string | null
           updated_at?: string

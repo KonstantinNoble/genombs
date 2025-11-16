@@ -239,10 +239,30 @@ serve(async (req) => {
         break;
 
       case 'subscription.cancelled':
-        // Don't deactivate immediately - let it run until expiry
-        console.log('Subscription cancelled but not deactivating yet:', profile.id);
+        // Don't deactivate immediately - update auto_renew status
+        console.log('Subscription cancelled, updating auto-renewal status:', profile.id);
+        const { error: cancelError } = await supabase
+          .from('user_credits')
+          .update({ 
+            auto_renew: false,
+            next_payment_date: null 
+          })
+          .eq('user_id', profile.id);
+        
+        if (cancelError) {
+          console.error('Error updating cancellation status:', cancelError);
+        }
+
+        // Mark event as processed
+        await supabase
+          .from('processed_webhook_events')
+          .insert({
+            event_id: event.id,
+            event_type: event.type,
+          });
+
         return new Response(
-          JSON.stringify({ message: 'Subscription cancelled, will expire naturally' }),
+          JSON.stringify({ message: 'Auto-renewal deactivated, subscription will expire naturally' }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
@@ -277,6 +297,17 @@ serve(async (req) => {
       if (subscriptionId) updateData.freemius_subscription_id = subscriptionId;
       if (customerId) updateData.freemius_customer_id = customerId;
       
+      // Add subscription dates
+      if (event.objects.subscription?.ends) {
+        updateData.subscription_end_date = new Date(event.objects.subscription.ends).toISOString();
+      }
+      if (event.objects.subscription?.next_payment_date) {
+        updateData.next_payment_date = new Date(event.objects.subscription.next_payment_date).toISOString();
+        updateData.auto_renew = true;
+      } else {
+        updateData.auto_renew = false;
+      }
+      
       // Set premium_since only if it's a new premium activation
       const { data: existingCredits } = await supabase
         .from('user_credits')
@@ -287,6 +318,11 @@ serve(async (req) => {
       if (!existingCredits?.premium_since) {
         updateData.premium_since = premiumSince;
       }
+    } else {
+      // When deactivating, clear subscription dates
+      updateData.subscription_end_date = null;
+      updateData.next_payment_date = null;
+      updateData.auto_renew = false;
     }
 
     const { error: updateError } = await supabase

@@ -34,7 +34,7 @@ const Profile = () => {
       if (session.user) {
         const { data } = await supabase
           .from('user_credits')
-          .select('is_premium, premium_since')
+          .select('is_premium, premium_since, subscription_end_date, next_payment_date, auto_renew')
           .eq('user_id', session.user.id)
           .maybeSingle();
         
@@ -135,13 +135,56 @@ const Profile = () => {
                 <Label>Premium Status</Label>
                 <div className="p-3 bg-muted rounded-md border border-border">
                   {credits?.is_premium ? (
-                    <div className="flex items-center justify-between">
-                      <span className="text-green-600 dark:text-green-500 font-medium">✓ Premium Active</span>
-                      {credits.premium_since && (
-                        <span className="text-xs text-muted-foreground">
-                          Since {new Date(credits.premium_since).toLocaleDateString()}
-                        </span>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-green-600 dark:text-green-500 font-medium">✓ Premium Active</span>
+                        {credits.premium_since && (
+                          <span className="text-xs text-muted-foreground">
+                            Since {new Date(credits.premium_since).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {credits.subscription_end_date && (
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Valid until: </span>
+                          <span className="font-medium">
+                            {new Date(credits.subscription_end_date).toLocaleDateString()}
+                          </span>
+                        </div>
                       )}
+                      
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {credits.auto_renew ? (
+                          <>
+                            <span className="text-green-600 dark:text-green-500 text-sm">
+                              ✓ Auto-renewal active
+                            </span>
+                            {credits.next_payment_date && (
+                              <span className="text-xs text-muted-foreground">
+                                Next payment: {new Date(credits.next_payment_date).toLocaleDateString()}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-orange-600 dark:text-orange-500 text-sm">
+                            ⚠ Auto-renewal canceled - expires on {credits.subscription_end_date 
+                              ? new Date(credits.subscription_end_date).toLocaleDateString() 
+                              : 'subscription end'}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          window.open('https://checkout.freemius.com/account/', '_blank');
+                        }}
+                        className="w-full mt-2"
+                      >
+                        Manage Subscription in Freemius
+                      </Button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2">

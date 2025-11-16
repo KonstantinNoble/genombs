@@ -1245,7 +1245,7 @@ const BusinessToolsAdvisor = () => {
 
                   {/* Image Upload - Premium + Deep Analysis Only (Tools Tab) */}
                   {isPremium && analysisMode === "deep" && (
-                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
+                    <div className="space-y-3 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
                       {/* Header with Premium Badge */}
                       <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="image-upload-tools" className="text-sm font-semibold flex items-center gap-2">
@@ -1273,7 +1273,7 @@ const BusinessToolsAdvisor = () => {
                               accept="image/jpeg,image/png,image/webp"
                               onChange={handleImageSelect}
                               disabled={analyzing || isUploadingImage}
-                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="w-full cursor-pointer text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                             {isUploadingImage && (
                               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -1287,15 +1287,15 @@ const BusinessToolsAdvisor = () => {
                             <img 
                               src={imagePreview} 
                               alt="Uploaded preview" 
-                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-primary/30 bg-background"
+                              className="w-full max-h-48 object-contain rounded-lg border-2 border-primary/30 bg-background"
                             />
-                            {/* Remove Button - Mobile optimized */}
+                            {/* Remove Button */}
                             <Button
                               variant="destructive"
                               size="sm"
                               onClick={handleRemoveImage}
                               disabled={analyzing}
-                              className="absolute top-2 right-2 h-10 w-10 sm:h-9 sm:w-9 rounded-full shadow-lg opacity-90 hover:opacity-100 transition-opacity"
+                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -1643,7 +1643,7 @@ const BusinessToolsAdvisor = () => {
 
                   {/* Image Upload - Premium + Deep Analysis Only (Ideas Tab) */}
                   {isPremium && analysisMode === "deep" && (
-                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
+                    <div className="space-y-3 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
                       {/* Header with Premium Badge */}
                       <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="image-upload" className="text-sm font-semibold flex items-center gap-2">
@@ -1671,7 +1671,7 @@ const BusinessToolsAdvisor = () => {
                               accept="image/jpeg,image/png,image/webp"
                               onChange={handleImageSelect}
                               disabled={analyzing || isUploadingImage}
-                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="w-full cursor-pointer text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                             {isUploadingImage && (
                               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -1685,15 +1685,15 @@ const BusinessToolsAdvisor = () => {
                             <img 
                               src={imagePreview} 
                               alt="Uploaded preview" 
-                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-primary/30 bg-background"
+                              className="w-full max-h-48 object-contain rounded-lg border-2 border-primary/30 bg-background"
                             />
-                            {/* Remove Button - Mobile optimized */}
+                            {/* Remove Button */}
                             <Button
                               variant="destructive"
                               size="sm"
                               onClick={handleRemoveImage}
                               disabled={analyzing}
-                              className="absolute top-2 right-2 h-10 w-10 sm:h-9 sm:w-9 rounded-full shadow-lg opacity-90 hover:opacity-100 transition-opacity"
+                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
                             >
                               <X className="h-4 w-4" />
                             </Button>

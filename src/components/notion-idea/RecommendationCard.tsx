@@ -120,7 +120,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                   <h4 className="text-xs sm:text-base font-semibold mt-2 sm:mt-3 mb-1 sm:mb-2 text-foreground">{children}</h4>
                 ),
                 p: ({ children }) => (
-                  <p className="text-xs sm:text-base leading-relaxed text-foreground mb-2 sm:mb-3 last:mb-0">{children}</p>
+                  <p className="text-xs sm:text-base leading-relaxed text-foreground mb-2 sm:mb-3 last:mb-0 break-words">{children}</p>
                 ),
                 strong: ({ children }) => (
                   <strong className="font-semibold text-foreground">{children}</strong>
@@ -135,8 +135,17 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                   <ol className="list-decimal pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ol>
                 ),
                 li: ({ children }) => (
-                  <li className="text-xs sm:text-base leading-relaxed">{children}</li>
+                  <li className="text-xs sm:text-base leading-relaxed break-words">{children}</li>
                 ),
+                a: ({ children, href }) => <a href={href} className="underline break-words text-primary" target="_blank" rel="noreferrer">{children}</a>,
+                pre: ({ children }) => <pre className="overflow-x-auto rounded-md p-3 bg-muted text-xs sm:text-sm">{children}</pre>,
+                code: ({ children }) => <code className="break-all">{children}</code>,
+                table: ({ children }) => <div className="overflow-x-auto"><table className="min-w-full text-left text-xs sm:text-sm">{children}</table></div>,
+                thead: ({ children }) => <thead className="border-b">{children}</thead>,
+                tbody: ({ children }) => <tbody>{children}</tbody>,
+                tr: ({ children }) => <tr className="border-b last:border-0">{children}</tr>,
+                th: ({ children }) => <th className="px-2 py-1 sm:px-3 sm:py-2 font-semibold">{children}</th>,
+                td: ({ children }) => <td className="px-2 py-1 sm:px-3 sm:py-2 align-top">{children}</td>,
               }}
             >
               {normalizeMarkdown(rationale)}

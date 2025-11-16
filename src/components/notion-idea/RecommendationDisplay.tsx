@@ -227,12 +227,21 @@ const RecommendationDisplay = ({
                             h2: ({ children }) => <h2 className="text-base sm:text-xl font-semibold mt-4 sm:mt-5 mb-2 sm:mb-3 text-foreground">{children}</h2>,
                             h3: ({ children }) => <h3 className="text-sm sm:text-lg font-semibold mt-3 sm:mt-4 mb-2 text-foreground">{children}</h3>,
                             h4: ({ children }) => <h4 className="text-xs sm:text-base font-semibold mt-2 sm:mt-3 mb-1 sm:mb-2 text-foreground">{children}</h4>,
-                            p: ({ children }) => <p className="text-xs sm:text-base leading-relaxed mb-2 sm:mb-3 text-foreground">{children}</p>,
+                            p: ({ children }) => <p className="text-xs sm:text-base leading-relaxed mb-2 sm:mb-3 text-foreground break-words">{children}</p>,
                             ul: ({ children }) => <ul className="list-disc pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ul>,
                             ol: ({ children }) => <ol className="list-decimal pl-4 sm:pl-5 mb-2 sm:mb-3 space-y-1 sm:space-y-1.5 text-foreground text-xs sm:text-base">{children}</ol>,
-                            li: ({ children }) => <li className="text-xs sm:text-base leading-relaxed">{children}</li>,
+                            li: ({ children }) => <li className="text-xs sm:text-base leading-relaxed break-words">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
                             em: ({ children }) => <em className="italic text-foreground">{children}</em>,
+                            a: ({ children, href }) => <a href={href} className="underline break-words text-primary" target="_blank" rel="noreferrer">{children}</a>,
+                            pre: ({ children }) => <pre className="overflow-x-auto rounded-md p-3 bg-muted text-xs sm:text-sm">{children}</pre>,
+                            code: ({ children }) => <code className="break-all">{children}</code>,
+                            table: ({ children }) => <div className="overflow-x-auto"><table className="min-w-full text-left text-xs sm:text-sm">{children}</table></div>,
+                            thead: ({ children }) => <thead className="border-b">{children}</thead>,
+                            tbody: ({ children }) => <tbody>{children}</tbody>,
+                            tr: ({ children }) => <tr className="border-b last:border-0">{children}</tr>,
+                            th: ({ children }) => <th className="px-2 py-1 sm:px-3 sm:py-2 font-semibold">{children}</th>,
+                            td: ({ children }) => <td className="px-2 py-1 sm:px-3 sm:py-2 align-top">{children}</td>,
                           }}
                         >
                           {normalizeMarkdown(sec.content)}

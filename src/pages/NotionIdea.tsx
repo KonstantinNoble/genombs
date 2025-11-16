@@ -336,7 +336,7 @@ const NotionIdea = () => {
   return (
     <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl overflow-x-hidden">
         {effectiveViewMode === 'landing' && (
           <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-4 sm:py-16">
             <div className="space-y-3 sm:space-y-6 px-2 sm:px-4">

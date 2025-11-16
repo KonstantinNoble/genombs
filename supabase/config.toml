@@ -21,9 +21,6 @@ verify_jwt = true
 [functions.check-email-availability]
 verify_jwt = false
 
-[functions.business-ideas-advisor]
-verify_jwt = true
-
 [functions.business-tools-advisor]
 verify_jwt = true
 

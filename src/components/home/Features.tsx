@@ -24,7 +24,7 @@ const features = [
   {
     title: "Standard & Deep Analysis",
     description:
-      "Choose between quick standard analysis or comprehensive deep analysis with ROI calculations and risk assessments.",
+      "Choose between quick standard analysis or comprehensive deep analysis with ROI calculations, risk assessments, and custom requirements input.",
   },
   {
     title: "Actionable Reports",

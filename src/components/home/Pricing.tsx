@@ -94,15 +94,27 @@ const Pricing = ({ compact = false }: PricingProps) => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>Website Tool Recommendations</span>
+                    <span>5-7 recommendations per analysis</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>Business Improvement Ideas</span>
+                    <span>Basic implementation guidance</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>Basic Analysis Report</span>
+                    <span className="text-muted-foreground mt-0.5">✗</span>
+                    <span className="text-muted-foreground">No Deep Analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground mt-0.5">✗</span>
+                    <span className="text-muted-foreground">No Custom Requirements</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground mt-0.5">✗</span>
+                    <span className="text-muted-foreground">No ROI calculations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground mt-0.5">✗</span>
+                    <span className="text-muted-foreground">No PDF export</span>
                   </li>
                 </ul>
               </CardContent>
@@ -137,27 +149,31 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>6 Standard Analyses per day</span>
+                    <span>6 Standard + 2 Deep Analyses per day</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span className="font-semibold">2 Deep Analyses per day (Premium exclusive)</span>
+                    <span>8-10 detailed recommendations in Deep Mode</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>Advanced Analysis with detailed steps</span>
+                    <span><strong>Custom Requirements</strong> - Tell AI exactly what you need</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>ROI & Risk Assessment</span>
+                    <span>Detailed implementation steps & timelines</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>Implementation Timeline</span>
+                    <span>ROI calculations & risk assessment</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>PDF Export</span>
+                    <span>Prerequisites & success metrics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>PDF export of all analyses</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>

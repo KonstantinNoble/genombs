@@ -125,66 +125,51 @@ const AnalysisHistory = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">AI Analysis History ({history.length})</h2>
-      </div>
-
+    <div className="space-y-4 md:space-y-6">
       {history.length === 0 ? (
-        <Card className="p-12 text-center">
-          <TrendingUp className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+        <Card className="p-8 md:p-12 text-center">
+          <TrendingUp className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 text-muted-foreground" />
           <p className="text-muted-foreground mb-2">No analyses yet</p>
           <p className="text-sm text-muted-foreground">
             Your AI website advisor analyses will appear here
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* History List */}
-          <div className="space-y-3">
-            {history.map((item) => (
-              <Card
-                key={item.id}
-                className={`cursor-pointer transition-all duration-300 hover:shadow-md ${
-                  selectedAnalysis?.id === item.id
-                    ? "border-primary bg-primary/5"
-                    : "hover:border-primary/50"
-                }`}
-                onClick={() => setSelectedAnalysis(item)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1 flex-1">
-                      <CardTitle className="text-base">{item.industry}</CardTitle>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {item.team_size}
+        <div className="space-y-4 md:space-y-6">
+          {history.map((item) => (
+            <Card key={item.id} className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <CardTitle className="text-lg md:text-xl break-words">{item.industry}</CardTitle>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {item.team_size}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {item.budget_range}
+                      </Badge>
+                      {item.analysis_mode && (
+                        <Badge variant="secondary" className="text-xs">
+                          {item.analysis_mode}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {item.budget_range}
-                        </Badge>
-                        {item.analysis_mode && (
-                          <Badge variant="secondary" className="text-xs">
-                            {item.analysis_mode}
-                          </Badge>
-                        )}
-                      </div>
+                      )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item.id);
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(item.id)}
+                    className="shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="w-3 h-3 shrink-0" />
+                  <span>
                     {new Date(item.created_at).toLocaleDateString("de-DE", {
                       day: "2-digit",
                       month: "2-digit",
@@ -192,67 +177,51 @@ const AnalysisHistory = () => {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                  </span>
+                </div>
+
+                {/* Business Goals */}
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">Business Goals</h3>
+                  <p className="text-sm text-muted-foreground break-words">
                     {item.business_goals}
                   </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
 
-          {/* Analysis Details */}
-          <div className="lg:sticky lg:top-6 lg:self-start">
-            {selectedAnalysis ? (
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>Analysis Details</CardTitle>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline">{selectedAnalysis.industry}</Badge>
-                    <Badge variant="outline">{selectedAnalysis.team_size}</Badge>
-                    <Badge variant="outline">{selectedAnalysis.budget_range}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6 max-h-[600px] overflow-y-auto">
-                  {/* Goals */}
+                {/* General Advice */}
+                {item.result.generalAdvice && (
                   <div>
-                    <h3 className="font-semibold mb-2">Business Goals</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedAnalysis.business_goals}
-                    </p>
-                  </div>
-
-                  {/* General Advice */}
-                  {selectedAnalysis.result.generalAdvice && (
-                    <div>
-                      <h3 className="font-semibold mb-2">General Advice</h3>
-                      <div className="prose prose-sm max-w-none dark:prose-invert">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                          {selectedAnalysis.result.generalAdvice}
-                        </ReactMarkdown>
-                      </div>
+                    <h3 className="font-semibold text-sm mb-2">General Advice</h3>
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                        {item.result.generalAdvice}
+                      </ReactMarkdown>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Recommendations */}
+                {/* Recommendations */}
+                {item.result.recommendations && item.result.recommendations.length > 0 && (
                   <div>
-                    <h3 className="font-semibold mb-3">
-                      Recommendations ({selectedAnalysis.result.recommendations?.length || 0})
+                    <h3 className="font-semibold text-sm mb-3">
+                      Recommendations ({item.result.recommendations.length})
                     </h3>
-                    <div className="space-y-4">
-                      {selectedAnalysis.result.recommendations?.map((rec, idx) => (
+                    <div className="space-y-3">
+                      {item.result.recommendations.map((rec, idx) => (
                         <Card key={idx} className="border-l-4 border-l-primary">
-                          <CardHeader className="pb-3">
-                            <div className="flex items-start justify-between gap-2">
-                              <CardTitle className="text-base">{rec.name}</CardTitle>
+                          <CardHeader className="pb-3 px-3 md:px-6">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                              <CardTitle className="text-sm md:text-base break-words">
+                                {rec.name}
+                              </CardTitle>
                               <Badge
                                 variant="outline"
-                                className={getImplementationColor(rec.implementation)}
+                                className={`${getImplementationColor(rec.implementation)} shrink-0 self-start text-xs`}
                               >
                                 {rec.implementation}
                               </Badge>
                             </div>
-                            <div className="flex gap-2 mt-2">
+                            <div className="flex flex-wrap gap-2 mt-2">
                               <Badge variant="secondary" className="text-xs">
                                 {rec.category}
                               </Badge>
@@ -261,7 +230,7 @@ const AnalysisHistory = () => {
                               </Badge>
                             </div>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="px-3 md:px-6">
                             <div className="prose prose-sm max-w-none dark:prose-invert">
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                                 {rec.rationale}
@@ -272,16 +241,10 @@ const AnalysisHistory = () => {
                       ))}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="p-12 text-center">
-                <p className="text-muted-foreground">
-                  Select an analysis to view details
-                </p>
-              </Card>
-            )}
-          </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

@@ -62,7 +62,7 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
   };
 
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4">
+    <div className="max-w-7xl mx-auto animate-fade-in px-2 sm:px-4 pb-24 sm:pb-0">
       <div className="text-center mb-6 sm:mb-8 px-2">
         <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-foreground">
           Import Your AI Recommendations
@@ -226,15 +226,20 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
         </div>
       </div>
 
-      <div className="flex justify-center">
-        <Button
-          size="lg"
-          onClick={handleImport}
-          disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
-          className="bg-primary hover:shadow-lg transition-all"
-        >
-          Import Selected ({selectedToolIds.length + selectedIdeaIds.length})
-        </Button>
+      {/* Sticky Import Bar on mobile */}
+      <div className="sm:static fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-auto z-40">
+        <div className="px-3 py-3 sm:px-0 sm:py-0 bg-background/80 sm:bg-transparent border-t border-border sm:border-0 backdrop-blur supports-[backdrop-filter]:backdrop-blur">
+          <div className="max-w-7xl mx-auto flex justify-center">
+            <Button
+              size="lg"
+              onClick={handleImport}
+              disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
+              className="bg-primary hover:shadow-lg transition-all w-full sm:w-auto"
+            >
+              Import Selected ({selectedToolIds.length + selectedIdeaIds.length})
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

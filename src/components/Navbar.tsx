@@ -94,16 +94,6 @@ const Navbar = () => {
                   AI Website Advisor
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link 
-                  to="/notion-idea" 
-                  className={`cursor-pointer ${
-                    isActive("/notion-idea") ? "text-primary font-semibold" : ""
-                  }`}
-                >
-                  Notion Idea
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           

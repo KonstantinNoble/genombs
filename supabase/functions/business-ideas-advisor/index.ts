@@ -397,8 +397,7 @@ Current Business Context: ${businessContext}`;
         budget_range: budgetRange,
         business_context: businessContext,
         result: parsedResult,
-        analysis_mode: analysisMode || 'standard',
-        uploaded_image_url: validatedInput.imageUrl || null
+        analysis_mode: analysisMode || 'standard'
       });
 
     if (historyError) {

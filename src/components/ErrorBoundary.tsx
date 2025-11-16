@@ -31,6 +31,18 @@ class ErrorBoundary extends Component<Props, State> {
     window.location.reload();
   };
 
+  handleEnableSafeMode = () => {
+    try {
+      localStorage.setItem('safe-mode', 'true');
+    } catch {}
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('safe', '1');
+      window.location.replace(url.toString());
+    } catch {
+      window.location.reload();
+    }
+  };
   render() {
     if (this.state.hasError) {
       return (
@@ -47,11 +59,16 @@ class ErrorBoundary extends Component<Props, State> {
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                Please reload the page to continue.
+                Please reload the page to continue. If the issue persists on mobile, enable Safe Mode.
               </p>
-              <Button onClick={this.handleReload} className="w-full">
-                Reload Page
-              </Button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <Button onClick={this.handleReload} className="w-full">
+                  Reload Page
+                </Button>
+                <Button variant="outline" onClick={this.handleEnableSafeMode} className="w-full">
+                  Enable Safe Mode
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

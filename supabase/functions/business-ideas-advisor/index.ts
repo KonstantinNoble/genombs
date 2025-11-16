@@ -386,7 +386,8 @@ Please provide personalized improvement recommendations to grow and optimize thi
         budget_range: budgetRange,
         business_context: businessContext,
         result: parsedResult,
-        analysis_mode: analysisMode || 'standard'
+        analysis_mode: analysisMode || 'standard',
+        uploaded_image_url: validatedInput.imageUrl || null
       });
 
     if (historyError) {

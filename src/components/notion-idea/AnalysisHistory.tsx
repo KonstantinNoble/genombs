@@ -62,7 +62,26 @@ const AnalysisHistory = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setHistory((data || []) as unknown as AnalysisItem[]);
+
+      const normalizeItem = (raw: any): AnalysisItem => {
+        const parsed: ToolAdvisorResult = { recommendations: [], generalAdvice: "" };
+        try {
+          const r: any = raw?.result;
+          if (typeof r === "string") {
+            const obj = JSON.parse(r);
+            if (Array.isArray(obj?.recommendations)) parsed.recommendations = obj.recommendations;
+            if (typeof obj?.generalAdvice === "string") parsed.generalAdvice = obj.generalAdvice;
+          } else if (r && typeof r === "object") {
+            if (Array.isArray(r?.recommendations)) parsed.recommendations = r.recommendations;
+            if (typeof r?.generalAdvice === "string") parsed.generalAdvice = r.generalAdvice;
+          }
+        } catch (_) {
+          // Fallback already set
+        }
+        return { ...raw, result: parsed } as AnalysisItem;
+      };
+
+      setHistory(((data || []) as any[]).map(normalizeItem));
     } catch (error) {
       console.error("Error loading history:", error);
       toast({

@@ -32,7 +32,8 @@ const inputSchema = z.object({
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  analysisMode: z.enum(["standard", "deep"]).optional()
+  analysisMode: z.enum(["standard", "deep"]).optional(),
+  customRequirements: z.string().max(100).optional()
 });
 
 serve(async (req) => {
@@ -146,12 +147,13 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, analysisMode } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, analysisMode, customRequirements } = validatedInput;
     
     console.log('📊 Analysis mode:', {
       isPremium,
       analysisMode: analysisMode || 'standard',
-      isDeepMode
+      isDeepMode,
+      hasCustomRequirements: !!customRequirements
     });
 
     // Call Lovable AI
@@ -165,6 +167,7 @@ serve(async (req) => {
 ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
+${customRequirements ? `\n**CRITICAL CUSTOM REQUIREMENTS**: ${customRequirements}\nYou MUST address these requirements in your recommendations and explain how each tool meets or supports these specific needs.` : ''}
 
 Provide 8-10 DETAILED tool recommendations with:
 - detailedSteps: Array of concrete implementation steps

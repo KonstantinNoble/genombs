@@ -165,6 +165,7 @@ const BusinessToolsAdvisor = () => {
   // Premium-only state
   const [isPremium, setIsPremium] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"standard" | "deep">("standard");
+  const [customRequirements, setCustomRequirements] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
@@ -1099,6 +1100,25 @@ const BusinessToolsAdvisor = () => {
                     </>
                   )}
 
+                  {/* Custom Requirements - Deep Mode + Premium Only */}
+                  {isPremium && analysisMode === "deep" && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Specific Requirements (Optional)
+                      </label>
+                      <Input
+                        placeholder="E.g., Must be GDPR compliant, need mobile app support..."
+                        value={customRequirements}
+                        onChange={(e) => setCustomRequirements(e.target.value.slice(0, 100))}
+                        maxLength={100}
+                        className="w-full"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {customRequirements.length}/100 characters
+                      </p>
+                    </div>
+                  )}
+
                   {isPremium && (
                     <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
                       <div className="text-sm text-muted-foreground space-y-1">
@@ -1360,7 +1380,26 @@ const BusinessToolsAdvisor = () => {
                               <SelectItem value="mature">Mature (5y+)</SelectItem>
                             </SelectContent>
                           </Select>
+                      </div>
+
+                      {/* Custom Requirements - Deep Mode Only */}
+                      {analysisMode === "deep" && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">
+                            Specific Requirements (Optional)
+                          </label>
+                          <Input
+                            placeholder="E.g., B2B focus, low initial investment, scalable model..."
+                            value={customRequirements}
+                            onChange={(e) => setCustomRequirements(e.target.value.slice(0, 100))}
+                            maxLength={100}
+                            className="w-full"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {customRequirements.length}/100 characters
+                          </p>
                         </div>
+                      )}
                       </div>
 
                       {/* Analysis Mode Toggle for Ideas */}

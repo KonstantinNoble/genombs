@@ -174,17 +174,6 @@ const Profile = () => {
                           </span>
                         )}
                       </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          window.open('https://checkout.freemius.com/account/', '_blank');
-                        }}
-                        className="w-full mt-2"
-                      >
-                        Manage Subscription in Freemius
-                      </Button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2">

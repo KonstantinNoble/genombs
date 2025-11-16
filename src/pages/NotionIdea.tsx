@@ -71,6 +71,7 @@ export interface CombinedRecommendation {
 const NotionIdea = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPlainMode, setIsPlainMode] = useState(false);
   const [toolsHistory, setToolsHistory] = useState<ToolHistoryItem[]>([]);
   const [ideasHistory, setIdeasHistory] = useState<IdeaHistoryItem[]>([]);
   const [importedRecommendations, setImportedRecommendations] = useState<CombinedRecommendation[]>(() => {
@@ -94,6 +95,12 @@ const NotionIdea = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check for safe mode from URL or localStorage
+    const params = new URLSearchParams(window.location.search);
+    const safeModeParam = params.get('safe');
+    const safeModeStorage = localStorage.getItem('safe-mode');
+    setIsPlainMode(safeModeParam === '1' || safeModeStorage === 'true');
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
@@ -387,7 +394,7 @@ const NotionIdea = () => {
           />
         )}
         
-      {effectiveViewMode === 'display' && (
+      {effectiveViewMode === 'display' && !isPlainMode && (
         <>
           {/* Phase 1: Haftungsausschluss-Banner */}
           <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 mb-8 rounded-r-lg">
@@ -413,6 +420,53 @@ const NotionIdea = () => {
             onClearAll={handleClearAll}
           />
         </>
+      )}
+      
+      {effectiveViewMode === 'display' && isPlainMode && (
+        <div className="space-y-4 p-4 border rounded-lg bg-card">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">Your Recommendations</h1>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleBackToSelection}>Import More</Button>
+              <Button variant="destructive" onClick={handleClearAll}>Clear All</Button>
+            </div>
+          </div>
+          
+          {Object.entries(
+            importedRecommendations.reduce((acc, rec) => {
+              if (!acc[rec.category]) acc[rec.category] = [];
+              acc[rec.category].push(rec);
+              return acc;
+            }, {} as Record<string, CombinedRecommendation[]>)
+          ).map(([category, recs]) => (
+            <div key={category} className="border-l-4 border-primary pl-4">
+              <h2 className="text-xl font-bold capitalize mb-3">{category}</h2>
+              {recs.map((rec) => (
+                <div key={rec.id} className="mb-4 pb-4 border-b last:border-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold px-2 py-1 rounded bg-primary/10">
+                      {rec.type === 'tool' ? 'Tool' : 'Idea'}
+                    </span>
+                    <h3 className="font-semibold">{rec.name}</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {rec.type === 'tool' ? rec.implementation : rec.viability} • {rec.type === 'tool' ? rec.estimatedCost : rec.estimatedInvestment}
+                  </p>
+                  <p className="text-sm">{rec.rationale}</p>
+                </div>
+              ))}
+            </div>
+          ))}
+          
+          {importedRecommendations.some(r => r.generalAdvice) && (
+            <div className="mt-6 p-4 border rounded bg-muted/50">
+              <h3 className="font-semibold mb-2">Strategic Overview</h3>
+              {Array.from(new Set(importedRecommendations.filter(r => r.generalAdvice).map(r => r.generalAdvice))).map((advice, idx) => (
+                <p key={idx} className="whitespace-pre-wrap mb-3 last:mb-0">{advice}</p>
+              ))}
+            </div>
+          )}
+        </div>
       )}
       </main>
       <Footer />

@@ -27,7 +27,7 @@ const Blog = () => {
         url="https://synoptas.com/blog"
       />
 
-      <div className="min-h-screen bg-background/80 backdrop-blur-[8px]">
+      <div className="min-h-screen bg-background sm:bg-background/80 sm:backdrop-blur-[8px]">
         <Navbar />
 
         <main className="container mx-auto px-4 py-16 md:py-24">

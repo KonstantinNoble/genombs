@@ -58,7 +58,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background/80 backdrop-blur-[8px] p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background sm:bg-background/80 sm:backdrop-blur-[8px] p-4 relative overflow-hidden">
       {/* Subtle background pattern */}
       <div
         className="absolute inset-0 opacity-20"

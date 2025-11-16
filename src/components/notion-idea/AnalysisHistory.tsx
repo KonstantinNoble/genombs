@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, Loader2, TrendingUp, Calendar, Download } from "lucide-react";
+import { Trash2, Loader2, TrendingUp, Calendar, Download, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Tables } from "@/integrations/supabase/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ToolRecommendation {
   name: string;
@@ -30,6 +37,10 @@ const AnalysisHistory = () => {
   const [history, setHistory] = useState<AnalysisItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisItem | null>(null);
+  const [filterIndustry, setFilterIndustry] = useState<string>("all");
+  const [filterMode, setFilterMode] = useState<string>("all");
+  const [filterBudget, setFilterBudget] = useState<string>("all");
+  const [filterTeamSize, setFilterTeamSize] = useState<string>("all");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -104,6 +115,34 @@ const AnalysisHistory = () => {
         return "bg-muted text-muted-foreground";
     }
   };
+
+  // Get unique values for filters
+  const uniqueIndustries = useMemo(() => {
+    return Array.from(new Set(history.map(item => item.industry)));
+  }, [history]);
+
+  const uniqueModes = useMemo(() => {
+    return Array.from(new Set(history.map(item => item.analysis_mode).filter(Boolean)));
+  }, [history]);
+
+  const uniqueBudgets = useMemo(() => {
+    return Array.from(new Set(history.map(item => item.budget_range)));
+  }, [history]);
+
+  const uniqueTeamSizes = useMemo(() => {
+    return Array.from(new Set(history.map(item => item.team_size)));
+  }, [history]);
+
+  // Filter history based on selected filters
+  const filteredHistory = useMemo(() => {
+    return history.filter(item => {
+      if (filterIndustry !== "all" && item.industry !== filterIndustry) return false;
+      if (filterMode !== "all" && item.analysis_mode !== filterMode) return false;
+      if (filterBudget !== "all" && item.budget_range !== filterBudget) return false;
+      if (filterTeamSize !== "all" && item.team_size !== filterTeamSize) return false;
+      return true;
+    });
+  }, [history, filterIndustry, filterMode, filterBudget, filterTeamSize]);
 
   const mdComponents = {
     h1: ({ children }: any) => <h1 className="text-2xl font-bold mt-6 mb-4 text-foreground">{children}</h1>,
@@ -225,7 +264,104 @@ const AnalysisHistory = () => {
         </Card>
       ) : (
         <div className="space-y-4 md:space-y-6">
-          {history.map((item) => (
+          {/* Filter Header */}
+          <Card className="p-4 md:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Filter className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-lg">Filter Analyses</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Industry</label>
+                <Select value={filterIndustry} onValueChange={setFilterIndustry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Industries" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Industries</SelectItem>
+                    {uniqueIndustries.map(industry => (
+                      <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Analysis Mode</label>
+                <Select value={filterMode} onValueChange={setFilterMode}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Modes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Modes</SelectItem>
+                    {uniqueModes.map(mode => (
+                      <SelectItem key={mode} value={mode || ""}>{mode}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Budget</label>
+                <Select value={filterBudget} onValueChange={setFilterBudget}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Budgets" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Budgets</SelectItem>
+                    {uniqueBudgets.map(budget => (
+                      <SelectItem key={budget} value={budget}>{budget}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Team Size</label>
+                <Select value={filterTeamSize} onValueChange={setFilterTeamSize}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Team Sizes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Team Sizes</SelectItem>
+                    {uniqueTeamSizes.map(size => (
+                      <SelectItem key={size} value={size}>{size}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {(filterIndustry !== "all" || filterMode !== "all" || filterBudget !== "all" || filterTeamSize !== "all") && (
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredHistory.length} of {history.length} analyses
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setFilterIndustry("all");
+                    setFilterMode("all");
+                    setFilterBudget("all");
+                    setFilterTeamSize("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </Card>
+
+          {filteredHistory.length === 0 ? (
+            <Card className="p-8 md:p-12 text-center">
+              <Filter className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground mb-2">No matching analyses</p>
+              <p className="text-sm text-muted-foreground">
+                Try adjusting your filters
+              </p>
+            </Card>
+          ) : (
+            filteredHistory.map((item) => (
             <Card key={item.id} className="overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-3">
@@ -343,7 +479,8 @@ const AnalysisHistory = () => {
                 )}
               </CardContent>
             </Card>
-          ))}
+          ))
+          )}
         </div>
       )}
     </div>

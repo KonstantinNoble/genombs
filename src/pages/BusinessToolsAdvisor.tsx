@@ -467,8 +467,8 @@ const BusinessToolsAdvisor = () => {
     let imageUrl: string | null = null;
 
     try {
-      // STEP 1: Upload image (if present) - only for ideas + deep mode + premium
-      if (!isTools && uploadedImage && isPremium && analysisMode === "deep") {
+      // STEP 1: Upload image (if present) - for deep mode + premium
+      if (uploadedImage && isPremium && analysisMode === "deep") {
         console.log('🖼️ Uploading image before analysis...');
         imageUrl = await uploadImageToStorage(user.id);
         

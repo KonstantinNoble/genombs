@@ -33,6 +33,7 @@ const inputSchema = z.object({
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
   analysisMode: z.enum(["standard", "deep"]).optional(),
+  customRequirements: z.string().max(100).optional(),
   imageUrl: z.string().url().optional() // NEW: Image upload support
 });
 
@@ -147,12 +148,13 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, analysisMode } = validatedInput;
+    const { websiteType, websiteStatus, budgetRange, businessContext, targetAudience, competitionLevel, growthStage, analysisMode, customRequirements } = validatedInput;
     
     console.log('📊 Analysis mode:', {
       isPremium,
       analysisMode: analysisMode || 'standard',
-      isDeepMode
+      isDeepMode,
+      hasCustomRequirements: !!customRequirements
     });
 
     // Call Lovable AI
@@ -166,6 +168,7 @@ serve(async (req) => {
 ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
+${customRequirements ? `\n**CRITICAL CUSTOM REQUIREMENTS**: ${customRequirements}\nYou MUST address these requirements in your recommendations and explain how each idea meets or supports these specific needs.` : ''}
 
 ${validatedInput.imageUrl ? `
 🔍 **IMAGE ANALYSIS INSTRUCTIONS**:

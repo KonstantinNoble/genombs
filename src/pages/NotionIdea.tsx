@@ -68,6 +68,27 @@ export interface CombinedRecommendation {
   generalAdvice?: string;
 }
 
+// Strip markdown formatting for plain text display
+function stripMarkdown(md: string): string {
+  if (!md) return '';
+  return md
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[([^\]]+)\]\((.*?)\)/g, '$1')
+    .replace(/^>+\s?/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/^-{3,}$/gm, '')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/^\s*\d+\.\s+/gm, '• ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 const NotionIdea = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -470,7 +491,7 @@ const NotionIdea = () => {
             <div className="mt-6 p-4 border rounded bg-muted/50">
               <h3 className="font-semibold mb-2">Strategic Overview</h3>
               {Array.from(new Set(importedRecommendations.filter(r => r.generalAdvice).map(r => r.generalAdvice))).map((advice, idx) => (
-                <p key={idx} className="whitespace-pre-wrap mb-3 last:mb-0">{advice}</p>
+                <p key={idx} className="whitespace-pre-wrap mb-3 last:mb-0">{stripMarkdown(advice)}</p>
               ))}
             </div>
           )}

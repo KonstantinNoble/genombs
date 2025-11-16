@@ -174,13 +174,6 @@ const Navbar = () => {
                 AI Website Advisor
               </Link>
               
-              <Link
-                to="/notion-idea"
-                className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
-                onClick={() => setIsOpen(false)}
-              >
-                Notion Idea
-              </Link>
             </div>
 
             <Link

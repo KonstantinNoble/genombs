@@ -57,8 +57,59 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
     setSelectedIdeaIds((ideasHistory || []).map(i => i.id));
   };
 
-  const handleImport = () => {
-    onImport(selectedToolIds, selectedIdeaIds);
+  const handleExportPDF = async () => {
+    const { pdf } = await import('@react-pdf/renderer');
+    const { ReportPDF } = await import('@/components/ReportPDF');
+    
+    // Combine selected analyses
+    const selectedTools = toolsHistory.filter(t => selectedToolIds.includes(t.id));
+    const selectedIdeas = ideasHistory.filter(i => selectedIdeaIds.includes(i.id));
+    
+    // Combine all recommendations
+    const allRecommendations = [
+      ...selectedTools.flatMap(t => {
+        const result = typeof t.result === 'string' ? JSON.parse(t.result) : t.result;
+        return (result?.recommendations || []).map((rec: any) => ({
+          ...rec,
+          source: `Tools Analysis - ${t.industry}`,
+        }));
+      }),
+      ...selectedIdeas.flatMap(i => {
+        const result = typeof i.result === 'string' ? JSON.parse(i.result) : i.result;
+        return (result?.recommendations || []).map((rec: any) => ({
+          ...rec,
+          source: `Ideas Analysis - ${i.industry}`,
+        }));
+      }),
+    ];
+
+    const combinedResult = {
+      recommendations: allRecommendations,
+      generalAdvice: `Combined analysis from ${selectedTools.length} tools and ${selectedIdeas.length} ideas analyses.`,
+    };
+
+    const metadata = {
+      websiteType: 'Combined Analysis',
+      websiteStatus: `${selectedTools.length + selectedIdeas.length} Analyses`,
+      budgetRange: 'Various',
+      date: formatDate(new Date().toISOString()),
+      analysisMode: 'combined',
+    };
+
+    const blob = await pdf(
+      ReportPDF({ 
+        type: 'tools', 
+        result: combinedResult, 
+        metadata 
+      })
+    ).toBlob();
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `notion-idea-export-${new Date().toISOString().split('T')[0]}.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -232,11 +283,11 @@ const AnalysisSelector = ({ toolsHistory, ideasHistory, onImport }: AnalysisSele
           <div className="max-w-7xl mx-auto flex justify-center">
             <Button
               size="lg"
-              onClick={handleImport}
+              onClick={handleExportPDF}
               disabled={selectedToolIds.length === 0 && selectedIdeaIds.length === 0}
               className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all w-full sm:w-auto h-11 sm:h-12 text-sm sm:text-base font-semibold"
             >
-              Import Selected ({selectedToolIds.length + selectedIdeaIds.length})
+              PDF exportieren ({selectedToolIds.length + selectedIdeaIds.length})
             </Button>
           </div>
         </div>

@@ -159,6 +159,14 @@ const BusinessToolsAdvisor = () => {
         if (element) {
           const top = element.getBoundingClientRect().top + window.scrollY - 80;
           window.scrollTo({ top, behavior: 'smooth' });
+          // iOS repaint fix
+          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isiOS) {
+            element.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => {
+              element.style.transform = '';
+            });
+          }
         }
       }, 100);
     }
@@ -171,6 +179,14 @@ const BusinessToolsAdvisor = () => {
         if (element) {
           const top = element.getBoundingClientRect().top + window.scrollY - 80;
           window.scrollTo({ top, behavior: 'smooth' });
+          // iOS repaint fix
+          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isiOS) {
+            element.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => {
+              element.style.transform = '';
+            });
+          }
         }
       }, 100);
     }
@@ -426,33 +442,33 @@ const BusinessToolsAdvisor = () => {
         
         if (error.message?.includes('Daily limit reached') || error.message?.includes('429')) {
           toast({
-            title: "Tageslimit erreicht",
-            description: "Bitte warten Sie 24 Stunden oder upgraden Sie auf Premium für mehr Analysen.",
+            title: "Daily limit reached",
+            description: "Please wait 24 hours or upgrade to Premium for more analyses.",
             variant: "destructive",
           });
           await syncCredits();
         } else if (error.message?.includes('Rate limit exceeded')) {
           toast({
-            title: "Rate Limit überschritten",
-            description: "Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut.",
+            title: "Rate limit exceeded",
+            description: "Too many requests. Please try again in a few minutes.",
             variant: "destructive",
           });
         } else if (error.message?.includes('AI service quota exceeded') || error.message?.includes('402')) {
           toast({
-            title: "Service vorübergehend nicht verfügbar",
-            description: "Das AI-Kontingent wurde überschritten. Bitte kontaktieren Sie den Support.",
+            title: "Service temporarily unavailable",
+            description: "AI quota exceeded. Please contact support.",
             variant: "destructive",
           });
         } else if (error.message?.includes('timed out')) {
           toast({
-            title: "Zeitüberschreitung",
-            description: "Die Analyse dauert zu lange. Bitte versuchen Sie es ohne Screenshots erneut.",
+            title: "Request timed out",
+            description: "The analysis is taking too long. Please try again without screenshots.",
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Fehler bei der Analyse",
-            description: error.message || "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+            title: "Analysis failed",
+            description: error.message || "An unknown error occurred. Please try again.",
             variant: "destructive",
           });
         }
@@ -598,7 +614,7 @@ const BusinessToolsAdvisor = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex items-center justify-center">
+      <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -606,7 +622,7 @@ const BusinessToolsAdvisor = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
+      <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
         {/* Upgrade Dialog for Free Users at Limit */}
         <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
           <DialogContent className="max-w-4xl">
@@ -765,7 +781,7 @@ const BusinessToolsAdvisor = () => {
   const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
 
   return (
-    <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
+    <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
       <Helmet>
         <title>AI Advisor - Personalized Tools & Strategy Recommendations | Synoptas</title>
         <meta 
@@ -872,7 +888,7 @@ const BusinessToolsAdvisor = () => {
 
           {/* Tab Selector */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ideas")} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-10 sm:h-12 bg-muted/50 p-1 backdrop-blur-sm">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-10 sm:h-12 bg-muted/50 p-1 sm:backdrop-blur-sm">
               <TabsTrigger 
                 value="tools" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
@@ -1088,7 +1104,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Results */}
               {toolResult && (
-                <Card ref={toolResultsRef} className="scroll-mt-20 shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+                <Card ref={toolResultsRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
                       <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
@@ -1331,7 +1347,7 @@ const BusinessToolsAdvisor = () => {
 
               {/* Idea Results */}
               {ideaResult && (
-                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6 animate-fade-in">
+                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6">
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">
@@ -1357,7 +1373,7 @@ const BusinessToolsAdvisor = () => {
                       {ideaResult.recommendations.map((rec, index) => (
                         <Card 
                           key={index}
-                          className="hover:shadow-hover transition-all duration-300 border-border hover:border-secondary/30 bg-gradient-to-br from-card to-muted/20"
+                          className="border-border bg-card sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:hover:border-secondary/30 sm:bg-gradient-to-br sm:from-card sm:to-muted/20"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <CardHeader className="pb-4">

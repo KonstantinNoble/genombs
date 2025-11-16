@@ -89,7 +89,6 @@ const PricingPage = () => {
     { name: "Standard Analyses per day", free: "2", premium: "6" },
     { name: "Deep Analyses per day", free: "0", premium: "2" },
     { name: "Website Tool Recommendations", free: true, premium: true },
-    { name: "Business Improvement Ideas", free: true, premium: true },
     { name: "Budget-Based Suggestions", free: true, premium: true },
     { name: "Custom Requirements Input", free: false, premium: true },
     { name: "Detailed Implementation Steps", free: false, premium: true },

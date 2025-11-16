@@ -61,7 +61,7 @@ export const ReportPDF = ({ type, result, metadata }: ReportPDFProps) => (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <Text style={styles.title}>
-          {type === 'tools' ? 'Website Tools Report' : 'Business Ideas Report'}
+          Website Tools Report
         </Text>
         <Text style={styles.subtitle}>
           {metadata.websiteType} • {metadata.websiteStatus} • {metadata.budgetRange}

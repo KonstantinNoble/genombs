@@ -140,7 +140,7 @@ const TermsOfService = () => {
               <p className="mb-4">Premium users receive enhanced features:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>
-                  6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor, Business Ideas Advisor
+                  6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor
                 </li>
                 <li>2 Deep Analyses per 24 hours (advanced AI-powered evaluations, not available in Free Plan)</li>
                 <li>Future Premium-exclusive features </li>

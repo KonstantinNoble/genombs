@@ -482,58 +482,15 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Business Ideas Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Enhanced Credit System for Premium Users</h3>
             <p className="text-muted-foreground mb-4">
-              The Business Ideas Advisor provides personalized business idea recommendations and startup concepts 
-              based on your market interests and constraints.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing for Business Ideas Analysis</h4>
-            <p className="text-muted-foreground mb-4">
-              When you use this feature, the following personal data is processed:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Business Profile Data (stated preferences):</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Industry sector (e.g., technology, retail, healthcare, manufacturing, etc.)</li>
-                  <li>Team size (solo, 2-10, 11-50, 51-200, 200+ employees)</li>
-                  <li>Budget range for business startup (e.g., &lt;$100/month, $100-500/month, $500-2000/month, $2000+/month)</li>
-                  <li>Business context (text description of market interests, target audience, or business ideas)</li>
-                </ul>
-              </li>
-              <li>
-                <strong>User Account Data:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>User ID (to manage your analysis history and daily usage limit)</li>
-                  <li>Timestamps (date and time of analysis requests)</li>
-                </ul>
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              The Business Ideas Advisor uses the same AI infrastructure as the Business Tools Advisor (Lovable AI 
-              Gateway and Google AI models). All data protection safeguards, third-country transfer mechanisms, and 
-              technical security measures described in section 4.1 apply equally to this feature.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data storage:</strong> Your business ideas analysis history is stored separately in the 
-              `business_ideas_history` database table and includes your business profile inputs (industry, team size, 
-              budget range, business context) and the generated idea recommendations.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (contract performance) and Art. 6(1)(f) GDPR (legitimate 
-              interest in providing innovative AI-powered features).
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Enhanced Credit System for Premium Users</h3>
-            <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, both the Business Tools Advisor and Business Ideas Advisor use 
+              To ensure fair use and prevent abuse, the Business Tools Advisor uses 
               a quota system. The available limits depend on your account type:
             </p>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Standard Users (Free)</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>2 standard analyses per 24-hour period (combined across both tools)</li>
+              <li>2 standard analyses per 24-hour period</li>
               <li>Standard analysis depth</li>
             </ul>
             
@@ -722,10 +679,9 @@ const PrivacyPolicy = () => {
               Contact information for Freemius is provided in your purchase confirmation email and accessible through your Freemius customer account.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Notion Idea Board</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Notion Idea Board</h3>
             <p className="text-muted-foreground mb-4">
-              The Notion Idea Board feature allows you to import, organize, and visualize AI-generated recommendations 
-              from both the Business Tools Advisor and Business Ideas Advisor in a unified workspace interface.
+              The Notion Idea Board feature allows you to organize and manage your business ideas in a unified workspace interface.
             </p>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing</h4>
@@ -734,18 +690,12 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Data sources:</strong> The feature retrieves your existing analysis data from the 
-                `business_tools_history` and `business_ideas_history` database tables
+                <strong>Browser localStorage:</strong> Your ideas, workspace preferences, and organization settings 
+                are stored locally in your web browser's localStorage to persist your workspace state across sessions
               </li>
               <li>
-                <strong>Browser localStorage:</strong> Your imported recommendations and workspace preferences 
-                (view mode, selected analyses) are stored locally in your web browser's localStorage to persist 
-                your workspace state across sessions
-              </li>
-              <li>
-                <strong>No server transmission:</strong> The Notion Idea Board state (imported recommendations, 
-                organization preferences) is stored exclusively in your browser's localStorage and is NOT 
-                transmitted to our servers
+                <strong>No server transmission:</strong> The Notion Idea Board state (ideas, organization preferences) 
+                is stored exclusively in your browser's localStorage and is NOT transmitted to our servers
               </li>
             </ul>
             
@@ -754,9 +704,8 @@ const PrivacyPolicy = () => {
               The following data is stored in your browser's localStorage:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Imported recommendation data (derived from your existing analyses)</li>
-              <li>View mode state (landing, select, or display view)</li>
-              <li>Workspace organization preferences</li>
+              <li>Your business ideas and notes</li>
+              <li>Workspace organization preferences (categories, priorities, status)</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Data persistence:</strong> localStorage data persists on your device until you manually clear 
@@ -813,10 +762,6 @@ const PrivacyPolicy = () => {
                 <strong>business_tools_history:</strong> Business profile inputs (industry, team size, budget range, 
                 business goals) and generated tool recommendations
               </li>
-              <li>
-                <strong>business_ideas_history:</strong> Business profile inputs (industry, team size, budget range, 
-                business context) and generated idea recommendations
-              </li>
               <li>Timestamps of all analyses</li>
               <li>Credit tracking data (analysis count, window start, last analysis timestamp)</li>
             </ul>
@@ -829,7 +774,7 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>View your complete recommendation history at any time through your profile page</li>
-              <li>Delete individual recommendation entries from either tools or ideas history</li>
+              <li>Delete individual recommendation entries from tools history</li>
               <li>Clear your Notion Idea Board workspace data using the "Clear All" button</li>
               <li>
                 Delete your entire account, which permanently removes all recommendation history and credit tracking 
@@ -1070,15 +1015,10 @@ const PrivacyPolicy = () => {
                 goals and objectives)
               </li>
               <li>
-                Business profile data for Business Ideas Advisor (industry sector, team size, budget range, business 
-                context and market interests)
-              </li>
-              <li>
                 AI recommendation requests and responses:
                 <ul className="list-disc pl-6 mt-2">
                   <li>Business tool recommendations, software suggestions, business strategies (Business Tools Advisor)</li>
-                  <li>Business idea recommendations, startup concepts, market opportunities (Business Ideas Advisor)</li>
-                  <li>Complete recommendation history for both features</li>
+                  <li>Complete recommendation history</li>
                 </ul>
               </li>
               <li>
@@ -1116,7 +1056,7 @@ const PrivacyPolicy = () => {
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
               <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
-              (Business Tools Advisor or Business Ideas Advisor), your business profile data is transmitted server-side 
+              (Business Tools Advisor), your business profile data is transmitted server-side
               through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
               <strong>Your client IP address is NOT transmitted to Google AI</strong>. Only
               the IP address of our backend server is visible to the AI provider. This server-side architecture
@@ -1137,7 +1077,7 @@ const PrivacyPolicy = () => {
                 including Supabase (database, authentication, serverless functions, realtime subscriptions)
               </li>
               <li>
-                <strong>AI service provider (for Business Tools Advisor and Business Ideas Advisor):</strong>
+                <strong>AI service provider (for Business Tools Advisor):</strong>
                 <ul className="list-disc pl-6 mt-2">
                   <li>
                     Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
@@ -1152,10 +1092,10 @@ const PrivacyPolicy = () => {
                   </li>
                 </ul>
                 <p className="mt-2 text-sm">
-                  <strong>Data minimization and security:</strong> AI requests from both the Business Tools Advisor and 
-                  Business Ideas Advisor are processed through our backend (Supabase Edge Functions), which means Google 
-                  AI receives only your business profile data (industry, team size, budget range, business goals or 
-                  business context) without personal identifiers such as your name, email, or client IP address. Only 
+                  <strong>Data minimization and security:</strong> AI requests from the Business Tools Advisor 
+                  are processed through our backend (Supabase Edge Functions), which means Google 
+                  AI receives only your business profile data (industry, team size, budget range, business goals) 
+                  without personal identifiers such as your name, email, or client IP address. Only 
                   the backend server's IP address is visible to Google. All transmissions are encrypted using TLS/SSL 
                   protocols.
                 </p>
@@ -1230,9 +1170,9 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making / Profiling</h2>
             <p className="text-muted-foreground mb-4">
-              <strong>AI-Powered Business Tools Advisor and Business Ideas Advisor:</strong> Our AI-powered features 
-              (Business Tools Advisor and Business Ideas Advisor) use automated processing to generate educational 
-              business recommendations, tool suggestions, and business idea concepts. However, this does NOT constitute 
+              <strong>AI-Powered Business Tools Advisor:</strong> Our AI-powered feature 
+              (Business Tools Advisor) uses automated processing to generate educational 
+              business recommendations and tool suggestions. However, this does NOT constitute
               automated decision-making within the meaning of Art. 22 GDPR because:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">

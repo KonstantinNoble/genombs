@@ -32,7 +32,8 @@ const inputSchema = z.object({
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  analysisMode: z.enum(["standard", "deep"]).optional()
+  analysisMode: z.enum(["standard", "deep"]).optional(),
+  imageUrl: z.string().url().optional() // NEW: Image upload support
 });
 
 serve(async (req) => {
@@ -166,6 +167,18 @@ ${targetAudience ? `Target audience: ${targetAudience}` : ''}
 ${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
 ${growthStage ? `Growth stage: ${growthStage}` : ''}
 
+${validatedInput.imageUrl ? `
+🔍 **IMAGE ANALYSIS INSTRUCTIONS**:
+You have been provided with an image. Carefully analyze:
+- Visual elements (products, workspace, team, processes shown)
+- Brand presentation and design quality
+- Operational insights visible in the image
+- Any text, logos, or data visible
+- Context clues about the business environment
+
+Integrate these visual insights into your recommendations. Reference specific observations from the image in your rationale when relevant.
+` : ''}
+
 Provide 8-10 DETAILED, actionable improvement ideas with:
 - detailedSteps: Array of concrete implementation steps
 - expectedROI: ROI projection with specific timeframes
@@ -259,10 +272,25 @@ Please provide personalized improvement recommendations to grow and optimize thi
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
-    const timeout = isDeepMode ? 30000 : 20000;
+    const timeout = (isDeepMode && validatedInput.imageUrl) ? 40000 : isDeepMode ? 30000 : 20000;
     
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
+
+    const messages: any[] = [{ role: 'system', content: systemPrompt }];
+    
+    if (isDeepMode && validatedInput.imageUrl) {
+      console.log('🖼️ Including image in AI analysis');
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'text', text: userPrompt },
+          { type: 'image_url', image_url: { url: validatedInput.imageUrl, detail: 'high' } }
+        ]
+      });
+    } else {
+      messages.push({ role: 'user', content: userPrompt });
+    }
 
     let aiResponse: Response;
     try {
@@ -275,10 +303,7 @@ Please provide personalized improvement recommendations to grow and optimize thi
         },
         body: JSON.stringify({
           model: 'google/gemini-2.5-flash',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
-          ],
+          messages: messages,
           tools: [
             {
               type: "function",

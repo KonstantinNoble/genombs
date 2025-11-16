@@ -25,6 +25,7 @@ export type Database = {
           result: Json
           screenshot_urls: string[] | null
           team_size: string
+          uploaded_image_url: string | null
           user_id: string
         }
         Insert: {
@@ -37,6 +38,7 @@ export type Database = {
           result: Json
           screenshot_urls?: string[] | null
           team_size: string
+          uploaded_image_url?: string | null
           user_id: string
         }
         Update: {
@@ -49,6 +51,7 @@ export type Database = {
           result?: Json
           screenshot_urls?: string[] | null
           team_size?: string
+          uploaded_image_url?: string | null
           user_id?: string
         }
         Relationships: []

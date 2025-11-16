@@ -118,6 +118,7 @@ const BusinessToolsAdvisor = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState<"tools" | "ideas">("tools");
+  const [isPlainMode, setIsPlainMode] = useState(false);
   
   const [toolResult, setToolResult] = useState<ToolAdvisorResult | null>(null);
   const [toolHistory, setToolHistory] = useState<ToolHistoryItem[]>([]);
@@ -151,7 +152,7 @@ const BusinessToolsAdvisor = () => {
 
   const { toast } = useToast();
 
-  // Auto-scroll to results after analysis completes with offset
+  // Auto-scroll to results after analysis completes with offset + iOS repaint fix
   useEffect(() => {
     if (toolResult && toolResultsRef.current) {
       setTimeout(() => {
@@ -159,6 +160,12 @@ const BusinessToolsAdvisor = () => {
         if (element) {
           const top = element.getBoundingClientRect().top + window.scrollY - 80;
           window.scrollTo({ top, behavior: 'smooth' });
+          // iOS repaint fix
+          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isiOS && element) {
+            element.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => { element.style.transform = ''; });
+          }
         }
       }, 100);
     }
@@ -171,12 +178,24 @@ const BusinessToolsAdvisor = () => {
         if (element) {
           const top = element.getBoundingClientRect().top + window.scrollY - 80;
           window.scrollTo({ top, behavior: 'smooth' });
+          // iOS repaint fix
+          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isiOS && element) {
+            element.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => { element.style.transform = ''; });
+          }
         }
       }, 100);
     }
   }, [ideaResult]);
 
   useEffect(() => {
+    // Check for safe mode from URL or localStorage
+    const params = new URLSearchParams(window.location.search);
+    const safeModeParam = params.get('safe');
+    const safeModeStorage = localStorage.getItem('safe-mode');
+    setIsPlainMode(safeModeParam === '1' || safeModeStorage === 'true');
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
@@ -445,14 +464,14 @@ const BusinessToolsAdvisor = () => {
           });
         } else if (error.message?.includes('timed out')) {
           toast({
-            title: "Zeitüberschreitung",
-            description: "Die Analyse dauert zu lange. Bitte versuchen Sie es ohne Screenshots erneut.",
+            title: "Timeout",
+            description: "Analysis is taking too long. Please try again without screenshots.",
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Fehler bei der Analyse",
-            description: error.message || "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+            title: "Analysis Error",
+            description: error.message || "An unknown error occurred. Please try again.",
             variant: "destructive",
           });
         }
@@ -598,7 +617,7 @@ const BusinessToolsAdvisor = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex items-center justify-center">
+      <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -606,7 +625,7 @@ const BusinessToolsAdvisor = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
+      <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
         {/* Upgrade Dialog for Free Users at Limit */}
         <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
           <DialogContent className="max-w-4xl">
@@ -765,7 +784,7 @@ const BusinessToolsAdvisor = () => {
   const setCurrentResult = activeTab === "tools" ? setToolResult : setIdeaResult;
 
   return (
-    <div className="min-h-screen isolate bg-background/60 sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
+    <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
       <Helmet>
         <title>AI Advisor - Personalized Tools & Strategy Recommendations | Synoptas</title>
         <meta 
@@ -872,7 +891,7 @@ const BusinessToolsAdvisor = () => {
 
           {/* Tab Selector */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ideas")} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-10 sm:h-12 bg-muted/50 p-1 backdrop-blur-sm">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-10 sm:h-12 bg-muted/50 p-1 sm:backdrop-blur-sm">
               <TabsTrigger 
                 value="tools" 
                 className="gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground transition-all duration-300"
@@ -889,7 +908,7 @@ const BusinessToolsAdvisor = () => {
 
             {/* Tools Tab */}
             <TabsContent value="tools" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card to-primary/5">
+              <Card className="border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
               <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored website tool recommendations powered by AI</CardDescription>
@@ -1087,8 +1106,8 @@ const BusinessToolsAdvisor = () => {
               </Card>
 
               {/* Results */}
-              {toolResult && (
-                <Card ref={toolResultsRef} className="scroll-mt-20 shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+              {toolResult && !isPlainMode && (
+                <Card ref={toolResultsRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
                       <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
@@ -1161,10 +1180,30 @@ const BusinessToolsAdvisor = () => {
                         ))}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Plain Mode Tool Results */}
+            {toolResult && isPlainMode && (
+              <div ref={toolResultsRef} className="scroll-mt-20 space-y-4 p-4 border rounded-lg bg-card">
+                <h2 className="text-2xl font-bold">Tool Recommendations</h2>
+                {toolResult.recommendations.map((tool, idx) => (
+                  <div key={idx} className="border-l-4 border-primary pl-4 py-2">
+                    <h3 className="text-lg font-semibold">{tool.name}</h3>
+                    <p className="text-sm text-muted-foreground">{tool.category} • {tool.implementation} • {tool.estimatedCost}</p>
+                    <p className="mt-2">{tool.rationale}</p>
+                  </div>
+                ))}
+                {toolResult.generalAdvice && (
+                  <div className="mt-6 p-4 border rounded bg-muted/50">
+                    <h3 className="font-semibold mb-2">General Advice</h3>
+                    <p className="whitespace-pre-wrap">{toolResult.generalAdvice}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </TabsContent>
 
             {/* Ideas Tab */}
             <TabsContent value="ideas" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
@@ -1330,8 +1369,8 @@ const BusinessToolsAdvisor = () => {
               </Card>
 
               {/* Idea Results */}
-              {ideaResult && (
-                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6 animate-fade-in">
+              {ideaResult && !isPlainMode && (
+                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6">
                   <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
                     <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3 text-xl">
@@ -1432,6 +1471,26 @@ const BusinessToolsAdvisor = () => {
                         </div>
                       </CardContent>
                     </Card>
+                  )}
+                </div>
+              )}
+              
+              {/* Plain Mode Idea Results */}
+              {ideaResult && isPlainMode && (
+                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-4 p-4 border rounded-lg bg-card">
+                  <h2 className="text-2xl font-bold">Business Ideas</h2>
+                  {ideaResult.recommendations.map((idea, idx) => (
+                    <div key={idx} className="border-l-4 border-secondary pl-4 py-2">
+                      <h3 className="text-lg font-semibold">{idea.name}</h3>
+                      <p className="text-sm text-muted-foreground">{idea.category} • {idea.viability} • {idea.estimatedInvestment}</p>
+                      <p className="mt-2">{idea.rationale}</p>
+                    </div>
+                  ))}
+                  {ideaResult.generalAdvice && (
+                    <div className="mt-6 p-4 border rounded bg-muted/50">
+                      <h3 className="font-semibold mb-2">General Advice</h3>
+                      <p className="whitespace-pre-wrap">{ideaResult.generalAdvice}</p>
+                    </div>
                   )}
                 </div>
               )}

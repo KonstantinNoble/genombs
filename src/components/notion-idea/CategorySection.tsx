@@ -14,8 +14,8 @@ const CategorySection = ({ category, recommendations }: CategorySectionProps) =>
 
   return (
     <Accordion type="single" collapsible defaultValue={category}>
-      <AccordionItem value={category} className="border rounded-lg">
-        <AccordionTrigger className="px-6 hover:no-underline group">
+      <AccordionItem value={category} className="border rounded-lg bg-card">
+        <AccordionTrigger className="px-6 hover:no-underline group sm:transition-all">
           <div className="flex items-center gap-3 flex-1">
             <div className="flex items-center gap-3 flex-1">
               <h3 className="text-lg font-semibold capitalize">{category}</h3>

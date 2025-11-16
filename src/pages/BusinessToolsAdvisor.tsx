@@ -98,6 +98,27 @@ function normalizeMarkdown(md?: string) {
   return s;
 }
 
+// Strip markdown formatting for plain text display
+function stripMarkdown(md: string): string {
+  if (!md) return '';
+  return md
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[([^\]]+)\]\((.*?)\)/g, '$1')
+    .replace(/^>+\s?/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/^-{3,}$/gm, '')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/^\s*\d+\.\s+/gm, '• ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 // Markdown components for better readability
 const mdComponents = {
   h1: ({ children }: any) => <h1 className="text-2xl sm:text-3xl font-bold mt-6 mb-4 text-foreground">{children}</h1>,
@@ -1207,7 +1228,7 @@ const BusinessToolsAdvisor = () => {
                 {toolResult.generalAdvice && (
                   <div className="mt-6 p-4 border rounded bg-muted/50">
                     <h3 className="font-semibold mb-2">General Advice</h3>
-                    <p className="whitespace-pre-wrap">{toolResult.generalAdvice}</p>
+                    <p className="whitespace-pre-wrap">{stripMarkdown(toolResult.generalAdvice)}</p>
                   </div>
                 )}
               </div>
@@ -1498,7 +1519,7 @@ const BusinessToolsAdvisor = () => {
                   {ideaResult.generalAdvice && (
                     <div className="mt-6 p-4 border rounded bg-muted/50">
                       <h3 className="font-semibold mb-2">General Advice</h3>
-                      <p className="whitespace-pre-wrap">{ideaResult.generalAdvice}</p>
+                      <p className="whitespace-pre-wrap">{stripMarkdown(ideaResult.generalAdvice)}</p>
                     </div>
                   )}
                 </div>

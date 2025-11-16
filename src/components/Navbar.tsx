@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 const Navbar = () => {
   const location = useLocation();
   const { user } = useAuth();
@@ -72,27 +78,34 @@ const Navbar = () => {
             Home
           </Link>
           
-          <Link 
-            to="/business-tools" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
-              isActive("/business-tools") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
-            }`}
-          >
-            AI Website Advisor
-          </Link>
-          
-          <Link 
-            to="/notion-idea" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
-              isActive("/notion-idea") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
-            }`}
-          >
-            Notion Idea
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
+              Features
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-background border border-border z-50">
+              <DropdownMenuItem asChild>
+                <Link 
+                  to="/business-tools" 
+                  className={`cursor-pointer ${
+                    isActive("/business-tools") ? "text-primary font-semibold" : ""
+                  }`}
+                >
+                  AI Website Advisor
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link 
+                  to="/notion-idea" 
+                  className={`cursor-pointer ${
+                    isActive("/notion-idea") ? "text-primary font-semibold" : ""
+                  }`}
+                >
+                  Notion Idea
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Link 
             to="/pricing" 
@@ -161,21 +174,24 @@ const Navbar = () => {
               Home
             </Link>
             
-            <Link
-              to="/business-tools"
-              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
-              onClick={() => setIsOpen(false)}
-            >
-              AI Website Advisor
-            </Link>
-            
-            <Link
-              to="/notion-idea"
-              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
-              onClick={() => setIsOpen(false)}
-            >
-              Notion Idea
-            </Link>
+            <div className="border-t border-border pt-3 mt-3">
+              <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">Features</div>
+              <Link
+                to="/business-tools"
+                className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                onClick={() => setIsOpen(false)}
+              >
+                AI Website Advisor
+              </Link>
+              
+              <Link
+                to="/notion-idea"
+                className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                onClick={() => setIsOpen(false)}
+              >
+                Notion Idea
+              </Link>
+            </div>
 
             <Link
               to="/pricing"

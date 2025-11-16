@@ -12,7 +12,7 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
-import NotionIdea from "./pages/NotionIdea";
+
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PricingPage from "./pages/Pricing";
@@ -59,7 +59,7 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
-              <Route path="/notion-idea" element={<NotionIdea />} />
+              
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />

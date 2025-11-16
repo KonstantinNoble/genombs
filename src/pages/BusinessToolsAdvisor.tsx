@@ -1243,6 +1243,106 @@ const BusinessToolsAdvisor = () => {
                     </>
                   )}
 
+                  {/* Image Upload - Premium + Deep Analysis Only (Tools Tab) */}
+                  {isPremium && analysisMode === "deep" && (
+                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
+                      {/* Header with Premium Badge */}
+                      <div className="flex items-center justify-between gap-2">
+                        <Label htmlFor="image-upload-tools" className="text-sm font-semibold flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-primary" />
+                          Upload Image (Optional)
+                        </Label>
+                        <Badge className="bg-primary text-primary-foreground text-xs">
+                          Premium
+                        </Badge>
+                      </div>
+                      
+                      {/* Info Text */}
+                      <p className="text-xs text-muted-foreground">
+                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
+                      </p>
+
+                      {/* Upload Area */}
+                      <div className="space-y-2">
+                        {!imagePreview ? (
+                          // Upload Input
+                          <div className="relative">
+                            <Input
+                              id="image-upload-tools"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              onChange={handleImageSelect}
+                              disabled={analyzing || isUploadingImage}
+                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            {isUploadingImage && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          // Image Preview with Remove Button
+                          <div className="relative group">
+                            <img 
+                              src={imagePreview} 
+                              alt="Uploaded preview" 
+                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-primary/30 bg-background"
+                            />
+                            {/* Remove Button - Mobile optimized */}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={handleRemoveImage}
+                              disabled={analyzing}
+                              className="absolute top-2 right-2 h-10 w-10 sm:h-9 sm:w-9 rounded-full shadow-lg opacity-90 hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            {/* File size display */}
+                            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                              {uploadedImage && `${(uploadedImage.size / 1024).toFixed(0)} KB`}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Error Display */}
+                        {imageError && (
+                          <p className="text-xs text-destructive flex items-center gap-1">
+                            <span className="text-base">⚠️</span> {imageError}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Non-Premium User Upgrade Notice (Tools Tab) */}
+                  {!isPremium && analysisMode === "deep" && (
+                    <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg space-y-2">
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500">
+                            Deep Analysis + Image Upload is a Premium Feature
+                          </p>
+                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                            Get deeper insights through AI-powered image analysis. 
+                            Upgrade now for unlimited deep analyses.
+                          </p>
+                          <Button 
+                            asChild 
+                            size="sm" 
+                            className="mt-3 bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                          >
+                            <Link to="/pricing">
+                              Upgrade to Premium
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {isPremium && (
                     <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
                       <div className="text-sm text-muted-foreground space-y-1">
@@ -1541,16 +1641,16 @@ const BusinessToolsAdvisor = () => {
                     </>
                   )}
 
-                  {/* Image Upload - Premium + Deep Analysis Only */}
+                  {/* Image Upload - Premium + Deep Analysis Only (Ideas Tab) */}
                   {isPremium && analysisMode === "deep" && (
-                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-purple-500/30 rounded-lg bg-purple-50/50 dark:bg-purple-950/20">
+                    <div className="space-y-3 p-3 sm:p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
                       {/* Header with Premium Badge */}
                       <div className="flex items-center justify-between gap-2">
                         <Label htmlFor="image-upload" className="text-sm font-semibold flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-purple-600" />
+                          <Sparkles className="h-4 w-4 text-primary" />
                           Upload Image (Optional)
                         </Label>
-                        <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                        <Badge className="bg-primary text-primary-foreground text-xs">
                           Premium
                         </Badge>
                       </div>
@@ -1571,11 +1671,11 @@ const BusinessToolsAdvisor = () => {
                               accept="image/jpeg,image/png,image/webp"
                               onChange={handleImageSelect}
                               disabled={analyzing || isUploadingImage}
-                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="cursor-pointer text-sm sm:text-base file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                             {isUploadingImage && (
                               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
+                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
                               </div>
                             )}
                           </div>
@@ -1585,7 +1685,7 @@ const BusinessToolsAdvisor = () => {
                             <img 
                               src={imagePreview} 
                               alt="Uploaded preview" 
-                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-900"
+                              className="w-full max-h-48 sm:max-h-64 object-contain rounded-lg border-2 border-primary/30 bg-background"
                             />
                             {/* Remove Button - Mobile optimized */}
                             <Button
@@ -1606,7 +1706,7 @@ const BusinessToolsAdvisor = () => {
 
                         {/* Error Display */}
                         {imageError && (
-                          <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                          <p className="text-xs text-destructive flex items-center gap-1">
                             <span className="text-base">⚠️</span> {imageError}
                           </p>
                         )}
@@ -1614,7 +1714,7 @@ const BusinessToolsAdvisor = () => {
                     </div>
                   )}
                   
-                  {/* Non-Premium User Upgrade Notice */}
+                  {/* Non-Premium User Upgrade Notice (Ideas Tab) */}
                   {!isPremium && analysisMode === "deep" && (
                     <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg space-y-2">
                       <div className="flex items-start gap-2">
@@ -1630,7 +1730,7 @@ const BusinessToolsAdvisor = () => {
                           <Button 
                             asChild 
                             size="sm" 
-                            className="mt-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 w-full sm:w-auto"
+                            className="mt-3 bg-primary hover:bg-primary/90 w-full sm:w-auto"
                           >
                             <Link to="/pricing">
                               Upgrade to Premium

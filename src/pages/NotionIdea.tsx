@@ -338,45 +338,45 @@ const NotionIdea = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         {effectiveViewMode === 'landing' && (
-          <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-6 sm:py-16">
-            <div className="space-y-4 sm:space-y-6 px-4">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight px-2">
+          <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-10 animate-fade-in py-4 sm:py-16">
+            <div className="space-y-3 sm:space-y-6 px-2 sm:px-4">
+              <h1 className="text-2xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                 Website Idea Board
               </h1>
-              <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
+              <p className="text-sm sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Collect and organize your <span className="text-primary font-semibold">AI-generated</span> website recommendations in a clear, visual workspace
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-6 sm:my-10 px-4">
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
-                <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Import Analyses</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 my-4 sm:my-10 px-2 sm:px-4">
+              <div className="p-4 sm:p-8 rounded-xl sm:rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300">
+                <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-lg text-foreground">Import Analyses</h3>
+                <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
                   Import recommendations from your Website Tools & Ideas analyses
                 </p>
               </div>
               
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
-                <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Organize</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              <div className="p-4 sm:p-8 rounded-xl sm:rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300">
+                <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-lg text-foreground">Organize</h3>
+                <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
                   Filter, sort, and group recommendations by categories
                 </p>
               </div>
               
-              <div className="p-5 sm:p-8 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-500">
-                <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg text-foreground">Execute</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              <div className="p-4 sm:p-8 rounded-xl sm:rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300">
+                <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-lg text-foreground">Execute</h3>
+                <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
                   Build your website roadmap with clear, actionable insights
                 </p>
               </div>
             </div>
 
             {user ? (
-              <div className="space-y-4 sm:space-y-6 px-4">
+              <div className="space-y-3 sm:space-y-6 px-2 sm:px-4">
                 <Button 
                   size="lg" 
                   onClick={handleGetStarted}
-                  className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 font-bold w-full sm:w-auto"
+                  className="bg-primary hover:bg-primary/90 hover:shadow-lg transition-all text-sm sm:text-lg px-6 sm:px-10 py-5 sm:py-7 font-bold w-full sm:w-auto"
                 >
                   Get Started
                 </Button>

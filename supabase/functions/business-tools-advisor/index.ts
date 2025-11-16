@@ -32,8 +32,7 @@ const inputSchema = z.object({
   targetAudience: z.string().optional(),
   competitionLevel: z.string().optional(),
   growthStage: z.string().optional(),
-  analysisMode: z.enum(["standard", "deep"]).optional(),
-  imageUrl: z.string().url().optional()
+  analysisMode: z.enum(["standard", "deep"]).optional()
 });
 
 serve(async (req) => {
@@ -206,38 +205,12 @@ CRITICAL MARKDOWN FORMATTING RULES:
 Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
 Use the suggest_tools function.`;
 
-    // Check if imageUrl is provided
-    const imageUrl = validatedInput.imageUrl;
-    
-    let userPrompt: any;
-    if (imageUrl && isDeepMode) {
-      // Multi-modal prompt with image
-      userPrompt = [
-        {
-          type: "text",
-          text: `Website Type: ${websiteType}
-Website Status: ${websiteStatus}
-Monthly Budget: ${budgetRange}
-Website Goals: ${websiteGoals}
-
-I've attached a screenshot. Please analyze it and provide personalized website tool recommendations based on what you see.`
-        },
-        {
-          type: "image_url",
-          image_url: {
-            url: imageUrl
-          }
-        }
-      ];
-    } else {
-      // Text-only prompt
-      userPrompt = `Website Type: ${websiteType}
+    const userPrompt = `Website Type: ${websiteType}
 Website Status: ${websiteStatus}
 Monthly Budget: ${budgetRange}
 Website Goals: ${websiteGoals}
 
 Please provide personalized website tool recommendations.`;
-    }
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
@@ -282,10 +255,7 @@ Please provide personalized website tool recommendations.`;
           model: 'google/gemini-2.5-flash',
           messages: [
             { role: 'system', content: systemPrompt },
-            { 
-              role: 'user', 
-              content: userPrompt 
-            },
+            { role: 'user', content: userPrompt },
           ],
           tools: [
             {

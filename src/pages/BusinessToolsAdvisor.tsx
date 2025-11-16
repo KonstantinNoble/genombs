@@ -169,9 +169,6 @@ const BusinessToolsAdvisor = () => {
   const [competitionLevel, setCompetitionLevel] = useState("");
   const [growthStage, setGrowthStage] = useState("");
   
-  // Image upload state
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   
@@ -467,20 +464,6 @@ const BusinessToolsAdvisor = () => {
     let imageUrl: string | null = null;
 
     try {
-      // STEP 1: Upload image (if present) - for deep mode + premium
-      if (uploadedImage && isPremium && analysisMode === "deep") {
-        console.log('🖼️ Uploading image before analysis...');
-        imageUrl = await uploadImageToStorage(user.id);
-        
-        if (!imageUrl) {
-          // Upload failed - abort analysis
-          console.error('❌ Image upload failed, aborting analysis');
-          setAnalyzing(false);
-          return;
-        }
-        
-        console.log('✅ Image uploaded successfully, proceeding with analysis');
-      }
       
       // STEP 2: Call Edge Function
       const functionName = isTools ? 'business-tools-advisor' : 'business-ideas-advisor';
@@ -548,8 +531,6 @@ const BusinessToolsAdvisor = () => {
       } else {
         setIdeaResult(data);
         await loadIdeaHistory();
-        // Reset image after successful analysis
-        handleRemoveImage();
       }
       
       await loadAnalysisLimit();
@@ -570,131 +551,6 @@ const BusinessToolsAdvisor = () => {
     }
   };
   
-  // Image upload handlers
-  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setImageError(null);
-
-    // Validate file size
-    if (file.size > MAX_IMAGE_SIZE) {
-      setImageError('File too large. Maximum: 5MB');
-      toast({
-        title: "File Too Large",
-        description: "Please select an image under 5MB.",
-        variant: "destructive",
-      });
-      e.target.value = '';
-      return;
-    }
-
-    // Validate MIME type
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setImageError('Invalid format. Only JPG, PNG and WEBP allowed.');
-      toast({
-        title: "Invalid Format",
-        description: "Only JPG, PNG and WEBP files are allowed.",
-        variant: "destructive",
-      });
-      e.target.value = '';
-      return;
-    }
-
-    // Validate file extension
-    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
-      setImageError('Invalid file extension.');
-      e.target.value = '';
-      return;
-    }
-
-    setUploadedImage(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.onerror = () => {
-      setImageError('Error loading preview');
-      toast({
-        title: "Error",
-        description: "Could not create image preview.",
-        variant: "destructive",
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveImage = () => {
-    setUploadedImage(null);
-    setImagePreview(null);
-    setImageError(null);
-    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-  };
-
-  const uploadImageToStorage = async (userId: string): Promise<string | null> => {
-    if (!uploadedImage) return null;
-
-    setIsUploadingImage(true);
-    try {
-      const fileExt = uploadedImage.name.split('.').pop()?.toLowerCase();
-      const timestamp = Date.now();
-      const fileName = `${userId}/${timestamp}.${fileExt}`;
-      
-      console.log(`📤 Uploading image: ${fileName} (${(uploadedImage.size / 1024).toFixed(2)} KB)`);
-      
-      const { data, error } = await supabase.storage
-        .from('business-analysis-images')
-        .upload(fileName, uploadedImage, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: uploadedImage.type
-        });
-
-      if (error) {
-        console.error('❌ Storage upload error:', error);
-        throw error;
-      }
-
-      console.log('✅ Image uploaded successfully:', data.path);
-
-      // Create signed URL (valid for 2 hours for AI processing)
-      const { data: urlData, error: urlError } = await supabase.storage
-        .from('business-analysis-images')
-        .createSignedUrl(fileName, 7200);
-
-      if (urlError) {
-        console.error('❌ Signed URL error:', urlError);
-        throw urlError;
-      }
-
-      console.log('✅ Signed URL created');
-      return urlData?.signedUrl || null;
-
-    } catch (error: any) {
-      console.error('❌ Image upload failed:', error);
-      
-      let errorMessage = 'Image upload failed. Please try again.';
-      if (error.message?.includes('policy')) {
-        errorMessage = 'Permission denied. Premium required.';
-      } else if (error.message?.includes('size')) {
-        errorMessage = 'File too large (max 5MB).';
-      }
-      
-      toast({
-        title: "Upload Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      return null;
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
-
   const handleDeleteToolHistory = async (id: string) => {
     const { error } = await supabase
       .from('business_tools_history')
@@ -1243,106 +1099,6 @@ const BusinessToolsAdvisor = () => {
                     </>
                   )}
 
-                  {/* Image Upload - Premium + Deep Analysis Only (Tools Tab) */}
-                  {isPremium && analysisMode === "deep" && (
-                    <div className="space-y-3 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
-                      {/* Header with Premium Badge */}
-                      <div className="flex items-center justify-between gap-2">
-                        <Label htmlFor="image-upload-tools" className="text-sm font-semibold flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-primary" />
-                          Upload Image (Optional)
-                        </Label>
-                        <Badge className="bg-primary text-primary-foreground text-xs">
-                          Premium
-                        </Badge>
-                      </div>
-                      
-                      {/* Info Text */}
-                      <p className="text-xs text-muted-foreground">
-                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
-                      </p>
-
-                      {/* Upload Area */}
-                      <div className="space-y-2">
-                        {!imagePreview ? (
-                          // Upload Input
-                          <div className="relative">
-                            <Input
-                              id="image-upload-tools"
-                              type="file"
-                              accept="image/jpeg,image/png,image/webp"
-                              onChange={handleImageSelect}
-                              disabled={analyzing || isUploadingImage}
-                              className="w-full cursor-pointer text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                            {isUploadingImage && (
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          // Image Preview with Remove Button
-                          <div className="relative group">
-                            <img 
-                              src={imagePreview} 
-                              alt="Uploaded preview" 
-                              className="w-full max-h-48 object-contain rounded-lg border-2 border-primary/30 bg-background"
-                            />
-                            {/* Remove Button */}
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={handleRemoveImage}
-                              disabled={analyzing}
-                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            {/* File size display */}
-                            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                              {uploadedImage && `${(uploadedImage.size / 1024).toFixed(0)} KB`}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Error Display */}
-                        {imageError && (
-                          <p className="text-xs text-destructive flex items-center gap-1">
-                            <span className="text-base">⚠️</span> {imageError}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Non-Premium User Upgrade Notice (Tools Tab) */}
-                  {!isPremium && analysisMode === "deep" && (
-                    <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg space-y-2">
-                      <div className="flex items-start gap-2">
-                        <Sparkles className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500">
-                            Deep Analysis + Image Upload is a Premium Feature
-                          </p>
-                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                            Get deeper insights through AI-powered image analysis. 
-                            Upgrade now for unlimited deep analyses.
-                          </p>
-                          <Button 
-                            asChild 
-                            size="sm" 
-                            className="mt-3 bg-primary hover:bg-primary/90 w-full sm:w-auto"
-                          >
-                            <Link to="/pricing">
-                              Upgrade to Premium
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   {isPremium && (
                     <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
                       <div className="text-sm text-muted-foreground space-y-1">
@@ -1641,224 +1397,136 @@ const BusinessToolsAdvisor = () => {
                     </>
                   )}
 
-                  {/* Image Upload - Premium + Deep Analysis Only (Ideas Tab) */}
-                  {isPremium && analysisMode === "deep" && (
-                    <div className="space-y-3 p-4 border-2 border-dashed border-primary/30 rounded-lg bg-primary/5">
-                      {/* Header with Premium Badge */}
-                      <div className="flex items-center justify-between gap-2">
-                        <Label htmlFor="image-upload" className="text-sm font-semibold flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-primary" />
-                          Upload Image (Optional)
-                        </Label>
-                        <Badge className="bg-primary text-primary-foreground text-xs">
-                          Premium
-                        </Badge>
-                      </div>
-                      
-                      {/* Info Text */}
-                      <p className="text-xs text-muted-foreground">
-                        Add an image for deeper visual analysis (max 5MB • JPG, PNG, WEBP)
+                  {!isPremium && (
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium">Standard Analysis:</span> {standardAnalysisCount}/{standardAnalysisLimit} used today
+                        {standardAnalysisCount >= standardAnalysisLimit && nextAnalysisTime && (
+                          <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                        )}
                       </p>
-
-                      {/* Upload Area */}
-                      <div className="space-y-2">
-                        {!imagePreview ? (
-                          // Upload Input
-                          <div className="relative">
-                            <Input
-                              id="image-upload"
-                              type="file"
-                              accept="image/jpeg,image/png,image/webp"
-                              onChange={handleImageSelect}
-                              disabled={analyzing || isUploadingImage}
-                              className="w-full cursor-pointer text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                            {isUploadingImage && (
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          // Image Preview with Remove Button
-                          <div className="relative group">
-                            <img 
-                              src={imagePreview} 
-                              alt="Uploaded preview" 
-                              className="w-full max-h-48 object-contain rounded-lg border-2 border-primary/30 bg-background"
-                            />
-                            {/* Remove Button */}
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={handleRemoveImage}
-                              disabled={analyzing}
-                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            {/* File size display */}
-                            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                              {uploadedImage && `${(uploadedImage.size / 1024).toFixed(0)} KB`}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Error Display */}
-                        {imageError && (
-                          <p className="text-xs text-destructive flex items-center gap-1">
-                            <span className="text-base">⚠️</span> {imageError}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Non-Premium User Upgrade Notice (Ideas Tab) */}
-                  {!isPremium && analysisMode === "deep" && (
-                    <div className="p-4 border-2 border-yellow-500/50 bg-yellow-500/10 rounded-lg space-y-2">
-                      <div className="flex items-start gap-2">
-                        <Sparkles className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500">
-                            Deep Analysis + Image Upload is a Premium Feature
-                          </p>
-                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                            Get deeper insights through AI-powered image analysis. 
-                            Upgrade now for unlimited deep analyses.
-                          </p>
-                          <Button 
-                            asChild 
-                            size="sm" 
-                            className="mt-3 bg-primary hover:bg-primary/90 w-full sm:w-auto"
-                          >
-                            <Link to="/pricing">
-                              Upgrade to Premium
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
                     </div>
                   )}
 
                   <Button
                     onClick={handleAnalyze}
                     disabled={analyzing || !canAnalyze || !websiteType || !websiteStatus || !budgetRange || !businessContext.trim()}
-                    className="w-full bg-secondary hover:bg-secondary/90 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
-                    size="lg"
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
                     {analyzing ? (
-                      <>Analyzing market opportunities...</>
-                    ) : !canAnalyze ? (
-                      <>Next recommendation in {getTimeUntilNextAnalysis()}</>
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
+                      </>
                     ) : (
-                      <>Get AI Business Ideas</>
+                      "Start Analysis"
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center">You can request new recommendations once every 24 hours</p>
+
+                  {!canAnalyze && nextAnalysisTime && (
+                    <p className="text-sm text-center text-muted-foreground">
+                      Next analysis in: {getTimeUntilNextAnalysis()}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 
               {/* Idea Results */}
               {ideaResult && !isPlainMode && (
-                <div ref={ideaResultsRef} className="scroll-mt-20 space-y-6">
-                  <Card className="border-secondary/30 bg-gradient-to-br from-secondary/5 via-card to-primary/5 shadow-elegant">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-3 text-xl">
-                        <span>Market Insights</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                          {normalizeMarkdown(ideaResult.generalAdvice)}
-                        </ReactMarkdown>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-1 flex-1 bg-gradient-to-r from-secondary via-primary to-secondary/30 rounded-full" />
-                      <h2 className="text-2xl font-bold whitespace-nowrap">Recommended Business Ideas</h2>
-                      <div className="h-1 flex-1 bg-gradient-to-l from-secondary via-primary to-secondary/30 rounded-full" />
-                    </div>
-                    <div className="grid gap-4">
-                      {ideaResult.recommendations.map((rec, index) => (
-                        <Card 
-                          key={index}
-                          className="hover:shadow-hover transition-all duration-300 border-border hover:border-secondary/30 bg-gradient-to-br from-card to-muted/20"
-                          style={{ animationDelay: `${index * 0.1}s` }}
-                        >
-                          <CardHeader className="pb-4">
-                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0 space-y-3">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                                  <CardTitle className="text-base sm:text-lg break-words flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-                                    {rec.name}
-                                  </CardTitle>
-                                  <Button asChild size="sm" variant="outline" className="gap-2 h-8 w-fit shrink-0 hover:bg-secondary/10 hover:border-secondary transition-all">
-                                    <a
-                                      href={`https://www.google.com/search?q=${encodeURIComponent(rec.name + " business idea")}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      title={`Search for ${rec.name} on Google`}
-                                    >
-                                        <span className="text-xs">Search</span>
-                                    </a>
-                                  </Button>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                  <span className="text-xs px-3 py-1.5 rounded-full bg-secondary text-white font-medium shadow-sm">
-                                    {rec.category}
-                                  </span>
-                                  <span className={`text-xs px-3 py-1.5 rounded-full border font-medium shadow-sm ${getImplementationColor(rec.viability)}`}>
-                                    {rec.viability.replace('-', ' ')}
-                                  </span>
-                                    <span className="text-xs px-3 py-1.5 rounded-full bg-accent text-accent-foreground font-medium shadow-sm">
-                                      {rec.estimatedInvestment}
-                                    </span>
-                                </div>
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="max-w-none">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                                {normalizeMarkdown(rec.rationale)}
-                              </ReactMarkdown>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
-                    <CardContent className="pt-6">
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        <strong>Disclaimer:</strong> These recommendations are generated by AI (Google Gemini 2.5 Flash) based on general market trends and business practices. 
-                        Each business idea requires thorough market research, validation, and planning. This does not constitute professional business consulting advice.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  {user && (toolHistory.length > 0 || ideaHistory.length > 0) && (
-                    <Card className="border-primary bg-primary/5">
-                      <CardContent className="pt-6">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                          <div className="text-center sm:text-left">
-                            <h3 className="font-semibold mb-1">Organize Your Recommendations</h3>
-                            <p className="text-sm text-muted-foreground">
-                              View all your AI analyses in a beautiful Notion-style workspace
-                            </p>
+                <div ref={ideaResultsRef} className="scroll-mt-20">
+                  {ideaResult.recommendations.map((idea, idx) => (
+                    <Card key={idx} className="mb-4 border-secondary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-secondary/5">
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-base sm:text-lg">{idea.name}</CardTitle>
+                            <CardDescription className="mt-1 text-xs sm:text-sm">
+                              <Badge variant="outline" className="mr-2">{idea.category}</Badge>
+                              <Badge variant="outline" className="mr-2">{idea.viability}</Badge>
+                              <Badge variant="outline">{idea.estimatedInvestment}</Badge>
+                            </CardDescription>
                           </div>
-                          <Button asChild variant="default" className="bg-gradient-to-r from-primary to-secondary whitespace-nowrap">
-                            <Link to="/notion-idea">
-                              Open Notion Idea
-                            </Link>
-                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3 sm:space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-xs sm:text-sm mb-2">Rationale</h4>
+                          <div className="markdown-body text-xs sm:text-sm">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {normalizeMarkdown(idea.rationale)}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                        
+                        {idea.detailedSteps && idea.detailedSteps.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Implementation Steps</h4>
+                            <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
+                              {idea.detailedSteps.map((step, i) => (
+                                <li key={i}>{step}</li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                        
+                        {idea.expectedROI && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Expected ROI</h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{idea.expectedROI}</p>
+                          </div>
+                        )}
+                        
+                        {idea.riskLevel && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Risk Level</h4>
+                            <Badge variant={idea.riskLevel === "low" ? "default" : idea.riskLevel === "medium" ? "secondary" : "destructive"}>
+                              {idea.riskLevel}
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {idea.prerequisites && idea.prerequisites.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Prerequisites</h4>
+                            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
+                              {idea.prerequisites.map((prereq, i) => (
+                                <li key={i}>{prereq}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {idea.metrics && idea.metrics.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-2">Success Metrics</h4>
+                            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-muted-foreground">
+                              {idea.metrics.map((metric, i) => (
+                                <li key={i}>{metric}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {idea.implementationTimeline && (
+                          <div>
+                            <h4 className="font-semibold text-xs sm:text-sm mb-1">Implementation Timeline</h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{idea.implementationTimeline}</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                  {ideaResult.generalAdvice && (
+                    <Card className="mt-4 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                      <CardHeader>
+                        <CardTitle className="text-base sm:text-lg">General Advice</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="markdown-body text-xs sm:text-sm">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {normalizeMarkdown(ideaResult.generalAdvice)}
+                          </ReactMarkdown>
                         </div>
                       </CardContent>
                     </Card>

@@ -241,12 +241,21 @@ serve(async (req) => {
       case 'subscription.cancelled':
         // Don't deactivate immediately - update auto_renew status
         console.log('Subscription cancelled, updating auto-renewal status:', profile.id);
+        
+        const updateCancelData: any = {
+          auto_renew: false,
+          next_payment_date: null
+        };
+        
+        // Store subscription end date if available
+        if (event.objects.subscription?.ends) {
+          updateCancelData.subscription_end_date = new Date(event.objects.subscription.ends).toISOString();
+          console.log('Storing subscription end date:', updateCancelData.subscription_end_date);
+        }
+        
         const { error: cancelError } = await supabase
           .from('user_credits')
-          .update({ 
-            auto_renew: false,
-            next_payment_date: null 
-          })
+          .update(updateCancelData)
           .eq('user_id', profile.id);
         
         if (cancelError) {

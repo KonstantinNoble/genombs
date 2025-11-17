@@ -37,10 +37,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const { data } = await supabase
               .from('user_credits')
-              .select('is_premium')
+              .select('is_premium, subscription_end_date, auto_renew')
               .eq('user_id', session.user.id)
               .single();
-            setIsPremium(data?.is_premium ?? false);
+            
+            let actualPremiumStatus = data?.is_premium ?? false;
+            
+            // Fallback check: If subscription was cancelled and end date has passed
+            if (actualPremiumStatus && 
+                data?.auto_renew === false && 
+                data?.subscription_end_date) {
+              const endDate = new Date(data.subscription_end_date);
+              if (endDate < new Date()) {
+                actualPremiumStatus = false;
+              }
+            }
+            
+            setIsPremium(actualPremiumStatus);
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);
@@ -63,10 +76,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const { data } = await supabase
               .from('user_credits')
-              .select('is_premium')
+              .select('is_premium, subscription_end_date, auto_renew')
               .eq('user_id', session.user.id)
               .single();
-            setIsPremium(data?.is_premium ?? false);
+            
+            let actualPremiumStatus = data?.is_premium ?? false;
+            
+            // Fallback check: If subscription was cancelled and end date has passed
+            if (actualPremiumStatus && 
+                data?.auto_renew === false && 
+                data?.subscription_end_date) {
+              const endDate = new Date(data.subscription_end_date);
+              if (endDate < new Date()) {
+                actualPremiumStatus = false;
+              }
+            }
+            
+            setIsPremium(actualPremiumStatus);
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);

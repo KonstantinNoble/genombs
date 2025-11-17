@@ -43,12 +43,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             let actualPremiumStatus = data?.is_premium ?? false;
             
-            // Fallback check: If subscription was cancelled and end date has passed
-            if (actualPremiumStatus && 
-                data?.auto_renew === false && 
-                data?.subscription_end_date) {
-              const endDate = new Date(data.subscription_end_date);
-              if (endDate < new Date()) {
+            // Fallback check: If subscription was cancelled
+            if (actualPremiumStatus && data?.auto_renew === false) {
+              if (data?.subscription_end_date) {
+                // Case 1: End date exists -> Check if it's in the past
+                const endDate = new Date(data.subscription_end_date);
+                if (endDate < new Date()) {
+                  actualPremiumStatus = false;
+                }
+              } else {
+                // Case 2: No end date but subscription cancelled -> Treat as expired
                 actualPremiumStatus = false;
               }
             }
@@ -82,12 +86,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             let actualPremiumStatus = data?.is_premium ?? false;
             
-            // Fallback check: If subscription was cancelled and end date has passed
-            if (actualPremiumStatus && 
-                data?.auto_renew === false && 
-                data?.subscription_end_date) {
-              const endDate = new Date(data.subscription_end_date);
-              if (endDate < new Date()) {
+            // Fallback check: If subscription was cancelled
+            if (actualPremiumStatus && data?.auto_renew === false) {
+              if (data?.subscription_end_date) {
+                // Case 1: End date exists -> Check if it's in the past
+                const endDate = new Date(data.subscription_end_date);
+                if (endDate < new Date()) {
+                  actualPremiumStatus = false;
+                }
+              } else {
+                // Case 2: No end date but subscription cancelled -> Treat as expired
                 actualPremiumStatus = false;
               }
             }

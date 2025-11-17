@@ -13,7 +13,6 @@ import { User } from "@supabase/supabase-js";
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [credits, setCredits] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -64,41 +63,6 @@ const Profile = () => {
     navigate("/");
   };
 
-  const handleSyncSubscription = async () => {
-    if (!user) return;
-
-    setSyncing(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("sync-freemius-subscription", {
-        method: "POST",
-      });
-      
-      if (error) throw error;
-
-      // Refresh credits data
-      const { data: updatedCredits } = await supabase
-        .from('user_credits')
-        .select('is_premium, premium_since, subscription_end_date, next_payment_date, auto_renew')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      setCredits(updatedCredits);
-
-      toast({
-        title: "Subscription synced",
-        description: data.message || "Your subscription status has been updated.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Sync failed",
-        description: error.message || "Failed to sync subscription status",
-        variant: "destructive",
-      });
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -169,17 +133,7 @@ const Profile = () => {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Premium Status</Label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSyncSubscription}
-                    disabled={syncing}
-                  >
-                    {syncing ? "Syncing..." : "Sync with Freemius"}
-                  </Button>
-                </div>
+                <Label>Premium Status</Label>
                 <div className="p-3 bg-muted rounded-md border border-border">
                   {credits?.is_premium ? (
                     <div className="space-y-3">

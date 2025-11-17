@@ -247,10 +247,18 @@ serve(async (req) => {
           next_payment_date: null
         };
         
-        // Store subscription end date if available
+        // Store subscription end date with fallback calculation
         if (event.objects.subscription?.ends) {
           updateCancelData.subscription_end_date = new Date(event.objects.subscription.ends).toISOString();
-          console.log('Storing subscription end date:', updateCancelData.subscription_end_date);
+          console.log('Storing subscription end date from webhook:', updateCancelData.subscription_end_date);
+        } else if (event.objects.subscription?.created) {
+          // Fallback: Calculate end date based on creation date + 30 days (monthly assumption)
+          const createdDate = new Date(event.objects.subscription.created);
+          createdDate.setDate(createdDate.getDate() + 30);
+          updateCancelData.subscription_end_date = createdDate.toISOString();
+          console.log('Calculated fallback subscription end date (created +30 days):', updateCancelData.subscription_end_date);
+        } else {
+          console.warn('No subscription end date available and no creation date for fallback calculation');
         }
         
         const { error: cancelError } = await supabase

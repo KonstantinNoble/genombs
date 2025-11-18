@@ -188,18 +188,31 @@ serve(async (req) => {
           next_payment_date: null
         };
         
+        let subscriptionEndDate: Date | null = null;
+        
         // Store subscription end date with fallback calculation
         if (event.objects.subscription?.ends) {
-          updateCancelData.subscription_end_date = new Date(event.objects.subscription.ends).toISOString();
+          subscriptionEndDate = new Date(event.objects.subscription.ends);
+          updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
           console.log('Storing subscription end date from webhook:', updateCancelData.subscription_end_date);
         } else if (event.objects.subscription?.created) {
           // Fallback: Calculate end date based on creation date + 30 days (monthly assumption)
           const createdDate = new Date(event.objects.subscription.created);
           createdDate.setDate(createdDate.getDate() + 30);
-          updateCancelData.subscription_end_date = createdDate.toISOString();
+          subscriptionEndDate = createdDate;
+          updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
           console.log('Calculated fallback subscription end date (created +30 days):', updateCancelData.subscription_end_date);
         } else {
           console.warn('No subscription end date available and no creation date for fallback calculation');
+        }
+        
+        // ✅ WICHTIG: Setze is_premium auf true, wenn Abo noch läuft
+        if (subscriptionEndDate && subscriptionEndDate > new Date()) {
+          updateCancelData.is_premium = true;
+          console.log('Subscription still valid until:', subscriptionEndDate.toISOString(), '- keeping premium status');
+        } else {
+          updateCancelData.is_premium = false;
+          console.log('Subscription already expired or no end date available - removing premium status');
         }
         
         const { error: cancelError } = await supabase

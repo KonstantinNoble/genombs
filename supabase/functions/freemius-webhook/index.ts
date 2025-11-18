@@ -38,8 +38,60 @@ serve(async (req) => {
   }
 
   try {
-    // Get and parse the event directly (no signature verification)
+    // Get raw body for signature verification
     const rawBody = await req.text();
+    
+    // Verify Freemius webhook signature
+    const signature = req.headers.get('x-signature');
+    if (!signature) {
+      console.error('Missing webhook signature');
+      return new Response(
+        JSON.stringify({ error: 'Missing signature' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const freemiusSecretKey = Deno.env.get('FREEMIUS_SECRET_KEY');
+    if (!freemiusSecretKey) {
+      console.error('FREEMIUS_SECRET_KEY not configured');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Compute HMAC-SHA256 signature
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(freemiusSecretKey),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    
+    const signatureBuffer = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(rawBody)
+    );
+    
+    const computedSignature = Array.from(new Uint8Array(signatureBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Constant-time comparison to prevent timing attacks
+    if (signature !== computedSignature) {
+      console.error('Invalid webhook signature');
+      return new Response(
+        JSON.stringify({ error: 'Invalid signature' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Webhook signature verified successfully');
+    
+    // Parse the verified event
     const event: FreemiusWebhookEvent = JSON.parse(rawBody);
     console.log('Received Freemius webhook event:', event.type, 'ID:', event.id);
 

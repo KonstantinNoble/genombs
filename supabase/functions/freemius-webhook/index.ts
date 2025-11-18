@@ -31,43 +31,6 @@ interface FreemiusWebhookEvent {
   };
 }
 
-async function verifyWebhookSignature(
-  payload: string,
-  signature: string | null,
-  secret: string
-): Promise<boolean> {
-  if (!signature) {
-    console.error('No signature provided in webhook');
-    return false;
-  }
-
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const signatureBytes = await crypto.subtle.sign(
-      'HMAC',
-      key,
-      encoder.encode(payload)
-    );
-
-    const expectedSignature = Array.from(new Uint8Array(signatureBytes))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
-
-    return signature === expectedSignature;
-  } catch (error) {
-    console.error('Error verifying webhook signature:', error);
-    return false;
-  }
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -75,30 +38,8 @@ serve(async (req) => {
   }
 
   try {
-    const webhookSecret = Deno.env.get('FREEMIUS_WEBHOOK_SECRET');
-    if (!webhookSecret) {
-      console.error('FREEMIUS_WEBHOOK_SECRET not configured');
-      return new Response(
-        JSON.stringify({ error: 'Webhook secret not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Get raw body for signature verification
+    // Get and parse the event directly (no signature verification)
     const rawBody = await req.text();
-    const signature = req.headers.get('x-signature');
-
-    // Verify webhook signature
-    const isValid = await verifyWebhookSignature(rawBody, signature, webhookSecret);
-    if (!isValid) {
-      console.error('Invalid webhook signature');
-      return new Response(
-        JSON.stringify({ error: 'Invalid signature' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Parse the event
     const event: FreemiusWebhookEvent = JSON.parse(rawBody);
     console.log('Received Freemius webhook event:', event.type, 'ID:', event.id);
 

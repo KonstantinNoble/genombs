@@ -24,7 +24,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
     } else {
       // Logged in
       if (plan === 'premium') {
-        const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${user.email}&readonly_user=true`;
+        const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user.email}&readonly_user=true`;
         window.open(checkoutUrl, '_blank');
       } else {
         navigate('/business-tools');

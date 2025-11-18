@@ -100,7 +100,7 @@ const AuthCallback = () => {
         
         if (storedIntent === 'premium') {
           // Open Freemius checkout and navigate to profile
-          const checkoutUrl = `https://checkout.freemius.com/mode/dialog/product/21698/plan/36191/?user_email=${user.email}&readonly_user=true`;
+          const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user.email}&readonly_user=true`;
           window.open(checkoutUrl, '_blank');
           toast.success("Successfully signed in!");
           navigate('/profile');

@@ -48,7 +48,7 @@ serve(async (req) => {
 
     const isPremium = creditsData?.is_premium ?? false;
 
-    // Count deep and standard analyses separately
+    // Count deep and standard analyses separately from business_tools_history
     const { data: toolsData, error: toolsError } = await supabase
       .from('business_tools_history')
       .select('created_at, analysis_mode')
@@ -61,23 +61,8 @@ serve(async (req) => {
       throw new Error('Failed to sync credits');
     }
 
-    const { data: ideasData, error: ideasError } = await supabase
-      .from('business_ideas_history')
-      .select('created_at, analysis_mode')
-      .eq('user_id', user.id)
-      .gte('created_at', last24Hours.toISOString())
-      .order('created_at', { ascending: true });
-
-    if (ideasError) {
-      console.error('Error fetching ideas history:', ideasError);
-      throw new Error('Failed to sync credits');
-    }
-
-    // Combine all generations
-    const allGenerations = [
-      ...(toolsData || []),
-      ...(ideasData || [])
-    ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    // All generations come from business_tools_history
+    const allGenerations = toolsData || [];
 
     // Count deep vs standard
     const deepGenerations = allGenerations.filter(g => g.analysis_mode === 'deep');
@@ -94,16 +79,14 @@ serve(async (req) => {
 
     // Keep old combined counts for backwards compatibility
     const toolsCount = Math.min(toolsData?.length ?? 0, isPremium ? 8 : 2);
-    const ideasCount = Math.min(ideasData?.length ?? 0, isPremium ? 8 : 2);
     const toolsWindowStart = toolsData && toolsData.length > 0 ? toolsData[0].created_at : null;
-    const ideasWindowStart = ideasData && ideasData.length > 0 ? ideasData[0].created_at : null;
-    const analysisCount = toolsCount + ideasCount;
+    const analysisCount = toolsCount;
     const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
 
     console.log(`📊 Sync Results (Premium: ${isPremium}):`);
     console.log(`  Deep: ${deepGenerations.length} total → ${deepCount}/${deepLimit} counted, window: ${deepWindowStart}`);
     console.log(`  Standard: ${standardGenerations.length} total → ${standardCount}/${standardLimit} counted, window: ${standardWindowStart}`);
-    console.log(`  Legacy - Tools: ${toolsData?.length ?? 0} → ${toolsCount}, Ideas: ${ideasData?.length ?? 0} → ${ideasCount}`);
+    console.log(`  Legacy - Tools: ${toolsData?.length ?? 0} → ${toolsCount}`);
 
     // Update user_credits with mode-specific and legacy counts
     const { error: updateError } = await supabase
@@ -117,8 +100,6 @@ serve(async (req) => {
         // Keep old columns for backwards compatibility
         tools_count: toolsCount,
         tools_window_start: toolsWindowStart,
-        ideas_count: ideasCount,
-        ideas_window_start: ideasWindowStart,
         analysis_count: analysisCount,
         analysis_window_start: analysisWindowStart,
         updated_at: now.toISOString()
@@ -143,8 +124,6 @@ serve(async (req) => {
         // Legacy fields
         tools_count: toolsCount,
         tools_window_start: toolsWindowStart,
-        ideas_count: ideasCount,
-        ideas_window_start: ideasWindowStart,
         analysis_count: analysisCount,
         analysis_window_start: analysisWindowStart
       }),

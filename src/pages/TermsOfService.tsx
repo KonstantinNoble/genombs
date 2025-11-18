@@ -456,108 +456,89 @@ const TermsOfService = () => {
                 <li>No pro-rated refund for unused Premium period</li>
               </ul>
             </section>
-            {/* Section VIII - Right of Withdrawal */}           {" "}
+            {/* Section VIII - Right of Withdrawal */}
             <section>
-                            <h2 className="text-2xl font-semibold mb-4">VIII. Right of Withdrawal</h2>             {" "}
-              <h3 className="text-xl font-semibold mb-3">8.1 Right of Withdrawal for Free Services</h3>             {" "}
+              <h2 className="text-2xl font-semibold mb-4">VIII. Right of Withdrawal</h2>
+
+              <h3 className="text-xl font-semibold mb-3">8.1 Right of Withdrawal for Free Services</h3>
               <p className="mb-4">
-                                Since basic platform usage is free of charge, there is no statutory right of withdrawal
-                in the sense of                 distance selling law. However, you may cancel your account anytime
-                according to Section VII.              {" "}
+                Since basic platform usage is free of charge, there is no statutory right of withdrawal in the sense of
+                distance selling law. However, you may cancel your account anytime according to Section VII.
               </p>
-                           {" "}
+
               <h3 className="text-xl font-semibold mb-3 mt-6">
-                                8.2 Right of Withdrawal for Premium Subscriptions (EU/EEA Consumers)              {" "}
+                8.2 Right of Withdrawal for Premium Subscriptions (EU/EEA Consumers)
               </h3>
-                           {" "}
+
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
-                                <p className="font-bold mb-2">🔐 Important: Right of Withdrawal Lies with Freemius</p> 
-                             {" "}
+                <p className="font-bold mb-2">🔐 Important: Right of Withdrawal Lies with Freemius</p>
                 <p>
-                                    The statutory right of withdrawal for Premium purchases lies with{" "}
-                  <strong>Freemius, Inc.</strong> as                   Merchant of Record –{" "}
-                  <strong>NOT with Synoptas/Muhammed Kagan Yilmaz</strong>.                {" "}
+                  The statutory right of withdrawal for Premium purchases lies with <strong>Freemius, Inc.</strong> as
+                  Merchant of Record – <strong>NOT with Synoptas/Muhammed Kagan Yilmaz</strong>.
                 </p>
-                             {" "}
               </div>
-                           {" "}
+
               <p className="mb-4">
-                                As an EU/EEA consumer, you have a <strong>14-day right of withdrawal</strong> from the
-                purchase date for                 Premium subscriptions.              {" "}
+                As an EU/EEA consumer, you have a <strong>14-day right of withdrawal</strong> from the purchase date for
+                Premium subscriptions.
               </p>
-                           {" "}
+
               <p className="mb-4">
-                                <strong>How to exercise your right of withdrawal:</strong>             {" "}
+                <strong>How to exercise your right of withdrawal:</strong>
               </p>
-                           {" "}
               <ol className="list-decimal pl-6 mb-4 space-y-2">
-                               {" "}
                 <li>
-                                    Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to
-                  Synoptas)                {" "}
+                  Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to Synoptas)
                 </li>
-                               {" "}
                 <li>
-                                    Contact Freemius through their customer portal (access link provided in your
-                  purchase confirmation                   email) – **Empfohlen zur Fristwahrung**                {" "}
+                  Contact Freemius through their customer portal (access link provided in your purchase confirmation
+                  email) – **Empfohlen zur Fristwahrung**
                 </li>
-                               {" "}
                 <li>
-                                    Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive,
-                  Wilmington, Delaware                   19808, USA                {" "}
+                  Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware
+                  19808, USA
                 </li>
-                               {" "}
                 <li>
-                                    Include your <strong>order number</strong> and <strong>email address</strong>       
-                         {" "}
+                  Include your <strong>order number</strong> and <strong>email address</strong>
                 </li>
-                             {" "}
               </ol>
-                           {" "}
+
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4 font-mono text-sm">
-                                <p className="font-semibold mb-2">Model Withdrawal Form</p>               {" "}
+                <p className="font-semibold mb-2">Model Withdrawal Form</p>
                 <p className="mb-2">
-                                    To: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA        
-                            <br />                  (or via Freemius customer portal)                {" "}
+                  To: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
+                  <br />
+                  (or via Freemius customer portal)
                 </p>
-                               {" "}
                 <p className="mb-2">
-                                    I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for
-                  Synoptas.                {" "}
+                  I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for Synoptas.
                 </p>
-                               {" "}
                 <p className="mb-2">
-                                    Ordered on: _______________                   <br />
-                                    Order number: _______________                   <br />
-                                    Email: _______________                   <br />                  Date:
-                  _______________                {" "}
+                  Ordered on: _______________
+                  <br />
+                  Order number: _______________
+                  <br />
+                  Email: _______________
+                  <br />
+                  Date: _______________
                 </p>
-                                <p className="text-xs italic">(*) Delete as appropriate</p>             {" "}
+                <p className="text-xs italic">(*) Delete as appropriate</p>
               </div>
-                           {" "}
+
               <p className="mb-4">
-                                <strong>Effects of withdrawal:</strong>             {" "}
+                <strong>Effects of withdrawal:</strong>
               </p>
-                           {" "}
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                               {" "}
                 <li>
-                                    Freemius refunds all received payments within <strong>14 days</strong>             
-                   {" "}
+                  Freemius refunds all received payments within <strong>14 days</strong>
                 </li>
-                                <li>Your Premium access is terminated (downgraded to Free Plan)</li>               {" "}
-                <li>Your Synoptas account remains active (free features still usable)</li>             {" "}
+                <li>Your Premium access is terminated (downgraded to Free Plan)</li>
+                <li>Your Synoptas account remains active (free features still usable)</li>
               </ul>
-                                         {" "}
-              {/*               **ENTFERNT**: Die Klausel "Loss of Right of Withdrawal" wurde entfernt, 
-              da sie ohne Checkbox zur aktiven Zustimmung widersprüchlich ist 
-              und Ihr Wunsch, das volle 14-Tage-Recht zu gewähren, dadurch besser umgesetzt wird.
-              */}
-                           {" "}
+
               <p className="mb-4">
-                                <strong>Does not apply to:</strong> Business customers (B2B)              {" "}
+                <strong>Does not apply to:</strong> Business customers (B2B)
               </p>
-                         {" "}
             </section>
             {/* Section IX - Final Provisions */}
             <section>

@@ -29,3 +29,6 @@ verify_jwt = true
 
 [functions.freemius-webhook]
 verify_jwt = false
+
+[functions.ads-advisor]
+verify_jwt = true

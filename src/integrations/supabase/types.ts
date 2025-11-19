@@ -18,14 +18,12 @@ export type Database = {
         Row: {
           analysis_mode: string | null
           budget_range: string
-          campaign_goals: string
           campaign_type: string
-          competitor_info: string | null
           created_at: string | null
-          current_channels: string | null
           id: string
           platform: string
           product_description: string | null
+          product_details: string | null
           result: Json
           target_audience: string
           user_id: string
@@ -33,14 +31,12 @@ export type Database = {
         Insert: {
           analysis_mode?: string | null
           budget_range: string
-          campaign_goals: string
           campaign_type: string
-          competitor_info?: string | null
           created_at?: string | null
-          current_channels?: string | null
           id?: string
           platform: string
           product_description?: string | null
+          product_details?: string | null
           result: Json
           target_audience: string
           user_id: string
@@ -48,14 +44,12 @@ export type Database = {
         Update: {
           analysis_mode?: string | null
           budget_range?: string
-          campaign_goals?: string
           campaign_type?: string
-          competitor_info?: string | null
           created_at?: string | null
-          current_channels?: string | null
           id?: string
           platform?: string
           product_description?: string | null
+          product_details?: string | null
           result?: Json
           target_audience?: string
           user_id?: string

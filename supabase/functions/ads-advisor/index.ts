@@ -27,11 +27,9 @@ const inputSchema = z.object({
   platform: z.string().trim().min(1).max(50),
   campaignType: z.string().trim().min(1).max(50),
   budgetRange: z.string().trim().min(1).max(50),
-  targetAudience: z.string().trim().min(1).max(500),
-  campaignGoals: z.string().trim().min(1).max(1000),
-  productDescription: z.string().max(500).optional(),
-  competitorInfo: z.string().max(500).optional(),
-  currentChannels: z.string().max(300).optional(),
+  productDetails: z.string().trim().min(1).max(100),
+  targetAudience: z.string().trim().min(1).max(100).optional(),
+  productDescription: z.string().trim().max(100).optional(),
   analysisMode: z.enum(["standard", "deep"]).optional(),
 });
 
@@ -197,18 +195,15 @@ IMPORTANT: All text must be in English and be concise but actionable.`;
       ? `Platform: ${validated.platform}
 Campaign Type: ${validated.campaignType}
 Budget Range: ${validated.budgetRange}
-Target Audience: ${validated.targetAudience}
-Campaign Goals: ${validated.campaignGoals}
-${validated.productDescription ? `\nProduct/Service Description: ${validated.productDescription}` : ''}
-${validated.competitorInfo ? `\nCompetitor Information: ${validated.competitorInfo}` : ''}
-${validated.currentChannels ? `\nCurrent Marketing Channels: ${validated.currentChannels}` : ''}
+Product Details: ${validated.productDetails}
+Target Audience: ${validated.targetAudience || 'Not specified'}
+${validated.productDescription ? `Product Description: ${validated.productDescription}` : ''}
 
 Provide a comprehensive, data-driven advertising strategy with specific recommendations.`
       : `Platform: ${validated.platform}
 Campaign Type: ${validated.campaignType}
 Budget Range: ${validated.budgetRange}
-Target Audience: ${validated.targetAudience}
-Campaign Goals: ${validated.campaignGoals}
+Product Details: ${validated.productDetails}
 
 Provide practical advertising recommendations for this campaign.`;
 
@@ -260,11 +255,9 @@ Provide practical advertising recommendations for this campaign.`;
         platform: validated.platform,
         campaign_type: validated.campaignType,
         budget_range: validated.budgetRange,
+        product_details: validated.productDetails,
         target_audience: validated.targetAudience,
-        campaign_goals: validated.campaignGoals,
         product_description: validated.productDescription,
-        competitor_info: validated.competitorInfo,
-        current_channels: validated.currentChannels,
         analysis_mode: validated.analysisMode || 'standard',
         result: parsedResult
       });

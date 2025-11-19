@@ -41,11 +41,9 @@ interface AdsHistoryItem {
   platform: string;
   campaign_type: string;
   budget_range: string;
-  target_audience: string;
-  campaign_goals: string;
+  product_details: string;
+  target_audience?: string;
   product_description?: string;
-  competitor_info?: string;
-  current_channels?: string;
   result: AdsAdvisorResult;
   created_at: string;
   analysis_mode?: string;
@@ -58,11 +56,9 @@ const AdsAdvisor = () => {
   const [platform, setPlatform] = useState("");
   const [campaignType, setCampaignType] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
+  const [productDetails, setProductDetails] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
-  const [campaignGoals, setCampaignGoals] = useState("");
   const [productDescription, setProductDescription] = useState("");
-  const [competitorInfo, setCompetitorInfo] = useState("");
-  const [currentChannels, setCurrentChannels] = useState("");
   const [analysisMode, setAnalysisMode] = useState<"standard" | "deep">("standard");
   
   const [loading, setLoading] = useState(false);
@@ -146,13 +142,18 @@ const AdsAdvisor = () => {
       return;
     }
 
-    if (!platform || !campaignType || !budgetRange || !targetAudience || !campaignGoals) {
+    if (!platform || !campaignType || !budgetRange || !productDetails) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     if (analysisMode === "deep" && !isPremium) {
       toast.error("Deep Analysis requires a premium subscription");
+      return;
+    }
+
+    if (analysisMode === "deep" && !targetAudience) {
+      toast.error("Please select a target audience for deep analysis");
       return;
     }
 
@@ -167,13 +168,11 @@ const AdsAdvisor = () => {
         platform,
         campaignType,
         budgetRange,
-        targetAudience,
-        campaignGoals,
+        productDetails,
         analysisMode,
         ...(analysisMode === "deep" && {
-          productDescription,
-          competitorInfo,
-          currentChannels
+          targetAudience,
+          productDescription
         })
       };
 
@@ -213,11 +212,9 @@ const AdsAdvisor = () => {
     setPlatform(item.platform);
     setCampaignType(item.campaign_type);
     setBudgetRange(item.budget_range);
-    setTargetAudience(item.target_audience);
-    setCampaignGoals(item.campaign_goals);
+    setProductDetails(item.product_details);
+    setTargetAudience(item.target_audience || "");
     setProductDescription(item.product_description || "");
-    setCompetitorInfo(item.competitor_info || "");
-    setCurrentChannels(item.current_channels || "");
     setAnalysisMode((item.analysis_mode as "standard" | "deep") || "standard");
     setResult(item.result);
     setSelectedHistoryId(item.id);
@@ -493,80 +490,52 @@ const AdsAdvisor = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="targetAudience">Target Audience * (max 500 characters)</Label>
+                      <Label htmlFor="productDetails">Product Details *</Label>
                       <Textarea
-                        id="targetAudience"
-                        value={targetAudience}
-                        onChange={(e) => setTargetAudience(e.target.value.slice(0, 500))}
-                        placeholder="Describe your target audience (demographics, interests, behaviors)"
-                        className="min-h-24"
-                        maxLength={500}
+                        id="productDetails"
+                        value={productDetails}
+                        onChange={(e) => setProductDetails(e.target.value)}
+                        placeholder="Brief description of your product or service..."
+                        className="min-h-[80px]"
+                        maxLength={100}
                       />
-                      <p className="text-xs text-muted-foreground text-right">
-                        {targetAudience.length}/500
-                      </p>
+                      <p className="text-xs text-muted-foreground">{productDetails.length}/100 characters</p>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="campaignGoals">Campaign Goals * (max 1000 characters)</Label>
-                      <Textarea
-                        id="campaignGoals"
-                        value={campaignGoals}
-                        onChange={(e) => setCampaignGoals(e.target.value.slice(0, 1000))}
-                        placeholder="What do you want to achieve with this campaign?"
-                        className="min-h-32"
-                        maxLength={1000}
-                      />
-                      <p className="text-xs text-muted-foreground text-right">
-                        {campaignGoals.length}/1000
-                      </p>
-                    </div>
-
-                    {analysisMode === "deep" && (
+                    {analysisMode === 'deep' && (
                       <>
                         <div className="space-y-2">
-                          <Label htmlFor="productDescription">Product/Service Description (max 500 characters)</Label>
+                          <Label htmlFor="targetAudience">Target Audience *</Label>
+                          <Select value={targetAudience} onValueChange={setTargetAudience}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select target audience" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="18-24 young adults">18-24 young adults</SelectItem>
+                              <SelectItem value="25-34 professionals">25-34 professionals</SelectItem>
+                              <SelectItem value="35-44 established">35-44 established</SelectItem>
+                              <SelectItem value="45-54 experienced">45-54 experienced</SelectItem>
+                              <SelectItem value="55+ seniors">55+ seniors</SelectItem>
+                              <SelectItem value="small business owners">Small business owners</SelectItem>
+                              <SelectItem value="enterprise decision makers">Enterprise decision makers</SelectItem>
+                              <SelectItem value="students">Students</SelectItem>
+                              <SelectItem value="parents">Parents</SelectItem>
+                              <SelectItem value="tech enthusiasts">Tech enthusiasts</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="productDescription">Product Description</Label>
                           <Textarea
                             id="productDescription"
                             value={productDescription}
-                            onChange={(e) => setProductDescription(e.target.value.slice(0, 500))}
-                            placeholder="Describe your product or service in detail"
-                            className="min-h-24"
-                            maxLength={500}
+                            onChange={(e) => setProductDescription(e.target.value)}
+                            placeholder="Additional product details..."
+                            className="min-h-[80px]"
+                            maxLength={100}
                           />
-                          <p className="text-xs text-muted-foreground text-right">
-                            {productDescription.length}/500
-                          </p>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="competitorInfo">Competitor Information (max 500 characters)</Label>
-                          <Textarea
-                            id="competitorInfo"
-                            value={competitorInfo}
-                            onChange={(e) => setCompetitorInfo(e.target.value.slice(0, 500))}
-                            placeholder="List your main competitors and their advertising approaches"
-                            className="min-h-24"
-                            maxLength={500}
-                          />
-                          <p className="text-xs text-muted-foreground text-right">
-                            {competitorInfo.length}/500
-                          </p>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="currentChannels">Current Marketing Channels (max 300 characters)</Label>
-                          <Textarea
-                            id="currentChannels"
-                            value={currentChannels}
-                            onChange={(e) => setCurrentChannels(e.target.value.slice(0, 300))}
-                            placeholder="What marketing channels are you currently using?"
-                            className="min-h-20"
-                            maxLength={300}
-                          />
-                          <p className="text-xs text-muted-foreground text-right">
-                            {currentChannels.length}/300
-                          </p>
+                          <p className="text-xs text-muted-foreground">{productDescription.length}/100 characters</p>
                         </div>
                       </>
                     )}

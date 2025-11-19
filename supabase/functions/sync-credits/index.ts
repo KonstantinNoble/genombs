@@ -46,27 +46,48 @@ serve(async (req) => {
       throw new Error('Failed to fetch user credits');
     }
 
-    const isPremium = creditsData?.is_premium ?? false;
+  const isPremium = creditsData?.is_premium ?? false;
 
-    // Count deep and standard analyses separately from business_tools_history
-    const { data: toolsData, error: toolsError } = await supabase
-      .from('business_tools_history')
-      .select('created_at, analysis_mode')
-      .eq('user_id', user.id)
-      .gte('created_at', last24Hours.toISOString())
-      .order('created_at', { ascending: true });
+  // Query business_tools_history for the last 24 hours
+  const { data: toolsData, error: toolsError } = await supabase
+    .from('business_tools_history')
+    .select('created_at, analysis_mode')
+    .eq('user_id', user.id)
+    .gte('created_at', last24Hours.toISOString())
+    .order('created_at', { ascending: true });
 
-    if (toolsError) {
-      console.error('Error fetching tools history:', toolsError);
-      throw new Error('Failed to sync credits');
-    }
+  if (toolsError) {
+    console.error('Error fetching tools history:', toolsError);
+    throw new Error('Failed to sync credits');
+  }
 
-    // All generations come from business_tools_history
-    const allGenerations = toolsData || [];
+  // Query ads_advisor_history for the last 24 hours (SHARED CREDITS)
+  const { data: adsData, error: adsError } = await supabase
+    .from('ads_advisor_history')
+    .select('created_at, analysis_mode')
+    .eq('user_id', user.id)
+    .gte('created_at', last24Hours.toISOString())
+    .order('created_at', { ascending: true });
 
-    // Count deep vs standard
-    const deepGenerations = allGenerations.filter(g => g.analysis_mode === 'deep');
-    const standardGenerations = allGenerations.filter(g => !g.analysis_mode || g.analysis_mode === 'standard');
+  if (adsError) {
+    console.error('Error fetching ads history:', adsError);
+    throw new Error('Failed to sync credits');
+  }
+
+  // Combine BOTH data sources for shared credit counting
+  const allGenerations = [
+    ...(toolsData || []),
+    ...(adsData || [])
+  ];
+
+  // Sort combined data by created_at
+  allGenerations.sort((a, b) => 
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+
+  // Separate deep and standard analyses from ALL sources
+  const deepGenerations = allGenerations.filter(g => g.analysis_mode === 'deep');
+  const standardGenerations = allGenerations.filter(g => !g.analysis_mode || g.analysis_mode === 'standard');
 
     const deepLimit = isPremium ? 2 : 0;
     const standardLimit = isPremium ? 6 : 2;
@@ -80,12 +101,17 @@ serve(async (req) => {
     // Keep old combined counts for backwards compatibility
     const toolsCount = Math.min(toolsData?.length ?? 0, isPremium ? 8 : 2);
     const toolsWindowStart = toolsData && toolsData.length > 0 ? toolsData[0].created_at : null;
-    const analysisCount = toolsCount;
-    const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
+  const analysisCount = toolsCount;
+  const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
 
-    console.log(`📊 Sync Results (Premium: ${isPremium}):`);
-    console.log(`  Deep: ${deepGenerations.length} total → ${deepCount}/${deepLimit} counted, window: ${deepWindowStart}`);
-    console.log(`  Standard: ${standardGenerations.length} total → ${standardCount}/${standardLimit} counted, window: ${standardWindowStart}`);
+  const toolsDeep = (toolsData || []).filter(g => g.analysis_mode === 'deep').length;
+  const adsDeep = (adsData || []).filter(g => g.analysis_mode === 'deep').length;
+  const toolsStandard = (toolsData || []).filter(g => !g.analysis_mode || g.analysis_mode === 'standard').length;
+  const adsStandard = (adsData || []).filter(g => !g.analysis_mode || g.analysis_mode === 'standard').length;
+
+  console.log(`📊 Sync Results (Premium: ${isPremium}):`);
+  console.log(`  Deep: ${deepGenerations.length} total (${toolsDeep} website + ${adsDeep} ads) → ${deepCount}/${deepLimit} counted (window: ${deepWindowStart})`);
+  console.log(`  Standard: ${standardGenerations.length} total (${toolsStandard} website + ${adsStandard} ads) → ${standardCount}/${standardLimit} counted (window: ${standardWindowStart})`);
     console.log(`  Legacy - Tools: ${toolsData?.length ?? 0} → ${toolsCount}`);
 
     // Update user_credits with mode-specific and legacy counts

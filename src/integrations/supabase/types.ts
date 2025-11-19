@@ -14,48 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ads_advisor_history: {
-        Row: {
-          analysis_mode: string | null
-          budget_range: string
-          campaign_type: string
-          created_at: string | null
-          id: string
-          platform: string
-          product_description: string | null
-          product_details: string | null
-          result: Json
-          target_audience: string
-          user_id: string
-        }
-        Insert: {
-          analysis_mode?: string | null
-          budget_range: string
-          campaign_type: string
-          created_at?: string | null
-          id?: string
-          platform: string
-          product_description?: string | null
-          product_details?: string | null
-          result: Json
-          target_audience: string
-          user_id: string
-        }
-        Update: {
-          analysis_mode?: string | null
-          budget_range?: string
-          campaign_type?: string
-          created_at?: string | null
-          id?: string
-          platform?: string
-          product_description?: string | null
-          product_details?: string | null
-          result?: Json
-          target_audience?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       business_tools_history: {
         Row: {
           analysis_mode: string | null

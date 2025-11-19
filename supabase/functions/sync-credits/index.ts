@@ -61,31 +61,9 @@ serve(async (req) => {
     throw new Error('Failed to sync credits');
   }
 
-  // Query ads_advisor_history for the last 24 hours (SHARED CREDITS)
-  const { data: adsData, error: adsError } = await supabase
-    .from('ads_advisor_history')
-    .select('created_at, analysis_mode')
-    .eq('user_id', user.id)
-    .gte('created_at', last24Hours.toISOString())
-    .order('created_at', { ascending: true });
+  const allGenerations = toolsData || [];
 
-  if (adsError) {
-    console.error('Error fetching ads history:', adsError);
-    throw new Error('Failed to sync credits');
-  }
-
-  // Combine BOTH data sources for shared credit counting
-  const allGenerations = [
-    ...(toolsData || []),
-    ...(adsData || [])
-  ];
-
-  // Sort combined data by created_at
-  allGenerations.sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
-
-  // Separate deep and standard analyses from ALL sources
+  // Separate deep and standard analyses
   const deepGenerations = allGenerations.filter(g => g.analysis_mode === 'deep');
   const standardGenerations = allGenerations.filter(g => !g.analysis_mode || g.analysis_mode === 'standard');
 
@@ -104,14 +82,9 @@ serve(async (req) => {
   const analysisCount = toolsCount;
   const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
 
-  const toolsDeep = (toolsData || []).filter(g => g.analysis_mode === 'deep').length;
-  const adsDeep = (adsData || []).filter(g => g.analysis_mode === 'deep').length;
-  const toolsStandard = (toolsData || []).filter(g => !g.analysis_mode || g.analysis_mode === 'standard').length;
-  const adsStandard = (adsData || []).filter(g => !g.analysis_mode || g.analysis_mode === 'standard').length;
-
   console.log(`📊 Sync Results (Premium: ${isPremium}):`);
-  console.log(`  Deep: ${deepGenerations.length} total (${toolsDeep} website + ${adsDeep} ads) → ${deepCount}/${deepLimit} counted (window: ${deepWindowStart})`);
-  console.log(`  Standard: ${standardGenerations.length} total (${toolsStandard} website + ${adsStandard} ads) → ${standardCount}/${standardLimit} counted (window: ${standardWindowStart})`);
+  console.log(`  Deep: ${deepGenerations.length} → ${deepCount}/${deepLimit} counted (window: ${deepWindowStart || 'null'})`);
+  console.log(`  Standard: ${standardGenerations.length} → ${standardCount}/${standardLimit} counted (window: ${standardWindowStart || 'null'})`);
     console.log(`  Legacy - Tools: ${toolsData?.length ?? 0} → ${toolsCount}`);
 
     // Update user_credits with mode-specific and legacy counts

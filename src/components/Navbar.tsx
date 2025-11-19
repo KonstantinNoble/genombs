@@ -94,16 +94,6 @@ const Navbar = () => {
                   AI Website Advisor
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link 
-                  to="/ads-advisor" 
-                  className={`cursor-pointer ${
-                    isActive("/ads-advisor") ? "text-primary font-semibold" : ""
-                  }`}
-                >
-                  AI Ads Advisor
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           

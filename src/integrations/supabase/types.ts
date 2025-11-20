@@ -20,42 +20,51 @@ export type Database = {
           advertising_goals: string
           analysis_mode: string | null
           competitor_ads: string | null
+          competitor_strategy: string | null
           created_at: string
           current_channels: string | null
           geographic_target: string | null
           id: string
+          industry: string | null
           result: Json
+          specific_requirements: string | null
           target_audience: string
           user_id: string
-          website_url: string
+          website_url: string | null
         }
         Insert: {
           advertising_budget: string
           advertising_goals: string
           analysis_mode?: string | null
           competitor_ads?: string | null
+          competitor_strategy?: string | null
           created_at?: string
           current_channels?: string | null
           geographic_target?: string | null
           id?: string
+          industry?: string | null
           result: Json
+          specific_requirements?: string | null
           target_audience: string
           user_id: string
-          website_url: string
+          website_url?: string | null
         }
         Update: {
           advertising_budget?: string
           advertising_goals?: string
           analysis_mode?: string | null
           competitor_ads?: string | null
+          competitor_strategy?: string | null
           created_at?: string
           current_channels?: string | null
           geographic_target?: string | null
           id?: string
+          industry?: string | null
           result?: Json
+          specific_requirements?: string | null
           target_audience?: string
           user_id?: string
-          website_url?: string
+          website_url?: string | null
         }
         Relationships: []
       }

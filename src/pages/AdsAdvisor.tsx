@@ -581,11 +581,42 @@ export default function AdsAdvisor() {
                       <CardDescription>AI-powered advertising strategy tailored to your business</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                      {analysisMode === 'deep' && result.recommendations.length === 3 && (
+                        <div className="mb-6">
+                          <h3 className="text-lg font-semibold mb-4">3-Phase Implementation Strategy</h3>
+                          <div className="grid grid-cols-3 gap-4 mb-6">
+                            <div className="text-center p-3 border rounded-lg bg-primary/5">
+                              <div className="font-semibold text-primary">Phase 1</div>
+                              <div className="text-xs text-muted-foreground">Foundation</div>
+                              <div className="text-xs">Month 1-2</div>
+                            </div>
+                            <div className="text-center p-3 border rounded-lg bg-primary/5">
+                              <div className="font-semibold text-primary">Phase 2</div>
+                              <div className="text-xs text-muted-foreground">Expansion</div>
+                              <div className="text-xs">Month 3-4</div>
+                            </div>
+                            <div className="text-center p-3 border rounded-lg bg-primary/5">
+                              <div className="font-semibold text-primary">Phase 3</div>
+                              <div className="text-xs text-muted-foreground">Optimization</div>
+                              <div className="text-xs">Month 5-6</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       {result.recommendations.map((campaign, index) => (
                         <Card key={index} className="border-border">
                           <CardHeader>
                             <div className="flex items-start justify-between gap-2">
-                              <CardTitle className="text-lg">{campaign.name}</CardTitle>
+                              <CardTitle className="text-lg">
+                                {analysisMode === 'deep' && result.recommendations.length === 3 
+                                  ? `Phase ${index + 1}: ${campaign.name}`
+                                  : index === 0 && analysisMode === 'standard'
+                                    ? `Primary: ${campaign.name}`
+                                    : analysisMode === 'standard'
+                                      ? `Supporting: ${campaign.name}`
+                                      : campaign.name
+                                }
+                              </CardTitle>
                               <Badge variant="outline" className={getImplementationColor(campaign.implementation)}>
                                 {campaign.implementation}
                               </Badge>
@@ -649,9 +680,20 @@ export default function AdsAdvisor() {
                       ))}
 
                       {result.generalAdvice && (
-                        <Card className="border-primary/20 bg-primary/5">
+                        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
                           <CardHeader>
-                            <CardTitle className="text-lg">Strategic Advice</CardTitle>
+                            <CardTitle className="text-lg sm:text-xl">
+                              {analysisMode === 'deep' 
+                                ? 'Strategic Roadmap Overview'
+                                : 'Campaign Strategy Overview'
+                              }
+                            </CardTitle>
+                            <CardDescription className="text-sm">
+                              {analysisMode === 'deep'
+                                ? 'How these phases work together to achieve your advertising goals'
+                                : 'How these campaigns complement each other'
+                              }
+                            </CardDescription>
                           </CardHeader>
                           <CardContent>
                             <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>

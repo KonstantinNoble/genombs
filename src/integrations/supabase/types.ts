@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      ads_advisor_history: {
+        Row: {
+          advertising_budget: string
+          advertising_goals: string
+          analysis_mode: string | null
+          competitor_ads: string | null
+          created_at: string
+          current_channels: string | null
+          geographic_target: string | null
+          id: string
+          result: Json
+          target_audience: string
+          user_id: string
+          website_url: string
+        }
+        Insert: {
+          advertising_budget: string
+          advertising_goals: string
+          analysis_mode?: string | null
+          competitor_ads?: string | null
+          created_at?: string
+          current_channels?: string | null
+          geographic_target?: string | null
+          id?: string
+          result: Json
+          target_audience: string
+          user_id: string
+          website_url: string
+        }
+        Update: {
+          advertising_budget?: string
+          advertising_goals?: string
+          analysis_mode?: string | null
+          competitor_ads?: string | null
+          created_at?: string
+          current_channels?: string | null
+          geographic_target?: string | null
+          id?: string
+          result?: Json
+          target_audience?: string
+          user_id?: string
+          website_url?: string
+        }
+        Relationships: []
+      }
       business_tools_history: {
         Row: {
           analysis_mode: string | null
@@ -136,6 +181,10 @@ export type Database = {
       }
       user_credits: {
         Row: {
+          ads_deep_analysis_count: number | null
+          ads_deep_analysis_window_start: string | null
+          ads_standard_analysis_count: number | null
+          ads_standard_analysis_window_start: string | null
           analysis_count: number | null
           analysis_window_start: string | null
           auto_renew: boolean | null
@@ -159,6 +208,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ads_deep_analysis_count?: number | null
+          ads_deep_analysis_window_start?: string | null
+          ads_standard_analysis_count?: number | null
+          ads_standard_analysis_window_start?: string | null
           analysis_count?: number | null
           analysis_window_start?: string | null
           auto_renew?: boolean | null
@@ -182,6 +235,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ads_deep_analysis_count?: number | null
+          ads_deep_analysis_window_start?: string | null
+          ads_standard_analysis_count?: number | null
+          ads_standard_analysis_window_start?: string | null
           analysis_count?: number | null
           analysis_window_start?: string | null
           auto_renew?: boolean | null

@@ -27,5 +27,8 @@ verify_jwt = true
 [functions.sync-credits]
 verify_jwt = true
 
+[functions.ads-advisor]
+verify_jwt = true
+
 [functions.freemius-webhook]
 verify_jwt = false

@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
+import AdsAdvisor from "./pages/AdsAdvisor";
 
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
+              <Route path="/ads-advisor" element={<AdsAdvisor />} />
               
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/blog" element={<Blog />} />

@@ -24,15 +24,16 @@ interface AdCampaignRecommendation {
 
 // Input validation schema
 const inputSchema = z.object({
-  websiteUrl: z.string().trim().url("Please enter a valid URL").max(200, "URL too long"),
-  targetAudience: z.string().trim().min(1, "Target audience is required").max(200, "Target audience too long"),
-  advertisingBudget: z.string().trim().min(1, "Budget is required").max(50),
-  advertisingGoals: z.string().trim().min(1, "Goals are required").max(1000, "Goals too long"),
+  industry: z.string().trim().min(1, "Industry is required"),
+  targetAudience: z.string().trim().min(1, "Target audience is required"),
+  advertisingBudget: z.string().trim().min(1, "Budget is required"),
+  advertisingGoals: z.string().trim().min(1, "Goals are required").max(100, "Goals must be 100 characters or less"),
   
   // Premium/Deep mode fields
-  currentChannels: z.string().max(200).optional(),
-  competitorAds: z.string().max(300).optional(),
-  geographicTarget: z.string().max(50).optional(),
+  currentChannels: z.string().optional(),
+  geographicTarget: z.string().optional(),
+  competitorStrategy: z.string().optional(),
+  specificRequirements: z.string().max(100, "Requirements must be 100 characters or less").optional(),
   analysisMode: z.enum(["standard", "deep"]).optional()
 });
 
@@ -127,7 +128,7 @@ serve(async (req) => {
 
     // Validate input
     const validatedInput = inputSchema.parse(requestBody);
-    const { websiteUrl, targetAudience, advertisingBudget, advertisingGoals, currentChannels, competitorAds, geographicTarget, analysisMode } = validatedInput;
+    const { industry, targetAudience, advertisingBudget, advertisingGoals, currentChannels, competitorStrategy, geographicTarget, specificRequirements, analysisMode } = validatedInput;
     
     console.log('📊 Analysis mode:', {
       isPremium,
@@ -145,8 +146,9 @@ serve(async (req) => {
       ? `You are an expert digital advertising strategist specializing in comprehensive campaign planning.
 
 ${currentChannels ? `Current Channels: ${currentChannels}` : ''}
-${competitorAds ? `Competitor Analysis: ${competitorAds}` : ''}
+${competitorStrategy ? `Competitor Strategy: ${competitorStrategy}` : ''}
 ${geographicTarget ? `Geographic Target: ${geographicTarget}` : ''}
+${specificRequirements ? `Specific Requirements: ${specificRequirements}` : ''}
 
 Provide 5-7 DETAILED advertising campaign recommendations with:
 - detailedSteps: Array of concrete implementation steps
@@ -181,15 +183,16 @@ CRITICAL OUTPUT REQUIREMENTS:
 Focus on practical advertising campaigns relevant to the budget and goals.
 Use the suggest_campaigns function.`;
 
-    let userPromptText = `Website URL: ${websiteUrl}
+    let userPromptText = `Industry: ${industry}
 Target Audience: ${targetAudience}
 Monthly Advertising Budget: ${advertisingBudget}
 Advertising Goals: ${advertisingGoals}`;
 
     // Add premium fields to user prompt if available
     if (currentChannels) userPromptText += `\nCurrent Channels: ${currentChannels}`;
-    if (competitorAds) userPromptText += `\nCompetitor Ads: ${competitorAds}`;
+    if (competitorStrategy) userPromptText += `\nCompetitor Strategy: ${competitorStrategy}`;
     if (geographicTarget) userPromptText += `\nGeographic Target: ${geographicTarget}`;
+    if (specificRequirements) userPromptText += `\nSpecific Requirements: ${specificRequirements}`;
 
     userPromptText += `\n\nProvide personalized advertising campaign recommendations. Focus on ROI and practical implementation.`;
 
@@ -303,13 +306,15 @@ Advertising Goals: ${advertisingGoals}`;
       .from('ads_advisor_history')
       .insert({
         user_id: user.id,
-        website_url: websiteUrl,
+        industry,
         target_audience: targetAudience,
         advertising_budget: advertisingBudget,
         advertising_goals: advertisingGoals,
         current_channels: currentChannels,
-        competitor_ads: competitorAds,
+        competitor_strategy: competitorStrategy,
         geographic_target: geographicTarget,
+        specific_requirements: specificRequirements,
+        website_url: '',
         result: recommendations,
         analysis_mode: isDeepMode ? 'deep' : 'standard'
       });

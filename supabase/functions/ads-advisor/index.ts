@@ -96,9 +96,17 @@ serve(async (req) => {
           console.log(`⛔ Deep analysis limit reached: ${currentDeepCount}/${deepLimit}`);
           console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
           
+          const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
+          const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
+          const timeMessage = hoursRemaining >= 1 
+            ? `${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`
+            : `${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}`;
+          
           return new Response(
             JSON.stringify({ 
-              error: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Next available at ${windowEndsAt.toISOString()}.`
+              error: 'LIMIT_REACHED',
+              message: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Try again in ${timeMessage}.`,
+              resetAt: windowEndsAt.toISOString()
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
@@ -115,9 +123,17 @@ serve(async (req) => {
           console.log(`⛔ Standard analysis limit reached: ${currentStandardCount}/${standardLimit}`);
           console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
           
+          const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
+          const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
+          const timeMessage = hoursRemaining >= 1 
+            ? `${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`
+            : `${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}`;
+          
           return new Response(
             JSON.stringify({ 
-              error: `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Next available at ${windowEndsAt.toISOString()}.`
+              error: 'LIMIT_REACHED',
+              message: `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try again in ${timeMessage}.`,
+              resetAt: windowEndsAt.toISOString()
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );

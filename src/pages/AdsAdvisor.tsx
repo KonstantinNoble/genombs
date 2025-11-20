@@ -215,9 +215,29 @@ export default function AdsAdvisor() {
 
       if (error) {
         console.error('Analysis error:', error);
+        
+        // Check if it's a limit reached error (429)
+        if (error.message && typeof error.message === 'string' && error.message.includes('limit reached')) {
+          toast({
+            title: "Analysis Limit Reached",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Analysis Error",
+            description: error.message || "An error occurred. Please try again.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+      
+      // Also check if data contains an error (for 429 responses)
+      if (data && data.error === 'LIMIT_REACHED') {
         toast({
-          title: "Analysis Error",
-          description: error.message || "An error occurred. Please try again.",
+          title: "Analysis Limit Reached",
+          description: data.message || "Analysis limit reached. Please try again later.",
           variant: "destructive",
         });
         return;

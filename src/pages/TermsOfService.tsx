@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 12, 2025 | Version 2.3</p>
+          <p className="text-muted-foreground mb-8">Effective Date: November 21, 2025 | Version 2.4</p>
 
           <div className="space-y-8">
             <section>
@@ -95,17 +95,18 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">III. Services</h2>
 
               <p className="mb-4">
-                We provide digital advisory tools including personalized recommendations, business analysis, and
-                educational content. All users have access to website browsing and public content.
+                We provide AI-powered digital advisory tools that deliver personalized recommendations, strategic analysis, 
+                and educational content based on your stated business context and objectives. All users have access to 
+                website browsing and public content.
               </p>
 
               <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">IMPORTANT DISCLAIMER</p>
                 <p className="mb-2">
                   Our services are for <strong>informational and educational purposes only</strong>. They are NOT
-                  professional advice (financial, legal, business consulting). We make no guarantees of results. You are
-                  solely responsible for all business decisions and must consult qualified professionals before making
-                  significant decisions.
+                  professional advice (financial, legal, business consulting, advertising consulting). We make no guarantees 
+                  of results. You are solely responsible for all business decisions and must consult qualified professionals 
+                  before making significant decisions.
                 </p>
                 <p>
                   AI outputs may be inaccurate, incomplete, or contextually inappropriate. We are not liable for
@@ -118,10 +119,10 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>
-                  <strong>Free Plan:</strong> 2 Standard Analyses per 24 hours (Deep Analysis not available)
+                  <strong>Free Plan:</strong> 2 Standard AI Analyses per 24 hours (Deep Analysis not available)
                 </li>
                 <li>
-                  <strong>Premium Plan:</strong> 6 Standard Analyses + 2 Deep Analyses per 24 hours
+                  <strong>Premium Plan:</strong> 6 Standard AI Analyses + 2 Deep AI Analyses per 24 hours
                 </li>
               </ul>
               <p className="mb-4">Limits are subject to change – current values are displayed within the app.</p>
@@ -136,9 +137,10 @@ const TermsOfService = () => {
 
               <p className="mb-4">Premium users receive enhanced features:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan) - Business Tools Advisor</li>
-                <li>2 Deep Analyses per 24 hours (advanced AI-powered evaluations, not available in Free Plan)</li>
-                <li>Future Premium-exclusive features </li>
+                <li>Increased analysis quota: 6 Standard AI Analyses per 24 hours (vs. 2 in Free Plan)</li>
+                <li>Access to Deep Analysis mode: 2 Deep AI Analyses per 24 hours (advanced evaluations with enhanced 
+                    AI capabilities, not available in Free Plan)</li>
+                <li>Future Premium-exclusive features</li>
               </ul>
 
               <p className="mb-4">
@@ -178,12 +180,10 @@ const TermsOfService = () => {
                 <strong>Premium Features:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>6 Standard Analyses per 24 hours (vs. 2 in Free Plan)</li>
-                <li>2 Deep Analyses per 24 hours (not available in Free Plan)</li>
-                <li>
-                  Advanced AI-powered evaluations with detailed implementation steps, ROI projections, and risk
-                  assessments
-                </li>
+                <li>Increased analysis quota: 6 Standard AI Analyses per 24 hours (vs. 2 in Free Plan)</li>
+                <li>Access to Deep Analysis mode: 2 Deep AI Analyses per 24 hours (not available in Free Plan)</li>
+                <li>Enhanced AI-powered evaluations with comprehensive insights, detailed recommendations, 
+                    and advanced strategic analysis capabilities</li>
                 <li>Future Premium-exclusive features</li>
               </ul>
 
@@ -408,7 +408,7 @@ const TermsOfService = () => {
                 <strong>Account Deletion & Data:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Profile, analysis history, and credit tracking data are permanently deleted</li>
+                <li>Profile data, complete analysis history from all services, and credit tracking data are permanently deleted</li>
                 <li>Local device data must be cleared manually via browser settings</li>
                 <li>
                   <strong>Email Hash:</strong> A SHA-256 hash of your email is stored for <strong>24 hours</strong>{" "}
@@ -452,7 +452,7 @@ const TermsOfService = () => {
                 <li>
                   Premium access ends at the <strong>end of the paid period</strong>
                 </li>
-                <li>Downgrade to Free Plan (2 Standard Analyses per 24h, Deep Analysis not available)</li>
+                <li>Downgrade to Free Plan (2 Standard AI Analyses per 24h, Deep Analysis not available)</li>
                 <li>No pro-rated refund for unused Premium period</li>
               </ul>
             </section>
@@ -658,9 +658,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: November 12, 2025
+                Last updated: November 21, 2025
                 <br />
-                Version 2.1 (Links & Address Update)
+                Version 2.4 (Services Generalization & Feature Updates)
               </p>
             </div>
           </div>

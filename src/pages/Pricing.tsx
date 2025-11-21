@@ -15,6 +15,9 @@ const PricingPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
 
+  const pageTitle = "Pricing Plans - Free & Premium AI Analysis";
+  const pageDescription = "Choose the perfect plan for your business. Free plan includes 2 daily analyses for Business Tools and Ads Campaigns. Premium unlocks 6 standard + 2 deep analyses daily with ROI calculations and implementation guides.";
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();

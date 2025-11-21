@@ -714,23 +714,23 @@ const BusinessToolsAdvisor = () => {
           <link rel="canonical" href="https://synoptas.com/business-tools" />
         </Helmet>
         <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-8 sm:py-16 bg-transparent">
-          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
-            <div className="space-y-4 sm:space-y-6 px-2">
+        <main className="flex-1 container mx-auto px-4 py-8 sm:py-16">
+          <article className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
+            <header className="space-y-4 sm:space-y-6 px-2">
               <div className="h-2" />
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(79,209,131,0.3)]">
-                AI Website Advisor
+                Business Tools Advisor
               </h1>
               <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Get AI-powered recommendations for <span className="text-primary font-semibold">website tools</span> to optimize your online presence and revenue
+                Get AI-powered <span className="text-primary font-semibold">personalized tool recommendations</span> tailored to your business needs
               </p>
-            </div>
+            </header>
 
-            <div className="py-12">
+            <section className="py-12">
               <Pricing compact={true} />
-            </div>
-          </div>
-        </div>
+            </section>
+          </article>
+        </main>
         <Footer />
       </div>
     );

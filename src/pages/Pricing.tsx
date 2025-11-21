@@ -56,7 +56,7 @@ const PricingPage = () => {
     {
       icon: <Zap className="h-6 w-6" />,
       title: "AI-Powered Analysis",
-      description: "Get personalized recommendations using advanced AI models trained for website optimization and business strategy."
+      description: "Get personalized recommendations using advanced AI models trained for business tools optimization and advertising campaign strategy."
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
@@ -76,19 +76,22 @@ const PricingPage = () => {
     {
       icon: <Target className="h-6 w-6" />,
       title: "Tailored Recommendations",
-      description: "Analysis based on your specific website type, status, budget, and business goals - no generic advice."
+      description: "Analysis based on your specific industry, budget, business goals, and target audience - no generic advice."
     },
     {
       icon: <Clock className="h-6 w-6" />,
       title: "Daily Analysis Credits",
-      description: "Free users get 2 analyses per day. Premium users get 6 standard + 2 deep analyses daily."
+      description: "Free users get 2 Business Tools + 2 Ads Campaign analyses per day. Premium users get 6 standard + 2 deep analyses for each service daily."
     }
   ];
 
   const comparisonFeatures = [
-    { name: "Standard Analyses per day", free: "2", premium: "6" },
-    { name: "Deep Analyses per day", free: "0", premium: "2" },
-    { name: "Website Tool Recommendations", free: true, premium: true },
+    { name: "Business Tools Standard Analyses per day", free: "2", premium: "6" },
+    { name: "Business Tools Deep Analyses per day", free: "0", premium: "2" },
+    { name: "Ads Campaign Standard Analyses per day", free: "2", premium: "6" },
+    { name: "Ads Campaign Deep Analyses per day", free: "0", premium: "2" },
+    { name: "Business Tool Recommendations", free: true, premium: true },
+    { name: "Advertising Campaign Strategy", free: true, premium: true },
     { name: "Budget-Based Suggestions", free: true, premium: true },
     { name: "Custom Requirements Input", free: false, premium: true },
     { name: "Detailed Implementation Steps", free: false, premium: true },
@@ -107,15 +110,15 @@ const PricingPage = () => {
     },
     {
       question: "How do daily analysis limits work?",
-      answer: "Free users get 2 standard analyses per day. Premium users get 6 standard analyses and 2 deep analyses per day. Limits reset every 24 hours from your first analysis."
+      answer: "Free users get 2 Business Tools standard analyses and 2 Ads Campaign standard analyses per day. Premium users get 6 standard analyses and 2 deep analyses for each service per day. Limits reset every 24 hours from your first analysis."
     },
     {
       question: "Can I cancel my Premium subscription anytime?",
       answer: "Yes, you can cancel your Premium subscription at any time. You'll continue to have Premium access until the end of your current billing period."
     },
     {
-      question: "What types of websites can I analyze?",
-      answer: "Our AI supports all website types including E-commerce, SaaS, Blogs, Portfolios, Service websites, Non-profits, and more. Recommendations are tailored to your specific website type and business model."
+      question: "What types of businesses can I get recommendations for?",
+      answer: "Our AI supports all business types and industries. You can get personalized Business Tools recommendations for E-commerce, SaaS, Services, Non-profits, and more. Additionally, you can get Advertising Campaign strategies tailored to your industry, target audience, budget, and specific advertising goals."
     },
     {
       question: "Do I need a credit card for the Free Plan?",

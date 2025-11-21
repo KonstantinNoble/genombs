@@ -4,22 +4,27 @@ const features = [
   {
     title: "AI-Powered Tool Discovery",
     description:
-      "Get personalized recommendations for analytics, SEO, performance, and marketing tools based on your website type and budget.",
+      "Get personalized recommendations for analytics, SEO, performance, and marketing tools based on your industry, team size, and budget.",
+  },
+  {
+    title: "Advertising Campaign Strategy",
+    description:
+      "Receive AI-generated advertising campaign recommendations tailored to your target audience, budget, and advertising goals across multiple channels.",
   },
   {
     title: "Strategic Improvement Ideas",
     description:
-      "Discover actionable strategies to grow your website. Focus on revenue, efficiency, customer experience, and market expansion.",
+      "Discover actionable strategies to grow your business. Focus on revenue, efficiency, customer experience, and market expansion.",
   },
   {
     title: "Budget-Friendly Recommendations",
     description:
-      "Whether you're starting out or scaling up, get tool and strategy suggestions that fit your monthly budget.",
+      "Whether you're starting out or scaling up, get tool and campaign strategy suggestions that fit your monthly budget.",
   },
   {
-    title: "Website Type Specific",
+    title: "Industry-Specific Analysis",
     description:
-      "Tailored advice for E-commerce, SaaS, Blogs, Portfolios, and more. AI understands your business model.",
+      "Tailored advice for E-commerce, SaaS, Services, Non-profits, and more. AI understands your business model and advertising needs.",
   },
   {
     title: "Standard & Deep Analysis",
@@ -29,7 +34,7 @@ const features = [
   {
     title: "Actionable Reports",
     description:
-      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines.",
+      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines for both tools and ad campaigns.",
   },
 ];
 

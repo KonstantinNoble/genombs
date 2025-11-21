@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Pricing from "@/components/home/Pricing";
 import { User } from "@supabase/supabase-js";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -114,14 +115,12 @@ export default function AdsAdvisor() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) {
-        window.location.href = '/auth';
-        return;
-      }
+      setUser(session?.user ?? null);
       
-      setUser(session.user);
-      await loadPremiumStatus(session.user.id);
-      await loadAdsHistory(session.user.id);
+      if (session?.user) {
+        await loadPremiumStatus(session.user.id);
+        await loadAdsHistory(session.user.id);
+      }
     } catch (error) {
       console.error('Auth check error:', error);
     } finally {
@@ -349,6 +348,41 @@ export default function AdsAdvisor() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Helmet>
+          <title>AI Ads Advisor - Get Advertising Campaign Recommendations | Synoptas</title>
+          <meta 
+            name="description" 
+            content="Get AI-powered advertising campaign recommendations tailored to your industry, budget, and goals. Free analysis with detailed strategy insights." 
+          />
+          <meta name="keywords" content="advertising advisor, AI ads strategy, campaign planning, ad recommendations, marketing strategy" />
+          <link rel="canonical" href="https://synoptas.com/ads-advisor" />
+        </Helmet>
+        <Navbar />
+        <div className="flex-1 container mx-auto px-4 py-8 sm:py-16">
+          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in">
+            <div className="space-y-4 sm:space-y-6 px-2">
+              <div className="h-2" />
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight tracking-tight drop-shadow-[0_0_30px_rgba(79,209,131,0.3)]">
+                AI Ads Advisor
+              </h1>
+              <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Get AI-powered <span className="text-primary font-semibold">advertising campaign recommendations</span> tailored to your business needs
+              </p>
+            </div>
+
+            <div className="py-12">
+              <Pricing compact={true} />
+            </div>
+          </div>
+        </div>
+        <Footer />
       </div>
     );
   }

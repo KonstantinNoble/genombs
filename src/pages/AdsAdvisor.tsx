@@ -97,10 +97,18 @@ export default function AdsAdvisor() {
   const [deepAnalysisLimit, setDeepAnalysisLimit] = useState(0);
   const [standardAnalysisCount, setStandardAnalysisCount] = useState(0);
   const [standardAnalysisLimit, setStandardAnalysisLimit] = useState(2);
+  const [canAnalyze, setCanAnalyze] = useState(true);
+  const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadPremiumStatus(user.id);
+    }
+  }, [analysisMode, user]);
 
   const checkAuth = async () => {
     try {
@@ -121,6 +129,33 @@ export default function AdsAdvisor() {
     }
   };
 
+  const checkCanAnalyze = (analysisCount: number | null, windowStart: string | null, limit: number): boolean => {
+    const now = new Date();
+    if (!windowStart) {
+      setNextAnalysisTime(null);
+      return true;
+    }
+
+    const windowStartDate = new Date(windowStart);
+    const windowEndsAt = new Date(windowStartDate.getTime() + 24 * 60 * 60 * 1000);
+
+    // If window already expired, allow analysis
+    if (now >= windowEndsAt) {
+      setNextAnalysisTime(null);
+      return true;
+    }
+
+    // Within window: allow if fewer than limit analyses used
+    if ((analysisCount ?? 0) < limit) {
+      setNextAnalysisTime(null);
+      return true;
+    }
+
+    // Limit reached: show remaining time
+    setNextAnalysisTime(windowEndsAt);
+    return false;
+  };
+
   const loadPremiumStatus = async (userId: string) => {
     const { data } = await supabase
       .from('user_credits')
@@ -137,15 +172,20 @@ export default function AdsAdvisor() {
       setDeepAnalysisLimit(deepLimit);
       setStandardAnalysisLimit(standardLimit);
       
-      const now = new Date();
-      const deepWindowStart = data.ads_deep_analysis_window_start ? new Date(data.ads_deep_analysis_window_start) : null;
-      const standardWindowStart = data.ads_standard_analysis_window_start ? new Date(data.ads_standard_analysis_window_start) : null;
+      const deepCount = data.ads_deep_analysis_count || 0;
+      const deepWindowStart = data.ads_deep_analysis_window_start;
+      const standardCount = data.ads_standard_analysis_count || 0;
+      const standardWindowStart = data.ads_standard_analysis_window_start;
       
-      const deepExpired = deepWindowStart ? (now.getTime() - deepWindowStart.getTime()) > 24 * 60 * 60 * 1000 : true;
-      const standardExpired = standardWindowStart ? (now.getTime() - standardWindowStart.getTime()) > 24 * 60 * 60 * 1000 : true;
+      setDeepAnalysisCount(deepCount);
+      setStandardAnalysisCount(standardCount);
       
-      setDeepAnalysisCount(deepExpired ? 0 : (data.ads_deep_analysis_count || 0));
-      setStandardAnalysisCount(standardExpired ? 0 : (data.ads_standard_analysis_count || 0));
+      // Check if user can analyze based on selected mode
+      if (analysisMode === 'deep') {
+        setCanAnalyze(checkCanAnalyze(deepCount, deepWindowStart, deepLimit));
+      } else {
+        setCanAnalyze(checkCanAnalyze(standardCount, standardWindowStart, standardLimit));
+      }
     }
   };
 
@@ -292,6 +332,17 @@ export default function AdsAdvisor() {
       "long-term": "text-blue-600 bg-blue-50 border-blue-200",
     };
     return colors[implementation] || "text-gray-600 bg-gray-50 border-gray-200";
+  };
+
+  const getTimeUntilNextAnalysis = (): string => {
+    if (!nextAnalysisTime) return "";
+    
+    const now = new Date();
+    const diff = nextAnalysisTime.getTime() - now.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${minutes}m`;
   };
 
   if (loading) {
@@ -577,19 +628,27 @@ export default function AdsAdvisor() {
 
                   <Button 
                     onClick={handleAnalyze}
-                    disabled={analyzing || !industry || !targetAudience || !advertisingBudget || !advertisingGoals}
-                    className="w-full"
+                    disabled={analyzing || !canAnalyze || !industry || !targetAudience || !advertisingBudget || !advertisingGoals}
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
                     size="lg"
                   >
                     {analyzing ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Analyzing...
+                        {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
                       </>
+                    ) : !canAnalyze && nextAnalysisTime ? (
+                      `Next analysis in ${getTimeUntilNextAnalysis()}`
                     ) : (
                       'Get Campaign Recommendations'
                     )}
                   </Button>
+
+                  {!canAnalyze && nextAnalysisTime && (
+                    <p className="text-sm text-center text-muted-foreground">
+                      Next analysis in: {getTimeUntilNextAnalysis()}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 

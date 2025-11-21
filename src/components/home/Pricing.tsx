@@ -86,7 +86,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>2 AI Analyses per day</span>
+                    <span>2 Business Tools Analyses per day</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>2 Ads Campaign Analyses per day</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
@@ -149,7 +153,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>
-                    <span>6 Standard + 2 Deep Analyses per day</span>
+                    <span>6 Business Tools Standard + 2 Deep per day</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>6 Ads Campaign Standard + 2 Deep per day</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">✓</span>

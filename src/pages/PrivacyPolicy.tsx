@@ -301,8 +301,9 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">5. AI-Powered Features</h2>
             <p className="text-muted-foreground mb-4">
               Our website offers AI-powered features that provide personalized recommendations for business tools,
-              software, strategies, and business ideas based on your stated business context and goals. These features 
-              are available to registered users and require authentication.
+              software, advertising campaign strategies, and business improvement ideas based on your stated business 
+              context, goals, target audience, and budget. These features are available to registered users and require 
+              authentication.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>IMPORTANT DISCLAIMER:</strong> These features provide general recommendations and information for

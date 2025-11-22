@@ -183,7 +183,13 @@ const Navbar = () => {
               >
                 AI Website Advisor
               </Link>
-              
+              <Link
+                to="/ads-advisor"
+                className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                onClick={() => setIsOpen(false)}
+              >
+                AI Ads Advisor
+              </Link>
             </div>
 
             <Link

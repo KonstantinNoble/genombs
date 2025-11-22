@@ -66,14 +66,14 @@ serve(async (req) => {
     // GDPR-compliant: Explicitly delete ALL user data from public tables
     // Order matters: history → credits → profile → auth user
     
-    console.log('Deleting business_ideas_history for user:', userData.user.id);
-    const { error: ideasError } = await adminClient
-      .from('business_ideas_history')
+    console.log('Deleting ads_advisor_history for user:', userData.user.id);
+    const { error: adsError } = await adminClient
+      .from('ads_advisor_history')
       .delete()
       .eq('user_id', userData.user.id);
     
-    if (ideasError) {
-      console.error('Failed to delete business_ideas_history:', ideasError);
+    if (adsError) {
+      console.error('Failed to delete ads_advisor_history:', adsError);
     }
 
     console.log('Deleting business_tools_history for user:', userData.user.id);

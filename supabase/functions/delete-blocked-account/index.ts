@@ -61,7 +61,7 @@ serve(async (req) => {
     });
 
     // Delete all user data
-    await adminClient.from('business_ideas_history').delete().eq('user_id', userId);
+    await adminClient.from('ads_advisor_history').delete().eq('user_id', userId);
     await adminClient.from('business_tools_history').delete().eq('user_id', userId);
     await adminClient.from('user_credits').delete().eq('user_id', userId);
     await adminClient.from('profiles').delete().eq('id', userId);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,6 +100,27 @@ export default function AdsAdvisor() {
   const [standardAnalysisLimit, setStandardAnalysisLimit] = useState(2);
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
+
+  const resultRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll to results after analysis with offset for mobile
+  useEffect(() => {
+    if (result && resultRef.current) {
+      setTimeout(() => {
+        const element = resultRef.current;
+        if (element) {
+          const top = element.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+          // iOS repaint fix
+          const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isiOS && element) {
+            element.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => { element.style.transform = ''; });
+          }
+        }
+      }, 100);
+    }
+  }, [result]);
 
   useEffect(() => {
     checkAuth();
@@ -709,40 +730,40 @@ export default function AdsAdvisor() {
               </Card>
 
               {result && (
-                <div className="space-y-4 animate-fade-in">
+                <div ref={resultRef} className="space-y-4 sm:space-y-6 animate-fade-in">
                   <Card className="border-primary/20 bg-card shadow-elegant">
-                    <CardHeader>
-                      <CardTitle className="text-xl">Campaign Recommendations</CardTitle>
-                      <CardDescription>AI-powered advertising strategy tailored to your business</CardDescription>
+                    <CardHeader className="pb-3 sm:pb-4">
+                      <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">AI-powered advertising strategy tailored to your business</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent className="space-y-4 sm:space-y-6">
                       {analysisMode === 'deep' && result.recommendations.length === 3 && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold mb-4">3-Phase Implementation Strategy</h3>
-                          <div className="grid grid-cols-3 gap-4 mb-6">
-                            <div className="text-center p-3 border rounded-lg bg-primary/5">
-                              <div className="font-semibold text-primary">Phase 1</div>
-                              <div className="text-xs text-muted-foreground">Foundation</div>
-                              <div className="text-xs">Month 1-2</div>
+                        <div className="mb-4 sm:mb-6">
+                          <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">3-Phase Implementation Strategy</h3>
+                          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                            <div className="text-center p-2 sm:p-3 border rounded-lg bg-primary/5">
+                              <div className="text-xs sm:text-sm font-semibold text-primary">Phase 1</div>
+                              <div className="text-[10px] sm:text-xs text-muted-foreground">Foundation</div>
+                              <div className="text-[10px] sm:text-xs">Month 1-2</div>
                             </div>
-                            <div className="text-center p-3 border rounded-lg bg-primary/5">
-                              <div className="font-semibold text-primary">Phase 2</div>
-                              <div className="text-xs text-muted-foreground">Expansion</div>
-                              <div className="text-xs">Month 3-4</div>
+                            <div className="text-center p-2 sm:p-3 border rounded-lg bg-primary/5">
+                              <div className="text-xs sm:text-sm font-semibold text-primary">Phase 2</div>
+                              <div className="text-[10px] sm:text-xs text-muted-foreground">Expansion</div>
+                              <div className="text-[10px] sm:text-xs">Month 3-4</div>
                             </div>
-                            <div className="text-center p-3 border rounded-lg bg-primary/5">
-                              <div className="font-semibold text-primary">Phase 3</div>
-                              <div className="text-xs text-muted-foreground">Optimization</div>
-                              <div className="text-xs">Month 5-6</div>
+                            <div className="text-center p-2 sm:p-3 border rounded-lg bg-primary/5">
+                              <div className="text-xs sm:text-sm font-semibold text-primary">Phase 3</div>
+                              <div className="text-[10px] sm:text-xs text-muted-foreground">Optimization</div>
+                              <div className="text-[10px] sm:text-xs">Month 5-6</div>
                             </div>
                           </div>
                         </div>
                       )}
                       {result.recommendations.map((campaign, index) => (
                         <Card key={index} className="border-border">
-                          <CardHeader>
+                          <CardHeader className="pb-3 sm:pb-4">
                             <div className="flex items-start justify-between gap-2">
-                              <CardTitle className="text-lg">
+                              <CardTitle className="text-base sm:text-lg">
                                 {analysisMode === 'deep' && result.recommendations.length === 3 
                                   ? `Phase ${index + 1}: ${campaign.name}`
                                   : index === 0 && analysisMode === 'standard'
@@ -756,14 +777,14 @@ export default function AdsAdvisor() {
                                 {campaign.implementation}
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                               <span className="font-medium">Est. Cost:</span>
                               <span>{campaign.estimatedCost}</span>
                             </div>
                           </CardHeader>
-                          <CardContent className="space-y-4">
+                          <CardContent className="space-y-3 sm:space-y-4">
                             <div>
-                              <h4 className="font-semibold mb-2">Rationale</h4>
+                              <h4 className="text-sm sm:text-base font-semibold mb-2">Rationale</h4>
                               <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
                                 {normalizeMarkdown(campaign.rationale)}
                               </ReactMarkdown>
@@ -771,30 +792,30 @@ export default function AdsAdvisor() {
 
                             {campaign.detailedSteps && (
                               <div>
-                                <h4 className="font-semibold mb-2">Implementation Steps</h4>
-                                <ol className="list-decimal list-inside space-y-1 text-sm">
+                                <h4 className="text-sm sm:text-base font-semibold mb-2">Implementation Steps</h4>
+                                <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm">
                                   {campaign.detailedSteps.map((step, i) => (
-                                    <li key={i}>{step}</li>
+                                    <li key={i} className="ml-1">{step}</li>
                                   ))}
                                 </ol>
                               </div>
                             )}
 
                             {campaign.expectedROI && (
-                              <div className="flex items-center gap-2 text-sm">
+                              <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 <span className="font-medium">Expected ROI:</span>
                                 <span>{campaign.expectedROI}</span>
                               </div>
                             )}
 
                             {campaign.riskLevel && (
-                              <div className="flex items-center gap-2 text-sm">
+                              <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 <span className="font-medium">Risk Level:</span>
                                 <Badge variant={
                                   campaign.riskLevel === 'low' ? 'default' : 
                                   campaign.riskLevel === 'medium' ? 'secondary' : 
                                   'destructive'
-                                }>
+                                } className="text-xs">
                                   {campaign.riskLevel}
                                 </Badge>
                               </div>
@@ -802,10 +823,10 @@ export default function AdsAdvisor() {
 
                             {campaign.metrics && campaign.metrics.length > 0 && (
                               <div>
-                                <h4 className="font-semibold mb-2">Key Metrics</h4>
-                                <div className="flex flex-wrap gap-2">
+                                <h4 className="text-sm sm:text-base font-semibold mb-2">Key Metrics</h4>
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                   {campaign.metrics.map((metric, i) => (
-                                    <Badge key={i} variant="outline">{metric}</Badge>
+                                    <Badge key={i} variant="outline" className="text-xs">{metric}</Badge>
                                   ))}
                                 </div>
                               </div>
@@ -816,14 +837,14 @@ export default function AdsAdvisor() {
 
                       {result.generalAdvice && (
                         <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
-                          <CardHeader>
-                            <CardTitle className="text-lg sm:text-xl">
+                          <CardHeader className="pb-3 sm:pb-4">
+                            <CardTitle className="text-base sm:text-lg">
                               {analysisMode === 'deep' 
                                 ? 'Strategic Roadmap Overview'
                                 : 'Campaign Strategy Overview'
                               }
                             </CardTitle>
-                            <CardDescription className="text-sm">
+                            <CardDescription className="text-xs sm:text-sm">
                               {analysisMode === 'deep'
                                 ? 'How these phases work together to achieve your advertising goals'
                                 : 'How these campaigns complement each other'

@@ -304,8 +304,6 @@ export default function AdsAdvisor() {
       }
 
       setResult(data);
-      console.log('[AdsAdvisor] Result set:', data);
-      console.log('[AdsAdvisor] Recommendations count:', data?.recommendations?.length);
       await loadAdsHistory(user!.id);
       await loadPremiumStatus(user!.id);
       
@@ -731,17 +729,14 @@ export default function AdsAdvisor() {
                 </CardContent>
               </Card>
 
-              {/* Results Section */}
-              {result && (() => {
-                console.log('[AdsAdvisor Render] Result exists:', !!result);
-                console.log('[AdsAdvisor Render] Recommendations:', result.recommendations);
-                return (
-                  <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
-                    <CardHeader className="pb-3 sm:pb-4">
-                      <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
-                      <CardDescription className="text-sm sm:text-base">AI-powered advertising strategy tailored to your business</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 sm:space-y-6">
+              {/* Results */}
+              {result && (
+                <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
+                    <CardDescription className="text-sm sm:text-base">AI-powered advertising strategy tailored to your business</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 sm:space-y-6">
                     {analysisMode === 'deep' && result.recommendations.length === 3 && (
                       <div className="mb-4 sm:mb-6">
                         <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">3-Phase Implementation Strategy</h3>
@@ -865,8 +860,7 @@ export default function AdsAdvisor() {
                     )}
                   </CardContent>
                 </Card>
-                );
-              })()}
+              )}
             </div>
           </main>
         </div>

@@ -730,7 +730,7 @@ export default function AdsAdvisor() {
               </Card>
 
               {/* Results Section */}
-              {result && (
+              {result && result.recommendations && Array.isArray(result.recommendations) && result.recommendations.length > 0 && (
                 <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="pb-3 sm:pb-4">
                     <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
@@ -759,6 +759,7 @@ export default function AdsAdvisor() {
                         </div>
                       </div>
                     )}
+                    
                     {result.recommendations.map((campaign, index) => (
                       <Card key={index} className="border-border">
                         <CardHeader className="pb-3 sm:pb-4">
@@ -790,7 +791,7 @@ export default function AdsAdvisor() {
                             </ReactMarkdown>
                           </div>
 
-                          {campaign.detailedSteps && (
+                          {campaign.detailedSteps && campaign.detailedSteps.length > 0 && (
                             <div>
                               <h4 className="text-sm sm:text-base font-semibold mb-2">Implementation Steps</h4>
                               <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm">

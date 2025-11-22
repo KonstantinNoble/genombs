@@ -732,10 +732,10 @@ export default function AdsAdvisor() {
               </Card>
 
               {/* Results Section */}
-              {result && (
-                <>
-                  {console.log('[AdsAdvisor Render] Result exists:', !!result)}
-                  {console.log('[AdsAdvisor Render] Recommendations:', result.recommendations)}
+              {result && (() => {
+                console.log('[AdsAdvisor Render] Result exists:', !!result);
+                console.log('[AdsAdvisor Render] Recommendations:', result.recommendations);
+                return (
                   <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                     <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
@@ -865,8 +865,8 @@ export default function AdsAdvisor() {
                     )}
                   </CardContent>
                 </Card>
-                </>
-              )}
+                );
+              })()}
             </div>
           </main>
         </div>

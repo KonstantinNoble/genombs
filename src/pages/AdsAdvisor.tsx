@@ -729,7 +729,7 @@ export default function AdsAdvisor() {
                 </CardContent>
               </Card>
 
-              {/* Results */}
+              {/* Results Section */}
               {result && (
                 <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="pb-3 sm:pb-4">

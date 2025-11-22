@@ -445,8 +445,8 @@ export default function AdsAdvisor() {
       
       <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-          {/* Sidebar - History */}
-          <aside className="w-full lg:w-80 shrink-0 space-y-4 animate-fade-in order-2 lg:order-1">
+          {/* Sidebar - History (hidden on mobile when results are shown) */}
+          <aside className={`w-full lg:w-80 shrink-0 space-y-4 animate-fade-in order-2 lg:order-1 ${result ? 'hidden lg:block' : ''}`}>
             <Card className="shadow-elegant hover:shadow-hover transition-all duration-300 border-primary/10 bg-gradient-to-br from-card via-card to-primary/5">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Previous Recommendations</CardTitle>
@@ -491,7 +491,7 @@ export default function AdsAdvisor() {
             </Card>
           </aside>
 
-          {/* Main Content */}
+          {/* Main Content - Form and Results */}
           <main className="flex-1 w-full min-w-0 space-y-4 sm:space-y-6 animate-fade-in order-1 lg:order-2" style={{ animationDelay: '0.1s' }}>
             <div className="text-center px-2 space-y-2 sm:space-y-3">
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 mb-2">
@@ -538,7 +538,8 @@ export default function AdsAdvisor() {
             </div>
 
             <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              <Card className="border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
+              {/* Input Form - Hide on mobile when results are shown */}
+              <Card className={`border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5 ${result ? 'hidden lg:block' : ''}`}>
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <CardTitle className="text-base sm:text-xl">Tell us about your advertising needs</CardTitle>
                   <CardDescription className="text-sm sm:text-base">Provide details to get tailored advertising campaign recommendations powered by AI</CardDescription>
@@ -731,6 +732,16 @@ export default function AdsAdvisor() {
 
               {result && (
                 <div ref={resultRef} className="space-y-4 sm:space-y-6 animate-fade-in">
+                  {/* Back button on mobile */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="lg:hidden mb-4"
+                    onClick={() => setResult(null)}
+                  >
+                    ← New Analysis
+                  </Button>
+                  
                   <Card className="border-primary/20 bg-card shadow-elegant">
                     <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>

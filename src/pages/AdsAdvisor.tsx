@@ -275,6 +275,7 @@ export default function AdsAdvisor() {
 
       if (error) {
         console.error('Analysis error:', error);
+        setAnalyzing(false);
         
         // Check if it's a limit reached error (429)
         if (error.message && typeof error.message === 'string' && error.message.includes('limit reached')) {
@@ -293,13 +294,26 @@ export default function AdsAdvisor() {
         return;
       }
       
-      // Also check if data contains an error (for 429 responses)
+      // Check if data contains an error (for 429 responses)
       if (data && data.error === 'LIMIT_REACHED') {
         toast({
           title: "Analysis Limit Reached",
           description: data.message || "Analysis limit reached. Please try again later.",
           variant: "destructive",
         });
+        setAnalyzing(false);
+        return;
+      }
+
+      // Validate data structure before setting result
+      if (!data || !data.recommendations || !Array.isArray(data.recommendations)) {
+        console.error('Invalid data structure received:', data);
+        toast({
+          title: "Invalid Response",
+          description: "Received invalid data from server. Please try again.",
+          variant: "destructive",
+        });
+        setAnalyzing(false);
         return;
       }
 
@@ -731,14 +745,14 @@ export default function AdsAdvisor() {
               </Card>
 
               {/* Results Section */}
-              {result && (
+              {result && result.recommendations && Array.isArray(result.recommendations) && result.recommendations.length > 0 && (
                 <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="pb-3 sm:pb-4">
                     <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
                     <CardDescription className="text-sm sm:text-base">AI-powered advertising strategy tailored to your business</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 sm:space-y-6">
-                    {analysisMode === 'deep' && result.recommendations.length === 3 && (
+                    {analysisMode === 'deep' && result?.recommendations?.length === 3 && (
                       <div className="mb-4 sm:mb-6">
                         <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">3-Phase Implementation Strategy</h3>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
@@ -761,12 +775,12 @@ export default function AdsAdvisor() {
                       </div>
                     )}
                     
-                    {result.recommendations.map((campaign, index) => (
+                    {result?.recommendations && Array.isArray(result.recommendations) && result.recommendations.map((campaign, index) => (
                       <Card key={index} className="border-border">
                         <CardHeader className="pb-3 sm:pb-4">
                           <div className="flex items-start justify-between gap-2">
                             <CardTitle className="text-base sm:text-lg">
-                              {analysisMode === 'deep' && result.recommendations.length === 3 
+                              {analysisMode === 'deep' && result?.recommendations?.length === 3
                                 ? `Phase ${index + 1}: ${campaign.name}`
                                 : index === 0 && analysisMode === 'standard'
                                   ? `Primary: ${campaign.name}`

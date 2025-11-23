@@ -303,9 +303,6 @@ export default function AdsAdvisor() {
         return;
       }
 
-      console.log('[AdsAdvisor] Analysis result received:', data);
-      console.log('[AdsAdvisor] Has recommendations:', data?.recommendations);
-      console.log('[AdsAdvisor] Recommendations array length:', data?.recommendations?.length);
       setResult(data);
       await loadAdsHistory(user!.id);
       await loadPremiumStatus(user!.id);
@@ -540,6 +537,7 @@ export default function AdsAdvisor() {
               </div>
             </div>
 
+            {/* Main Content */}
             <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card className="border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                 <CardHeader className="space-y-2 pb-3 sm:pb-4">
@@ -733,7 +731,7 @@ export default function AdsAdvisor() {
               </Card>
 
               {/* Results Section */}
-              {result && result.recommendations && Array.isArray(result.recommendations) && result.recommendations.length > 0 && (
+              {result && (
                 <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="pb-3 sm:pb-4">
                     <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>

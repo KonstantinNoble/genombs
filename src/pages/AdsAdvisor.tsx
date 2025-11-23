@@ -303,6 +303,9 @@ export default function AdsAdvisor() {
         return;
       }
 
+      console.log('[AdsAdvisor] Analysis result received:', data);
+      console.log('[AdsAdvisor] Has recommendations:', data?.recommendations);
+      console.log('[AdsAdvisor] Recommendations array length:', data?.recommendations?.length);
       setResult(data);
       await loadAdsHistory(user!.id);
       await loadPremiumStatus(user!.id);

@@ -310,14 +310,9 @@ export default function AdsAdvisor() {
       // Always set result (even if invalid) to prevent black screen
       setResult(data);
 
-      // Show warning toast if data structure is invalid
+      // Optional: Log warning if data structure is invalid (but still render)
       if (data && (!data.recommendations || !Array.isArray(data.recommendations))) {
         console.warn('Received data without valid recommendations:', data);
-        toast({
-          title: "Unvollständige Antwort",
-          description: "Die Analyse konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
-          variant: "destructive",
-        });
       }
       await loadAdsHistory(user!.id);
       await loadPremiumStatus(user!.id);
@@ -745,37 +740,35 @@ export default function AdsAdvisor() {
                 </CardContent>
               </Card>
 
-              {/* Results Section */}
+              {/* Results Section - Simplified single Card structure */}
               {result && (
-                <>
-                  {/* Error State: Wenn recommendations fehlt oder leer ist */}
-                  {(!result.recommendations || !Array.isArray(result.recommendations) || result.recommendations.length === 0) && (
-                    <Card className="border-destructive/50 bg-destructive/5">
-                      <CardHeader>
-                        <CardTitle className="text-destructive">Analyse nicht verfügbar</CardTitle>
-                        <CardDescription>
+                <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
+                    <CardDescription className="text-sm sm:text-base">
+                      {result.recommendations && Array.isArray(result.recommendations) && result.recommendations.length > 0
+                        ? `${result.recommendations.length} AI-powered campaign${result.recommendations.length !== 1 ? 's' : ''} tailored to your business`
+                        : 'AI-powered advertising strategy'
+                      }
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 sm:space-y-6">
+                    {/* Error State - shown if no valid recommendations */}
+                    {(!result.recommendations || !Array.isArray(result.recommendations) || result.recommendations.length === 0) ? (
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground mb-4">
                           {result.error 
                             ? result.message || "Ein Fehler ist aufgetreten."
                             : "Keine Empfehlungen erhalten. Bitte versuchen Sie es erneut."}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
+                        </p>
                         <Button onClick={() => setResult(null)} variant="outline">
                           Neue Analyse starten
                         </Button>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Success State: Wenn recommendations vorhanden sind */}
-                  {result.recommendations && Array.isArray(result.recommendations) && result.recommendations.length > 0 && (
-                    <Card ref={resultRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
-                      <CardHeader className="pb-3 sm:pb-4">
-                        <CardTitle className="text-lg sm:text-xl">Campaign Recommendations</CardTitle>
-                        <CardDescription className="text-sm sm:text-base">AI-powered advertising strategy tailored to your business</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4 sm:space-y-6">
-                        {analysisMode === 'deep' && result?.recommendations && Array.isArray(result.recommendations) && result.recommendations.length === 3 && (
+                      </div>
+                    ) : (
+                      <>
+                        {/* Success State - Timeline für Deep Mode */}
+                        {analysisMode === 'deep' && result.recommendations.length === 3 && (
                           <div className="mb-4 sm:mb-6">
                             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">3-Phase Implementation Strategy</h3>
                             <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
@@ -798,12 +791,13 @@ export default function AdsAdvisor() {
                           </div>
                         )}
                         
-                        {result?.recommendations && Array.isArray(result.recommendations) && result.recommendations.map((campaign, index) => (
+                        {/* Campaign Cards */}
+                        {result.recommendations.map((campaign, index) => (
                           <Card key={index} className="border-border">
                             <CardHeader className="pb-3 sm:pb-4">
                               <div className="flex items-start justify-between gap-2">
                                 <CardTitle className="text-base sm:text-lg">
-                                  {analysisMode === 'deep' && result?.recommendations && Array.isArray(result.recommendations) && result.recommendations.length === 3
+                                  {analysisMode === 'deep' && result.recommendations.length === 3
                                     ? `Phase ${index + 1}: ${campaign.name}`
                                     : index === 0 && analysisMode === 'standard'
                                       ? `Primary: ${campaign.name}`
@@ -822,86 +816,87 @@ export default function AdsAdvisor() {
                               </div>
                             </CardHeader>
                             <CardContent className="space-y-3 sm:space-y-4">
-                          <div>
-                            <h4 className="text-sm sm:text-base font-semibold mb-2">Rationale</h4>
-                            <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
-                              {normalizeMarkdown(campaign.rationale)}
-                            </ReactMarkdown>
-                          </div>
-
-                          {campaign.detailedSteps && campaign.detailedSteps.length > 0 && (
-                            <div>
-                              <h4 className="text-sm sm:text-base font-semibold mb-2">Implementation Steps</h4>
-                              <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm">
-                                {campaign.detailedSteps.map((step, i) => (
-                                  <li key={i} className="ml-1">{step}</li>
-                                ))}
-                              </ol>
-                            </div>
-                          )}
-
-                          {campaign.expectedROI && (
-                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                              <span className="font-medium">Expected ROI:</span>
-                              <span>{campaign.expectedROI}</span>
-                            </div>
-                          )}
-
-                          {campaign.riskLevel && (
-                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                              <span className="font-medium">Risk Level:</span>
-                              <Badge variant={
-                                campaign.riskLevel === 'low' ? 'default' : 
-                                campaign.riskLevel === 'medium' ? 'secondary' : 
-                                'destructive'
-                              } className="text-xs">
-                                {campaign.riskLevel}
-                              </Badge>
-                            </div>
-                          )}
-
-                          {campaign.metrics && campaign.metrics.length > 0 && (
-                            <div>
-                              <h4 className="text-sm sm:text-base font-semibold mb-2">Key Metrics</h4>
-                              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                                {campaign.metrics.map((metric, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs">{metric}</Badge>
-                                ))}
+                              <div>
+                                <h4 className="text-sm sm:text-base font-semibold mb-2">Rationale</h4>
+                                <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+                                  {normalizeMarkdown(campaign.rationale)}
+                                </ReactMarkdown>
                               </div>
-                            </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
 
-                      {result.generalAdvice && (
-                        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
-                          <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-base sm:text-lg">
-                              {analysisMode === 'deep' 
-                                ? 'Strategic Roadmap Overview'
-                                : 'Campaign Strategy Overview'
-                              }
-                            </CardTitle>
-                            <CardDescription className="text-xs sm:text-sm">
-                              {analysisMode === 'deep'
-                                ? 'How these phases work together to achieve your advertising goals'
-                                : 'How these campaigns complement each other'
-                              }
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
-                              {normalizeMarkdown(result.generalAdvice)}
-                            </ReactMarkdown>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
+                              {campaign.detailedSteps && campaign.detailedSteps.length > 0 && (
+                                <div>
+                                  <h4 className="text-sm sm:text-base font-semibold mb-2">Implementation Steps</h4>
+                                  <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm">
+                                    {campaign.detailedSteps.map((step, i) => (
+                                      <li key={i} className="ml-1">{step}</li>
+                                    ))}
+                                  </ol>
+                                </div>
+                              )}
+
+                              {campaign.expectedROI && (
+                                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                                  <span className="font-medium">Expected ROI:</span>
+                                  <span>{campaign.expectedROI}</span>
+                                </div>
+                              )}
+
+                              {campaign.riskLevel && (
+                                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                                  <span className="font-medium">Risk Level:</span>
+                                  <Badge variant={
+                                    campaign.riskLevel === 'low' ? 'default' : 
+                                    campaign.riskLevel === 'medium' ? 'secondary' : 
+                                    'destructive'
+                                  } className="text-xs">
+                                    {campaign.riskLevel}
+                                  </Badge>
+                                </div>
+                              )}
+
+                              {campaign.metrics && campaign.metrics.length > 0 && (
+                                <div>
+                                  <h4 className="text-sm sm:text-base font-semibold mb-2">Key Metrics</h4>
+                                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                                    {campaign.metrics.map((metric, i) => (
+                                      <Badge key={i} variant="outline" className="text-xs">{metric}</Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
+
+                        {/* General Advice */}
+                        {result.generalAdvice && (
+                          <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
+                            <CardHeader className="pb-3 sm:pb-4">
+                              <CardTitle className="text-base sm:text-lg">
+                                {analysisMode === 'deep' 
+                                  ? 'Strategic Roadmap Overview'
+                                  : 'Campaign Strategy Overview'
+                                }
+                              </CardTitle>
+                              <CardDescription className="text-xs sm:text-sm">
+                                {analysisMode === 'deep'
+                                  ? 'How these phases work together to achieve your advertising goals'
+                                  : 'How these campaigns complement each other'
+                                }
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+                                {normalizeMarkdown(result.generalAdvice)}
+                              </ReactMarkdown>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </main>
         </div>

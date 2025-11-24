@@ -1316,20 +1316,16 @@ const BusinessToolsAdvisor = () => {
 
                   <div className="space-y-1.5 sm:space-y-2">
                     <label className="text-xs sm:text-sm font-medium">Advertising Goals</label>
-                    <Select value={advertisingGoals} onValueChange={setAdvertisingGoals}>
-                      <SelectTrigger><SelectValue placeholder="Select primary goal" /></SelectTrigger>
-                      <SelectContent className="max-h-[200px] bg-background z-50">
-                        <SelectItem value="brand-awareness">Brand Awareness</SelectItem>
-                        <SelectItem value="lead-generation">Lead Generation</SelectItem>
-                        <SelectItem value="sales-conversion">Sales / Conversions</SelectItem>
-                        <SelectItem value="website-traffic">Website Traffic</SelectItem>
-                        <SelectItem value="app-installs">App Installs</SelectItem>
-                        <SelectItem value="engagement">Engagement / Social</SelectItem>
-                        <SelectItem value="product-launch">Product Launch</SelectItem>
-                        <SelectItem value="retargeting">Retargeting / Remarketing</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Textarea
+                      placeholder="E.g., Increase brand awareness, generate qualified leads, boost online sales by 30%..."
+                      value={advertisingGoals}
+                      onChange={(e) => setAdvertisingGoals(e.target.value.slice(0, 200))}
+                      rows={3}
+                      maxLength={200}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {advertisingGoals.length}/200 characters
+                    </p>
                   </div>
 
                   {isPremium && (
@@ -1353,15 +1349,6 @@ const BusinessToolsAdvisor = () => {
                         </Select>
                       </div>
 
-                      <div className="space-y-1.5 sm:space-y-2">
-                        <label className="text-xs sm:text-sm font-medium">Competitor Ads (Optional)</label>
-                        <Input
-                          placeholder="E.g., Competitor names or observed strategies"
-                          value={competitorAds}
-                          onChange={(e) => setCompetitorAds(e.target.value)}
-                          maxLength={100}
-                        />
-                      </div>
 
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                         <CardContent className="pt-6">

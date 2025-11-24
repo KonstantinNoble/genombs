@@ -42,15 +42,17 @@ interface DeepRecommendation {
 }
 
 interface ReportPDFProps {
-  type: 'tools' | 'ideas';
+  type: 'tools' | 'ideas' | 'ads';
   result: {
     recommendations: DeepRecommendation[];
     generalAdvice: string;
   };
   metadata: {
-    websiteType: string;
-    websiteStatus: string;
-    budgetRange: string;
+    websiteType?: string;
+    websiteStatus?: string;
+    budgetRange?: string;
+    targetAudience?: string;
+    advertisingBudget?: string;
     date: string;
     analysisMode?: string;
   };

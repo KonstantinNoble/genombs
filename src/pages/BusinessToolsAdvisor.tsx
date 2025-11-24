@@ -109,11 +109,23 @@ const BusinessToolsAdvisor = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [activeTab, setActiveTab] = useState<"tools">("tools");
+  const [activeTab, setActiveTab] = useState<"tools" | "ads">("tools");
   const [isPlainMode, setIsPlainMode] = useState(false);
   
   const [toolResult, setToolResult] = useState<ToolAdvisorResult | null>(null);
   const [toolHistory, setToolHistory] = useState<ToolHistoryItem[]>([]);
+  
+  // Ads-specific state
+  const [adsResult, setAdsResult] = useState<ToolAdvisorResult | null>(null);
+  const [adsHistory, setAdsHistory] = useState<any[]>([]);
+  const [targetAudienceAds, setTargetAudienceAds] = useState("");
+  const [advertisingGoals, setAdvertisingGoals] = useState("");
+  const [advertisingBudget, setAdvertisingBudget] = useState("");
+  const [currentChannels, setCurrentChannels] = useState("");
+  const [geographicTarget, setGeographicTarget] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [competitorAds, setCompetitorAds] = useState("");
+  const [specificRequirementsAds, setSpecificRequirementsAds] = useState("");
   
   const [deepAnalysisCount, setDeepAnalysisCount] = useState(0);
   const [standardAnalysisCount, setStandardAnalysisCount] = useState(0);
@@ -204,6 +216,7 @@ const BusinessToolsAdvisor = () => {
       
       checkPremiumStatus();
       loadToolHistory();
+      loadAdsHistory();
       loadAnalysisLimit();
 
       const channel = supabase
@@ -363,17 +376,43 @@ const BusinessToolsAdvisor = () => {
     setToolHistory((data || []) as unknown as ToolHistoryItem[]);
   };
 
+  const loadAdsHistory = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('ads_advisor_history')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (error) {
+      console.error('Error loading ads history:', error);
+      return;
+    }
+
+    setAdsHistory(data || []);
+  };
+
 
   const handleAnalyze = async () => {
     if (!user) {
       toast({
         title: "Authentication required",
-        description: "Please sign in to get business tool recommendations",
+        description: "Please sign in to get recommendations",
         variant: "destructive",
       });
       return;
     }
 
+    if (activeTab === "tools") {
+      return await handleToolsAnalyze();
+    } else {
+      return await handleAdsAnalyze();
+    }
+  };
+
+  const handleToolsAnalyze = async () => {
     const inputText = websiteGoals.trim();
 
     if (!websiteType || !websiteStatus || !budgetRange || !inputText) {
@@ -391,8 +430,6 @@ const BusinessToolsAdvisor = () => {
     let imageUrl: string | null = null;
 
     try {
-      
-      // STEP 2: Call Edge Function
       const functionName = 'business-tools-advisor';
       const body: any = { 
         websiteType, 
@@ -401,22 +438,17 @@ const BusinessToolsAdvisor = () => {
         websiteGoals: inputText 
       };
       
-      // Add optional premium fields
       if (targetAudience) body.targetAudience = targetAudience;
       if (competitionLevel) body.competitionLevel = competitionLevel;
       if (growthStage) body.growthStage = growthStage;
 
-      // Add analysis mode for premium users
       if (isPremium) {
         body.analysisMode = analysisMode;
         
-        // Add custom requirements for deep mode
         if (analysisMode === "deep" && customRequirements.trim()) {
           body.customRequirements = customRequirements.trim();
-          console.log('✅ Custom requirements added to payload:', customRequirements.trim());
         }
         
-        // Add image URL if available
         if (imageUrl) {
           body.imageUrl = imageUrl;
         }
@@ -464,12 +496,101 @@ const BusinessToolsAdvisor = () => {
 
       setToolResult(data);
       await loadToolHistory();
-      
       await loadAnalysisLimit();
       
       toast({
         title: "Analysis complete",
         description: `${analysisMode === 'deep' ? 'Detailed' : 'Quick'} tool recommendations provided`,
+      });
+    } catch (error) {
+      console.error('Error getting recommendations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recommendations. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleAdsAnalyze = async () => {
+    const inputText = advertisingGoals.trim();
+
+    if (!targetAudienceAds || !advertisingBudget || !inputText) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in target audience, budget, and advertising goals",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAnalyzing(true);
+    setAdsResult(null);
+
+    try {
+      const functionName = 'ads-advisor';
+      const body: any = { 
+        targetAudience: targetAudienceAds,
+        advertisingGoals: inputText,
+        advertisingBudget
+      };
+      
+      if (currentChannels) body.currentChannels = currentChannels;
+      if (geographicTarget) body.geographicTarget = geographicTarget;
+      if (industry) body.industry = industry;
+      if (competitorAds) body.competitorAds = competitorAds;
+
+      if (isPremium) {
+        body.analysisMode = analysisMode;
+        
+        if (analysisMode === "deep" && specificRequirementsAds.trim()) {
+          body.specificRequirements = specificRequirementsAds.trim();
+        }
+      }
+
+      const { data, error } = await supabase.functions.invoke(functionName, { body });
+
+      if (error) {
+        console.error('Analysis error:', error);
+        
+        if (error.message?.includes('limit reached') || error.message?.includes('429')) {
+          toast({
+            title: "Tageslimit erreicht",
+            description: "Bitte warten Sie 24 Stunden oder upgraden Sie auf Premium für mehr Analysen.",
+            variant: "destructive",
+          });
+          await syncCredits();
+        } else if (error.message?.includes('Rate limit exceeded')) {
+          toast({
+            title: "Rate Limit überschritten",
+            description: "Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes('AI service quota exceeded') || error.message?.includes('402')) {
+          toast({
+            title: "Service vorübergehend nicht verfügbar",
+            description: "Das AI-Kontingent wurde überschritten. Bitte kontaktieren Sie den Support.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Analysis Error",
+            description: error.message || "An unknown error occurred. Please try again.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      setAdsResult(data);
+      await loadAdsHistory();
+      await loadAnalysisLimit();
+      
+      toast({
+        title: "Analysis complete",
+        description: `${analysisMode === 'deep' ? 'Detailed' : 'Quick'} campaign recommendations provided`,
       });
     } catch (error) {
       console.error('Error getting recommendations:', error);
@@ -505,6 +626,28 @@ const BusinessToolsAdvisor = () => {
     });
   };
 
+  const handleDeleteAdsHistory = async (id: string) => {
+    const { error } = await supabase
+      .from('ads_advisor_history')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete history item",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAdsHistory(adsHistory.filter((item: any) => item.id !== id));
+    toast({
+      title: "Deleted",
+      description: "History item removed",
+    });
+  };
+
 
   const getImplementationColor = (implementation: string) => {
     const colors: Record<string, string> = {
@@ -529,13 +672,20 @@ const BusinessToolsAdvisor = () => {
   };
 
   const handleExportPDF = async () => {
-    const result = toolResult;
+    const result = activeTab === "tools" ? toolResult : adsResult;
     if (!result) return;
 
-    const metadata = {
+    const metadata = activeTab === "tools" ? {
       websiteType,
       websiteStatus,
       budgetRange,
+      date: new Date().toLocaleDateString('de-DE', { 
+        year: 'numeric', month: 'long', day: 'numeric' 
+      }),
+      analysisMode
+    } : {
+      targetAudience: targetAudienceAds,
+      advertisingBudget,
       date: new Date().toLocaleDateString('de-DE', { 
         year: 'numeric', month: 'long', day: 'numeric' 
       }),
@@ -736,10 +886,10 @@ const BusinessToolsAdvisor = () => {
     );
   }
 
-  const currentHistory = toolHistory;
-  const currentResult = toolResult;
-  const handleDelete = handleDeleteToolHistory;
-  const setCurrentResult = setToolResult;
+  const currentHistory = activeTab === "tools" ? toolHistory : adsHistory;
+  const currentResult = activeTab === "tools" ? toolResult : adsResult;
+  const handleDelete = activeTab === "tools" ? handleDeleteToolHistory : handleDeleteAdsHistory;
+  const setCurrentResult = activeTab === "tools" ? setToolResult : setAdsResult;
 
   return (
     <div className="min-h-screen isolate bg-background sm:bg-background/80 sm:backdrop-blur-[8px] flex flex-col">
@@ -847,8 +997,21 @@ const BusinessToolsAdvisor = () => {
             </div>
           </div>
 
+          {/* Tab Selector */}
+          <Card className="border-primary/20 bg-card sm:shadow-elegant">
+            <CardContent className="pt-6">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ads")} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="tools">Business Tools</TabsTrigger>
+                  <TabsTrigger value="ads">Ad Campaigns</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </CardContent>
+          </Card>
+
           {/* Main Content */}
           <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+            {activeTab === "tools" && (
               <Card className="border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
               <CardHeader className="space-y-2 pb-3 sm:pb-4">
                   <CardTitle className="text-base sm:text-xl">Tell us about your website</CardTitle>
@@ -1064,15 +1227,203 @@ const BusinessToolsAdvisor = () => {
                   )}
                 </CardContent>
               </Card>
+            )}
+
+            {activeTab === "ads" && (
+              <Card className="border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
+                <CardHeader className="space-y-2 pb-3 sm:pb-4">
+                  <CardTitle className="text-base sm:text-xl">Advertising Campaign Details</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Get AI-powered ad campaign recommendations</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Target Audience</label>
+                      <Input
+                        placeholder="E.g., Small business owners aged 30-50"
+                        value={targetAudienceAds}
+                        onChange={(e) => setTargetAudienceAds(e.target.value)}
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Advertising Budget</label>
+                      <Select value={advertisingBudget} onValueChange={setAdvertisingBudget}>
+                        <SelectTrigger><SelectValue placeholder="Select budget" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="minimal">$0-$500/month</SelectItem>
+                          <SelectItem value="low">$500-$2,000/month</SelectItem>
+                          <SelectItem value="medium">$2,000-$10,000/month</SelectItem>
+                          <SelectItem value="high">$10,000+/month</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label className="text-xs sm:text-sm font-medium">Advertising Goals</label>
+                    <Textarea
+                      placeholder="E.g., Increase brand awareness, generate leads, boost sales..."
+                      value={advertisingGoals}
+                      onChange={(e) => setAdvertisingGoals(e.target.value)}
+                      rows={3}
+                      maxLength={100}
+                    />
+                  </div>
+
+                  {isPremium && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium">Current Channels (Optional)</label>
+                          <Input
+                            placeholder="E.g., Google Ads, Facebook"
+                            value={currentChannels}
+                            onChange={(e) => setCurrentChannels(e.target.value)}
+                            maxLength={100}
+                          />
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium">Geographic Target (Optional)</label>
+                          <Input
+                            placeholder="E.g., Germany, Europe"
+                            value={geographicTarget}
+                            onChange={(e) => setGeographicTarget(e.target.value)}
+                            maxLength={50}
+                          />
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium">Industry (Optional)</label>
+                          <Input
+                            placeholder="E.g., E-commerce, SaaS"
+                            value={industry}
+                            onChange={(e) => setIndustry(e.target.value)}
+                            maxLength={50}
+                          />
+                        </div>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <label className="text-xs sm:text-sm font-medium">Competitor Ads (Optional)</label>
+                          <Input
+                            placeholder="E.g., Competitor names or strategies"
+                            value={competitorAds}
+                            onChange={(e) => setCompetitorAds(e.target.value)}
+                            maxLength={100}
+                          />
+                        </div>
+                      </div>
+
+                      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                        <CardContent className="pt-6">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold mb-2">Premium Analysis Mode</p>
+                            <div className="flex gap-3">
+                              <Button
+                                variant={analysisMode === "standard" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("standard")}
+                                className="flex-1"
+                              >
+                                Standard
+                              </Button>
+                              <Button
+                                variant={analysisMode === "deep" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setAnalysisMode("deep")}
+                                className="flex-1"
+                              >
+                                Deep Analysis
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {analysisMode === "standard" 
+                                ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used)` 
+                                : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI & metrics`}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {analysisMode === "deep" && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Specific Requirements (Optional)</label>
+                          <Input
+                            placeholder="E.g., Must comply with GDPR, focus on mobile users..."
+                            value={specificRequirementsAds}
+                            onChange={(e) => setSpecificRequirementsAds(e.target.value.slice(0, 100))}
+                            maxLength={100}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {specificRequirementsAds.length}/100 characters
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {isPremium && (
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>
+                          <span className="font-medium">Deep Analysis:</span> {deepAnalysisCount}/{deepAnalysisLimit} used today
+                          {deepAnalysisCount >= deepAnalysisLimit && nextAnalysisTime && analysisMode === 'deep' && (
+                            <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-medium">Standard Analysis:</span> {standardAnalysisCount}/{standardAnalysisLimit} used today
+                          {standardAnalysisCount >= standardAnalysisLimit && nextAnalysisTime && analysisMode === 'standard' && (
+                            <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isPremium && (
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium">Standard Analysis:</span> {standardAnalysisCount}/{standardAnalysisLimit} used today
+                        {standardAnalysisCount >= standardAnalysisLimit && nextAnalysisTime && (
+                          <span className="text-destructive ml-2">• Next in {getTimeUntilNextAnalysis()}</span>
+                        )}
+                      </p>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleAnalyze}
+                    disabled={analyzing || !canAnalyze || !targetAudienceAds || !advertisingBudget || !advertisingGoals.trim()}
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    {analyzing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
+                      </>
+                    ) : (
+                      "Start Analysis"
+                    )}
+                  </Button>
+
+                  {!canAnalyze && nextAnalysisTime && (
+                    <p className="text-sm text-center text-muted-foreground">
+                      Next analysis in: {getTimeUntilNextAnalysis()}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
               {/* Results */}
-              {toolResult && !isPlainMode && (
+              {currentResult && !isPlainMode && (
                 <Card ref={toolResultsRef} className="scroll-mt-20 border-primary/20 bg-card sm:shadow-elegant sm:hover:shadow-hover sm:transition-all sm:duration-300 sm:bg-gradient-to-br sm:from-card sm:to-primary/5">
                   <CardHeader className="flex flex-row items-start justify-between">
                     <div>
-                      <CardTitle className="text-xl sm:text-2xl">Website Tools Recommendations</CardTitle>
+                      <CardTitle className="text-xl sm:text-2xl">
+                        {activeTab === "tools" ? "Website Tools Recommendations" : "Ad Campaign Recommendations"}
+                      </CardTitle>
                       <CardDescription className="mt-2">
-                        {toolResult.recommendations.length} personalized recommendations
+                        {currentResult.recommendations.length} personalized recommendations
                       </CardDescription>
                     </div>
                     <Button
@@ -1090,13 +1441,13 @@ const BusinessToolsAdvisor = () => {
                       <h3 className="font-semibold text-base sm:text-lg">Strategic Overview</h3>
                       <div className="max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                          {normalizeMarkdown(toolResult.generalAdvice)}
+                          {normalizeMarkdown(currentResult.generalAdvice)}
                         </ReactMarkdown>
                       </div>
                     </div>
                     <div className="border-t pt-4">
                       <h3 className="font-semibold mb-3 text-base sm:text-lg">Recommendations</h3>
-                      <div className="space-y-3">{toolResult.recommendations.map((rec, idx) => (
+                      <div className="space-y-3">{currentResult.recommendations.map((rec, idx) => (
                           <div key={idx} className="p-4 bg-muted/30 rounded-lg border">
                             <div className="flex items-start justify-between gap-2 mb-2">
                               <h4 className="font-semibold text-sm sm:text-base">{rec.name}</h4>
@@ -1144,21 +1495,23 @@ const BusinessToolsAdvisor = () => {
               </Card>
             )}
             
-            {/* Plain Mode Tool Results */}
-            {toolResult && isPlainMode && (
+            {/* Plain Mode Results */}
+            {currentResult && isPlainMode && (
               <div ref={toolResultsRef} className="scroll-mt-20 space-y-4 p-4 border rounded-lg bg-card">
-                <h2 className="text-2xl font-bold">Tool Recommendations</h2>
-                {toolResult.recommendations.map((tool, idx) => (
+                <h2 className="text-2xl font-bold">
+                  {activeTab === "tools" ? "Tool Recommendations" : "Campaign Recommendations"}
+                </h2>
+                {currentResult.recommendations.map((item, idx) => (
                   <div key={idx} className="border-l-4 border-primary pl-4 py-2">
-                    <h3 className="text-lg font-semibold">{tool.name}</h3>
-                    <p className="text-sm text-muted-foreground">{tool.category} • {tool.implementation} • {tool.estimatedCost}</p>
-                    <p className="mt-2">{tool.rationale}</p>
+                    <h3 className="text-lg font-semibold">{item.name}</h3>
+                    <p className="text-sm text-muted-foreground">{item.category} • {item.implementation} • {item.estimatedCost}</p>
+                    <p className="mt-2">{item.rationale}</p>
                   </div>
                 ))}
-                {toolResult.generalAdvice && (
+                {currentResult.generalAdvice && (
                   <div className="mt-6 p-4 border rounded bg-muted/50">
                     <h3 className="font-semibold mb-2">General Advice</h3>
-                    <p className="whitespace-pre-wrap">{stripMarkdown(toolResult.generalAdvice)}</p>
+                    <p className="whitespace-pre-wrap">{stripMarkdown(currentResult.generalAdvice)}</p>
                   </div>
                 )}
               </div>

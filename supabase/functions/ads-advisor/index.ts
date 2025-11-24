@@ -104,9 +104,7 @@ serve(async (req) => {
           
           return new Response(
             JSON.stringify({ 
-              error: 'LIMIT_REACHED',
-              message: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Try again in ${timeMessage}.`,
-              resetAt: windowEndsAt.toISOString()
+              error: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Try again in ${timeMessage}.`
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
@@ -131,9 +129,7 @@ serve(async (req) => {
           
           return new Response(
             JSON.stringify({ 
-              error: 'LIMIT_REACHED',
-              message: `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try again in ${timeMessage}.`,
-              resetAt: windowEndsAt.toISOString()
+              error: `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try again in ${timeMessage}.`
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );

@@ -1317,14 +1317,14 @@ const BusinessToolsAdvisor = () => {
                   <div className="space-y-1.5 sm:space-y-2">
                     <label className="text-xs sm:text-sm font-medium">Advertising Goals</label>
                     <Textarea
-                      placeholder="E.g., Increase brand awareness, generate qualified leads, boost online sales by 30%..."
+                      placeholder="E.g., Increase brand awareness, generate qualified leads, boost online sales..."
                       value={advertisingGoals}
-                      onChange={(e) => setAdvertisingGoals(e.target.value.slice(0, 200))}
+                      onChange={(e) => setAdvertisingGoals(e.target.value.slice(0, 100))}
                       rows={3}
-                      maxLength={200}
+                      maxLength={100}
                     />
                     <p className="text-xs text-muted-foreground">
-                      {advertisingGoals.length}/200 characters
+                      {advertisingGoals.length}/100 characters
                     </p>
                   </div>
 

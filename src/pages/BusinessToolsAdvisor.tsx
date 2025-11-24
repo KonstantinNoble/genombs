@@ -1238,19 +1238,50 @@ const BusinessToolsAdvisor = () => {
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Industry</label>
+                      <Select value={industry} onValueChange={setIndustry}>
+                        <SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger>
+                        <SelectContent className="max-h-[200px] bg-background z-50">
+                          <SelectItem value="e-commerce">E-Commerce</SelectItem>
+                          <SelectItem value="saas">SaaS / Software</SelectItem>
+                          <SelectItem value="healthcare">Healthcare</SelectItem>
+                          <SelectItem value="finance">Finance / Banking</SelectItem>
+                          <SelectItem value="education">Education</SelectItem>
+                          <SelectItem value="real-estate">Real Estate</SelectItem>
+                          <SelectItem value="travel">Travel / Hospitality</SelectItem>
+                          <SelectItem value="food">Food / Beverage</SelectItem>
+                          <SelectItem value="fashion">Fashion / Retail</SelectItem>
+                          <SelectItem value="fitness">Fitness / Wellness</SelectItem>
+                          <SelectItem value="consulting">Consulting / Services</SelectItem>
+                          <SelectItem value="automotive">Automotive</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5 sm:space-y-2">
                       <label className="text-xs sm:text-sm font-medium">Target Audience</label>
-                      <Input
-                        placeholder="E.g., Small business owners aged 30-50"
-                        value={targetAudienceAds}
-                        onChange={(e) => setTargetAudienceAds(e.target.value)}
-                        maxLength={100}
-                      />
+                      <Select value={targetAudienceAds} onValueChange={setTargetAudienceAds}>
+                        <SelectTrigger><SelectValue placeholder="Select audience" /></SelectTrigger>
+                        <SelectContent className="max-h-[200px] bg-background z-50">
+                          <SelectItem value="small-business">Small Business Owners</SelectItem>
+                          <SelectItem value="enterprise">Enterprise Decision Makers</SelectItem>
+                          <SelectItem value="consumers-18-24">Consumers (18-24)</SelectItem>
+                          <SelectItem value="consumers-25-34">Consumers (25-34)</SelectItem>
+                          <SelectItem value="consumers-35-44">Consumers (35-44)</SelectItem>
+                          <SelectItem value="consumers-45-plus">Consumers (45+)</SelectItem>
+                          <SelectItem value="students">Students</SelectItem>
+                          <SelectItem value="professionals">Young Professionals</SelectItem>
+                          <SelectItem value="parents">Parents</SelectItem>
+                          <SelectItem value="retirees">Retirees</SelectItem>
+                          <SelectItem value="other">Other / Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-1.5 sm:space-y-2">
                       <label className="text-xs sm:text-sm font-medium">Advertising Budget</label>
                       <Select value={advertisingBudget} onValueChange={setAdvertisingBudget}>
                         <SelectTrigger><SelectValue placeholder="Select budget" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background z-50">
                           <SelectItem value="minimal">$0-$500/month</SelectItem>
                           <SelectItem value="low">$500-$2,000/month</SelectItem>
                           <SelectItem value="medium">$2,000-$10,000/month</SelectItem>
@@ -1258,58 +1289,78 @@ const BusinessToolsAdvisor = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-xs sm:text-sm font-medium">Geographic Target</label>
+                      <Select value={geographicTarget} onValueChange={setGeographicTarget}>
+                        <SelectTrigger><SelectValue placeholder="Select region" /></SelectTrigger>
+                        <SelectContent className="max-h-[200px] bg-background z-50">
+                          <SelectItem value="global">Global</SelectItem>
+                          <SelectItem value="north-america">North America</SelectItem>
+                          <SelectItem value="europe">Europe</SelectItem>
+                          <SelectItem value="asia">Asia</SelectItem>
+                          <SelectItem value="latin-america">Latin America</SelectItem>
+                          <SelectItem value="middle-east">Middle East</SelectItem>
+                          <SelectItem value="africa">Africa</SelectItem>
+                          <SelectItem value="oceania">Oceania</SelectItem>
+                          <SelectItem value="usa">USA</SelectItem>
+                          <SelectItem value="uk">United Kingdom</SelectItem>
+                          <SelectItem value="germany">Germany</SelectItem>
+                          <SelectItem value="france">France</SelectItem>
+                          <SelectItem value="canada">Canada</SelectItem>
+                          <SelectItem value="australia">Australia</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-1.5 sm:space-y-2">
                     <label className="text-xs sm:text-sm font-medium">Advertising Goals</label>
-                    <Textarea
-                      placeholder="E.g., Increase brand awareness, generate leads, boost sales..."
-                      value={advertisingGoals}
-                      onChange={(e) => setAdvertisingGoals(e.target.value)}
-                      rows={3}
-                      maxLength={100}
-                    />
+                    <Select value={advertisingGoals} onValueChange={setAdvertisingGoals}>
+                      <SelectTrigger><SelectValue placeholder="Select primary goal" /></SelectTrigger>
+                      <SelectContent className="max-h-[200px] bg-background z-50">
+                        <SelectItem value="brand-awareness">Brand Awareness</SelectItem>
+                        <SelectItem value="lead-generation">Lead Generation</SelectItem>
+                        <SelectItem value="sales-conversion">Sales / Conversions</SelectItem>
+                        <SelectItem value="website-traffic">Website Traffic</SelectItem>
+                        <SelectItem value="app-installs">App Installs</SelectItem>
+                        <SelectItem value="engagement">Engagement / Social</SelectItem>
+                        <SelectItem value="product-launch">Product Launch</SelectItem>
+                        <SelectItem value="retargeting">Retargeting / Remarketing</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {isPremium && (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium">Current Channels (Optional)</label>
-                          <Input
-                            placeholder="E.g., Google Ads, Facebook"
-                            value={currentChannels}
-                            onChange={(e) => setCurrentChannels(e.target.value)}
-                            maxLength={100}
-                          />
-                        </div>
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium">Geographic Target (Optional)</label>
-                          <Input
-                            placeholder="E.g., Germany, Europe"
-                            value={geographicTarget}
-                            onChange={(e) => setGeographicTarget(e.target.value)}
-                            maxLength={50}
-                          />
-                        </div>
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium">Industry (Optional)</label>
-                          <Input
-                            placeholder="E.g., E-commerce, SaaS"
-                            value={industry}
-                            onChange={(e) => setIndustry(e.target.value)}
-                            maxLength={50}
-                          />
-                        </div>
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <label className="text-xs sm:text-sm font-medium">Competitor Ads (Optional)</label>
-                          <Input
-                            placeholder="E.g., Competitor names or strategies"
-                            value={competitorAds}
-                            onChange={(e) => setCompetitorAds(e.target.value)}
-                            maxLength={100}
-                          />
-                        </div>
+                      <div className="space-y-1.5 sm:space-y-2">
+                        <label className="text-xs sm:text-sm font-medium">Current Advertising Channels (Optional)</label>
+                        <Select value={currentChannels} onValueChange={setCurrentChannels}>
+                          <SelectTrigger><SelectValue placeholder="Select current channels" /></SelectTrigger>
+                          <SelectContent className="max-h-[200px] bg-background z-50">
+                            <SelectItem value="none">None / Just Starting</SelectItem>
+                            <SelectItem value="google-ads">Google Ads</SelectItem>
+                            <SelectItem value="facebook-ads">Facebook Ads</SelectItem>
+                            <SelectItem value="instagram-ads">Instagram Ads</SelectItem>
+                            <SelectItem value="linkedin-ads">LinkedIn Ads</SelectItem>
+                            <SelectItem value="tiktok-ads">TikTok Ads</SelectItem>
+                            <SelectItem value="youtube-ads">YouTube Ads</SelectItem>
+                            <SelectItem value="display-ads">Display Advertising</SelectItem>
+                            <SelectItem value="multiple">Multiple Channels</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-1.5 sm:space-y-2">
+                        <label className="text-xs sm:text-sm font-medium">Competitor Ads (Optional)</label>
+                        <Input
+                          placeholder="E.g., Competitor names or observed strategies"
+                          value={competitorAds}
+                          onChange={(e) => setCompetitorAds(e.target.value)}
+                          maxLength={100}
+                        />
                       </div>
 
                       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">

@@ -25,11 +25,14 @@ import remarkGfm from "remark-gfm";
 
 interface ToolRecommendation {
   name: string;
-  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy";
-  implementation: "quick-win" | "medium-term" | "strategic";
+  category: "productivity" | "marketing" | "sales" | "finance" | "hr" | "operations" | "strategy" | "google-ads" | "facebook-ads" | "instagram-ads" | "linkedin-ads" | "tiktok-ads" | "youtube-ads" | "display-ads";
+  implementation: "quick-win" | "medium-term" | "strategic" | "immediate" | "short-term" | "long-term";
   estimatedCost: string;
   rationale: string;
-  // Deep analysis fields
+  // Deep analysis exclusive fields
+  phase?: string;
+  competitiveAdvantage?: string;
+  testingStrategy?: string[];
   detailedSteps?: string[];
   expectedROI?: string;
   riskLevel?: "low" | "medium" | "high";
@@ -1147,8 +1150,8 @@ const BusinessToolsAdvisor = () => {
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
                               {analysisMode === "standard" 
-                                ? `Quick recommendations (${standardAnalysisCount}/${standardAnalysisLimit} used) in ~10s` 
-                                : `Detailed analysis (${deepAnalysisCount}/${deepAnalysisLimit} used) with ROI, roadmap & risk assessment (~20-30s)`}
+                                ? `2 focused campaigns (${standardAnalysisCount}/${standardAnalysisLimit} used) - Quick wins in ~10s` 
+                                : `3-phase 6-month strategy (${deepAnalysisCount}/${deepAnalysisLimit} used) - ROI projections, competitive analysis, A/B testing roadmap (~20-30s)`}
                             </p>
                           </div>
                         </CardContent>
@@ -1431,7 +1434,11 @@ const BusinessToolsAdvisor = () => {
                   <Button
                     onClick={handleAnalyze}
                     disabled={analyzing || !canAnalyze || !targetAudienceAds || !advertisingBudget || !advertisingGoals.trim()}
-                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className={
+                      analysisMode === "deep" 
+                        ? "w-full bg-gradient-to-r from-primary via-primary/90 to-primary/80 hover:from-primary/95 hover:via-primary/85 hover:to-primary/75 text-primary-foreground transition-all duration-300 shadow-elegant hover:shadow-hover border border-primary/30"
+                        : "w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-lg hover:shadow-xl"
+                    }
                   >
                     {analyzing ? (
                       <>
@@ -1439,7 +1446,10 @@ const BusinessToolsAdvisor = () => {
                         {analysisMode === "deep" ? "Deep Analysis Running..." : "Analyzing..."}
                       </>
                     ) : (
-                      "Start Analysis"
+                      <>
+                        {analysisMode === "deep" && <TrendingUp className="mr-2 h-4 w-4" />}
+                        {analysisMode === "deep" ? "Start Premium Deep Analysis" : "Start Analysis"}
+                      </>
                     )}
                   </Button>
 
@@ -1488,7 +1498,14 @@ const BusinessToolsAdvisor = () => {
                       <div className="space-y-3">{currentResult.recommendations.map((rec, idx) => (
                           <div key={idx} className="p-4 bg-muted/30 rounded-lg border">
                             <div className="flex items-start justify-between gap-2 mb-2">
-                              <h4 className="font-semibold text-sm sm:text-base">{rec.name}</h4>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-sm sm:text-base">{rec.name}</h4>
+                                {rec.phase && (
+                                  <Badge className="mt-1 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-0">
+                                    {rec.phase}
+                                  </Badge>
+                                )}
+                              </div>
                               <Badge className={getImplementationColor(rec.implementation)} variant="outline">
                                 {rec.implementation}
                               </Badge>
@@ -1507,6 +1524,18 @@ const BusinessToolsAdvisor = () => {
                                 {normalizeMarkdown(rec.rationale)}
                               </ReactMarkdown>
                             </div>
+                            
+                            {/* Deep Mode Exclusive: Competitive Advantage */}
+                            {rec.competitiveAdvantage && (
+                              <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                                <p className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
+                                  <TrendingUp className="h-3 w-3" />
+                                  Competitive Advantage
+                                </p>
+                                <p className="text-sm text-foreground/90">{rec.competitiveAdvantage}</p>
+                              </div>
+                            )}
+                            
                             {rec.expectedROI && (
                               <div className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
                                 <p className="text-sm font-semibold text-green-800 dark:text-green-400 flex items-center gap-2">
@@ -1515,6 +1544,22 @@ const BusinessToolsAdvisor = () => {
                                 </p>
                               </div>
                             )}
+                            
+                            {/* Deep Mode Exclusive: Testing Strategy */}
+                            {rec.testingStrategy && rec.testingStrategy.length > 0 && (
+                              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <p className="text-xs font-semibold text-blue-800 dark:text-blue-400 mb-2">A/B Testing Strategy</p>
+                                <ul className="space-y-1">
+                                  {rec.testingStrategy.map((test, i) => (
+                                    <li key={i} className="text-sm text-blue-900 dark:text-blue-300 flex items-start gap-2">
+                                      <span className="text-blue-600 dark:text-blue-500 mt-0.5">•</span>
+                                      <span>{test}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            
                             {rec.detailedSteps && rec.detailedSteps.length > 0 && (
                               <details className="mt-3">
                                 <summary className="cursor-pointer text-sm font-semibold">Implementation Steps</summary>
@@ -1523,6 +1568,28 @@ const BusinessToolsAdvisor = () => {
                                     <li key={i}>{step}</li>
                                   ))}
                                 </ol>
+                              </details>
+                            )}
+                            
+                            {rec.prerequisites && rec.prerequisites.length > 0 && (
+                              <details className="mt-2">
+                                <summary className="cursor-pointer text-sm font-semibold text-orange-700 dark:text-orange-400">Prerequisites</summary>
+                                <ul className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm text-muted-foreground">
+                                  {rec.prerequisites.map((prereq, i) => (
+                                    <li key={i}>{prereq}</li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            
+                            {rec.metrics && rec.metrics.length > 0 && (
+                              <details className="mt-2">
+                                <summary className="cursor-pointer text-sm font-semibold">Key Metrics to Track</summary>
+                                <ul className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm text-muted-foreground">
+                                  {rec.metrics.map((metric, i) => (
+                                    <li key={i}>{metric}</li>
+                                  ))}
+                                </ul>
                               </details>
                             )}
                           </div>

@@ -13,13 +13,16 @@ interface AdCampaignRecommendation {
   implementation: string;
   estimatedCost: string;
   rationale: string;
-  // Deep mode fields
+  // Deep mode exclusive fields
+  phase?: string; // "Phase 1 (Month 1-2): FOUNDATION" | "Phase 2 (Month 3-4): EXPANSION" | "Phase 3 (Month 5-6): OPTIMIZATION"
   detailedSteps?: string[];
   expectedROI?: string;
   riskLevel?: string;
   prerequisites?: string[];
   metrics?: string[];
   implementationTimeline?: string;
+  competitiveAdvantage?: string;
+  testingStrategy?: string[];
 }
 
 // Input validation schema
@@ -155,76 +158,97 @@ serve(async (req) => {
     }
 
     const systemPrompt = isDeepMode
-      ? `You are a senior advertising strategist. Create a comprehensive 3-PHASE advertising strategy.
+      ? `You are a senior advertising strategist specializing in long-term campaign architecture. Create a comprehensive 6-MONTH, 3-PHASE advertising strategy.
 
-PHASE STRUCTURE:
+PREMIUM DEEP MODE REQUIREMENTS:
+You MUST provide EXACTLY 3 campaigns - one for each phase of the 6-month roadmap.
+
+PHASE STRUCTURE (CRITICAL - Each campaign must specify its phase):
 Phase 1 (Month 1-2): FOUNDATION
-- Establish market presence
-- Test messaging and targeting
-- Collect baseline data
-- Budget: 40% of total
+- Goal: Establish market presence and collect baseline data
+- Focus: Testing messaging, audience validation, initial brand awareness
+- Budget Distribution: 40% of total budget
+- Risk: Medium (learning phase)
 
 Phase 2 (Month 3-4): EXPANSION  
-- Scale what works from Phase 1
-- Add complementary channels
-- Begin retargeting
-- Budget: 35% of total
+- Goal: Scale proven tactics from Phase 1
+- Focus: Expand to complementary channels, begin retargeting
+- Budget Distribution: 35% of total budget
+- Risk: Low-Medium (data-driven scaling)
 
 Phase 3 (Month 5-6): OPTIMIZATION
-- Multi-channel integration
-- Advanced audience segmentation
-- Maximize ROI
-- Budget: 25% of total
+- Goal: Multi-channel integration and ROI maximization
+- Focus: Advanced segmentation, automation, conversion optimization
+- Budget Distribution: 25% of total budget
+- Risk: Low (refined approach)
 
-PROVIDE EXACTLY 3 CAMPAIGNS (one per phase) that build on each other sequentially.
+MANDATORY FIELDS FOR EACH CAMPAIGN:
+1. phase: MUST be one of:
+   - "Phase 1 (Month 1-2): FOUNDATION"
+   - "Phase 2 (Month 3-4): EXPANSION"
+   - "Phase 3 (Month 5-6): OPTIMIZATION"
 
-${currentChannels ? `Current Channels: ${currentChannels}` : ''}
-${competitorStrategy ? `Competitor Strategy: ${competitorStrategy}` : ''}
-${geographicTarget ? `Geographic Target: ${geographicTarget}` : ''}
-${specificRequirements ? `Specific Requirements: ${specificRequirements}` : ''}
+2. competitiveAdvantage: Explain how this campaign positions the business against competitors. Consider:
+   ${competitorStrategy ? `- Competitor insight: ${competitorStrategy}` : '- Market differentiation strategies'}
+   - Unique value proposition in this channel
+   - Defensive moats being built
+
+3. testingStrategy: Array of 3-4 specific A/B tests to run during this phase
+   - Example: "Test headline: Feature-focused vs. Benefit-focused"
+   - Example: "Test audience: Broad targeting vs. Interest-based segments"
+
+4. detailedSteps: 5-7 implementation steps specific to THIS phase
+5. expectedROI: Cumulative ROI projection considering all previous phases
+6. riskLevel: Risk assessment for this specific phase
+7. prerequisites: What MUST be completed from previous phases before starting
+8. metrics: 4-6 KPIs specific to tracking this phase's success
+9. implementationTimeline: Realistic setup duration for this phase
+
+${currentChannels ? `Current Channels: ${currentChannels} - Analyze how to leverage or complement these.` : ''}
+${geographicTarget ? `Geographic Target: ${geographicTarget} - Tailor campaigns to this market.` : ''}
+${specificRequirements ? `Special Requirements: ${specificRequirements}` : ''}
 
 CRITICAL OUTPUT REQUIREMENTS:
-1. Use clean, professional English
-2. NEVER use special characters: ★ ✓ → • ✨ 💡 📊 ⚡ ♦ ► etc.
-3. Use simple dashes (-) for bullet points ONLY in arrays
-4. Use plain text only - NO bold (**text**) or italics in rationale field
-5. Each campaign's rationale MUST reference previous phases
-6. Numbers and percentages: plain format (e.g., "5-10%", "$500-1000")
-7. For generalAdvice: Explain the strategic progression and why this phased approach works
+1. Professional English, zero special characters (★ ✓ → • ✨ etc.)
+2. Plain text only - NO markdown formatting
+3. Each campaign's rationale MUST explain how it builds on previous phases
+4. generalAdvice: Provide a detailed 6-month roadmap including:
+   - Budget distribution across phases
+   - Key milestones for each phase
+   - Synergies between channels
+   - Risk mitigation strategies
+   - Expected cumulative results by month 6
+   - When to pivot or scale back
 
-Each campaign should include:
-- detailedSteps: Implementation steps for THIS phase
-- expectedROI: Cumulative ROI (building on previous phases)
-- riskLevel: Risk assessment for this phase
-- prerequisites: What must be completed from previous phases
-- metrics: KPIs specific to this phase
-- implementationTimeline: Duration of this phase
-
-Focus on practical advertising campaigns (Google Ads, Facebook, Instagram, LinkedIn, TikTok, YouTube, Display Ads).
+Focus on practical advertising platforms: Google Ads, Facebook, Instagram, LinkedIn, TikTok, YouTube, Display Ads.
 Use the suggest_campaigns function.`
-      : `You are a strategic advertising consultant. Create a focused, cohesive advertising plan.
+      : `You are a strategic advertising consultant. Create a focused, immediate-action advertising plan.
 
-STRATEGY REQUIREMENTS:
-- Provide 2-3 campaigns that work together as ONE strategy
-- First campaign must be the PRIMARY traffic driver
-- Additional campaigns should SUPPORT and COMPLEMENT the primary
-- Explain how campaigns interconnect and reinforce each other
+STANDARD MODE REQUIREMENTS:
+Provide EXACTLY 2 campaigns that work as a unified quick-start strategy.
 
-OUTPUT STRUCTURE:
-1. PRIMARY Campaign: Main channel with highest budget allocation (60-70%)
-2. SUPPORTING Campaign(s): Complementary channels (30-40% combined)
+CAMPAIGN STRUCTURE:
+1. PRIMARY Campaign: Main traffic driver (60-70% of budget)
+   - Must be the fastest to implement
+   - Highest expected ROI in first 30 days
+   
+2. SUPPORTING Campaign: Complementary channel (30-40% of budget)
+   - Reinforces the primary campaign
+   - Different audience touchpoint
+   - Creates retargeting opportunities
 
 CRITICAL OUTPUT REQUIREMENTS:
-1. Use clean, professional English
-2. NEVER use special characters: ★ ✓ → • ✨ 💡 📊 ⚡ ♦ ► etc.
-3. Use simple dashes (-) for bullet points ONLY in arrays
-4. Use plain text only - NO bold (**text**) or italics in rationale field
-5. Keep rationale concise but strategic (4-5 sentences showing how campaigns connect)
-6. Numbers and percentages: plain format (e.g., "5-10%", "$500-1000")
-7. For generalAdvice: Provide a strategic overview explaining campaign synergies
+1. Professional English, zero special characters (★ ✓ → • ✨ etc.)
+2. Plain text only - NO markdown formatting
+3. Keep rationale focused (3-4 sentences explaining campaign synergy)
+4. Numbers in plain format: "5-10%", "$500-1000"
+5. generalAdvice: Provide a concise strategic overview (5-7 sentences) covering:
+   - Why these 2 campaigns work together
+   - Expected timeline to see results
+   - Key success metrics to watch
+   - One quick optimization tip
 
-Focus on creating ONE cohesive strategy, not separate isolated campaigns.
-Focus on practical advertising campaigns relevant to the budget and goals.
+Focus on immediate-action campaigns for quick wins.
 Use the suggest_campaigns function.`;
 
     let userPromptText = `Industry: ${industry}
@@ -256,33 +280,54 @@ Advertising Goals: ${advertisingGoals}`;
         enum: ['immediate', 'short-term', 'long-term'],
         description: 'When to start'
       },
-      estimatedCost: { type: 'string', description: 'Cost estimate (e.g., "$1000-2500 per month")' },
+      estimatedCost: { type: 'string', description: 'Cost estimate with breakdown (e.g., "$1000-2500/month" or for deep mode: "$1500-2000/month - Setup: $500, Monthly: $1000-1500")' },
       rationale: { type: 'string', description: 'Why this campaign (3-4 sentences, plain text, no special characters)' }
     };
 
     if (isDeepMode) {
+      toolProperties.phase = {
+        type: 'string',
+        enum: ['Phase 1 (Month 1-2): FOUNDATION', 'Phase 2 (Month 3-4): EXPANSION', 'Phase 3 (Month 5-6): OPTIMIZATION'],
+        description: 'REQUIRED: Which phase this campaign belongs to'
+      };
+      toolProperties.competitiveAdvantage = {
+        type: 'string',
+        description: 'REQUIRED: How this campaign positions against competitors (3-4 sentences)'
+      };
+      toolProperties.testingStrategy = {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'REQUIRED: 3-4 specific A/B tests to run in this phase',
+        minItems: 3,
+        maxItems: 4
+      };
       toolProperties.detailedSteps = {
         type: 'array',
         items: { type: 'string' },
-        description: 'Step-by-step implementation guide'
+        description: 'Step-by-step implementation (5-7 steps)',
+        minItems: 5,
+        maxItems: 7
       };
-      toolProperties.expectedROI = { type: 'string', description: 'ROI projection (e.g., "5-10% ROI in 3-6 months")' };
+      toolProperties.expectedROI = { type: 'string', description: 'Cumulative ROI projection considering previous phases (e.g., "8-12% cumulative ROI by end of phase")' };
       toolProperties.riskLevel = {
         type: 'string',
         enum: ['low', 'medium', 'high'],
-        description: 'Risk assessment'
+        description: 'Risk assessment for this phase'
       };
       toolProperties.prerequisites = {
         type: 'array',
         items: { type: 'string' },
-        description: 'Requirements before starting'
+        description: 'What must be completed from previous phases',
+        minItems: 1
       };
       toolProperties.metrics = {
         type: 'array',
         items: { type: 'string' },
-        description: 'KPIs to track (e.g., "Click-through rate", "Cost per acquisition")'
+        description: 'Phase-specific KPIs to track (4-6 metrics)',
+        minItems: 4,
+        maxItems: 6
       };
-      toolProperties.implementationTimeline = { type: 'string', description: 'Time to set up (e.g., "2-3 weeks")' };
+      toolProperties.implementationTimeline = { type: 'string', description: 'Setup duration for this phase (e.g., "3-4 weeks")' };
     }
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -310,12 +355,19 @@ Advertising Goals: ${advertisingGoals}`;
                   items: {
                     type: 'object',
                     properties: toolProperties,
-                    required: ['name', 'category', 'implementation', 'estimatedCost', 'rationale']
-                  }
+                    required: isDeepMode 
+                      ? ['name', 'category', 'implementation', 'estimatedCost', 'rationale', 'phase', 'competitiveAdvantage', 'testingStrategy', 'detailedSteps', 'expectedROI', 'riskLevel', 'prerequisites', 'metrics', 'implementationTimeline']
+                      : ['name', 'category', 'implementation', 'estimatedCost', 'rationale']
+                  },
+                  minItems: isDeepMode ? 3 : 2,
+                  maxItems: isDeepMode ? 3 : 2,
+                  description: isDeepMode ? 'Exactly 3 campaigns (one per phase)' : 'Exactly 2 campaigns (primary + supporting)'
                 },
                 generalAdvice: {
                   type: 'string',
-                  description: 'Overall advertising strategy (5-7 sentences, plain text, proper paragraph breaks)'
+                  description: isDeepMode 
+                    ? 'Comprehensive 6-month roadmap covering: budget distribution across phases, key milestones, channel synergies, risk mitigation, cumulative results projection, and pivot indicators. (10-15 sentences, plain text, proper paragraph breaks)'
+                    : 'Strategic overview explaining campaign synergy, expected timeline, key metrics, and one optimization tip. (5-7 sentences, plain text)'
                 }
               },
               required: ['recommendations', 'generalAdvice']

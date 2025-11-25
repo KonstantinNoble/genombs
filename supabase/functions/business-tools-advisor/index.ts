@@ -69,7 +69,7 @@ serve(async (req) => {
     // Get user's premium status and mode-specific counts
     const { data: creditsData, error: creditsError } = await supabase
       .from('user_credits')
-      .select('is_premium, deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start')
+      .select('is_premium, subscription_end_date, deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -78,7 +78,21 @@ serve(async (req) => {
       throw new Error('Failed to check credits');
     }
 
-    const isPremium = creditsData?.is_premium ?? false;
+    // Server-side premium verification: Check if subscription has expired
+    let isPremium = creditsData?.is_premium ?? false;
+    if (isPremium && creditsData?.subscription_end_date) {
+      const subscriptionEndDate = new Date(creditsData.subscription_end_date);
+      if (subscriptionEndDate < new Date()) {
+        console.log('⚠️ Premium subscription expired, denying premium access');
+        isPremium = false;
+        
+        // Update database to reflect expired status
+        await supabase
+          .from('user_credits')
+          .update({ is_premium: false, auto_renew: false })
+          .eq('user_id', user.id);
+      }
+    }
     
     // Set limits based on premium status
     const deepLimit = isPremium ? 2 : 0;

@@ -49,12 +49,12 @@ const CTA = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            {isPremium && isLoggedIn ? "Continue Your Premium Analysis" : "Ready to Optimize Your Website?"}
+            {isPremium && isLoggedIn ? "Continue Your Premium Analysis" : "Ready to Optimize Your Business?"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {isPremium && isLoggedIn 
-              ? "Access all your premium features and continue optimizing your website."
+              ? "Access all your premium features and continue optimizing your website and advertising campaigns."
               : "Get your first AI analysis free. No credit card required."}
           </p>
 
@@ -64,8 +64,18 @@ const CTA = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/business-tools">
-                {isPremium && isLoggedIn ? "Start Premium Analysis" : "Start Your Free Analysis Now"}
+              <Link to="/business-tools?tab=tools">
+                {isPremium && isLoggedIn ? "Website Analysis" : "Start Website Analysis"}
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base px-8 transition-all duration-300 hover:scale-105"
+              asChild
+            >
+              <Link to="/business-tools?tab=ads">
+                {isPremium && isLoggedIn ? "Ads Analysis" : "Start Ads Analysis"}
               </Link>
             </Button>
           </div>

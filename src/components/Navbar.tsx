@@ -86,7 +86,7 @@ const Navbar = () => {
             <DropdownMenuContent className="bg-background border border-border z-50">
               <DropdownMenuItem asChild>
                 <Link 
-                  to="/business-tools" 
+                  to="/business-tools?tab=tools" 
                   className={`cursor-pointer ${
                     isActive("/business-tools") ? "text-primary font-semibold" : ""
                   }`}
@@ -96,9 +96,9 @@ const Navbar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link 
-                  to="/ads-advisor" 
+                  to="/business-tools?tab=ads" 
                   className={`cursor-pointer ${
-                    isActive("/ads-advisor") ? "text-primary font-semibold" : ""
+                    isActive("/business-tools") ? "text-primary font-semibold" : ""
                   }`}
                 >
                   AI Ads Advisor
@@ -177,14 +177,14 @@ const Navbar = () => {
             <div className="border-t border-border pt-3 mt-3">
               <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">Features</div>
               <Link
-                to="/business-tools"
+                to="/business-tools?tab=tools"
                 className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
                 onClick={() => setIsOpen(false)}
               >
                 AI Website Advisor
               </Link>
               <Link
-                to="/ads-advisor"
+                to="/business-tools?tab=ads"
                 className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
                 onClick={() => setIsOpen(false)}
               >

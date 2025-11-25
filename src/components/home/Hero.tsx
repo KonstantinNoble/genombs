@@ -20,12 +20,12 @@ const Hero = () => {
           {/* Gradient Animated Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-fade-in bg-[length:200%_auto] hover:animate-pulse transition-all duration-300">
-              AI-Powered Website Analysis
+              AI-Powered Business Analysis
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Get personalized tool recommendations and strategic improvement ideas for your website. Powered by advanced AI analysis.
+            Get personalized tool recommendations for your website and strategic advertising campaign strategies. Powered by advanced AI analysis.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
@@ -34,8 +34,19 @@ const Hero = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/50"
               asChild
             >
-              <Link to="/business-tools">
-                {isPremium && user ? "Start Premium Analysis" : "Start Free Analysis"}
+              <Link to="/business-tools?tab=tools">
+                {isPremium && user ? "Website Analysis" : "Start Website Analysis"}
+              </Link>
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/30"
+              asChild
+            >
+              <Link to="/business-tools?tab=ads">
+                {isPremium && user ? "Ads Analysis" : "Start Ads Analysis"}
               </Link>
             </Button>
 

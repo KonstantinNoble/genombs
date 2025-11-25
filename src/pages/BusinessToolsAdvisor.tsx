@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -109,10 +109,15 @@ const mdComponents = {
 
 const BusinessToolsAdvisor = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [activeTab, setActiveTab] = useState<"tools" | "ads">("tools");
+  
+  // Initialize activeTab from URL parameter
+  const tabParam = searchParams.get('tab');
+  const initialTab = (tabParam === 'ads' || tabParam === 'tools') ? tabParam : 'tools';
+  const [activeTab, setActiveTab] = useState<"tools" | "ads">(initialTab);
   const [isPlainMode, setIsPlainMode] = useState(false);
   
   const [toolResult, setToolResult] = useState<ToolAdvisorResult | null>(null);
@@ -1003,7 +1008,11 @@ const BusinessToolsAdvisor = () => {
           {/* Tab Selector */}
           <Card className="border-primary/20 bg-card sm:shadow-elegant">
             <CardContent className="pt-6">
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "ads")} className="w-full">
+              <Tabs value={activeTab} onValueChange={(v) => {
+                const newTab = v as "tools" | "ads";
+                setActiveTab(newTab);
+                setSearchParams({ tab: newTab });
+              }} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="tools">Business Tools</TabsTrigger>
                   <TabsTrigger value="ads">Ad Campaigns</TabsTrigger>

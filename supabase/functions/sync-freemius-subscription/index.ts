@@ -6,57 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface FreemiusSubscription {
-  id: string;
-  plan_id: string;
-  installment_id: string | null;
-  status: string;
-  created: string;
-  next_payment_date?: string;
-  ends?: string;
-  auto_renew: boolean;
-}
-
-interface FreemiusApiResponse {
-  subscriptions?: FreemiusSubscription[];
-}
-
-async function fetchFreemiusSubscription(
-  customerId: string,
-  publicKey: string,
-  secretKey: string
-): Promise<{ subscription: FreemiusSubscription | null; error: boolean }> {
-  try {
-    // Freemius API uses Basic Auth with public_key:secret_key
-    const authString = btoa(`${publicKey}:${secretKey}`);
-    
-    // Fetch subscriptions for this customer
-    const response = await fetch(
-      `https://api.freemius.com/v1/users/${customerId}/subscriptions.json`,
-      {
-        headers: {
-          'Authorization': `Basic ${authString}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      console.error('Freemius API error:', response.status, await response.text());
-      return { subscription: null, error: true }; // API error - don't change status
-    }
-
-    const data: FreemiusApiResponse = await response.json();
-    
-    // Return the first active subscription (most relevant)
-    const activeSubscription = data.subscriptions?.find(s => s.status === 'active');
-    return { subscription: activeSubscription || data.subscriptions?.[0] || null, error: false };
-  } catch (error) {
-    console.error('Error fetching Freemius subscription:', error);
-    return { subscription: null, error: true }; // Network/parsing error - don't change status
-  }
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -64,11 +13,13 @@ serve(async (req) => {
   }
 
   try {
-    const freemiusPublicKey = Deno.env.get('FREEMIUS_PUBLIC_KEY');
+    const freemiusProductId = Deno.env.get('FREEMIUS_PRODUCT_ID');
+    const freemiusApiKey = Deno.env.get('FREEMIUS_API_KEY');
     const freemiusSecretKey = Deno.env.get('FREEMIUS_SECRET_KEY');
+    const freemiusPublicKey = Deno.env.get('FREEMIUS_PUBLIC_KEY');
     
-    if (!freemiusPublicKey || !freemiusSecretKey) {
-      console.error('Freemius API credentials not configured');
+    if (!freemiusProductId || !freemiusApiKey || !freemiusSecretKey || !freemiusPublicKey) {
+      console.error('❌ Freemius API credentials not configured');
       return new Response(
         JSON.stringify({ error: 'Freemius API credentials not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -94,14 +45,14 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
-      console.error('Error verifying user:', userError);
+      console.error('❌ Error verifying user:', userError);
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Syncing Freemius subscription for user:', user.id);
+    console.log('🔄 Syncing Freemius subscription for user:', user.id);
 
     // Get user's current credit record
     const { data: userCredits, error: creditsError } = await supabase
@@ -111,7 +62,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (creditsError) {
-      console.error('Error fetching user credits:', creditsError);
+      console.error('❌ Error fetching user credits:', creditsError);
       return new Response(
         JSON.stringify({ error: 'Database error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -119,6 +70,7 @@ serve(async (req) => {
     }
 
     if (!userCredits?.freemius_customer_id) {
+      console.log('⚠️ No Freemius customer ID found for user:', user.id);
       return new Response(
         JSON.stringify({ 
           message: 'No Freemius customer ID found for this user',
@@ -128,111 +80,144 @@ serve(async (req) => {
       );
     }
 
-    // Fetch subscription from Freemius API
-    const { subscription, error: apiError } = await fetchFreemiusSubscription(
-      userCredits.freemius_customer_id,
-      freemiusPublicKey,
-      freemiusSecretKey
-    );
+    // Fetch subscription from Freemius API using SDK approach
+    console.log('📡 Fetching subscription from Freemius API for customer:', userCredits.freemius_customer_id);
+    
+    try {
+      // Use Freemius API v1 endpoint with proper authentication
+      const apiUrl = `https://api.freemius.com/v1/plugins/${freemiusProductId}/users/${userCredits.freemius_customer_id}/subscriptions.json`;
+      
+      // Create authentication string (public_key:secret_key)
+      const authString = btoa(`${freemiusPublicKey}:${freemiusSecretKey}`);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${authString}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    // If API error occurred, don't change the current status
-    if (apiError) {
-      return new Response(
-        JSON.stringify({ 
-          message: 'Could not verify with Freemius API - keeping current premium status',
-          synced: false,
-          error: 'API authentication failed'
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Freemius API error:', response.status, errorText);
+        
+        return new Response(
+          JSON.stringify({ 
+            message: 'Could not verify with Freemius API - keeping current premium status',
+            synced: false,
+            error: `API error: ${response.status}`
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
-    if (!subscription) {
-      // No active subscription found - update to free
+      const data = await response.json();
+      console.log('📦 Freemius API response:', JSON.stringify(data, null, 2));
+      
+      // Find active subscription
+      const subscriptions = data.subscriptions || [];
+      const activeSubscription = subscriptions.find((s: any) => s.status === 'active') || subscriptions[0];
+
+      if (!activeSubscription) {
+        console.log('⚠️ No active subscription found - updating to free');
+        
+        // No active subscription found - update to free
+        const { error: updateError } = await supabase
+          .from('user_credits')
+          .update({
+            is_premium: false,
+            auto_renew: false,
+            subscription_end_date: null,
+            next_payment_date: null,
+          })
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error('❌ Error updating user credits:', updateError);
+          return new Response(
+            JSON.stringify({ error: 'Failed to update subscription status' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ 
+            message: 'No active subscription found - updated to free plan',
+            synced: true,
+            is_premium: false
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Update user_credits with Freemius subscription data
+      const updateData: any = {
+        auto_renew: activeSubscription.auto_renew,
+        freemius_subscription_id: activeSubscription.id,
+      };
+
+      // Determine premium status based on subscription status
+      if (activeSubscription.status === 'active') {
+        updateData.is_premium = true;
+        if (activeSubscription.next_payment_date) {
+          updateData.next_payment_date = new Date(activeSubscription.next_payment_date).toISOString();
+        }
+      } else if (activeSubscription.status === 'cancelled' || activeSubscription.status === 'expired') {
+        // Check if subscription has expired
+        if (activeSubscription.ends) {
+          const endDate = new Date(activeSubscription.ends);
+          updateData.subscription_end_date = endDate.toISOString();
+          updateData.is_premium = endDate > new Date();
+        } else {
+          updateData.is_premium = false;
+        }
+        updateData.auto_renew = false;
+        updateData.next_payment_date = null;
+      }
+
       const { error: updateError } = await supabase
         .from('user_credits')
-        .update({
-          is_premium: false,
-          auto_renew: false,
-          subscription_end_date: null,
-          next_payment_date: null,
-        })
+        .update(updateData)
         .eq('user_id', user.id);
 
       if (updateError) {
-        console.error('Error updating user credits:', updateError);
+        console.error('❌ Error updating user credits:', updateError);
         return new Response(
           JSON.stringify({ error: 'Failed to update subscription status' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
+      console.log('✅ Successfully synced subscription for user:', user.id, updateData);
+
       return new Response(
         JSON.stringify({ 
-          message: 'No active subscription found - updated to free plan',
+          message: 'Subscription synced successfully',
           synced: true,
-          is_premium: false
+          subscription: {
+            status: activeSubscription.status,
+            auto_renew: activeSubscription.auto_renew,
+            is_premium: updateData.is_premium,
+            next_payment_date: activeSubscription.next_payment_date || null,
+            ends: activeSubscription.ends || null,
+          }
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (apiError) {
+      console.error('❌ Error calling Freemius API:', apiError);
+      return new Response(
+        JSON.stringify({ 
+          message: 'Could not verify with Freemius API',
+          synced: false,
+          error: apiError instanceof Error ? apiError.message : 'Unknown error'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Update user_credits with Freemius subscription data
-    const updateData: any = {
-      auto_renew: subscription.auto_renew,
-      freemius_subscription_id: subscription.id,
-    };
-
-    // Determine premium status based on subscription status
-    if (subscription.status === 'active') {
-      updateData.is_premium = true;
-      if (subscription.next_payment_date) {
-        updateData.next_payment_date = new Date(subscription.next_payment_date).toISOString();
-      }
-    } else if (subscription.status === 'cancelled' || subscription.status === 'expired') {
-      // Check if subscription has expired
-      if (subscription.ends) {
-        const endDate = new Date(subscription.ends);
-        updateData.subscription_end_date = endDate.toISOString();
-        updateData.is_premium = endDate > new Date();
-      } else {
-        updateData.is_premium = false;
-      }
-      updateData.auto_renew = false;
-      updateData.next_payment_date = null;
-    }
-
-    const { error: updateError } = await supabase
-      .from('user_credits')
-      .update(updateData)
-      .eq('user_id', user.id);
-
-    if (updateError) {
-      console.error('Error updating user credits:', updateError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to update subscription status' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('Successfully synced subscription for user:', user.id, updateData);
-
-    return new Response(
-      JSON.stringify({ 
-        message: 'Subscription synced successfully',
-        synced: true,
-        subscription: {
-          status: subscription.status,
-          auto_renew: subscription.auto_renew,
-          is_premium: updateData.is_premium,
-          next_payment_date: subscription.next_payment_date || null,
-          ends: subscription.ends || null,
-        }
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('❌ Unexpected error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: errorMessage }),

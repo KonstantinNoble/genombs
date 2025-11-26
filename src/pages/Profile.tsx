@@ -13,7 +13,6 @@ import { User } from "@supabase/supabase-js";
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [credits, setCredits] = useState<{
     is_premium: boolean;
     premium_since: string | null;
@@ -70,50 +69,6 @@ const Profile = () => {
     navigate("/");
   };
 
-  const handleSyncStatus = async () => {
-    try {
-      setIsSyncing(true);
-      
-      const { data, error } = await supabase.functions.invoke('sync-freemius-subscription');
-      
-      if (error) {
-        toast({
-          title: "Sync-Fehler",
-          description: "Status konnte nicht synchronisiert werden. Bitte versuchen Sie es später erneut.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Refresh credits after sync
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: updatedCredits } = await supabase
-          .from('user_credits')
-          .select('is_premium, premium_since, subscription_end_date, next_payment_date, auto_renew')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-        
-        if (updatedCredits) {
-          setCredits(updatedCredits);
-        }
-      }
-      
-      toast({
-        title: "Status aktualisiert",
-        description: data?.synced ? "Ihr Premium-Status wurde erfolgreich synchronisiert." : "Keine Änderungen notwendig.",
-      });
-    } catch (error) {
-      console.error("Sync error:", error);
-      toast({
-        title: "Fehler",
-        description: "Ein unerwarteter Fehler ist aufgetreten.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  };
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -209,7 +164,7 @@ const Profile = () => {
                       <div className="flex items-center gap-2 flex-wrap">
                         {credits.auto_renew === null ? (
                           <span className="text-muted-foreground text-sm">
-                            ⓘ Status unbekannt
+                            ⓘ Status unknown - sync with Freemius may be pending
                           </span>
                         ) : credits.auto_renew ? (
                           <>
@@ -228,23 +183,6 @@ const Profile = () => {
                               ? new Date(credits.subscription_end_date).toLocaleDateString() 
                               : 'subscription end'}
                           </span>
-                        )}
-                      </div>
-                      
-                      <div className="pt-3 border-t border-border/50 mt-3">
-                        <Button 
-                          onClick={handleSyncStatus}
-                          disabled={isSyncing}
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                        >
-                          {isSyncing ? "Synchronisiere..." : "Status aktualisieren"}
-                        </Button>
-                        {credits.auto_renew === null && (
-                          <p className="text-xs text-muted-foreground mt-2 text-center">
-                            Klicken Sie hier, um Ihren Status mit Freemius zu synchronisieren
-                          </p>
                         )}
                       </div>
                     </div>

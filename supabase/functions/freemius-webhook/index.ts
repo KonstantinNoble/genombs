@@ -93,7 +93,14 @@ serve(async (req) => {
     
     // Parse the verified event
     const event: FreemiusWebhookEvent = JSON.parse(rawBody);
-    console.log('Received Freemius webhook event:', event.type, 'ID:', event.id);
+    console.log('========================================');
+    console.log('📨 WEBHOOK RECEIVED');
+    console.log('Event Type:', event.type);
+    console.log('Event ID:', event.id);
+    console.log('User Email:', event.objects.user?.email);
+    console.log('User ID (Freemius):', event.objects.user?.id);
+    console.log('Subscription ID:', event.objects.subscription?.id);
+    console.log('========================================');
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -143,7 +150,9 @@ serve(async (req) => {
     }
 
     if (!profile) {
-      console.log('User not found in database, storing in pending_premium:', userEmail);
+      console.log('❌ USER NOT FOUND IN DATABASE');
+      console.log('Email:', userEmail);
+      console.log('Action: Storing in pending_premium table');
       
       // Determine premium status based on event type
       let isPremiumPending = false;
@@ -196,7 +205,9 @@ serve(async (req) => {
         );
       }
 
-      console.log('Successfully stored pending premium for:', userEmail);
+      console.log('✅ PENDING PREMIUM STORED');
+      console.log('Email:', userEmail);
+      console.log('Will activate on first login');
       
       // Mark event as processed for pending users too
       await supabase
@@ -228,12 +239,18 @@ serve(async (req) => {
         premiumSince = new Date().toISOString();
         subscriptionId = event.objects.subscription?.id || event.objects.purchase?.subscription_id || null;
         customerId = event.objects.user?.id || null;
-        console.log('Activating premium for user:', profile.id);
+        console.log('✅ ACTIVATING PREMIUM');
+        console.log('User ID:', profile.id);
+        console.log('Event Type:', event.type);
+        console.log('Subscription ID:', subscriptionId);
+        console.log('Customer ID:', customerId);
         break;
 
       case 'subscription.cancelled':
         // Don't deactivate immediately - update auto_renew status
-        console.log('Subscription cancelled, updating auto-renewal status:', profile.id);
+        console.log('⚠️ SUBSCRIPTION CANCELLED');
+        console.log('User ID:', profile.id);
+        console.log('Action: Setting auto_renew to false');
         
         const updateCancelData: any = {
           auto_renew: false,
@@ -292,13 +309,17 @@ serve(async (req) => {
       case 'subscription.expired':
         // Deactivate premium
         isPremium = false;
-        console.log('Deactivating premium for user:', profile.id);
+        console.log('⏱️ SUBSCRIPTION EXPIRED');
+        console.log('User ID:', profile.id);
+        console.log('Action: Deactivating premium');
         break;
 
       case 'refund.completed':
         // Immediate deactivation on refund
         isPremium = false;
-        console.log('Refund processed, deactivating premium for user:', profile.id);
+        console.log('💰 REFUND PROCESSED');
+        console.log('User ID:', profile.id);
+        console.log('Action: Immediate premium deactivation');
         break;
 
       default:
@@ -365,7 +386,12 @@ serve(async (req) => {
       );
     }
 
-    console.log('Successfully updated premium status for user:', profile.id);
+    console.log('========================================');
+    console.log('✅ WEBHOOK PROCESSED SUCCESSFULLY');
+    console.log('User ID:', profile.id);
+    console.log('Premium Status:', isPremium);
+    console.log('Auto Renew:', updateData.auto_renew);
+    console.log('========================================');
 
     // Mark event as processed
     const { error: processedError } = await supabase

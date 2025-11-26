@@ -25,7 +25,7 @@ async function fetchFreemiusSubscription(
   customerId: string,
   publicKey: string,
   secretKey: string
-): Promise<FreemiusSubscription | null> {
+): Promise<{ subscription: FreemiusSubscription | null; error: boolean }> {
   try {
     // Freemius API uses Basic Auth with public_key:secret_key
     const authString = btoa(`${publicKey}:${secretKey}`);
@@ -43,17 +43,17 @@ async function fetchFreemiusSubscription(
 
     if (!response.ok) {
       console.error('Freemius API error:', response.status, await response.text());
-      return null;
+      return { subscription: null, error: true }; // API error - don't change status
     }
 
     const data: FreemiusApiResponse = await response.json();
     
     // Return the first active subscription (most relevant)
     const activeSubscription = data.subscriptions?.find(s => s.status === 'active');
-    return activeSubscription || data.subscriptions?.[0] || null;
+    return { subscription: activeSubscription || data.subscriptions?.[0] || null, error: false };
   } catch (error) {
     console.error('Error fetching Freemius subscription:', error);
-    return null;
+    return { subscription: null, error: true }; // Network/parsing error - don't change status
   }
 }
 
@@ -129,11 +129,23 @@ serve(async (req) => {
     }
 
     // Fetch subscription from Freemius API
-    const subscription = await fetchFreemiusSubscription(
+    const { subscription, error: apiError } = await fetchFreemiusSubscription(
       userCredits.freemius_customer_id,
       freemiusPublicKey,
       freemiusSecretKey
     );
+
+    // If API error occurred, don't change the current status
+    if (apiError) {
+      return new Response(
+        JSON.stringify({ 
+          message: 'Could not verify with Freemius API - keeping current premium status',
+          synced: false,
+          error: 'API authentication failed'
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!subscription) {
       // No active subscription found - update to free

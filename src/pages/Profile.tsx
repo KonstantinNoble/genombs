@@ -30,18 +30,6 @@ const Profile = () => {
 
       setUser(session.user);
 
-      // Sync Freemius subscription status
-      if (session.user) {
-        try {
-          const { error: syncError } = await supabase.functions.invoke('sync-freemius-subscription');
-          if (syncError) {
-            console.error('Failed to sync subscription:', syncError);
-          }
-        } catch (error) {
-          console.error('Sync error:', error);
-        }
-      }
-
       // Fetch user credits/premium status
       if (session.user) {
         const { data } = await supabase

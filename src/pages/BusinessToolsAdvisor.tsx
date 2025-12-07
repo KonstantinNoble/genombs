@@ -374,7 +374,7 @@ const BusinessToolsAdvisor = () => {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(10);
+      .limit(4);
 
     if (error) {
       console.error('Error loading tool history:', error);
@@ -392,7 +392,7 @@ const BusinessToolsAdvisor = () => {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(10);
+      .limit(4);
 
     if (error) {
       console.error('Error loading ads history:', error);

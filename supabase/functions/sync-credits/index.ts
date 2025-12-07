@@ -61,50 +61,81 @@ serve(async (req) => {
     throw new Error('Failed to sync credits');
   }
 
+  // Query ads_advisor_history for the last 24 hours
+  const { data: adsData, error: adsError } = await supabase
+    .from('ads_advisor_history')
+    .select('created_at, analysis_mode')
+    .eq('user_id', user.id)
+    .gte('created_at', last24Hours.toISOString())
+    .order('created_at', { ascending: true });
+
+  if (adsError) {
+    console.error('Error fetching ads history:', adsError);
+    throw new Error('Failed to sync ads credits');
+  }
+
   const allGenerations = toolsData || [];
 
-  // Separate deep and standard analyses
+  // Separate deep and standard analyses for business tools
   const deepGenerations = allGenerations.filter(g => g.analysis_mode === 'deep');
   const standardGenerations = allGenerations.filter(g => !g.analysis_mode || g.analysis_mode === 'standard');
 
-    const deepLimit = isPremium ? 2 : 0;
-    const standardLimit = isPremium ? 6 : 2;
+  // Separate deep and standard analyses for ads advisor
+  const adsGenerations = adsData || [];
+  const adsDeepGenerations = adsGenerations.filter(g => g.analysis_mode === 'deep');
+  const adsStandardGenerations = adsGenerations.filter(g => !g.analysis_mode || g.analysis_mode === 'standard');
 
-    const deepCount = Math.min(deepGenerations.length, deepLimit);
-    const standardCount = Math.min(standardGenerations.length, standardLimit);
+  const deepLimit = isPremium ? 2 : 0;
+  const standardLimit = isPremium ? 6 : 2;
 
-    const deepWindowStart = deepGenerations.length > 0 ? deepGenerations[0].created_at : null;
-    const standardWindowStart = standardGenerations.length > 0 ? standardGenerations[0].created_at : null;
+  // Business tools counts
+  const deepCount = Math.min(deepGenerations.length, deepLimit);
+  const standardCount = Math.min(standardGenerations.length, standardLimit);
+  const deepWindowStart = deepGenerations.length > 0 ? deepGenerations[0].created_at : null;
+  const standardWindowStart = standardGenerations.length > 0 ? standardGenerations[0].created_at : null;
 
-    // Keep old combined counts for backwards compatibility
-    const toolsCount = Math.min(toolsData?.length ?? 0, isPremium ? 8 : 2);
-    const toolsWindowStart = toolsData && toolsData.length > 0 ? toolsData[0].created_at : null;
+  // Ads advisor counts
+  const adsDeepCount = Math.min(adsDeepGenerations.length, deepLimit);
+  const adsStandardCount = Math.min(adsStandardGenerations.length, standardLimit);
+  const adsDeepWindowStart = adsDeepGenerations.length > 0 ? adsDeepGenerations[0].created_at : null;
+  const adsStandardWindowStart = adsStandardGenerations.length > 0 ? adsStandardGenerations[0].created_at : null;
+
+  // Keep old combined counts for backwards compatibility
+  const toolsCount = Math.min(toolsData?.length ?? 0, isPremium ? 8 : 2);
+  const toolsWindowStart = toolsData && toolsData.length > 0 ? toolsData[0].created_at : null;
   const analysisCount = toolsCount;
   const analysisWindowStart = allGenerations.length > 0 ? allGenerations[0].created_at : null;
 
   console.log(`📊 Sync Results (Premium: ${isPremium}):`);
-  console.log(`  Deep: ${deepGenerations.length} → ${deepCount}/${deepLimit} counted (window: ${deepWindowStart || 'null'})`);
-  console.log(`  Standard: ${standardGenerations.length} → ${standardCount}/${standardLimit} counted (window: ${standardWindowStart || 'null'})`);
-    console.log(`  Legacy - Tools: ${toolsData?.length ?? 0} → ${toolsCount}`);
+  console.log(`  Business Tools - Deep: ${deepGenerations.length} → ${deepCount}/${deepLimit}`);
+  console.log(`  Business Tools - Standard: ${standardGenerations.length} → ${standardCount}/${standardLimit}`);
+  console.log(`  Ads Advisor - Deep: ${adsDeepGenerations.length} → ${adsDeepCount}/${deepLimit}`);
+  console.log(`  Ads Advisor - Standard: ${adsStandardGenerations.length} → ${adsStandardCount}/${standardLimit}`);
 
-    // Update user_credits with mode-specific and legacy counts
-    const { error: updateError } = await supabase
-      .from('user_credits')
-      .upsert({
-        user_id: user.id,
-        deep_analysis_count: deepCount,
-        deep_analysis_window_start: deepWindowStart,
-        standard_analysis_count: standardCount,
-        standard_analysis_window_start: standardWindowStart,
-        // Keep old columns for backwards compatibility
-        tools_count: toolsCount,
-        tools_window_start: toolsWindowStart,
-        analysis_count: analysisCount,
-        analysis_window_start: analysisWindowStart,
-        updated_at: now.toISOString()
-      }, {
-        onConflict: 'user_id'
-      });
+  // Update user_credits with mode-specific counts for both tools
+  const { error: updateError } = await supabase
+    .from('user_credits')
+    .upsert({
+      user_id: user.id,
+      // Business tools counts
+      deep_analysis_count: deepCount,
+      deep_analysis_window_start: deepWindowStart,
+      standard_analysis_count: standardCount,
+      standard_analysis_window_start: standardWindowStart,
+      // Ads advisor counts
+      ads_deep_analysis_count: adsDeepCount,
+      ads_deep_analysis_window_start: adsDeepWindowStart,
+      ads_standard_analysis_count: adsStandardCount,
+      ads_standard_analysis_window_start: adsStandardWindowStart,
+      // Legacy columns for backwards compatibility
+      tools_count: toolsCount,
+      tools_window_start: toolsWindowStart,
+      analysis_count: analysisCount,
+      analysis_window_start: analysisWindowStart,
+      updated_at: now.toISOString()
+    }, {
+      onConflict: 'user_id'
+    });
 
     if (updateError) {
       console.error('Error updating credits:', updateError);
@@ -116,10 +147,16 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
+        // Business tools counts
         deep_analysis_count: deepCount,
         deep_analysis_window_start: deepWindowStart,
         standard_analysis_count: standardCount,
         standard_analysis_window_start: standardWindowStart,
+        // Ads advisor counts
+        ads_deep_analysis_count: adsDeepCount,
+        ads_deep_analysis_window_start: adsDeepWindowStart,
+        ads_standard_analysis_count: adsStandardCount,
+        ads_standard_analysis_window_start: adsStandardWindowStart,
         // Legacy fields
         tools_count: toolsCount,
         tools_window_start: toolsWindowStart,

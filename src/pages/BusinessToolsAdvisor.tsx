@@ -525,10 +525,10 @@ const BusinessToolsAdvisor = () => {
   const handleAdsAnalyze = async () => {
     const inputText = advertisingGoals.trim();
 
-    if (!targetAudienceAds || !advertisingBudget || !inputText) {
+    if (!industry || !targetAudienceAds || !advertisingBudget || !inputText) {
       toast({
         title: "Missing information",
-        description: "Please fill in target audience, budget, and advertising goals",
+        description: "Please fill in industry, target audience, budget, and advertising goals",
         variant: "destructive",
       });
       return;
@@ -540,6 +540,7 @@ const BusinessToolsAdvisor = () => {
     try {
       const functionName = 'ads-advisor';
       const body: any = { 
+        industry,
         targetAudience: targetAudienceAds,
         advertisingGoals: inputText,
         advertisingBudget
@@ -547,7 +548,6 @@ const BusinessToolsAdvisor = () => {
       
       if (currentChannels) body.currentChannels = currentChannels;
       if (geographicTarget) body.geographicTarget = geographicTarget;
-      if (industry) body.industry = industry;
       if (competitorAds) body.competitorAds = competitorAds;
 
       if (isPremium) {

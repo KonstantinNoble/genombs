@@ -216,7 +216,8 @@ export default function AdsAdvisor() {
       .from('ads_advisor_history')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(10);
 
     if (data) {
       setAdsHistory(data.map(item => ({

@@ -330,7 +330,7 @@ const BusinessToolsAdvisor = () => {
     try {
       const { data, error } = await supabase
         .from('user_credits')
-        .select('deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start, is_premium')
+        .select('deep_analysis_count, deep_analysis_window_start, standard_analysis_count, standard_analysis_window_start, ads_deep_analysis_count, ads_deep_analysis_window_start, ads_standard_analysis_count, ads_standard_analysis_window_start, is_premium')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -339,14 +339,7 @@ const BusinessToolsAdvisor = () => {
         return;
       }
 
-      const deepCount = data?.deep_analysis_count ?? 0;
-      const deepWindowStart = data?.deep_analysis_window_start ?? null;
-      const standardCount = data?.standard_analysis_count ?? 0;
-      const standardWindowStart = data?.standard_analysis_window_start ?? null;
       const premium = data?.is_premium ?? false;
-      
-      setDeepAnalysisCount(deepCount);
-      setStandardAnalysisCount(standardCount);
       setIsPremium(premium);
       
       const deepLimit = premium ? 2 : 0;
@@ -355,11 +348,35 @@ const BusinessToolsAdvisor = () => {
       setDeepAnalysisLimit(deepLimit);
       setStandardAnalysisLimit(standardLimit);
       
-      // Check if user can analyze based on selected mode
-      if (analysisMode === 'deep') {
-        setCanAnalyze(checkCanAnalyze(deepCount, deepWindowStart, deepLimit));
+      // Load counts based on active tab
+      if (activeTab === 'ads') {
+        const deepCount = data?.ads_deep_analysis_count ?? 0;
+        const deepWindowStart = data?.ads_deep_analysis_window_start ?? null;
+        const standardCount = data?.ads_standard_analysis_count ?? 0;
+        const standardWindowStart = data?.ads_standard_analysis_window_start ?? null;
+        
+        setDeepAnalysisCount(deepCount);
+        setStandardAnalysisCount(standardCount);
+        
+        if (analysisMode === 'deep') {
+          setCanAnalyze(checkCanAnalyze(deepCount, deepWindowStart, deepLimit));
+        } else {
+          setCanAnalyze(checkCanAnalyze(standardCount, standardWindowStart, standardLimit));
+        }
       } else {
-        setCanAnalyze(checkCanAnalyze(standardCount, standardWindowStart, standardLimit));
+        const deepCount = data?.deep_analysis_count ?? 0;
+        const deepWindowStart = data?.deep_analysis_window_start ?? null;
+        const standardCount = data?.standard_analysis_count ?? 0;
+        const standardWindowStart = data?.standard_analysis_window_start ?? null;
+        
+        setDeepAnalysisCount(deepCount);
+        setStandardAnalysisCount(standardCount);
+        
+        if (analysisMode === 'deep') {
+          setCanAnalyze(checkCanAnalyze(deepCount, deepWindowStart, deepLimit));
+        } else {
+          setCanAnalyze(checkCanAnalyze(standardCount, standardWindowStart, standardLimit));
+        }
       }
     } catch (error) {
       console.error('Error in loadAnalysisLimit:', error);

@@ -4,37 +4,17 @@ const features = [
   {
     title: "AI-Powered Tool Discovery",
     description:
-      "Get personalized recommendations for analytics, SEO, performance, and marketing tools based on your industry, team size, and budget.",
+      "Get personalized recommendations for analytics, SEO, and marketing tools based on your industry and budget.",
   },
   {
     title: "Advertising Campaign Strategy",
     description:
-      "Receive AI-generated advertising campaign recommendations tailored to your target audience, budget, and advertising goals across multiple channels.",
-  },
-  {
-    title: "Strategic Improvement Ideas",
-    description:
-      "Discover actionable strategies to grow your business. Focus on revenue, efficiency, customer experience, and market expansion.",
-  },
-  {
-    title: "Budget-Friendly Recommendations",
-    description:
-      "Whether you're starting out or scaling up, get tool and campaign strategy suggestions that fit your monthly budget.",
-  },
-  {
-    title: "Industry-Specific Analysis",
-    description:
-      "Tailored advice for E-commerce, SaaS, Services, Non-profits, and more. AI understands your business model and advertising needs.",
-  },
-  {
-    title: "Standard & Deep Analysis",
-    description:
-      "Choose between quick standard analysis or comprehensive deep analysis with ROI calculations, risk assessments, and custom requirements input.",
+      "Receive AI-generated advertising recommendations tailored to your target audience and goals.",
   },
   {
     title: "Actionable Reports",
     description:
-      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines for both tools and ad campaigns.",
+      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines.",
   },
 ];
 

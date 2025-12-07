@@ -2,20 +2,12 @@ import { Card } from "@/components/ui/card";
 
 const trustPoints = [
   {
-    title: "Privacy First",
-    description: "Your website data and analysis results are private and secure. We never share your information with third parties."
+    title: "Privacy & Security",
+    description: "Your data stays private. We never share your information with third parties."
   },
   {
-    title: "Powered by Advanced AI",
-    description: "Built on Google Gemini 2.5 Flash, delivering cutting-edge analysis with fast response times and accurate recommendations."
-  },
-  {
-    title: "Website-Specific Results",
-    description: "Unlike generic advice, our AI analyzes your exact website type, status, goals, and budget to deliver truly personalized recommendations."
-  },
-  {
-    title: "ROI-Focused Advice",
-    description: "Every premium recommendation includes expected return on investment, risk levels, and realistic timelines - no fluff, just actionable strategies."
+    title: "Personalized AI Analysis",
+    description: "Our AI analyzes your exact website, goals, and budget to deliver truly tailored recommendations."
   }
 ];
 

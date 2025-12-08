@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 21, 2025 | Version 2.5</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 8, 2025 | Version 2.6</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -300,10 +300,9 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. AI-Powered Features</h2>
             <p className="text-muted-foreground mb-4">
-              Our website offers AI-powered advisory services that analyze your business context, objectives, and requirements 
-              to provide personalized strategic recommendations. These features are available to registered users and require 
-              authentication. Our platform currently offers two main AI advisory services: Business Tools Advisor and Ads 
-              Campaign Advisor.
+              Our website offers an AI-powered advisory service that analyzes your business context, objectives, and requirements 
+              to provide personalized strategic recommendations. This feature is available to registered users and requires 
+              authentication.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>IMPORTANT DISCLAIMER:</strong> These features provide general recommendations and information for
@@ -484,197 +483,21 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Ads Campaign Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Credit System and Usage Quotas</h3>
             <p className="text-muted-foreground mb-4">
-              The Ads Campaign Advisor provides personalized advertising campaign strategies and recommendations based on 
-              your marketing objectives, target audience, budget constraints, and competitive landscape. This service helps 
-              you develop data-driven advertising approaches tailored to your business goals.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Functionality</h4>
-            <p className="text-muted-foreground mb-4">
-              The Ads Campaign Advisor offers two analysis modes:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Standard Analysis:</strong> Generates fundamental advertising campaign recommendations based on 
-                core business parameters (industry, target audience, advertising budget, and advertising goals)
-              </li>
-              <li>
-                <strong>Deep Analysis (Premium Only):</strong> Provides comprehensive advertising strategy with advanced 
-                insights including channel optimization, geographic targeting, competitive analysis, and custom requirements 
-                consideration
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processing for Ads Campaign Analysis</h4>
-            <p className="text-muted-foreground mb-4">
-              When you use the Ads Campaign Advisor, the following personal data is processed:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Business Context Data (Standard Analysis):</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Industry sector (e.g., e-commerce, SaaS, local services, B2B, healthcare, etc.)</li>
-                  <li>Target audience description (demographics, psychographics, behavioral characteristics you want to reach)</li>
-                  <li>Advertising budget range (e.g., &lt;$500/month, $500-2000/month, $2000-5000/month, $5000+/month)</li>
-                  <li>Advertising goals and objectives (text description of campaign objectives, KPIs, desired outcomes)</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Deep Analysis Additional Data (Premium Only):</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Current advertising channels (existing platforms and strategies you're using)</li>
-                  <li>Geographic target markets (countries, regions, cities you want to target)</li>
-                  <li>Competitor advertising strategies (observed competitor approaches, messaging, positioning)</li>
-                  <li>Specific requirements or constraints (compliance requirements, brand guidelines, technical limitations)</li>
-                </ul>
-              </li>
-              <li>
-                <strong>User Account Data:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>User ID (to manage your analysis history and enforce daily usage quotas)</li>
-                  <li>Timestamps (date and time of analysis requests)</li>
-                  <li>Analysis mode (standard or deep analysis)</li>
-                </ul>
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">AI Model Provider and Third-Country Transfer</h4>
-            <p className="text-muted-foreground mb-4">
-              The Ads Campaign Advisor uses the same technical infrastructure and AI models as the Business Tools Advisor:
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Lovable AI Gateway:</strong> Acts as an intermediary service (operated by Lovable Labs Incorporated, 
-              340 S Lemon Ave #9828, Walnut, CA 91789, USA) that routes AI requests to Google's AI models. A Data Processing 
-              Agreement (DPA) pursuant to Art. 28 GDPR has been concluded with Lovable Labs Incorporated covering all 
-              processing activities through the AI Gateway.
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Google AI Models:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-              <br />
-              <strong>Models used:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Gemini 2.5 Flash Lite
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis for third-country transfer:</strong> Art. 45 GDPR (Adequacy Decision)
-              <br />
-              Google LLC is certified under the EU-U.S. Data Privacy Framework (DPF). The European Commission has
-              recognized the DPF as providing an adequate level of data protection equivalent to EU law. Therefore, data
-              transfers to Google for AI processing are based on the adequacy decision pursuant to Art. 45 GDPR and do
-              not require additional safeguards such as Standard Contractual Clauses.
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Data usage by Google:</strong> According to Google Cloud's API data usage policies, input data
-              submitted through the Gemini API is not used to train or improve Google's models. Google retains API
-              request data for a limited period for abuse prevention and security monitoring purposes only.
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              For more information, see the links provided in Section 5.1 (Google Privacy Policy, DPF Certification, 
-              Google Cloud Terms, and Lovable AI Gateway Documentation).
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Primary legal basis:</strong> Art. 6(1)(b) GDPR – Processing is necessary for the performance of
-                the contract (providing the advertising campaign advisory service you requested as a registered user)
-              </li>
-              <li>
-                <strong>Legitimate interest:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing
-                innovative, AI-powered marketing advisory features to enhance user experience and help businesses develop 
-                effective advertising strategies
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              By using the "Get Ads Strategy" feature as a logged-in user, you are requesting the contractual service
-              of receiving personalized advertising campaign recommendations based on your stated marketing context,
-              target audience, budget, and business objectives. The processing is necessary to fulfill this service request.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Technical and Organizational Security Measures</h4>
-            <p className="text-muted-foreground mb-4">
-              We implement the following technical safeguards to protect your advertising campaign data during AI processing:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Data minimization:</strong> Only the minimum necessary business and advertising context data is 
-                transmitted to AI providers. We do not transmit identifying information such as your name, email address, 
-                or IP address to the AI models.
-              </li>
-              <li>
-                <strong>Encryption in transit:</strong> All data transmissions between our backend, the Lovable AI
-                Gateway, and AI providers are encrypted using industry-standard TLS/SSL encryption protocols.
-              </li>
-              <li>
-                <strong>Server-side processing:</strong> AI requests are routed through our backend infrastructure
-                (Supabase Edge Functions), ensuring that your client IP address is NOT visible to AI providers. Only the
-                backend server's IP address is transmitted.
-              </li>
-              <li>
-                <strong>Pseudonymization:</strong> Your advertising campaign data is processed without direct personal
-                identifiers, making it significantly more difficult for AI providers to link the data to your identity.
-              </li>
-              <li>
-                <strong>Access controls:</strong> Strict authentication requirements ensure only authorized users can
-                access the Ads Campaign Advisor feature.
-              </li>
-              <li>
-                <strong>Separate quota enforcement:</strong> Usage limits are tracked separately for Ads Campaign Advisor 
-                (distinct from Business Tools Advisor quotas) to ensure fair use and prevent abuse.
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Retention</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention:</strong> Google retains API request data for a limited period for abuse 
-              monitoring and security purposes, after which it is permanently deleted. Your advertising campaign data is NOT
-              used to train or improve Google's AI models.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Our Database Storage:</strong> Your ads campaign analysis history is stored in our backend database 
-              in the <code className="text-sm">ads_advisor_history</code> table, which includes:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Industry sector, target audience, advertising budget, and advertising goals (standard analysis inputs)</li>
-              <li>Current channels, geographic targets, competitor strategies, and specific requirements (deep analysis inputs, if applicable)</li>
-              <li>Generated advertising campaign recommendations and strategies</li>
-              <li>Analysis mode (standard or deep), timestamps, and user ID</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              This data remains stored as long as your account is active. You can:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your complete ads campaign analysis history at any time through your profile page</li>
-              <li>Delete individual analysis entries from your history</li>
-              <li>
-                Delete your entire account, which permanently removes all analysis history (both ads campaigns and business 
-                tools) and credit tracking data from our production database
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Credit System and Usage Quotas</h3>
-            <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, all AI-powered advisory features use a quota system with separate 
-              tracking for different analysis types. The available limits depend on your account type:
+              To ensure fair use and prevent abuse, the Business Tools Advisor uses a quota system. The available limits depend on your account type:
             </p>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Standard Users (Free)</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Business Tools Advisor:</strong> 2 standard analyses per 24-hour period</li>
-              <li><strong>Ads Campaign Advisor:</strong> 2 standard analyses per 24-hour period</li>
+              <li>2 standard analyses per 24-hour period</li>
               <li>Deep analysis mode is not available for free users</li>
             </ul>
             
             <h4 className="text-lg font-semibold mb-2 mt-4">Premium Users</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Business Tools Advisor:</strong> 6 standard analyses + 2 deep analyses per 24-hour period</li>
-              <li><strong>Ads Campaign Advisor:</strong> 6 standard analyses + 2 deep analyses per 24-hour period</li>
-              <li>Access to advanced deep analysis features across all advisory services</li>
+              <li>6 standard analyses + 2 deep analyses per 24-hour period</li>
+              <li>Access to advanced deep analysis features</li>
               <li>Premium status is managed via the <code className="text-sm">is_premium</code> flag in our database</li>
             </ul>
             
@@ -682,44 +505,21 @@ const PrivacyPolicy = () => {
               <strong>Credit tracking data processed:</strong>
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Business Tools Advisor counters:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li><code className="text-sm">standard_analysis_count</code> – Number of standard business tools analyses</li>
-                  <li><code className="text-sm">deep_analysis_count</code> – Number of deep business tools analyses (premium only)</li>
-                  <li><code className="text-sm">analysis_window_start</code> – When the current 24-hour period began</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Ads Campaign Advisor counters:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li><code className="text-sm">ads_standard_analysis_count</code> – Number of standard ads campaign analyses</li>
-                  <li><code className="text-sm">ads_deep_analysis_count</code> – Number of deep ads campaign analyses (premium only)</li>
-                  <li><code className="text-sm">ads_standard_analysis_window_start</code> and <code className="text-sm">ads_deep_analysis_window_start</code> – When each 24-hour period began</li>
-                </ul>
-              </li>
-              <li>Last analysis timestamp (most recent analysis request across all features)</li>
+              <li><code className="text-sm">standard_analysis_count</code> – Number of standard analyses</li>
+              <li><code className="text-sm">deep_analysis_count</code> – Number of deep analyses (premium only)</li>
+              <li><code className="text-sm">analysis_window_start</code> – When the current 24-hour period began</li>
+              <li>Last analysis timestamp</li>
               <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
               <li>Freemius Customer ID and Subscription ID (optional external reference for premium subscriptions)</li>
               <li>User ID (to associate credit tracking with your account)</li>
             </ul>
-            <p className="text-muted-foreground mb-4">
-              The system automatically tracks your analysis count separately for each feature and enforces limits based on 
-              your account type and the specific advisory service you're using. Attempting to exceed your limits will result 
-              in an error message indicating when the next analysis will be available.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Realtime synchronization:</strong> The application uses realtime database subscriptions to 
-              synchronize your credit status across all advisory features automatically. This ensures accurate quota 
-              enforcement regardless of which feature you use and prevents quota circumvention.
-            </p>
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance and fair use 
               enforcement) and Art. 6(1)(f) GDPR (legitimate interest in preventing abuse and ensuring equitable 
               service access for all users).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Premium Subscriptions and Payment Processing</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Premium Subscriptions and Payment Processing (Freemius)</h3>
             <p className="text-muted-foreground mb-4">
               We offer premium subscription plans that provide enhanced features and extended usage limits. Payment 
               processing and subscription management are handled exclusively by our payment partner.
@@ -870,15 +670,14 @@ const PrivacyPolicy = () => {
             </p>
 
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Data Storage and Retention (All AI Features)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Data Storage and Retention</h3>
             <p className="text-muted-foreground mb-4">
               <strong>AI Provider Retention:</strong> Google retains API request data for a limited period
               for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
               used to train or improve Google's AI models.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Our Database Storage:</strong> Your complete analysis history from all AI-powered advisory features 
-              is stored in our backend database in separate tables for each service:
+              <strong>Our Database Storage:</strong> Your complete analysis history is stored in our backend database:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -886,26 +685,19 @@ const PrivacyPolicy = () => {
                 business goals, analysis mode) and generated tool recommendations
               </li>
               <li>
-                <strong>ads_advisor_history:</strong> Advertising campaign inputs (industry, target audience, advertising 
-                budget, advertising goals, current channels, geographic targets, competitor strategies, specific requirements, 
-                analysis mode) and generated campaign strategies
-              </li>
-              <li>
-                <strong>user_credits:</strong> Credit tracking data including separate counters for each feature type 
-                (standard/deep analyses for both Business Tools and Ads Campaign), window start timestamps, premium status, 
-                and subscription information
+                <strong>user_credits:</strong> Credit tracking data including analysis counters, window start timestamps, 
+                premium status, and subscription information
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Storage duration:</strong> This data remains stored as long as your account is active. You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your complete analysis history from all features at any time through your profile page</li>
-              <li>Delete individual analysis entries from your history (available for each feature separately)</li>
+              <li>View your complete analysis history at any time through your profile page</li>
+              <li>Delete individual analysis entries from your history</li>
               <li>
-                Delete your entire account, which permanently removes all analysis history from all features (Business Tools, 
-                Ads Campaign, and any future features), complete credit tracking data, and all associated personal data from 
-                our production database
+                Delete your entire account, which permanently removes all analysis history, credit tracking data, 
+                and all associated personal data from our production database
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
@@ -1210,7 +1002,7 @@ const PrivacyPolicy = () => {
                 <ul className="list-disc pl-6 mt-2">
                   <li>
                     Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
-                    and intermediary service that routes requests from both AI features to:
+                    and intermediary service that routes AI requests to:
                   </li>
                   <li>
                     Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)
@@ -1221,12 +1013,11 @@ const PrivacyPolicy = () => {
                   </li>
                 </ul>
                 <p className="mt-2 text-sm">
-                  <strong>Data minimization and security:</strong> AI requests from the Business Tools Advisor 
-                  are processed through our backend (Supabase Edge Functions), which means Google 
-                  AI receives only your business profile data (industry, team size, budget range, business goals) 
-                  without personal identifiers such as your name, email, or client IP address. Only 
-                  the backend server's IP address is visible to Google. All transmissions are encrypted using TLS/SSL 
-                  protocols.
+                  <strong>Data minimization and security:</strong> AI requests are processed through our backend 
+                  (Supabase Edge Functions), which means Google AI receives only your business profile data 
+                  (industry, team size, budget range, business goals) without personal identifiers such as your 
+                  name, email, or client IP address. Only the backend server's IP address is visible to Google. 
+                  All transmissions are encrypted using TLS/SSL protocols.
                 </p>
               </li>
               <li>
@@ -1290,9 +1081,9 @@ const PrivacyPolicy = () => {
               You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
               the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
               legitimate interest according to Art. 6(1)(f) GDPR). Furthermore, to use our registration-required AI 
-              features (Business Tools Advisor and Business Ideas Advisor), the provision of your email address and 
-              your business profile data is mandatory, as this processing is necessary for the performance of the 
-              contract (Art. 6(1)(b) GDPR). We cannot otherwise fulfill the contractually agreed-upon service.
+              feature (Business Tools Advisor), the provision of your email address and your business profile data 
+              is mandatory, as this processing is necessary for the performance of the contract (Art. 6(1)(b) GDPR). 
+              We cannot otherwise fulfill the contractually agreed-upon service.
             </p>
           </section>
 
@@ -1339,9 +1130,8 @@ const PrivacyPolicy = () => {
                 deleted when you delete your account (subject to backup retention periods as described in Section 4.6).
               </li>
               <li>
-                <strong>Analysis History:</strong> Business tools and business ideas recommendation history is stored 
-                until you delete your account or manually delete individual entries. You have full control to delete 
-                this data at any time.
+                <strong>Analysis History:</strong> Business tools recommendation history is stored until you delete 
+                your account or manually delete individual entries. You have full control to delete this data at any time.
               </li>
               <li>
                 <strong>User Credits and Quota Data:</strong> Analysis counts, window start timestamps, and last 
@@ -1460,13 +1250,13 @@ const PrivacyPolicy = () => {
 
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> November 12, 2025
+              <strong>Last updated:</strong> December 8, 2025
             </p>
           </section>
         </article>

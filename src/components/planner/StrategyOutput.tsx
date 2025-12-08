@@ -1,13 +1,19 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, Search } from 'lucide-react';
+
+// New structured action type
+export interface ActionItem {
+  text: string;
+  searchTerm: string;
+}
 
 export interface StrategyPhase {
   phase: number;
   title: string;
   timeframe: string;
   objectives: string[];
-  actions: string[];
+  actions: (ActionItem | string)[];  // Support both new structured and legacy string formats
   budget?: string;
   channels?: string[];
   milestones?: string[];
@@ -55,6 +61,11 @@ function isLegacyAdResult(result: unknown): result is LegacyAdResult {
 
 function isPlannerResult(result: unknown): result is PlannerResult {
   return typeof result === 'object' && result !== null && 'strategies' in result && Array.isArray((result as PlannerResult).strategies);
+}
+
+// Helper to check if action is structured (has text and searchTerm)
+function isStructuredAction(action: ActionItem | string): action is ActionItem {
+  return typeof action === 'object' && action !== null && 'text' in action && 'searchTerm' in action;
 }
 
 // Fallback renderer for legacy results
@@ -209,21 +220,41 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                   </ul>
                 </div>
 
-                {/* Actions */}
+                {/* Actions with Google Search Links */}
                 <div>
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
                     <Zap className="h-3.5 w-3.5" />
                     Actions
                   </h4>
-                  <ol className="space-y-1.5">
-                    {phase.actions.map((action, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <span className="flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">
-                          {i + 1}
-                        </span>
-                        <span>{action}</span>
-                      </li>
-                    ))}
+                  <ol className="space-y-2">
+                    {phase.actions.map((action, i) => {
+                      const isStructured = isStructuredAction(action);
+                      const actionText = isStructured ? action.text : action;
+                      const searchTerm = isStructured ? action.searchTerm : null;
+                      
+                      return (
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          <span className="flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0 mt-0.5">
+                            {i + 1}
+                          </span>
+                          <div className="flex-1">
+                            <span>{actionText}</span>
+                            {searchTerm && (
+                              <a 
+                                href={`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 ml-2 text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
+                                title={`Search: ${searchTerm}`}
+                              >
+                                <Search className="h-3 w-3" />
+                                <span>Learn more</span>
+                              </a>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ol>
                 </div>
 

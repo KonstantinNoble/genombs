@@ -270,19 +270,39 @@ export default function BusinessToolsAdvisor() {
                             />
                           ).toBlob();
                           const url = URL.createObjectURL(blob);
-                          const link = document.createElement('a');
-                          link.href = url;
-                          link.download = `business-strategy-${new Date().toISOString().split('T')[0]}.pdf`;
-                          link.click();
-                          URL.revokeObjectURL(url);
-                          toast({ title: "PDF Downloaded", description: "Your strategy has been exported" });
+                          const filename = `business-strategy-${new Date().toISOString().split('T')[0]}.pdf`;
+                          
+                          // iOS/Safari Detection
+                          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                          
+                          if (isIOS || isSafari) {
+                            // Auf iOS/Safari: PDF in neuem Tab öffnen
+                            window.open(url, '_blank');
+                            toast({ 
+                              title: "PDF geöffnet", 
+                              description: "Nutze den Share-Button um das PDF zu speichern" 
+                            });
+                            setTimeout(() => URL.revokeObjectURL(url), 5000);
+                          } else {
+                            // Auf anderen Geräten: Normaler Download
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            toast({ title: "PDF Downloaded", description: "Your strategy has been exported" });
+                          }
                         } catch (error) {
+                          console.error('PDF export error:', error);
                           toast({ title: "Export Failed", description: "Could not generate PDF", variant: "destructive" });
                         }
                       }}
                     >
                       <Download className="h-4 w-4" />
-                      <span className="hidden sm:inline">Export PDF</span>
+                      <span className="hidden sm:inline">PDF</span>
                     </Button>
                   </CardHeader>
                   <CardContent><StrategyOutput result={result} isDeepMode={analysisMode === 'deep'} /></CardContent>

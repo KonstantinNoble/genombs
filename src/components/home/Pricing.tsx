@@ -45,7 +45,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               You're on the Premium Plan!
             </h2>
             <p className="text-lg text-muted-foreground">
-              Enjoy unlimited access to all premium features including Deep Analysis, ROI calculations, custom requirements, and PDF exports.
+              Enjoy unlimited access to all premium features including Deep Analysis with 6 phases, ROI projections, competitor analysis, and more.
             </p>
             <Button 
               size="lg" 
@@ -61,27 +61,23 @@ const Pricing = ({ compact = false }: PricingProps) => {
   }
 
   const freeFeatures = [
-    { text: "2 Business Tools Analyses per day", included: true },
-    { text: "2 Ads Campaign Analyses per day", included: true },
-    { text: "Standard Analysis Mode", included: true },
-    { text: "5-7 AI recommendations per analysis", included: true },
-    { text: "Basic implementation guidance", included: true },
+    { text: "2 AI Business Analyses per day", included: true },
+    { text: "4 strategy phases per analysis", included: true },
+    { text: "Actionable steps with Google search links", included: true },
+    { text: "Optional context (budget, industry, timeline)", included: true },
     { text: "Deep Analysis Mode", included: false },
-    { text: "Custom Requirements Input", included: false },
-    { text: "ROI & Risk Calculations", included: false },
-    { text: "PDF Report Export", included: false },
+    { text: "Competitor & ROI Analysis", included: false },
   ];
 
   const premiumFeatures = [
-    { text: "6 Standard + 2 Deep Analyses daily", included: true, highlight: true },
-    { text: "Works for Business Tools & Ads", included: true },
-    { text: "8-10 detailed recommendations", included: true, highlight: true },
-    { text: "Custom Requirements - Tell AI exactly what you need", included: true, highlight: true },
-    { text: "Step-by-step implementation guides", included: true },
-    { text: "ROI calculations for every tool", included: true, highlight: true },
-    { text: "Risk assessment & success metrics", included: true },
-    { text: "Implementation timelines", included: true },
-    { text: "Export beautiful PDF reports", included: true, highlight: true },
+    { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
+    { text: "6 comprehensive phases in Deep Mode", included: true, highlight: true },
+    { text: "Competitor Analysis - Know your competition", included: true },
+    { text: "ROI Projections - Expected returns calculated", included: true, highlight: true },
+    { text: "A/B Test Suggestions - Data-driven testing ideas", included: true },
+    { text: "Risk Mitigation Plans - IF metric drops, THEN do X", included: true },
+    { text: "Weekly Breakdown - Step-by-step weekly tasks", included: true },
+    { text: "KPI Milestones - Clear success metrics", included: true },
   ];
 
   return (
@@ -154,7 +150,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-sm text-primary font-medium mt-2">
-                  Save 44% - was $17.99
+                  Best value for business growth
                 </p>
               </CardHeader>
               <CardContent className="flex-grow pt-0">

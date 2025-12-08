@@ -214,7 +214,7 @@ export default function BusinessToolsAdvisor() {
                 <Tabs value={analysisMode} onValueChange={(v) => setAnalysisMode(v as "standard" | "deep")}>
                   <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0">
                     <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none"><div className="py-2"><div className="font-semibold">Standard</div><div className="text-xs opacity-80">4 phases</div></div></TabsTrigger>
-                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">4 phases + KPIs</div></div></TabsTrigger>
+                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">6 phases + Advanced Insights</div></div></TabsTrigger>
                   </TabsList>
                 </Tabs>
                 {!isPremium && (

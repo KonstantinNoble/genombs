@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, FileText, BarChart3, Target, Clock, Sparkles, Brain, Shield } from "lucide-react";
+import { Check, X, Zap, TrendingUp, BarChart3, Target, Clock, Sparkles, Brain, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -55,65 +55,63 @@ const PricingPage = () => {
   const features = [
     {
       icon: <Brain className="h-6 w-6" />,
-      title: "Advanced AI Analysis",
-      description: "Powered by Google's Gemini 2.5 Flash - get intelligent recommendations tailored to your specific business needs and goals."
+      title: "Deep Analysis Mode",
+      description: "6 comprehensive phases with competitor analysis, ROI projections, A/B test suggestions, and weekly action plans."
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
-      title: "ROI Calculations",
-      description: "Every Premium recommendation includes expected return on investment, helping you prioritize the tools and strategies with the highest impact."
-    },
-    {
-      icon: <FileText className="h-6 w-6" />,
-      title: "Beautiful PDF Reports",
-      description: "Export your complete analysis as a professional PDF report - perfect for sharing with team members or stakeholders."
-    },
-    {
-      icon: <BarChart3 className="h-6 w-6" />,
-      title: "Deep Analysis Mode",
-      description: "Go beyond basic recommendations. Get 8-10 detailed insights with implementation steps, timelines, prerequisites, and risk assessments."
+      title: "ROI Projections",
+      description: "Every Deep Analysis includes expected return on investment with realistic assumptions to prioritize high-impact strategies."
     },
     {
       icon: <Target className="h-6 w-6" />,
-      title: "Custom Requirements",
-      description: "Tell the AI exactly what you need. Add specific requirements, constraints, or preferences to get perfectly tailored recommendations."
+      title: "Competitor Analysis",
+      description: "Know your competition's strengths and weaknesses to position yourself better in the market."
+    },
+    {
+      icon: <Shield className="h-6 w-6" />,
+      title: "Risk Mitigation",
+      description: "Backup strategies with specific triggers - IF metric drops below target, THEN execute this backup plan."
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: "More Daily Analyses",
-      description: "Premium users get 6 standard + 2 deep analyses per day for both Business Tools and Ads Campaigns. That's 16 total analyses daily!"
+      title: "Weekly Breakdown",
+      description: "Step-by-step weekly action plans for each strategy phase so you always know what to do next."
+    },
+    {
+      icon: <BarChart3 className="h-6 w-6" />,
+      title: "8x Daily Analyses",
+      description: "6 Standard + 2 Deep analyses per day compared to 2 for free users. More strategies, more insights."
     }
   ];
 
   const comparisonFeatures = [
-    { name: "Business Tools Analyses", free: "2/day", premium: "8/day (6 standard + 2 deep)" },
-    { name: "Ads Campaign Analyses", free: "2/day", premium: "8/day (6 standard + 2 deep)" },
-    { name: "Recommendations per Analysis", free: "5-7", premium: "8-10 (detailed)" },
-    { name: "AI-Powered Suggestions", free: true, premium: true },
-    { name: "Industry-Specific Insights", free: true, premium: true },
-    { name: "Budget-Based Recommendations", free: true, premium: true },
+    { name: "Daily Analyses", free: "2 Standard", premium: "6 Standard + 2 Deep" },
+    { name: "Phases per Analysis", free: "4", premium: "4 (Standard) / 6 (Deep)" },
+    { name: "Actionable Steps", free: true, premium: true },
+    { name: "Google Search Links", free: true, premium: true },
+    { name: "Optional Context Input", free: true, premium: true },
     { name: "Deep Analysis Mode", free: false, premium: true },
-    { name: "Custom Requirements Input", free: false, premium: true },
-    { name: "ROI Calculations", free: false, premium: true },
-    { name: "Risk Assessment", free: false, premium: true },
-    { name: "Implementation Timelines", free: false, premium: true },
-    { name: "Prerequisites & Metrics", free: false, premium: true },
-    { name: "PDF Export", free: false, premium: true },
-    { name: "Priority Support", free: false, premium: true }
+    { name: "Competitor Analysis", free: false, premium: true },
+    { name: "ROI Projections", free: false, premium: true },
+    { name: "A/B Test Suggestions", free: false, premium: true },
+    { name: "Risk Mitigation Plans", free: false, premium: true },
+    { name: "Weekly Breakdown", free: false, premium: true },
+    { name: "KPI Milestones", free: false, premium: true }
   ];
 
   const faqs = [
     {
       question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis gives you 5-7 quick, actionable recommendations - great for getting started. Deep Analysis (Premium only) provides 8-10 comprehensive recommendations with detailed implementation guides, ROI calculations, risk assessments, timelines, and success metrics."
+      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links. Deep Analysis (Premium only) provides 6 comprehensive phases with competitor analysis, ROI projections, A/B test suggestions, risk mitigation plans, weekly breakdowns, and KPI milestones."
     },
     {
       question: "How do the daily analysis limits work?",
-      answer: "Free users get 2 Business Tools and 2 Ads Campaign analyses per day. Premium users get 6 standard + 2 deep analyses for each service daily - that's 16 total analyses! Limits reset every 24 hours from your first daily analysis."
+      answer: "Free users get 2 Standard analyses per day. Premium users get 6 Standard + 2 Deep analyses daily - that's 8 total analyses! Limits reset every 24 hours from your first daily analysis."
     },
     {
-      question: "What are Custom Requirements?",
-      answer: "Custom Requirements (Premium only) let you add specific instructions to your analysis. For example: 'Focus on tools under $50/month' or 'Prioritize solutions with Shopify integration'. The AI will tailor all recommendations to match your exact needs."
+      question: "What optional context can I provide?",
+      answer: "You can add budget range, industry, current marketing channels, timeline, and geographic target. The AI uses this context to create more relevant and specific strategies tailored to your situation."
     },
     {
       question: "Can I cancel my Premium subscription anytime?",
@@ -121,7 +119,7 @@ const PricingPage = () => {
     },
     {
       question: "Do I need a credit card for the Free Plan?",
-      answer: "No credit card required. Sign up with your email and start getting AI recommendations immediately. Upgrade to Premium only when you need advanced features."
+      answer: "No credit card required. Sign up with your email and start getting AI-powered business strategies immediately. Upgrade to Premium only when you need Deep Analysis features."
     },
     {
       question: "What payment methods do you accept?",
@@ -162,8 +160,8 @@ const PricingPage = () => {
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "Enjoy unlimited access to all premium features including Deep Analysis, ROI calculations, custom requirements, and PDF exports."
-                : "Start free with no credit card. Get instant AI recommendations for your business tools and advertising campaigns."}
+                ? "Enjoy unlimited access to all premium features including Deep Analysis with 6 phases, ROI projections, competitor analysis, and more."
+                : "Start free with no credit card. Get AI-powered business strategies with actionable steps and Google search links."}
             </p>
             {!isPremium && !isLoggedIn && (
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
@@ -185,16 +183,16 @@ const PricingPage = () => {
                 <CardContent className="p-8">
                   <div className="grid md:grid-cols-3 gap-6 text-center">
                     <div>
-                      <div className="text-4xl font-bold text-primary">16</div>
+                      <div className="text-4xl font-bold text-primary">8</div>
                       <div className="text-sm text-muted-foreground mt-1">Daily Analyses (Premium)</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">$0.62</div>
-                      <div className="text-sm text-muted-foreground mt-1">Per Analysis (if fully used)</div>
+                      <div className="text-4xl font-bold text-primary">6</div>
+                      <div className="text-sm text-muted-foreground mt-1">Phases in Deep Mode</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">44%</div>
-                      <div className="text-sm text-muted-foreground mt-1">Savings vs. Old Price</div>
+                      <div className="text-4xl font-bold text-primary">ROI</div>
+                      <div className="text-sm text-muted-foreground mt-1">Projections Included</div>
                     </div>
                   </div>
                 </CardContent>

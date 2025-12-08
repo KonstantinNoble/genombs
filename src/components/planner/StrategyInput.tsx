@@ -1,13 +1,6 @@
-import { useState } from 'react';
-import { Plus, X, DollarSign, Globe, Target, Clock, Building2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -15,8 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 export interface OptionalParams {
   budget?: string;
@@ -36,11 +27,26 @@ interface StrategyInputProps {
 }
 
 const budgetOptions = [
-  { value: 'under-1k', label: 'Under $1,000/month' },
-  { value: '1k-5k', label: '$1,000 - $5,000/month' },
-  { value: '5k-20k', label: '$5,000 - $20,000/month' },
-  { value: '20k-50k', label: '$20,000 - $50,000/month' },
-  { value: '50k-plus', label: '$50,000+/month' },
+  { value: 'under-1k', label: 'Under $1K' },
+  { value: '1k-5k', label: '$1K - $5K' },
+  { value: '5k-20k', label: '$5K - $20K' },
+  { value: '20k-plus', label: '$20K+' },
+];
+
+const industryOptions = [
+  { value: 'ecommerce', label: 'E-commerce' },
+  { value: 'saas', label: 'SaaS' },
+  { value: 'services', label: 'Services' },
+  { value: 'healthcare', label: 'Healthcare' },
+  { value: 'other', label: 'Other' },
+];
+
+const channelOptions = [
+  { value: 'google-ads', label: 'Google Ads' },
+  { value: 'meta', label: 'Meta (FB/IG)' },
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'mixed', label: 'Mixed Channels' },
 ];
 
 const timelineOptions = [
@@ -50,200 +56,168 @@ const timelineOptions = [
   { value: '12-months', label: '12 Months' },
 ];
 
+const geographicOptions = [
+  { value: 'local', label: 'Local' },
+  { value: 'national', label: 'National' },
+  { value: 'europe', label: 'Europe' },
+  { value: 'global', label: 'Global' },
+];
+
+const MAX_CHARS = 150;
+
 export function StrategyInput({
   value,
   onChange,
   optionalParams,
   onOptionalParamsChange,
-  placeholder = "Describe your goals, challenges, target audience, and what you want to achieve...",
+  placeholder = "Describe your goals in a few words...",
   disabled = false,
 }: StrategyInputProps) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [tempBudget, setTempBudget] = useState(optionalParams.budget || '');
-  const [tempIndustry, setTempIndustry] = useState(optionalParams.industry || '');
-  const [tempChannels, setTempChannels] = useState(optionalParams.channels || '');
-  const [tempTimeline, setTempTimeline] = useState(optionalParams.timeline || '');
-  const [tempGeographic, setTempGeographic] = useState(optionalParams.geographic || '');
+  const charCount = value.length;
+  const isAtLimit = charCount >= MAX_CHARS;
 
-  const handleAddParams = () => {
-    const newParams: OptionalParams = {};
-    if (tempBudget) newParams.budget = tempBudget;
-    if (tempIndustry) newParams.industry = tempIndustry;
-    if (tempChannels) newParams.channels = tempChannels;
-    if (tempTimeline) newParams.timeline = tempTimeline;
-    if (tempGeographic) newParams.geographic = tempGeographic;
-    
-    onOptionalParamsChange({ ...optionalParams, ...newParams });
-    setIsPopoverOpen(false);
-  };
-
-  const removeParam = (key: keyof OptionalParams) => {
-    const newParams = { ...optionalParams };
-    delete newParams[key];
-    onOptionalParamsChange(newParams);
-    
-    // Reset temp values
-    if (key === 'budget') setTempBudget('');
-    if (key === 'industry') setTempIndustry('');
-    if (key === 'channels') setTempChannels('');
-    if (key === 'timeline') setTempTimeline('');
-    if (key === 'geographic') setTempGeographic('');
-  };
-
-  const hasParams = Object.keys(optionalParams).length > 0;
-
-  const getParamIcon = (key: keyof OptionalParams) => {
-    switch (key) {
-      case 'budget': return <DollarSign className="h-3 w-3" />;
-      case 'industry': return <Building2 className="h-3 w-3" />;
-      case 'channels': return <Target className="h-3 w-3" />;
-      case 'timeline': return <Clock className="h-3 w-3" />;
-      case 'geographic': return <Globe className="h-3 w-3" />;
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length <= MAX_CHARS) {
+      onChange(newValue);
     }
   };
 
-  const getParamLabel = (key: keyof OptionalParams, value: string) => {
-    if (key === 'budget') {
-      const option = budgetOptions.find(o => o.value === value);
-      return option?.label || value;
-    }
-    if (key === 'timeline') {
-      const option = timelineOptions.find(o => o.value === value);
-      return option?.label || value;
-    }
-    return value;
+  const updateParam = (key: keyof OptionalParams, val: string) => {
+    onOptionalParamsChange({
+      ...optionalParams,
+      [key]: val === 'none' ? undefined : val,
+    });
   };
 
   return (
-    <div className="relative rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm p-4 transition-all duration-200 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20">
-      <div className="flex gap-3">
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="shrink-0 h-10 w-10 rounded-lg border border-dashed border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all"
-              disabled={disabled}
-            >
-              <Plus className="h-5 w-5 text-muted-foreground" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80" align="start">
-            <div className="space-y-4">
-              <h4 className="font-medium text-sm">Add Context (Optional)</h4>
-              
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5">
-                    <DollarSign className="h-3 w-3" /> Budget
-                  </Label>
-                  <Select value={tempBudget} onValueChange={setTempBudget}>
-                    <SelectTrigger className="h-9">
-                      <SelectValue placeholder="Select budget range" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {budgetOptions.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5">
-                    <Building2 className="h-3 w-3" /> Industry
-                  </Label>
-                  <Input 
-                    placeholder="e.g., E-commerce, SaaS, Healthcare"
-                    value={tempIndustry}
-                    onChange={(e) => setTempIndustry(e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5">
-                    <Target className="h-3 w-3" /> Preferred Channels
-                  </Label>
-                  <Input 
-                    placeholder="e.g., Google Ads, Facebook, LinkedIn"
-                    value={tempChannels}
-                    onChange={(e) => setTempChannels(e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5">
-                    <Clock className="h-3 w-3" /> Timeline
-                  </Label>
-                  <Select value={tempTimeline} onValueChange={setTempTimeline}>
-                    <SelectTrigger className="h-9">
-                      <SelectValue placeholder="Select timeline" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timelineOptions.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5">
-                    <Globe className="h-3 w-3" /> Geographic Target
-                  </Label>
-                  <Input 
-                    placeholder="e.g., United States, Europe, Global"
-                    value={tempGeographic}
-                    onChange={(e) => setTempGeographic(e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-              </div>
-
-              <Button onClick={handleAddParams} className="w-full" size="sm">
-                Add Parameters
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
+    <div className="space-y-4">
+      {/* Main Text Input */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <Label htmlFor="strategy-input">Your Goals</Label>
+          <span className={`text-xs ${isAtLimit ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {charCount}/{MAX_CHARS}
+          </span>
+        </div>
         <Textarea
+          id="strategy-input"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleTextChange}
           placeholder={placeholder}
           disabled={disabled}
-          className="flex-1 min-h-[120px] border-0 bg-transparent resize-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base placeholder:text-muted-foreground/60"
+          maxLength={MAX_CHARS}
+          className="min-h-[80px] resize-none"
         />
       </div>
 
-      {hasParams && (
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/40">
-          {(Object.entries(optionalParams) as [keyof OptionalParams, string][]).map(([key, paramValue]) => (
-            <Badge 
-              key={key} 
-              variant="secondary" 
-              className="pl-2 pr-1 py-1 gap-1.5 text-xs font-normal bg-secondary/50"
-            >
-              {getParamIcon(key)}
-              <span className="capitalize">{key}:</span>
-              <span className="font-medium">{getParamLabel(key, paramValue)}</span>
-              <button
-                onClick={() => removeParam(key)}
-                className="ml-1 p-0.5 rounded-full hover:bg-destructive/20 transition-colors"
-                disabled={disabled}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </Badge>
-          ))}
+      {/* Context Dropdowns */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Budget</Label>
+          <Select
+            value={optionalParams.budget || 'none'}
+            onValueChange={(val) => updateParam('budget', val)}
+            disabled={disabled}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              {budgetOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Industry</Label>
+          <Select
+            value={optionalParams.industry || 'none'}
+            onValueChange={(val) => updateParam('industry', val)}
+            disabled={disabled}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              {industryOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Channels</Label>
+          <Select
+            value={optionalParams.channels || 'none'}
+            onValueChange={(val) => updateParam('channels', val)}
+            disabled={disabled}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              {channelOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Timeline</Label>
+          <Select
+            value={optionalParams.timeline || 'none'}
+            onValueChange={(val) => updateParam('timeline', val)}
+            disabled={disabled}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              {timelineOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Geographic</Label>
+          <Select
+            value={optionalParams.geographic || 'none'}
+            onValueChange={(val) => updateParam('geographic', val)}
+            disabled={disabled}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              {geographicOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 }

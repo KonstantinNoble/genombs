@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown } from 'lucide-react';
 
 export interface StrategyPhase {
   phase: number;
@@ -131,8 +131,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     'from-purple-500/20 to-purple-600/10 border-purple-500/30',
     'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30',
     'from-amber-500/20 to-amber-600/10 border-amber-500/30',
-    'from-rose-500/20 to-rose-600/10 border-rose-500/30',
-    'from-cyan-500/20 to-cyan-600/10 border-cyan-500/30',
   ];
 
   const phaseAccents = [
@@ -140,24 +138,43 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     'bg-purple-500',
     'bg-emerald-500',
     'bg-amber-500',
-    'bg-rose-500',
-    'bg-cyan-500',
   ];
 
   return (
     <div className="space-y-6">
+      {/* Premium indicator */}
+      {isDeepMode && (
+        <div className="flex items-center gap-2 text-sm">
+          <Crown className="h-4 w-4 text-amber-500" />
+          <span className="font-medium text-amber-600 dark:text-amber-400">Premium Deep Analysis</span>
+          <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 text-xs">
+            Gemini 2.5 Pro
+          </Badge>
+        </div>
+      )}
+
       {/* Timeline connector */}
       <div className="relative">
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent hidden lg:block" />
         
-        <div className={`grid gap-6 ${isDeepMode ? 'lg:grid-cols-2 xl:grid-cols-3' : 'lg:grid-cols-2'}`}>
+        <div className="grid gap-6 lg:grid-cols-2">
           {strategies.map((phase, index) => (
             <Card 
               key={index} 
-              className={`relative overflow-hidden bg-gradient-to-br ${phaseColors[index % phaseColors.length]} border transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
+              className={`relative overflow-hidden bg-gradient-to-br ${phaseColors[index % phaseColors.length]} border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${isDeepMode ? 'ring-1 ring-amber-500/20' : ''}`}
             >
               {/* Phase indicator bar */}
               <div className={`absolute top-0 left-0 w-1.5 h-full ${phaseAccents[index % phaseAccents.length]}`} />
+              
+              {/* Premium badge for deep mode */}
+              {isDeepMode && (
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[10px]">
+                    <Crown className="h-2.5 w-2.5 mr-1" />
+                    Premium
+                  </Badge>
+                </div>
+              )}
               
               <CardHeader className="pb-3 pl-6">
                 <div className="flex items-center justify-between mb-2">
@@ -172,7 +189,7 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                     Phase {phase.phase}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold leading-tight">{phase.title}</h3>
+                <h3 className="text-lg font-bold leading-tight pr-16">{phase.title}</h3>
               </CardHeader>
 
               <CardContent className="pl-6 space-y-4">
@@ -210,39 +227,39 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                   </ol>
                 </div>
 
-                {/* Optional: Budget */}
-                {phase.budget && (
+                {/* Premium: Budget - only show in deep mode */}
+                {isDeepMode && phase.budget && (
                   <div className="pt-2 border-t border-border/40">
                     <div className="flex items-center gap-2 text-sm">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Budget:</span>
-                      <span className="font-medium">{phase.budget}</span>
+                      <DollarSign className="h-4 w-4 text-amber-500" />
+                      <span className="text-muted-foreground">Budget Allocation:</span>
+                      <span className="font-medium text-amber-600 dark:text-amber-400">{phase.budget}</span>
                     </div>
                   </div>
                 )}
 
-                {/* Optional: Channels */}
-                {phase.channels && phase.channels.length > 0 && (
+                {/* Premium: Channels - only show in deep mode */}
+                {isDeepMode && phase.channels && phase.channels.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {phase.channels.map((channel, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
+                      <Badge key={i} variant="secondary" className="text-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20">
                         {channel}
                       </Badge>
                     ))}
                   </div>
                 )}
 
-                {/* Optional: Milestones */}
-                {phase.milestones && phase.milestones.length > 0 && (
+                {/* Premium: Milestones - only show in deep mode */}
+                {isDeepMode && phase.milestones && phase.milestones.length > 0 && (
                   <div className="pt-2 border-t border-border/40">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                      <Flag className="h-3.5 w-3.5" />
-                      Milestones
+                      <Flag className="h-3.5 w-3.5 text-amber-500" />
+                      KPI Milestones
                     </h4>
                     <ul className="space-y-1">
                       {phase.milestones.map((milestone, i) => (
                         <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary/60" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                           {milestone}
                         </li>
                       ))}

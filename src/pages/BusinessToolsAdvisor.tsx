@@ -213,8 +213,8 @@ export default function BusinessToolsAdvisor() {
                 <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={analyzing} />
                 <Tabs value={analysisMode} onValueChange={(v) => setAnalysisMode(v as "standard" | "deep")}>
                   <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0">
-                    <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none"><div className="py-2"><div className="font-semibold">Standard</div><div className="text-xs opacity-80">2-3 phases</div></div></TabsTrigger>
-                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">4-6 phases</div></div></TabsTrigger>
+                    <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none"><div className="py-2"><div className="font-semibold">Standard</div><div className="text-xs opacity-80">4 phases</div></div></TabsTrigger>
+                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">4 phases + KPIs</div></div></TabsTrigger>
                   </TabsList>
                 </Tabs>
                 <Button onClick={handleAnalyze} disabled={analyzing || !canAnalyze || !prompt.trim()} className="w-full" size="lg">

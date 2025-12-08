@@ -45,7 +45,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               You're on the Premium Plan!
             </h2>
             <p className="text-lg text-muted-foreground">
-              Enjoy unlimited access to all premium features including Deep Analysis with 6 phases, ROI projections, competitor analysis, and more.
+              Enjoy unlimited access to all premium features including Deep Analysis with ROI projections, competitor analysis, and risk mitigation.
             </p>
             <Button 
               size="lg" 
@@ -71,12 +71,10 @@ const Pricing = ({ compact = false }: PricingProps) => {
 
   const premiumFeatures = [
     { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
-    { text: "6 comprehensive phases in Deep Mode", included: true, highlight: true },
+    { text: "4 comprehensive phases per analysis", included: true, highlight: true },
     { text: "Competitor Analysis - Know your competition", included: true },
     { text: "ROI Projections - Expected returns calculated", included: true, highlight: true },
-    { text: "A/B Test Suggestions - Data-driven testing ideas", included: true },
     { text: "Risk Mitigation Plans - IF metric drops, THEN do X", included: true },
-    { text: "Weekly Breakdown - Step-by-step weekly tasks", included: true },
     { text: "KPI Milestones - Clear success metrics", included: true },
   ];
 

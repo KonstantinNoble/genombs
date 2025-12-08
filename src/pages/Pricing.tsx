@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, BarChart3, Target, Clock, Sparkles, Brain, Shield } from "lucide-react";
+import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -56,7 +56,7 @@ const PricingPage = () => {
     {
       icon: <Brain className="h-6 w-6" />,
       title: "Deep Analysis Mode",
-      description: "6 comprehensive phases with competitor analysis, ROI projections, A/B test suggestions, and weekly action plans."
+      description: "Advanced analysis with competitor insights, ROI projections, and risk mitigation strategies."
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
@@ -74,11 +74,6 @@ const PricingPage = () => {
       description: "Backup strategies with specific triggers - IF metric drops below target, THEN execute this backup plan."
     },
     {
-      icon: <Clock className="h-6 w-6" />,
-      title: "Weekly Breakdown",
-      description: "Step-by-step weekly action plans for each strategy phase so you always know what to do next."
-    },
-    {
       icon: <BarChart3 className="h-6 w-6" />,
       title: "8x Daily Analyses",
       description: "6 Standard + 2 Deep analyses per day compared to 2 for free users. More strategies, more insights."
@@ -87,23 +82,21 @@ const PricingPage = () => {
 
   const comparisonFeatures = [
     { name: "Daily Analyses", free: "2 Standard", premium: "6 Standard + 2 Deep" },
-    { name: "Phases per Analysis", free: "4", premium: "4 (Standard) / 6 (Deep)" },
+    { name: "Phases per Analysis", free: "4", premium: "4" },
     { name: "Actionable Steps", free: true, premium: true },
     { name: "Google Search Links", free: true, premium: true },
     { name: "Optional Context Input", free: true, premium: true },
     { name: "Deep Analysis Mode", free: false, premium: true },
     { name: "Competitor Analysis", free: false, premium: true },
     { name: "ROI Projections", free: false, premium: true },
-    { name: "A/B Test Suggestions", free: false, premium: true },
     { name: "Risk Mitigation Plans", free: false, premium: true },
-    { name: "Weekly Breakdown", free: false, premium: true },
     { name: "KPI Milestones", free: false, premium: true }
   ];
 
   const faqs = [
     {
       question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links. Deep Analysis (Premium only) provides 6 comprehensive phases with competitor analysis, ROI projections, A/B test suggestions, risk mitigation plans, weekly breakdowns, and KPI milestones."
+      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links. Deep Analysis (Premium only) adds competitor analysis, ROI projections, risk mitigation plans, and KPI milestones to each phase."
     },
     {
       question: "How do the daily analysis limits work?",
@@ -148,7 +141,7 @@ const PricingPage = () => {
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "Enjoy unlimited access to all premium features including Deep Analysis with 6 phases, ROI projections, competitor analysis, and more."
+                ? "Enjoy unlimited access to all premium features including Deep Analysis with ROI projections, competitor analysis, and risk mitigation."
                 : "Start free with no credit card. Get AI-powered business strategies with actionable steps and Google search links."}
             </p>
             {!isPremium && !isLoggedIn && (
@@ -175,8 +168,8 @@ const PricingPage = () => {
                       <div className="text-sm text-muted-foreground mt-1">Daily Analyses (Premium)</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">6</div>
-                      <div className="text-sm text-muted-foreground mt-1">Phases in Deep Mode</div>
+                      <div className="text-4xl font-bold text-primary">4</div>
+                      <div className="text-sm text-muted-foreground mt-1">Phases per Analysis</div>
                     </div>
                     <div>
                       <div className="text-4xl font-bold text-primary">ROI</div>

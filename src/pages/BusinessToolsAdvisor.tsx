@@ -108,7 +108,7 @@ export default function BusinessToolsAdvisor() {
   };
 
   const loadHistory = async (userId: string) => {
-    const { data } = await supabase.from('business_tools_history').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(4);
+    const { data } = await supabase.from('business_tools_history').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
     if (data) setHistory(data.map(item => ({ ...item, result: item.result as unknown as PlannerResult })));
   };
 

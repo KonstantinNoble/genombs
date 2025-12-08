@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, FileText, BarChart3, Target, Clock } from "lucide-react";
+import { Check, X, Zap, TrendingUp, FileText, BarChart3, Target, Clock, Sparkles, Brain, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -14,9 +14,6 @@ const PricingPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
-
-  const pageTitle = "Pricing Plans - Free & Premium AI Analysis";
-  const pageDescription = "Choose the perfect plan for your business. Free plan includes 2 daily analyses for Business Tools and Ads Campaigns. Premium unlocks 6 standard + 2 deep analyses daily with ROI calculations and implementation guides.";
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -57,79 +54,78 @@ const PricingPage = () => {
 
   const features = [
     {
-      icon: <Zap className="h-6 w-6" />,
-      title: "AI-Powered Analysis",
-      description: "Get personalized recommendations using advanced AI models trained for business tools optimization and advertising campaign strategy."
+      icon: <Brain className="h-6 w-6" />,
+      title: "Advanced AI Analysis",
+      description: "Powered by Google's Gemini 2.5 Flash - get intelligent recommendations tailored to your specific business needs and goals."
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
-      title: "ROI Focused",
-      description: "Every recommendation includes expected ROI calculations and risk assessments to help you make informed decisions."
+      title: "ROI Calculations",
+      description: "Every Premium recommendation includes expected return on investment, helping you prioritize the tools and strategies with the highest impact."
     },
     {
       icon: <FileText className="h-6 w-6" />,
-      title: "Detailed Reports",
-      description: "Premium users get comprehensive PDF reports with step-by-step implementation guides and timelines."
+      title: "Beautiful PDF Reports",
+      description: "Export your complete analysis as a professional PDF report - perfect for sharing with team members or stakeholders."
     },
     {
       icon: <BarChart3 className="h-6 w-6" />,
       title: "Deep Analysis Mode",
-      description: "Premium exclusive: Get 8-10 detailed recommendations with prerequisites, metrics, and risk levels. Add custom requirements to get AI recommendations tailored exactly to your specific needs."
+      description: "Go beyond basic recommendations. Get 8-10 detailed insights with implementation steps, timelines, prerequisites, and risk assessments."
     },
     {
       icon: <Target className="h-6 w-6" />,
-      title: "Tailored Recommendations",
-      description: "Analysis based on your specific industry, budget, business goals, and target audience - no generic advice."
+      title: "Custom Requirements",
+      description: "Tell the AI exactly what you need. Add specific requirements, constraints, or preferences to get perfectly tailored recommendations."
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: "Daily Analysis Credits",
-      description: "Free users get 2 Business Tools + 2 Ads Campaign analyses per day. Premium users get 6 standard + 2 deep analyses for each service daily."
+      title: "More Daily Analyses",
+      description: "Premium users get 6 standard + 2 deep analyses per day for both Business Tools and Ads Campaigns. That's 16 total analyses daily!"
     }
   ];
 
   const comparisonFeatures = [
-    { name: "Business Tools Standard Analyses per day", free: "2", premium: "6" },
-    { name: "Business Tools Deep Analyses per day", free: "0", premium: "2" },
-    { name: "Ads Campaign Standard Analyses per day", free: "2", premium: "6" },
-    { name: "Ads Campaign Deep Analyses per day", free: "0", premium: "2" },
-    { name: "Business Tool Recommendations", free: true, premium: true },
-    { name: "Advertising Campaign Strategy", free: true, premium: true },
-    { name: "Budget-Based Suggestions", free: true, premium: true },
+    { name: "Business Tools Analyses", free: "2/day", premium: "8/day (6 standard + 2 deep)" },
+    { name: "Ads Campaign Analyses", free: "2/day", premium: "8/day (6 standard + 2 deep)" },
+    { name: "Recommendations per Analysis", free: "5-7", premium: "8-10 (detailed)" },
+    { name: "AI-Powered Suggestions", free: true, premium: true },
+    { name: "Industry-Specific Insights", free: true, premium: true },
+    { name: "Budget-Based Recommendations", free: true, premium: true },
+    { name: "Deep Analysis Mode", free: false, premium: true },
     { name: "Custom Requirements Input", free: false, premium: true },
-    { name: "Detailed Implementation Steps", free: false, premium: true },
     { name: "ROI Calculations", free: false, premium: true },
     { name: "Risk Assessment", free: false, premium: true },
-    { name: "Implementation Timeline", free: false, premium: true },
-    { name: "Prerequisites Analysis", free: false, premium: true },
-    { name: "Performance Metrics", free: false, premium: true },
-    { name: "PDF Export", free: false, premium: true }
+    { name: "Implementation Timelines", free: false, premium: true },
+    { name: "Prerequisites & Metrics", free: false, premium: true },
+    { name: "PDF Export", free: false, premium: true },
+    { name: "Priority Support", free: false, premium: true }
   ];
 
   const faqs = [
     {
       question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis provides 5-7 quick recommendations perfect for getting started. Deep Analysis (Premium only) delivers 8-10 comprehensive recommendations with detailed step-by-step implementation guides, ROI calculations, risk assessments, and timelines."
+      answer: "Standard Analysis gives you 5-7 quick, actionable recommendations - great for getting started. Deep Analysis (Premium only) provides 8-10 comprehensive recommendations with detailed implementation guides, ROI calculations, risk assessments, timelines, and success metrics."
     },
     {
-      question: "How do daily analysis limits work?",
-      answer: "Free users get 2 Business Tools standard analyses and 2 Ads Campaign standard analyses per day. Premium users get 6 standard analyses and 2 deep analyses for each service per day. Limits reset every 24 hours from your first analysis."
+      question: "How do the daily analysis limits work?",
+      answer: "Free users get 2 Business Tools and 2 Ads Campaign analyses per day. Premium users get 6 standard + 2 deep analyses for each service daily - that's 16 total analyses! Limits reset every 24 hours from your first daily analysis."
+    },
+    {
+      question: "What are Custom Requirements?",
+      answer: "Custom Requirements (Premium only) let you add specific instructions to your analysis. For example: 'Focus on tools under $50/month' or 'Prioritize solutions with Shopify integration'. The AI will tailor all recommendations to match your exact needs."
     },
     {
       question: "Can I cancel my Premium subscription anytime?",
-      answer: "Yes, you can cancel your Premium subscription at any time. You'll continue to have Premium access until the end of your current billing period."
-    },
-    {
-      question: "What types of businesses can I get recommendations for?",
-      answer: "Our AI supports all business types and industries. You can get personalized Business Tools recommendations for E-commerce, SaaS, Services, Non-profits, and more. Additionally, you can get Advertising Campaign strategies tailored to your industry, target audience, budget, and specific advertising goals."
+      answer: "Yes! Cancel anytime with no questions asked. You'll keep Premium access until the end of your current billing period. Your analysis history stays available even after cancellation."
     },
     {
       question: "Do I need a credit card for the Free Plan?",
-      answer: "No credit card required for the Free Plan. Simply sign up with your email and start getting AI recommendations immediately."
+      answer: "No credit card required. Sign up with your email and start getting AI recommendations immediately. Upgrade to Premium only when you need advanced features."
     },
     {
-      question: "What AI model powers the analysis?",
-      answer: "We use Google's Gemini 2.5 Flash model, optimized for business analysis, strategic recommendations, and website optimization insights."
+      question: "What payment methods do you accept?",
+      answer: "We accept all major credit cards (Visa, Mastercard, American Express) and PayPal through our secure payment partner Freemius. All transactions are encrypted and secure."
     }
   ];
 
@@ -139,7 +135,7 @@ const PricingPage = () => {
         <title>Pricing - AI Website Analysis Plans | Synoptas</title>
         <meta 
           name="description" 
-          content="Choose the perfect AI website analysis plan. Start free with 2 daily analyses or upgrade to Premium for deep analysis, ROI calculations, and PDF reports. No hidden fees." 
+          content="Get AI-powered business recommendations starting at $0. Premium plan just $9.99/mo with deep analysis, ROI calculations, and PDF reports. No credit card required for free plan." 
         />
         <meta name="keywords" content="pricing, AI website analysis, website optimization pricing, business analysis plans, premium features" />
         <link rel="canonical" href="https://synoptas.com/pricing" />
@@ -151,38 +147,80 @@ const PricingPage = () => {
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-            <Badge className="mb-4">{isPremium && isLoggedIn ? "Premium Member" : "Simple, Transparent Pricing"}</Badge>
+            {isPremium && isLoggedIn ? (
+              <Badge className="mb-4 bg-primary text-primary-foreground">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Premium Member
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="mb-4">Simple, Transparent Pricing</Badge>
+            )}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-              {isPremium && isLoggedIn ? "You're on the Premium Plan!" : "Choose the Plan That Fits Your Needs"}
+              {isPremium && isLoggedIn 
+                ? "You're on the Premium Plan!" 
+                : "Powerful AI Analysis for Just $9.99/mo"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "Enjoy unlimited access to all premium features including deep analysis, ROI calculations, and detailed implementation strategies."
-                : "Start with our Free Plan and upgrade when you need advanced AI analysis. No hidden fees, no commitments."}
+                ? "Enjoy unlimited access to all premium features including Deep Analysis, ROI calculations, custom requirements, and PDF exports."
+                : "Start free with no credit card. Get instant AI recommendations for your business tools and advertising campaigns."}
             </p>
+            {!isPremium && !isLoggedIn && (
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Shield className="h-4 w-4 text-primary" />
+                <span>Cancel anytime • Secure payment • Instant access</span>
+              </div>
+            )}
           </div>
         </section>
 
         {/* Pricing Cards */}
         <Pricing compact={false} />
 
+        {/* Value Proposition */}
+        {!isPremium && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-4xl mx-auto">
+              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                <CardContent className="p-8">
+                  <div className="grid md:grid-cols-3 gap-6 text-center">
+                    <div>
+                      <div className="text-4xl font-bold text-primary">16</div>
+                      <div className="text-sm text-muted-foreground mt-1">Daily Analyses (Premium)</div>
+                    </div>
+                    <div>
+                      <div className="text-4xl font-bold text-primary">$0.62</div>
+                      <div className="text-sm text-muted-foreground mt-1">Per Analysis (if fully used)</div>
+                    </div>
+                    <div>
+                      <div className="text-4xl font-bold text-primary">44%</div>
+                      <div className="text-sm text-muted-foreground mt-1">Savings vs. Old Price</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        )}
+
         {/* Features Grid */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-4 mb-16">
+              <Badge variant="outline">Premium Features</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                Why Choose Our AI Analysis?
+                Everything You Get with Premium
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Professional website optimization insights powered by advanced AI technology
+                Unlock the full potential of AI-powered business analysis
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <Card key={index} className="border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+                <Card key={index} className="border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg group">
                   <CardHeader>
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                       {feature.icon}
                     </div>
                     <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -201,7 +239,7 @@ const PricingPage = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center space-y-4 mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                Feature Comparison
+                Free vs Premium Comparison
               </h2>
               <p className="text-lg text-muted-foreground">
                 See exactly what you get with each plan
@@ -214,8 +252,17 @@ const PricingPage = () => {
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
                       <th className="text-left p-4 font-semibold">Feature</th>
-                      <th className="text-center p-4 font-semibold">Free Plan</th>
-                      <th className="text-center p-4 font-semibold bg-primary/5">Premium Plan</th>
+                      <th className="text-center p-4 font-semibold">
+                        <div>Free</div>
+                        <div className="text-sm font-normal text-muted-foreground">$0/mo</div>
+                      </th>
+                      <th className="text-center p-4 font-semibold bg-primary/5">
+                        <div className="flex items-center justify-center gap-1">
+                          <Zap className="h-4 w-4 text-primary" />
+                          Premium
+                        </div>
+                        <div className="text-sm font-normal text-primary">$9.99/mo</div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -227,10 +274,10 @@ const PricingPage = () => {
                             feature.free ? (
                               <Check className="h-5 w-5 text-primary mx-auto" />
                             ) : (
-                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              <X className="h-5 w-5 text-muted-foreground/50 mx-auto" />
                             )
                           ) : (
-                            <span className="font-semibold">{feature.free}</span>
+                            <span className="text-sm">{feature.free}</span>
                           )}
                         </td>
                         <td className="text-center p-4 bg-primary/5">
@@ -238,10 +285,10 @@ const PricingPage = () => {
                             feature.premium ? (
                               <Check className="h-5 w-5 text-primary mx-auto" />
                             ) : (
-                              <X className="h-5 w-5 text-muted-foreground mx-auto" />
+                              <X className="h-5 w-5 text-muted-foreground/50 mx-auto" />
                             )
                           ) : (
-                            <span className="font-semibold text-primary">{feature.premium}</span>
+                            <span className="text-sm font-medium text-primary">{feature.premium}</span>
                           )}
                         </td>
                       </tr>
@@ -265,11 +312,11 @@ const PricingPage = () => {
               </p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <Card key={index} className="border border-border hover:border-primary/50 transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{faq.question}</CardTitle>
+                <Card key={index} className="border border-border hover:border-primary/30 transition-all duration-300">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold">{faq.question}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
@@ -284,13 +331,18 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
           <Card className="max-w-4xl mx-auto bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20">
             <CardContent className="text-center space-y-6 py-16 px-6">
+              <Badge className="bg-primary/10 text-primary border-primary/20">
+                {isPremium && isLoggedIn ? "Premium Access" : "Limited Time Offer"}
+              </Badge>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                {isPremium && isLoggedIn ? "Continue Your Analysis" : "Ready to Optimize Your Website?"}
+                {isPremium && isLoggedIn 
+                  ? "Continue Your Analysis" 
+                  : "Start Optimizing Your Business Today"}
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {isPremium && isLoggedIn 
-                  ? "Access your premium features and continue optimizing your website with advanced AI analysis."
-                  : "Start with our Free Plan today. No credit card required, get instant AI-powered recommendations."}
+                  ? "Access your premium features and continue optimizing with advanced AI analysis."
+                  : "Join thousands of businesses using AI to make smarter decisions. Start free, upgrade anytime."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <Button 
@@ -300,18 +352,22 @@ const PricingPage = () => {
                 >
                   {isPremium && isLoggedIn ? "Go to Dashboard" : "Start Free Analysis"}
                 </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate(isLoggedIn ? '/business-tools' : '/auth?intent=premium')}
-                  className="px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
-                >
-                  View Premium Benefits
-                </Button>
+                {!isPremium && (
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={() => isLoggedIn ? window.open(`https://checkout.freemius.com/product/21730/plan/36437/`, '_blank') : navigate('/auth?intent=premium')}
+                    className="px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
+                  >
+                    Get Premium - $9.99/mo
+                  </Button>
+                )}
               </div>
-              <p className="text-sm text-muted-foreground pt-4">
-                Join users who trust AI to make better website decisions
-              </p>
+              {!isPremium && (
+                <p className="text-sm text-muted-foreground pt-4">
+                  No credit card required for free plan • Cancel premium anytime
+                </p>
+              )}
             </CardContent>
           </Card>
         </section>

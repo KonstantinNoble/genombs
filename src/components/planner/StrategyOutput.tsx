@@ -248,8 +248,7 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                                 title={`Search: ${searchTerm}`}
                               >
                                 <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                <span className="hidden xs:inline sm:inline">Learn more</span>
-                                <span className="inline xs:hidden sm:hidden">🔍</span>
+                                <span className="hidden sm:inline">Learn more</span>
                               </a>
                             )}
                           </div>

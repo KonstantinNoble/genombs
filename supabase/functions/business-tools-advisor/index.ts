@@ -18,13 +18,6 @@ interface CompetitorInfo {
   weaknesses: string[];
 }
 
-interface ABTestSuggestion {
-  element: string;
-  variantA: string;
-  variantB: string;
-  expectedImpact: string;
-}
-
 interface ROIProjection {
   investment: string;
   expectedReturn: string;
@@ -44,9 +37,7 @@ interface StrategyPhase {
   // Deep mode exclusive fields
   competitorAnalysis?: CompetitorInfo[];
   riskMitigation?: string[];
-  abTestSuggestions?: ABTestSuggestion[];
   roiProjection?: ROIProjection;
-  weeklyBreakdown?: string[];
 }
 
 // Input validation schema - simplified for free text input
@@ -209,7 +200,7 @@ serve(async (req) => {
     }
 
     // Different phase counts for standard vs deep mode - constraint in prompt only, not schema
-    const phaseCount = isDeepMode ? "EXACTLY 6" : "EXACTLY 4";
+    const phaseCount = "EXACTLY 4";
 
     const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
@@ -263,40 +254,25 @@ ${isDeepMode ? `DEEP MODE PREMIUM ANALYSIS - MANDATORY ADDITIONAL FIELDS:
 
 You MUST provide these additional fields for EACH phase:
 
-9. competitorAnalysis: Array of 2-3 competitor objects. For each competitor include:
-   - name: Actual competitor company/tool name (e.g., "Competitor A: Salesforce", "Competitor B: Pipedrive")
-   - strengths: 2-3 specific strengths with numbers where possible
-   - weaknesses: 2-3 specific weaknesses or gaps you can exploit
+9. competitorAnalysis: Array with 1 competitor. Include:
+   - name: Actual competitor company/tool name (e.g., "Competitor: Salesforce")
+   - strengths: 2 specific strengths
+   - weaknesses: 2 specific weaknesses or gaps you can exploit
    
-10. riskMitigation: Array of 3-4 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
-    Examples:
-    - "IF website traffic is below 500/month after 4 weeks, THEN increase content publishing from 2 to 4 posts/week"
-    - "IF email open rates drop below 15%, THEN A/B test subject lines and send times"
+10. riskMitigation: Array of 2 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
 
-11. abTestSuggestions: Array of 2-3 A/B test objects:
-    - element: What to test (e.g., "Landing page headline", "CTA button color")
-    - variantA: First variant with specifics
-    - variantB: Second variant with specifics
-    - expectedImpact: Expected improvement percentage
+11. roiProjection: ROI calculation object with:
+    - investment: Total investment for this phase
+    - expectedReturn: Expected return
+    - timeframe: When to expect returns
+    - assumptions: 2 assumptions behind the calculation
 
-12. roiProjection: ROI calculation object with:
-    - investment: Total investment for this phase (e.g., "500 EUR tools + 20 hours labor")
-    - expectedReturn: Expected return (e.g., "15-20 qualified leads worth 3000-4000 EUR pipeline")
-    - timeframe: When to expect returns (e.g., "Within 8 weeks of implementation")
-    - assumptions: Array of 2-3 assumptions behind the calculation
-
-13. weeklyBreakdown: Array of weekly tasks for the phase timeframe. Be specific:
-    - "Week 1: Set up analytics and tracking (8 hours)"
-    - "Week 2: Create content calendar and first 4 blog posts (12 hours)"
-    - "Week 3: Launch email sequences and monitor open rates (6 hours)"
-
-DEEP MODE QUALITY REQUIREMENTS:
-- 6 comprehensive phases instead of 4
-- More detailed implementation steps
-- Specific competitor names relevant to the user's industry
-- Quantified risk thresholds and backup actions
-- Data-driven A/B testing recommendations
-- ROI calculations with realistic assumptions` : `STANDARD MODE:
+DEEP MODE REQUIREMENTS:
+- 4 focused phases (same as standard but with more detail)
+- Keep objectives to 2-3 per phase
+- Keep actions to 3-4 per phase
+- Keep milestones to 2-3 per phase
+- Include competitor analysis, risk mitigation, and ROI for each phase` : `STANDARD MODE:
 - Focus on quick wins and immediate impact
 - Keep recommendations practical and achievable for small teams
 - Prioritize the most impactful actions with lowest effort
@@ -327,8 +303,8 @@ Use the create_strategy function to return your response.`;
 
     // Use different models for standard vs deep mode
     const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
-    const maxTokens = isDeepMode ? 24000 : 8000;
-    const timeout = isDeepMode ? 90000 : 25000;
+    const maxTokens = isDeepMode ? 12000 : 8000;
+    const timeout = isDeepMode ? 60000 : 25000;
 
     console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'})...`);
 
@@ -352,31 +328,18 @@ The JSON must have this exact structure:
       "title": "Phase title",
       "timeframe": "Week 1-2",
       "objectives": ["Objective 1", "Objective 2"],
-      "actions": [
-        {"text": "Action description", "searchTerm": "google search term"}
-      ],
+      "actions": [{"text": "Action description", "searchTerm": "google search term"}],
       "budget": "Budget for phase",
       "channels": ["Tool 1", "Tool 2"],
       "milestones": ["Milestone 1"],
-      "competitorAnalysis": [
-        {"name": "Competitor Name", "strengths": ["Strength 1"], "weaknesses": ["Weakness 1"]}
-      ],
+      "competitorAnalysis": [{"name": "Competitor Name", "strengths": ["Strength 1"], "weaknesses": ["Weakness 1"]}],
       "riskMitigation": ["If X happens, then Y"],
-      "abTestSuggestions": [
-        {"element": "What to test", "variantA": "First variant", "variantB": "Second variant", "expectedImpact": "Expected result"}
-      ],
-      "roiProjection": {
-        "investment": "Investment amount",
-        "expectedReturn": "Expected return",
-        "timeframe": "When to expect returns",
-        "assumptions": ["Assumption 1"]
-      },
-      "weeklyBreakdown": ["Week 1: Task description"]
+      "roiProjection": {"investment": "Amount", "expectedReturn": "Return", "timeframe": "Timeframe", "assumptions": ["Assumption 1"]}
     }
   ]
 }
 
-Return EXACTLY 6 phases. Each phase MUST have ALL fields including competitorAnalysis, riskMitigation, abTestSuggestions, roiProjection, and weeklyBreakdown.`;
+Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis (1 competitor), riskMitigation (2 items), and roiProjection.`;
 
       const deepSystemPrompt = systemPrompt + deepModeJsonInstructions;
 

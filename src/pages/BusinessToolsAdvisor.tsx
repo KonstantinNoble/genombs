@@ -6,13 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, Download } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
 import { User } from "@supabase/supabase-js";
 import { StrategyInput, OptionalParams } from "@/components/planner/StrategyInput";
 import { StrategyOutput, PlannerResult } from "@/components/planner/StrategyOutput";
+import { pdf } from "@react-pdf/renderer";
+import { StrategyPDF } from "@/components/planner/StrategyPDF";
 
 interface HistoryItem {
   id: string;
@@ -249,7 +251,40 @@ export default function BusinessToolsAdvisor() {
             {result && (
               <div ref={resultRef} className="animate-fade-in">
                 <Card className="border-primary/20 shadow-elegant">
-                  <CardHeader><CardTitle>Your Business Strategy</CardTitle><CardDescription>{result.strategies?.length || 0} phases planned</CardDescription></CardHeader>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <div>
+                      <CardTitle>Your Business Strategy</CardTitle>
+                      <CardDescription>{result.strategies?.length || 0} phases planned</CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={async () => {
+                        try {
+                          const blob = await pdf(
+                            <StrategyPDF 
+                              result={result} 
+                              isDeepMode={analysisMode === 'deep'} 
+                              businessGoals={prompt}
+                            />
+                          ).toBlob();
+                          const url = URL.createObjectURL(blob);
+                          const link = document.createElement('a');
+                          link.href = url;
+                          link.download = `business-strategy-${new Date().toISOString().split('T')[0]}.pdf`;
+                          link.click();
+                          URL.revokeObjectURL(url);
+                          toast({ title: "PDF Downloaded", description: "Your strategy has been exported" });
+                        } catch (error) {
+                          toast({ title: "Export Failed", description: "Could not generate PDF", variant: "destructive" });
+                        }
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">Export PDF</span>
+                    </Button>
+                  </CardHeader>
                   <CardContent><StrategyOutput result={result} isDeepMode={analysisMode === 'deep'} /></CardContent>
                 </Card>
               </div>

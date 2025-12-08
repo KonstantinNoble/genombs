@@ -2,19 +2,19 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
-    title: "AI-Powered Tool Discovery",
+    title: "AI Business Planner",
     description:
-      "Get personalized recommendations for analytics, SEO, and marketing tools based on your industry and budget.",
+      "Describe your business goals and get a phased strategy with actionable steps and Google search links.",
   },
   {
-    title: "Advertising Campaign Strategy",
+    title: "Deep Analysis Mode",
     description:
-      "Receive AI-generated advertising recommendations tailored to your target audience and goals.",
+      "Premium users get 6 comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
   },
   {
-    title: "Actionable Reports",
+    title: "Actionable Strategies",
     description:
-      "No fluff, just concrete action steps. Premium users get detailed PDF reports with implementation timelines.",
+      "No fluff, just concrete action steps. Every recommendation includes specific tasks and resources to get started.",
   },
 ];
 
@@ -30,10 +30,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16 space-y-4 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent bg-[length:200%_auto]">
-            Everything You Need to Optimize Your Website
+            AI-Powered Business Strategy
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive AI analysis for your website optimization needs
+            Turn your business goals into actionable, phased strategies
           </p>
         </div>
 

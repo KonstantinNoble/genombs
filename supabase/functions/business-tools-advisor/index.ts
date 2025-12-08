@@ -208,9 +208,8 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    // Different phase counts for standard vs deep mode
+    // Different phase counts for standard vs deep mode - constraint in prompt only, not schema
     const phaseCount = isDeepMode ? "EXACTLY 6" : "EXACTLY 4";
-    const phaseMinMax = isDeepMode ? { minItems: 6, maxItems: 6 } : { minItems: 4, maxItems: 4 };
 
     const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
@@ -336,108 +335,90 @@ Use the create_strategy function to return your response.`;
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-    // Build tool parameters based on mode
+    // Build tool parameters based on mode - simplified schema to avoid Google AI complexity limits
     const baseProperties = {
-      phase: { type: 'number', description: 'Phase number (1, 2, 3, etc.)' },
-      title: { type: 'string', description: 'Clear phase title' },
-      timeframe: { type: 'string', description: 'Duration like "Week 1-2" or "Month 1"' },
+      phase: { type: 'number', description: 'Phase number' },
+      title: { type: 'string', description: 'Phase title' },
+      timeframe: { type: 'string', description: 'Duration' },
       objectives: { 
         type: 'array', 
         items: { type: 'string' },
-        minItems: 2,
-        maxItems: 4,
-        description: '2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers'
+        description: 'Measurable objectives with KPIs'
       },
       actions: { 
         type: 'array', 
         items: { 
           type: 'object',
           properties: {
-            text: { 
-              type: 'string', 
-              description: 'Detailed action with EXACT tool name, time estimate, and expected outcome. Format: "[ACTION] [TOOL] - [TIME] - [OUTCOME]"' 
-            },
-            searchTerm: { 
-              type: 'string', 
-              description: 'Google search term for learning more, e.g. "Google Analytics 4 setup tutorial"' 
-            }
+            text: { type: 'string' },
+            searchTerm: { type: 'string' }
           },
           required: ['text', 'searchTerm']
         },
-        minItems: 3,
-        maxItems: 5,
-        description: '3-5 specific actions with tool names, time estimates, and expected outcomes'
+        description: 'Specific actions with search terms'
       },
-      budget: { type: 'string', description: 'Budget allocation for this phase with specific amounts' },
+      budget: { type: 'string', description: 'Budget allocation' },
       channels: { 
         type: 'array', 
         items: { type: 'string' },
-        description: 'Specific tools, platforms, or resources needed'
+        description: 'Tools and platforms needed'
       },
       milestones: { 
         type: 'array', 
         items: { type: 'string' },
-        description: 'Key success indicators with SPECIFIC metrics'
+        description: 'Success indicators'
       }
     };
 
-    // Add deep mode exclusive properties
+    // Add deep mode exclusive properties - simplified schema to avoid Google AI complexity limits
     const deepModeProperties = isDeepMode ? {
       competitorAnalysis: {
         type: 'array',
         items: {
           type: 'object',
           properties: {
-            name: { type: 'string', description: 'Competitor name' },
-            strengths: { type: 'array', items: { type: 'string' }, description: '2-3 specific strengths' },
-            weaknesses: { type: 'array', items: { type: 'string' }, description: '2-3 specific weaknesses' }
+            name: { type: 'string' },
+            strengths: { type: 'array', items: { type: 'string' } },
+            weaknesses: { type: 'array', items: { type: 'string' } }
           },
           required: ['name', 'strengths', 'weaknesses']
         },
-        minItems: 2,
-        maxItems: 3,
-        description: '2-3 competitor analyses with specific strengths and weaknesses'
+        description: 'Competitor analyses'
       },
       riskMitigation: {
         type: 'array',
         items: { type: 'string' },
-        minItems: 3,
-        maxItems: 4,
-        description: '3-4 backup plans in format: IF [metric] below [target], THEN [action]'
+        description: 'Backup plans'
       },
       abTestSuggestions: {
         type: 'array',
         items: {
           type: 'object',
           properties: {
-            element: { type: 'string', description: 'What to test' },
-            variantA: { type: 'string', description: 'First variant' },
-            variantB: { type: 'string', description: 'Second variant' },
-            expectedImpact: { type: 'string', description: 'Expected improvement' }
+            element: { type: 'string' },
+            variantA: { type: 'string' },
+            variantB: { type: 'string' },
+            expectedImpact: { type: 'string' }
           },
           required: ['element', 'variantA', 'variantB', 'expectedImpact']
         },
-        minItems: 2,
-        maxItems: 3,
-        description: '2-3 A/B test suggestions with variants and expected impact'
+        description: 'A/B test suggestions'
       },
       roiProjection: {
         type: 'object',
         properties: {
-          investment: { type: 'string', description: 'Total investment for this phase' },
-          expectedReturn: { type: 'string', description: 'Expected return value' },
-          timeframe: { type: 'string', description: 'When to expect returns' },
-          assumptions: { type: 'array', items: { type: 'string' }, description: '2-3 assumptions' }
+          investment: { type: 'string' },
+          expectedReturn: { type: 'string' },
+          timeframe: { type: 'string' },
+          assumptions: { type: 'array', items: { type: 'string' } }
         },
         required: ['investment', 'expectedReturn', 'timeframe', 'assumptions'],
-        description: 'ROI projection with investment, return, timeframe and assumptions'
+        description: 'ROI projection'
       },
       weeklyBreakdown: {
         type: 'array',
         items: { type: 'string' },
-        minItems: 2,
-        maxItems: 4,
-        description: 'Weekly task breakdown for the phase'
+        description: 'Weekly task breakdown'
       }
     } : {};
 
@@ -476,7 +457,7 @@ Use the create_strategy function to return your response.`;
                       properties: phaseProperties,
                       required: requiredFields
                     },
-                    ...phaseMinMax
+                    description: `Array of ${isDeepMode ? '6' : '4'} strategy phases`
                   }
                 },
                 required: ['strategies']

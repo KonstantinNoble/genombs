@@ -12,6 +12,26 @@ interface ActionItem {
   searchTerm: string;
 }
 
+interface CompetitorInfo {
+  name: string;
+  strengths: string[];
+  weaknesses: string[];
+}
+
+interface ABTestSuggestion {
+  element: string;
+  variantA: string;
+  variantB: string;
+  expectedImpact: string;
+}
+
+interface ROIProjection {
+  investment: string;
+  expectedReturn: string;
+  timeframe: string;
+  assumptions: string[];
+}
+
 interface StrategyPhase {
   phase: number;
   title: string;
@@ -21,6 +41,12 @@ interface StrategyPhase {
   budget?: string;
   channels?: string[];
   milestones?: string[];
+  // Deep mode exclusive fields
+  competitorAnalysis?: CompetitorInfo[];
+  riskMitigation?: string[];
+  abTestSuggestions?: ABTestSuggestion[];
+  roiProjection?: ROIProjection;
+  weeklyBreakdown?: string[];
 }
 
 // Input validation schema - simplified for free text input
@@ -82,7 +108,7 @@ serve(async (req) => {
     if (isPremium && creditsData?.subscription_end_date) {
       const subscriptionEndDate = new Date(creditsData.subscription_end_date);
       if (subscriptionEndDate < new Date()) {
-        console.log('⚠️ Premium subscription expired, denying premium access');
+        console.log('Premium subscription expired, denying premium access');
         isPremium = false;
         
         // Update database to reflect expired status
@@ -105,7 +131,7 @@ serve(async (req) => {
       if (deepWindowStart) {
         const windowEndsAt = new Date(new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000);
         if (new Date() < windowEndsAt && currentDeepCount >= deepLimit) {
-          console.log(`⛔ Deep analysis limit reached: ${currentDeepCount}/${deepLimit}`);
+          console.log(`Deep analysis limit reached: ${currentDeepCount}/${deepLimit}`);
           
           const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
           const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
@@ -121,7 +147,7 @@ serve(async (req) => {
           );
         }
       }
-      console.log(`✅ Deep analysis allowed. Current count: ${currentDeepCount}/${deepLimit}`);
+      console.log(`Deep analysis allowed. Current count: ${currentDeepCount}/${deepLimit}`);
     } else {
       const currentStandardCount = creditsData?.standard_analysis_count ?? 0;
       const standardWindowStart = creditsData?.standard_analysis_window_start;
@@ -129,7 +155,7 @@ serve(async (req) => {
       if (standardWindowStart) {
         const windowEndsAt = new Date(new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000);
         if (new Date() < windowEndsAt && currentStandardCount >= standardLimit) {
-          console.log(`⛔ Standard analysis limit reached: ${currentStandardCount}/${standardLimit}`);
+          console.log(`Standard analysis limit reached: ${currentStandardCount}/${standardLimit}`);
           
           const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
           const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
@@ -147,7 +173,7 @@ serve(async (req) => {
           );
         }
       }
-      console.log(`✅ Standard analysis allowed. Current count: ${currentStandardCount}/${standardLimit}`);
+      console.log(`Standard analysis allowed. Current count: ${currentStandardCount}/${standardLimit}`);
     }
 
     // Validate input
@@ -170,7 +196,7 @@ serve(async (req) => {
 
     const { prompt, budget, industry, channels, timeline, geographic, analysisMode } = validatedInput;
     
-    console.log('📊 Analysis mode:', {
+    console.log('Analysis mode:', {
       isPremium,
       analysisMode: analysisMode || 'standard',
       isDeepMode
@@ -182,16 +208,18 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const phaseCount = "EXACTLY 4";
+    // Different phase counts for standard vs deep mode
+    const phaseCount = isDeepMode ? "EXACTLY 6" : "EXACTLY 4";
+    const phaseMinMax = isDeepMode ? { minItems: 6, maxItems: 6 } : { minItems: 4, maxItems: 4 };
 
     const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
 CRITICAL OUTPUT RULES - NO BUZZWORDS ALLOWED:
-❌ NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
-❌ NEVER use generic phrases like: "increase brand awareness", "drive engagement", "build presence", "maximize potential"
+- NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
+- NEVER use generic phrases like: "increase brand awareness", "drive engagement", "build presence", "maximize potential"
 
-✅ ALWAYS include:
-- SPECIFIC numbers (e.g., "500 visitors", "€20/day budget", "3 hours setup time", "expect 15-25% conversion rate")
+ALWAYS include:
+- SPECIFIC numbers (e.g., "500 visitors", "20 EUR/day budget", "3 hours setup time", "expect 15-25% conversion rate")
 - EXACT tool/platform names (e.g., "Google Analytics 4", "HubSpot CRM Free", "Mailchimp", "Notion")
 - Concrete timeframes (e.g., "complete in 2 hours", "takes 30 minutes daily")
 - Expected outcomes with metrics (e.g., "expect 1000-2000 impressions", "should generate 5-10 leads/week")
@@ -211,7 +239,7 @@ Each phase must include:
    Example objectives:
    - "Achieve 2,000 monthly website visitors from organic search within 6 weeks"
    - "Generate 50 qualified leads per month through landing page optimization"
-   - "Reduce customer acquisition cost from €50 to €30 per customer"
+   - "Reduce customer acquisition cost from 50 EUR to 30 EUR per customer"
    NEVER write objectives like "Increase visibility" or "Improve engagement"
 5. actions: 3-5 SPECIFIC, DETAILED action items. Each action MUST be an object with:
    - text: Detailed action with EXACT tool name, time estimate, and expected outcome
@@ -232,16 +260,48 @@ Each phase must include:
 7. channels: Tools, platforms, or resources needed for this phase
 8. milestones: Key success indicators with SPECIFIC metrics to achieve before moving to next phase
 
-${isDeepMode ? `DEEP MODE - Enhanced Analysis:
-- Provide more detailed actions with implementation specifics and exact steps
-- Include competitive analysis considerations with specific competitor names if relevant
-- Add risk mitigation strategies in objectives
-- Include testing and validation steps in actions
-- Provide ROI projections with specific numbers where applicable
-- Consider dependencies between phases` : `STANDARD MODE:
+${isDeepMode ? `DEEP MODE PREMIUM ANALYSIS - MANDATORY ADDITIONAL FIELDS:
+
+You MUST provide these additional fields for EACH phase:
+
+9. competitorAnalysis: Array of 2-3 competitor objects. For each competitor include:
+   - name: Actual competitor company/tool name (e.g., "Competitor A: Salesforce", "Competitor B: Pipedrive")
+   - strengths: 2-3 specific strengths with numbers where possible
+   - weaknesses: 2-3 specific weaknesses or gaps you can exploit
+   
+10. riskMitigation: Array of 3-4 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
+    Examples:
+    - "IF website traffic is below 500/month after 4 weeks, THEN increase content publishing from 2 to 4 posts/week"
+    - "IF email open rates drop below 15%, THEN A/B test subject lines and send times"
+
+11. abTestSuggestions: Array of 2-3 A/B test objects:
+    - element: What to test (e.g., "Landing page headline", "CTA button color")
+    - variantA: First variant with specifics
+    - variantB: Second variant with specifics
+    - expectedImpact: Expected improvement percentage
+
+12. roiProjection: ROI calculation object with:
+    - investment: Total investment for this phase (e.g., "500 EUR tools + 20 hours labor")
+    - expectedReturn: Expected return (e.g., "15-20 qualified leads worth 3000-4000 EUR pipeline")
+    - timeframe: When to expect returns (e.g., "Within 8 weeks of implementation")
+    - assumptions: Array of 2-3 assumptions behind the calculation
+
+13. weeklyBreakdown: Array of weekly tasks for the phase timeframe. Be specific:
+    - "Week 1: Set up analytics and tracking (8 hours)"
+    - "Week 2: Create content calendar and first 4 blog posts (12 hours)"
+    - "Week 3: Launch email sequences and monitor open rates (6 hours)"
+
+DEEP MODE QUALITY REQUIREMENTS:
+- 6 comprehensive phases instead of 4
+- More detailed implementation steps
+- Specific competitor names relevant to the user's industry
+- Quantified risk thresholds and backup actions
+- Data-driven A/B testing recommendations
+- ROI calculations with realistic assumptions` : `STANDARD MODE:
 - Focus on quick wins and immediate impact
 - Keep recommendations practical and achievable for small teams
-- Prioritize the most impactful actions with lowest effort`}
+- Prioritize the most impactful actions with lowest effort
+- 4 focused phases`}
 
 FOCUS AREAS for business strategies:
 - Technology & Tools (CRM, Analytics, Automation) - always name SPECIFIC tools
@@ -266,11 +326,125 @@ Use the create_strategy function to return your response.`;
     if (timeline) userPromptText += `\nTimeline: ${timeline}`;
     if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
-    console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
+    // Use different models for standard vs deep mode
+    const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
+    const maxTokens = isDeepMode ? 24000 : 8000;
+    const timeout = isDeepMode ? 90000 : 25000;
 
-    const timeout = isDeepMode ? 45000 : 25000;
+    console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'})...`);
+
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
+
+    // Build tool parameters based on mode
+    const baseProperties = {
+      phase: { type: 'number', description: 'Phase number (1, 2, 3, etc.)' },
+      title: { type: 'string', description: 'Clear phase title' },
+      timeframe: { type: 'string', description: 'Duration like "Week 1-2" or "Month 1"' },
+      objectives: { 
+        type: 'array', 
+        items: { type: 'string' },
+        minItems: 2,
+        maxItems: 4,
+        description: '2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers'
+      },
+      actions: { 
+        type: 'array', 
+        items: { 
+          type: 'object',
+          properties: {
+            text: { 
+              type: 'string', 
+              description: 'Detailed action with EXACT tool name, time estimate, and expected outcome. Format: "[ACTION] [TOOL] - [TIME] - [OUTCOME]"' 
+            },
+            searchTerm: { 
+              type: 'string', 
+              description: 'Google search term for learning more, e.g. "Google Analytics 4 setup tutorial"' 
+            }
+          },
+          required: ['text', 'searchTerm']
+        },
+        minItems: 3,
+        maxItems: 5,
+        description: '3-5 specific actions with tool names, time estimates, and expected outcomes'
+      },
+      budget: { type: 'string', description: 'Budget allocation for this phase with specific amounts' },
+      channels: { 
+        type: 'array', 
+        items: { type: 'string' },
+        description: 'Specific tools, platforms, or resources needed'
+      },
+      milestones: { 
+        type: 'array', 
+        items: { type: 'string' },
+        description: 'Key success indicators with SPECIFIC metrics'
+      }
+    };
+
+    // Add deep mode exclusive properties
+    const deepModeProperties = isDeepMode ? {
+      competitorAnalysis: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Competitor name' },
+            strengths: { type: 'array', items: { type: 'string' }, description: '2-3 specific strengths' },
+            weaknesses: { type: 'array', items: { type: 'string' }, description: '2-3 specific weaknesses' }
+          },
+          required: ['name', 'strengths', 'weaknesses']
+        },
+        minItems: 2,
+        maxItems: 3,
+        description: '2-3 competitor analyses with specific strengths and weaknesses'
+      },
+      riskMitigation: {
+        type: 'array',
+        items: { type: 'string' },
+        minItems: 3,
+        maxItems: 4,
+        description: '3-4 backup plans in format: IF [metric] below [target], THEN [action]'
+      },
+      abTestSuggestions: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            element: { type: 'string', description: 'What to test' },
+            variantA: { type: 'string', description: 'First variant' },
+            variantB: { type: 'string', description: 'Second variant' },
+            expectedImpact: { type: 'string', description: 'Expected improvement' }
+          },
+          required: ['element', 'variantA', 'variantB', 'expectedImpact']
+        },
+        minItems: 2,
+        maxItems: 3,
+        description: '2-3 A/B test suggestions with variants and expected impact'
+      },
+      roiProjection: {
+        type: 'object',
+        properties: {
+          investment: { type: 'string', description: 'Total investment for this phase' },
+          expectedReturn: { type: 'string', description: 'Expected return value' },
+          timeframe: { type: 'string', description: 'When to expect returns' },
+          assumptions: { type: 'array', items: { type: 'string' }, description: '2-3 assumptions' }
+        },
+        required: ['investment', 'expectedReturn', 'timeframe', 'assumptions'],
+        description: 'ROI projection with investment, return, timeframe and assumptions'
+      },
+      weeklyBreakdown: {
+        type: 'array',
+        items: { type: 'string' },
+        minItems: 2,
+        maxItems: 4,
+        description: 'Weekly task breakdown for the phase'
+      }
+    } : {};
+
+    const phaseProperties = { ...baseProperties, ...deepModeProperties };
+    const requiredFields = isDeepMode 
+      ? ['phase', 'title', 'timeframe', 'objectives', 'actions', 'competitorAnalysis', 'riskMitigation', 'abTestSuggestions', 'roiProjection', 'weeklyBreakdown']
+      : ['phase', 'title', 'timeframe', 'objectives', 'actions'];
 
     let aiResponse: Response;
     try {
@@ -281,12 +455,12 @@ Use the create_strategy function to return your response.`;
           'Authorization': `Bearer ${LOVABLE_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
+          model: model,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPromptText }
           ],
-          max_completion_tokens: isDeepMode ? 16000 : 8000,
+          max_completion_tokens: maxTokens,
           tools: [{
             type: 'function',
             function: {
@@ -299,53 +473,10 @@ Use the create_strategy function to return your response.`;
                     type: 'array',
                     items: {
                       type: 'object',
-                      properties: {
-                        phase: { type: 'number', description: 'Phase number (1, 2, 3, etc.)' },
-                        title: { type: 'string', description: 'Clear phase title' },
-                        timeframe: { type: 'string', description: 'Duration like "Week 1-2" or "Month 1"' },
-                        objectives: { 
-                          type: 'array', 
-                          items: { type: 'string' },
-                          minItems: 2,
-                          maxItems: 4,
-                          description: '2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers'
-                        },
-                        actions: { 
-                          type: 'array', 
-                          items: { 
-                            type: 'object',
-                            properties: {
-                              text: { 
-                                type: 'string', 
-                                description: 'Detailed action with EXACT tool name, time estimate, and expected outcome. Format: "[ACTION] [TOOL] - [TIME] - [OUTCOME]"' 
-                              },
-                              searchTerm: { 
-                                type: 'string', 
-                                description: 'Google search term for learning more, e.g. "Google Analytics 4 setup tutorial"' 
-                              }
-                            },
-                            required: ['text', 'searchTerm']
-                          },
-                          minItems: 3,
-                          maxItems: 5,
-                          description: '3-5 specific actions with tool names, time estimates, and expected outcomes'
-                        },
-                        budget: { type: 'string', description: 'Budget allocation for this phase with specific amounts' },
-                        channels: { 
-                          type: 'array', 
-                          items: { type: 'string' },
-                          description: 'Specific tools, platforms, or resources needed'
-                        },
-                        milestones: { 
-                          type: 'array', 
-                          items: { type: 'string' },
-                          description: 'Key success indicators with SPECIFIC metrics'
-                        }
-                      },
-                      required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
+                      properties: phaseProperties,
+                      required: requiredFields
                     },
-                    minItems: 4,
-                    maxItems: 4
+                    ...phaseMinMax
                   }
                 },
                 required: ['strategies']
@@ -386,7 +517,7 @@ Use the create_strategy function to return your response.`;
     }
 
     const aiData = await aiResponse.json();
-    console.log('✅ AI response received');
+    console.log('AI response received');
 
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall || toolCall.function?.name !== 'create_strategy') {
@@ -401,17 +532,17 @@ Use the create_strategy function to return your response.`;
       throw new Error('Invalid response format from AI');
     }
 
-    console.log(`Parsed ${result.strategies.length} strategy phases`);
+    console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);
 
     // Save to history - map to existing columns
     const { error: historyError } = await supabase
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        industry: industry || 'Not specified',
-        team_size: timeline || 'Not specified',
-        budget_range: budget || 'Not specified',
         business_goals: prompt.substring(0, 500),
+        budget_range: budget || 'Not specified',
+        industry: industry || 'Not specified',
+        team_size: 'Not specified',
         result: result,
         analysis_mode: analysisMode || 'standard'
       });
@@ -447,7 +578,7 @@ Use the create_strategy function to return your response.`;
         })
         .eq('user_id', user.id);
         
-      console.log(`✅ Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
+      console.log(`Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
     } else {
       const standardWindowStart = creditsData?.standard_analysis_window_start;
       const standardCount = creditsData?.standard_analysis_count ?? 0;
@@ -469,10 +600,11 @@ Use the create_strategy function to return your response.`;
         })
         .eq('user_id', user.id);
         
-      console.log(`✅ Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
+      console.log(`Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
     }
 
-    console.log(`✅ Request completed in ${Date.now() - startTime}ms`);
+    const totalTime = Date.now() - startTime;
+    console.log(`Request completed in ${totalTime}ms`);
 
     return new Response(
       JSON.stringify(result),
@@ -480,15 +612,12 @@ Use the create_strategy function to return your response.`;
     );
 
   } catch (error: any) {
-    console.error('Error in business-tools-advisor:', error);
+    console.error('Business Tools Advisor error:', error);
     
-    if (error instanceof z.ZodError) {
+    if (error.message === 'Unauthorized') {
       return new Response(
-        JSON.stringify({ 
-          error: 'Invalid input', 
-          details: error.errors.map(e => e.message).join(', ')
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Please log in to continue' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
     

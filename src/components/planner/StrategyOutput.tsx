@@ -1,11 +1,32 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, Search, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, FlaskConical, TrendingUp, Users, AlertTriangle, ListChecks } from 'lucide-react';
 
 // New structured action type
 export interface ActionItem {
   text: string;
   searchTerm: string;
+}
+
+// Deep mode exclusive types
+export interface CompetitorInfo {
+  name: string;
+  strengths: string[];
+  weaknesses: string[];
+}
+
+export interface ABTestSuggestion {
+  element: string;
+  variantA: string;
+  variantB: string;
+  expectedImpact: string;
+}
+
+export interface ROIProjection {
+  investment: string;
+  expectedReturn: string;
+  timeframe: string;
+  assumptions: string[];
 }
 
 export interface StrategyPhase {
@@ -17,6 +38,12 @@ export interface StrategyPhase {
   budget?: string;
   channels?: string[];
   milestones?: string[];
+  // Deep mode exclusive fields
+  competitorAnalysis?: CompetitorInfo[];
+  riskMitigation?: string[];
+  abTestSuggestions?: ABTestSuggestion[];
+  roiProjection?: ROIProjection;
+  weeklyBreakdown?: string[];
 }
 
 export interface PlannerResult {
@@ -142,6 +169,8 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     'from-purple-500/20 to-purple-600/10 border-purple-500/30',
     'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30',
     'from-amber-500/20 to-amber-600/10 border-amber-500/30',
+    'from-rose-500/20 to-rose-600/10 border-rose-500/30',
+    'from-cyan-500/20 to-cyan-600/10 border-cyan-500/30',
   ];
 
   const phaseAccents = [
@@ -149,18 +178,21 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     'bg-purple-500',
     'bg-emerald-500',
     'bg-amber-500',
+    'bg-rose-500',
+    'bg-cyan-500',
   ];
 
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Premium indicator */}
       {isDeepMode && (
-        <div className="flex flex-wrap items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-sm p-3 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">
           <Crown className="h-4 w-4 text-amber-500 shrink-0" />
           <span className="font-medium text-amber-600 dark:text-amber-400">Premium Deep Analysis</span>
           <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 text-xs">
             Gemini 2.5 Pro
           </Badge>
+          <span className="text-xs text-muted-foreground ml-auto">6 phases with competitor analysis, A/B tests & ROI projections</span>
         </div>
       )}
 
@@ -297,6 +329,151 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {/* DEEP MODE EXCLUSIVE: Competitor Analysis */}
+                {isDeepMode && phase.competitorAnalysis && phase.competitorAnalysis.length > 0 && (
+                  <div className="pt-3 border-t border-amber-500/30 bg-amber-500/5 -mx-3 sm:-mx-4 px-3 sm:px-4 pb-3 rounded-b-lg">
+                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 shrink-0" />
+                      Competitor Analysis
+                    </h4>
+                    <div className="space-y-2">
+                      {phase.competitorAnalysis.map((competitor, i) => (
+                        <div key={i} className="bg-background/50 rounded-md p-2 sm:p-3 text-xs">
+                          <div className="font-semibold text-foreground mb-1">{competitor.name}</div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-[10px] uppercase">Strengths:</span>
+                              <ul className="mt-0.5 space-y-0.5">
+                                {competitor.strengths.map((s, j) => (
+                                  <li key={j} className="text-muted-foreground text-[10px] sm:text-xs flex items-start gap-1">
+                                    <span className="text-emerald-500">+</span>
+                                    <span className="break-words min-w-0">{s}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <span className="text-rose-600 dark:text-rose-400 font-medium text-[10px] uppercase">Weaknesses:</span>
+                              <ul className="mt-0.5 space-y-0.5">
+                                {competitor.weaknesses.map((w, j) => (
+                                  <li key={j} className="text-muted-foreground text-[10px] sm:text-xs flex items-start gap-1">
+                                    <span className="text-rose-500">-</span>
+                                    <span className="break-words min-w-0">{w}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* DEEP MODE EXCLUSIVE: Risk Mitigation */}
+                {isDeepMode && phase.riskMitigation && phase.riskMitigation.length > 0 && (
+                  <div className="pt-2 border-t border-amber-500/30">
+                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                      <Shield className="h-3.5 w-3.5 shrink-0" />
+                      Risk Mitigation
+                    </h4>
+                    <ul className="space-y-1">
+                      {phase.riskMitigation.map((risk, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5 bg-orange-500/5 rounded px-2 py-1">
+                          <AlertTriangle className="h-3 w-3 text-orange-500 shrink-0 mt-0.5" />
+                          <span className="break-words min-w-0">{risk}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* DEEP MODE EXCLUSIVE: A/B Test Suggestions */}
+                {isDeepMode && phase.abTestSuggestions && phase.abTestSuggestions.length > 0 && (
+                  <div className="pt-2 border-t border-amber-500/30">
+                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                      <FlaskConical className="h-3.5 w-3.5 shrink-0" />
+                      A/B Test Suggestions
+                    </h4>
+                    <div className="space-y-2">
+                      {phase.abTestSuggestions.map((test, i) => (
+                        <div key={i} className="bg-violet-500/5 rounded-md p-2 text-xs border border-violet-500/20">
+                          <div className="font-semibold text-violet-600 dark:text-violet-400 mb-1">{test.element}</div>
+                          <div className="grid grid-cols-2 gap-2 mb-1">
+                            <div className="bg-background/50 rounded px-2 py-1">
+                              <span className="text-[10px] text-muted-foreground">Variant A:</span>
+                              <p className="text-foreground break-words">{test.variantA}</p>
+                            </div>
+                            <div className="bg-background/50 rounded px-2 py-1">
+                              <span className="text-[10px] text-muted-foreground">Variant B:</span>
+                              <p className="text-foreground break-words">{test.variantB}</p>
+                            </div>
+                          </div>
+                          <div className="text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-medium">
+                            Expected Impact: {test.expectedImpact}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* DEEP MODE EXCLUSIVE: ROI Projection */}
+                {isDeepMode && phase.roiProjection && (
+                  <div className="pt-2 border-t border-amber-500/30">
+                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                      <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+                      ROI Projection
+                    </h4>
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-md p-2 sm:p-3 border border-emerald-500/20">
+                      <div className="grid grid-cols-2 gap-2 text-xs mb-2">
+                        <div>
+                          <span className="text-muted-foreground text-[10px] uppercase">Investment:</span>
+                          <p className="font-semibold text-foreground break-words">{phase.roiProjection.investment}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground text-[10px] uppercase">Expected Return:</span>
+                          <p className="font-semibold text-emerald-600 dark:text-emerald-400 break-words">{phase.roiProjection.expectedReturn}</p>
+                        </div>
+                      </div>
+                      <div className="text-xs mb-2">
+                        <span className="text-muted-foreground text-[10px] uppercase">Timeframe:</span>
+                        <p className="text-foreground">{phase.roiProjection.timeframe}</p>
+                      </div>
+                      {phase.roiProjection.assumptions && phase.roiProjection.assumptions.length > 0 && (
+                        <div className="text-[10px] text-muted-foreground">
+                          <span className="uppercase font-medium">Assumptions:</span>
+                          <ul className="mt-0.5 space-y-0.5">
+                            {phase.roiProjection.assumptions.map((a, i) => (
+                              <li key={i} className="flex items-start gap-1">
+                                <span className="text-amber-500">*</span>
+                                <span className="break-words min-w-0">{a}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* DEEP MODE EXCLUSIVE: Weekly Breakdown */}
+                {isDeepMode && phase.weeklyBreakdown && phase.weeklyBreakdown.length > 0 && (
+                  <div className="pt-2 border-t border-amber-500/30">
+                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                      <ListChecks className="h-3.5 w-3.5 shrink-0" />
+                      Weekly Breakdown
+                    </h4>
+                    <ol className="space-y-1">
+                      {phase.weeklyBreakdown.map((week, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-2 bg-blue-500/5 rounded px-2 py-1.5 border-l-2 border-blue-500/50">
+                          <span className="break-words min-w-0">{week}</span>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
                 )}
               </CardContent>

@@ -568,6 +568,30 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis (1 competitor),
       // Don't throw - still return the result
     } else {
       console.log('History saved successfully');
+      
+      // Auto-cleanup: Keep only the 10 most recent history entries per user
+      const HISTORY_LIMIT = 10;
+      
+      const { data: allHistory } = await supabase
+        .from('business_tools_history')
+        .select('id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (allHistory && allHistory.length > HISTORY_LIMIT) {
+        const idsToDelete = allHistory.slice(HISTORY_LIMIT).map(h => h.id);
+        
+        const { error: deleteError } = await supabase
+          .from('business_tools_history')
+          .delete()
+          .in('id', idsToDelete);
+          
+        if (deleteError) {
+          console.error('Error cleaning up old history:', deleteError);
+        } else {
+          console.log(`Cleaned up ${idsToDelete.length} old history entries for user ${user.id}`);
+        }
+      }
     }
 
     // Update credits

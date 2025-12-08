@@ -677,7 +677,7 @@ const PrivacyPolicy = () => {
               used to train or improve Google's AI models.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Our Database Storage:</strong> Your complete analysis history is stored in our backend database:
+              <strong>Our Database Storage:</strong> Your <strong>10 most recent</strong> analysis entries are stored in our backend database:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
@@ -690,10 +690,15 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Storage duration:</strong> This data remains stored as long as your account is active. You can:
+              <strong>Automatic cleanup:</strong> To ensure optimal performance and manage storage, we automatically 
+              retain only your <strong>10 most recent</strong> analysis entries. When you create a new analysis and already 
+              have 10 stored entries, the oldest entry is automatically deleted to maintain this limit.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Your control:</strong> You can:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your complete analysis history at any time through your profile page</li>
+              <li>View your 10 most recent analyses at any time through your profile page</li>
               <li>Delete individual analysis entries from your history</li>
               <li>
                 Delete your entire account, which permanently removes all analysis history, credit tracking data, 
@@ -1130,8 +1135,9 @@ const PrivacyPolicy = () => {
                 deleted when you delete your account (subject to backup retention periods as described in Section 4.6).
               </li>
               <li>
-                <strong>Analysis History:</strong> Business tools recommendation history is stored until you delete 
-                your account or manually delete individual entries. You have full control to delete this data at any time.
+                <strong>Analysis History:</strong> Only your <strong>10 most recent</strong> business tools analyses are 
+                retained. Older entries are automatically deleted when new analyses are created. You can also manually 
+                delete individual entries at any time.
               </li>
               <li>
                 <strong>User Credits and Quota Data:</strong> Analysis counts, window start timestamps, and last 

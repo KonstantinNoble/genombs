@@ -261,6 +261,18 @@ export default function BusinessToolsAdvisor() {
                       size="sm"
                       className="gap-2"
                       onClick={async () => {
+                        // Mobile detection
+                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        
+                        if (isMobile) {
+                          toast({ 
+                            title: "Desktop Only", 
+                            description: "PDF export is only available on desktop devices",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        
                         try {
                           const blob = await pdf(
                             <StrategyPDF 
@@ -270,33 +282,15 @@ export default function BusinessToolsAdvisor() {
                             />
                           ).toBlob();
                           const url = URL.createObjectURL(blob);
-                          const filename = `business-strategy-${new Date().toISOString().split('T')[0]}.pdf`;
-                          
-                          // iOS/Safari Detection
-                          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-                          
-                          if (isIOS || isSafari) {
-                            // Auf iOS/Safari: PDF in neuem Tab öffnen
-                            window.open(url, '_blank');
-                            toast({ 
-                              title: "PDF geöffnet", 
-                              description: "Nutze den Share-Button um das PDF zu speichern" 
-                            });
-                            setTimeout(() => URL.revokeObjectURL(url), 5000);
-                          } else {
-                            // Auf anderen Geräten: Normaler Download
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = filename;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                            toast({ title: "PDF Downloaded", description: "Your strategy has been exported" });
-                          }
+                          const link = document.createElement('a');
+                          link.href = url;
+                          link.download = `business-strategy-${new Date().toISOString().split('T')[0]}.pdf`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          URL.revokeObjectURL(url);
+                          toast({ title: "PDF Downloaded", description: "Your strategy has been exported" });
                         } catch (error) {
-                          console.error('PDF export error:', error);
                           toast({ title: "Export Failed", description: "Could not generate PDF", variant: "destructive" });
                         }
                       }}

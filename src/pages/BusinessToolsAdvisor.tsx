@@ -217,6 +217,19 @@ export default function BusinessToolsAdvisor() {
                     <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">4 phases + KPIs</div></div></TabsTrigger>
                   </TabsList>
                 </Tabs>
+                {!isPremium && (
+                  <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20">
+                    <span className="text-sm text-muted-foreground">Unlock Deep Analysis & more analyses</span>
+                    <a 
+                      href="https://checkout.freemius.com/product/21730/plan/36437/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-amber-600 hover:text-amber-500 underline underline-offset-2 transition-colors"
+                    >
+                      Upgrade to Premium →
+                    </a>
+                  </div>
+                )}
                 <Button onClick={handleAnalyze} disabled={analyzing || !canAnalyze || !prompt.trim()} className="w-full" size="lg">
                   {analyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Strategy...</> : !canAnalyze ? `Next in ${getTimeUntilNextAnalysis()}` : 'Create Business Strategy'}
                 </Button>

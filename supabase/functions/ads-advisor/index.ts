@@ -7,12 +7,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface ActionItem {
+  text: string;
+  searchTerm: string;
+}
+
 interface StrategyPhase {
   phase: number;
   title: string;
   timeframe: string;
   objectives: string[];
-  actions: string[];
+  actions: ActionItem[];
   budget?: string;
   channels?: string[];
   milestones?: string[];
@@ -163,10 +168,20 @@ serve(async (req) => {
     
     const systemPrompt = `You are a strategic advertising planner. Create a phased advertising strategy based on the user's input.
 
+CRITICAL OUTPUT RULES - NO BUZZWORDS ALLOWED:
+❌ NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
+❌ NEVER use generic phrases like: "increase brand awareness", "maximize ROI", "build presence", "maximize potential"
+
+✅ ALWAYS include:
+- SPECIFIC numbers (e.g., "€500/month budget", "expect 10,000-15,000 impressions", "target €2-3 CPC")
+- EXACT platform names (e.g., "Google Ads Search", "Meta Ads Manager", "LinkedIn Campaign Manager")
+- Concrete timeframes (e.g., "complete setup in 2 hours", "run for 14 days minimum")
+- Expected outcomes with metrics (e.g., "expect 2-4% CTR", "should generate 50-100 clicks/day")
+
 OUTPUT REQUIREMENTS:
 - Return ${phaseCount} strategy phases as a structured timeline
 - Each phase should build upon the previous one
-- Focus on actionable, practical advertising strategies
+- Focus on actionable, practical advertising strategies with SPECIFIC details
 - Consider the user's context (budget, industry, timeline if provided)
 
 PHASE STRUCTURE:
@@ -174,27 +189,56 @@ Each phase must include:
 1. phase: Phase number (1, 2, 3, etc.)
 2. title: Clear, action-oriented title (e.g., "Foundation & Brand Awareness", "Scaling & Optimization")
 3. timeframe: Duration (e.g., "Week 1-2", "Month 1", "Weeks 3-4")
-4. objectives: 2-4 clear, measurable objectives for this phase
-5. actions: 3-5 specific, actionable steps to implement
-6. budget: Budget allocation for this phase (if budget context provided)
+4. objectives: 2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers
+   Example objectives:
+   - "Achieve 50,000 ad impressions within the first 2 weeks"
+   - "Generate 200 website clicks at under €1.50 CPC"
+   - "Reach 5,000 unique users in the target demographic"
+   NEVER write objectives like "Increase visibility" or "Improve engagement"
+5. actions: 3-5 SPECIFIC, DETAILED action items. Each action MUST be an object with:
+   - text: Detailed action with EXACT platform name, time estimate, and expected outcome
+   - searchTerm: Google search term for learning more about this action
+   
+   FORMAT FOR ACTION TEXT (MANDATORY):
+   "[ACTION VERB] [EXACT PLATFORM NAME] - [TIME ESTIMATE] - [EXPECTED OUTCOME]"
+   
+   Example actions:
+   - text: "Create Google Ads Search campaign targeting 10 high-intent keywords like 'buy [product] online' - 3 hours setup - expect 500-1000 daily impressions at €1.50-2.50 CPC"
+     searchTerm: "Google Ads Search campaign setup tutorial"
+   - text: "Set up Meta Ads Manager conversion campaign with 3 ad creatives (image, video, carousel) - 4 hours to create - expect 15,000-25,000 reach at €5-8 CPM"
+     searchTerm: "Facebook Meta Ads conversion campaign setup"
+   - text: "Install Google Tag Manager and set up conversion tracking pixels for all ad platforms - 2 hours setup - enables accurate ROI measurement"
+     searchTerm: "Google Tag Manager conversion tracking setup"
+
+6. budget: Budget allocation for this phase with SPECIFIC amounts (e.g., "€200/week on Google Ads, €150/week on Meta Ads")
 7. channels: Recommended advertising channels for this phase
-8. milestones: Key success indicators to achieve before moving to next phase
+8. milestones: Key success indicators with SPECIFIC metrics to achieve before moving to next phase
 
 ${isDeepMode ? `DEEP MODE - Enhanced Analysis:
-- Provide more detailed actions with implementation specifics
-- Include competitive positioning strategies
-- Add risk mitigation suggestions in objectives
-- Include A/B testing recommendations in actions
-- Provide ROI projections where applicable` : `STANDARD MODE:
+- Provide more detailed actions with step-by-step implementation specifics
+- Include competitive positioning strategies with specific competitor analysis if relevant
+- Add risk mitigation suggestions in objectives (what to do if metrics are below target)
+- Include A/B testing recommendations with specific variables to test
+- Provide ROI projections with specific numbers (e.g., "at €2 CPC and 3% conversion, expect €66 cost per acquisition")` : `STANDARD MODE:
 - Focus on quick wins and immediate impact
-- Keep recommendations practical and achievable
-- Prioritize the most impactful channels`}
+- Keep recommendations practical and achievable for beginners
+- Prioritize the most impactful channels with lowest complexity`}
+
+ADVERTISING PLATFORMS - Always use EXACT names:
+- Google Ads Search (for intent-based targeting)
+- Google Ads Display (for awareness campaigns)
+- Meta Ads Manager / Facebook Ads (for demographic targeting)
+- Instagram Ads (for visual products, younger demographics)
+- LinkedIn Campaign Manager (for B2B targeting)
+- TikTok Ads Manager (for Gen Z, viral content)
+- YouTube Ads (for video campaigns)
+- Microsoft Advertising / Bing Ads (for additional search traffic)
 
 CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
-- Focus on advertising platforms: Google Ads, Meta Ads (Facebook/Instagram), LinkedIn Ads, TikTok Ads, YouTube Ads, Display/Programmatic
-- Be specific and actionable, not generic
+- Be EXTREMELY specific and actionable - no generic advice
+- Every action must include a searchTerm for users to learn more
 
 Use the create_strategy function to return your response.`;
 
@@ -224,7 +268,7 @@ Use the create_strategy function to return your response.`;
           type: 'function',
           function: {
             name: 'create_strategy',
-            description: 'Create a phased advertising strategy',
+            description: 'Create a phased advertising strategy with specific, actionable steps',
             parameters: {
               type: 'object',
               properties: {
@@ -239,29 +283,46 @@ Use the create_strategy function to return your response.`;
                       objectives: { 
                         type: 'array', 
                         items: { type: 'string' },
-                        description: '2-4 clear objectives'
+                        minItems: 2,
+                        maxItems: 4,
+                        description: '2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers'
                       },
                       actions: { 
                         type: 'array', 
-                        items: { type: 'string' },
-                        description: '3-5 specific actions'
+                        items: { 
+                          type: 'object',
+                          properties: {
+                            text: { 
+                              type: 'string', 
+                              description: 'Detailed action with EXACT platform name, time estimate, and expected outcome. Format: "[ACTION] [PLATFORM] - [TIME] - [OUTCOME]"' 
+                            },
+                            searchTerm: { 
+                              type: 'string', 
+                              description: 'Google search term for learning more, e.g. "Google Ads Search campaign tutorial"' 
+                            }
+                          },
+                          required: ['text', 'searchTerm']
+                        },
+                        minItems: 3,
+                        maxItems: 5,
+                        description: '3-5 specific actions with platform names, time estimates, and expected outcomes'
                       },
-                      budget: { type: 'string', description: 'Budget allocation for this phase' },
+                      budget: { type: 'string', description: 'Budget allocation for this phase with specific amounts' },
                       channels: { 
                         type: 'array', 
                         items: { type: 'string' },
-                        description: 'Recommended channels'
+                        description: 'Recommended advertising channels'
                       },
                       milestones: { 
                         type: 'array', 
                         items: { type: 'string' },
-                        description: 'Key success indicators'
+                        description: 'Key success indicators with SPECIFIC metrics'
                       }
                     },
                     required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
                   },
-                  minItems: isDeepMode ? 4 : 2,
-                  maxItems: isDeepMode ? 6 : 3
+                  minItems: 4,
+                  maxItems: 4
                 }
               },
               required: ['strategies']

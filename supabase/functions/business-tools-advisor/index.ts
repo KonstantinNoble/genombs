@@ -177,7 +177,7 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const phaseCount = isDeepMode ? "4-6" : "2-3";
+    const phaseCount = "EXACTLY 4";
 
     const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 

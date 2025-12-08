@@ -335,182 +335,254 @@ Use the create_strategy function to return your response.`;
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-    // Build tool parameters based on mode - simplified schema to avoid Google AI complexity limits
-    const baseProperties = {
-      phase: { type: 'number', description: 'Phase number' },
-      title: { type: 'string', description: 'Phase title' },
-      timeframe: { type: 'string', description: 'Duration' },
-      objectives: { 
-        type: 'array', 
-        items: { type: 'string' },
-        description: 'Measurable objectives with KPIs'
+    let result: { strategies: StrategyPhase[] };
+
+    if (isDeepMode) {
+      // DEEP MODE: Use regular chat completion WITHOUT tool calling to avoid schema complexity limits
+      const deepModeJsonInstructions = `
+
+RESPONSE FORMAT - CRITICAL:
+You MUST return ONLY a valid JSON object with no markdown, no code fences, no explanation.
+The JSON must have this exact structure:
+
+{
+  "strategies": [
+    {
+      "phase": 1,
+      "title": "Phase title",
+      "timeframe": "Week 1-2",
+      "objectives": ["Objective 1", "Objective 2"],
+      "actions": [
+        {"text": "Action description", "searchTerm": "google search term"}
+      ],
+      "budget": "Budget for phase",
+      "channels": ["Tool 1", "Tool 2"],
+      "milestones": ["Milestone 1"],
+      "competitorAnalysis": [
+        {"name": "Competitor Name", "strengths": ["Strength 1"], "weaknesses": ["Weakness 1"]}
+      ],
+      "riskMitigation": ["If X happens, then Y"],
+      "abTestSuggestions": [
+        {"element": "What to test", "variantA": "First variant", "variantB": "Second variant", "expectedImpact": "Expected result"}
+      ],
+      "roiProjection": {
+        "investment": "Investment amount",
+        "expectedReturn": "Expected return",
+        "timeframe": "When to expect returns",
+        "assumptions": ["Assumption 1"]
       },
-      actions: { 
-        type: 'array', 
-        items: { 
-          type: 'object',
-          properties: {
-            text: { type: 'string' },
-            searchTerm: { type: 'string' }
+      "weeklyBreakdown": ["Week 1: Task description"]
+    }
+  ]
+}
+
+Return EXACTLY 6 phases. Each phase MUST have ALL fields including competitorAnalysis, riskMitigation, abTestSuggestions, roiProjection, and weeklyBreakdown.`;
+
+      const deepSystemPrompt = systemPrompt + deepModeJsonInstructions;
+
+      let aiResponse: Response;
+      try {
+        aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`
           },
-          required: ['text', 'searchTerm']
-        },
-        description: 'Specific actions with search terms'
-      },
-      budget: { type: 'string', description: 'Budget allocation' },
-      channels: { 
-        type: 'array', 
-        items: { type: 'string' },
-        description: 'Tools and platforms needed'
-      },
-      milestones: { 
-        type: 'array', 
-        items: { type: 'string' },
-        description: 'Success indicators'
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: 'system', content: deepSystemPrompt },
+              { role: 'user', content: userPromptText }
+            ],
+            max_completion_tokens: maxTokens
+            // NO tools or tool_choice for deep mode!
+          }),
+          signal: abortController.signal
+        });
+        
+        clearTimeout(timeoutId);
+      } catch (error: any) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error(`AI request timed out after ${timeout}ms`);
+        }
+        throw error;
       }
-    };
 
-    // Add deep mode exclusive properties - simplified schema to avoid Google AI complexity limits
-    const deepModeProperties = isDeepMode ? {
-      competitorAnalysis: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            strengths: { type: 'array', items: { type: 'string' } },
-            weaknesses: { type: 'array', items: { type: 'string' } }
-          },
-          required: ['name', 'strengths', 'weaknesses']
-        },
-        description: 'Competitor analyses'
-      },
-      riskMitigation: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Backup plans'
-      },
-      abTestSuggestions: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            element: { type: 'string' },
-            variantA: { type: 'string' },
-            variantB: { type: 'string' },
-            expectedImpact: { type: 'string' }
-          },
-          required: ['element', 'variantA', 'variantB', 'expectedImpact']
-        },
-        description: 'A/B test suggestions'
-      },
-      roiProjection: {
-        type: 'object',
-        properties: {
-          investment: { type: 'string' },
-          expectedReturn: { type: 'string' },
-          timeframe: { type: 'string' },
-          assumptions: { type: 'array', items: { type: 'string' } }
-        },
-        required: ['investment', 'expectedReturn', 'timeframe', 'assumptions'],
-        description: 'ROI projection'
-      },
-      weeklyBreakdown: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Weekly task breakdown'
+      if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        console.error('AI API error:', aiResponse.status, errorText);
+        
+        if (aiResponse.status === 429) {
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (aiResponse.status === 402) {
+          return new Response(
+            JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        throw new Error(`AI API error: ${aiResponse.status}`);
       }
-    } : {};
 
-    const phaseProperties = { ...baseProperties, ...deepModeProperties };
-    const requiredFields = isDeepMode 
-      ? ['phase', 'title', 'timeframe', 'objectives', 'actions', 'competitorAnalysis', 'riskMitigation', 'abTestSuggestions', 'roiProjection', 'weeklyBreakdown']
-      : ['phase', 'title', 'timeframe', 'objectives', 'actions'];
+      const aiData = await aiResponse.json();
+      console.log('AI response received (deep mode - no tool calling)');
 
-    let aiResponse: Response;
-    try {
-      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${LOVABLE_API_KEY}`
+      // Parse the content as JSON directly
+      const content = aiData.choices?.[0]?.message?.content;
+      if (!content) {
+        console.error('No content in AI response');
+        throw new Error('Empty AI response');
+      }
+
+      // Clean up the response - remove markdown code fences if present
+      let cleanedContent = content.trim();
+      if (cleanedContent.startsWith('```json')) {
+        cleanedContent = cleanedContent.slice(7);
+      } else if (cleanedContent.startsWith('```')) {
+        cleanedContent = cleanedContent.slice(3);
+      }
+      if (cleanedContent.endsWith('```')) {
+        cleanedContent = cleanedContent.slice(0, -3);
+      }
+      cleanedContent = cleanedContent.trim();
+
+      try {
+        result = JSON.parse(cleanedContent);
+      } catch (parseError) {
+        console.error('Failed to parse AI response as JSON:', cleanedContent.substring(0, 500));
+        throw new Error('AI returned invalid JSON format');
+      }
+
+      if (!result.strategies || !Array.isArray(result.strategies)) {
+        console.error('Invalid structure in parsed JSON');
+        throw new Error('Invalid response format from AI');
+      }
+
+    } else {
+      // STANDARD MODE: Use tool calling with simplified schema
+      const baseProperties = {
+        phase: { type: 'number', description: 'Phase number' },
+        title: { type: 'string', description: 'Phase title' },
+        timeframe: { type: 'string', description: 'Duration' },
+        objectives: { 
+          type: 'array', 
+          items: { type: 'string' },
+          description: 'Measurable objectives with KPIs'
         },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPromptText }
-          ],
-          max_completion_tokens: maxTokens,
-          tools: [{
-            type: 'function',
-            function: {
-              name: 'create_strategy',
-              description: 'Create a phased business strategy with specific, actionable steps',
-              parameters: {
-                type: 'object',
-                properties: {
-                  strategies: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: phaseProperties,
-                      required: requiredFields
-                    },
-                    description: `Array of ${isDeepMode ? '6' : '4'} strategy phases`
-                  }
-                },
-                required: ['strategies']
+        actions: { 
+          type: 'array', 
+          items: { 
+            type: 'object',
+            properties: {
+              text: { type: 'string' },
+              searchTerm: { type: 'string' }
+            },
+            required: ['text', 'searchTerm']
+          },
+          description: 'Specific actions with search terms'
+        },
+        budget: { type: 'string', description: 'Budget allocation' },
+        channels: { 
+          type: 'array', 
+          items: { type: 'string' },
+          description: 'Tools and platforms needed'
+        },
+        milestones: { 
+          type: 'array', 
+          items: { type: 'string' },
+          description: 'Success indicators'
+        }
+      };
+
+      let aiResponse: Response;
+      try {
+        aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPromptText }
+            ],
+            max_completion_tokens: maxTokens,
+            tools: [{
+              type: 'function',
+              function: {
+                name: 'create_strategy',
+                description: 'Create a phased business strategy with specific, actionable steps',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    strategies: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: baseProperties,
+                        required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
+                      },
+                      description: 'Array of 4 strategy phases'
+                    }
+                  },
+                  required: ['strategies']
+                }
               }
-            }
-          }],
-          tool_choice: { type: 'function', function: { name: 'create_strategy' } }
-        }),
-        signal: abortController.signal
-      });
+            }],
+            tool_choice: { type: 'function', function: { name: 'create_strategy' } }
+          }),
+          signal: abortController.signal
+        });
+        
+        clearTimeout(timeoutId);
+      } catch (error: any) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error(`AI request timed out after ${timeout}ms`);
+        }
+        throw error;
+      }
+
+      if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        console.error('AI API error:', aiResponse.status, errorText);
+        
+        if (aiResponse.status === 429) {
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (aiResponse.status === 402) {
+          return new Response(
+            JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        throw new Error(`AI API error: ${aiResponse.status}`);
+      }
+
+      const aiData = await aiResponse.json();
+      console.log('AI response received (standard mode - tool calling)');
+
+      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall || toolCall.function?.name !== 'create_strategy') {
+        console.error('No valid tool call in response');
+        throw new Error('Invalid AI response format');
+      }
+
+      result = JSON.parse(toolCall.function.arguments);
       
-      clearTimeout(timeoutId);
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new Error(`AI request timed out after ${timeout}ms`);
+      if (!result.strategies || !Array.isArray(result.strategies)) {
+        console.error('Invalid structure');
+        throw new Error('Invalid response format from AI');
       }
-      throw error;
-    }
-
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error('AI API error:', aiResponse.status, errorText);
-      
-      if (aiResponse.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (aiResponse.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      throw new Error(`AI API error: ${aiResponse.status}`);
-    }
-
-    const aiData = await aiResponse.json();
-    console.log('AI response received');
-
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || toolCall.function?.name !== 'create_strategy') {
-      console.error('No valid tool call in response');
-      throw new Error('Invalid AI response format');
-    }
-
-    const result = JSON.parse(toolCall.function.arguments);
-    
-    if (!result.strategies || !Array.isArray(result.strategies)) {
-      console.error('Invalid structure');
-      throw new Error('Invalid response format from AI');
     }
 
     console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);

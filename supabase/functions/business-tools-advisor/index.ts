@@ -7,33 +7,27 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface ToolRecommendation {
-  name: string;
-  category: string;
-  implementation: string;
-  estimatedCost: string;
-  rationale: string;
-  // Deep mode fields
-  detailedSteps?: string[];
-  expectedROI?: string;
-  riskLevel?: string;
-  prerequisites?: string[];
-  metrics?: string[];
-  implementationTimeline?: string;
+interface StrategyPhase {
+  phase: number;
+  title: string;
+  timeframe: string;
+  objectives: string[];
+  actions: string[];
+  budget?: string;
+  channels?: string[];
+  milestones?: string[];
 }
 
-// Input validation schema
+// Input validation schema - simplified for free text input
 const inputSchema = z.object({
-  websiteType: z.string().trim().min(1).max(100),
-  websiteStatus: z.string().trim().min(1).max(50),
-  budgetRange: z.string().trim().min(1).max(50),
-  websiteGoals: z.string().trim().min(1).max(1000),
-  // Premium-only fields
-  targetAudience: z.string().optional(),
-  competitionLevel: z.string().optional(),
-  growthStage: z.string().optional(),
-  analysisMode: z.enum(["standard", "deep"]).optional(),
-  customRequirements: z.string().max(100).optional()
+  prompt: z.string().trim().min(1, "Please describe your business goals").max(2000, "Description too long"),
+  // Optional context parameters
+  budget: z.string().optional(),
+  industry: z.string().optional(),
+  channels: z.string().optional(),
+  timeline: z.string().optional(),
+  geographic: z.string().optional(),
+  analysisMode: z.enum(["standard", "deep"]).optional()
 });
 
 serve(async (req) => {
@@ -60,7 +54,7 @@ serve(async (req) => {
     }
 
     const startTime = Date.now();
-    console.log('Business tools request received');
+    console.log('Business Planner request received');
 
     // Parse request early to get analysis mode
     const requestBody = await req.json();
@@ -107,11 +101,16 @@ serve(async (req) => {
         const windowEndsAt = new Date(new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000);
         if (new Date() < windowEndsAt && currentDeepCount >= deepLimit) {
           console.log(`⛔ Deep analysis limit reached: ${currentDeepCount}/${deepLimit}`);
-          console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
+          
+          const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
+          const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
+          const timeMessage = hoursRemaining >= 1 
+            ? `${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`
+            : `${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}`;
           
           return new Response(
             JSON.stringify({ 
-              error: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Next available at ${windowEndsAt.toISOString()}.`
+              error: `Deep analysis limit reached (${currentDeepCount}/${deepLimit}). Try again in ${timeMessage}.`
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
@@ -126,13 +125,18 @@ serve(async (req) => {
         const windowEndsAt = new Date(new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000);
         if (new Date() < windowEndsAt && currentStandardCount >= standardLimit) {
           console.log(`⛔ Standard analysis limit reached: ${currentStandardCount}/${standardLimit}`);
-          console.log(`⏰ Window ends at: ${windowEndsAt.toISOString()}`);
+          
+          const hoursRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60 * 60));
+          const minutesRemaining = Math.ceil((windowEndsAt.getTime() - Date.now()) / (1000 * 60));
+          const timeMessage = hoursRemaining >= 1 
+            ? `${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`
+            : `${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}`;
           
           return new Response(
             JSON.stringify({ 
               error: isPremium 
-                ? `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try deep analysis or wait until ${windowEndsAt.toISOString()}.`
-                : `Free limit reached (${currentStandardCount}/${standardLimit}). Please wait 24 hours.`
+                ? `Standard analysis limit reached (${currentStandardCount}/${standardLimit}). Try again in ${timeMessage}.`
+                : `Free limit reached (${currentStandardCount}/${standardLimit}). Please wait 24 hours or upgrade to Premium.`
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
@@ -141,9 +145,7 @@ serve(async (req) => {
       console.log(`✅ Standard analysis allowed. Current count: ${currentStandardCount}/${standardLimit}`);
     }
 
-    console.log('Limit check passed');
-
-    // Validate input (already parsed above)
+    // Validate input
     let validatedInput;
     try {
       validatedInput = inputSchema.parse(requestBody);
@@ -153,7 +155,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             error: 'Invalid input', 
-            details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+            details: error.errors.map(e => e.message).join(', ')
           }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
@@ -161,13 +163,12 @@ serve(async (req) => {
       throw error;
     }
 
-    const { websiteType, websiteStatus, budgetRange, websiteGoals, targetAudience, competitionLevel, growthStage, analysisMode, customRequirements } = validatedInput;
+    const { prompt, budget, industry, channels, timeline, geographic, analysisMode } = validatedInput;
     
     console.log('📊 Analysis mode:', {
       isPremium,
       analysisMode: analysisMode || 'standard',
-      isDeepMode,
-      hasCustomRequirements: !!customRequirements
+      isDeepMode
     });
 
     // Call Lovable AI
@@ -176,150 +177,135 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = isDeepMode
-      ? `You are an ADVANCED website tools advisor.
-${targetAudience ? `Target audience: ${targetAudience}` : ''}
-${competitionLevel ? `Competition level: ${competitionLevel}` : ''}
-${growthStage ? `Growth stage: ${growthStage}` : ''}
-${customRequirements ? `\n**CRITICAL CUSTOM REQUIREMENTS**: ${customRequirements}\nYou MUST address these requirements in your recommendations and explain how each tool meets or supports these specific needs.` : ''}
+    const phaseCount = isDeepMode ? "4-6" : "2-3";
 
-Provide 8-10 DETAILED tool recommendations with:
-- detailedSteps: Array of concrete implementation steps
-- expectedROI: ROI projection (e.g., "3-6 months to break-even")
-- riskLevel: "low" | "medium" | "high"
-- prerequisites: What must be in place first
-- metrics: How to measure success
-- implementationTimeline: Time estimate
+    const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
-CRITICAL MARKDOWN FORMATTING RULES:
-- ALL headings (### or ####) MUST start at the beginning of a new line
-- NEVER place ### or #### inline within sentences
-- Put a blank line BEFORE and AFTER every heading
-- Put a blank line between paragraphs
-- Put a blank line before lists
-- For "rationale": Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
-- For "generalAdvice": Create a well-structured Markdown document with:
-  * Use ### for main section headings (ALWAYS on its own line with blank lines before/after)
-  * Use #### for subsection headings (ALWAYS on its own line with blank lines before/after)
-  * Use bullet points (-) for lists, each on its own line
-  * Use **bold** for emphasis on key points
-  * Separate sections with blank lines for readability
-  * Structure should include: Prioritization Matrix, Industry Insights, Competitive Positioning, Implementation Roadmap
+OUTPUT REQUIREMENTS:
+- Return ${phaseCount} strategy phases as a structured timeline
+- Each phase should build upon the previous one
+- Focus on actionable, practical business strategies
+- Consider the user's context (budget, industry, timeline if provided)
 
-Focus on tools for websites (analytics, SEO, performance, conversion, etc.).
-Use the suggest_tools function.`
-      : `You are a website tools advisor. Provide 5-7 concise tool recommendations.
+PHASE STRUCTURE:
+Each phase must include:
+1. phase: Phase number (1, 2, 3, etc.)
+2. title: Clear, action-oriented title (e.g., "Foundation & Infrastructure", "Growth & Expansion", "Optimization & Scaling")
+3. timeframe: Duration (e.g., "Week 1-2", "Month 1", "Weeks 3-4")
+4. objectives: 2-4 clear, measurable objectives for this phase
+5. actions: 3-5 specific, actionable steps to implement
+6. budget: Budget allocation for this phase (if budget context provided)
+7. channels: Tools, platforms, or resources needed for this phase
+8. milestones: Key success indicators to achieve before moving to next phase
 
-CRITICAL MARKDOWN FORMATTING RULES:
-- ALL headings (### or ####) MUST start at the beginning of a new line
-- NEVER place ### or #### inline within sentences
-- Put a blank line BEFORE and AFTER every heading
-- Put a blank line between paragraphs
-- Put a blank line before lists
-- For "rationale": Use clear paragraphs separated by double line breaks (\\n\\n). Use **bold** for key points.
-- For "generalAdvice": Use Markdown formatting with ### headings (ALWAYS on their own line with blank lines before/after), bullet points (-), and **bold** for emphasis. Separate sections with blank lines.
+${isDeepMode ? `DEEP MODE - Enhanced Analysis:
+- Provide more detailed actions with implementation specifics
+- Include competitive analysis considerations
+- Add risk mitigation strategies in objectives
+- Include testing and validation steps in actions
+- Provide ROI projections where applicable
+- Consider dependencies between phases` : `STANDARD MODE:
+- Focus on quick wins and immediate impact
+- Keep recommendations practical and achievable
+- Prioritize the most impactful actions`}
 
-Focus on tools relevant for websites (analytics, SEO, performance, conversion, etc.).
-Use the suggest_tools function.`;
+FOCUS AREAS for business strategies:
+- Technology & Tools (CRM, Analytics, Automation)
+- Marketing & Growth (SEO, Content, Social Media)
+- Operations & Efficiency (Processes, Workflows)
+- Customer Experience (Support, Engagement)
+- Revenue & Monetization (Pricing, Sales)
 
-    let userPromptText = `Website Type: ${websiteType}
-Website Status: ${websiteStatus}
-Monthly Budget: ${budgetRange}
-Website Goals: ${websiteGoals}`;
+CRITICAL:
+- Output must be in English
+- No markdown formatting in the output
+- Be specific and actionable, not generic
 
-    // Add premium fields to user prompt if available
-    if (targetAudience) userPromptText += `\nTarget Audience: ${targetAudience}`;
-    if (competitionLevel) userPromptText += `\nCompetition Level: ${competitionLevel}`;
-    if (growthStage) userPromptText += `\nGrowth Stage: ${growthStage}`;
-    if (customRequirements) userPromptText += `\n\n**Custom Requirements**: ${customRequirements}`;
+Use the create_strategy function to return your response.`;
 
-    userPromptText += `\n\nPlease provide personalized website tool recommendations.`;
-
-    const userPrompt = userPromptText;
+    let userPromptText = `User's business goals and context:\n\n${prompt}`;
+    
+    if (budget) userPromptText += `\n\nBudget: ${budget}`;
+    if (industry) userPromptText += `\nIndustry: ${industry}`;
+    if (channels) userPromptText += `\nPreferred Tools/Channels: ${channels}`;
+    if (timeline) userPromptText += `\nTimeline: ${timeline}`;
+    if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
     console.log('🤖 Calling AI (model: google/gemini-2.5-flash, mode: ' + (isDeepMode ? 'deep' : 'standard') + ')...');
 
-    const toolProperties: any = {
-      name: { type: 'string', description: 'Tool or service name' },
-      category: {
-        type: 'string',
-        enum: ['analytics', 'seo', 'performance', 'design', 'marketing', 'ecommerce', 'cms', 'conversion'],
-      },
-      implementation: {
-        type: 'string',
-        enum: ['quick-win', 'medium-term', 'strategic'],
-      },
-      estimatedCost: { type: 'string', description: 'Cost range like $0-$50/month' },
-      rationale: { type: 'string', description: 'Why this tool fits the website' },
-    };
-
-    if (isDeepMode) {
-      toolProperties.detailedSteps = { type: 'array', items: { type: 'string' } };
-      toolProperties.expectedROI = { type: 'string' };
-      toolProperties.riskLevel = { type: 'string', enum: ['low', 'medium', 'high'] };
-      toolProperties.prerequisites = { type: 'array', items: { type: 'string' } };
-      toolProperties.metrics = { type: 'array', items: { type: 'string' } };
-      toolProperties.implementationTimeline = { type: 'string' };
-    }
-
     const timeout = isDeepMode ? 45000 : 25000;
-    
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
     let aiResponse: Response;
     try {
-      const aiStartTime = Date.now();
       aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`
         },
         body: JSON.stringify({
           model: 'google/gemini-2.5-flash',
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
+            { role: 'user', content: userPromptText }
           ],
           max_completion_tokens: isDeepMode ? 16000 : 8000,
-          tools: [
-            {
-              type: 'function',
-              function: {
-                name: 'suggest_tools',
-                description: isDeepMode
-                  ? 'Return 8-10 detailed website tool recommendations'
-                  : 'Return 5-7 website tool recommendations',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    recommendations: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: toolProperties,
-                        required: isDeepMode 
-                          ? ['name', 'category', 'implementation', 'estimatedCost', 'rationale', 'expectedROI', 'riskLevel']
-                          : ['name', 'category', 'implementation', 'estimatedCost', 'rationale'],
-                        additionalProperties: false,
+          tools: [{
+            type: 'function',
+            function: {
+              name: 'create_strategy',
+              description: 'Create a phased business strategy',
+              parameters: {
+                type: 'object',
+                properties: {
+                  strategies: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        phase: { type: 'number', description: 'Phase number (1, 2, 3, etc.)' },
+                        title: { type: 'string', description: 'Clear phase title' },
+                        timeframe: { type: 'string', description: 'Duration like "Week 1-2" or "Month 1"' },
+                        objectives: { 
+                          type: 'array', 
+                          items: { type: 'string' },
+                          description: '2-4 clear objectives'
+                        },
+                        actions: { 
+                          type: 'array', 
+                          items: { type: 'string' },
+                          description: '3-5 specific actions'
+                        },
+                        budget: { type: 'string', description: 'Budget allocation for this phase' },
+                        channels: { 
+                          type: 'array', 
+                          items: { type: 'string' },
+                          description: 'Tools, platforms, or resources'
+                        },
+                        milestones: { 
+                          type: 'array', 
+                          items: { type: 'string' },
+                          description: 'Key success indicators'
+                        }
                       },
+                      required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
                     },
-                    generalAdvice: { type: 'string' },
-                  },
-                  required: ['recommendations', 'generalAdvice'],
-                  additionalProperties: false,
+                    minItems: isDeepMode ? 4 : 2,
+                    maxItems: isDeepMode ? 6 : 3
+                  }
                 },
-              },
-            },
-          ],
-          tool_choice: { type: 'function', function: { name: 'suggest_tools' } },
+                required: ['strategies']
+              }
+            }
+          }],
+          tool_choice: { type: 'function', function: { name: 'create_strategy' } }
         }),
-        signal: abortController.signal,
+        signal: abortController.signal
       });
       
       clearTimeout(timeoutId);
-      console.log(`⏱️ AI call completed in ${Date.now() - aiStartTime}ms`);
     } catch (error: any) {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
@@ -331,7 +317,7 @@ Website Goals: ${websiteGoals}`;
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error('AI API error:', aiResponse.status, errorText);
-
+      
       if (aiResponse.status === 429) {
         return new Response(
           JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
@@ -348,45 +334,44 @@ Website Goals: ${websiteGoals}`;
     }
 
     const aiData = await aiResponse.json();
-    console.log(`✅ AI response received (total time: ${Date.now() - startTime}ms)`);
+    console.log('✅ AI response received');
 
-    // Parse tool call result
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || toolCall.function?.name !== 'suggest_tools') {
+    if (!toolCall || toolCall.function?.name !== 'create_strategy') {
       console.error('No valid tool call in response');
       throw new Error('Invalid AI response format');
     }
 
-    const parsedResult = JSON.parse(toolCall.function.arguments);
+    const result = JSON.parse(toolCall.function.arguments);
     
-    if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
+    if (!result.strategies || !Array.isArray(result.strategies)) {
       console.error('Invalid structure');
       throw new Error('Invalid response format from AI');
     }
 
-    console.log(`Parsed ${parsedResult.recommendations.length} recommendations`);
+    console.log(`Parsed ${result.strategies.length} strategy phases`);
 
-    // Insert into history with analysis_mode
+    // Save to history - map to existing columns
     const { error: historyError } = await supabase
       .from('business_tools_history')
       .insert({
         user_id: user.id,
-        industry: websiteType,
-        team_size: websiteStatus,
-        budget_range: budgetRange,
-        business_goals: websiteGoals,
-        result: parsedResult,
+        industry: industry || 'Not specified',
+        team_size: timeline || 'Not specified',
+        budget_range: budget || 'Not specified',
+        business_goals: prompt.substring(0, 500),
+        result: result,
         analysis_mode: analysisMode || 'standard'
       });
 
     if (historyError) {
       console.error('Error saving history:', historyError);
-      throw new Error('Failed to save recommendations');
+      // Don't throw - still return the result
+    } else {
+      console.log('History saved successfully');
     }
 
-    console.log('History saved successfully');
-
-    // Increment the correct counter
+    // Update credits
     const now = new Date();
     
     if (isDeepMode) {
@@ -401,7 +386,7 @@ Website Goals: ${websiteGoals}`;
         newDeepWindowStart = now.toISOString();
       }
       
-      const { error: updateError } = await supabase
+      await supabase
         .from('user_credits')
         .update({
           deep_analysis_count: newDeepCount,
@@ -410,11 +395,7 @@ Website Goals: ${websiteGoals}`;
         })
         .eq('user_id', user.id);
         
-      if (updateError) {
-        console.error('Error updating deep analysis credits:', updateError);
-      } else {
-        console.log(`✅ Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
-      }
+      console.log(`✅ Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
     } else {
       const standardWindowStart = creditsData?.standard_analysis_window_start;
       const standardCount = creditsData?.standard_analysis_count ?? 0;
@@ -427,7 +408,7 @@ Website Goals: ${websiteGoals}`;
         newStandardWindowStart = now.toISOString();
       }
       
-      const { error: updateError } = await supabase
+      await supabase
         .from('user_credits')
         .update({
           standard_analysis_count: newStandardCount,
@@ -436,22 +417,31 @@ Website Goals: ${websiteGoals}`;
         })
         .eq('user_id', user.id);
         
-      if (updateError) {
-        console.error('Error updating standard analysis credits:', updateError);
-      } else {
-        console.log(`✅ Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
-      }
+      console.log(`✅ Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
     }
 
+    console.log(`✅ Request completed in ${Date.now() - startTime}ms`);
+
     return new Response(
-      JSON.stringify(parsedResult),
+      JSON.stringify(result),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in business-tools-advisor:', error);
+    
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid input', 
+          details: error.errors.map(e => e.message).join(', ')
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: error.message || 'An error occurred' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

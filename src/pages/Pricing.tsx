@@ -112,18 +112,6 @@ const PricingPage = () => {
     {
       question: "What optional context can I provide?",
       answer: "You can add budget range, industry, current marketing channels, timeline, and geographic target. The AI uses this context to create more relevant and specific strategies tailored to your situation."
-    },
-    {
-      question: "Can I cancel my Premium subscription anytime?",
-      answer: "Yes! Cancel anytime with no questions asked. You'll keep Premium access until the end of your current billing period. Your analysis history stays available even after cancellation."
-    },
-    {
-      question: "Do I need a credit card for the Free Plan?",
-      answer: "No credit card required. Sign up with your email and start getting AI-powered business strategies immediately. Upgrade to Premium only when you need Deep Analysis features."
-    },
-    {
-      question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards (Visa, Mastercard, American Express) and PayPal through our secure payment partner Freemius. All transactions are encrypted and secure."
     }
   ];
 

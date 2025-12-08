@@ -457,6 +457,19 @@ export default function AdsAdvisor() {
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
+                  {!isPremium && (
+                    <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 mt-3">
+                      <span className="text-sm text-muted-foreground">Unlock Deep Analysis & more analyses</span>
+                      <a 
+                        href="https://checkout.freemius.com/product/21730/plan/36437/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-amber-600 hover:text-amber-500 underline underline-offset-2 transition-colors"
+                      >
+                        Upgrade to Premium →
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 <Button 

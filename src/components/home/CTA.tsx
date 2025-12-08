@@ -49,13 +49,13 @@ const CTA = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            {isPremium && isLoggedIn ? "Continue Your Premium Analysis" : "Ready to Optimize Your Business?"}
+            {isPremium && isLoggedIn ? "Continue Your Business Strategy" : "Ready to Plan Your Business Growth?"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {isPremium && isLoggedIn 
-              ? "Access all your premium features and continue optimizing your website and advertising campaigns."
-              : "Get your first AI analysis free. No credit card required."}
+              ? "Access all your premium features including Deep Analysis with 6 phases, ROI projections, and competitor analysis."
+              : "Get your first AI business strategy free. No credit card required."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -64,20 +64,20 @@ const CTA = () => {
               className="text-base px-8 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link to="/business-tools?tab=tools">
-                {isPremium && isLoggedIn ? "Website Analysis" : "Start Website Analysis"}
+              <Link to="/business-tools">
+                {isPremium && isLoggedIn ? "Go to Planner" : "Start Free Analysis"}
               </Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base px-8 transition-all duration-300 hover:scale-105"
-              asChild
-            >
-              <Link to="/business-tools?tab=ads">
-                {isPremium && isLoggedIn ? "Ads Analysis" : "Start Ads Analysis"}
-              </Link>
-            </Button>
+            {!isPremium && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 transition-all duration-300 hover:scale-105"
+                asChild
+              >
+                <Link to="/pricing">View Pricing</Link>
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">

@@ -212,9 +212,19 @@ export default function BusinessToolsAdvisor() {
               <CardContent className="space-y-4">
                 <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={analyzing} />
                 <Tabs value={analysisMode} onValueChange={(v) => setAnalysisMode(v as "standard" | "deep")}>
-                  <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0">
-                    <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none"><div className="py-2"><div className="font-semibold">Standard</div><div className="text-xs opacity-80">4 phases</div></div></TabsTrigger>
-                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none"><div className="py-2"><div className="font-semibold">Deep {!isPremium && "(Premium)"}</div><div className="text-xs opacity-80">6 phases + Advanced Insights</div></div></TabsTrigger>
+                  <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0 gap-0 w-full">
+                    <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none min-h-[70px] sm:min-h-[60px]">
+                      <div className="py-2 px-1 text-center">
+                        <div className="font-semibold text-sm sm:text-base">Standard</div>
+                        <div className="text-[10px] sm:text-xs opacity-80">4 phases</div>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger value="deep" disabled={!isPremium} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border border-l-0 rounded-r-lg rounded-l-none min-h-[70px] sm:min-h-[60px]">
+                      <div className="py-2 px-1 text-center">
+                        <div className="font-semibold text-sm sm:text-base whitespace-nowrap">Deep {!isPremium && <span className="text-[10px] sm:text-xs">(Premium)</span>}</div>
+                        <div className="text-[10px] sm:text-xs opacity-80 whitespace-normal leading-tight">6 phases + Insights</div>
+                      </div>
+                    </TabsTrigger>
                   </TabsList>
                 </Tabs>
                 {!isPremium && (

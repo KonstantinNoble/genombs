@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, FlaskConical, TrendingUp, Users, AlertTriangle, ListChecks } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle } from 'lucide-react';
 
 // New structured action type
 export interface ActionItem {
@@ -13,13 +13,6 @@ export interface CompetitorInfo {
   name: string;
   strengths: string[];
   weaknesses: string[];
-}
-
-export interface ABTestSuggestion {
-  element: string;
-  variantA: string;
-  variantB: string;
-  expectedImpact: string;
 }
 
 export interface ROIProjection {
@@ -41,9 +34,7 @@ export interface StrategyPhase {
   // Deep mode exclusive fields
   competitorAnalysis?: CompetitorInfo[];
   riskMitigation?: string[];
-  abTestSuggestions?: ABTestSuggestion[];
   roiProjection?: ROIProjection;
-  weeklyBreakdown?: string[];
 }
 
 export interface PlannerResult {
@@ -192,7 +183,7 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
           <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 text-xs">
             Gemini 2.5 Pro
           </Badge>
-          <span className="text-xs text-muted-foreground ml-auto">6 phases with competitor analysis, A/B tests & ROI projections</span>
+          <span className="text-xs text-muted-foreground ml-auto">Enhanced analysis with competitor insights & ROI projections</span>
         </div>
       )}
 
@@ -391,36 +382,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                   </div>
                 )}
 
-                {/* DEEP MODE EXCLUSIVE: A/B Test Suggestions */}
-                {isDeepMode && phase.abTestSuggestions && phase.abTestSuggestions.length > 0 && (
-                  <div className="pt-2 border-t border-amber-500/30">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
-                      <FlaskConical className="h-3.5 w-3.5 shrink-0" />
-                      A/B Test Suggestions
-                    </h4>
-                    <div className="space-y-2">
-                      {phase.abTestSuggestions.map((test, i) => (
-                        <div key={i} className="bg-violet-500/5 rounded-md p-2 text-xs border border-violet-500/20">
-                          <div className="font-semibold text-violet-600 dark:text-violet-400 mb-1">{test.element}</div>
-                          <div className="grid grid-cols-2 gap-2 mb-1">
-                            <div className="bg-background/50 rounded px-2 py-1">
-                              <span className="text-[10px] text-muted-foreground">Variant A:</span>
-                              <p className="text-foreground break-words">{test.variantA}</p>
-                            </div>
-                            <div className="bg-background/50 rounded px-2 py-1">
-                              <span className="text-[10px] text-muted-foreground">Variant B:</span>
-                              <p className="text-foreground break-words">{test.variantB}</p>
-                            </div>
-                          </div>
-                          <div className="text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-medium">
-                            Expected Impact: {test.expectedImpact}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* DEEP MODE EXCLUSIVE: ROI Projection */}
                 {isDeepMode && phase.roiProjection && (
                   <div className="pt-2 border-t border-amber-500/30">
@@ -457,23 +418,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
-
-                {/* DEEP MODE EXCLUSIVE: Weekly Breakdown */}
-                {isDeepMode && phase.weeklyBreakdown && phase.weeklyBreakdown.length > 0 && (
-                  <div className="pt-2 border-t border-amber-500/30">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
-                      <ListChecks className="h-3.5 w-3.5 shrink-0" />
-                      Weekly Breakdown
-                    </h4>
-                    <ol className="space-y-1">
-                      {phase.weeklyBreakdown.map((week, i) => (
-                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-2 bg-blue-500/5 rounded px-2 py-1.5 border-l-2 border-blue-500/50">
-                          <span className="break-words min-w-0">{week}</span>
-                        </li>
-                      ))}
-                    </ol>
                   </div>
                 )}
               </CardContent>

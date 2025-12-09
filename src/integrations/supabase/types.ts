@@ -278,6 +278,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_strategy_phase_progress_strategy"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "active_strategies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "strategy_phase_progress_strategy_id_fkey"
             columns: ["strategy_id"]
             isOneToOne: false

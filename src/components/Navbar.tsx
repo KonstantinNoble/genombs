@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { Target, Crown, ChevronDown, Briefcase } from "lucide-react";
+import { Crown, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,14 +96,12 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
               <DropdownMenuItem asChild>
-                <Link to="/business-tools" className="flex items-center gap-2 cursor-pointer">
-                  <Briefcase className="h-4 w-4" />
+                <Link to="/business-tools" className="cursor-pointer">
                   AI Business Planner
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/my-strategies" className="flex items-center gap-2 cursor-pointer">
-                  <Target className="h-4 w-4" />
+                <Link to="/my-strategies" className="flex items-center cursor-pointer">
                   My Strategies
                   {!isPremium && (
                     <Crown className="h-3.5 w-3.5 ml-auto text-amber-500" />
@@ -190,18 +188,16 @@ const Navbar = () => {
               <CollapsibleContent className="pl-4 space-y-1">
                 <Link
                   to="/business-tools"
-                  className="flex items-center gap-2 text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  className="block text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Briefcase className="h-4 w-4" />
                   AI Business Planner
                 </Link>
                 <Link
                   to="/my-strategies"
-                  className="flex items-center gap-2 text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  className="flex items-center text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Target className="h-4 w-4" />
                   My Strategies
                   {!isPremium && (
                     <Crown className="h-3.5 w-3.5 ml-auto text-amber-500" />

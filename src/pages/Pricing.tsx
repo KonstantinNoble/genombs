@@ -65,6 +65,11 @@ const PricingPage = () => {
     },
     {
       icon: <Target className="h-6 w-6" />,
+      title: "Strategy Tracking",
+      description: "Activate strategies and track your progress. Monitor completed phases and actions with visual progress indicators."
+    },
+    {
+      icon: <BarChart3 className="h-6 w-6" />,
       title: "Competitor Analysis",
       description: "Know your competition's strengths and weaknesses to position yourself better in the market."
     },
@@ -74,7 +79,7 @@ const PricingPage = () => {
       description: "Backup strategies with specific triggers - IF metric drops below target, THEN execute this backup plan."
     },
     {
-      icon: <BarChart3 className="h-6 w-6" />,
+      icon: <Zap className="h-6 w-6" />,
       title: "8x Daily Analyses",
       description: "6 Standard + 2 Deep analyses per day compared to 2 for free users. More strategies, more insights."
     }
@@ -87,10 +92,10 @@ const PricingPage = () => {
     { name: "Google Search Links", free: true, premium: true },
     { name: "Optional Context Input", free: true, premium: true },
     { name: "Deep Analysis Mode", free: false, premium: true },
+    { name: "Strategy Tracking", free: false, premium: true },
     { name: "Competitor Analysis", free: false, premium: true },
     { name: "ROI Projections", free: false, premium: true },
-    { name: "Risk Mitigation Plans", free: false, premium: true },
-    { name: "KPI Milestones", free: false, premium: true }
+    { name: "Risk Mitigation Plans", free: false, premium: true }
   ];
 
   const faqs = [

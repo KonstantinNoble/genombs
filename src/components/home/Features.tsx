@@ -9,7 +9,12 @@ const features = [
   {
     title: "Deep Analysis Mode",
     description:
-      "Premium users get 6 comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
+      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
+  },
+  {
+    title: "Strategy Tracking",
+    description:
+      "Activate strategies and track your progress. Monitor completed phases and actions with visual progress indicators.",
   },
   {
     title: "Actionable Strategies",
@@ -37,7 +42,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <Card
               key={index}

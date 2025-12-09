@@ -233,90 +233,13 @@ export type Database = {
         }
         Relationships: []
       }
-      strategy_action_progress: {
-        Row: {
-          action_index: number
-          action_text: string
-          completed_at: string | null
-          created_at: string
-          id: string
-          is_completed: boolean
-          phase_index: number
-          strategy_id: string
-        }
-        Insert: {
-          action_index: number
-          action_text: string
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          phase_index: number
-          strategy_id: string
-        }
-        Update: {
-          action_index?: number
-          action_text?: string
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          phase_index?: number
-          strategy_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "strategy_action_progress_strategy_id_fkey"
-            columns: ["strategy_id"]
-            isOneToOne: false
-            referencedRelation: "active_strategies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      strategy_milestone_progress: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          is_completed: boolean
-          milestone_text: string
-          phase_index: number
-          strategy_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          milestone_text: string
-          phase_index: number
-          strategy_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          milestone_text?: string
-          phase_index?: number
-          strategy_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "strategy_milestone_progress_strategy_id_fkey"
-            columns: ["strategy_id"]
-            isOneToOne: false
-            referencedRelation: "active_strategies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       strategy_phase_progress: {
         Row: {
+          actions_completed: number[] | null
           completed_at: string | null
           created_at: string
           id: string
+          milestones_completed: number[] | null
           notes: string | null
           phase_index: number
           phase_name: string
@@ -326,9 +249,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          actions_completed?: number[] | null
           completed_at?: string | null
           created_at?: string
           id?: string
+          milestones_completed?: number[] | null
           notes?: string | null
           phase_index: number
           phase_name: string
@@ -338,9 +263,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          actions_completed?: number[] | null
           completed_at?: string | null
           created_at?: string
           id?: string
+          milestones_completed?: number[] | null
           notes?: string | null
           phase_index?: number
           phase_name?: string

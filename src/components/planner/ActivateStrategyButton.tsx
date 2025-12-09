@@ -23,15 +23,6 @@ interface ActivateStrategyButtonProps {
   isDeepMode?: boolean;
 }
 
-// Helper to extract action text
-function getActionText(action: unknown): string {
-  if (typeof action === 'string') return action;
-  if (typeof action === 'object' && action !== null && 'text' in action) {
-    return (action as { text: string }).text;
-  }
-  return '';
-}
-
 export function ActivateStrategyButton({ result, isDeepMode = false }: ActivateStrategyButtonProps) {
   const navigate = useNavigate();
   const { user, isPremium } = useAuth();
@@ -103,12 +94,14 @@ export function ActivateStrategyButton({ result, isDeepMode = false }: ActivateS
 
       const strategyId = strategyData.id;
 
-      // Insert phase progress records
+      // Insert phase progress records (now includes actions_completed and milestones_completed arrays)
       const phaseRecords = strategies.map((phase: StrategyPhase, index: number) => ({
         strategy_id: strategyId,
         phase_index: index,
         phase_name: phase.title,
-        status: 'not_started' as const
+        status: 'not_started' as const,
+        actions_completed: [] as number[],
+        milestones_completed: [] as number[]
       }));
 
       if (phaseRecords.length > 0) {
@@ -116,58 +109,6 @@ export function ActivateStrategyButton({ result, isDeepMode = false }: ActivateS
           .from('strategy_phase_progress')
           .insert(phaseRecords);
         if (phasesError) console.error('Error inserting phases:', phasesError);
-      }
-
-      // Insert action progress records
-      const actionRecords: Array<{
-        strategy_id: string;
-        phase_index: number;
-        action_index: number;
-        action_text: string;
-      }> = [];
-      
-      strategies.forEach((phase: StrategyPhase, phaseIndex: number) => {
-        (phase.actions || []).forEach((action, actionIndex) => {
-          actionRecords.push({
-            strategy_id: strategyId,
-            phase_index: phaseIndex,
-            action_index: actionIndex,
-            action_text: getActionText(action)
-          });
-        });
-      });
-
-      if (actionRecords.length > 0) {
-        const { error: actionsError } = await supabase
-          .from('strategy_action_progress')
-          .insert(actionRecords);
-        if (actionsError) console.error('Error inserting actions:', actionsError);
-      }
-
-      // Insert milestone progress records (for deep mode)
-      if (isDeepMode) {
-        const milestoneRecords: Array<{
-          strategy_id: string;
-          phase_index: number;
-          milestone_text: string;
-        }> = [];
-        
-        strategies.forEach((phase: StrategyPhase, phaseIndex: number) => {
-          (phase.milestones || []).forEach(milestone => {
-            milestoneRecords.push({
-              strategy_id: strategyId,
-              phase_index: phaseIndex,
-              milestone_text: milestone
-            });
-          });
-        });
-
-        if (milestoneRecords.length > 0) {
-          const { error: milestonesError } = await supabase
-            .from('strategy_milestone_progress')
-            .insert(milestoneRecords);
-          if (milestonesError) console.error('Error inserting milestones:', milestonesError);
-        }
       }
 
       toast.success('Strategy activated!', {

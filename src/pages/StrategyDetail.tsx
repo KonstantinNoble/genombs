@@ -16,7 +16,6 @@ import {
   Target, 
   ArrowLeft,
   Play, 
-  Pause, 
   CheckCircle, 
   Crown, 
   Calendar,
@@ -47,21 +46,8 @@ interface PhaseProgress {
   phase_name: string;
   status: 'not_started' | 'in_progress' | 'completed';
   notes: string | null;
-}
-
-interface ActionProgress {
-  id: string;
-  phase_index: number;
-  action_index: number;
-  action_text: string;
-  is_completed: boolean;
-}
-
-interface MilestoneProgress {
-  id: string;
-  phase_index: number;
-  milestone_text: string;
-  is_completed: boolean;
+  actions_completed: number[];
+  milestones_completed: number[];
 }
 
 const StrategyDetail = () => {
@@ -71,8 +57,6 @@ const StrategyDetail = () => {
   
   const [strategy, setStrategy] = useState<ActiveStrategy | null>(null);
   const [phases, setPhases] = useState<PhaseProgress[]>([]);
-  const [actions, setActions] = useState<ActionProgress[]>([]);
-  const [milestones, setMilestones] = useState<MilestoneProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [expandedPhase, setExpandedPhase] = useState<number | null>(0);
@@ -91,30 +75,18 @@ const StrategyDetail = () => {
       if (strategyError) throw strategyError;
       setStrategy(strategyData as unknown as ActiveStrategy);
 
-      // Fetch phases
+      // Fetch phases (now includes actions_completed and milestones_completed)
       const { data: phasesData } = await supabase
         .from('strategy_phase_progress')
         .select('*')
         .eq('strategy_id', id)
         .order('phase_index');
-      setPhases((phasesData as PhaseProgress[]) || []);
-
-      // Fetch actions
-      const { data: actionsData } = await supabase
-        .from('strategy_action_progress')
-        .select('*')
-        .eq('strategy_id', id)
-        .order('phase_index')
-        .order('action_index');
-      setActions((actionsData as ActionProgress[]) || []);
-
-      // Fetch milestones
-      const { data: milestonesData } = await supabase
-        .from('strategy_milestone_progress')
-        .select('*')
-        .eq('strategy_id', id)
-        .order('phase_index');
-      setMilestones((milestonesData as MilestoneProgress[]) || []);
+      
+      setPhases((phasesData || []).map(p => ({
+        ...p,
+        actions_completed: p.actions_completed || [],
+        milestones_completed: p.milestones_completed || []
+      })) as PhaseProgress[]);
 
     } catch (error) {
       console.error('Error fetching strategy:', error);
@@ -142,52 +114,72 @@ const StrategyDetail = () => {
     }
   }, [user, isPremium, authLoading, id, navigate, fetchData]);
 
-  const toggleAction = async (action: ActionProgress) => {
-    const newCompleted = !action.is_completed;
-    
+  const toggleAction = async (phaseIndex: number, actionIndex: number) => {
+    const phase = phases.find(p => p.phase_index === phaseIndex);
+    if (!phase) return;
+
+    const isCurrentlyCompleted = phase.actions_completed.includes(actionIndex);
+    const newActionsCompleted = isCurrentlyCompleted
+      ? phase.actions_completed.filter(i => i !== actionIndex)
+      : [...phase.actions_completed, actionIndex].sort((a, b) => a - b);
+
     // Optimistic update
-    setActions(prev => 
-      prev.map(a => a.id === action.id ? { ...a, is_completed: newCompleted } : a)
+    setPhases(prev => 
+      prev.map(p => p.phase_index === phaseIndex 
+        ? { ...p, actions_completed: newActionsCompleted } 
+        : p
+      )
     );
 
     try {
       await supabase
-        .from('strategy_action_progress')
-        .update({ 
-          is_completed: newCompleted,
-          completed_at: newCompleted ? new Date().toISOString() : null
-        })
-        .eq('id', action.id);
+        .from('strategy_phase_progress')
+        .update({ actions_completed: newActionsCompleted })
+        .eq('id', phase.id);
 
       // Update strategy counters
-      await updateStrategyCounts();
+      await updateStrategyCounts(newActionsCompleted.length - phase.actions_completed.length);
     } catch (error) {
       // Revert on error
-      setActions(prev => 
-        prev.map(a => a.id === action.id ? { ...a, is_completed: !newCompleted } : a)
+      setPhases(prev => 
+        prev.map(p => p.phase_index === phaseIndex 
+          ? { ...p, actions_completed: phase.actions_completed } 
+          : p
+        )
       );
       toast.error('Failed to update action');
     }
   };
 
-  const toggleMilestone = async (milestone: MilestoneProgress) => {
-    const newCompleted = !milestone.is_completed;
-    
-    setMilestones(prev => 
-      prev.map(m => m.id === milestone.id ? { ...m, is_completed: newCompleted } : m)
+  const toggleMilestone = async (phaseIndex: number, milestoneIndex: number) => {
+    const phase = phases.find(p => p.phase_index === phaseIndex);
+    if (!phase) return;
+
+    const isCurrentlyCompleted = phase.milestones_completed.includes(milestoneIndex);
+    const newMilestonesCompleted = isCurrentlyCompleted
+      ? phase.milestones_completed.filter(i => i !== milestoneIndex)
+      : [...phase.milestones_completed, milestoneIndex].sort((a, b) => a - b);
+
+    // Optimistic update
+    setPhases(prev => 
+      prev.map(p => p.phase_index === phaseIndex 
+        ? { ...p, milestones_completed: newMilestonesCompleted } 
+        : p
+      )
     );
 
     try {
       await supabase
-        .from('strategy_milestone_progress')
-        .update({ 
-          is_completed: newCompleted,
-          completed_at: newCompleted ? new Date().toISOString() : null
-        })
-        .eq('id', milestone.id);
+        .from('strategy_phase_progress')
+        .update({ milestones_completed: newMilestonesCompleted })
+        .eq('id', phase.id);
     } catch (error) {
-      setMilestones(prev => 
-        prev.map(m => m.id === milestone.id ? { ...m, is_completed: !newCompleted } : m)
+      // Revert on error
+      setPhases(prev => 
+        prev.map(p => p.phase_index === phaseIndex 
+          ? { ...p, milestones_completed: phase.milestones_completed } 
+          : p
+        )
       );
       toast.error('Failed to update milestone');
     }
@@ -218,6 +210,10 @@ const StrategyDetail = () => {
   };
 
   const updatePhaseStatus = async (phaseId: string, status: 'not_started' | 'in_progress' | 'completed') => {
+    const oldPhase = phases.find(p => p.id === phaseId);
+    const wasCompleted = oldPhase?.status === 'completed';
+    const isNowCompleted = status === 'completed';
+
     setPhases(prev => 
       prev.map(p => p.id === phaseId ? { ...p, status } : p)
     );
@@ -232,35 +228,57 @@ const StrategyDetail = () => {
         })
         .eq('id', phaseId);
 
-      await updateStrategyCounts();
+      // Update phase count if completion status changed
+      if (wasCompleted !== isNowCompleted) {
+        await updatePhaseCount(isNowCompleted ? 1 : -1);
+      }
     } catch (error) {
       toast.error('Failed to update phase status');
     }
   };
 
-  const updateStrategyCounts = async () => {
+  const updateStrategyCounts = async (actionDelta: number) => {
     if (!strategy) return;
 
-    const completedActions = actions.filter(a => a.is_completed).length;
-    const completedPhases = phases.filter(p => p.status === 'completed').length;
+    const newCompletedActions = strategy.completed_actions + actionDelta;
 
     try {
       await supabase
         .from('active_strategies')
         .update({
-          completed_actions: completedActions,
-          completed_phases: completedPhases,
-          status: completedPhases === strategy.total_phases ? 'completed' : 'active'
+          completed_actions: newCompletedActions
         })
         .eq('id', strategy.id);
 
       setStrategy(prev => prev ? {
         ...prev,
-        completed_actions: completedActions,
-        completed_phases: completedPhases
+        completed_actions: newCompletedActions
       } : null);
     } catch (error) {
       console.error('Error updating strategy counts:', error);
+    }
+  };
+
+  const updatePhaseCount = async (phaseDelta: number) => {
+    if (!strategy) return;
+
+    const newCompletedPhases = strategy.completed_phases + phaseDelta;
+
+    try {
+      await supabase
+        .from('active_strategies')
+        .update({
+          completed_phases: newCompletedPhases,
+          status: newCompletedPhases === strategy.total_phases ? 'completed' : 'active'
+        })
+        .eq('id', strategy.id);
+
+      setStrategy(prev => prev ? {
+        ...prev,
+        completed_phases: newCompletedPhases
+      } : null);
+    } catch (error) {
+      console.error('Error updating phase count:', error);
     }
   };
 
@@ -391,9 +409,9 @@ const StrategyDetail = () => {
         <div className="space-y-4">
           {originalStrategies.map((originalPhase: StrategyPhase, phaseIndex: number) => {
             const phaseProgress = phases.find(p => p.phase_index === phaseIndex);
-            const phaseActions = actions.filter(a => a.phase_index === phaseIndex);
-            const phaseMilestones = milestones.filter(m => m.phase_index === phaseIndex);
-            const completedInPhase = phaseActions.filter(a => a.is_completed).length;
+            const phaseActions = originalPhase.actions || [];
+            const phaseMilestones = originalPhase.milestones || [];
+            const completedInPhase = phaseProgress?.actions_completed.length || 0;
             const phasePercent = phaseActions.length > 0 
               ? Math.round((completedInPhase / phaseActions.length) * 100) 
               : 0;
@@ -464,29 +482,30 @@ const StrategyDetail = () => {
                         Actions ({completedInPhase}/{phaseActions.length})
                       </h4>
                       <div className="space-y-2">
-                        {phaseActions.map((action) => {
-                          const originalAction = originalPhase.actions[action.action_index];
-                          const searchTerm = typeof originalAction === 'object' && 'searchTerm' in originalAction 
-                            ? originalAction.searchTerm 
+                        {phaseActions.map((action, actionIndex) => {
+                          const actionText = typeof action === 'string' ? action : action.text || '';
+                          const searchTerm = typeof action === 'object' && 'searchTerm' in action 
+                            ? action.searchTerm 
                             : null;
+                          const isCompleted = phaseProgress?.actions_completed.includes(actionIndex) || false;
                           
                           return (
                             <div 
-                              key={action.id}
+                              key={actionIndex}
                               className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                                action.is_completed 
+                                isCompleted 
                                   ? 'bg-primary/5 border-primary/20' 
                                   : 'bg-muted/20 border-border/50 hover:border-primary/30'
                               }`}
                             >
                               <Checkbox
-                                checked={action.is_completed}
-                                onCheckedChange={() => toggleAction(action)}
+                                checked={isCompleted}
+                                onCheckedChange={() => toggleAction(phaseIndex, actionIndex)}
                                 className="mt-0.5"
                               />
                               <div className="flex-1 min-w-0">
-                                <span className={`text-sm ${action.is_completed ? 'line-through text-muted-foreground' : ''}`}>
-                                  {action.action_text}
+                                <span className={`text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
+                                  {actionText}
                                 </span>
                                 {searchTerm && (
                                   <a 
@@ -515,25 +534,29 @@ const StrategyDetail = () => {
                           KPI Milestones
                         </h4>
                         <div className="space-y-2">
-                          {phaseMilestones.map((milestone) => (
-                            <div 
-                              key={milestone.id}
-                              className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                                milestone.is_completed 
-                                  ? 'bg-amber-500/10 border-amber-500/30' 
-                                  : 'bg-amber-500/5 border-amber-500/20'
-                              }`}
-                            >
-                              <Checkbox
-                                checked={milestone.is_completed}
-                                onCheckedChange={() => toggleMilestone(milestone)}
-                                className="mt-0.5"
-                              />
-                              <span className={`text-sm ${milestone.is_completed ? 'line-through text-muted-foreground' : ''}`}>
-                                {milestone.milestone_text}
-                              </span>
-                            </div>
-                          ))}
+                          {phaseMilestones.map((milestone, milestoneIndex) => {
+                            const isCompleted = phaseProgress?.milestones_completed.includes(milestoneIndex) || false;
+                            
+                            return (
+                              <div 
+                                key={milestoneIndex}
+                                className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                                  isCompleted 
+                                    ? 'bg-amber-500/10 border-amber-500/30' 
+                                    : 'bg-amber-500/5 border-amber-500/20'
+                                }`}
+                              >
+                                <Checkbox
+                                  checked={isCompleted}
+                                  onCheckedChange={() => toggleMilestone(phaseIndex, milestoneIndex)}
+                                  className="mt-0.5"
+                                />
+                                <span className={`text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
+                                  {milestone}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

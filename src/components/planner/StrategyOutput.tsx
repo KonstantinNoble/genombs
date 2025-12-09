@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle } from 'lucide-react';
+import { ActivateStrategyButton } from './ActivateStrategyButton';
 
 // New structured action type
 export interface ActionItem {
@@ -175,6 +176,11 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Activate Strategy Button */}
+      <div className="flex justify-end">
+        <ActivateStrategyButton result={result} isDeepMode={isDeepMode} />
+      </div>
+
       {/* Premium indicator */}
       {isDeepMode && (
         <div className="flex flex-wrap items-center gap-2 text-sm p-3 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">

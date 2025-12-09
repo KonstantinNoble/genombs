@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 8, 2025 | Version 2.6</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 9, 2025 | Version 2.7</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -246,6 +246,12 @@ const PrivacyPolicy = () => {
                 All authentication data (Google OAuth tokens, session tokens) are invalidated and removed from active
                 systems
               </li>
+              <li>
+                All strategy tracking data (active strategies, phase progress, milestones, user notes) is permanently 
+                deleted
+              </li>
+              <li>All analysis history (Business Tools Advisor results) is permanently deleted</li>
+              <li>All credit and quota tracking data is permanently deleted</li>
               <li>The deletion is irreversible and cannot be undone once processed</li>
               <li>You will be automatically logged out and redirected to the homepage</li>
               <li>
@@ -302,7 +308,7 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               Our website offers an AI-powered advisory service that analyzes your business context, objectives, and requirements 
               to provide personalized strategic recommendations. This feature is available to registered users and requires 
-              authentication.
+              authentication. Generated strategies may be saved to your account and activated for progress tracking purposes.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>IMPORTANT DISCLAIMER:</strong> These features provide general recommendations and information for
@@ -712,6 +718,93 @@ const PrivacyPolicy = () => {
               data before account deletion if you need to retain it.
             </p>
 
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Strategy Tracking (My Strategies)</h3>
+            <p className="text-muted-foreground mb-4">
+              Our platform provides a Strategy Tracking feature ("My Strategies") that enables registered users to 
+              activate AI-generated business strategies and monitor their implementation progress over time. This 
+              feature is designed to help users systematically execute recommended strategies by tracking phases, 
+              actions, and milestones.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed for Strategy Tracking</h4>
+            <p className="text-muted-foreground mb-4">
+              When you activate a strategy for tracking, the following personal data is processed and stored:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Strategy Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Strategy name (derived from the AI-generated recommendation)</li>
+                  <li>Strategy status (active, paused, or completed)</li>
+                  <li>Original AI-generated result data (stored as structured JSON)</li>
+                  <li>Analysis mode indicator (standard or deep analysis)</li>
+                  <li>Total and completed phase counts</li>
+                  <li>Total and completed action counts</li>
+                  <li>Creation and last update timestamps</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Phase Progress Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Phase name and index position</li>
+                  <li>Phase status (not started, in progress, or completed)</li>
+                  <li>Completed actions within each phase (stored as array indices)</li>
+                  <li>Completed milestones within each phase (stored as array indices)</li>
+                  <li>User-entered notes (optional free-text field for personal annotations)</li>
+                  <li>Phase start and completion timestamps</li>
+                </ul>
+              </li>
+              <li>
+                <strong>User Account Association:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>User ID (to associate strategies with your account)</li>
+                  <li>All strategy data is linked exclusively to your authenticated user account</li>
+                </ul>
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              The processing of strategy tracking data is based on:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR – Contract Performance:</strong> Processing is necessary to provide the 
+                strategy tracking service you requested as a registered user. By activating a strategy, you are 
+                requesting the contractual service of progress tracking and implementation monitoring.
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR – Legitimate Interest:</strong> Our legitimate interest in providing 
+                valuable tools that help users implement and track their business strategies effectively.
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage and Retention</h4>
+            <p className="text-muted-foreground mb-4">
+              Strategy tracking data is stored as long as your account remains active. You retain full control over 
+              your strategy data:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>You may delete individual strategies at any time through the My Strategies interface</li>
+              <li>You may pause, resume, or mark strategies as completed at your discretion</li>
+              <li>All strategy data is permanently deleted when you delete your account</li>
+              <li>
+                Upon account deletion, both the strategy records and all associated phase progress data are 
+                immediately removed from our production database through a secure cascade deletion process
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Security</h4>
+            <p className="text-muted-foreground mb-4">
+              Strategy tracking data is protected by Row-Level Security (RLS) policies in our database, ensuring that:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Only authenticated users can access strategy tracking features</li>
+              <li>Users can only view, modify, and delete their own strategies</li>
+              <li>Phase progress data is accessible only through the associated parent strategy</li>
+              <li>All data access requires valid authentication credentials</li>
+            </ul>
+
           </section>
 
           <section className="mb-8">
@@ -979,6 +1072,16 @@ const PrivacyPolicy = () => {
                   <li>HMAC-SHA256 signatures (for cryptographic verification)</li>
                 </ul>
               </li>
+              <li>
+                Strategy tracking data (My Strategies feature):
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Active strategies (name, status, analysis mode, completion counts)</li>
+                  <li>Original AI-generated strategy results (stored as structured JSON)</li>
+                  <li>Phase progress (phase names, status, completed actions, completed milestones)</li>
+                  <li>User-entered notes (optional personal annotations per phase)</li>
+                  <li>Timestamps (strategy creation, updates, phase start/completion dates)</li>
+                </ul>
+              </li>
             </ul>
             <p className="text-muted-foreground mb-4 mt-4">
               <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
@@ -1173,6 +1276,11 @@ const PrivacyPolicy = () => {
                 <strong>Contact Correspondence:</strong> Email correspondence with our support is stored only as long 
                 as necessary to handle your inquiry, then deleted unless legal retention obligations apply.
               </li>
+              <li>
+                <strong>Strategy Tracking Data:</strong> Active strategies and phase progress data are stored as long 
+                as your account remains active. You may delete individual strategies at any time through the My 
+                Strategies interface. All strategy data is permanently deleted when you delete your account.
+              </li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Legal Retention Obligations:</strong> In certain cases, we may be legally required to retain 
@@ -1262,7 +1370,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 8, 2025
+              <strong>Last updated:</strong> December 9, 2025
             </p>
           </section>
         </article>

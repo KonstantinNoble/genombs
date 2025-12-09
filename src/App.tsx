@@ -12,6 +12,8 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
+import MyStrategies from "./pages/MyStrategies";
+import StrategyDetail from "./pages/StrategyDetail";
 
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -59,6 +61,8 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
+              <Route path="/my-strategies" element={<MyStrategies />} />
+              <Route path="/strategy/:id" element={<StrategyDetail />} />
               
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/blog" element={<Blog />} />

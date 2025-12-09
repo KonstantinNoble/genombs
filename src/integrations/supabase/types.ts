@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_strategies: {
+        Row: {
+          completed_actions: number
+          completed_phases: number
+          created_at: string
+          id: string
+          is_deep_mode: boolean
+          name: string
+          original_result: Json
+          status: string
+          total_actions: number
+          total_phases: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_actions?: number
+          completed_phases?: number
+          created_at?: string
+          id?: string
+          is_deep_mode?: boolean
+          name: string
+          original_result: Json
+          status?: string
+          total_actions?: number
+          total_phases?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_actions?: number
+          completed_phases?: number
+          created_at?: string
+          id?: string
+          is_deep_mode?: boolean
+          name?: string
+          original_result?: Json
+          status?: string
+          total_actions?: number
+          total_phases?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ads_advisor_history: {
         Row: {
           advertising_budget: string
@@ -187,6 +232,132 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      strategy_action_progress: {
+        Row: {
+          action_index: number
+          action_text: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean
+          phase_index: number
+          strategy_id: string
+        }
+        Insert: {
+          action_index: number
+          action_text: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          phase_index: number
+          strategy_id: string
+        }
+        Update: {
+          action_index?: number
+          action_text?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          phase_index?: number
+          strategy_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_action_progress_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "active_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      strategy_milestone_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean
+          milestone_text: string
+          phase_index: number
+          strategy_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          milestone_text: string
+          phase_index: number
+          strategy_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          milestone_text?: string
+          phase_index?: number
+          strategy_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_milestone_progress_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "active_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      strategy_phase_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          phase_index: number
+          phase_name: string
+          started_at: string | null
+          status: string
+          strategy_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase_index: number
+          phase_name: string
+          started_at?: string | null
+          status?: string
+          strategy_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase_index?: number
+          phase_name?: string
+          started_at?: string | null
+          status?: string
+          strategy_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_phase_progress_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "active_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_credits: {
         Row: {

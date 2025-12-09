@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { Target } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isPremium } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
   const isActive = (path: string) => location.pathname === path;
@@ -104,6 +106,22 @@ const Navbar = () => {
           >
             Blog
           </Link>
+          
+          {/* My Strategies - Premium Only */}
+          {user && isPremium && (
+            <Link 
+              to="/my-strategies" 
+              className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 flex items-center gap-1.5 ${
+                isActive("/my-strategies") 
+                  ? "text-primary after:w-full" 
+                  : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
+              }`}
+            >
+              <Target className="h-4 w-4" />
+              My Strategies
+            </Link>
+          )}
+          
           {user ? (
             <Button
               size="sm"
@@ -173,6 +191,19 @@ const Navbar = () => {
             >
               Blog
             </Link>
+            
+            {/* My Strategies - Premium Only (Mobile) */}
+            {user && isPremium && (
+              <Link
+                to="/my-strategies"
+                className="flex items-center gap-2 text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                onClick={() => setIsOpen(false)}
+              >
+                <Target className="h-4 w-4" />
+                My Strategies
+              </Link>
+            )}
+
             {user ? (
               <Button
                 size="sm"

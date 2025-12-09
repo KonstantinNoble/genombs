@@ -64,51 +64,100 @@ serve(async (req) => {
     }
 
     // GDPR-compliant: Explicitly delete ALL user data from public tables
-    // Order matters: history → credits → profile → auth user
+    // Order matters: child tables first, then parent tables, finally auth user
     
-    console.log('Deleting ads_advisor_history for user:', userData.user.id);
-    const { error: adsError } = await adminClient
-      .from('ads_advisor_history')
-      .delete()
-      .eq('user_id', userData.user.id);
-    
-    if (adsError) {
-      console.error('Failed to delete ads_advisor_history:', adsError);
+    const userId = userData.user.id;
+
+    // First, get all strategy IDs for this user
+    console.log('Fetching active strategies for user:', userId);
+    const { data: strategies, error: strategiesError } = await adminClient
+      .from('active_strategies')
+      .select('id')
+      .eq('user_id', userId);
+
+    if (strategiesError) {
+      console.error('Failed to fetch strategies:', strategiesError);
     }
 
-    console.log('Deleting business_tools_history for user:', userData.user.id);
+    const strategyIds = strategies?.map(s => s.id) || [];
+
+    if (strategyIds.length > 0) {
+      // Delete strategy child tables first
+      console.log('Deleting strategy_action_progress for strategies:', strategyIds);
+      const { error: actionsError } = await adminClient
+        .from('strategy_action_progress')
+        .delete()
+        .in('strategy_id', strategyIds);
+      
+      if (actionsError) {
+        console.error('Failed to delete strategy_action_progress:', actionsError);
+      }
+
+      console.log('Deleting strategy_phase_progress for strategies:', strategyIds);
+      const { error: phasesError } = await adminClient
+        .from('strategy_phase_progress')
+        .delete()
+        .in('strategy_id', strategyIds);
+      
+      if (phasesError) {
+        console.error('Failed to delete strategy_phase_progress:', phasesError);
+      }
+
+      console.log('Deleting strategy_milestone_progress for strategies:', strategyIds);
+      const { error: milestonesError } = await adminClient
+        .from('strategy_milestone_progress')
+        .delete()
+        .in('strategy_id', strategyIds);
+      
+      if (milestonesError) {
+        console.error('Failed to delete strategy_milestone_progress:', milestonesError);
+      }
+
+      // Now delete the parent strategies table
+      console.log('Deleting active_strategies for user:', userId);
+      const { error: strategiesDeleteError } = await adminClient
+        .from('active_strategies')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (strategiesDeleteError) {
+        console.error('Failed to delete active_strategies:', strategiesDeleteError);
+      }
+    }
+
+    console.log('Deleting business_tools_history for user:', userId);
     const { error: toolsError } = await adminClient
       .from('business_tools_history')
       .delete()
-      .eq('user_id', userData.user.id);
+      .eq('user_id', userId);
     
     if (toolsError) {
       console.error('Failed to delete business_tools_history:', toolsError);
     }
 
-    console.log('Deleting user_credits for user:', userData.user.id);
+    console.log('Deleting user_credits for user:', userId);
     const { error: creditsError } = await adminClient
       .from('user_credits')
       .delete()
-      .eq('user_id', userData.user.id);
+      .eq('user_id', userId);
     
     if (creditsError) {
       console.error('Failed to delete user_credits:', creditsError);
     }
 
-    console.log('Deleting profile for user:', userData.user.id);
+    console.log('Deleting profile for user:', userId);
     const { error: profileError } = await adminClient
       .from('profiles')
       .delete()
-      .eq('id', userData.user.id);
+      .eq('id', userId);
     
     if (profileError) {
       console.error('Failed to delete profile:', profileError);
     }
 
     // Finally: Delete auth.users entry (invalidates login immediately)
-    console.log('Deleting auth user:', userData.user.id);
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userData.user.id);
+    console.log('Deleting auth user:', userId);
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {
       console.error("Account deletion failed");
       return new Response(JSON.stringify({ error: "Service unavailable" }), {

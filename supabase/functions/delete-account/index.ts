@@ -68,32 +68,16 @@ serve(async (req) => {
     
     const userId = userData.user.id;
 
-    // First, get all strategy IDs for this user
-    console.log('Fetching active strategies for user:', userId);
-    const { data: strategies, error: strategiesError } = await adminClient
+    // Delete strategy phase progress (contains actions_completed and milestones_completed arrays)
+    console.log('Deleting strategy_phase_progress for user:', userId);
+    const { data: strategies } = await adminClient
       .from('active_strategies')
       .select('id')
       .eq('user_id', userId);
 
-    if (strategiesError) {
-      console.error('Failed to fetch strategies:', strategiesError);
-    }
-
     const strategyIds = strategies?.map(s => s.id) || [];
 
     if (strategyIds.length > 0) {
-      // Delete strategy child tables first
-      console.log('Deleting strategy_action_progress for strategies:', strategyIds);
-      const { error: actionsError } = await adminClient
-        .from('strategy_action_progress')
-        .delete()
-        .in('strategy_id', strategyIds);
-      
-      if (actionsError) {
-        console.error('Failed to delete strategy_action_progress:', actionsError);
-      }
-
-      console.log('Deleting strategy_phase_progress for strategies:', strategyIds);
       const { error: phasesError } = await adminClient
         .from('strategy_phase_progress')
         .delete()
@@ -101,16 +85,6 @@ serve(async (req) => {
       
       if (phasesError) {
         console.error('Failed to delete strategy_phase_progress:', phasesError);
-      }
-
-      console.log('Deleting strategy_milestone_progress for strategies:', strategyIds);
-      const { error: milestonesError } = await adminClient
-        .from('strategy_milestone_progress')
-        .delete()
-        .in('strategy_id', strategyIds);
-      
-      if (milestonesError) {
-        console.error('Failed to delete strategy_milestone_progress:', milestonesError);
       }
 
       // Now delete the parent strategies table

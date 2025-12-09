@@ -66,16 +66,16 @@ const Pricing = ({ compact = false }: PricingProps) => {
     { text: "Actionable steps with Google search links", included: true },
     { text: "Optional context (budget, industry, timeline)", included: true },
     { text: "Deep Analysis Mode", included: false },
-    { text: "Competitor & ROI Analysis", included: false },
+    { text: "Strategy Tracking Dashboard", included: false },
   ];
 
   const premiumFeatures = [
     { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
     { text: "4 comprehensive phases per analysis", included: true, highlight: true },
+    { text: "Strategy Tracking - Track progress & completed phases", included: true, highlight: true },
     { text: "Competitor Analysis - Know your competition", included: true },
-    { text: "ROI Projections - Expected returns calculated", included: true, highlight: true },
+    { text: "ROI Projections - Expected returns calculated", included: true },
     { text: "Risk Mitigation Plans - IF metric drops, THEN do X", included: true },
-    { text: "KPI Milestones - Clear success metrics", included: true },
   ];
 
   return (

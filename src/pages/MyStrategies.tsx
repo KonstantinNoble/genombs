@@ -59,15 +59,11 @@ const MyStrategies = () => {
       navigate('/auth');
       return;
     }
-    
-    if (!authLoading && user && !isPremium) {
-      toast.error('Premium required', { description: 'Strategy Tracker is a Premium feature' });
-      navigate('/pricing');
-      return;
-    }
 
     if (user && isPremium) {
       fetchStrategies();
+    } else if (!authLoading && user && !isPremium) {
+      setIsLoading(false);
     }
   }, [user, isPremium, authLoading, navigate]);
 
@@ -138,6 +134,53 @@ const MyStrategies = () => {
         <main className="flex-grow flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Premium required view for non-premium users
+  if (!isPremium) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Helmet>
+          <title>My Strategies - Premium Feature | Synoptas</title>
+          <meta name="description" content="Upgrade to Premium to track and manage your business strategies" />
+        </Helmet>
+
+        <Navbar />
+
+        <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+          <Card className="max-w-md w-full text-center border-border/50">
+            <CardContent className="pt-10 pb-10">
+              <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-6">
+                <Crown className="h-8 w-8 text-amber-500" />
+              </div>
+              <h2 className="text-2xl font-bold mb-3">Premium Feature</h2>
+              <p className="text-muted-foreground mb-6">
+                Strategy Tracker allows you to monitor and manage your business strategies in real-time. 
+                Upgrade to Premium to unlock this feature.
+              </p>
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => navigate('/pricing')} 
+                  className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Premium
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/business-tools')} 
+                  className="w-full"
+                >
+                  Try AI Business Planner First
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+
         <Footer />
       </div>
     );

@@ -11,7 +11,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
-  Target, 
   Play, 
   Pause, 
   CheckCircle, 
@@ -20,7 +19,8 @@ import {
   ArrowRight,
   Plus,
   Loader2,
-  Trash2
+  Trash2,
+  LayoutGrid
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -199,8 +199,7 @@ const MyStrategies = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-              <Target className="h-7 w-7 text-primary" />
+            <h1 className="text-2xl md:text-3xl font-bold">
               My Strategies
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -223,8 +222,8 @@ const MyStrategies = () => {
         {/* Strategy Cards */}
         {strategies.length === 0 ? (
           <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <Target className="h-12 w-12 text-muted-foreground/50 mb-4" />
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <LayoutGrid className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-semibold mb-2">No Active Strategies</h3>
               <p className="text-muted-foreground mb-4 max-w-md">
                 Create a new business analysis and activate your strategy to start tracking progress.

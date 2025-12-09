@@ -338,68 +338,66 @@ const StrategyDetail = () => {
 
       <Navbar />
 
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
+      <main className="flex-grow container mx-auto px-3 sm:px-4 py-4 sm:py-8 md:py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/my-strategies')}
-            className="mb-4"
+            className="mb-3 sm:mb-4 -ml-2 h-8 text-xs sm:text-sm"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Strategies
+            <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            Back
           </Button>
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                {strategy.is_deep_mode && (
-                  <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Deep Mode
-                  </Badge>
-                )}
-                <Badge variant="outline" className="text-xs">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {new Date(strategy.created_at).toLocaleDateString()}
+          <div className="flex flex-col gap-2 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              {strategy.is_deep_mode && (
+                <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 text-[10px] sm:text-xs">
+                  <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
+                  Deep
                 </Badge>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold">{strategy.name}</h1>
+              )}
+              <Badge variant="outline" className="text-[10px] sm:text-xs">
+                <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
+                {new Date(strategy.created_at).toLocaleDateString()}
+              </Badge>
             </div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight">{strategy.name}</h1>
           </div>
         </div>
 
         {/* Overall Progress */}
-        <Card className="mb-8">
-          <CardContent className="py-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-              <div>
-                <h2 className="text-lg font-semibold">Overall Progress</h2>
-                <p className="text-sm text-muted-foreground">
-                  {strategy.completed_actions} of {strategy.total_actions} actions completed
+        <Card className="mb-6 sm:mb-8">
+          <CardContent className="py-4 sm:py-6 px-4 sm:px-6">
+            <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold">Overall Progress</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {strategy.completed_actions}/{strategy.total_actions} actions
                 </p>
               </div>
-              <div className="text-3xl font-bold text-primary">{overallProgress}%</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary flex-shrink-0">{overallProgress}%</div>
             </div>
-            <Progress value={overallProgress} className="h-3" />
+            <Progress value={overallProgress} className="h-2 sm:h-3" />
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-              <div className="text-center p-3 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold">{strategy.total_phases}</div>
-                <div className="text-xs text-muted-foreground">Total Phases</div>
+            <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-4 sm:mt-6">
+              <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
+                <div className="text-lg sm:text-2xl font-bold">{strategy.total_phases}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">Phases</div>
               </div>
-              <div className="text-center p-3 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold text-primary">{strategy.completed_phases}</div>
-                <div className="text-xs text-muted-foreground">Completed</div>
+              <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
+                <div className="text-lg sm:text-2xl font-bold text-primary">{strategy.completed_phases}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">Done</div>
               </div>
-              <div className="text-center p-3 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold">{strategy.total_actions}</div>
-                <div className="text-xs text-muted-foreground">Total Actions</div>
+              <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
+                <div className="text-lg sm:text-2xl font-bold">{strategy.total_actions}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">Actions</div>
               </div>
-              <div className="text-center p-3 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold text-primary">{strategy.completed_actions}</div>
-                <div className="text-xs text-muted-foreground">Done</div>
+              <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
+                <div className="text-lg sm:text-2xl font-bold text-primary">{strategy.completed_actions}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">Done</div>
               </div>
             </div>
           </CardContent>
@@ -426,50 +424,52 @@ const StrategyDetail = () => {
                 }`}
               >
                 <CardHeader 
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
+                  className="cursor-pointer hover:bg-muted/30 transition-colors p-4 sm:p-6"
                   onClick={() => setExpandedPhase(isExpanded ? null : phaseIndex)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
+                  <div className="flex items-start sm:items-center justify-between gap-2">
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="flex-shrink-0 flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-primary/10 text-primary font-bold text-xs sm:text-sm">
                         {phaseIndex + 1}
                       </div>
-                      <div>
-                        <CardTitle className="text-base sm:text-lg">{originalPhase.title}</CardTitle>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className={statusBadge.class}>
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-sm sm:text-lg leading-tight line-clamp-2">{originalPhase.title}</CardTitle>
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
+                          <Badge variant="outline" className={`${statusBadge.class} text-[10px] sm:text-xs px-1.5 sm:px-2`}>
                             {statusBadge.icon}
-                            {phaseProgress?.status?.replace('_', ' ') || 'not started'}
+                            <span className="hidden xs:inline">{phaseProgress?.status?.replace('_', ' ') || 'not started'}</span>
+                            <span className="xs:hidden">{phaseProgress?.status === 'in_progress' ? 'Active' : phaseProgress?.status === 'completed' ? 'Done' : 'New'}</span>
                           </Badge>
-                          <span className="text-xs text-muted-foreground">{originalPhase.timeframe}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground truncate">{originalPhase.timeframe}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold">{phasePercent}%</div>
-                      <div className="text-xs text-muted-foreground">{completedInPhase}/{phaseActions.length}</div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-base sm:text-lg font-bold">{phasePercent}%</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{completedInPhase}/{phaseActions.length}</div>
                     </div>
                   </div>
-                  <Progress value={phasePercent} className="h-1.5 mt-3" />
+                  <Progress value={phasePercent} className="h-1 sm:h-1.5 mt-3" />
                 </CardHeader>
 
                 {isExpanded && (
-                  <CardContent className="pt-0 space-y-6">
+                  <CardContent className="pt-0 px-4 sm:px-6 space-y-4 sm:space-y-6">
                     {/* Phase Status Buttons */}
                     {phaseProgress && (
-                      <div className="flex flex-wrap gap-2 pb-4 border-b border-border/50">
-                        <span className="text-sm text-muted-foreground mr-2">Status:</span>
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 pb-4 border-b border-border/50">
+                        <span className="text-xs sm:text-sm text-muted-foreground mr-1 sm:mr-2 w-full sm:w-auto mb-1 sm:mb-0">Status:</span>
                         {(['not_started', 'in_progress', 'completed'] as const).map(status => (
                           <Button
                             key={status}
                             size="sm"
                             variant={phaseProgress.status === status ? 'default' : 'outline'}
                             onClick={() => updatePhaseStatus(phaseProgress.id, status)}
-                            className="text-xs"
+                            className="text-[10px] sm:text-xs h-7 sm:h-8 px-2 sm:px-3"
                           >
-                            {status === 'not_started' && 'Not Started'}
-                            {status === 'in_progress' && <><Play className="h-3 w-3 mr-1" /> In Progress</>}
-                            {status === 'completed' && <><CheckCircle className="h-3 w-3 mr-1" /> Completed</>}
+                            {status === 'not_started' && <span className="hidden sm:inline">Not Started</span>}
+                            {status === 'not_started' && <span className="sm:hidden">New</span>}
+                            {status === 'in_progress' && <><Play className="h-3 w-3 mr-1" /><span className="hidden sm:inline">In Progress</span><span className="sm:hidden">Active</span></>}
+                            {status === 'completed' && <><CheckCircle className="h-3 w-3 mr-1" /><span className="hidden sm:inline">Completed</span><span className="sm:hidden">Done</span></>}
                           </Button>
                         ))}
                       </div>
@@ -477,11 +477,11 @@ const StrategyDetail = () => {
 
                     {/* Actions Checklist */}
                     <div>
-                      <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                        <Zap className="h-4 w-4" />
+                      <h4 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2 sm:mb-3 flex items-center gap-2">
+                        <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         Actions ({completedInPhase}/{phaseActions.length})
                       </h4>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5 sm:space-y-2">
                         {phaseActions.map((action, actionIndex) => {
                           const actionText = typeof action === 'string' ? action : action.text || '';
                           const searchTerm = typeof action === 'object' && 'searchTerm' in action 
@@ -492,7 +492,7 @@ const StrategyDetail = () => {
                           return (
                             <div 
                               key={actionIndex}
-                              className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                              className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
                                 isCompleted 
                                   ? 'bg-primary/5 border-primary/20' 
                                   : 'bg-muted/20 border-border/50 hover:border-primary/30'
@@ -501,10 +501,10 @@ const StrategyDetail = () => {
                               <Checkbox
                                 checked={isCompleted}
                                 onCheckedChange={() => toggleAction(phaseIndex, actionIndex)}
-                                className="mt-0.5"
+                                className="mt-0.5 h-4 w-4"
                               />
                               <div className="flex-1 min-w-0">
-                                <span className={`text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
+                                <span className={`text-xs sm:text-sm leading-relaxed ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
                                   {actionText}
                                 </span>
                                 {searchTerm && (
@@ -512,11 +512,12 @@ const StrategyDetail = () => {
                                     href={`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 ml-2 text-xs text-primary hover:underline"
+                                    className="inline-flex items-center gap-1 ml-1 sm:ml-2 text-[10px] sm:text-xs text-primary hover:underline"
                                     onClick={e => e.stopPropagation()}
                                   >
-                                    <ExternalLink className="h-3 w-3" />
-                                    Learn more
+                                    <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                    <span className="hidden sm:inline">Learn more</span>
+                                    <span className="sm:hidden">More</span>
                                   </a>
                                 )}
                               </div>
@@ -567,25 +568,36 @@ const StrategyDetail = () => {
                         <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                           Notes
                         </h4>
-                        <Textarea
-                          placeholder="Add notes for this phase..."
-                          value={phaseProgress.notes || ''}
-                          onChange={(e) => updatePhaseNotes(phaseProgress.id, e.target.value)}
-                          className="min-h-[100px] resize-none"
-                        />
-                        <Button 
-                          size="sm" 
-                          className="mt-2"
-                          onClick={() => savePhaseNotes(phaseProgress.id)}
-                          disabled={isSaving}
-                        >
-                          {isSaving ? (
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          ) : (
-                            <Save className="h-4 w-4 mr-2" />
-                          )}
-                          Save Notes
-                        </Button>
+                        <div className="space-y-2">
+                          <Textarea
+                            placeholder="Add notes for this phase..."
+                            value={phaseProgress.notes || ''}
+                            onChange={(e) => {
+                              if (e.target.value.length <= 100) {
+                                updatePhaseNotes(phaseProgress.id, e.target.value);
+                              }
+                            }}
+                            maxLength={100}
+                            className="min-h-[60px] resize-none text-sm"
+                          />
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">
+                              {(phaseProgress.notes || '').length}/100
+                            </span>
+                            <Button 
+                              size="sm" 
+                              onClick={() => savePhaseNotes(phaseProgress.id)}
+                              disabled={isSaving}
+                            >
+                              {isSaving ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                              ) : (
+                                <Save className="h-4 w-4 mr-1" />
+                              )}
+                              Save
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </CardContent>

@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { Target } from "lucide-react";
+import { Target, Crown, ChevronDown, Briefcase } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const Navbar = () => {
   const location = useLocation();
@@ -74,16 +84,34 @@ const Navbar = () => {
             Home
           </Link>
           
-          <Link 
-            to="/business-tools" 
-            className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
-              isActive("/business-tools") 
-                ? "text-primary after:w-full" 
-                : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
-            }`}
-          >
-            AI Business Planner
-          </Link>
+          {/* Services Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className={`text-sm font-semibold transition-all duration-300 flex items-center gap-1 ${
+              isActive("/business-tools") || isActive("/my-strategies")
+                ? "text-primary" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}>
+              Services
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link to="/business-tools" className="flex items-center gap-2 cursor-pointer">
+                  <Briefcase className="h-4 w-4" />
+                  AI Business Planner
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/my-strategies" className="flex items-center gap-2 cursor-pointer">
+                  <Target className="h-4 w-4" />
+                  My Strategies
+                  {!isPremium && (
+                    <Crown className="h-3.5 w-3.5 ml-auto text-amber-500" />
+                  )}
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Link 
             to="/pricing" 
@@ -106,21 +134,6 @@ const Navbar = () => {
           >
             Blog
           </Link>
-          
-          {/* My Strategies - Premium Only */}
-          {user && isPremium && (
-            <Link 
-              to="/my-strategies" 
-              className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 flex items-center gap-1.5 ${
-                isActive("/my-strategies") 
-                  ? "text-primary after:w-full" 
-                  : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
-              }`}
-            >
-              <Target className="h-4 w-4" />
-              My Strategies
-            </Link>
-          )}
           
           {user ? (
             <Button
@@ -168,13 +181,34 @@ const Navbar = () => {
               Home
             </Link>
             
-            <Link
-              to="/business-tools"
-              className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
-              onClick={() => setIsOpen(false)}
-            >
-              AI Business Planner
-            </Link>
+            {/* Services Collapsible (Mobile) */}
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg">
+                Services
+                <ChevronDown className="h-4 w-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-4 space-y-1">
+                <Link
+                  to="/business-tools"
+                  className="flex items-center gap-2 text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Briefcase className="h-4 w-4" />
+                  AI Business Planner
+                </Link>
+                <Link
+                  to="/my-strategies"
+                  className="flex items-center gap-2 text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Target className="h-4 w-4" />
+                  My Strategies
+                  {!isPremium && (
+                    <Crown className="h-3.5 w-3.5 ml-auto text-amber-500" />
+                  )}
+                </Link>
+              </CollapsibleContent>
+            </Collapsible>
 
             <Link
               to="/pricing"
@@ -191,18 +225,6 @@ const Navbar = () => {
             >
               Blog
             </Link>
-            
-            {/* My Strategies - Premium Only (Mobile) */}
-            {user && isPremium && (
-              <Link
-                to="/my-strategies"
-                className="flex items-center gap-2 text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
-                onClick={() => setIsOpen(false)}
-              >
-                <Target className="h-4 w-4" />
-                My Strategies
-              </Link>
-            )}
 
             {user ? (
               <Button

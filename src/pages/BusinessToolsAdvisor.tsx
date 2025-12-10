@@ -13,6 +13,7 @@ import Pricing from "@/components/home/Pricing";
 import { User } from "@supabase/supabase-js";
 import { StrategyInput, OptionalParams } from "@/components/planner/StrategyInput";
 import { StrategyOutput, PlannerResult } from "@/components/planner/StrategyOutput";
+import { AnalysisLoader } from "@/components/planner/AnalysisLoader";
 import { pdf } from "@react-pdf/renderer";
 import { StrategyPDF } from "@/components/planner/StrategyPDF";
 
@@ -248,7 +249,11 @@ export default function BusinessToolsAdvisor() {
               </CardContent>
             </Card>
 
-            {result && (
+            {analyzing && (
+              <AnalysisLoader isDeepMode={analysisMode === 'deep'} />
+            )}
+
+            {result && !analyzing && (
               <div ref={resultRef} className="animate-fade-in">
                 <Card className="border-primary/20 shadow-elegant">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

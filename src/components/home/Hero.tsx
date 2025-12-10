@@ -5,6 +5,11 @@ import { useAuth } from "@/contexts/AuthContext";
 const Hero = () => {
   const { user, isPremium } = useAuth();
 
+  const scrollToHowItWorks = () => {
+    const section = document.getElementById('how-it-works');
+    section?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section
       className="relative min-h-[85vh] flex items-center justify-center py-20 sm:py-24 md:py-32 overflow-hidden"
@@ -17,15 +22,15 @@ const Hero = () => {
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-          {/* Gradient Animated Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight animate-scale-in">
-            <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-fade-in bg-[length:200%_auto] hover:animate-pulse transition-all duration-300">
-              AI Business Planner
+          {/* Benefit-Driven Headline */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
+            <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-fade-in bg-[length:200%_auto] transition-all duration-300">
+              Turn Your Business Goals Into a Clear Action Plan
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Describe your business goals and get a phased strategy with actionable steps. Powered by advanced AI analysis.
+            Describe what you want to achieve. Get a structured, week-by-week strategy with specific tasks, budgets, and milestones — ready in under 2 minutes.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
@@ -35,7 +40,7 @@ const Hero = () => {
               asChild
             >
               <Link to="/business-tools">
-                {isPremium && user ? "Go to Planner" : "Start Free Analysis"}
+                {isPremium && user ? "Go to Planner" : "Create Your Strategy"}
               </Link>
             </Button>
 
@@ -44,12 +49,9 @@ const Hero = () => {
                 size="lg"
                 variant="outline"
                 className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/30"
-                onClick={() => {
-                  const pricingSection = document.getElementById('pricing-section');
-                  pricingSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={scrollToHowItWorks}
               >
-                View Pricing
+                See How It Works
               </Button>
             )}
           </div>
@@ -65,7 +67,7 @@ const Hero = () => {
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: '1s' }} />
-              Instant Results
+              Results in Under 2 Minutes
             </span>
           </div>
         </div>

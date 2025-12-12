@@ -315,10 +315,12 @@ serve(async (req) => {
         break;
 
       case 'refund.completed':
+      case 'payment.refund':
         // Immediate deactivation on refund
         isPremium = false;
         console.log('💰 REFUND PROCESSED');
         console.log('User ID:', profile.id);
+        console.log('Event Type:', event.type);
         console.log('Action: Immediate premium deactivation');
         break;
 

@@ -1,6 +1,5 @@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Sparkles } from 'lucide-react';
 
 interface AutopilotToggleProps {
   enabled: boolean;
@@ -19,9 +18,8 @@ const AutopilotToggle = ({ enabled, onToggle, disabled }: AutopilotToggleProps) 
       />
       <Label 
         htmlFor="autopilot-toggle" 
-        className="flex items-center gap-1.5 cursor-pointer"
+        className="cursor-pointer"
       >
-        <Sparkles className="h-4 w-4 text-primary" />
         <span className="text-sm font-medium">Autopilot</span>
       </Label>
     </div>

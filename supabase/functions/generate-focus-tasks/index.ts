@@ -158,33 +158,33 @@ serve(async (req) => {
       });
     });
 
-    const systemPrompt = `Du bist ein Produktivitäts-Coach für Business-Strategien. Deine Aufgabe ist es, 1-3 fokussierte Tagesaufgaben zu generieren, die den User bei der Umsetzung seiner Strategie unterstützen.
+    const systemPrompt = `You are a productivity coach for business strategies. Your task is to generate 1-3 focused daily tasks that help the user implement their strategy.
 
-WICHTIG: Antworte NUR mit einem JSON-Array. Keine Erklärungen, kein Markdown, nur das JSON.
+IMPORTANT: Respond ONLY with a JSON array. No explanations, no markdown, just the JSON.
 
-Priorisiere Tasks nach:
-1. Blockierende Aufgaben (was muss zuerst erledigt werden?)
-2. Quick Wins (was kann schnell abgeschlossen werden?)
-3. Momentum-Builder (was bringt sichtbaren Fortschritt?)
+Prioritize tasks by:
+1. Blocking tasks (what needs to be done first?)
+2. Quick wins (what can be completed quickly?)
+3. Momentum builders (what creates visible progress?)
 
-Jede Task muss folgende Felder haben:
-- task_title: Kurz und actionable (max 60 Zeichen)
-- task_description: 1-2 konkrete Sätze
+Each task must have these fields:
+- task_title: Short and actionable (max 60 characters)
+- task_description: 1-2 concrete sentences
 - task_type: "action" | "preparation" | "review"
-- priority: 1 (höchste) bis 3
-- estimated_duration: z.B. "30 min", "1-2 Stunden"
-- phase_index: Index der Phase (0-basiert)
-- action_index: Index der Action in der Phase (0-basiert) oder null wenn generische Task
-- ai_reasoning: Warum diese Task heute wichtig ist (1 Satz)`;
+- priority: 1 (highest) to 3
+- estimated_duration: e.g. "30 min", "1-2 hours"
+- phase_index: Index of the phase (0-based)
+- action_index: Index of the action in the phase (0-based) or null if generic task
+- ai_reasoning: Why this task is important today (1 sentence)`;
 
-    const userPrompt = `Analysiere diese Business-Strategie und generiere 1-3 fokussierte Tasks für HEUTE:
+    const userPrompt = `Analyze this business strategy and generate 1-3 focused tasks for TODAY:
 
-Strategie: "${strategy.name}"
-Gesamtfortschritt: ${strategy.completed_actions}/${strategy.total_actions} Actions, ${strategy.completed_phases}/${strategy.total_phases} Phasen
+Strategy: "${strategy.name}"
+Overall progress: ${strategy.completed_actions}/${strategy.total_actions} actions, ${strategy.completed_phases}/${strategy.total_phases} phases
 
 ${progressContext}
 
-Generiere jetzt 1-3 priorisierte Tasks als JSON-Array:`;
+Generate 1-3 prioritized tasks as JSON array now:`;
 
     console.log('Calling Lovable AI for task generation...');
 
@@ -239,16 +239,15 @@ Generiere jetzt 1-3 priorisierte Tasks als JSON-Array:`;
       }
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
-      // Create a fallback task
       tasks = [{
-        task_title: 'Strategie-Review durchführen',
-        task_description: 'Überprüfe deinen aktuellen Fortschritt und plane die nächsten Schritte.',
+        task_title: 'Review your strategy progress',
+        task_description: 'Check your current progress and plan the next steps.',
         task_type: 'review',
         priority: 1,
         estimated_duration: '15 min',
         phase_index: 0,
         action_index: null,
-        ai_reasoning: 'Ein regelmäßiger Review hilft, den Überblick zu behalten.'
+        ai_reasoning: 'A regular review helps maintain focus and momentum.'
       }];
     }
 

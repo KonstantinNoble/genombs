@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FocusTask {
@@ -24,11 +24,11 @@ interface FocusTaskCardProps {
 const FocusTaskCard = ({ task, onToggle }: FocusTaskCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const priorityEmoji = task.priority === 1 ? '1️⃣' : task.priority === 2 ? '2️⃣' : '3️⃣';
+  const priorityLabel = task.priority === 1 ? 'High' : task.priority === 2 ? 'Medium' : 'Low';
   
   const taskTypeLabel = {
     action: 'Action',
-    preparation: 'Vorbereitung',
+    preparation: 'Preparation',
     review: 'Review',
   }[task.task_type] || 'Task';
 
@@ -37,6 +37,12 @@ const FocusTaskCard = ({ task, onToggle }: FocusTaskCardProps) => {
     preparation: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
     review: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
   }[task.task_type] || 'bg-muted text-muted-foreground';
+
+  const priorityColor = {
+    1: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    2: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+    3: 'bg-muted text-muted-foreground',
+  }[task.priority] || 'bg-muted text-muted-foreground';
 
   return (
     <div 
@@ -56,12 +62,13 @@ const FocusTaskCard = ({ task, onToggle }: FocusTaskCardProps) => {
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-sm">{priorityEmoji}</span>
+            <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", priorityColor)}>
+              {priorityLabel}
+            </span>
             <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", taskTypeColor)}>
               {taskTypeLabel}
             </span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+            <span className="text-xs text-muted-foreground">
               {task.estimated_duration}
             </span>
             <span className="text-xs text-muted-foreground">
@@ -86,14 +93,13 @@ const FocusTaskCard = ({ task, onToggle }: FocusTaskCardProps) => {
             onClick={() => setExpanded(!expanded)}
             className="flex items-center gap-1 text-xs text-primary/70 hover:text-primary mt-2 transition-colors"
           >
-            <Lightbulb className="h-3 w-3" />
-            Warum heute?
+            Why today?
             {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           </button>
           
           {expanded && (
-            <div className="mt-2 text-sm text-muted-foreground bg-muted/50 rounded p-2 italic">
-              💡 {task.ai_reasoning}
+            <div className="mt-2 text-sm text-muted-foreground bg-muted/50 rounded p-2">
+              {task.ai_reasoning}
             </div>
           )}
         </div>

@@ -59,6 +59,11 @@ const PricingPage = () => {
       description: "Advanced analysis with competitor insights, ROI projections, and risk mitigation strategies."
     },
     {
+      icon: <Sparkles className="h-6 w-6" />,
+      title: "AI Autopilot",
+      description: "Get 3 AI-generated daily focus tasks tailored to your strategy. Stay on track with personalized action items and streak tracking."
+    },
+    {
       icon: <TrendingUp className="h-6 w-6" />,
       title: "ROI Projections",
       description: "Every Deep Analysis includes expected return on investment with realistic assumptions to prioritize high-impact strategies."
@@ -92,6 +97,7 @@ const PricingPage = () => {
     { name: "Google Search Links", free: true, premium: true },
     { name: "Optional Context Input", free: true, premium: true },
     { name: "Deep Analysis Mode", free: false, premium: true },
+    { name: "AI Autopilot (3 daily tasks)", free: false, premium: true },
     { name: "Strategy Tracking", free: false, premium: true },
     { name: "Competitor Analysis", free: false, premium: true },
     { name: "ROI Projections", free: false, premium: true },

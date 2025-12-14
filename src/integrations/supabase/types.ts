@@ -379,7 +379,9 @@ export type Database = {
           analysis_count: number | null
           analysis_window_start: string | null
           auto_renew: boolean | null
+          autopilot_generation_reset_date: string | null
           created_at: string
+          daily_autopilot_generations: number | null
           deep_analysis_count: number | null
           deep_analysis_window_start: string | null
           freemius_customer_id: string | null
@@ -406,7 +408,9 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           auto_renew?: boolean | null
+          autopilot_generation_reset_date?: string | null
           created_at?: string
+          daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
           deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null
@@ -433,7 +437,9 @@ export type Database = {
           analysis_count?: number | null
           analysis_window_start?: string | null
           auto_renew?: boolean | null
+          autopilot_generation_reset_date?: string | null
           created_at?: string
+          daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
           deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null

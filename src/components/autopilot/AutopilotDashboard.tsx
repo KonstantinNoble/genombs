@@ -60,6 +60,23 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
       }
 
       const data = response.data;
+      
+      // Check for limit reached error
+      if (data.error && data.limit_reached) {
+        toast({
+          title: "Daily limit reached",
+          description: "You've used all 3 AI generations today. Try again tomorrow.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        setRegenerating(false);
+        return;
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       setTasks(data.tasks || []);
       setStreak(data.streak ?? 0);
       setLongestStreak(data.longestStreak ?? 0);
@@ -89,38 +106,53 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
 
   const handleTaskToggle = async (taskId: string, completed: boolean) => {
     try {
-      const { error } = await supabase
-        .from('autopilot_focus_tasks')
-        .update({ 
-          is_completed: completed,
-          completed_at: completed ? new Date().toISOString() : null
-        })
-        .eq('id', taskId);
-
-      if (error) throw error;
-
+      // Optimistically update UI first
       setTasks(prev => prev.map(t => 
         t.id === taskId 
           ? { ...t, is_completed: completed, completed_at: completed ? new Date().toISOString() : null }
           : t
       ));
 
-      // Update strategy total completed tasks if completing
-      if (completed) {
-        await supabase
-          .from('active_strategies')
-          .update({ 
-            total_focus_tasks_completed: tasks.filter(t => t.is_completed).length + 1
-          })
-          .eq('id', strategyId);
+      const { data, error } = await supabase
+        .from('autopilot_focus_tasks')
+        .update({ 
+          is_completed: completed,
+          completed_at: completed ? new Date().toISOString() : null
+        })
+        .eq('id', taskId)
+        .select();
+
+      if (error) {
+        console.error('Database update error:', error);
+        // Revert optimistic update on error
+        setTasks(prev => prev.map(t => 
+          t.id === taskId 
+            ? { ...t, is_completed: !completed, completed_at: null }
+            : t
+        ));
+        throw error;
       }
+
+      console.log('Task updated successfully:', data);
+
+      // Update strategy total completed tasks
+      const currentCompletedCount = tasks.filter(t => 
+        t.id === taskId ? completed : t.is_completed
+      ).length;
+      
+      await supabase
+        .from('active_strategies')
+        .update({ 
+          total_focus_tasks_completed: currentCompletedCount
+        })
+        .eq('id', strategyId);
 
       onTaskComplete?.();
 
       const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, is_completed: completed } : t);
       const allCompleted = updatedTasks.every(t => t.is_completed);
       
-      if (allCompleted && completed) {
+      if (allCompleted && completed && updatedTasks.length > 0) {
         toast({
           title: "All tasks completed",
           description: "Great work. New tasks will be available tomorrow.",

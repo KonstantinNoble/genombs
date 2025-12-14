@@ -160,6 +160,8 @@ serve(async (req) => {
 
     const systemPrompt = `You are a productivity coach for business strategies. Your task is to generate 1-3 focused daily tasks that help the user implement their strategy.
 
+CRITICAL: ALL output MUST be in English, regardless of the input language.
+
 IMPORTANT: Respond ONLY with a JSON array. No explanations, no markdown, just the JSON.
 
 Prioritize tasks by:
@@ -167,15 +169,15 @@ Prioritize tasks by:
 2. Quick wins (what can be completed quickly?)
 3. Momentum builders (what creates visible progress?)
 
-Each task must have these fields:
-- task_title: Short and actionable (max 60 characters)
-- task_description: 1-2 concrete sentences
+Each task must have these fields (ALL IN ENGLISH):
+- task_title: Short and actionable (max 60 characters, English only)
+- task_description: 1-2 concrete sentences (English only)
 - task_type: "action" | "preparation" | "review"
 - priority: 1 (highest) to 3
 - estimated_duration: e.g. "30 min", "1-2 hours"
 - phase_index: Index of the phase (0-based)
 - action_index: Index of the action in the phase (0-based) or null if generic task
-- ai_reasoning: Why this task is important today (1 sentence)`;
+- ai_reasoning: Why this task is important today (1 sentence, English only)`;
 
     const userPrompt = `Analyze this business strategy and generate 1-3 focused tasks for TODAY:
 

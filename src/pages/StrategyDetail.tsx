@@ -26,6 +26,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { PlannerResult, StrategyPhase } from '@/components/planner/StrategyOutput';
+import AutopilotDashboard from '@/components/autopilot/AutopilotDashboard';
 
 interface ActiveStrategy {
   id: string;
@@ -403,8 +404,15 @@ const StrategyDetail = () => {
           </CardContent>
         </Card>
 
+        {/* Autopilot Dashboard */}
+        <AutopilotDashboard 
+          strategyId={strategy.id} 
+          strategyName={strategy.name}
+          onTaskComplete={fetchData}
+        />
+
         {/* Phases */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-6">
           {originalStrategies.map((originalPhase: StrategyPhase, phaseIndex: number) => {
             const phaseProgress = phases.find(p => p.phase_index === phaseIndex);
             const phaseActions = originalPhase.actions || [];

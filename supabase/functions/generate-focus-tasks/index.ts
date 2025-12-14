@@ -25,6 +25,8 @@ interface FocusTask {
   ai_reasoning: string;
 }
 
+const MAX_DAILY_GENERATIONS = 3;
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -61,12 +63,19 @@ serve(async (req) => {
       });
     }
 
-    // Check premium status
-    const { data: credits } = await supabaseClient
+    // Get today's date in UTC
+    const today = new Date().toISOString().split('T')[0];
+
+    // Check premium status and daily generation limit
+    const { data: credits, error: creditsError } = await supabaseClient
       .from('user_credits')
-      .select('is_premium')
+      .select('is_premium, daily_autopilot_generations, autopilot_generation_reset_date')
       .eq('user_id', user.id)
       .maybeSingle();
+
+    if (creditsError) {
+      console.error('Error fetching credits:', creditsError);
+    }
 
     if (!credits?.is_premium) {
       return new Response(JSON.stringify({ error: 'Premium required for Autopilot feature' }), {
@@ -99,24 +108,61 @@ serve(async (req) => {
       });
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    // Check if tasks already exist for today for THIS strategy
+    const { data: existingTasks } = await supabaseClient
+      .from('autopilot_focus_tasks')
+      .select('*')
+      .eq('strategy_id', strategy_id)
+      .eq('generated_for_date', today);
 
-    // Check if tasks already exist for today
-    if (!force_regenerate) {
-      const { data: existingTasks } = await supabaseClient
-        .from('autopilot_focus_tasks')
-        .select('*')
-        .eq('strategy_id', strategy_id)
-        .eq('generated_for_date', today);
+    // If tasks exist and not forcing regeneration, return them
+    if (!force_regenerate && existingTasks && existingTasks.length > 0) {
+      console.log('Tasks already exist for today, returning existing');
+      return new Response(JSON.stringify({ 
+        tasks: existingTasks, 
+        cached: true,
+        streak: strategy.current_streak || 0,
+        longestStreak: strategy.longest_streak || 0
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-      if (existingTasks && existingTasks.length > 0) {
-        console.log('Tasks already exist for today, returning existing');
-        return new Response(JSON.stringify({ tasks: existingTasks, cached: true }), {
+    // Check global daily generation limit (only when generating NEW tasks)
+    const needsNewGeneration = force_regenerate || !existingTasks || existingTasks.length === 0;
+    
+    if (needsNewGeneration) {
+      // Reset counter if it's a new day
+      const resetDate = credits?.autopilot_generation_reset_date;
+      let currentGenerations = credits?.daily_autopilot_generations || 0;
+      
+      if (resetDate !== today) {
+        // New day, reset counter
+        currentGenerations = 0;
+        await supabaseClient
+          .from('user_credits')
+          .update({ 
+            daily_autopilot_generations: 0,
+            autopilot_generation_reset_date: today
+          })
+          .eq('user_id', user.id);
+      }
+
+      // Check if limit reached
+      if (currentGenerations >= MAX_DAILY_GENERATIONS) {
+        console.log(`Daily generation limit reached for user ${user.id}: ${currentGenerations}/${MAX_DAILY_GENERATIONS}`);
+        return new Response(JSON.stringify({ 
+          error: 'Daily AI generation limit reached (max 3 per day). Tasks will be available again tomorrow.',
+          limit_reached: true
+        }), {
+          status: 429,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-    } else {
-      // Delete existing tasks for regeneration
+    }
+
+    // Delete existing tasks for regeneration if forcing
+    if (force_regenerate && existingTasks && existingTasks.length > 0) {
       await supabaseClient
         .from('autopilot_focus_tasks')
         .delete()
@@ -279,6 +325,17 @@ Generate 1-3 prioritized tasks as JSON array now:`;
       throw insertError;
     }
 
+    // Increment the global daily generation counter
+    await supabaseClient
+      .from('user_credits')
+      .update({ 
+        daily_autopilot_generations: (credits?.daily_autopilot_generations || 0) + 1,
+        autopilot_generation_reset_date: today
+      })
+      .eq('user_id', user.id);
+
+    console.log(`Incremented daily generation count for user ${user.id}`);
+
     // Update strategy last generated timestamp
     await supabaseClient
       .from('active_strategies')
@@ -288,9 +345,9 @@ Generate 1-3 prioritized tasks as JSON array now:`;
       })
       .eq('id', strategy_id);
 
-    // Calculate streak
+    // Calculate streak - only based on yesterday's completed tasks
     const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     const { data: yesterdayTasks } = await supabaseClient
@@ -300,6 +357,10 @@ Generate 1-3 prioritized tasks as JSON array now:`;
       .eq('generated_for_date', yesterdayStr);
 
     let newStreak = strategy.current_streak || 0;
+    
+    // Streak logic: if yesterday had tasks and ALL were completed, increment
+    // If yesterday had tasks but not all completed, reset to 0
+    // If yesterday had no tasks, keep current streak (user might have started fresh)
     if (yesterdayTasks && yesterdayTasks.length > 0) {
       const allCompleted = yesterdayTasks.every(t => t.is_completed);
       if (allCompleted) {
@@ -308,6 +369,7 @@ Generate 1-3 prioritized tasks as JSON array now:`;
         newStreak = 0;
       }
     }
+    // If no tasks yesterday, keep streak as is (don't break streak for first day)
 
     const longestStreak = Math.max(newStreak, strategy.longest_streak || 0);
 

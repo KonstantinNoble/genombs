@@ -16,43 +16,58 @@ export type Database = {
     Tables: {
       active_strategies: {
         Row: {
+          autopilot_enabled: boolean | null
+          autopilot_last_generated: string | null
           completed_actions: number
           completed_phases: number
           created_at: string
+          current_streak: number | null
           id: string
           is_deep_mode: boolean
+          longest_streak: number | null
           name: string
           original_result: Json
           status: string
           total_actions: number
+          total_focus_tasks_completed: number | null
           total_phases: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          autopilot_enabled?: boolean | null
+          autopilot_last_generated?: string | null
           completed_actions?: number
           completed_phases?: number
           created_at?: string
+          current_streak?: number | null
           id?: string
           is_deep_mode?: boolean
+          longest_streak?: number | null
           name: string
           original_result: Json
           status?: string
           total_actions?: number
+          total_focus_tasks_completed?: number | null
           total_phases?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          autopilot_enabled?: boolean | null
+          autopilot_last_generated?: string | null
           completed_actions?: number
           completed_phases?: number
           created_at?: string
+          current_streak?: number | null
           id?: string
           is_deep_mode?: boolean
+          longest_streak?: number | null
           name?: string
           original_result?: Json
           status?: string
           total_actions?: number
+          total_focus_tasks_completed?: number | null
           total_phases?: number
           updated_at?: string
           user_id?: string
@@ -112,6 +127,68 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      autopilot_focus_tasks: {
+        Row: {
+          action_index: number | null
+          ai_reasoning: string | null
+          completed_at: string | null
+          created_at: string | null
+          estimated_duration: string | null
+          generated_for_date: string
+          id: string
+          is_completed: boolean | null
+          phase_index: number | null
+          priority: number | null
+          strategy_id: string
+          task_description: string | null
+          task_title: string
+          task_type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_index?: number | null
+          ai_reasoning?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          estimated_duration?: string | null
+          generated_for_date: string
+          id?: string
+          is_completed?: boolean | null
+          phase_index?: number | null
+          priority?: number | null
+          strategy_id: string
+          task_description?: string | null
+          task_title: string
+          task_type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_index?: number | null
+          ai_reasoning?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          estimated_duration?: string | null
+          generated_for_date?: string
+          id?: string
+          is_completed?: boolean | null
+          phase_index?: number | null
+          priority?: number | null
+          strategy_id?: string
+          task_description?: string | null
+          task_title?: string
+          task_type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "autopilot_focus_tasks_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "active_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       business_tools_history: {
         Row: {

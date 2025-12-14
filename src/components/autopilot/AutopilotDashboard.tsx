@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { RefreshCw, Loader2, Clock, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import FocusTaskCard from './FocusTaskCard';
@@ -34,6 +35,50 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
   const [regenerating, setRegenerating] = useState(false);
   const [streak, setStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
+  const [remainingGenerations, setRemainingGenerations] = useState(3);
+  const [maxGenerations, setMaxGenerations] = useState(3);
+  const [limitReached, setLimitReached] = useState(false);
+  const [resetTime, setResetTime] = useState<string | null>(null);
+  const [timeUntilReset, setTimeUntilReset] = useState<string>('');
+
+  // Calculate time until reset
+  const calculateTimeUntilReset = (resetTimeStr: string) => {
+    const resetDate = new Date(resetTimeStr);
+    const now = new Date();
+    const diff = resetDate.getTime() - now.getTime();
+    
+    if (diff <= 0) return 'Refreshing...';
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
+  // Update timer every minute
+  useEffect(() => {
+    if (!resetTime || !limitReached) return;
+    
+    const updateTimer = () => {
+      const timeStr = calculateTimeUntilReset(resetTime);
+      setTimeUntilReset(timeStr);
+      
+      // If timer expired, reset limit state
+      if (timeStr === 'Refreshing...') {
+        setLimitReached(false);
+        setRemainingGenerations(maxGenerations);
+        setResetTime(null);
+      }
+    };
+    
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [resetTime, limitReached, maxGenerations]);
 
   const fetchOrGenerateTasks = async (forceRegenerate = false) => {
     try {
@@ -61,11 +106,24 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
 
       const data = response.data;
       
+      // Update generation counts
+      if (data.remaining_generations !== undefined) {
+        setRemainingGenerations(data.remaining_generations);
+      }
+      if (data.max_generations !== undefined) {
+        setMaxGenerations(data.max_generations);
+      }
+      
       // Check for limit reached error
       if (data.error && data.limit_reached) {
+        setLimitReached(true);
+        if (data.reset_time) {
+          setResetTime(data.reset_time);
+          setTimeUntilReset(calculateTimeUntilReset(data.reset_time));
+        }
         toast({
           title: "Daily limit reached",
-          description: "You've used all 3 AI generations today. Try again tomorrow.",
+          description: `You've used all ${data.max_generations || 3} AI generations today. New generations available in ${calculateTimeUntilReset(data.reset_time)}.`,
           variant: "destructive",
         });
         setLoading(false);
@@ -77,14 +135,15 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
         throw new Error(data.error);
       }
 
+      setLimitReached(false);
       setTasks(data.tasks || []);
       setStreak(data.streak ?? 0);
       setLongestStreak(data.longestStreak ?? 0);
 
-      if (!data.cached && !forceRegenerate) {
+      if (!data.cached && forceRegenerate) {
         toast({
-          title: "Focus tasks generated",
-          description: "Your daily tasks have been created.",
+          title: "Tasks regenerated",
+          description: `${data.remaining_generations} generation${data.remaining_generations !== 1 ? 's' : ''} remaining today.`,
         });
       }
     } catch (error: any) {
@@ -192,13 +251,26 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
             <CardTitle className="text-lg">Today's Focus</CardTitle>
           </div>
           <div className="flex items-center gap-3">
+            {/* Generation counter */}
+            {limitReached ? (
+              <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                <Clock className="h-3 w-3" />
+                Resets in {timeUntilReset}
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                <Sparkles className="h-3 w-3" />
+                {remainingGenerations}/{maxGenerations} left
+              </Badge>
+            )}
             <StreakDisplay streak={streak} longestStreak={longestStreak} />
             <Button
               variant="ghost"
               size="sm"
               onClick={() => fetchOrGenerateTasks(true)}
-              disabled={regenerating}
+              disabled={regenerating || limitReached}
               className="h-8"
+              title={limitReached ? `Limit reached. Resets in ${timeUntilReset}` : 'Regenerate tasks'}
             >
               <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
             </Button>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Flame, RefreshCw, Target, Loader2, Sparkles } from 'lucide-react';
+import { RefreshCw, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import FocusTaskCard from './FocusTaskCard';
@@ -66,15 +66,15 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
 
       if (!data.cached && !forceRegenerate) {
         toast({
-          title: "Focus Tasks generiert",
-          description: "Deine täglichen Aufgaben wurden erstellt.",
+          title: "Focus tasks generated",
+          description: "Your daily tasks have been created.",
         });
       }
     } catch (error: any) {
       console.error('Error fetching tasks:', error);
       toast({
-        title: "Fehler",
-        description: error.message || "Tasks konnten nicht geladen werden.",
+        title: "Error",
+        description: error.message || "Could not load tasks.",
         variant: "destructive",
       });
     } finally {
@@ -117,21 +117,20 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
 
       onTaskComplete?.();
 
-      // Check if all tasks completed
       const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, is_completed: completed } : t);
       const allCompleted = updatedTasks.every(t => t.is_completed);
       
       if (allCompleted && completed) {
         toast({
-          title: "🎉 Alle Tasks erledigt!",
-          description: "Super Arbeit! Morgen warten neue Aufgaben auf dich.",
+          title: "All tasks completed",
+          description: "Great work. New tasks will be available tomorrow.",
         });
       }
     } catch (error: any) {
       console.error('Error toggling task:', error);
       toast({
-        title: "Fehler",
-        description: "Status konnte nicht aktualisiert werden.",
+        title: "Error",
+        description: "Could not update status.",
         variant: "destructive",
       });
     }
@@ -142,11 +141,11 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+      <Card className="border-primary/20">
         <CardContent className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Generiere Focus Tasks...</p>
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Generating focus tasks...</p>
           </div>
         </CardContent>
       </Card>
@@ -154,13 +153,11 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
   }
 
   return (
-    <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+    <Card className="border-primary/20">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
+          <div>
             <CardTitle className="text-lg">Today's Focus</CardTitle>
-            <Sparkles className="h-4 w-4 text-yellow-500" />
           </div>
           <div className="flex items-center gap-3">
             <StreakDisplay streak={streak} longestStreak={longestStreak} />
@@ -176,20 +173,20 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          {completedCount}/{tasks.length} Tasks erledigt
+          {completedCount}/{tasks.length} tasks completed
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
         {tasks.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-muted-foreground">Keine Tasks für heute.</p>
+            <p className="text-muted-foreground">No tasks for today.</p>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => fetchOrGenerateTasks(true)}
               className="mt-3"
             >
-              Tasks generieren
+              Generate tasks
             </Button>
           </div>
         ) : (
@@ -207,10 +204,10 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
             {allCompleted && (
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
                 <p className="text-green-600 dark:text-green-400 font-medium">
-                  ✨ Alle Tasks erledigt! Super Arbeit!
+                  All tasks completed. Great work.
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Morgen warten neue Aufgaben auf dich.
+                  New tasks will be available tomorrow.
                 </p>
               </div>
             )}

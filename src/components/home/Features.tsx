@@ -7,9 +7,9 @@ const features = [
       "Describe your business goals and get a phased strategy with actionable steps and Google search links.",
   },
   {
-    title: "Deep Analysis Mode",
+    title: "AI Autopilot",
     description:
-      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
+      "Get 3 AI-generated daily focus tasks tailored to your active strategy. Stay on track with personalized action items and streak tracking.",
   },
   {
     title: "Strategy Tracking",
@@ -17,9 +17,9 @@ const features = [
       "Activate strategies and track your progress. Monitor completed phases and actions with visual progress indicators.",
   },
   {
-    title: "Actionable Strategies",
+    title: "Deep Analysis Mode",
     description:
-      "No fluff, just concrete action steps. Every recommendation includes specific tasks and resources to get started.",
+      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
   },
 ];
 

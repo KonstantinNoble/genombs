@@ -71,7 +71,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
 
   const premiumFeatures = [
     { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
-    { text: "4 comprehensive phases per analysis", included: true, highlight: true },
+    { text: "AI Autopilot - 3 personalized daily focus tasks", included: true, highlight: true },
     { text: "Strategy Tracking - Track progress & completed phases", included: true, highlight: true },
     { text: "Competitor Analysis - Know your competition", included: true },
     { text: "ROI Projections - Expected returns calculated", included: true },

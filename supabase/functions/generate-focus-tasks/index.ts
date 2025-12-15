@@ -345,16 +345,16 @@ Generate 1-3 prioritized tasks as JSON array now:`;
       throw insertError;
     }
 
-    // Increment the global daily generation counter
+    // Increment the global daily generation counter (use currentGenerations which may have been reset)
     await supabaseClient
       .from('user_credits')
       .update({ 
-        daily_autopilot_generations: (credits?.daily_autopilot_generations || 0) + 1,
+        daily_autopilot_generations: currentGenerations + 1,
         autopilot_generation_reset_date: today
       })
       .eq('user_id', user.id);
 
-    console.log(`Incremented daily generation count for user ${user.id}`);
+    console.log(`Incremented daily generation count for user ${user.id}: ${currentGenerations + 1}/${MAX_DAILY_GENERATIONS}`);
 
     // Update strategy last generated timestamp
     await supabaseClient

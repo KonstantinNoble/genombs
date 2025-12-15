@@ -84,6 +84,27 @@ serve(async (req) => {
       });
     }
 
+    // FIRST: Check if we need to reset the daily counter (new day)
+    const resetDate = credits?.autopilot_generation_reset_date;
+    let currentGenerations = credits?.daily_autopilot_generations || 0;
+    
+    if (resetDate !== today) {
+      // New day, reset counter in database
+      console.log(`New day detected. Resetting generation counter from ${currentGenerations} to 0`);
+      currentGenerations = 0;
+      await supabaseClient
+        .from('user_credits')
+        .update({ 
+          daily_autopilot_generations: 0,
+          autopilot_generation_reset_date: today
+        })
+        .eq('user_id', user.id);
+    }
+
+    // NOW calculate remaining generations (always accurate after reset check)
+    const remainingGenerations = Math.max(0, MAX_DAILY_GENERATIONS - currentGenerations);
+    console.log(`Current generations: ${currentGenerations}, Remaining: ${remainingGenerations}`);
+
     const { strategy_id, force_regenerate = false } = await req.json();
 
     if (!strategy_id) {
@@ -115,12 +136,7 @@ serve(async (req) => {
       .eq('strategy_id', strategy_id)
       .eq('generated_for_date', today);
 
-    // Get current generation count for returning remaining
-    const resetDate = credits?.autopilot_generation_reset_date;
-    const currentGenCount = resetDate === today ? (credits?.daily_autopilot_generations || 0) : 0;
-    const remainingForCached = Math.max(0, MAX_DAILY_GENERATIONS - currentGenCount);
-
-    // If tasks exist and not forcing regeneration, return them
+    // If tasks exist and not forcing regeneration, return them with accurate remaining count
     if (!force_regenerate && existingTasks && existingTasks.length > 0) {
       console.log('Tasks already exist for today, returning existing');
       return new Response(JSON.stringify({ 
@@ -128,7 +144,7 @@ serve(async (req) => {
         cached: true,
         streak: strategy.current_streak || 0,
         longestStreak: strategy.longest_streak || 0,
-        remaining_generations: remainingForCached,
+        remaining_generations: remainingGenerations,
         max_generations: MAX_DAILY_GENERATIONS
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -143,42 +159,19 @@ serve(async (req) => {
       return tomorrow.toISOString();
     };
 
-    // Check global daily generation limit (only when generating NEW tasks)
-    const needsNewGeneration = force_regenerate || !existingTasks || existingTasks.length === 0;
-    
-    // Reset counter if it's a new day (use resetDate from above)
-    let currentGenerations = credits?.daily_autopilot_generations || 0;
-    
-    if (resetDate !== today) {
-      // New day, reset counter
-      currentGenerations = 0;
-      await supabaseClient
-        .from('user_credits')
-        .update({ 
-          daily_autopilot_generations: 0,
-          autopilot_generation_reset_date: today
-        })
-        .eq('user_id', user.id);
-    }
-
-    // Calculate remaining generations
-    const remainingGenerations = Math.max(0, MAX_DAILY_GENERATIONS - currentGenerations);
-    
-    if (needsNewGeneration) {
-      // Check if limit reached
-      if (currentGenerations >= MAX_DAILY_GENERATIONS) {
-        console.log(`Daily generation limit reached for user ${user.id}: ${currentGenerations}/${MAX_DAILY_GENERATIONS}`);
-        return new Response(JSON.stringify({ 
-          error: 'Daily AI generation limit reached',
-          limit_reached: true,
-          reset_time: getResetTime(),
-          remaining_generations: 0,
-          max_generations: MAX_DAILY_GENERATIONS
-        }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+    // Check if limit reached for new generation
+    if (currentGenerations >= MAX_DAILY_GENERATIONS) {
+      console.log(`Daily generation limit reached for user ${user.id}: ${currentGenerations}/${MAX_DAILY_GENERATIONS}`);
+      return new Response(JSON.stringify({ 
+        error: 'Daily AI generation limit reached',
+        limit_reached: true,
+        reset_time: getResetTime(),
+        remaining_generations: 0,
+        max_generations: MAX_DAILY_GENERATIONS
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Delete existing tasks for regeneration if forcing

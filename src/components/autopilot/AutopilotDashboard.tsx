@@ -35,7 +35,7 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
   const [regenerating, setRegenerating] = useState(false);
   const [streak, setStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
-  const [remainingGenerations, setRemainingGenerations] = useState(3);
+  const [remainingGenerations, setRemainingGenerations] = useState<number | null>(null);
   const [maxGenerations, setMaxGenerations] = useState(3);
   const [limitReached, setLimitReached] = useState(false);
   const [resetTime, setResetTime] = useState<string | null>(null);
@@ -160,6 +160,12 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
   };
 
   useEffect(() => {
+    // Reset state when strategy changes
+    setRemainingGenerations(null);
+    setLimitReached(false);
+    setResetTime(null);
+    setTasks([]);
+    
     fetchOrGenerateTasks();
   }, [strategyId]);
 
@@ -257,10 +263,15 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
                 <Clock className="h-3 w-3" />
                 Resets in {timeUntilReset}
               </Badge>
-            ) : (
+            ) : remainingGenerations !== null ? (
               <Badge variant="outline" className="flex items-center gap-1 text-xs">
                 <Sparkles className="h-3 w-3" />
                 {remainingGenerations}/{maxGenerations} left
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs animate-pulse">
+                <Sparkles className="h-3 w-3" />
+                Loading...
               </Badge>
             )}
             <StreakDisplay streak={streak} longestStreak={longestStreak} />

@@ -36,6 +36,7 @@ export default function BusinessToolsAdvisor() {
   
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<PlannerResult | null>(null);
+  const [displayedResultMode, setDisplayedResultMode] = useState<"standard" | "deep" | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [analysisMode, setAnalysisMode] = useState<"standard" | "deep">("standard");
   
@@ -142,6 +143,7 @@ export default function BusinessToolsAdvisor() {
       if (error) { toast({ title: "Analysis Error", description: error.message, variant: "destructive" }); return; }
       if (data?.error) { toast({ title: "Error", description: data.error, variant: "destructive" }); return; }
       setResult(data);
+      setDisplayedResultMode(analysisMode);
       await loadHistory(user!.id);
       await loadPremiumStatus(user!.id);
       toast({ title: "Strategy Created", description: `Your ${analysisMode === 'deep' ? 'comprehensive' : 'quick'} business strategy is ready` });
@@ -189,7 +191,7 @@ export default function BusinessToolsAdvisor() {
               <CardHeader className="pb-3"><CardTitle className="text-lg">Previous Strategies</CardTitle></CardHeader>
               <CardContent className="space-y-2 max-h-96 overflow-y-auto">
                 {history.length === 0 ? <p className="text-sm text-muted-foreground text-center py-8">No history yet</p> : history.map(item => (
-                  <div key={item.id} className="p-3 border rounded-lg hover:bg-accent/50 cursor-pointer group" onClick={() => setResult(item.result)}>
+                  <div key={item.id} className="p-3 border rounded-lg hover:bg-accent/50 cursor-pointer group" onClick={() => { setResult(item.result); setDisplayedResultMode(item.analysis_mode as "standard" | "deep"); }}>
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{item.business_goals?.substring(0, 50)}...</p>
@@ -294,7 +296,7 @@ export default function BusinessToolsAdvisor() {
                           const blob = await pdf(
                             <StrategyPDF 
                               result={result} 
-                              isDeepMode={analysisMode === 'deep'} 
+                              isDeepMode={displayedResultMode === 'deep'} 
                               businessGoals={prompt}
                             />
                           ).toBlob();
@@ -316,7 +318,7 @@ export default function BusinessToolsAdvisor() {
                       <span className="hidden sm:inline">PDF</span>
                     </Button>
                   </CardHeader>
-                  <CardContent><StrategyOutput result={result} isDeepMode={analysisMode === 'deep'} /></CardContent>
+                  <CardContent><StrategyOutput result={result} isDeepMode={displayedResultMode === 'deep'} /></CardContent>
                 </Card>
               </div>
             )}

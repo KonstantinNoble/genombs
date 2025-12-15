@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Sparkles, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 interface PricingProps {
   compact?: boolean;
@@ -12,6 +13,7 @@ interface PricingProps {
 const Pricing = ({ compact = false }: PricingProps) => {
   const navigate = useNavigate();
   const { user, isPremium } = useAuth();
+  const { openCheckout } = useFreemiusCheckout();
   const isLoggedIn = !!user;
 
   const handlePlanClick = async (plan: 'free' | 'premium') => {
@@ -23,8 +25,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
       }
     } else {
       if (plan === 'premium') {
-        const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user.email}&readonly_user=true`;
-        window.open(checkoutUrl, '_blank');
+        openCheckout();
       } else {
         navigate('/business-tools');
       }

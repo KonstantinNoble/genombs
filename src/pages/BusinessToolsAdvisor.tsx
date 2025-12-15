@@ -16,6 +16,7 @@ import { StrategyOutput, PlannerResult } from "@/components/planner/StrategyOutp
 import { AnalysisLoader } from "@/components/planner/AnalysisLoader";
 import { pdf } from "@react-pdf/renderer";
 import { StrategyPDF } from "@/components/planner/StrategyPDF";
+import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 interface HistoryItem {
   id: string;
@@ -27,6 +28,7 @@ interface HistoryItem {
 
 export default function BusinessToolsAdvisor() {
   const { toast } = useToast();
+  const { openCheckout } = useFreemiusCheckout();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
@@ -247,14 +249,12 @@ export default function BusinessToolsAdvisor() {
                 {!isPremium && (
                   <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20">
                     <span className="text-sm text-muted-foreground">Unlock Deep Analysis & more analyses</span>
-                    <a 
-                      href={`https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user?.email}&readonly_user=true`}
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                    <button 
+                      onClick={() => openCheckout(user?.email || undefined)}
                       className="text-sm font-semibold text-amber-600 hover:text-amber-500 underline underline-offset-2 transition-colors"
                     >
                       Upgrade to Premium →
-                    </a>
+                    </button>
                   </div>
                 )}
                 <Button onClick={handleAnalyze} disabled={analyzing || !canAnalyze || !prompt.trim()} className="w-full" size="lg">

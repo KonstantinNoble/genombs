@@ -9,9 +9,11 @@ import Pricing from "@/components/home/Pricing";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 const PricingPage = () => {
   const navigate = useNavigate();
+  const { openCheckout } = useFreemiusCheckout();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
 
@@ -346,7 +348,7 @@ const PricingPage = () => {
                   <Button 
                     size="lg"
                     variant="outline"
-                    onClick={() => isLoggedIn ? window.open(`https://checkout.freemius.com/product/21730/plan/36437/`, '_blank') : navigate('/auth?intent=premium')}
+                    onClick={() => isLoggedIn ? openCheckout() : navigate('/auth?intent=premium')}
                     className="px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
                   >
                     Get Premium - $9.99/mo

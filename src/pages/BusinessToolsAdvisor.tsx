@@ -103,10 +103,22 @@ export default function BusinessToolsAdvisor() {
       const standardLimit = data.is_premium ? 6 : 2;
       setDeepAnalysisLimit(deepLimit);
       setStandardAnalysisLimit(standardLimit);
-      setDeepAnalysisCount(data.deep_analysis_count || 0);
-      setStandardAnalysisCount(data.standard_analysis_count || 0);
-      if (analysisMode === 'deep') setCanAnalyze(checkCanAnalyze(data.deep_analysis_count, data.deep_analysis_window_start, deepLimit));
-      else setCanAnalyze(checkCanAnalyze(data.standard_analysis_count, data.standard_analysis_window_start, standardLimit));
+      
+      // Check if 24h windows have expired and reset displayed counts accordingly
+      const now = new Date();
+      const deepWindowExpired = !data.deep_analysis_window_start || 
+        now >= new Date(new Date(data.deep_analysis_window_start).getTime() + 24 * 60 * 60 * 1000);
+      const standardWindowExpired = !data.standard_analysis_window_start || 
+        now >= new Date(new Date(data.standard_analysis_window_start).getTime() + 24 * 60 * 60 * 1000);
+      
+      const effectiveDeepCount = deepWindowExpired ? 0 : (data.deep_analysis_count || 0);
+      const effectiveStandardCount = standardWindowExpired ? 0 : (data.standard_analysis_count || 0);
+      
+      setDeepAnalysisCount(effectiveDeepCount);
+      setStandardAnalysisCount(effectiveStandardCount);
+      
+      if (analysisMode === 'deep') setCanAnalyze(checkCanAnalyze(effectiveDeepCount, data.deep_analysis_window_start, deepLimit));
+      else setCanAnalyze(checkCanAnalyze(effectiveStandardCount, data.standard_analysis_window_start, standardLimit));
     }
   };
 

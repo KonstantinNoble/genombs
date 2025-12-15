@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { User } from "@supabase/supabase-js";
+import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -22,6 +23,7 @@ const Profile = () => {
   } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { openCheckout } = useFreemiusCheckout();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -190,10 +192,7 @@ const Profile = () => {
                     <div className="flex flex-col gap-2">
                       <span className="text-muted-foreground">Free Plan</span>
                       <Button
-                        onClick={() => {
-                          const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;
-                          window.open(checkoutUrl, '_blank');
-                        }}
+                        onClick={() => openCheckout(user.email || undefined)}
                         className="w-full"
                       >
                         Upgrade to Premium

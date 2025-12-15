@@ -20,7 +20,10 @@ interface FreemiusCheckoutHandler {
 interface FreemiusCheckoutOptions {
   name?: string;
   licenses?: number;
-  email?: string;
+  user_email?: string;
+  user_firstname?: string;
+  user_lastname?: string;
+  readonly_user?: boolean;
   purchaseCompleted?: (response: FreemiusResponse) => void;
   success?: (response: FreemiusResponse) => void;
   cancel?: () => void;

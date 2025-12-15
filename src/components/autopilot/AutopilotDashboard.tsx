@@ -100,23 +100,16 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
         }
       });
 
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to generate tasks');
-      }
-
+      // Handle both error and data - 429 errors come with limit_reached data
       const data = response.data;
       
-      // Update generation counts
-      if (data.remaining_generations !== undefined) {
-        setRemainingGenerations(data.remaining_generations);
-      }
-      if (data.max_generations !== undefined) {
-        setMaxGenerations(data.max_generations);
-      }
-      
-      // Check for limit reached error
-      if (data.error && data.limit_reached) {
+      // Check for limit reached error (can come as response.error with data, or just data.error)
+      if (data?.limit_reached || (response.error && data?.limit_reached)) {
         setLimitReached(true);
+        setRemainingGenerations(data.remaining_generations ?? 0);
+        if (data.max_generations !== undefined) {
+          setMaxGenerations(data.max_generations);
+        }
         if (data.reset_time) {
           setResetTime(data.reset_time);
           setTimeUntilReset(calculateTimeUntilReset(data.reset_time));
@@ -131,8 +124,21 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
         return;
       }
 
-      if (data.error) {
+      // Handle other errors
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to generate tasks');
+      }
+
+      if (data?.error) {
         throw new Error(data.error);
+      }
+      
+      // Update generation counts from successful response
+      if (data?.remaining_generations !== undefined) {
+        setRemainingGenerations(data.remaining_generations);
+      }
+      if (data?.max_generations !== undefined) {
+        setMaxGenerations(data.max_generations);
       }
 
       setLimitReached(false);

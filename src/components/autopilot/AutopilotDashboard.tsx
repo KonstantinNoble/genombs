@@ -100,11 +100,42 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
         }
       });
 
-      // Handle both error and data - 429 errors come with limit_reached data
       const data = response.data;
       
-      // Check for limit reached error (can come as response.error with data, or just data.error)
-      if (data?.limit_reached || (response.error && data?.limit_reached)) {
+      // Handle 429 limit error - when this happens, data is null
+      // Check error message or status to detect limit reached
+      if (response.error && !data) {
+        const errorMsg = response.error.message || '';
+        const isLimitError = errorMsg.includes('429') || 
+                            errorMsg.includes('limit') || 
+                            errorMsg.includes('non-2xx');
+        
+        if (isLimitError) {
+          // Calculate reset time client-side (midnight UTC)
+          const now = new Date();
+          const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+          const resetTimeStr = tomorrow.toISOString();
+          
+          setLimitReached(true);
+          setRemainingGenerations(0);
+          setResetTime(resetTimeStr);
+          setTimeUntilReset(calculateTimeUntilReset(resetTimeStr));
+          
+          toast({
+            title: "Daily limit reached",
+            description: `You've used all AI generations today. Try again in ${calculateTimeUntilReset(resetTimeStr)}.`,
+            variant: "destructive",
+          });
+          setLoading(false);
+          setRegenerating(false);
+          return;
+        }
+        
+        throw new Error(response.error.message || 'Failed to generate tasks');
+      }
+      
+      // Check for limit reached in data (when status is 200 with limit info)
+      if (data?.limit_reached) {
         setLimitReached(true);
         setRemainingGenerations(data.remaining_generations ?? 0);
         if (data.max_generations !== undefined) {
@@ -124,11 +155,6 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
         return;
       }
 
-      // Handle other errors
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to generate tasks');
-      }
-
       if (data?.error) {
         throw new Error(data.error);
       }
@@ -142,11 +168,11 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
       }
 
       setLimitReached(false);
-      setTasks(data.tasks || []);
-      setStreak(data.streak ?? 0);
-      setLongestStreak(data.longestStreak ?? 0);
+      setTasks(data?.tasks || []);
+      setStreak(data?.streak ?? 0);
+      setLongestStreak(data?.longestStreak ?? 0);
 
-      if (!data.cached && forceRegenerate) {
+      if (data && !data.cached && forceRegenerate) {
         toast({
           title: "Tasks regenerated",
           description: `${data.remaining_generations} generation${data.remaining_generations !== 1 ? 's' : ''} remaining today.`,
@@ -299,17 +325,29 @@ const AutopilotDashboard = ({ strategyId, strategyName, onTaskComplete }: Autopi
       </CardHeader>
       <CardContent className="space-y-3">
         {tasks.length === 0 ? (
-          <div className="text-center py-6">
-            <p className="text-muted-foreground">No tasks for today.</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => fetchOrGenerateTasks(true)}
-              className="mt-3"
-            >
-              Generate tasks
-            </Button>
-          </div>
+          limitReached ? (
+            <div className="text-center py-6 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <Clock className="h-8 w-8 mx-auto mb-2 text-amber-500" />
+              <p className="text-amber-600 dark:text-amber-400 font-medium">
+                Daily limit reached
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                New generations available in {timeUntilReset}
+              </p>
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-muted-foreground">No tasks for today.</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => fetchOrGenerateTasks(true)}
+                className="mt-3"
+              >
+                Generate tasks
+              </Button>
+            </div>
+          )
         ) : (
           <>
             {tasks

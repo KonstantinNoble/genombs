@@ -47,7 +47,10 @@ export const useFreemiusCheckout = () => {
     handler.open({
       name: 'Synoptas Premium',
       licenses: 1,
-      ...(userEmail && { user_email: userEmail }),
+      ...(userEmail && { 
+        user_email: userEmail,
+        readonly_user: true 
+      }),
       
       purchaseCompleted: async (response) => {
         console.log('Purchase completed:', response);

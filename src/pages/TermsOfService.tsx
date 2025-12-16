@@ -521,9 +521,9 @@ const TermsOfService = () => {
               <div className="bg-muted/30 border border-border rounded-lg p-4 my-4 font-mono text-sm">
                 <p className="font-semibold mb-2">Model Withdrawal Form</p>
                 <p className="mb-2">
-                  To: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
+                  To: Muhammed Kagan Yilmaz, Aroser Allee 50, 13407 Berlin, Germany
                   <br />
-                  (or via Freemius customer portal)
+                  Email: mail@wealthconomy.com
                 </p>
                 <p className="mb-2">
                   I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for Synoptas.
@@ -533,9 +533,15 @@ const TermsOfService = () => {
                   <br />
                   Order number: _______________
                   <br />
+                  Name of consumer(s): _______________
+                  <br />
+                  Address of consumer(s): _______________
+                  <br />
                   Email: _______________
                   <br />
                   Date: _______________
+                  <br />
+                  Signature (only for paper form): _______________
                 </p>
                 <p className="text-xs italic">(*) Delete as appropriate</p>
               </div>

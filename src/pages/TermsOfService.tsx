@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: November 21, 2025 | Version 2.4</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 16, 2025 | Version 2.5</p>
 
           <div className="space-y-8">
             <section>
@@ -242,8 +242,14 @@ const TermsOfService = () => {
               </p>
 
               <p className="mb-4">
-                <strong>Refunds:</strong> All refund requests (outside the Right of Withdrawal) must be directed to
-                Freemius. Freemius decides on discretionary refunds according to their own policies.
+                <strong>Refunds:</strong> Refund requests (outside the Right of Withdrawal) should be directed to{" "}
+                <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                  mail@wealthconomy.com
+                </a>
+                . We (Synoptas/Muhammed Kagan Yilmaz) will review your request and decide whether a refund is appropriate 
+                based on the circumstances. If approved, Freemius will execute the technical refund on our behalf. 
+                Refunds are generally not provided for partially used subscription periods unless legally required or 
+                exceptional circumstances apply.
               </p>
             </section>
             {/* Section V - User Obligations */}
@@ -343,24 +349,33 @@ const TermsOfService = () => {
                 these Terms, misuse of recommendations, or violation of third-party rights.
               </p>
 
-              <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Liability for Third-Party Payment Processing</h3>
+              <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Customer Support and Payment Processing</h3>
               <p className="mb-4">
-                For all aspects of payment processing, invoicing, refunds, and data privacy regarding Premium
-                subscriptions, <strong>Freemius, Inc.</strong> is responsible as Merchant of Record.
+                <strong>Primary Contact for All Issues:</strong> For any questions, complaints, or support requests 
+                (including payment-related matters), please contact us first at{" "}
+                <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                  mail@wealthconomy.com
+                </a>
+                . We are your primary contact for customer support.
+              </p>
+              <p className="mb-4">
+                <strong>Payment Processing:</strong> While <strong>Freemius, Inc.</strong> handles the technical 
+                payment processing as Merchant of Record, we (Synoptas/Muhammed Kagan Yilmaz) remain responsible 
+                for customer support, refund decisions, and resolving disputes.
               </p>
               <p className="mb-4">
                 <strong>We (Synoptas/Muhammed Kagan Yilmaz) are NOT liable for:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Payment errors, failed transactions, or billing issues</li>
-                <li>Disputes regarding invoices, refunds, or cancellations</li>
-                <li>Data privacy violations by Freemius's payment system</li>
-                <li>Credit card fees or currency conversion costs</li>
-                <li>Delays in Premium activation due to Freemius system errors</li>
+                <li>Technical payment processing errors caused by Freemius's systems</li>
+                <li>Data privacy violations by Freemius's payment infrastructure</li>
+                <li>Credit card fees or currency conversion costs charged by payment providers</li>
+                <li>Delays in payment processing due to third-party banking systems</li>
               </ul>
               <p className="mb-4">
-                All payment-related complaints must be directed to Freemius via their customer portal or support
-                channels (contact information provided in your purchase confirmation email).
+                <strong>Note:</strong> Only technical issues specific to Freemius's payment system infrastructure 
+                (e.g., checkout system errors) may need to be forwarded to Freemius. For all other matters, 
+                we will handle your request directly.
               </p>
             </section>
             {/* Section VII - Termination */}
@@ -471,35 +486,35 @@ const TermsOfService = () => {
               </h3>
 
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">🔐 Important: Right of Withdrawal Lies with Freemius</p>
+                <p className="font-bold mb-2">🔐 Important: Right of Withdrawal</p>
                 <p>
-                  The statutory right of withdrawal for Premium purchases lies with <strong>Freemius, Inc.</strong> as
-                  Merchant of Record – <strong>NOT with Synoptas/Muhammed Kagan Yilmaz</strong>.
+                  As an EU/EEA consumer, you have a statutory <strong>14-day right of withdrawal</strong> from the 
+                  purchase date for Premium subscriptions. Since Freemius, Inc. acts as Merchant of Record, the 
+                  withdrawal must ultimately be processed through Freemius. However, we will assist you with the process.
                 </p>
               </div>
-
-              <p className="mb-4">
-                As an EU/EEA consumer, you have a <strong>14-day right of withdrawal</strong> from the purchase date for
-                Premium subscriptions.
-              </p>
 
               <p className="mb-4">
                 <strong>How to exercise your right of withdrawal:</strong>
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2">
                 <li>
-                  Send a clear withdrawal statement to <strong>Freemius, Inc.</strong> (not to Synoptas)
+                  <strong>Recommended:</strong> Contact us at{" "}
+                  <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                    mail@wealthconomy.com
+                  </a>{" "}
+                  with your withdrawal request. We will process it on your behalf and coordinate with Freemius.
                 </li>
                 <li>
-                  Contact Freemius through their customer portal (access link provided in your purchase confirmation
-                  email) – **Empfohlen zur Fristwahrung**
+                  <strong>Alternative:</strong> Contact Freemius directly through their customer portal 
+                  (access link provided in your purchase confirmation email)
                 </li>
                 <li>
-                  Or send a written withdrawal notice to: Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware
-                  19808, USA
+                  <strong>Written notice:</strong> You may also send a written withdrawal notice to: 
+                  Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
                 </li>
                 <li>
-                  Include your <strong>order number</strong> and <strong>email address</strong>
+                  Include your <strong>order number</strong> and <strong>email address</strong> in any withdrawal request
                 </li>
               </ol>
 
@@ -563,38 +578,35 @@ const TermsOfService = () => {
                 </a>
               </p>
 
-              <h3 className="text-xl font-semibold mb-3 mt-6">IX.A Dispute Resolution for Payment Issues</h3>
+              <h3 className="text-xl font-semibold mb-3 mt-6">IX.A Customer Support and Dispute Resolution</h3>
 
-              <p className="mb-4">
-                <strong>Distinction by topic area:</strong>
-              </p>
-
-              <div className="bg-muted/30 border border-border rounded-lg p-4 my-4">
-                <p className="font-semibold mb-3">💳 Payment, Billing, and Refund Issues</p>
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 my-4">
+                <p className="font-semibold mb-3">📧 Primary Contact for ALL Issues</p>
                 <p className="mb-2">
-                  Contact <strong>Freemius</strong> via their customer portal or support channels (contact information
-                  provided in your purchase confirmation email)
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  (Examples: Incorrect billing, missing refund, credit card problems, invoice corrections)
-                </p>
-              </div>
-
-              <div className="bg-muted/30 border border-border rounded-lg p-4 my-4">
-                <p className="font-semibold mb-3">🛠️ Service Quality, Features, Technical Issues</p>
-                <p className="mb-2">
-                  Contact <strong>us (Synoptas)</strong>:{" "}
+                  Contact <strong>us (Synoptas)</strong> first for any questions, complaints, or support requests:{" "}
                   <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
                     mail@wealthconomy.com
                   </a>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  (Examples: Premium features not working, analysis errors, account problems, privacy concerns)
+                  Including: Payment questions, billing issues, refund requests, Premium features, technical problems, 
+                  account issues, privacy concerns, and general inquiries
+                </p>
+              </div>
+
+              <div className="bg-muted/30 border border-border rounded-lg p-4 my-4">
+                <p className="font-semibold mb-3">⚙️ Technical Freemius System Issues Only</p>
+                <p className="mb-2">
+                  Contact <strong>Freemius</strong> directly only for technical checkout system errors 
+                  (e.g., payment form not loading, Freemius website issues)
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Access via customer portal (link in your purchase confirmation email)
                 </p>
               </div>
 
               <p className="mb-4">
-                EU consumers may also use the EU ODR platform for <strong>payment disputes</strong>:{" "}
+                EU consumers may also use the EU ODR platform for disputes:{" "}
                 <a
                   href="https://ec.europa.eu/consumers/odr/"
                   target="_blank"
@@ -658,9 +670,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: November 21, 2025
+                Last updated: December 16, 2025
                 <br />
-                Version 2.4 (Services Generalization & Feature Updates)
+                Version 2.5 (Freemius Vendor Compliance Update)
               </p>
             </div>
           </div>

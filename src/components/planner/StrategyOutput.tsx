@@ -186,9 +186,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
         <div className="flex flex-wrap items-center gap-2 text-sm p-3 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">
           <Crown className="h-4 w-4 text-amber-500 shrink-0" />
           <span className="font-medium text-amber-600 dark:text-amber-400">Premium Deep Analysis</span>
-          <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 text-xs">
-            Gemini 2.5 Pro
-          </Badge>
           <span className="text-xs text-muted-foreground ml-auto">Enhanced analysis with competitor insights & ROI projections</span>
         </div>
       )}

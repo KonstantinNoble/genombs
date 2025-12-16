@@ -145,9 +145,6 @@ export function ActivateStrategyButton({ result, isDeepMode = false }: ActivateS
         <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
           <Target className="h-4 w-4" />
           Activate Strategy
-          {isDeepMode && (
-            <Crown className="h-3.5 w-3.5 text-amber-400" />
-          )}
         </Button>
       </DialogTrigger>
       <DialogContent>

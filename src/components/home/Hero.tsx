@@ -32,13 +32,6 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p
-            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in"
-            style={{ animationDelay: "0.2s" }}
-          >
-            Describe what you want to achieve. Get a structured, week-by-week strategy with specific tasks, budgets, and
-            milestones, ready in under 2 minutes.
-          </p>
 
           <div
             className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-fade-in"

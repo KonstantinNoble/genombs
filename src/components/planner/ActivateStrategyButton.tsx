@@ -142,8 +142,7 @@ export function ActivateStrategyButton({ result, isDeepMode = false }: ActivateS
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
-          <Target className="h-4 w-4" />
+        <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
           Activate Strategy
         </Button>
       </DialogTrigger>

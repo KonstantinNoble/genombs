@@ -27,21 +27,22 @@ export function AnalysisLoader({
   totalPhases = 4
 }: AnalysisLoaderProps) {
   const [animatedProgress, setAnimatedProgress] = useState(5);
-  const animationRef = useRef<number>();
+  const [simulatedProgress, setSimulatedProgress] = useState(0);
+  const lastStatusRef = useRef<StreamingStatus>('idle');
   
-  // Target progress based on streaming status
-  const getTargetProgress = () => {
-    switch (streamingStatus) {
+  // Get maximum progress allowed for current status (before next event)
+  const getMaxProgressForStatus = (status: StreamingStatus) => {
+    switch (status) {
       case 'idle':
         return 5;
       case 'research_start':
-        return 25;
+        return 35;
       case 'research_complete':
-        return 40;
-      case 'generation_start':
         return 50;
+      case 'generation_start':
+        return 60;
       case 'phase_complete':
-        return 55 + (phasesCompleted / totalPhases) * 40;
+        return 60 + (phasesCompleted / totalPhases) * 35; // Up to 95%
       case 'complete':
         return 100;
       default:
@@ -49,33 +50,87 @@ export function AnalysisLoader({
     }
   };
 
-  // Smooth animation effect with easing
+  // Get minimum progress for current status (jump to this on status change)
+  const getMinProgressForStatus = (status: StreamingStatus) => {
+    switch (status) {
+      case 'idle':
+        return 5;
+      case 'research_start':
+        return 15;
+      case 'research_complete':
+        return 40;
+      case 'generation_start':
+        return 50;
+      case 'phase_complete':
+        return 55 + ((phasesCompleted - 1) / totalPhases) * 35;
+      case 'complete':
+        return 100;
+      default:
+        return 5;
+    }
+  };
+
+  // Reset on idle
   useEffect(() => {
-    const target = getTargetProgress();
-    
-    // Cubic ease-out for smooth deceleration
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-    
-    const animate = () => {
-      setAnimatedProgress(prev => {
-        const diff = target - prev;
-        if (Math.abs(diff) < 0.3) return target;
-        // Smoother interpolation with easing
-        const normalizedDiff = Math.min(Math.abs(diff) / 50, 1);
-        const easedSpeed = 0.02 + easeOut(normalizedDiff) * 0.03;
-        return prev + diff * easedSpeed;
-      });
-      animationRef.current = requestAnimationFrame(animate);
-    };
-    
-    animationRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+    if (streamingStatus === 'idle') {
+      setSimulatedProgress(0);
+      setAnimatedProgress(5);
+      lastStatusRef.current = 'idle';
+    }
+  }, [streamingStatus]);
+
+  // Handle status changes - jump to minimum for new status
+  useEffect(() => {
+    if (streamingStatus !== lastStatusRef.current) {
+      lastStatusRef.current = streamingStatus;
+      
+      // On complete, immediately jump to 100%
+      if (streamingStatus === 'complete') {
+        setAnimatedProgress(100);
+        return;
       }
-    };
+      
+      // Jump to minimum progress for new status
+      const minProgress = getMinProgressForStatus(streamingStatus);
+      setAnimatedProgress(prev => Math.max(prev, minProgress));
+    }
   }, [streamingStatus, phasesCompleted, totalPhases]);
+
+  // Continuous simulated progress - always keeps moving
+  useEffect(() => {
+    if (streamingStatus === 'idle' || streamingStatus === 'complete') {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setSimulatedProgress(prev => prev + 1);
+    }, 150); // Increment every 150ms
+
+    return () => clearInterval(interval);
+  }, [streamingStatus]);
+
+  // Smooth animation combining simulated progress with status-based limits
+  useEffect(() => {
+    if (streamingStatus === 'idle' || streamingStatus === 'complete') {
+      return;
+    }
+
+    const maxProgress = getMaxProgressForStatus(streamingStatus);
+    const minProgress = getMinProgressForStatus(streamingStatus);
+    
+    // Calculate target: start from min, grow with simulation, cap at max
+    const simulatedGrowth = simulatedProgress * 0.4; // 0.4% per tick
+    const targetProgress = Math.min(minProgress + simulatedGrowth, maxProgress);
+
+    // Smoothly animate towards target
+    setAnimatedProgress(prev => {
+      if (prev >= targetProgress) return prev;
+      const diff = targetProgress - prev;
+      // Fast catch-up if far behind, slow if close
+      const speed = Math.max(0.5, diff * 0.1);
+      return Math.min(prev + speed, targetProgress);
+    });
+  }, [simulatedProgress, streamingStatus, phasesCompleted, totalPhases]);
 
   const getStatusMessage = () => {
     switch (streamingStatus) {

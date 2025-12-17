@@ -32,6 +32,12 @@ const Hero = () => {
             </span>
           </h1>
 
+          <p
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
+            AI-powered strategies backed by real-time market research. Get actionable insights tailored to your industry in under 2 minutes.
+          </p>
 
           <div
             className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-fade-in"
@@ -71,7 +77,7 @@ const Hero = () => {
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "1s" }} />
-              Results in Under 2 Minutes
+              Live Market Research
             </span>
           </div>
         </div>

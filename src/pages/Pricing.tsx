@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield } from "lucide-react";
+import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield, Globe } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -56,6 +56,11 @@ const PricingPage = () => {
 
   const features = [
     {
+      icon: <Globe className="h-6 w-6" />,
+      title: "Live Market Intelligence",
+      description: "Every analysis is powered by real-time web research, analyzing 20+ sources to deliver current market trends and competitor insights."
+    },
+    {
       icon: <Brain className="h-6 w-6" />,
       title: "Deep Analysis Mode",
       description: "Advanced analysis with competitor insights, ROI projections, and risk mitigation strategies."
@@ -94,6 +99,7 @@ const PricingPage = () => {
 
   const comparisonFeatures = [
     { name: "Daily Analyses", free: "2 Standard", premium: "6 Standard + 2 Deep" },
+    { name: "Market Research Sources", free: "10+ sources", premium: "20+ sources" },
     { name: "Phases per Analysis", free: "4", premium: "4" },
     { name: "Actionable Steps", free: true, premium: true },
     { name: "Google Search Links", free: true, premium: true },
@@ -108,8 +114,12 @@ const PricingPage = () => {
 
   const faqs = [
     {
+      question: "How does the real-time market research work?",
+      answer: "Our AI actively researches the web during each analysis, gathering current market data, competitor information, and industry trends from 10-20+ sources. This means your strategies are always based on up-to-date information, not outdated datasets."
+    },
+    {
       question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links. Deep Analysis (Premium only) adds competitor analysis, ROI projections, risk mitigation plans, and KPI milestones to each phase."
+      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links, backed by 10+ research sources. Deep Analysis (Premium only) adds competitor analysis, ROI projections, risk mitigation plans, and uses 20+ sources for more comprehensive insights."
     },
     {
       question: "How do the daily analysis limits work?",
@@ -175,10 +185,14 @@ const PricingPage = () => {
             <div className="max-w-4xl mx-auto">
               <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <CardContent className="p-8">
-                  <div className="grid md:grid-cols-3 gap-6 text-center">
+                <div className="grid md:grid-cols-4 gap-6 text-center">
+                    <div>
+                      <div className="text-4xl font-bold text-primary">20+</div>
+                      <div className="text-sm text-muted-foreground mt-1">Sources Analyzed</div>
+                    </div>
                     <div>
                       <div className="text-4xl font-bold text-primary">8</div>
-                      <div className="text-sm text-muted-foreground mt-1">Daily Analyses (Premium)</div>
+                      <div className="text-sm text-muted-foreground mt-1">Daily Analyses</div>
                     </div>
                     <div>
                       <div className="text-4xl font-bold text-primary">4</div>

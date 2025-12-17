@@ -103,6 +103,99 @@ const PrivacyPolicy = () => {
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance) and Art. 6(1)(f) GDPR 
               (legitimate interest in providing secure authentication).
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.3 Third-Party Service Cookies</h3>
+            <p className="text-muted-foreground mb-4">
+              When you actively use certain features of our website, such as logging in via Google or completing a 
+              purchase through our payment providers, these third-party services may set cookies on your device. These 
+              cookies are strictly necessary for the functionality you explicitly requested.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              Since you initiate these services through your own action (clicking "Login" or "Checkout"), these cookies 
+              qualify as technically necessary under <strong>§ 25 Abs. 2 Nr. 2 TDDDG</strong> (German Telecommunications 
+              Digital Services Data Protection Act, formerly TTDSG) and do not require separate consent.
+            </p>
+            
+            <p className="text-muted-foreground mb-4">
+              <strong>The following third-party services may set cookies:</strong>
+            </p>
+            
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Service Provider</th>
+                    <th className="border border-border p-3 text-left font-semibold">When Set</th>
+                    <th className="border border-border p-3 text-left font-semibold">Purpose</th>
+                    <th className="border border-border p-3 text-left font-semibold">Legal Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Google</strong></td>
+                    <td className="border border-border p-3">When you click "Login with Google"</td>
+                    <td className="border border-border p-3">Authentication, session security</td>
+                    <td className="border border-border p-3">Art. 6(1)(b) GDPR, § 25 Abs. 2 Nr. 2 TDDDG</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Freemius</strong></td>
+                    <td className="border border-border p-3">When you initiate Premium checkout</td>
+                    <td className="border border-border p-3">Payment session, subscription management</td>
+                    <td className="border border-border p-3">Art. 6(1)(b) GDPR, § 25 Abs. 2 Nr. 2 TDDDG</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Stripe</strong></td>
+                    <td className="border border-border p-3">When processing card payments</td>
+                    <td className="border border-border p-3">Secure payment, fraud prevention</td>
+                    <td className="border border-border p-3">Art. 6(1)(b) GDPR, Art. 6(1)(f) GDPR</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>PayPal</strong></td>
+                    <td className="border border-border p-3">When you select PayPal payment</td>
+                    <td className="border border-border p-3">Secure payment processing, authentication</td>
+                    <td className="border border-border p-3">Art. 6(1)(b) GDPR, Art. 6(1)(f) GDPR</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Fraud Prevention:</strong> Payment providers (Stripe, PayPal) may also process data for fraud 
+              prevention purposes. This processing is based on our and the payment providers' legitimate interests in 
+              preventing fraudulent transactions (<strong>Art. 6(1)(f) GDPR</strong>).
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Third-Party Privacy Policies:</strong> For detailed information about cookies and data processing 
+              by these providers, please refer to their respective privacy policies:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Google Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://freemius.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Freemius Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Stripe Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.paypal.com/de/webapps/mpp/ua/privacy-full" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  PayPal Privacy Policy
+                </a>
+              </li>
+            </ul>
+
+            <p className="text-muted-foreground mb-4">
+              You can manage cookies through your browser settings. However, please note that blocking these cookies 
+              may prevent you from using the associated features (login, payment processing).
+            </p>
           </section>
 
           <section className="mb-8">
@@ -1463,7 +1556,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 17, 2025 (Version 2.9)
+              <strong>Last updated:</strong> December 17, 2025 (Version 3.0)
             </p>
           </section>
         </article>

@@ -17,6 +17,7 @@ import { AnalysisLoader } from "@/components/planner/AnalysisLoader";
 import { pdf } from "@react-pdf/renderer";
 import { StrategyPDF } from "@/components/planner/StrategyPDF";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+import { useStreamingAnalysis } from "@/hooks/useStreamingAnalysis";
 
 interface HistoryItem {
   id: string;
@@ -36,7 +37,6 @@ export default function BusinessToolsAdvisor() {
   const [prompt, setPrompt] = useState("");
   const [optionalParams, setOptionalParams] = useState<OptionalParams>({});
   
-  const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<PlannerResult | null>(null);
   const [displayedResultMode, setDisplayedResultMode] = useState<"standard" | "deep" | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -50,6 +50,19 @@ export default function BusinessToolsAdvisor() {
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
+
+  const { analyze, isAnalyzing, streamingState } = useStreamingAnalysis({
+    onComplete: async (data) => {
+      setResult(data);
+      setDisplayedResultMode(analysisMode);
+      await loadHistory(user!.id);
+      await loadPremiumStatus(user!.id);
+      toast({ title: "Strategy Created", description: `Your ${analysisMode === 'deep' ? 'comprehensive' : 'quick'} business strategy is ready` });
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: error, variant: "destructive" });
+    }
+  });
 
   useEffect(() => {
     if (result && resultRef.current) {
@@ -131,27 +144,24 @@ export default function BusinessToolsAdvisor() {
   };
 
   const handleAnalyze = async () => {
-    if (!prompt.trim()) { toast({ title: "Missing Information", description: "Please describe your business goals", variant: "destructive" }); return; }
-    setAnalyzing(true); setResult(null);
-    try {
-      const body: any = { prompt: prompt.trim(), analysisMode };
-      if (optionalParams.budget) body.budget = optionalParams.budget;
-      if (optionalParams.industry) body.industry = optionalParams.industry;
-      if (optionalParams.channels) body.channels = optionalParams.channels;
-      if (optionalParams.timeline) body.timeline = optionalParams.timeline;
-      if (optionalParams.geographic) body.geographic = optionalParams.geographic;
+    if (!prompt.trim()) { 
+      toast({ title: "Missing Information", description: "Please describe your business goals", variant: "destructive" }); 
+      return; 
+    }
+    setResult(null);
+    
+    const body: Record<string, any> = { prompt: prompt.trim(), analysisMode };
+    if (optionalParams.budget) body.budget = optionalParams.budget;
+    if (optionalParams.industry) body.industry = optionalParams.industry;
+    if (optionalParams.channels) body.channels = optionalParams.channels;
+    if (optionalParams.timeline) body.timeline = optionalParams.timeline;
+    if (optionalParams.geographic) body.geographic = optionalParams.geographic;
 
-      const { data, error } = await supabase.functions.invoke('business-tools-advisor', { body });
-      if (error) { toast({ title: "Analysis Error", description: error.message, variant: "destructive" }); return; }
-      if (data?.error) { toast({ title: "Error", description: data.error, variant: "destructive" }); return; }
-      setResult(data);
-      setDisplayedResultMode(analysisMode);
-      await loadHistory(user!.id);
-      await loadPremiumStatus(user!.id);
-      toast({ title: "Strategy Created", description: `Your ${analysisMode === 'deep' ? 'comprehensive' : 'quick'} business strategy is ready` });
+    try {
+      await analyze(body);
     } catch (error) {
-      toast({ title: "Error", description: "Failed to generate strategy", variant: "destructive" });
-    } finally { setAnalyzing(false); }
+      // Error already handled in onError callback
+    }
   };
 
   const handleDeleteHistory = async (id: string) => {
@@ -229,7 +239,7 @@ export default function BusinessToolsAdvisor() {
             <Card className="border-primary/20 shadow-elegant">
               <CardHeader><CardTitle>Describe Your Business Goals</CardTitle><CardDescription>Use the + button to add optional context like budget or industry.</CardDescription></CardHeader>
               <CardContent className="space-y-4">
-                <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={analyzing} />
+                <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={isAnalyzing} />
                 <Tabs value={analysisMode} onValueChange={(v) => setAnalysisMode(v as "standard" | "deep")}>
                   <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0 gap-0 w-full">
                     <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none min-h-[70px] sm:min-h-[60px]">
@@ -257,17 +267,23 @@ export default function BusinessToolsAdvisor() {
                     </button>
                   </div>
                 )}
-                <Button onClick={handleAnalyze} disabled={analyzing || !canAnalyze || !prompt.trim()} className="w-full" size="lg">
-                  {analyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Strategy...</> : !canAnalyze ? `Next in ${getTimeUntilNextAnalysis()}` : 'Create Business Strategy'}
+                <Button onClick={handleAnalyze} disabled={isAnalyzing || !canAnalyze || !prompt.trim()} className="w-full" size="lg">
+                  {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Strategy...</> : !canAnalyze ? `Next in ${getTimeUntilNextAnalysis()}` : 'Create Business Strategy'}
                 </Button>
               </CardContent>
             </Card>
 
-            {analyzing && (
-              <AnalysisLoader isDeepMode={analysisMode === 'deep'} />
+            {isAnalyzing && (
+              <AnalysisLoader 
+                isDeepMode={analysisMode === 'deep'} 
+                streamingStatus={streamingState.status}
+                sourceCount={streamingState.sourceCount}
+                phasesCompleted={streamingState.phasesCompleted}
+                totalPhases={streamingState.totalPhases}
+              />
             )}
 
-            {result && !analyzing && (
+            {result && !isAnalyzing && (
               <div ref={resultRef} className="animate-fade-in">
                 <Card className="border-primary/20 shadow-elegant">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -6,6 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-signature',
 };
 
+// KORRIGIERTES Interface basierend auf Freemius API Dokumentation
 interface FreemiusWebhookEvent {
   type: string;
   id: string;
@@ -21,15 +22,32 @@ interface FreemiusWebhookEvent {
       id: string;
       plan_id: string;
       created: string;
-      next_payment_date?: string;
-      ends?: string;
+      next_payment?: string;        // KORRIGIERT: war next_payment_date
+      canceled_at?: string;         // KORRIGIERT: war ends (existiert nicht)
+      billing_cycle?: number;       // NEU: 1=monatlich, 12=jährlich
+    };
+    license?: {                     // NEU: License-Objekt
+      id: string;
+      expiration?: string;          // Das tatsächliche Ablaufdatum
     };
     payment?: {
       id: string;
       subscription_id?: string;
       gross?: number;
+      is_renewal?: boolean;         // NEU: Zeigt ob es eine Verlängerung ist
     };
   };
+}
+
+// Helper: Berechne Abo-Ende basierend auf billing_cycle
+function calculateSubscriptionEndDate(billingCycle?: number): Date {
+  const endDate = new Date();
+  if (billingCycle === 12) {
+    endDate.setFullYear(endDate.getFullYear() + 1);
+  } else {
+    endDate.setMonth(endDate.getMonth() + 1);
+  }
+  return endDate;
 }
 
 serve(async (req) => {
@@ -101,7 +119,11 @@ serve(async (req) => {
     console.log('User Email:', event.objects.user?.email);
     console.log('User ID (Freemius):', event.objects.user?.id);
     console.log('Subscription ID:', event.objects.subscription?.id);
+    console.log('Subscription next_payment:', event.objects.subscription?.next_payment);
+    console.log('Subscription billing_cycle:', event.objects.subscription?.billing_cycle);
+    console.log('License expiration:', event.objects.license?.expiration);
     console.log('Payment ID:', event.objects.payment?.id);
+    console.log('Payment is_renewal:', event.objects.payment?.is_renewal);
     console.log('Full Event:', JSON.stringify(event, null, 2));
     console.log('========================================');
 
@@ -158,7 +180,6 @@ serve(async (req) => {
       console.log('Action: Storing in pending_premium table');
       
       // Only store pending premium for activation events
-      // KORRIGIERT: Nur noch existierende Freemius Events verwenden
       const activationEvents = ['subscription.created', 'payment.created'];
       
       if (!activationEvents.includes(event.type)) {
@@ -219,7 +240,7 @@ serve(async (req) => {
       );
     }
 
-    // Handle different webhook events - KORRIGIERTE EVENT NAMEN
+    // Handle different webhook events
     switch (event.type) {
       // ============================================
       // NEUE ABO-ERSTELLUNG
@@ -230,6 +251,7 @@ serve(async (req) => {
         
         const subscriptionId = event.objects.subscription?.id || null;
         const customerId = event.objects.user?.id || null;
+        const billingCycle = event.objects.subscription?.billing_cycle;
         
         const updateData: any = {
           user_id: profile.id,
@@ -250,18 +272,21 @@ serve(async (req) => {
           updateData.premium_since = new Date().toISOString();
         }
 
-        // Set subscription dates
-        if (event.objects.subscription?.ends) {
-          updateData.subscription_end_date = new Date(event.objects.subscription.ends).toISOString();
+        // KORRIGIERT: Verwende license.expiration für das Ablaufdatum
+        if (event.objects.license?.expiration) {
+          updateData.subscription_end_date = new Date(event.objects.license.expiration).toISOString();
+          console.log('Using license.expiration:', updateData.subscription_end_date);
         } else {
-          // Default: 30 days from now
-          const endDate = new Date();
-          endDate.setDate(endDate.getDate() + 30);
+          // Fallback: Berechne basierend auf billing_cycle
+          const endDate = calculateSubscriptionEndDate(billingCycle);
           updateData.subscription_end_date = endDate.toISOString();
+          console.log('Calculated subscription_end_date based on billing_cycle:', billingCycle, '->', updateData.subscription_end_date);
         }
         
-        if (event.objects.subscription?.next_payment_date) {
-          updateData.next_payment_date = new Date(event.objects.subscription.next_payment_date).toISOString();
+        // KORRIGIERT: Verwende next_payment statt next_payment_date
+        if (event.objects.subscription?.next_payment) {
+          updateData.next_payment_date = new Date(event.objects.subscription.next_payment).toISOString();
+          console.log('Using next_payment:', updateData.next_payment_date);
         }
 
         const { error: updateError } = await supabase
@@ -287,13 +312,14 @@ serve(async (req) => {
         console.log('💰 PAYMENT RECEIVED');
         console.log('User ID:', profile.id);
         console.log('Payment ID:', event.objects.payment?.id);
+        console.log('Is Renewal:', event.objects.payment?.is_renewal);
         
         const subscriptionId = event.objects.subscription?.id || event.objects.payment?.subscription_id || null;
         const customerId = event.objects.user?.id || null;
+        const billingCycle = event.objects.subscription?.billing_cycle;
 
-        // Verlängere subscription_end_date um 30 Tage ab jetzt
-        const newEndDate = new Date();
-        newEndDate.setDate(newEndDate.getDate() + 30);
+        // Berechne neues Ablaufdatum basierend auf billing_cycle
+        const newEndDate = calculateSubscriptionEndDate(billingCycle);
 
         const updateData: any = {
           user_id: profile.id,
@@ -305,11 +331,12 @@ serve(async (req) => {
         if (subscriptionId) updateData.freemius_subscription_id = subscriptionId;
         if (customerId) updateData.freemius_customer_id = customerId;
 
-        // Set next_payment_date if available
-        if (event.objects.subscription?.next_payment_date) {
-          updateData.next_payment_date = new Date(event.objects.subscription.next_payment_date).toISOString();
+        // KORRIGIERT: Verwende next_payment statt next_payment_date
+        if (event.objects.subscription?.next_payment) {
+          updateData.next_payment_date = new Date(event.objects.subscription.next_payment).toISOString();
+          console.log('Using next_payment:', updateData.next_payment_date);
         } else {
-          // Default: 30 days from now
+          // Fallback: Gleiches Datum wie subscription_end_date
           updateData.next_payment_date = newEndDate.toISOString();
         }
 
@@ -338,6 +365,7 @@ serve(async (req) => {
 
         console.log('✅ Premium extended for payment.created');
         console.log('New end date:', newEndDate.toISOString());
+        console.log('Billing cycle:', billingCycle);
         break;
       }
 
@@ -356,18 +384,34 @@ serve(async (req) => {
         
         let subscriptionEndDate: Date | null = null;
         
-        // Store subscription end date with fallback calculation
-        if (event.objects.subscription?.ends) {
-          subscriptionEndDate = new Date(event.objects.subscription.ends);
+        // KORRIGIERT: Verwende license.expiration für das Ablaufdatum
+        if (event.objects.license?.expiration) {
+          subscriptionEndDate = new Date(event.objects.license.expiration);
           updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
-          console.log('Storing subscription end date from webhook:', updateCancelData.subscription_end_date);
-        } else if (event.objects.subscription?.created) {
-          // Fallback: Calculate end date based on creation date + 30 days
-          const createdDate = new Date(event.objects.subscription.created);
-          createdDate.setDate(createdDate.getDate() + 30);
-          subscriptionEndDate = createdDate;
-          updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
-          console.log('Calculated fallback subscription end date:', updateCancelData.subscription_end_date);
+          console.log('Using license.expiration for end date:', updateCancelData.subscription_end_date);
+        } else if (event.objects.subscription?.canceled_at) {
+          // KORRIGIERT: canceled_at statt ends
+          // canceled_at zeigt wann gekündigt wurde, nicht wann es abläuft
+          // Wir behalten das bestehende subscription_end_date bei
+          console.log('Subscription canceled_at:', event.objects.subscription.canceled_at);
+        } else {
+          // Fallback: Hole existierendes Ablaufdatum aus DB
+          const { data: existingCredits } = await supabase
+            .from('user_credits')
+            .select('subscription_end_date')
+            .eq('user_id', profile.id)
+            .maybeSingle();
+          
+          if (existingCredits?.subscription_end_date) {
+            subscriptionEndDate = new Date(existingCredits.subscription_end_date);
+            console.log('Using existing subscription_end_date from DB:', subscriptionEndDate.toISOString());
+          } else {
+            // Letzter Fallback: 30 Tage ab jetzt
+            subscriptionEndDate = new Date();
+            subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
+            updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
+            console.log('Fallback: Using 30 days from now:', updateCancelData.subscription_end_date);
+          }
         }
         
         // Keep premium active if subscription still valid

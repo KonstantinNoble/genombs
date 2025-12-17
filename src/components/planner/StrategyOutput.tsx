@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle, Globe, Link2 } from 'lucide-react';
 import { ActivateStrategyButton } from './ActivateStrategyButton';
 
 // New structured action type
@@ -40,6 +40,9 @@ export interface StrategyPhase {
 
 export interface PlannerResult {
   strategies: StrategyPhase[];
+  // Market intelligence from Perplexity
+  marketInsights?: string;
+  sources?: string[];
 }
 
 interface StrategyOutputProps {
@@ -150,11 +153,13 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     return <LegacyResultRenderer result={result as LegacyToolResult | LegacyAdResult} />;
   }
 
-  const { strategies } = result;
+  const { strategies, marketInsights, sources } = result;
 
   if (!strategies || strategies.length === 0) {
     return <p className="text-muted-foreground">No strategy phases generated</p>;
   }
+
+  const hasMarketIntelligence = marketInsights && marketInsights.length > 0;
 
   const phaseColors = [
     'from-blue-500/20 to-blue-600/10 border-blue-500/30',
@@ -180,6 +185,24 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
       <div className="flex justify-end">
         <ActivateStrategyButton result={result} isDeepMode={isDeepMode} />
       </div>
+
+      {/* Market Intelligence Banner */}
+      {hasMarketIntelligence && (
+        <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg border border-cyan-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="h-4 w-4 text-cyan-500" />
+            <span className="font-medium text-cyan-600 dark:text-cyan-400 text-sm">
+              Powered by Real-Time Market Intelligence
+            </span>
+            <Badge variant="outline" className="text-[10px] bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+              LIVE DATA
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            This strategy was enhanced with current market research and industry insights.
+          </p>
+        </div>
+      )}
 
       {/* Premium indicator */}
       {isDeepMode && (
@@ -428,6 +451,41 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
           ))}
         </div>
       </div>
+
+      {/* Sources Section - shown when market intelligence was used */}
+      {sources && sources.length > 0 && (
+        <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+            <Link2 className="h-3.5 w-3.5" />
+            Market Research Sources
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {sources.map((source, i) => {
+              // Extract domain from URL for display
+              let displayText = source;
+              try {
+                const url = new URL(source);
+                displayText = url.hostname.replace('www.', '');
+              } catch {
+                // Keep original if not a valid URL
+              }
+              
+              return (
+                <a
+                  key={i}
+                  href={source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 hover:underline bg-primary/5 px-2 py-1 rounded-md transition-colors"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  <span className="truncate max-w-[150px]">{displayText}</span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

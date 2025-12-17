@@ -52,20 +52,32 @@ const inputSchema = z.object({
   channels: z.string().optional(),
   timeline: z.string().optional(),
   geographic: z.string().optional(),
-  analysisMode: z.enum(["standard", "deep"]).optional()
+  analysisMode: z.enum(["standard", "deep"]).optional(),
+  streaming: z.boolean().optional()
 });
+
+// Helper function to send SSE event
+function sendSSE(controller: ReadableStreamDefaultController, event: string, data: any) {
+  const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  controller.enqueue(new TextEncoder().encode(message));
+}
 
 // Perplexity market research function
 async function performMarketResearch(
   industry: string,
   businessContext: string,
-  isDeepMode: boolean
+  isDeepMode: boolean,
+  controller?: ReadableStreamDefaultController
 ): Promise<MarketResearchResult> {
   const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
   
   if (!PERPLEXITY_API_KEY) {
     console.log('Perplexity API key not configured, skipping market research');
     return { insights: '', citations: [] };
+  }
+
+  if (controller) {
+    sendSSE(controller, 'research_start', { message: 'Researching market data...' });
   }
 
   console.log(`Starting Perplexity market research (mode: ${isDeepMode ? 'deep' : 'standard'})`);
@@ -132,6 +144,13 @@ async function performMarketResearch(
     const duration = Date.now() - startTime;
     console.log(`Perplexity research completed in ${duration}ms with ${allCitations.length} sources`);
 
+    if (controller) {
+      sendSSE(controller, 'research_complete', { 
+        message: `Found ${allCitations.length} sources`,
+        sourceCount: allCitations.length
+      });
+    }
+
     return {
       insights: allInsights,
       citations: allCitations.slice(0, isDeepMode ? 10 : 5) // Limit citations
@@ -170,6 +189,7 @@ serve(async (req) => {
 
     const requestBody = await req.json();
     const isDeepMode = requestBody.analysisMode === "deep";
+    const useStreaming = requestBody.streaming === true;
 
     // Get user's premium status
     const { data: creditsData, error: creditsError } = await supabase
@@ -260,24 +280,123 @@ serve(async (req) => {
 
     const { prompt, budget, industry, channels, timeline, geographic, analysisMode } = validatedInput;
     
-    console.log('Analysis mode:', { isPremium, analysisMode: analysisMode || 'standard', isDeepMode });
+    console.log('Analysis mode:', { isPremium, analysisMode: analysisMode || 'standard', isDeepMode, streaming: useStreaming });
 
-    // Step 1: Perform Perplexity market research
+    // If streaming is enabled, create a stream response
+    if (useStreaming) {
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            // Step 1: Perform Perplexity market research with streaming updates
+            const industryContext = industry || 'general business';
+            const marketResearch = await performMarketResearch(industryContext, prompt, isDeepMode, controller);
+            const hasMarketResearch = marketResearch.insights.length > 0;
+
+            // Step 2: Notify AI generation starting
+            sendSSE(controller, 'generation_start', { message: 'Creating strategy...' });
+
+            // Step 3: Call Lovable AI
+            const result = await generateStrategy(
+              prompt, budget, industry, channels, timeline, geographic,
+              isDeepMode, marketResearch, hasMarketResearch, controller
+            );
+
+            // Step 4: Save to history and update credits
+            await saveHistoryAndUpdateCredits(
+              supabase, user.id, prompt, budget, industry, 
+              analysisMode || 'standard', result, creditsData, 
+              isDeepMode, deepLimit, standardLimit
+            );
+
+            // Step 5: Send final result
+            sendSSE(controller, 'complete', result);
+
+            const totalTime = Date.now() - startTime;
+            console.log(`Streaming request completed in ${totalTime}ms`);
+
+            controller.close();
+          } catch (error: any) {
+            console.error('Streaming error:', error);
+            sendSSE(controller, 'error', { error: error.message || 'An error occurred' });
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      });
+    }
+
+    // Non-streaming mode (legacy)
     const industryContext = industry || 'general business';
     const marketResearch = await performMarketResearch(industryContext, prompt, isDeepMode);
     const hasMarketResearch = marketResearch.insights.length > 0;
 
     console.log(`Market research: ${hasMarketResearch ? 'available' : 'skipped'} (${marketResearch.citations.length} sources)`);
 
-    // Step 2: Call Lovable AI with enhanced context
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    const result = await generateStrategy(
+      prompt, budget, industry, channels, timeline, geographic,
+      isDeepMode, marketResearch, hasMarketResearch
+    );
+
+    await saveHistoryAndUpdateCredits(
+      supabase, user.id, prompt, budget, industry, 
+      analysisMode || 'standard', result, creditsData, 
+      isDeepMode, deepLimit, standardLimit
+    );
+
+    const totalTime = Date.now() - startTime;
+    console.log(`Request completed in ${totalTime}ms`);
+
+    return new Response(
+      JSON.stringify(result),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error: any) {
+    console.error('Business Tools Advisor error:', error);
+    
+    if (error.message === 'Unauthorized') {
+      return new Response(
+        JSON.stringify({ error: 'Please log in to continue' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+    
+    return new Response(
+      JSON.stringify({ error: error.message || 'An error occurred' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});
 
-    const phaseCount = "EXACTLY 4";
+// Helper function to generate strategy
+async function generateStrategy(
+  prompt: string,
+  budget: string | undefined,
+  industry: string | undefined,
+  channels: string | undefined,
+  timeline: string | undefined,
+  geographic: string | undefined,
+  isDeepMode: boolean,
+  marketResearch: MarketResearchResult,
+  hasMarketResearch: boolean,
+  controller?: ReadableStreamDefaultController
+): Promise<{ strategies: StrategyPhase[]; marketInsights?: string; sources?: string[] }> {
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  if (!LOVABLE_API_KEY) {
+    throw new Error('LOVABLE_API_KEY not configured');
+  }
 
-    const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
+  const phaseCount = "EXACTLY 4";
+
+  const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
 CRITICAL OUTPUT RULES - NO BUZZWORDS ALLOWED:
 - NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
@@ -342,33 +461,33 @@ CRITICAL:
 
 Use the create_strategy function to return your response.`;
 
-    // Build user prompt with market research context
-    let userPromptText = `User's business goals and context:\n\n${prompt}`;
-    
-    if (budget) userPromptText += `\n\nBudget: ${budget}`;
-    if (industry) userPromptText += `\nIndustry: ${industry}`;
-    if (channels) userPromptText += `\nPreferred Tools/Channels: ${channels}`;
-    if (timeline) userPromptText += `\nTimeline: ${timeline}`;
-    if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
+  // Build user prompt with market research context
+  let userPromptText = `User's business goals and context:\n\n${prompt}`;
+  
+  if (budget) userPromptText += `\n\nBudget: ${budget}`;
+  if (industry) userPromptText += `\nIndustry: ${industry}`;
+  if (channels) userPromptText += `\nPreferred Tools/Channels: ${channels}`;
+  if (timeline) userPromptText += `\nTimeline: ${timeline}`;
+  if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
-    // Add market research context if available
-    if (hasMarketResearch) {
-      userPromptText += `\n\n=== REAL-TIME MARKET INTELLIGENCE (${new Date().toLocaleDateString()}) ===\n${marketResearch.insights}\n\nSources: ${marketResearch.citations.join(', ')}\n===\n\nIMPORTANT: Use this market intelligence to make your recommendations more relevant and data-driven.`;
-    }
+  // Add market research context if available
+  if (hasMarketResearch) {
+    userPromptText += `\n\n=== REAL-TIME MARKET INTELLIGENCE (${new Date().toLocaleDateString()}) ===\n${marketResearch.insights}\n\nSources: ${marketResearch.citations.join(', ')}\n===\n\nIMPORTANT: Use this market intelligence to make your recommendations more relevant and data-driven.`;
+  }
 
-    const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
-    const maxTokens = isDeepMode ? 12000 : 8000;
-    const timeout = isDeepMode ? 90000 : 40000; // Increased timeout for Perplexity
+  const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
+  const maxTokens = isDeepMode ? 12000 : 6000;
+  const timeout = isDeepMode ? 90000 : 35000;
 
-    console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'})...`);
+  console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'})...`);
 
-    const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), timeout);
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-    let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[] };
+  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[] };
 
-    if (isDeepMode) {
-      const deepModeJsonInstructions = `
+  if (isDeepMode) {
+    const deepModeJsonInstructions = `
 
 RESPONSE FORMAT - CRITICAL:
 You MUST return ONLY a valid JSON object with no markdown, no code fences, no explanation.
@@ -394,319 +513,311 @@ The JSON must have this exact structure:
 
 Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation, and roiProjection.`;
 
-      const deepSystemPrompt = systemPrompt + deepModeJsonInstructions;
+    const deepSystemPrompt = systemPrompt + deepModeJsonInstructions;
 
-      let aiResponse: Response;
-      try {
-        aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [
-              { role: 'system', content: deepSystemPrompt },
-              { role: 'user', content: userPromptText }
-            ],
-            max_completion_tokens: maxTokens
-          }),
-          signal: abortController.signal
-        });
-        
-        clearTimeout(timeoutId);
-      } catch (error: any) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-          throw new Error(`AI request timed out after ${timeout}ms`);
-        }
-        throw error;
-      }
-
-      if (!aiResponse.ok) {
-        const errorText = await aiResponse.text();
-        console.error('AI API error:', aiResponse.status, errorText);
-        
-        if (aiResponse.status === 429) {
-          return new Response(
-            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        if (aiResponse.status === 402) {
-          return new Response(
-            JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
-            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        throw new Error(`AI API error: ${aiResponse.status}`);
-      }
-
-      const aiData = await aiResponse.json();
-      console.log('AI response received (deep mode)');
-
-      const content = aiData.choices?.[0]?.message?.content;
-      if (!content) {
-        throw new Error('Empty AI response');
-      }
-
-      let cleanedContent = content.trim();
-      if (cleanedContent.startsWith('```json')) {
-        cleanedContent = cleanedContent.slice(7);
-      } else if (cleanedContent.startsWith('```')) {
-        cleanedContent = cleanedContent.slice(3);
-      }
-      if (cleanedContent.endsWith('```')) {
-        cleanedContent = cleanedContent.slice(0, -3);
-      }
-      cleanedContent = cleanedContent.trim();
-
-      try {
-        result = JSON.parse(cleanedContent);
-      } catch (parseError) {
-        console.error('Failed to parse AI response as JSON:', cleanedContent.substring(0, 500));
-        throw new Error('AI returned invalid JSON format');
-      }
-
-      if (!result.strategies || !Array.isArray(result.strategies)) {
-        throw new Error('Invalid response format from AI');
-      }
-
-    } else {
-      // STANDARD MODE: Use tool calling
-      const baseProperties = {
-        phase: { type: 'number', description: 'Phase number' },
-        title: { type: 'string', description: 'Phase title' },
-        timeframe: { type: 'string', description: 'Duration' },
-        objectives: { 
-          type: 'array', 
-          items: { type: 'string' },
-          description: 'Measurable objectives with KPIs'
+    let aiResponse: Response;
+    try {
+      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`
         },
-        actions: { 
-          type: 'array', 
-          items: { 
-            type: 'object',
-            properties: {
-              text: { type: 'string' },
-              searchTerm: { type: 'string' }
-            },
-            required: ['text', 'searchTerm']
-          },
-          description: 'Specific actions with search terms'
-        },
-        budget: { type: 'string', description: 'Budget allocation' },
-        channels: { 
-          type: 'array', 
-          items: { type: 'string' },
-          description: 'Tools and platforms needed'
-        },
-        milestones: { 
-          type: 'array', 
-          items: { type: 'string' },
-          description: 'Success indicators'
-        }
-      };
-
-      let aiResponse: Response;
-      try {
-        aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPromptText }
-            ],
-            max_completion_tokens: maxTokens,
-            tools: [{
-              type: 'function',
-              function: {
-                name: 'create_strategy',
-                description: 'Create a phased business strategy with specific, actionable steps',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    strategies: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: baseProperties,
-                        required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
-                      },
-                      description: 'Array of 4 strategy phases'
-                    }
-                  },
-                  required: ['strategies']
-                }
-              }
-            }],
-            tool_choice: { type: 'function', function: { name: 'create_strategy' } }
-          }),
-          signal: abortController.signal
-        });
-        
-        clearTimeout(timeoutId);
-      } catch (error: any) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-          throw new Error(`AI request timed out after ${timeout}ms`);
-        }
-        throw error;
-      }
-
-      if (!aiResponse.ok) {
-        const errorText = await aiResponse.text();
-        console.error('AI API error:', aiResponse.status, errorText);
-        
-        if (aiResponse.status === 429) {
-          return new Response(
-            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        if (aiResponse.status === 402) {
-          return new Response(
-            JSON.stringify({ error: 'AI service quota exceeded. Please contact support.' }),
-            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        throw new Error(`AI API error: ${aiResponse.status}`);
-      }
-
-      const aiData = await aiResponse.json();
-      console.log('AI response received (standard mode)');
-
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall || toolCall.function?.name !== 'create_strategy') {
-        throw new Error('Invalid AI response format');
-      }
-
-      result = JSON.parse(toolCall.function.arguments);
-      
-      if (!result.strategies || !Array.isArray(result.strategies)) {
-        throw new Error('Invalid response format from AI');
-      }
-    }
-
-    // Add market insights to result
-    if (hasMarketResearch) {
-      result.marketInsights = marketResearch.insights;
-      result.sources = marketResearch.citations;
-    }
-
-    console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);
-
-    // Save to history
-    const { error: historyError } = await supabase
-      .from('business_tools_history')
-      .insert({
-        user_id: user.id,
-        business_goals: prompt.substring(0, 500),
-        budget_range: budget || 'Not specified',
-        industry: industry || 'Not specified',
-        team_size: 'Not specified',
-        result: result,
-        analysis_mode: analysisMode || 'standard'
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: 'system', content: deepSystemPrompt },
+            { role: 'user', content: userPromptText }
+          ],
+          max_completion_tokens: maxTokens
+        }),
+        signal: abortController.signal
       });
-
-    if (historyError) {
-      console.error('Error saving history:', historyError);
-    } else {
-      console.log('History saved successfully');
       
-      // Auto-cleanup
-      const HISTORY_LIMIT = 10;
-      const { data: allHistory } = await supabase
-        .from('business_tools_history')
-        .select('id')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (allHistory && allHistory.length > HISTORY_LIMIT) {
-        const idsToDelete = allHistory.slice(HISTORY_LIMIT).map(h => h.id);
-        await supabase
-          .from('business_tools_history')
-          .delete()
-          .in('id', idsToDelete);
+      clearTimeout(timeoutId);
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`AI request timed out after ${timeout}ms`);
       }
+      throw error;
     }
 
-    // Update credits
-    const now = new Date();
-    
-    if (isDeepMode) {
-      const deepWindowStart = creditsData?.deep_analysis_window_start;
-      const deepCount = creditsData?.deep_analysis_count ?? 0;
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI API error:', aiResponse.status, errorText);
       
-      let newDeepCount = deepCount + 1;
-      let newDeepWindowStart = deepWindowStart;
-      
-      if (!deepWindowStart || new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
-        newDeepCount = 1;
-        newDeepWindowStart = now.toISOString();
+      if (aiResponse.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again later.');
       }
-      
-      await supabase
-        .from('user_credits')
-        .update({
-          deep_analysis_count: newDeepCount,
-          deep_analysis_window_start: newDeepWindowStart,
-          updated_at: now.toISOString()
-        })
-        .eq('user_id', user.id);
-        
-      console.log(`Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
-    } else {
-      const standardWindowStart = creditsData?.standard_analysis_window_start;
-      const standardCount = creditsData?.standard_analysis_count ?? 0;
-      
-      let newStandardCount = standardCount + 1;
-      let newStandardWindowStart = standardWindowStart;
-      
-      if (!standardWindowStart || new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
-        newStandardCount = 1;
-        newStandardWindowStart = now.toISOString();
+      if (aiResponse.status === 402) {
+        throw new Error('AI service quota exceeded. Please contact support.');
       }
-      
-      await supabase
-        .from('user_credits')
-        .update({
-          standard_analysis_count: newStandardCount,
-          standard_analysis_window_start: newStandardWindowStart,
-          updated_at: now.toISOString()
-        })
-        .eq('user_id', user.id);
-        
-      console.log(`Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
+      throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
-    const totalTime = Date.now() - startTime;
-    console.log(`Request completed in ${totalTime}ms`);
+    const aiData = await aiResponse.json();
+    console.log('AI response received (deep mode)');
 
-    return new Response(
-      JSON.stringify(result),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error: any) {
-    console.error('Business Tools Advisor error:', error);
-    
-    if (error.message === 'Unauthorized') {
-      return new Response(
-        JSON.stringify({ error: 'Please log in to continue' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const content = aiData.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error('Empty AI response');
     }
+
+    let cleanedContent = content.trim();
+    if (cleanedContent.startsWith('```json')) {
+      cleanedContent = cleanedContent.slice(7);
+    } else if (cleanedContent.startsWith('```')) {
+      cleanedContent = cleanedContent.slice(3);
+    }
+    if (cleanedContent.endsWith('```')) {
+      cleanedContent = cleanedContent.slice(0, -3);
+    }
+    cleanedContent = cleanedContent.trim();
+
+    try {
+      result = JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', cleanedContent.substring(0, 500));
+      throw new Error('AI returned invalid JSON format');
+    }
+
+    if (!result.strategies || !Array.isArray(result.strategies)) {
+      throw new Error('Invalid response format from AI');
+    }
+
+  } else {
+    // STANDARD MODE: Use tool calling
+    const baseProperties = {
+      phase: { type: 'number', description: 'Phase number' },
+      title: { type: 'string', description: 'Phase title' },
+      timeframe: { type: 'string', description: 'Duration' },
+      objectives: { 
+        type: 'array', 
+        items: { type: 'string' },
+        description: 'Measurable objectives with KPIs'
+      },
+      actions: { 
+        type: 'array', 
+        items: { 
+          type: 'object',
+          properties: {
+            text: { type: 'string' },
+            searchTerm: { type: 'string' }
+          },
+          required: ['text', 'searchTerm']
+        },
+        description: 'Specific actions with search terms'
+      },
+      budget: { type: 'string', description: 'Budget allocation' },
+      channels: { 
+        type: 'array', 
+        items: { type: 'string' },
+        description: 'Tools and platforms needed'
+      },
+      milestones: { 
+        type: 'array', 
+        items: { type: 'string' },
+        description: 'Success indicators'
+      }
+    };
+
+    let aiResponse: Response;
+    try {
+      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPromptText }
+          ],
+          max_completion_tokens: maxTokens,
+          tools: [{
+            type: 'function',
+            function: {
+              name: 'create_strategy',
+              description: 'Create a phased business strategy with specific, actionable steps',
+              parameters: {
+                type: 'object',
+                properties: {
+                  strategies: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: baseProperties,
+                      required: ['phase', 'title', 'timeframe', 'objectives', 'actions']
+                    },
+                    description: 'Array of 4 strategy phases'
+                  }
+                },
+                required: ['strategies']
+              }
+            }
+          }],
+          tool_choice: { type: 'function', function: { name: 'create_strategy' } }
+        }),
+        signal: abortController.signal
+      });
+      
+      clearTimeout(timeoutId);
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`AI request timed out after ${timeout}ms`);
+      }
+      throw error;
+    }
+
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI API error:', aiResponse.status, errorText);
+      
+      if (aiResponse.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again later.');
+      }
+      if (aiResponse.status === 402) {
+        throw new Error('AI service quota exceeded. Please contact support.');
+      }
+      throw new Error(`AI API error: ${aiResponse.status}`);
+    }
+
+    const aiData = await aiResponse.json();
+    console.log('AI response received (standard mode)');
+
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall || toolCall.function?.name !== 'create_strategy') {
+      throw new Error('Invalid AI response format');
+    }
+
+    result = JSON.parse(toolCall.function.arguments);
     
-    return new Response(
-      JSON.stringify({ error: error.message || 'An error occurred' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    if (!result.strategies || !Array.isArray(result.strategies)) {
+      throw new Error('Invalid response format from AI');
+    }
   }
-});
+
+  // Send phase updates for streaming mode
+  if (controller && result.strategies) {
+    for (let i = 0; i < result.strategies.length; i++) {
+      sendSSE(controller, 'phase_complete', { 
+        phaseNumber: i + 1,
+        totalPhases: result.strategies.length,
+        phase: result.strategies[i]
+      });
+    }
+  }
+
+  // Add market insights to result
+  if (hasMarketResearch) {
+    result.marketInsights = marketResearch.insights;
+    result.sources = marketResearch.citations;
+  }
+
+  console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);
+
+  return result;
+}
+
+// Helper function to save history and update credits
+async function saveHistoryAndUpdateCredits(
+  supabase: any,
+  userId: string,
+  prompt: string,
+  budget: string | undefined,
+  industry: string | undefined,
+  analysisMode: string,
+  result: any,
+  creditsData: any,
+  isDeepMode: boolean,
+  deepLimit: number,
+  standardLimit: number
+) {
+  // Save to history
+  const { error: historyError } = await supabase
+    .from('business_tools_history')
+    .insert({
+      user_id: userId,
+      business_goals: prompt.substring(0, 500),
+      budget_range: budget || 'Not specified',
+      industry: industry || 'Not specified',
+      team_size: 'Not specified',
+      result: result,
+      analysis_mode: analysisMode
+    });
+
+  if (historyError) {
+    console.error('Error saving history:', historyError);
+  } else {
+    console.log('History saved successfully');
+    
+    // Auto-cleanup
+    const HISTORY_LIMIT = 10;
+    const { data: allHistory } = await supabase
+      .from('business_tools_history')
+      .select('id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (allHistory && allHistory.length > HISTORY_LIMIT) {
+      const idsToDelete = allHistory.slice(HISTORY_LIMIT).map((h: any) => h.id);
+      await supabase
+        .from('business_tools_history')
+        .delete()
+        .in('id', idsToDelete);
+    }
+  }
+
+  // Update credits
+  const now = new Date();
+  
+  if (isDeepMode) {
+    const deepWindowStart = creditsData?.deep_analysis_window_start;
+    const deepCount = creditsData?.deep_analysis_count ?? 0;
+    
+    let newDeepCount = deepCount + 1;
+    let newDeepWindowStart = deepWindowStart;
+    
+    if (!deepWindowStart || new Date(deepWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
+      newDeepCount = 1;
+      newDeepWindowStart = now.toISOString();
+    }
+    
+    await supabase
+      .from('user_credits')
+      .update({
+        deep_analysis_count: newDeepCount,
+        deep_analysis_window_start: newDeepWindowStart,
+        updated_at: now.toISOString()
+      })
+      .eq('user_id', userId);
+      
+    console.log(`Deep analysis count updated: ${newDeepCount}/${deepLimit}`);
+  } else {
+    const standardWindowStart = creditsData?.standard_analysis_window_start;
+    const standardCount = creditsData?.standard_analysis_count ?? 0;
+    
+    let newStandardCount = standardCount + 1;
+    let newStandardWindowStart = standardWindowStart;
+    
+    if (!standardWindowStart || new Date(standardWindowStart).getTime() + 24 * 60 * 60 * 1000 <= now.getTime()) {
+      newStandardCount = 1;
+      newStandardWindowStart = now.toISOString();
+    }
+    
+    await supabase
+      .from('user_credits')
+      .update({
+        standard_analysis_count: newStandardCount,
+        standard_analysis_window_start: newStandardWindowStart,
+        updated_at: now.toISOString()
+      })
+      .eq('user_id', userId);
+      
+    console.log(`Standard analysis count updated: ${newStandardCount}/${standardLimit}`);
+  }
+}

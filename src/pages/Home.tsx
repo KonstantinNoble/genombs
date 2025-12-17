@@ -72,12 +72,12 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <Helmet>
-        <title>Synoptas - AI Website Advisor | Tool Recommendations for Websites</title>
+        <title>Synoptas - AI Website Advisor | Smart Tool Recommendations</title>
         <meta 
           name="description" 
-          content="Optimize your website with AI-powered tool recommendations. Screenshot analysis, website-specific strategies. Start free!" 
+          content="Optimize your website with AI-powered tool recommendations. Screenshot analysis with real-time market research from 10-20+ sources. Free daily analysis!" 
         />
-        <meta name="keywords" content="AI Website Advisor, Website Tools, Website Optimization, AI Website Analysis, Website Screenshot Analysis, E-Commerce Tools, Blog Tools" />
+        <meta name="keywords" content="AI Website Advisor, Website Tools, Website Optimization, AI Website Analysis, Screenshot Analysis, E-Commerce Tools, Blog Tools, Real-Time Market Research, Tool Recommendations" />
         <link rel="canonical" href="https://synoptas.com/" />
       </Helmet>
       <WebPageSchema

@@ -227,16 +227,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
               {/* Phase indicator bar */}
               <div className={`absolute top-0 left-0 w-1.5 sm:w-2 h-full ${phaseAccents[index % phaseAccents.length]}`} />
               
-              {/* Premium badge for deep mode */}
-              {isDeepMode && (
-                <div className="absolute top-3 right-3">
-                  <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-xs px-2 py-1">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Premium
-                  </Badge>
-                </div>
-              )}
-              
               <CardHeader className="pb-4 pl-6 sm:pl-8 pr-4 sm:pr-6">
                 <div className="flex items-center justify-between mb-3 gap-3">
                   <Badge 

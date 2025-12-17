@@ -45,9 +45,22 @@ interface CitationInfo {
   title: string;
 }
 
+// Structured market data interface for Deep Mode
+interface StructuredMarketData {
+  marketSize?: string;
+  growthRate?: string;
+  topCompetitors?: { name: string; marketShare?: string; keyStrength?: string }[];
+  averageCAC?: string;
+  conversionRateBenchmark?: string;
+  bestChannels?: { channel: string; roi?: string }[];
+  keyTrends?: string[];
+  rawInsights: string;
+}
+
 interface MarketResearchResult {
   insights: string;
   citations: CitationInfo[];
+  structuredData?: StructuredMarketData;
 }
 
 // Input validation schema
@@ -68,7 +81,90 @@ function sendSSE(controller: ReadableStreamDefaultController, event: string, dat
   controller.enqueue(new TextEncoder().encode(message));
 }
 
-// Perplexity market research function
+// Extract structured data from Perplexity insights (Deep Mode only)
+function extractStructuredData(insights: string): StructuredMarketData {
+  const structuredData: StructuredMarketData = {
+    rawInsights: insights,
+    topCompetitors: [],
+    bestChannels: [],
+    keyTrends: []
+  };
+
+  try {
+    // Extract market size (look for patterns like "$X billion", "X billion USD", etc.)
+    const marketSizeMatch = insights.match(/(?:market size|market value|valued at|worth)[^.]*?(\$?\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion|B|M|T))?(?:\s*(?:USD|EUR|GBP))?)/i);
+    if (marketSizeMatch) {
+      structuredData.marketSize = marketSizeMatch[1].trim();
+    }
+
+    // Extract growth rate (look for CAGR, growth rate percentages)
+    const growthMatch = insights.match(/(?:CAGR|growth rate|growing at|growth of)[^.]*?(\d+(?:\.\d+)?%)/i);
+    if (growthMatch) {
+      structuredData.growthRate = growthMatch[1];
+    }
+
+    // Extract CAC (Customer Acquisition Cost)
+    const cacMatch = insights.match(/(?:CAC|customer acquisition cost|acquisition cost)[^.]*?(\$?\d+(?:-\d+)?(?:\s*(?:USD|EUR))?)/i);
+    if (cacMatch) {
+      structuredData.averageCAC = cacMatch[1].trim();
+    }
+
+    // Extract conversion rate
+    const conversionMatch = insights.match(/(?:conversion rate|convert at)[^.]*?(\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?%)/i);
+    if (conversionMatch) {
+      structuredData.conversionRateBenchmark = conversionMatch[1];
+    }
+
+    // Extract competitor names (common patterns)
+    const competitorPatterns = [
+      /(?:competitors?|market leaders?|key players?|leading companies)[^.]*?(?:include|are|such as)[^.]*?([A-Z][a-zA-Z]+(?:,?\s*(?:and\s+)?[A-Z][a-zA-Z]+)*)/i,
+      /([A-Z][a-zA-Z]+)\s*(?:dominates?|leads?|holds?)\s*(?:\d+%|\d+\s*percent)/gi
+    ];
+    
+    for (const pattern of competitorPatterns) {
+      const matches = insights.match(pattern);
+      if (matches) {
+        const names = matches[0].split(/,|\s+and\s+/).map(n => n.trim()).filter(n => n.length > 2 && /^[A-Z]/.test(n));
+        for (const name of names.slice(0, 3)) {
+          if (!structuredData.topCompetitors!.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+            // Try to extract market share for this competitor
+            const shareMatch = insights.match(new RegExp(`${name}[^.]*?(\\d+(?:\\.\\d+)?%)`, 'i'));
+            structuredData.topCompetitors!.push({
+              name: name,
+              marketShare: shareMatch ? shareMatch[1] : undefined
+            });
+          }
+        }
+      }
+    }
+
+    // Extract marketing channels
+    const channelKeywords = ['LinkedIn', 'Google Ads', 'Facebook', 'Instagram', 'TikTok', 'Email Marketing', 'Content Marketing', 'SEO', 'YouTube', 'Twitter', 'Webinars', 'Podcasts', 'Influencer Marketing'];
+    for (const channel of channelKeywords) {
+      if (insights.toLowerCase().includes(channel.toLowerCase())) {
+        // Try to find ROI mention near the channel
+        const roiMatch = insights.match(new RegExp(`${channel}[^.]*?(\\d+(?:\\.\\d+)?x|\\d+(?:\\.\\d+)?%\\s*ROI)`, 'i'));
+        structuredData.bestChannels!.push({
+          channel: channel,
+          roi: roiMatch ? roiMatch[1] : undefined
+        });
+      }
+    }
+
+    // Extract key trends (sentences containing "trend", "growing", "emerging")
+    const trendSentences = insights.split(/[.!]/).filter(s => 
+      /(?:trend|growing|emerging|rising|increasing demand|shift toward)/i.test(s) && s.length > 20
+    );
+    structuredData.keyTrends = trendSentences.slice(0, 3).map(s => s.trim());
+
+  } catch (error) {
+    console.error('Error extracting structured data:', error);
+  }
+
+  return structuredData;
+}
+
+// Perplexity market research function with differentiated queries
 async function performMarketResearch(
   industry: string,
   businessContext: string,
@@ -92,54 +188,67 @@ async function performMarketResearch(
   try {
     const model = isDeepMode ? 'sonar-pro' : 'sonar';
     
-    // Prepare research queries based on mode
+    // DIFFERENTIATED QUERIES: Deep Mode gets specific, structured data queries
     const queries = isDeepMode 
       ? [
-          `${industry} current market trends and growth opportunities`,
-          `${industry} competitor landscape and market leaders analysis`,
-          `${industry} latest best practices and successful business strategies`
+          // Query 1: Market size, growth, and competitive landscape
+          `What is the current market size and annual growth rate (CAGR) for ${industry}? Who are the top 3-5 competitors with their market share percentages? Include specific numbers and statistics from 2024-2025.`,
+          // Query 2: Customer acquisition benchmarks
+          `What is the average customer acquisition cost (CAC) and conversion rate benchmarks in ${industry}? What are the typical sales cycle length and customer lifetime value? Include specific dollar amounts and percentages.`,
+          // Query 3: Marketing channel performance
+          `What are the top performing marketing channels in ${industry} based on ROI data 2024-2025? Which channels have the highest conversion rates and lowest cost per acquisition? Include specific statistics.`,
+          // Query 4: Trends and opportunities
+          `What are the emerging trends and growth opportunities in ${industry} for 2025? What strategies are working best for fast-growing companies in this space?`
         ]
       : [
-          `${industry} current business trends best practices growth strategies`
+          // Standard Mode: Single generic query (less detailed)
+          `${industry} current business trends and basic growth strategies 2025`
         ];
 
     // Execute queries (parallel for deep mode, single for standard)
     const researchPromises = queries.map(async (query) => {
-      const response = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are a market research analyst. Provide concise, factual market insights. Focus on actionable data: market size, trends, key players, growth rates. Keep responses under 400 words.' 
-            },
-            { role: 'user', content: query }
-          ],
-        }),
-      });
+      try {
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { 
+                role: 'system', 
+                content: isDeepMode
+                  ? 'You are a market research analyst specializing in quantitative data. Provide SPECIFIC numbers: market sizes, percentages, dollar amounts, competitor names with market shares, CAC figures, conversion rates. Be factual and data-driven. Keep responses under 400 words but maximize data density.'
+                  : 'You are a market research analyst. Provide concise, general market insights. Focus on broad trends and basic recommendations. Keep responses under 300 words.' 
+              },
+              { role: 'user', content: query }
+            ],
+          }),
+        });
 
-      if (!response.ok) {
-        console.error(`Perplexity API error: ${response.status}`);
+        if (!response.ok) {
+          console.error(`Perplexity API error: ${response.status}`);
+          return null;
+        }
+
+        const data = await response.json();
+        return {
+          content: data.choices?.[0]?.message?.content || '',
+          citations: (data.citations || []).map((url: string) => {
+            let title = url;
+            try {
+              const urlObj = new URL(url);
+              title = urlObj.hostname.replace('www.', '');
+            } catch {}
+            return { url, title };
+          })
+        };
+      } catch (queryError) {
+        console.error('Perplexity query error:', queryError);
         return null;
       }
-
-      const data = await response.json();
-      return {
-        content: data.choices?.[0]?.message?.content || '',
-        citations: (data.citations || []).map((url: string) => {
-          let title = url;
-          try {
-            const urlObj = new URL(url);
-            title = urlObj.hostname.replace('www.', '');
-          } catch {}
-          return { url, title };
-        })
-      };
     });
 
     const results = await Promise.all(researchPromises);
@@ -162,7 +271,6 @@ async function performMarketResearch(
         }
       });
     });
-    
 
     const duration = Date.now() - startTime;
     console.log(`Perplexity research completed in ${duration}ms with ${allCitations.length} sources`);
@@ -174,12 +282,26 @@ async function performMarketResearch(
       });
     }
 
+    // For Deep Mode: Extract structured data from insights
+    let structuredData: StructuredMarketData | undefined;
+    if (isDeepMode) {
+      structuredData = extractStructuredData(allInsights);
+      console.log('Structured data extracted:', {
+        hasMarketSize: !!structuredData.marketSize,
+        hasGrowthRate: !!structuredData.growthRate,
+        competitorCount: structuredData.topCompetitors?.length || 0,
+        channelCount: structuredData.bestChannels?.length || 0
+      });
+    }
+
     return {
       insights: allInsights,
-      citations: allCitations.slice(0, isDeepMode ? 10 : 5) // Limit citations
+      citations: allCitations.slice(0, isDeepMode ? 10 : 5),
+      structuredData
     };
   } catch (error) {
     console.error('Perplexity research error:', error);
+    // Graceful degradation: return empty result instead of failing
     return { insights: '', citations: [] };
   }
 }
@@ -399,6 +521,58 @@ serve(async (req) => {
   }
 });
 
+// Build structured market data section for Deep Mode user prompt
+function buildStructuredMarketDataPrompt(structuredData: StructuredMarketData): string {
+  const sections: string[] = [];
+  
+  sections.push('=== 📊 MARKET INTELLIGENCE DATA (You MUST incorporate these into your strategy) ===\n');
+  
+  // Market Size and Growth
+  if (structuredData.marketSize || structuredData.growthRate) {
+    sections.push(`📈 MARKET SIZE: ${structuredData.marketSize || 'Data not available'} (Growing ${structuredData.growthRate || 'N/A'})`);
+  }
+  
+  // Competitors
+  if (structuredData.topCompetitors && structuredData.topCompetitors.length > 0) {
+    sections.push('\n🏆 TOP COMPETITORS (Reference in your competitorAnalysis):');
+    for (const comp of structuredData.topCompetitors) {
+      sections.push(`• ${comp.name}${comp.marketShare ? ` - ${comp.marketShare} market share` : ''}`);
+    }
+  }
+  
+  // Benchmarks
+  if (structuredData.averageCAC || structuredData.conversionRateBenchmark) {
+    sections.push('\n💰 INDUSTRY BENCHMARKS (Use in your ROI projections):');
+    if (structuredData.averageCAC) sections.push(`• Average CAC: ${structuredData.averageCAC}`);
+    if (structuredData.conversionRateBenchmark) sections.push(`• Conversion Rate: ${structuredData.conversionRateBenchmark}`);
+  }
+  
+  // Marketing Channels
+  if (structuredData.bestChannels && structuredData.bestChannels.length > 0) {
+    sections.push('\n📣 BEST PERFORMING CHANNELS (Prioritize in your recommendations):');
+    for (const channel of structuredData.bestChannels) {
+      sections.push(`• ${channel.channel}${channel.roi ? ` - ROI: ${channel.roi}` : ' - High ROI'}`);
+    }
+  }
+  
+  // Key Trends
+  if (structuredData.keyTrends && structuredData.keyTrends.length > 0) {
+    sections.push('\n🔥 KEY TRENDS:');
+    for (const trend of structuredData.keyTrends) {
+      sections.push(`• ${trend}`);
+    }
+  }
+  
+  sections.push('\n\n⚠️ MANDATORY INTEGRATION REQUIREMENTS:');
+  sections.push('1. Reference at least one competitor by name in competitorAnalysis for each phase');
+  sections.push('2. Include market size or growth rate in at least one objective');
+  sections.push('3. Base your ROI projections on the industry benchmarks provided above');
+  sections.push('4. Prioritize marketing channels based on the ROI data above');
+  sections.push('5. Incorporate key trends into your strategy recommendations');
+  
+  return sections.join('\n');
+}
+
 // Helper function to generate strategy
 async function generateStrategy(
   prompt: string,
@@ -419,7 +593,8 @@ async function generateStrategy(
 
   const phaseCount = "EXACTLY 4";
 
-  const systemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
+  // BASE SYSTEM PROMPT (shared between modes)
+  const baseSystemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
 
 CRITICAL OUTPUT RULES - NO BUZZWORDS ALLOWED:
 - NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
@@ -436,7 +611,6 @@ OUTPUT REQUIREMENTS:
 - Each phase should build upon the previous one
 - Focus on actionable, practical business strategies with SPECIFIC details
 - Consider the user's context (budget, industry, timeline if provided)
-${hasMarketResearch ? '- INTEGRATE the real-time market intelligence data into your recommendations' : ''}
 
 PHASE STRUCTURE:
 Each phase must include:
@@ -450,43 +624,74 @@ Each phase must include:
    - resourceTitle: (OPTIONAL) Domain name of the resource (e.g., "hubspot.com", "shopify.com")
 6. budget: Budget allocation for this phase (if budget context provided)
 7. channels: Tools, platforms, or resources needed
-8. milestones: Key success indicators with SPECIFIC metrics
+8. milestones: Key success indicators with SPECIFIC metrics`;
 
-${isDeepMode ? `DEEP MODE PREMIUM ANALYSIS - MANDATORY ADDITIONAL FIELDS:
+  // MODE-SPECIFIC SYSTEM PROMPT ADDITIONS
+  let systemPrompt: string;
+  
+  if (isDeepMode) {
+    systemPrompt = baseSystemPrompt + `
+
+DEEP MODE PREMIUM ANALYSIS - MANDATORY ADDITIONAL FIELDS:
 
 You MUST provide these additional fields for EACH phase:
 
-9. competitorAnalysis: Array with 1 competitor. Include:
-   - name: Actual competitor company/tool name
+9. competitorAnalysis: Array with 1-2 competitors. Include:
+   - name: Actual competitor company/tool name (USE NAMES FROM MARKET DATA IF PROVIDED)
    - strengths: 2 specific strengths
    - weaknesses: 2 specific weaknesses or gaps you can exploit
    
 10. riskMitigation: Array of 2 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
 
 11. roiProjection: ROI calculation object with:
-    - investment: Total investment for this phase
-    - expectedReturn: Expected return
+    - investment: Total investment for this phase (USE BENCHMARKS FROM MARKET DATA)
+    - expectedReturn: Expected return (BASE ON INDUSTRY CONVERSION RATES)
     - timeframe: When to expect returns
     - assumptions: 2 assumptions behind the calculation
 
-DEEP MODE REQUIREMENTS:
-- 4 focused phases with detailed analysis
-- Include competitor analysis, risk mitigation, and ROI for each phase` : `STANDARD MODE:
-- Focus on quick wins and immediate impact
-- Keep recommendations practical and achievable
-- Prioritize the most impactful actions with lowest effort
-- 4 focused phases`}
+=== MANDATORY MARKET DATA INTEGRATION (PREMIUM REQUIREMENT) ===
+
+Your strategy MUST demonstrate that you used the market intelligence data:
+
+1. COMPETITOR INTEGRATION: At least 2 phases must reference actual competitors from the market data by name
+2. MARKET METRICS: Include market size or growth rate numbers in your objectives
+3. BENCHMARK-BASED PROJECTIONS: Your ROI calculations MUST reference the CAC/conversion benchmarks provided
+4. CHANNEL PRIORITIZATION: Recommend channels based on their actual ROI performance data
+5. TREND ALIGNMENT: Reference at least one key industry trend in your strategy
+
+If specific data is not available, state "Based on industry estimates" rather than ignoring the requirement.
+
+⚠️ QUALITY CHECK: A strategy that doesn't incorporate market data is NOT a premium deep analysis.
 
 CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (${isDeepMode ? '2-3 per phase' : '1-2 per phase'})
+- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (2-3 per phase)
 - Only include resourceUrl if it's truly relevant to the action
 
 Use the create_strategy function to return your response.`;
+  } else {
+    systemPrompt = baseSystemPrompt + `
 
-  // Build user prompt with market research context
+STANDARD MODE:
+- Focus on quick wins and immediate impact
+- Keep recommendations practical and achievable
+- Prioritize the most impactful actions with lowest effort
+- 4 focused phases
+- General recommendations without deep market analysis
+
+CRITICAL:
+- Output must be in English
+- No markdown formatting in the output
+- Be EXTREMELY specific and actionable
+- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (1-2 per phase)
+- Only include resourceUrl if it's truly relevant to the action
+
+Use the create_strategy function to return your response.`;
+  }
+
+  // BUILD USER PROMPT (differentiated by mode)
   let userPromptText = `User's business goals and context:\n\n${prompt}`;
   
   if (budget) userPromptText += `\n\nBudget: ${budget}`;
@@ -495,10 +700,26 @@ Use the create_strategy function to return your response.`;
   if (timeline) userPromptText += `\nTimeline: ${timeline}`;
   if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
-  // Add market research context and available resources if available
+  // Add market research context (DIFFERENTIATED BY MODE)
   if (hasMarketResearch) {
+    if (isDeepMode && marketResearch.structuredData) {
+      // DEEP MODE: Structured data prompt with mandatory integration requirements
+      userPromptText += '\n\n' + buildStructuredMarketDataPrompt(marketResearch.structuredData);
+      
+      // Also include raw insights for additional context
+      userPromptText += `\n\n=== DETAILED MARKET RESEARCH ===\n${marketResearch.insights}`;
+    } else {
+      // STANDARD MODE: Basic context (optional, not mandatory)
+      userPromptText += `\n\n=== MARKET CONTEXT (optional background) ===\n${marketResearch.insights}`;
+    }
+    
+    // Add available resources for both modes
     const resourcesList = marketResearch.citations.map((c, i) => `${i + 1}. ${c.url} - "${c.title}"`).join('\n');
-    userPromptText += `\n\n=== REAL-TIME MARKET INTELLIGENCE (${new Date().toLocaleDateString()}) ===\n${marketResearch.insights}\n\n=== AVAILABLE RESOURCES ===\nUse these URLs for resourceUrl in actions when relevant:\n${resourcesList}\n===\n\nIMPORTANT: Assign relevant resource URLs from AVAILABLE RESOURCES to your action items. Only include resourceUrl if it's directly relevant to that action.`;
+    userPromptText += `\n\n=== AVAILABLE RESOURCES ===\nUse these URLs for resourceUrl in actions when relevant:\n${resourcesList}`;
+    
+    if (isDeepMode) {
+      userPromptText += `\n\n⚠️ REMINDER: This is a PREMIUM deep analysis. Your strategy MUST incorporate the market intelligence data above. Generic strategies without market data integration are not acceptable.`;
+    }
   }
 
   const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
@@ -525,19 +746,19 @@ The JSON must have this exact structure:
       "phase": 1,
       "title": "Phase title",
       "timeframe": "Week 1-2",
-      "objectives": ["Objective 1", "Objective 2"],
-      "actions": [{"text": "Action description", "resourceUrl": "https://example.com", "resourceTitle": "example.com"}],
-      "budget": "Budget for phase",
+      "objectives": ["Objective 1 with specific metrics", "Objective 2 referencing market data"],
+      "actions": [{"text": "Action description with specific tools and metrics", "resourceUrl": "https://example.com", "resourceTitle": "example.com"}],
+      "budget": "Budget for phase based on industry CAC benchmarks",
       "channels": ["Tool 1", "Tool 2"],
-      "milestones": ["Milestone 1"],
-      "competitorAnalysis": [{"name": "Competitor Name", "strengths": ["Strength 1"], "weaknesses": ["Weakness 1"]}],
-      "riskMitigation": ["If X happens, then Y"],
-      "roiProjection": {"investment": "Amount", "expectedReturn": "Return", "timeframe": "Timeframe", "assumptions": ["Assumption 1"]}
+      "milestones": ["Milestone 1 with metric target"],
+      "competitorAnalysis": [{"name": "Actual Competitor Name from market data", "strengths": ["Strength 1", "Strength 2"], "weaknesses": ["Weakness 1", "Weakness 2"]}],
+      "riskMitigation": ["IF conversion rate is below X%, THEN do Y"],
+      "roiProjection": {"investment": "Amount based on benchmarks", "expectedReturn": "Return based on industry conversion rates", "timeframe": "Timeframe", "assumptions": ["Assumption based on market data"]}
     }
   ]
 }
 
-Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation, and roiProjection.`;
+Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation, and roiProjection with market data integration.`;
 
     const deepSystemPrompt = systemPrompt + deepModeJsonInstructions;
 

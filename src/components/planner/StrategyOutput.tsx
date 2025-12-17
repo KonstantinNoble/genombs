@@ -181,7 +181,7 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Activate Strategy Button */}
       <div className="flex justify-end">
         <ActivateStrategyButton result={result} isDeepMode={isDeepMode} />
@@ -189,17 +189,17 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
       {/* Market Intelligence Banner */}
       {hasMarketIntelligence && (
-        <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg border border-cyan-500/20">
+        <div className="p-5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg border border-cyan-500/20">
           <div className="flex items-center gap-2 mb-2">
-            <Globe className="h-4 w-4 text-cyan-500" />
-            <span className="font-medium text-cyan-600 dark:text-cyan-400 text-sm">
+            <Globe className="h-5 w-5 text-cyan-500" />
+            <span className="font-medium text-cyan-600 dark:text-cyan-400 text-base">
               Powered by Real-Time Market Intelligence
             </span>
-            <Badge variant="outline" className="text-[10px] bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+            <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
               LIVE DATA
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             This strategy was enhanced with current market research and industry insights.
           </p>
         </div>
@@ -207,63 +207,63 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
       {/* Premium indicator */}
       {isDeepMode && (
-        <div className="flex flex-wrap items-center gap-2 text-sm p-3 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">
-          <Crown className="h-4 w-4 text-amber-500 shrink-0" />
+        <div className="flex flex-wrap items-center gap-3 text-base p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">
+          <Crown className="h-5 w-5 text-amber-500 shrink-0" />
           <span className="font-medium text-amber-600 dark:text-amber-400">Premium Deep Analysis</span>
-          <span className="text-xs text-muted-foreground ml-auto">Enhanced analysis with competitor insights & ROI projections</span>
+          <span className="text-sm text-muted-foreground ml-auto">Enhanced analysis with competitor insights & ROI projections</span>
         </div>
       )}
 
       {/* Timeline connector */}
       <div className="relative">
-        <div className="absolute left-4 sm:left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent hidden lg:block" />
+        <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent hidden xl:block" />
         
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 xl:grid-cols-2">
           {strategies.map((phase, index) => (
             <Card 
               key={index} 
               className={`relative overflow-hidden bg-gradient-to-br ${phaseColors[index % phaseColors.length]} border transition-all duration-300 hover:shadow-lg active:scale-[0.99] sm:hover:scale-[1.02] ${isDeepMode ? 'ring-1 ring-amber-500/20' : ''}`}
             >
               {/* Phase indicator bar */}
-              <div className={`absolute top-0 left-0 w-1 sm:w-1.5 h-full ${phaseAccents[index % phaseAccents.length]}`} />
+              <div className={`absolute top-0 left-0 w-1.5 sm:w-2 h-full ${phaseAccents[index % phaseAccents.length]}`} />
               
               {/* Premium badge for deep mode */}
               {isDeepMode && (
-                <div className="absolute top-2 right-2">
-                  <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[9px] sm:text-[10px] px-1.5 py-0.5">
-                    <Crown className="h-2 w-2 sm:h-2.5 sm:w-2.5 mr-0.5 sm:mr-1" />
+                <div className="absolute top-3 right-3">
+                  <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-xs px-2 py-1">
+                    <Crown className="h-3 w-3 mr-1" />
                     Premium
                   </Badge>
                 </div>
               )}
               
-              <CardHeader className="pb-2 sm:pb-3 pl-4 sm:pl-6 pr-3 sm:pr-4">
-                <div className="flex items-center justify-between mb-2 gap-2">
+              <CardHeader className="pb-4 pl-6 sm:pl-8 pr-4 sm:pr-6">
+                <div className="flex items-center justify-between mb-3 gap-3">
                   <Badge 
                     variant="outline" 
-                    className="text-[10px] sm:text-xs font-medium bg-background/50 backdrop-blur-sm px-1.5 sm:px-2 py-0.5"
+                    className="text-sm font-medium bg-background/50 backdrop-blur-sm px-3 py-1"
                   >
-                    <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                    <span className="truncate max-w-[100px] sm:max-w-none">{phase.timeframe}</span>
+                    <Calendar className="h-4 w-4 mr-1.5" />
+                    <span className="truncate max-w-[150px] sm:max-w-none">{phase.timeframe}</span>
                   </Badge>
-                  <span className="text-[10px] sm:text-xs font-bold text-muted-foreground/70 whitespace-nowrap">
+                  <span className="text-sm font-bold text-muted-foreground/70 whitespace-nowrap">
                     Phase {phase.phase}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold leading-tight pr-12 sm:pr-16 break-words">{phase.title}</h3>
+                <h3 className="text-lg sm:text-xl font-bold leading-tight pr-16 sm:pr-20 break-words">{phase.title}</h3>
               </CardHeader>
 
-              <CardContent className="pl-4 sm:pl-6 pr-3 sm:pr-4 space-y-3 sm:space-y-4 pb-4 sm:pb-6">
+              <CardContent className="pl-6 sm:pl-8 pr-4 sm:pr-6 space-y-5 sm:space-y-6 pb-6 sm:pb-8">
                 {/* Objectives */}
                 <div>
-                  <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-1.5">
-                    <Target className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                    <Target className="h-4 w-4 shrink-0" />
                     Objectives
                   </h4>
-                  <ul className="space-y-1 sm:space-y-1.5">
+                  <ul className="space-y-2 sm:space-y-3">
                     {phase.objectives.map((objective, i) => (
-                      <li key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                        <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0 mt-0.5" />
+                      <li key={i} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+                        <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                         <span className="break-words min-w-0">{objective}</span>
                       </li>
                     ))}
@@ -272,11 +272,11 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* Actions with Google Search Links */}
                 <div>
-                  <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-1.5">
-                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                    <Zap className="h-4 w-4 shrink-0" />
                     Actions
                   </h4>
-                  <ol className="space-y-2 sm:space-y-2.5">
+                  <ol className="space-y-3 sm:space-y-4">
                     {phase.actions.map((action, i) => {
                       const isStructured = isStructuredAction(action);
                       const actionText = isStructured ? action.text : action;
@@ -284,8 +284,8 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                       const resourceTitle = isStructured ? action.resourceTitle : null;
                       
                       return (
-                        <li key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                          <span className="flex items-center justify-center h-4 w-4 sm:h-5 sm:w-5 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold shrink-0 mt-0.5">
+                        <li key={i} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+                          <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-sm font-bold shrink-0 mt-0.5">
                             {i + 1}
                           </span>
                           <div className="flex-1 min-w-0">
@@ -295,11 +295,11 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                                 href={resourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-0.5 sm:gap-1 ml-1 sm:ml-2 text-[10px] sm:text-xs text-primary hover:text-primary/80 hover:underline transition-colors whitespace-nowrap"
+                                className="inline-flex items-center gap-1 ml-2 text-sm text-primary hover:text-primary/80 hover:underline transition-colors whitespace-nowrap"
                                 title={resourceUrl}
                               >
-                                <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                <span className="truncate max-w-[100px]">{resourceTitle || 'Resource'}</span>
+                                <ExternalLink className="h-4 w-4" />
+                                <span className="truncate max-w-[150px]">{resourceTitle || 'Resource'}</span>
                               </a>
                             )}
                           </div>
@@ -311,9 +311,9 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* Premium: Budget - only show in deep mode */}
                 {isDeepMode && phase.budget && (
-                  <div className="pt-2 border-t border-border/40">
-                    <div className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                      <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="pt-3 border-t border-border/40">
+                    <div className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+                      <DollarSign className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                       <div className="min-w-0">
                         <span className="text-muted-foreground">Budget: </span>
                         <span className="font-medium text-amber-600 dark:text-amber-400 break-words">{phase.budget}</span>
@@ -324,9 +324,9 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* Premium: Channels - only show in deep mode */}
                 {isDeepMode && phase.channels && phase.channels.length > 0 && (
-                  <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {phase.channels.map((channel, i) => (
-                      <Badge key={i} variant="secondary" className="text-[10px] sm:text-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20 px-1.5 sm:px-2 py-0.5">
+                      <Badge key={i} variant="secondary" className="text-sm bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20 px-3 py-1">
                         {channel}
                       </Badge>
                     ))}
@@ -335,15 +335,15 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* Premium: Milestones - only show in deep mode */}
                 {isDeepMode && phase.milestones && phase.milestones.length > 0 && (
-                  <div className="pt-2 border-t border-border/40">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 sm:mb-2 flex items-center gap-1 sm:gap-1.5">
-                      <Flag className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500 shrink-0" />
+                  <div className="pt-3 border-t border-border/40">
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                      <Flag className="h-4 w-4 text-amber-500 shrink-0" />
                       KPI Milestones
                     </h4>
-                    <ul className="space-y-0.5 sm:space-y-1">
+                    <ul className="space-y-2">
                       {phase.milestones.map((milestone, i) => (
-                        <li key={i} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-1.5 sm:gap-2">
-                          <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5 sm:mt-2" />
+                        <li key={i} className="text-sm sm:text-base text-muted-foreground flex items-start gap-2 sm:gap-3">
+                          <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0 mt-2" />
                           <span className="break-words min-w-0">{milestone}</span>
                         </li>
                       ))}
@@ -353,21 +353,21 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* DEEP MODE EXCLUSIVE: Competitor Analysis */}
                 {isDeepMode && phase.competitorAnalysis && phase.competitorAnalysis.length > 0 && (
-                  <div className="pt-3 border-t border-amber-500/30 bg-amber-500/5 -mx-3 sm:-mx-4 px-3 sm:px-4 pb-3 rounded-b-lg">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5 shrink-0" />
+                  <div className="pt-4 border-t border-amber-500/30 bg-amber-500/5 -mx-4 sm:-mx-6 px-4 sm:px-6 pb-4 rounded-b-lg">
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-2">
+                      <Users className="h-4 w-4 shrink-0" />
                       Competitor Analysis
                     </h4>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {phase.competitorAnalysis.map((competitor, i) => (
-                        <div key={i} className="bg-background/50 rounded-md p-2 sm:p-3 text-xs">
-                          <div className="font-semibold text-foreground mb-1">{competitor.name}</div>
-                          <div className="grid grid-cols-2 gap-2">
+                        <div key={i} className="bg-background/50 rounded-md p-4 text-sm">
+                          <div className="font-semibold text-foreground mb-2 text-base">{competitor.name}</div>
+                          <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-[10px] uppercase">Strengths:</span>
-                              <ul className="mt-0.5 space-y-0.5">
+                              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs uppercase">Strengths:</span>
+                              <ul className="mt-1 space-y-1">
                                 {competitor.strengths.map((s, j) => (
-                                  <li key={j} className="text-muted-foreground text-[10px] sm:text-xs flex items-start gap-1">
+                                  <li key={j} className="text-muted-foreground text-sm flex items-start gap-2">
                                     <span className="text-emerald-500">+</span>
                                     <span className="break-words min-w-0">{s}</span>
                                   </li>
@@ -375,10 +375,10 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                               </ul>
                             </div>
                             <div>
-                              <span className="text-rose-600 dark:text-rose-400 font-medium text-[10px] uppercase">Weaknesses:</span>
-                              <ul className="mt-0.5 space-y-0.5">
+                              <span className="text-rose-600 dark:text-rose-400 font-medium text-xs uppercase">Weaknesses:</span>
+                              <ul className="mt-1 space-y-1">
                                 {competitor.weaknesses.map((w, j) => (
-                                  <li key={j} className="text-muted-foreground text-[10px] sm:text-xs flex items-start gap-1">
+                                  <li key={j} className="text-muted-foreground text-sm flex items-start gap-2">
                                     <span className="text-rose-500">-</span>
                                     <span className="break-words min-w-0">{w}</span>
                                   </li>
@@ -394,15 +394,15 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* DEEP MODE EXCLUSIVE: Risk Mitigation */}
                 {isDeepMode && phase.riskMitigation && phase.riskMitigation.length > 0 && (
-                  <div className="pt-2 border-t border-amber-500/30">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
-                      <Shield className="h-3.5 w-3.5 shrink-0" />
+                  <div className="pt-3 border-t border-amber-500/30">
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-2">
+                      <Shield className="h-4 w-4 shrink-0" />
                       Risk Mitigation
                     </h4>
-                    <ul className="space-y-1">
+                    <ul className="space-y-2">
                       {phase.riskMitigation.map((risk, i) => (
-                        <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5 bg-orange-500/5 rounded px-2 py-1">
-                          <AlertTriangle className="h-3 w-3 text-orange-500 shrink-0 mt-0.5" />
+                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2 bg-orange-500/5 rounded px-3 py-2">
+                          <AlertTriangle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
                           <span className="break-words min-w-0">{risk}</span>
                         </li>
                       ))}
@@ -412,32 +412,32 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
 
                 {/* DEEP MODE EXCLUSIVE: ROI Projection */}
                 {isDeepMode && phase.roiProjection && (
-                  <div className="pt-2 border-t border-amber-500/30">
-                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+                  <div className="pt-3 border-t border-amber-500/30">
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 shrink-0" />
                       ROI Projection
                     </h4>
-                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-md p-2 sm:p-3 border border-emerald-500/20">
-                      <div className="grid grid-cols-2 gap-2 text-xs mb-2">
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-md p-4 border border-emerald-500/20">
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                         <div>
-                          <span className="text-muted-foreground text-[10px] uppercase">Investment:</span>
-                          <p className="font-semibold text-foreground break-words">{phase.roiProjection.investment}</p>
+                          <span className="text-muted-foreground text-xs uppercase">Investment:</span>
+                          <p className="font-semibold text-foreground break-words text-base">{phase.roiProjection.investment}</p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground text-[10px] uppercase">Expected Return:</span>
-                          <p className="font-semibold text-emerald-600 dark:text-emerald-400 break-words">{phase.roiProjection.expectedReturn}</p>
+                          <span className="text-muted-foreground text-xs uppercase">Expected Return:</span>
+                          <p className="font-semibold text-emerald-600 dark:text-emerald-400 break-words text-base">{phase.roiProjection.expectedReturn}</p>
                         </div>
                       </div>
-                      <div className="text-xs mb-2">
-                        <span className="text-muted-foreground text-[10px] uppercase">Timeframe:</span>
-                        <p className="text-foreground">{phase.roiProjection.timeframe}</p>
+                      <div className="text-sm mb-3">
+                        <span className="text-muted-foreground text-xs uppercase">Timeframe:</span>
+                        <p className="text-foreground text-base">{phase.roiProjection.timeframe}</p>
                       </div>
                       {phase.roiProjection.assumptions && phase.roiProjection.assumptions.length > 0 && (
-                        <div className="text-[10px] text-muted-foreground">
-                          <span className="uppercase font-medium">Assumptions:</span>
-                          <ul className="mt-0.5 space-y-0.5">
+                        <div className="text-sm text-muted-foreground">
+                          <span className="uppercase font-medium text-xs">Assumptions:</span>
+                          <ul className="mt-1 space-y-1">
                             {phase.roiProjection.assumptions.map((a, i) => (
-                              <li key={i} className="flex items-start gap-1">
+                              <li key={i} className="flex items-start gap-2">
                                 <span className="text-amber-500">*</span>
                                 <span className="break-words min-w-0">{a}</span>
                               </li>

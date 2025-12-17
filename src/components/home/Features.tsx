@@ -2,19 +2,19 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
+    title: "Real-Time Market Research",
+    description:
+      "Every strategy is backed by live web research. Our AI analyzes 10-20+ current sources including market trends, competitor data, and industry insights.",
+  },
+  {
     title: "AI Business Planner",
     description:
-      "Describe your business goals and get a phased strategy with actionable steps and Google search links.",
+      "Describe your business goals and get a phased strategy with actionable steps powered by real-time data.",
   },
   {
     title: "AI Autopilot",
     description:
       "Get 3 AI-generated daily focus tasks tailored to your active strategy. Stay on track with personalized action items and streak tracking.",
-  },
-  {
-    title: "Strategy Tracking",
-    description:
-      "Activate strategies and track your progress. Monitor completed phases and actions with visual progress indicators.",
   },
   {
     title: "Deep Analysis Mode",

@@ -270,16 +270,17 @@ export const StrategyPDF = ({ result, isDeepMode = false, businessGoals }: Strat
             {phase.actions.map((action, i) => {
               const isStructured = isStructuredAction(action);
               const actionText = isStructured ? action.text : action;
-              const searchTerm = isStructured ? action.searchTerm : null;
+              const resourceUrl = isStructured ? action.resourceUrl : null;
+              const resourceTitle = isStructured ? action.resourceTitle : null;
               
               return (
                 <View key={i} style={{ marginBottom: 4 }}>
                   <Text style={styles.actionItem}>
                     {i + 1}. {actionText}
                   </Text>
-                  {searchTerm && (
-                    <Link src={`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`} style={styles.link}>
-                      → Learn more: {searchTerm}
+                  {resourceUrl && (
+                    <Link src={resourceUrl} style={styles.link}>
+                      → {resourceTitle || 'Resource'}
                     </Link>
                   )}
                 </View>

@@ -70,7 +70,7 @@ const AuthCallback = () => {
         if (!pendingError && pendingPremium) {
           console.log('Found pending premium for user, activating...');
           
-          // Activate premium in user_credits
+          // Activate premium in user_credits mit allen Subscription-Feldern
           const { error: activateError } = await supabase
             .from('user_credits')
             .upsert({
@@ -79,6 +79,10 @@ const AuthCallback = () => {
               premium_since: new Date().toISOString(),
               freemius_subscription_id: pendingPremium.freemius_subscription_id,
               freemius_customer_id: pendingPremium.freemius_customer_id,
+              // NEU: Übertrage alle Subscription-Felder aus pending_premium
+              subscription_end_date: (pendingPremium as any).subscription_end_date || null,
+              auto_renew: (pendingPremium as any).auto_renew ?? true,
+              next_payment_date: (pendingPremium as any).next_payment_date || null,
             }, { onConflict: 'user_id' });
 
           if (activateError) {

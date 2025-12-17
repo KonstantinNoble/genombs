@@ -201,7 +201,15 @@ serve(async (req) => {
         );
       }
 
-      // Store in pending_premium table
+      // Berechne subscription_end_date für pending_premium
+      let pendingSubscriptionEndDate: string;
+      if (event.objects.license?.expiration) {
+        pendingSubscriptionEndDate = new Date(event.objects.license.expiration).toISOString();
+      } else {
+        pendingSubscriptionEndDate = calculateSubscriptionEndDate(event.objects.subscription?.billing_cycle).toISOString();
+      }
+
+      // Store in pending_premium table mit allen relevanten Feldern
       const { error: pendingError } = await supabase
         .from('pending_premium')
         .upsert({
@@ -209,6 +217,12 @@ serve(async (req) => {
           freemius_subscription_id: subscriptionIdPending,
           email: userEmail,
           is_premium: true,
+          subscription_end_date: pendingSubscriptionEndDate,
+          billing_cycle: event.objects.subscription?.billing_cycle || 1,
+          auto_renew: true,
+          next_payment_date: event.objects.subscription?.next_payment
+            ? new Date(event.objects.subscription.next_payment).toISOString()
+            : pendingSubscriptionEndDate,
         }, { 
           onConflict: 'freemius_customer_id',
           ignoreDuplicates: false 

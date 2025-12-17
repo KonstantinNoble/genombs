@@ -249,28 +249,40 @@ export type Database = {
       }
       pending_premium: {
         Row: {
+          auto_renew: boolean | null
+          billing_cycle: number | null
           created_at: string | null
           email: string
           freemius_customer_id: string
           freemius_subscription_id: string
           id: string
           is_premium: boolean
+          next_payment_date: string | null
+          subscription_end_date: string | null
         }
         Insert: {
+          auto_renew?: boolean | null
+          billing_cycle?: number | null
           created_at?: string | null
           email: string
           freemius_customer_id: string
           freemius_subscription_id: string
           id?: string
           is_premium?: boolean
+          next_payment_date?: string | null
+          subscription_end_date?: string | null
         }
         Update: {
+          auto_renew?: boolean | null
+          billing_cycle?: number | null
           created_at?: string | null
           email?: string
           freemius_customer_id?: string
           freemius_subscription_id?: string
           id?: string
           is_premium?: boolean
+          next_payment_date?: string | null
+          subscription_end_date?: string | null
         }
         Relationships: []
       }

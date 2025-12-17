@@ -443,19 +443,30 @@ const PrivacyPolicy = () => {
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Market Research and Resource Links (Perplexity AI)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">Market Research and Strategic Content (Perplexity AI)</h3>
             <p className="text-muted-foreground mb-4">
-              To enhance the quality of strategic recommendations, our AI-powered features integrate real-time market 
-              research capabilities. When generating business strategies, we use Perplexity AI to search the web for 
-              current, relevant resources and embed direct links to helpful tools, articles, and services within your 
-              strategy actions.
+              To enhance the quality and accuracy of strategic recommendations, our AI-powered features integrate 
+              real-time market research capabilities through Perplexity AI. When generating business strategies, 
+              Perplexity AI actively contributes to the content of your personalized plans by:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Conducting competitor analysis and market positioning research</li>
+              <li>Gathering current industry trends and market data</li>
+              <li>Researching pricing strategies and business model insights relevant to your sector</li>
+              <li>Identifying best practices and successful approaches in your industry</li>
+              <li>Finding and embedding direct links to helpful tools, articles, and services</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              This market research data is directly integrated into the AI-generated strategy phases, influencing 
+              the specific recommendations, action items, and strategic approaches tailored to your business context.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Data transmitted to Perplexity AI:</strong>
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Business context queries (industry sector, business goals, budget range)</li>
-              <li>Search queries derived from your strategy requirements</li>
+              <li>Business context queries (industry sector, business goals, budget range, team size)</li>
+              <li>Search queries for market research (competitor analysis, industry trends, pricing strategies)</li>
+              <li>Queries for relevant tools, software solutions, and service providers</li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Data NOT transmitted:</strong> No personal identifiers (name, email address, IP address) are 
@@ -1452,7 +1463,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 9, 2025
+              <strong>Last updated:</strong> December 17, 2025 (Version 2.9)
             </p>
           </section>
         </article>

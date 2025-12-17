@@ -77,12 +77,12 @@ async function performMarketResearch(
     // Prepare research queries based on mode
     const queries = isDeepMode 
       ? [
-          `${industry} market trends and growth opportunities 2024-2025`,
+          `${industry} current market trends and growth opportunities`,
           `${industry} competitor landscape and market leaders analysis`,
-          `${industry} best practices and successful business strategies`
+          `${industry} latest best practices and successful business strategies`
         ]
       : [
-          `${industry} business trends best practices growth strategies 2025`
+          `${industry} current business trends best practices growth strategies`
         ];
 
     // Execute queries (parallel for deep mode, single for standard)

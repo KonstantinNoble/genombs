@@ -9,7 +9,8 @@ const corsHeaders = {
 
 interface ActionItem {
   text: string;
-  searchTerm: string;
+  resourceUrl?: string;
+  resourceTitle?: string;
 }
 
 interface CompetitorInfo {
@@ -39,9 +40,14 @@ interface StrategyPhase {
   roiProjection?: ROIProjection;
 }
 
+interface CitationInfo {
+  url: string;
+  title: string;
+}
+
 interface MarketResearchResult {
   insights: string;
-  citations: string[];
+  citations: CitationInfo[];
 }
 
 // Input validation schema
@@ -125,7 +131,14 @@ async function performMarketResearch(
       const data = await response.json();
       return {
         content: data.choices?.[0]?.message?.content || '',
-        citations: data.citations || []
+        citations: (data.citations || []).map((url: string) => {
+          let title = url;
+          try {
+            const urlObj = new URL(url);
+            title = urlObj.hostname.replace('www.', '');
+          } catch {}
+          return { url, title };
+        })
       };
     });
 
@@ -139,7 +152,17 @@ async function performMarketResearch(
 
     // Combine insights
     const allInsights = validResults.map(r => r!.content).join('\n\n');
-    const allCitations = [...new Set(validResults.flatMap(r => r!.citations))];
+    const allCitations: CitationInfo[] = [];
+    const seenUrls = new Set<string>();
+    validResults.forEach(r => {
+      r!.citations.forEach((c: CitationInfo) => {
+        if (!seenUrls.has(c.url)) {
+          seenUrls.add(c.url);
+          allCitations.push(c);
+        }
+      });
+    });
+    
 
     const duration = Date.now() - startTime;
     console.log(`Perplexity research completed in ${duration}ms with ${allCitations.length} sources`);
@@ -423,7 +446,8 @@ Each phase must include:
 4. objectives: 2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers
 5. actions: 3-5 SPECIFIC, DETAILED action items. Each action MUST be an object with:
    - text: Detailed action with EXACT tool name, time estimate, and expected outcome
-   - searchTerm: Google search term for learning more
+   - resourceUrl: (OPTIONAL) If a relevant resource URL is available from the AVAILABLE RESOURCES list, include it here
+   - resourceTitle: (OPTIONAL) Domain name of the resource (e.g., "hubspot.com", "shopify.com")
 6. budget: Budget allocation for this phase (if budget context provided)
 7. channels: Tools, platforms, or resources needed
 8. milestones: Key success indicators with SPECIFIC metrics
@@ -457,7 +481,8 @@ CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- Every action must include a searchTerm
+- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (${isDeepMode ? '2-3 per phase' : '1-2 per phase'})
+- Only include resourceUrl if it's truly relevant to the action
 
 Use the create_strategy function to return your response.`;
 
@@ -470,9 +495,10 @@ Use the create_strategy function to return your response.`;
   if (timeline) userPromptText += `\nTimeline: ${timeline}`;
   if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
-  // Add market research context if available
+  // Add market research context and available resources if available
   if (hasMarketResearch) {
-    userPromptText += `\n\n=== REAL-TIME MARKET INTELLIGENCE (${new Date().toLocaleDateString()}) ===\n${marketResearch.insights}\n\nSources: ${marketResearch.citations.join(', ')}\n===\n\nIMPORTANT: Use this market intelligence to make your recommendations more relevant and data-driven.`;
+    const resourcesList = marketResearch.citations.map((c, i) => `${i + 1}. ${c.url} - "${c.title}"`).join('\n');
+    userPromptText += `\n\n=== REAL-TIME MARKET INTELLIGENCE (${new Date().toLocaleDateString()}) ===\n${marketResearch.insights}\n\n=== AVAILABLE RESOURCES ===\nUse these URLs for resourceUrl in actions when relevant:\n${resourcesList}\n===\n\nIMPORTANT: Assign relevant resource URLs from AVAILABLE RESOURCES to your action items. Only include resourceUrl if it's directly relevant to that action.`;
   }
 
   const model = isDeepMode ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash';
@@ -500,7 +526,7 @@ The JSON must have this exact structure:
       "title": "Phase title",
       "timeframe": "Week 1-2",
       "objectives": ["Objective 1", "Objective 2"],
-      "actions": [{"text": "Action description", "searchTerm": "google search term"}],
+      "actions": [{"text": "Action description", "resourceUrl": "https://example.com", "resourceTitle": "example.com"}],
       "budget": "Budget for phase",
       "channels": ["Tool 1", "Tool 2"],
       "milestones": ["Milestone 1"],
@@ -602,12 +628,13 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation
         items: { 
           type: 'object',
           properties: {
-            text: { type: 'string' },
-            searchTerm: { type: 'string' }
+            text: { type: 'string', description: 'Detailed action description' },
+            resourceUrl: { type: 'string', description: 'Optional: relevant URL from available resources' },
+            resourceTitle: { type: 'string', description: 'Optional: domain name of the resource' }
           },
-          required: ['text', 'searchTerm']
+          required: ['text']
         },
-        description: 'Specific actions with search terms'
+        description: 'Specific actions with optional resource URLs from available resources'
       },
       budget: { type: 'string', description: 'Budget allocation' },
       channels: { 
@@ -712,10 +739,9 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation
     }
   }
 
-  // Add market insights to result
+  // Add market insights to result (sources not included - URLs are now in actions)
   if (hasMarketResearch) {
     result.marketInsights = marketResearch.insights;
-    result.sources = marketResearch.citations;
   }
 
   console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);

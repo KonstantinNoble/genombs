@@ -492,9 +492,12 @@ const StrategyDetail = () => {
                       <div className="space-y-1.5 sm:space-y-2">
                         {phaseActions.map((action, actionIndex) => {
                           const actionText = typeof action === 'string' ? action : action.text || '';
-                          const searchTerm = typeof action === 'object' && 'searchTerm' in action 
-                            ? action.searchTerm 
-                            : null;
+                          const resourceUrl = typeof action === 'object' && 'resourceUrl' in action 
+                            ? String(action.resourceUrl || '')
+                            : '';
+                          const resourceTitle = typeof action === 'object' && 'resourceTitle' in action 
+                            ? String(action.resourceTitle || '')
+                            : '';
                           const isCompleted = phaseProgress?.actions_completed.includes(actionIndex) || false;
                           
                           return (
@@ -515,17 +518,16 @@ const StrategyDetail = () => {
                                 <span className={`text-xs sm:text-sm leading-relaxed ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
                                   {actionText}
                                 </span>
-                                {searchTerm && (
+                                {resourceUrl && (
                                   <a 
-                                    href={`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`}
+                                    href={resourceUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1 ml-1 sm:ml-2 text-[10px] sm:text-xs text-primary hover:underline"
                                     onClick={e => e.stopPropagation()}
                                   >
                                     <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                    <span className="hidden sm:inline">Learn more</span>
-                                    <span className="sm:hidden">More</span>
+                                    <span className="truncate max-w-[80px]">{resourceTitle || 'Resource'}</span>
                                   </a>
                                 )}
                               </div>

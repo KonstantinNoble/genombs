@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle, Globe, Link2 } from 'lucide-react';
+import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle, Globe } from 'lucide-react';
 import { ActivateStrategyButton } from './ActivateStrategyButton';
 
-// New structured action type
+// New structured action type with resource URL
 export interface ActionItem {
   text: string;
-  searchTerm: string;
+  resourceUrl?: string;
+  resourceTitle?: string;
 }
 
 // Deep mode exclusive types
@@ -85,9 +86,9 @@ function isPlannerResult(result: unknown): result is PlannerResult {
   return typeof result === 'object' && result !== null && 'strategies' in result && Array.isArray((result as PlannerResult).strategies);
 }
 
-// Helper to check if action is structured (has text and searchTerm)
+// Helper to check if action is structured (has text property)
 function isStructuredAction(action: ActionItem | string): action is ActionItem {
-  return typeof action === 'object' && action !== null && 'text' in action && 'searchTerm' in action;
+  return typeof action === 'object' && action !== null && 'text' in action;
 }
 
 // Fallback renderer for legacy results
@@ -279,7 +280,8 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                     {phase.actions.map((action, i) => {
                       const isStructured = isStructuredAction(action);
                       const actionText = isStructured ? action.text : action;
-                      const searchTerm = isStructured ? action.searchTerm : null;
+                      const resourceUrl = isStructured ? action.resourceUrl : null;
+                      const resourceTitle = isStructured ? action.resourceTitle : null;
                       
                       return (
                         <li key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm">
@@ -288,16 +290,16 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
                           </span>
                           <div className="flex-1 min-w-0">
                             <span className="break-words">{actionText}</span>
-                            {searchTerm && (
+                            {resourceUrl && (
                               <a 
-                                href={`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`}
+                                href={resourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-0.5 sm:gap-1 ml-1 sm:ml-2 text-[10px] sm:text-xs text-primary hover:text-primary/80 hover:underline transition-colors whitespace-nowrap"
-                                title={`Search: ${searchTerm}`}
+                                title={resourceUrl}
                               >
                                 <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                <span className="hidden sm:inline">Learn more</span>
+                                <span className="truncate max-w-[100px]">{resourceTitle || 'Resource'}</span>
                               </a>
                             )}
                           </div>
@@ -451,41 +453,6 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
           ))}
         </div>
       </div>
-
-      {/* Sources Section - shown when market intelligence was used */}
-      {sources && sources.length > 0 && (
-        <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-            <Link2 className="h-3.5 w-3.5" />
-            Market Research Sources
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {sources.map((source, i) => {
-              // Extract domain from URL for display
-              let displayText = source;
-              try {
-                const url = new URL(source);
-                displayText = url.hostname.replace('www.', '');
-              } catch {
-                // Keep original if not a valid URL
-              }
-              
-              return (
-                <a
-                  key={i}
-                  href={source}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 hover:underline bg-primary/5 px-2 py-1 rounded-md transition-colors"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  <span className="truncate max-w-[150px]">{displayText}</span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

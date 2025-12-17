@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Check, Search, Sparkles, Zap } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 export type StreamingStatus = 
   | 'idle'
@@ -26,25 +27,50 @@ export function AnalysisLoader({
   phasesCompleted = 0,
   totalPhases = 4
 }: AnalysisLoaderProps) {
+  const [animatedProgress, setAnimatedProgress] = useState(5);
+  const animationRef = useRef<number>();
   
-  // Calculate progress based on streaming status
-  const getProgress = () => {
+  // Target progress based on streaming status
+  const getTargetProgress = () => {
     switch (streamingStatus) {
       case 'idle':
+        return 5;
       case 'research_start':
-        return 15;
+        return 25;
       case 'research_complete':
-        return 35;
+        return 40;
       case 'generation_start':
-        return 45;
+        return 50;
       case 'phase_complete':
-        return 50 + (phasesCompleted / totalPhases) * 45;
+        return 55 + (phasesCompleted / totalPhases) * 40;
       case 'complete':
         return 100;
       default:
-        return 10;
+        return 5;
     }
   };
+
+  // Smooth animation effect
+  useEffect(() => {
+    const target = getTargetProgress();
+    
+    const animate = () => {
+      setAnimatedProgress(prev => {
+        const diff = target - prev;
+        if (Math.abs(diff) < 0.5) return target;
+        return prev + diff * 0.08;
+      });
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [streamingStatus, phasesCompleted, totalPhases]);
 
   const getStatusMessage = () => {
     switch (streamingStatus) {
@@ -106,8 +132,8 @@ export function AnalysisLoader({
 
           <div className="space-y-2">
             <Progress 
-              value={getProgress()} 
-              className={`h-2 transition-all duration-500 ${isDeepMode ? '[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-yellow-500' : ''}`}
+              value={animatedProgress} 
+              className={`h-2 ${isDeepMode ? '[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-yellow-500' : ''}`}
             />
           </div>
 

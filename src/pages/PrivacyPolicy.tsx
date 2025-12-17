@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 9, 2025 | Version 2.7</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 17, 2025 | Version 2.8</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -440,6 +440,58 @@ const PrivacyPolicy = () => {
                 className="text-primary hover:underline"
               >
                 https://docs.lovable.dev/features/ai
+              </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Market Research and Resource Links (Perplexity AI)</h3>
+            <p className="text-muted-foreground mb-4">
+              To enhance the quality of strategic recommendations, our AI-powered features integrate real-time market 
+              research capabilities. When generating business strategies, we use Perplexity AI to search the web for 
+              current, relevant resources and embed direct links to helpful tools, articles, and services within your 
+              strategy actions.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data transmitted to Perplexity AI:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Business context queries (industry sector, business goals, budget range)</li>
+              <li>Search queries derived from your strategy requirements</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data NOT transmitted:</strong> No personal identifiers (name, email address, IP address) are 
+              sent to Perplexity AI. All requests are processed server-side through our backend infrastructure 
+              (Edge Functions), ensuring your client IP address remains hidden from Perplexity.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Perplexity AI, Inc. (San Francisco, CA, USA)
+              <br />
+              <strong>Models used:</strong> Sonar (Standard Analysis) / Sonar Pro (Deep Analysis)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance (providing 
+                high-quality strategic recommendations with actionable resource links as part of the requested service)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, research-backed 
+                business recommendations
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Third-country transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Privacy Policy:</strong>{" "}
+              <a
+                href="https://www.perplexity.ai/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://www.perplexity.ai/privacy
               </a>
             </p>
 
@@ -1127,6 +1179,36 @@ const PrivacyPolicy = () => {
                   name, email, or client IP address. Only the backend server's IP address is visible to Google. 
                   All transmissions are encrypted using TLS/SSL protocols.
                 </p>
+              </li>
+              <li>
+                <strong>Market research provider (for Strategy Resource Links):</strong> Perplexity AI, Inc. 
+                (San Francisco, CA, USA)
+                <ul className="list-disc pl-6 mt-2">
+                  <li>
+                    Provides real-time web search to generate relevant resource URLs embedded in strategy recommendations
+                  </li>
+                  <li>
+                    <strong>Data transmitted:</strong> Business context queries only (industry, goals, budget range) – 
+                    no personal identifiers (name, email, IP address)
+                  </li>
+                  <li>
+                    <strong>Models:</strong> Sonar (Standard) / Sonar Pro (Deep Analysis)
+                  </li>
+                  <li>
+                    <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
+                  </li>
+                  <li>
+                    <strong>Privacy Policy:</strong>{" "}
+                    <a
+                      href="https://www.perplexity.ai/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      https://www.perplexity.ai/privacy
+                    </a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <strong>Payment processor and Merchant of Record:</strong> Freemius, Inc. (Wilmington, Delaware, USA)

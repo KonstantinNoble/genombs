@@ -667,7 +667,8 @@ CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (2-3 per phase)
+- ⚠️ MINIMUM 4-5 resource URLs REQUIRED across all phases - distribute links to action items
+- Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
 - Only include resourceUrl if it's truly relevant to the action
 
 Use the create_strategy function to return your response.`;
@@ -685,7 +686,8 @@ CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- Assign resource URLs from AVAILABLE RESOURCES to actions when relevant (1-2 per phase)
+- ⚠️ MINIMUM 4 resource URLs REQUIRED across all phases - distribute links to action items
+- Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
 - Only include resourceUrl if it's truly relevant to the action
 
 Use the create_strategy function to return your response.`;

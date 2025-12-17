@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check, Search, Sparkles, Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export type StreamingStatus = 
@@ -50,15 +49,21 @@ export function AnalysisLoader({
     }
   };
 
-  // Smooth animation effect
+  // Smooth animation effect with easing
   useEffect(() => {
     const target = getTargetProgress();
+    
+    // Cubic ease-out for smooth deceleration
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
     
     const animate = () => {
       setAnimatedProgress(prev => {
         const diff = target - prev;
-        if (Math.abs(diff) < 0.5) return target;
-        return prev + diff * 0.08;
+        if (Math.abs(diff) < 0.3) return target;
+        // Smoother interpolation with easing
+        const normalizedDiff = Math.min(Math.abs(diff) / 50, 1);
+        const easedSpeed = 0.02 + easeOut(normalizedDiff) * 0.03;
+        return prev + diff * easedSpeed;
       });
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -95,22 +100,22 @@ export function AnalysisLoader({
   const steps = [
     { 
       id: 'research', 
-      label: 'Market Research', 
-      icon: Search,
+      label: 'Research', 
+      step: 1,
       done: ['research_complete', 'generation_start', 'phase_complete', 'complete'].includes(streamingStatus),
       active: streamingStatus === 'research_start'
     },
     { 
       id: 'generate', 
-      label: 'Strategy Generation', 
-      icon: Sparkles,
+      label: 'Generation', 
+      step: 2,
       done: ['phase_complete', 'complete'].includes(streamingStatus) && phasesCompleted >= totalPhases,
       active: ['generation_start', 'phase_complete'].includes(streamingStatus)
     },
     { 
       id: 'finalize', 
-      label: 'Finalizing', 
-      icon: Zap,
+      label: 'Finalize', 
+      step: 3,
       done: streamingStatus === 'complete',
       active: streamingStatus === 'phase_complete' && phasesCompleted >= totalPhases
     }
@@ -137,33 +142,29 @@ export function AnalysisLoader({
             />
           </div>
 
-          {/* Step indicators */}
-          <div className="flex justify-between gap-2">
+          {/* Step indicators - clean, minimal design */}
+          <div className="flex justify-between gap-3">
             {steps.map((step) => (
               <div 
                 key={step.id}
-                className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg transition-all duration-300 ${
+                className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg transition-all duration-500 ${
                   step.done 
                     ? 'bg-primary/10' 
                     : step.active 
-                      ? isDeepMode ? 'bg-amber-500/10 animate-pulse' : 'bg-primary/5 animate-pulse'
+                      ? isDeepMode ? 'bg-amber-500/10' : 'bg-primary/5'
                       : 'bg-muted/30'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 text-sm font-semibold ${
                   step.done 
                     ? 'bg-primary text-primary-foreground' 
                     : step.active 
-                      ? isDeepMode ? 'bg-amber-500/20 text-amber-500' : 'bg-primary/20 text-primary'
+                      ? isDeepMode ? 'bg-amber-500/20 text-amber-600' : 'bg-primary/20 text-primary'
                       : 'bg-muted text-muted-foreground'
                 }`}>
-                  {step.done ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <step.icon className={`h-4 w-4 ${step.active ? 'animate-pulse' : ''}`} />
-                  )}
+                  {step.done ? '✓' : step.step}
                 </div>
-                <span className={`text-xs text-center font-medium ${
+                <span className={`text-xs text-center font-medium transition-colors duration-300 ${
                   step.done || step.active ? 'text-foreground' : 'text-muted-foreground'
                 }`}>
                   {step.label}
@@ -180,8 +181,7 @@ export function AnalysisLoader({
                   ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20' 
                   : 'bg-primary/10 text-primary border border-primary/20'
               }`}>
-                <Search className="h-3 w-3" />
-                {sourceCount} market sources analyzed
+                {sourceCount} sources analyzed
               </span>
             </div>
           )}

@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 16, 2025 | Version 2.5</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 17, 2025 | Version 2.6</p>
 
           <div className="space-y-8">
             <section>
@@ -119,13 +119,17 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>
-                  <strong>Free Plan:</strong> 2 Standard AI Analyses per 24 hours (Deep Analysis not available)
+                  <strong>Free Plan:</strong> Access to basic AI analysis features with daily usage limits
                 </li>
                 <li>
-                  <strong>Premium Plan:</strong> 6 Standard AI Analyses + 2 Deep AI Analyses per 24 hours
+                  <strong>Premium Plan:</strong> Enhanced analysis capabilities with increased daily usage limits and access to advanced features
                 </li>
               </ul>
-              <p className="mb-4">Limits are subject to change – current values are displayed within the app.</p>
+              <p className="mb-4">
+                Current usage limits and available features are always displayed within your account dashboard and on our{" "}
+                <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link>. 
+                We reserve the right to adjust these limits with reasonable notice.
+              </p>
 
               <p className="mb-4">
                 <strong>Service Availability:</strong> We strive for reliable service but do not guarantee uninterrupted
@@ -137,11 +141,14 @@ const TermsOfService = () => {
 
               <p className="mb-4">Premium users receive enhanced features:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Increased analysis quota: 6 Standard AI Analyses per 24 hours (vs. 2 in Free Plan)</li>
-                <li>Access to Deep Analysis mode: 2 Deep AI Analyses per 24 hours (advanced evaluations with enhanced 
-                    AI capabilities, not available in Free Plan)</li>
-                <li>Future Premium-exclusive features</li>
+                <li>Increased usage quotas for AI-powered analysis features</li>
+                <li>Access to advanced analysis modes not available in the Free Plan</li>
+                <li>Priority access to new features and capabilities</li>
+                <li>Additional Premium-exclusive features as they become available</li>
               </ul>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Current Premium features and limits are displayed in your account dashboard and during checkout.
+              </p>
 
               <p className="mb-4">
                 <strong>Feature Changes:</strong> We reserve the right to adjust, expand, or limit Premium features.
@@ -152,6 +159,21 @@ const TermsOfService = () => {
                 <strong>Availability:</strong> Premium features are subject to the same availability clauses as free
                 services (see above). We do not guarantee 100% uptime but strive for maximum reliability.
               </p>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">III.B Dynamic Service Information</h3>
+              <p className="mb-4">
+                The specific features, usage limits, and capabilities of our services may be updated from time to time 
+                to improve the platform and respond to user needs. Current information is always available:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li><strong>Usage limits:</strong> Displayed in your account dashboard</li>
+                <li><strong>Available features:</strong> Shown on our <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and within the application</li>
+                <li><strong>Premium benefits:</strong> Detailed during checkout and in your account settings</li>
+              </ul>
+              <p className="mb-4">
+                Material changes to Premium features or significant reductions in usage limits will be announced 
+                <strong> 30 days in advance</strong> via email to affected users.
+              </p>
             </section>
             {/* Section IV - Pricing */}
             <section>
@@ -161,8 +183,8 @@ const TermsOfService = () => {
               <p className="mb-4">Basic features are available at no cost:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Website browsing and public content</li>
-                <li>2 Standard Analyses per 24 hours</li>
-                <li>Deep Analysis feature requires Premium subscription</li>
+                <li>AI analysis features with daily usage limits (see account dashboard for current limits)</li>
+                <li>Certain advanced features require a Premium subscription</li>
               </ul>
 
               <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Premium Subscriptions</h3>
@@ -180,12 +202,14 @@ const TermsOfService = () => {
                 <strong>Premium Features:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Increased analysis quota: 6 Standard AI Analyses per 24 hours (vs. 2 in Free Plan)</li>
-                <li>Access to Deep Analysis mode: 2 Deep AI Analyses per 24 hours (not available in Free Plan)</li>
-                <li>Enhanced AI-powered evaluations with comprehensive insights, detailed recommendations, 
-                    and advanced strategic analysis capabilities</li>
-                <li>Future Premium-exclusive features</li>
+                <li>Enhanced analysis capabilities with higher usage quotas</li>
+                <li>Access to advanced AI features not available in the Free Plan</li>
+                <li>Comprehensive insights, detailed recommendations, and advanced strategic analysis capabilities</li>
+                <li>Additional Premium-exclusive features as they become available</li>
               </ul>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Current features and limits are displayed during checkout and in your account dashboard.
+              </p>
 
               <p className="mb-4">
                 <strong>Payment Processing:</strong>
@@ -467,7 +491,7 @@ const TermsOfService = () => {
                 <li>
                   Premium access ends at the <strong>end of the paid period</strong>
                 </li>
-                <li>Downgrade to Free Plan (2 Standard AI Analyses per 24h, Deep Analysis not available)</li>
+                <li>Downgrade to Free Plan (with reduced usage limits and limited feature access)</li>
                 <li>No pro-rated refund for unused Premium period</li>
               </ul>
             </section>
@@ -676,7 +700,7 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: December 16, 2025
+                Last updated: December 17, 2025
                 <br />
                 Version 2.5 (Freemius Vendor Compliance Update)
               </p>

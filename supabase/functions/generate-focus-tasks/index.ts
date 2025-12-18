@@ -69,7 +69,7 @@ serve(async (req) => {
     // Check premium status and daily generation limit
     const { data: credits, error: creditsError } = await supabaseClient
       .from('user_credits')
-      .select('is_premium, daily_autopilot_generations, autopilot_generation_reset_date')
+      .select('is_premium, daily_autopilot_generations, autopilot_generation_reset_date, subscription_end_date')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -77,7 +77,22 @@ serve(async (req) => {
       console.error('Error fetching credits:', creditsError);
     }
 
-    if (!credits?.is_premium) {
+    let isPremium = credits?.is_premium ?? false;
+
+    // Check if subscription has expired (for cancelled subscriptions)
+    if (isPremium && credits?.subscription_end_date) {
+      const subscriptionEndDate = new Date(credits.subscription_end_date);
+      if (subscriptionEndDate < new Date()) {
+        console.log('Premium subscription expired, updating status');
+        isPremium = false;
+        await supabaseClient
+          .from('user_credits')
+          .update({ is_premium: false, auto_renew: false })
+          .eq('user_id', user.id);
+      }
+    }
+
+    if (!isPremium) {
       return new Response(JSON.stringify({ error: 'Premium required for Autopilot feature' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

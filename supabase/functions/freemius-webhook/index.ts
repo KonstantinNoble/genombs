@@ -327,6 +327,21 @@ serve(async (req) => {
         console.log('User ID:', profile.id);
         console.log('Payment ID:', event.objects.payment?.id);
         console.log('Is Renewal:', event.objects.payment?.is_renewal);
+        console.log('Payment gross:', event.objects.payment?.gross);
+        
+        // FIX: Skip if this is actually a refund (negative gross or type=refund)
+        const paymentObj = event.objects.payment;
+        if (paymentObj?.gross !== undefined && paymentObj.gross < 0) {
+          console.log('⚠️ Skipping payment.created - negative gross indicates this is a refund');
+          await supabase.from('processed_webhook_events').insert({
+            event_id: event.id,
+            event_type: event.type,
+          });
+          return new Response(
+            JSON.stringify({ message: 'Refund payment.created skipped' }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const subscriptionId = event.objects.subscription?.id || event.objects.payment?.subscription_id || null;
         const customerId = event.objects.user?.id || null;
@@ -389,52 +404,19 @@ serve(async (req) => {
       case 'subscription.cancelled': {
         console.log('⚠️ SUBSCRIPTION CANCELLED');
         console.log('User ID:', profile.id);
-        console.log('Action: Setting auto_renew to false');
+        console.log('Action: Setting auto_renew to false (NOT re-activating premium)');
         
+        // FIX: Only set auto_renew=false, do NOT touch is_premium
+        // Premium status should only be changed by payment.refund or subscription.renewal.failed.last
         const updateCancelData: any = {
           auto_renew: false,
           next_payment_date: null
         };
         
-        let subscriptionEndDate: Date | null = null;
-        
-        // KORRIGIERT: Verwende license.expiration für das Ablaufdatum
+        // Optionally update subscription_end_date if we have license expiration info
         if (event.objects.license?.expiration) {
-          subscriptionEndDate = new Date(event.objects.license.expiration);
-          updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
-          console.log('Using license.expiration for end date:', updateCancelData.subscription_end_date);
-        } else if (event.objects.subscription?.canceled_at) {
-          // KORRIGIERT: canceled_at statt ends
-          // canceled_at zeigt wann gekündigt wurde, nicht wann es abläuft
-          // Wir behalten das bestehende subscription_end_date bei
-          console.log('Subscription canceled_at:', event.objects.subscription.canceled_at);
-        } else {
-          // Fallback: Hole existierendes Ablaufdatum aus DB
-          const { data: existingCredits } = await supabase
-            .from('user_credits')
-            .select('subscription_end_date')
-            .eq('user_id', profile.id)
-            .maybeSingle();
-          
-          if (existingCredits?.subscription_end_date) {
-            subscriptionEndDate = new Date(existingCredits.subscription_end_date);
-            console.log('Using existing subscription_end_date from DB:', subscriptionEndDate.toISOString());
-          } else {
-            // Letzter Fallback: 30 Tage ab jetzt
-            subscriptionEndDate = new Date();
-            subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
-            updateCancelData.subscription_end_date = subscriptionEndDate.toISOString();
-            console.log('Fallback: Using 30 days from now:', updateCancelData.subscription_end_date);
-          }
-        }
-        
-        // Keep premium active if subscription still valid
-        if (subscriptionEndDate && subscriptionEndDate > new Date()) {
-          updateCancelData.is_premium = true;
-          console.log('Subscription still valid until:', subscriptionEndDate.toISOString(), '- keeping premium status');
-        } else {
-          updateCancelData.is_premium = false;
-          console.log('Subscription already expired - removing premium status');
+          updateCancelData.subscription_end_date = new Date(event.objects.license.expiration).toISOString();
+          console.log('Setting subscription_end_date from license.expiration:', updateCancelData.subscription_end_date);
         }
         
         const { error: cancelError } = await supabase
@@ -459,7 +441,7 @@ serve(async (req) => {
           });
 
         return new Response(
-          JSON.stringify({ message: 'Auto-renewal deactivated, subscription will expire naturally' }),
+          JSON.stringify({ message: 'Auto-renewal deactivated, premium status unchanged' }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }

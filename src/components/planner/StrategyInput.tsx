@@ -71,7 +71,7 @@ const geographicOptions = [
   { value: 'global', label: 'Global' },
 ];
 
-const MAX_CHARS = 150;
+const MAX_CHARS = 300;
 
 const getLabel = (options: { value: string; label: string }[], value?: string) => {
   return options.find(o => o.value === value)?.label;

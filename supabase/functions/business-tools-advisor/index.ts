@@ -71,9 +71,85 @@ const inputSchema = z.object({
   channels: z.string().optional(),
   timeline: z.string().optional(),
   geographic: z.string().optional(),
+  websiteUrl: z.string().url().optional().or(z.literal('')),
   analysisMode: z.enum(["standard", "deep"]).optional(),
   streaming: z.boolean().optional()
 });
+
+// Website insights interface
+interface WebsiteInsights {
+  businessType: string;
+  offerings: string[];
+  targetAudience: string;
+  currentChannels: string[];
+  problems: string[];
+  improvements: string[];
+  rawContent: string;
+}
+
+// Helper function to analyze website with Firecrawl
+async function analyzeWebsite(
+  websiteUrl: string,
+  authHeader: string,
+  controller?: ReadableStreamDefaultController
+): Promise<WebsiteInsights | null> {
+  if (!websiteUrl || websiteUrl.length < 5) {
+    return null;
+  }
+
+  if (controller) {
+    sendSSE(controller, 'website_analysis_start', { message: 'Analyzing your website...' });
+  }
+
+  console.log('Starting website analysis for:', websiteUrl);
+  const startTime = Date.now();
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/firecrawl-analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authHeader,
+      },
+      body: JSON.stringify({ url: websiteUrl }),
+    });
+
+    if (!response.ok) {
+      console.error('Website analysis failed:', response.status);
+      if (controller) {
+        sendSSE(controller, 'website_analysis_error', { message: 'Could not analyze website' });
+      }
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !data.insights) {
+      console.error('No website insights returned');
+      return null;
+    }
+
+    const duration = Date.now() - startTime;
+    console.log(`Website analysis completed in ${duration}ms`);
+
+    if (controller) {
+      sendSSE(controller, 'website_analysis_complete', { 
+        message: 'Website analyzed successfully',
+        businessType: data.insights.businessType
+      });
+    }
+
+    return data.insights as WebsiteInsights;
+  } catch (error) {
+    console.error('Website analysis error:', error);
+    if (controller) {
+      sendSSE(controller, 'website_analysis_error', { message: 'Website analysis failed' });
+    }
+    return null;
+  }
+}
 
 // Helper function to send SSE event
 function sendSSE(controller: ReadableStreamDefaultController, event: string, data: any) {
@@ -423,15 +499,21 @@ serve(async (req) => {
       throw error;
     }
 
-    const { prompt, budget, industry, channels, timeline, geographic, analysisMode } = validatedInput;
+    const { prompt, budget, industry, channels, timeline, geographic, websiteUrl, analysisMode } = validatedInput;
     
-    console.log('Analysis mode:', { isPremium, analysisMode: analysisMode || 'standard', isDeepMode, streaming: useStreaming });
+    console.log('Analysis mode:', { isPremium, analysisMode: analysisMode || 'standard', isDeepMode, streaming: useStreaming, hasWebsiteUrl: !!websiteUrl });
 
     // If streaming is enabled, create a stream response
     if (useStreaming) {
       const stream = new ReadableStream({
         async start(controller) {
           try {
+            // Step 0: Analyze website if URL provided
+            let websiteInsights: WebsiteInsights | null = null;
+            if (websiteUrl) {
+              websiteInsights = await analyzeWebsite(websiteUrl, authHeader!, controller);
+            }
+
             // Step 1: Perform Perplexity market research with streaming updates
             const industryContext = industry || 'general business';
             const marketResearch = await performMarketResearch(industryContext, prompt, isDeepMode, controller);
@@ -443,7 +525,7 @@ serve(async (req) => {
             // Step 3: Call Lovable AI
             const result = await generateStrategy(
               prompt, budget, industry, channels, timeline, geographic,
-              isDeepMode, marketResearch, hasMarketResearch, controller
+              isDeepMode, marketResearch, hasMarketResearch, websiteInsights, controller
             );
 
             // Step 4: Save to history and update credits
@@ -479,15 +561,22 @@ serve(async (req) => {
     }
 
     // Non-streaming mode (legacy)
+    // Analyze website if URL provided
+    let websiteInsights: WebsiteInsights | null = null;
+    if (websiteUrl) {
+      websiteInsights = await analyzeWebsite(websiteUrl, authHeader!);
+    }
+
     const industryContext = industry || 'general business';
     const marketResearch = await performMarketResearch(industryContext, prompt, isDeepMode);
     const hasMarketResearch = marketResearch.insights.length > 0;
 
     console.log(`Market research: ${hasMarketResearch ? 'available' : 'skipped'} (${marketResearch.citations.length} sources)`);
+    console.log(`Website insights: ${websiteInsights ? 'available' : 'none'}`);
 
     const result = await generateStrategy(
       prompt, budget, industry, channels, timeline, geographic,
-      isDeepMode, marketResearch, hasMarketResearch
+      isDeepMode, marketResearch, hasMarketResearch, websiteInsights
     );
 
     await saveHistoryAndUpdateCredits(
@@ -584,8 +673,9 @@ async function generateStrategy(
   isDeepMode: boolean,
   marketResearch: MarketResearchResult,
   hasMarketResearch: boolean,
+  websiteInsights: WebsiteInsights | null,
   controller?: ReadableStreamDefaultController
-): Promise<{ strategies: StrategyPhase[]; marketInsights?: string; sources?: string[] }> {
+): Promise<{ strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights }> {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   if (!LOVABLE_API_KEY) {
     throw new Error('LOVABLE_API_KEY not configured');
@@ -593,38 +683,50 @@ async function generateStrategy(
 
   const phaseCount = "EXACTLY 4";
 
-  // BASE SYSTEM PROMPT (shared between modes)
-  const baseSystemPrompt = `You are a strategic business planner. Create a phased business strategy based on the user's input.
+  // BASE SYSTEM PROMPT (shared between modes) - IMPROVED FOR CONCRETENESS
+  const baseSystemPrompt = `You are a practical business advisor who gives SPECIFIC, ACTIONABLE advice. No fluff, no buzzwords.
 
-CRITICAL OUTPUT RULES - NO BUZZWORDS ALLOWED:
+CRITICAL OUTPUT RULES - BE EXTREMELY CONCRETE:
 - NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
-- NEVER use generic phrases like: "increase brand awareness", "drive engagement", "build presence", "maximize potential"
+- NEVER give generic advice like: "increase brand awareness", "drive engagement", "build presence", "maximize potential", "implement a strategy"
 
-ALWAYS include:
-- SPECIFIC numbers (e.g., "500 visitors", "20 EUR/day budget", "3 hours setup time", "expect 15-25% conversion rate")
-- EXACT tool/platform names (e.g., "Google Analytics 4", "HubSpot CRM Free", "Mailchimp", "Notion")
-- Concrete timeframes (e.g., "complete in 2 hours", "takes 30 minutes daily")
-- Expected outcomes with metrics (e.g., "expect 1000-2000 impressions", "should generate 5-10 leads/week")
+ALWAYS include for EVERY action:
+- EXACT tool/platform name with link (e.g., "Use Canva (canva.com) to create...", "Set up Google Analytics 4 (analytics.google.com)")
+- TIME estimate (e.g., "takes 30 minutes", "spend 2 hours on this")
+- SPECIFIC numbers and examples (e.g., "post 3x per week", "budget 50 EUR/month", "target 100 website visits")
+- COPY-PASTE ready text where possible (e.g., "Use this headline: 'Get 50% off your first order'")
+- Expected outcome with metrics (e.g., "expect 200-500 views", "should generate 5-10 leads")
 
-OUTPUT REQUIREMENTS:
-- Return ${phaseCount} strategy phases as a structured timeline
-- Each phase should build upon the previous one
-- Focus on actionable, practical business strategies with SPECIFIC details
-- Consider the user's context (budget, industry, timeline if provided)
+HELPFUL RESOURCES - Include these real URLs in actions where relevant:
+- Email Marketing: mailchimp.com, convertkit.com, brevo.com
+- Design: canva.com, figma.com, unsplash.com (free images)
+- Landing Pages: carrd.co, unbounce.com, leadpages.com
+- Analytics: analytics.google.com, hotjar.com, clarity.microsoft.com
+- Social Media: later.com, buffer.com, hootsuite.com
+- SEO: ubersuggest.com, ahrefs.com/free-tools, answerthepublic.com
+- CRM: hubspot.com/free-crm, pipedrive.com, notion.so
+- Ads: ads.google.com, business.facebook.com
+- Video: loom.com, descript.com, capcut.com
+- AI Tools: chatgpt.com, claude.ai, perplexity.ai
+- Tutorials: youtube.com (search for specific tutorials)
 
 PHASE STRUCTURE:
+- Return ${phaseCount} strategy phases as a structured timeline
+- Each phase should build upon the previous one
+- Focus on IMMEDIATE actionable steps, not long-term theory
+
 Each phase must include:
 1. phase: Phase number (1, 2, 3, etc.)
-2. title: Clear, action-oriented title
-3. timeframe: Duration (e.g., "Week 1-2", "Month 1")
-4. objectives: 2-4 MEASURABLE objectives with SPECIFIC KPIs and numbers
-5. actions: 3-5 SPECIFIC, DETAILED action items. Each action MUST be an object with:
-   - text: Detailed action with EXACT tool name, time estimate, and expected outcome
-   - resourceUrl: (OPTIONAL) If a relevant resource URL is available from the AVAILABLE RESOURCES list, include it here
-   - resourceTitle: (OPTIONAL) Domain name of the resource (e.g., "hubspot.com", "shopify.com")
-6. budget: Budget allocation for this phase (if budget context provided)
-7. channels: Tools, platforms, or resources needed
-8. milestones: Key success indicators with SPECIFIC metrics`;
+2. title: Clear, action-oriented title (e.g., "Set Up Email Capture" not "Optimize Email Strategy")
+3. timeframe: Duration (e.g., "Week 1-2", "Days 1-3")
+4. objectives: 2-4 MEASURABLE objectives with SPECIFIC numbers (e.g., "Get 50 email subscribers" not "Build email list")
+5. actions: 3-5 DETAILED action items. Each action MUST be an object with:
+   - text: Step-by-step instruction with tool name, time estimate, and expected result
+   - resourceUrl: A helpful URL from the list above or from market research
+   - resourceTitle: Domain name (e.g., "canva.com", "mailchimp.com")
+6. budget: Specific budget for this phase (e.g., "50-100 EUR" or "Free tools only")
+7. channels: Exact tools and platforms to use
+8. milestones: Measurable checkpoints with numbers`;
 
   // MODE-SPECIFIC SYSTEM PROMPT ADDITIONS
   let systemPrompt: string;
@@ -702,6 +804,41 @@ Use the create_strategy function to return your response.`;
   if (timeline) userPromptText += `\nTimeline: ${timeline}`;
   if (geographic) userPromptText += `\nGeographic Focus: ${geographic}`;
 
+  // Add website insights if available (PERSONALIZED STRATEGY)
+  if (websiteInsights) {
+    userPromptText += `\n\n=== 🔍 WEBSITE ANALYSIS - PERSONALIZE YOUR STRATEGY TO THIS ===`;
+    userPromptText += `\n\nWe analyzed the user's actual website and found:`;
+    userPromptText += `\n\n📌 Business Type: ${websiteInsights.businessType}`;
+    
+    if (websiteInsights.offerings && websiteInsights.offerings.length > 0) {
+      userPromptText += `\n📦 What They Sell: ${websiteInsights.offerings.join(', ')}`;
+    }
+    
+    if (websiteInsights.targetAudience) {
+      userPromptText += `\n👥 Target Audience: ${websiteInsights.targetAudience}`;
+    }
+    
+    if (websiteInsights.currentChannels && websiteInsights.currentChannels.length > 0) {
+      userPromptText += `\n📣 Current Marketing Channels: ${websiteInsights.currentChannels.join(', ')}`;
+    }
+    
+    if (websiteInsights.problems && websiteInsights.problems.length > 0) {
+      userPromptText += `\n\n⚠️ PROBLEMS WE FOUND ON THEIR WEBSITE (ADDRESS THESE IN YOUR STRATEGY):`;
+      websiteInsights.problems.forEach((problem, i) => {
+        userPromptText += `\n${i + 1}. ${problem}`;
+      });
+    }
+    
+    if (websiteInsights.improvements && websiteInsights.improvements.length > 0) {
+      userPromptText += `\n\n💡 IMPROVEMENT SUGGESTIONS (INCORPORATE THESE):`;
+      websiteInsights.improvements.forEach((improvement, i) => {
+        userPromptText += `\n${i + 1}. ${improvement}`;
+      });
+    }
+    
+    userPromptText += `\n\n⚠️ IMPORTANT: Your strategy MUST address the problems found on their website. Make Phase 1 focus on fixing the most critical website issues. Reference specific problems and improvements in your actions.`;
+  }
+
   // Add market research context (DIFFERENTIATED BY MODE)
   if (hasMarketResearch) {
     if (isDeepMode && marketResearch.structuredData) {
@@ -728,12 +865,12 @@ Use the create_strategy function to return your response.`;
   const maxTokens = isDeepMode ? 12000 : 6000;
   const timeout = isDeepMode ? 90000 : 35000;
 
-  console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'})...`);
+  console.log(`Calling AI (model: ${model}, mode: ${isDeepMode ? 'deep' : 'standard'}, hasWebsiteInsights: ${!!websiteInsights})...`);
 
   const abortController = new AbortController();
   const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[] };
+  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights };
 
   if (isDeepMode) {
     const deepModeJsonInstructions = `
@@ -962,12 +1099,16 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation
     }
   }
 
-  // Add market insights to result (sources not included - URLs are now in actions)
+  // Add market insights and website analysis to result
   if (hasMarketResearch) {
     result.marketInsights = marketResearch.insights;
   }
+  
+  if (websiteInsights) {
+    result.websiteAnalysis = websiteInsights;
+  }
 
-  console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'})`);
+  console.log(`Parsed ${result.strategies.length} strategy phases (mode: ${isDeepMode ? 'deep' : 'standard'}, hasWebsiteAnalysis: ${!!websiteInsights})`);
 
   return result;
 }

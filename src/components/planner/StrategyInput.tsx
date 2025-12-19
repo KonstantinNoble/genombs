@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Globe, Loader2 } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -23,6 +24,7 @@ export interface OptionalParams {
   channels?: string;
   timeline?: string;
   geographic?: string;
+  websiteUrl?: string;
 }
 
 interface StrategyInputProps {
@@ -266,6 +268,36 @@ export function StrategyInput({
         </div>
       </div>
 
+      {/* Website URL Input */}
+      <div className="relative">
+        <div className="flex items-center gap-2 p-2 rounded-xl border border-border bg-background/50">
+          <Globe className="h-4 w-4 text-muted-foreground shrink-0 ml-1" />
+          <Input
+            type="url"
+            value={optionalParams.websiteUrl || ''}
+            onChange={(e) => updateParam('websiteUrl', e.target.value || 'none')}
+            placeholder="https://your-website.com (optional - for personalized analysis)"
+            disabled={disabled}
+            className="border-0 p-0 h-8 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm"
+          />
+          {optionalParams.websiteUrl && (
+            <button
+              type="button"
+              onClick={() => removeParam('websiteUrl')}
+              className="hover:bg-muted rounded-full p-1"
+              disabled={disabled}
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </div>
+        {optionalParams.websiteUrl && (
+          <p className="text-xs text-muted-foreground mt-1 ml-1">
+            We'll analyze your website to create a personalized strategy
+          </p>
+        )}
+      </div>
+
       {/* Active Context Badges */}
       {activeParams.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -327,6 +359,20 @@ export function StrategyInput({
               <button
                 type="button"
                 onClick={() => removeParam('geographic')}
+                className="ml-1 hover:bg-muted rounded-full p-0.5"
+                disabled={disabled}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {optionalParams.websiteUrl && (
+            <Badge variant="secondary" className="gap-1 pr-1 bg-primary/10 text-primary border-primary/20">
+              <Globe className="h-3 w-3 mr-1" />
+              Website added
+              <button
+                type="button"
+                onClick={() => removeParam('websiteUrl')}
                 className="ml-1 hover:bg-muted rounded-full p-0.5"
                 disabled={disabled}
               >

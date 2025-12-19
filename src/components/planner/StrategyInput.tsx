@@ -79,6 +79,28 @@ const getLabel = (options: { value: string; label: string }[], value?: string) =
   return options.find(o => o.value === value)?.label;
 };
 
+const MAX_URL_CHARS = 200;
+
+// URL validation helper
+const validateWebsiteUrl = (url: string): { isValid: boolean; error?: string } => {
+  if (!url || url.length === 0) return { isValid: true };
+  
+  if (!url.startsWith('https://')) {
+    return { isValid: false, error: 'URL must start with https://' };
+  }
+  
+  if (url.length > MAX_URL_CHARS) {
+    return { isValid: false, error: `URL must be less than ${MAX_URL_CHARS} characters` };
+  }
+  
+  try {
+    new URL(url);
+    return { isValid: true };
+  } catch {
+    return { isValid: false, error: 'Please enter a valid URL' };
+  }
+};
+
 export function StrategyInput({
   value,
   onChange,
@@ -88,8 +110,10 @@ export function StrategyInput({
   disabled = false,
 }: StrategyInputProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [urlError, setUrlError] = useState<string | undefined>();
   const charCount = value.length;
   const isAtLimit = charCount >= MAX_CHARS;
+  const urlCharCount = optionalParams.websiteUrl?.length || 0;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -270,28 +294,48 @@ export function StrategyInput({
 
       {/* Website URL Input */}
       <div className="relative">
-        <div className="flex items-center gap-2 p-2 rounded-xl border border-border bg-background/50">
-          <Globe className="h-4 w-4 text-muted-foreground shrink-0 ml-1" />
+        <div className={`flex items-center gap-2 p-2 rounded-xl border bg-background/50 ${urlError ? 'border-destructive' : 'border-border'}`}>
+          <Globe className={`h-4 w-4 shrink-0 ml-1 ${urlError ? 'text-destructive' : 'text-muted-foreground'}`} />
           <Input
             type="url"
             value={optionalParams.websiteUrl || ''}
-            onChange={(e) => updateParam('websiteUrl', e.target.value || 'none')}
-            placeholder="https://your-website.com (optional - for personalized analysis)"
+            onChange={(e) => {
+              const newUrl = e.target.value;
+              const validation = validateWebsiteUrl(newUrl);
+              setUrlError(validation.error);
+              
+              if (newUrl.length <= MAX_URL_CHARS) {
+                updateParam('websiteUrl', newUrl || 'none');
+              }
+            }}
+            placeholder="https://your-website.com (optional)"
             disabled={disabled}
+            maxLength={MAX_URL_CHARS}
             className="border-0 p-0 h-8 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm"
           />
           {optionalParams.websiteUrl && (
             <button
               type="button"
-              onClick={() => removeParam('websiteUrl')}
+              onClick={() => {
+                removeParam('websiteUrl');
+                setUrlError(undefined);
+              }}
               className="hover:bg-muted rounded-full p-1"
               disabled={disabled}
             >
               <X className="h-3 w-3" />
             </button>
           )}
+          <span className={`text-xs shrink-0 ${urlCharCount >= MAX_URL_CHARS ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {urlCharCount}/{MAX_URL_CHARS}
+          </span>
         </div>
-        {optionalParams.websiteUrl && (
+        {urlError && (
+          <p className="text-xs text-destructive mt-1 ml-1">
+            {urlError}
+          </p>
+        )}
+        {optionalParams.websiteUrl && !urlError && (
           <p className="text-xs text-muted-foreground mt-1 ml-1">
             We'll analyze your website to create a personalized strategy
           </p>

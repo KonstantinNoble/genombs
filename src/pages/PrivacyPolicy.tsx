@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 17, 2025 | Version 2.8</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 19, 2025 | Version 2.9</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -596,6 +596,72 @@ const PrivacyPolicy = () => {
                 className="text-primary hover:underline"
               >
                 https://www.perplexity.ai/privacy
+              </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">Website Analysis (Firecrawl)</h3>
+            <p className="text-muted-foreground mb-4">
+              Our Strategy Planner includes an optional website analysis feature that allows you to receive personalized 
+              strategic recommendations based on your website's content. When you choose to enable this feature and enter 
+              your website URL, we use Firecrawl to analyze your website.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data transmitted to Firecrawl:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The website URL you voluntarily provide</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data received from Firecrawl:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Website content in Markdown format (text, headings, structure)</li>
+              <li>Page metadata (title, description)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data NOT transmitted:</strong> No personal identifiers (your name, email address, IP address) are 
+              sent to Firecrawl. All requests are processed server-side through our backend infrastructure (Edge Functions), 
+              ensuring your client IP address remains hidden from Firecrawl.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Firecrawl, Inc. (San Francisco, CA, USA)
+              <br />
+              <strong>API:</strong> firecrawl.dev
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance – you voluntarily 
+                request the website analysis feature to receive personalized strategic recommendations
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, data-driven 
+                business recommendations based on your actual website content
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Third-country transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data security:</strong> The website analysis is processed entirely server-side. Your browser never 
+              communicates directly with Firecrawl – all requests are routed through our secure backend infrastructure, 
+              providing an additional layer of privacy protection.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Storage duration:</strong> Website analysis results are stored as part of your analysis history 
+              for as long as you maintain an account. You can delete your account at any time to remove all stored data.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Privacy Policy:</strong>{" "}
+              <a
+                href="https://www.firecrawl.dev/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                https://www.firecrawl.dev/privacy
               </a>
             </p>
 

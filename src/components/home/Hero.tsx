@@ -77,7 +77,7 @@ const Hero = () => {
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "1s" }} />
-              Live Market Research
+              Website Analysis Included
             </span>
           </div>
         </div>

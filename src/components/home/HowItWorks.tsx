@@ -19,7 +19,7 @@ const HowItWorks = () => {
             </span>
             <h3 className="text-xl font-semibold mt-2 mb-4">Describe Your Goal</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Enter your business objective with optional context like budget, team size, or industry. The more specific, the better your strategy.
+              Enter your business objective. Add your website URL for personalized insights, plus optional context like budget, team size, or industry.
             </p>
           </div>
 

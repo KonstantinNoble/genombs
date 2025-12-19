@@ -7,9 +7,9 @@ const features = [
       "Every strategy is backed by live web research. Our AI analyzes 10-20+ current sources including market trends, competitor data, and industry insights.",
   },
   {
-    title: "AI Business Planner",
+    title: "Website Analysis",
     description:
-      "Describe your business goals and get a phased strategy with actionable steps powered by real-time data.",
+      "Enter your website URL and get personalized strategies based on your actual website content, branding, and business model.",
   },
   {
     title: "AI Autopilot",

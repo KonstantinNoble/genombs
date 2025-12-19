@@ -64,6 +64,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
   const freeFeatures = [
     { text: "2 AI Business Analyses per day", included: true },
     { text: "Real-time market research (10+ sources)", included: true },
+    { text: "Website Analysis for personalized insights", included: true },
     { text: "4 strategy phases per analysis", included: true },
     { text: "Actionable steps with Google search links", included: true },
     { text: "Deep Analysis Mode", included: false },
@@ -73,7 +74,8 @@ const Pricing = ({ compact = false }: PricingProps) => {
   const premiumFeatures = [
     { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
     { text: "Enhanced market research (20+ sources)", included: true, highlight: true },
-    { text: "AI Autopilot - 3 personalized daily focus tasks", included: true, highlight: true },
+    { text: "Website Analysis with detailed content extraction", included: true, highlight: true },
+    { text: "AI Autopilot - 3 personalized daily focus tasks", included: true },
     { text: "Strategy Tracking - Track progress & completed phases", included: true },
     { text: "Competitor Analysis - Know your competition", included: true },
     { text: "ROI Projections - Expected returns calculated", included: true },

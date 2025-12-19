@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield, Globe } from "lucide-react";
+import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield, Globe, Link } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -61,6 +61,11 @@ const PricingPage = () => {
       description: "Every analysis is powered by real-time web research, analyzing 20+ sources to deliver current market trends and competitor insights."
     },
     {
+      icon: <Link className="h-6 w-6" />,
+      title: "Website Analysis",
+      description: "Enter your website URL to receive strategies tailored to your actual website content, branding, and business offerings."
+    },
+    {
       icon: <Brain className="h-6 w-6" />,
       title: "Deep Analysis Mode",
       description: "Advanced analysis with competitor insights, ROI projections, and risk mitigation strategies."
@@ -103,6 +108,7 @@ const PricingPage = () => {
     { name: "Phases per Analysis", free: "4", premium: "4" },
     { name: "Actionable Steps", free: true, premium: true },
     { name: "Google Search Links", free: true, premium: true },
+    { name: "Website Analysis", free: true, premium: true },
     { name: "Optional Context Input", free: true, premium: true },
     { name: "Deep Analysis Mode", free: false, premium: true },
     { name: "AI Autopilot (3 daily tasks)", free: false, premium: true },
@@ -116,6 +122,10 @@ const PricingPage = () => {
     {
       question: "How does the real-time market research work?",
       answer: "Our AI actively researches the web during each analysis, gathering current market data, competitor information, and industry trends from 10-20+ sources. This means your strategies are always based on up-to-date information, not outdated datasets."
+    },
+    {
+      question: "How does the Website Analysis feature work?",
+      answer: "When you enter your website URL, our AI scrapes and analyzes your website content, branding, and offerings. This information is then used to create highly personalized strategies that match your actual business, rather than generic recommendations."
     },
     {
       question: "What's the difference between Standard and Deep Analysis?",

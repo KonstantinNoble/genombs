@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.generate-focus-tasks]
 verify_jwt = true
+
+[functions.firecrawl-analyze]
+verify_jwt = true

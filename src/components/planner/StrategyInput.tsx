@@ -79,7 +79,7 @@ const getLabel = (options: { value: string; label: string }[], value?: string) =
   return options.find(o => o.value === value)?.label;
 };
 
-const MAX_URL_CHARS = 200;
+const MAX_URL_CHARS = 100;
 
 // URL validation helper
 const validateWebsiteUrl = (url: string): { isValid: boolean; error?: string } => {

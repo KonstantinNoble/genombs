@@ -240,7 +240,7 @@ export default function BusinessToolsAdvisor() {
             <Card className="border-primary/20 shadow-elegant">
               <CardHeader><CardTitle>Describe Your Business Goals</CardTitle><CardDescription>Use the + button to add optional context like budget or industry.</CardDescription></CardHeader>
               <CardContent className="space-y-4">
-                <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={isAnalyzing} />
+                <StrategyInput value={prompt} onChange={setPrompt} optionalParams={optionalParams} onOptionalParamsChange={setOptionalParams} placeholder="E.g., I want to grow my SaaS business from 1000 to 10000 users. Focus on SEO, content marketing, and improving conversion rates..." disabled={isAnalyzing} analysisMode={analysisMode} />
                 <Tabs value={analysisMode} onValueChange={(v) => setAnalysisMode(v as "standard" | "deep")}>
                   <TabsList className="grid grid-cols-2 h-auto bg-transparent border-0 gap-0 w-full">
                     <TabsTrigger value="standard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border rounded-l-lg rounded-r-none min-h-[70px] sm:min-h-[60px]">

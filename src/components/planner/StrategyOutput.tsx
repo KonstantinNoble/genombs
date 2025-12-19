@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Target, Zap, Calendar, DollarSign, Flag, Crown, ExternalLink, Shield, TrendingUp, Users, AlertTriangle, Globe } from 'lucide-react';
 import { ActivateStrategyButton } from './ActivateStrategyButton';
+import { MarketIntelligenceCard, StructuredMarketData } from './MarketIntelligenceCard';
 
 // New structured action type with resource URL
 export interface ActionItem {
@@ -44,6 +45,8 @@ export interface PlannerResult {
   // Market intelligence from Perplexity
   marketInsights?: string;
   sources?: string[];
+  // Structured market data for display
+  structuredMarketData?: StructuredMarketData;
 }
 
 interface StrategyOutputProps {
@@ -154,13 +157,20 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
     return <LegacyResultRenderer result={result as LegacyToolResult | LegacyAdResult} />;
   }
 
-  const { strategies, marketInsights, sources } = result;
+  const { strategies, marketInsights, sources, structuredMarketData } = result;
 
   if (!strategies || strategies.length === 0) {
     return <p className="text-muted-foreground">No strategy phases generated</p>;
   }
 
   const hasMarketIntelligence = marketInsights && marketInsights.length > 0;
+  const hasStructuredData = structuredMarketData && (
+    structuredMarketData.marketSize ||
+    structuredMarketData.growthRate ||
+    (structuredMarketData.topCompetitors && structuredMarketData.topCompetitors.length > 0) ||
+    structuredMarketData.averageCAC ||
+    structuredMarketData.conversionRateBenchmark
+  );
 
   const phaseColors = [
     'from-blue-500/20 to-blue-600/10 border-blue-500/30',
@@ -187,8 +197,13 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
         <ActivateStrategyButton result={result} isDeepMode={isDeepMode} />
       </div>
 
-      {/* Market Intelligence Banner */}
-      {hasMarketIntelligence && (
+      {/* Market Intelligence Card - Prominent Display of Perplexity Data */}
+      {isDeepMode && hasStructuredData && structuredMarketData && (
+        <MarketIntelligenceCard data={structuredMarketData} sources={sources} />
+      )}
+
+      {/* Simple Market Intelligence Banner for standard mode */}
+      {!isDeepMode && hasMarketIntelligence && (
         <div className="p-5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg border border-cyan-500/20">
           <div className="flex items-center gap-2 mb-2">
             <Globe className="h-5 w-5 text-cyan-500" />
@@ -210,7 +225,7 @@ export function StrategyOutput({ result, isDeepMode = false }: StrategyOutputPro
         <div className="flex flex-wrap items-center gap-3 text-base p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/20">
           <Crown className="h-5 w-5 text-amber-500 shrink-0" />
           <span className="font-medium text-amber-600 dark:text-amber-400">Premium Deep Analysis</span>
-          <span className="text-sm text-muted-foreground ml-auto">Enhanced analysis with competitor insights & ROI projections</span>
+          <span className="text-sm text-muted-foreground ml-auto">Enhanced with competitor insights, ROI projections & market data</span>
         </div>
       )}
 

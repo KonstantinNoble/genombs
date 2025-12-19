@@ -614,45 +614,45 @@ serve(async (req) => {
 function buildStructuredMarketDataPrompt(structuredData: StructuredMarketData): string {
   const sections: string[] = [];
   
-  sections.push('=== MARKET INTELLIGENCE DATA (You MUST incorporate these into your strategy) ===\n');
+  sections.push('=== 📊 MARKET INTELLIGENCE DATA (You MUST incorporate these into your strategy) ===\n');
   
   // Market Size and Growth
   if (structuredData.marketSize || structuredData.growthRate) {
-    sections.push(`MARKET SIZE: ${structuredData.marketSize || 'Data not available'} (Growing ${structuredData.growthRate || 'N/A'})`);
+    sections.push(`📈 MARKET SIZE: ${structuredData.marketSize || 'Data not available'} (Growing ${structuredData.growthRate || 'N/A'})`);
   }
   
   // Competitors
   if (structuredData.topCompetitors && structuredData.topCompetitors.length > 0) {
-    sections.push('\nTOP COMPETITORS (Reference in your competitorAnalysis):');
+    sections.push('\n🏆 TOP COMPETITORS (Reference in your competitorAnalysis):');
     for (const comp of structuredData.topCompetitors) {
-      sections.push(`- ${comp.name}${comp.marketShare ? ` - ${comp.marketShare} market share` : ''}`);
+      sections.push(`• ${comp.name}${comp.marketShare ? ` - ${comp.marketShare} market share` : ''}`);
     }
   }
   
   // Benchmarks
   if (structuredData.averageCAC || structuredData.conversionRateBenchmark) {
-    sections.push('\nINDUSTRY BENCHMARKS (Use in your ROI projections):');
-    if (structuredData.averageCAC) sections.push(`- Average CAC: ${structuredData.averageCAC}`);
-    if (structuredData.conversionRateBenchmark) sections.push(`- Conversion Rate: ${structuredData.conversionRateBenchmark}`);
+    sections.push('\n💰 INDUSTRY BENCHMARKS (Use in your ROI projections):');
+    if (structuredData.averageCAC) sections.push(`• Average CAC: ${structuredData.averageCAC}`);
+    if (structuredData.conversionRateBenchmark) sections.push(`• Conversion Rate: ${structuredData.conversionRateBenchmark}`);
   }
   
   // Marketing Channels
   if (structuredData.bestChannels && structuredData.bestChannels.length > 0) {
-    sections.push('\nBEST PERFORMING CHANNELS (Prioritize in your recommendations):');
+    sections.push('\n📣 BEST PERFORMING CHANNELS (Prioritize in your recommendations):');
     for (const channel of structuredData.bestChannels) {
-      sections.push(`- ${channel.channel}${channel.roi ? ` - ROI: ${channel.roi}` : ' - High ROI'}`);
+      sections.push(`• ${channel.channel}${channel.roi ? ` - ROI: ${channel.roi}` : ' - High ROI'}`);
     }
   }
   
   // Key Trends
   if (structuredData.keyTrends && structuredData.keyTrends.length > 0) {
-    sections.push('\nKEY TRENDS:');
+    sections.push('\n🔥 KEY TRENDS:');
     for (const trend of structuredData.keyTrends) {
-      sections.push(`- ${trend}`);
+      sections.push(`• ${trend}`);
     }
   }
   
-  sections.push('\n\nMANDATORY INTEGRATION REQUIREMENTS:');
+  sections.push('\n\n⚠️ MANDATORY INTEGRATION REQUIREMENTS:');
   sections.push('1. Reference at least one competitor by name in competitorAnalysis for each phase');
   sections.push('2. Include market size or growth rate in at least one objective');
   sections.push('3. Base your ROI projections on the industry benchmarks provided above');
@@ -690,18 +690,12 @@ CRITICAL OUTPUT RULES - BE EXTREMELY CONCRETE:
 - NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
 - NEVER give generic advice like: "increase brand awareness", "drive engagement", "build presence", "maximize potential", "implement a strategy"
 
-=== ACTION TEMPLATE - USE THIS FORMAT FOR EVERY ACTION ===
-WHAT: [Exact Tool/Platform] at [URL]
-TIME: [X minutes/hours to complete]
-COST: [Free / EUR X per month / one-time EUR X]
-STEPS:
-   1. Go to [exact URL]
-   2. Click [exact button/link]
-   3. Enter/Select [specific values]
-RESULT: Expect [specific metric] within [timeframe]
-
-EXAMPLE ACTION (follow this level of detail):
-"Set up email capture with ConvertKit (convertkit.com). TIME: 45 minutes, COST: Free up to 1,000 subscribers. STEPS: 1) Go to convertkit.com/signup 2) Create account 3) Click 'Landing Pages' → 'Create New' 4) Choose 'Charlotte' template 5) Change headline to '[Your Product] - Get 20% Off Your First Order' 6) Add form fields: Email only 7) Set thank-you redirect to your website. RESULT: Expect 2-5% visitor conversion rate, aim for 50 subscribers in first week."
+ALWAYS include for EVERY action:
+- EXACT tool/platform name with link (e.g., "Use Canva (canva.com) to create...", "Set up Google Analytics 4 (analytics.google.com)")
+- TIME estimate (e.g., "takes 30 minutes", "spend 2 hours on this")
+- SPECIFIC numbers and examples (e.g., "post 3x per week", "budget 50 EUR/month", "target 100 website visits")
+- COPY-PASTE ready text where possible (e.g., "Use this headline: 'Get 50% off your first order'")
+- Expected outcome with metrics (e.g., "expect 200-500 views", "should generate 5-10 leads")
 
 HELPFUL RESOURCES - Include these real URLs in actions where relevant:
 - Email Marketing: mailchimp.com, convertkit.com, brevo.com
@@ -727,7 +721,7 @@ Each phase must include:
 3. timeframe: Duration (e.g., "Week 1-2", "Days 1-3")
 4. objectives: 2-4 MEASURABLE objectives with SPECIFIC numbers (e.g., "Get 50 email subscribers" not "Build email list")
 5. actions: 3-5 DETAILED action items. Each action MUST be an object with:
-   - text: Step-by-step instruction following the ACTION TEMPLATE above
+   - text: Step-by-step instruction with tool name, time estimate, and expected result
    - resourceUrl: A helpful URL from the list above or from market research
    - resourceTitle: Domain name (e.g., "canva.com", "mailchimp.com")
 6. budget: Specific budget for this phase (e.g., "50-100 EUR" or "Free tools only")
@@ -746,54 +740,38 @@ You MUST provide these additional fields for EACH phase:
 
 9. competitorAnalysis: Array with 1-2 competitors. Include:
    - name: Actual competitor company/tool name (USE NAMES FROM MARKET DATA IF PROVIDED)
-   - strengths: 2 specific strengths with numbers where possible
+   - strengths: 2 specific strengths
    - weaknesses: 2 specific weaknesses or gaps you can exploit
+   
+10. riskMitigation: Array of 2 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
 
-10. riskMitigation: Array of 2 backup plans. Format EXACTLY like this:
-    "IF [specific metric] is below [specific target number], THEN [specific alternative action with tool name and URL]"
-    Example: "IF email signup rate is below 2%, THEN switch to exit-intent popup using OptinMonster (optinmonster.com) with 10% discount offer"
-
-11. roiProjection: ROI calculation object with REAL MATH:
-    - investment: Total investment for this phase with breakdown (e.g., "€200 total: €100 ads + €50 tools + €50 content")
-    - expectedReturn: Expected return WITH CALCULATION shown (e.g., "€600-900 based on: 200 clicks × 3% conversion = 6 customers × €100-150 avg order")
+11. roiProjection: ROI calculation object with:
+    - investment: Total investment for this phase (USE BENCHMARKS FROM MARKET DATA)
+    - expectedReturn: Expected return (BASE ON INDUSTRY CONVERSION RATES)
     - timeframe: When to expect returns
-    - assumptions: 2 assumptions with specific numbers (e.g., "Assumes industry-average 3% conversion rate", "Based on €2.50 CPC from market data")
+    - assumptions: 2 assumptions behind the calculation
 
-=== ROI CALCULATOR TEMPLATE - USE THIS FORMAT ===
-Investment Breakdown:
-- Ad Spend: €X
-- Tool Costs: €X  
-- Content Creation: €X (or X hours × €Y/hour)
-- Total: €X
-
-Expected Return Calculation:
-- Traffic: X visitors (from €X ad spend ÷ €X CPC)
-- Conversion: X% (industry benchmark)
-- Customers: X (traffic × conversion)
-- Revenue: €X-Y (customers × €X average order value)
-- ROI: X% ((revenue - investment) ÷ investment × 100)
-
-=== MANDATORY MARKET DATA INTEGRATION ===
+=== MANDATORY MARKET DATA INTEGRATION (PREMIUM REQUIREMENT) ===
 
 Your strategy MUST demonstrate that you used the market intelligence data:
 
-1. COMPETITOR INTEGRATION: Reference actual competitors from market data BY NAME in competitorAnalysis
-2. MARKET METRICS: Include market size or growth rate numbers from research in your objectives
-3. BENCHMARK-BASED PROJECTIONS: Your ROI calculations MUST use the CAC/conversion benchmarks provided
-4. CHANNEL PRIORITIZATION: Recommend channels based on their actual ROI performance data from research
-5. TREND ALIGNMENT: Reference at least one specific industry trend from the research
+1. COMPETITOR INTEGRATION: At least 2 phases must reference actual competitors from the market data by name
+2. MARKET METRICS: Include market size or growth rate numbers in your objectives
+3. BENCHMARK-BASED PROJECTIONS: Your ROI calculations MUST reference the CAC/conversion benchmarks provided
+4. CHANNEL PRIORITIZATION: Recommend channels based on their actual ROI performance data
+5. TREND ALIGNMENT: Reference at least one key industry trend in your strategy
 
-If specific data is not available, state "Based on industry estimates" with a reasonable estimate.
+If specific data is not available, state "Based on industry estimates" rather than ignoring the requirement.
 
-QUALITY CHECK: A strategy without specific numbers, URLs, and market data integration is NOT a premium deep analysis.
+⚠️ QUALITY CHECK: A strategy that doesn't incorporate market data is NOT a premium deep analysis.
 
 CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
-- Be EXTREMELY specific - every action should be copy-paste executable
-- MINIMUM 6-8 resource URLs REQUIRED across all phases
-- Each phase MUST have at least 2 actions with resourceUrl
-- Include ROI calculations with actual math, not vague projections
+- Be EXTREMELY specific and actionable
+- ⚠️ MINIMUM 4-5 resource URLs REQUIRED across all phases - distribute links to action items
+- Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
+- Only include resourceUrl if it's truly relevant to the action
 
 Use the create_strategy function to return your response.`;
   } else {
@@ -810,7 +788,7 @@ CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- MINIMUM 4 resource URLs REQUIRED across all phases - distribute links to action items
+- ⚠️ MINIMUM 4 resource URLs REQUIRED across all phases - distribute links to action items
 - Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
 - Only include resourceUrl if it's truly relevant to the action
 
@@ -828,37 +806,37 @@ Use the create_strategy function to return your response.`;
 
   // Add website insights if available (PERSONALIZED STRATEGY)
   if (websiteInsights) {
-    userPromptText += `\n\n=== WEBSITE ANALYSIS - PERSONALIZE YOUR STRATEGY TO THIS ===`;
+    userPromptText += `\n\n=== 🔍 WEBSITE ANALYSIS - PERSONALIZE YOUR STRATEGY TO THIS ===`;
     userPromptText += `\n\nWe analyzed the user's actual website and found:`;
-    userPromptText += `\n\nBusiness Type: ${websiteInsights.businessType}`;
+    userPromptText += `\n\n📌 Business Type: ${websiteInsights.businessType}`;
     
     if (websiteInsights.offerings && websiteInsights.offerings.length > 0) {
-      userPromptText += `\nWhat They Sell: ${websiteInsights.offerings.join(', ')}`;
+      userPromptText += `\n📦 What They Sell: ${websiteInsights.offerings.join(', ')}`;
     }
     
     if (websiteInsights.targetAudience) {
-      userPromptText += `\nTarget Audience: ${websiteInsights.targetAudience}`;
+      userPromptText += `\n👥 Target Audience: ${websiteInsights.targetAudience}`;
     }
     
     if (websiteInsights.currentChannels && websiteInsights.currentChannels.length > 0) {
-      userPromptText += `\nCurrent Marketing Channels: ${websiteInsights.currentChannels.join(', ')}`;
+      userPromptText += `\n📣 Current Marketing Channels: ${websiteInsights.currentChannels.join(', ')}`;
     }
     
     if (websiteInsights.problems && websiteInsights.problems.length > 0) {
-      userPromptText += `\n\nPROBLEMS WE FOUND ON THEIR WEBSITE (ADDRESS THESE IN YOUR STRATEGY):`;
+      userPromptText += `\n\n⚠️ PROBLEMS WE FOUND ON THEIR WEBSITE (ADDRESS THESE IN YOUR STRATEGY):`;
       websiteInsights.problems.forEach((problem, i) => {
         userPromptText += `\n${i + 1}. ${problem}`;
       });
     }
     
     if (websiteInsights.improvements && websiteInsights.improvements.length > 0) {
-      userPromptText += `\n\nIMPROVEMENT SUGGESTIONS (INCORPORATE THESE):`;
+      userPromptText += `\n\n💡 IMPROVEMENT SUGGESTIONS (INCORPORATE THESE):`;
       websiteInsights.improvements.forEach((improvement, i) => {
         userPromptText += `\n${i + 1}. ${improvement}`;
       });
     }
     
-    userPromptText += `\n\nIMPORTANT: Your strategy MUST address the problems found on their website. Make Phase 1 focus on fixing the most critical website issues. Reference specific problems and improvements in your actions.`;
+    userPromptText += `\n\n⚠️ IMPORTANT: Your strategy MUST address the problems found on their website. Make Phase 1 focus on fixing the most critical website issues. Reference specific problems and improvements in your actions.`;
   }
 
   // Add market research context (DIFFERENTIATED BY MODE)
@@ -879,7 +857,7 @@ Use the create_strategy function to return your response.`;
     userPromptText += `\n\n=== AVAILABLE RESOURCES ===\nUse these URLs for resourceUrl in actions when relevant:\n${resourcesList}`;
     
     if (isDeepMode) {
-      userPromptText += `\n\nREMINDER: This is a PREMIUM deep analysis. Your strategy MUST incorporate the market intelligence data above. Generic strategies without market data integration are not acceptable.`;
+      userPromptText += `\n\n⚠️ REMINDER: This is a PREMIUM deep analysis. Your strategy MUST incorporate the market intelligence data above. Generic strategies without market data integration are not acceptable.`;
     }
   }
 
@@ -892,7 +870,7 @@ Use the create_strategy function to return your response.`;
   const abortController = new AbortController();
   const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights; structuredMarketData?: StructuredMarketData };
+  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights };
 
   if (isDeepMode) {
     const deepModeJsonInstructions = `
@@ -1121,15 +1099,9 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation
     }
   }
 
-  // Add market insights, structured data, and website analysis to result
+  // Add market insights and website analysis to result
   if (hasMarketResearch) {
     result.marketInsights = marketResearch.insights;
-    result.sources = marketResearch.citations.map(c => c.url);
-    
-    // Include structured market data for Deep Mode display
-    if (isDeepMode && marketResearch.structuredData) {
-      result.structuredMarketData = marketResearch.structuredData;
-    }
   }
   
   if (websiteInsights) {

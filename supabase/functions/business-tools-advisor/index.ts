@@ -690,12 +690,18 @@ CRITICAL OUTPUT RULES - BE EXTREMELY CONCRETE:
 - NEVER use vague terms like: "leverage", "optimize", "synergize", "strategic initiatives", "streamline", "enhance", "holistic", "cutting-edge", "innovative", "drive engagement", "build presence"
 - NEVER give generic advice like: "increase brand awareness", "drive engagement", "build presence", "maximize potential", "implement a strategy"
 
-ALWAYS include for EVERY action:
-- EXACT tool/platform name with link (e.g., "Use Canva (canva.com) to create...", "Set up Google Analytics 4 (analytics.google.com)")
-- TIME estimate (e.g., "takes 30 minutes", "spend 2 hours on this")
-- SPECIFIC numbers and examples (e.g., "post 3x per week", "budget 50 EUR/month", "target 100 website visits")
-- COPY-PASTE ready text where possible (e.g., "Use this headline: 'Get 50% off your first order'")
-- Expected outcome with metrics (e.g., "expect 200-500 views", "should generate 5-10 leads")
+=== ACTION TEMPLATE - USE THIS FORMAT FOR EVERY ACTION ===
+✅ WHAT: [Exact Tool/Platform] at [URL]
+⏱️ TIME: [X minutes/hours to complete]
+💰 COST: [Free / €X per month / one-time €X]
+📋 STEPS:
+   1. Go to [exact URL]
+   2. Click [exact button/link]
+   3. Enter/Select [specific values]
+📊 RESULT: Expect [specific metric] within [timeframe]
+
+EXAMPLE ACTION (follow this level of detail):
+"Set up email capture with ConvertKit (convertkit.com). TIME: 45 minutes, COST: Free up to 1,000 subscribers. STEPS: 1) Go to convertkit.com/signup 2) Create account 3) Click 'Landing Pages' → 'Create New' 4) Choose 'Charlotte' template 5) Change headline to '[Your Product] - Get 20% Off Your First Order' 6) Add form fields: Email only 7) Set thank-you redirect to your website. RESULT: Expect 2-5% visitor conversion rate, aim for 50 subscribers in first week."
 
 HELPFUL RESOURCES - Include these real URLs in actions where relevant:
 - Email Marketing: mailchimp.com, convertkit.com, brevo.com
@@ -721,7 +727,7 @@ Each phase must include:
 3. timeframe: Duration (e.g., "Week 1-2", "Days 1-3")
 4. objectives: 2-4 MEASURABLE objectives with SPECIFIC numbers (e.g., "Get 50 email subscribers" not "Build email list")
 5. actions: 3-5 DETAILED action items. Each action MUST be an object with:
-   - text: Step-by-step instruction with tool name, time estimate, and expected result
+   - text: Step-by-step instruction following the ACTION TEMPLATE above
    - resourceUrl: A helpful URL from the list above or from market research
    - resourceTitle: Domain name (e.g., "canva.com", "mailchimp.com")
 6. budget: Specific budget for this phase (e.g., "50-100 EUR" or "Free tools only")
@@ -740,38 +746,54 @@ You MUST provide these additional fields for EACH phase:
 
 9. competitorAnalysis: Array with 1-2 competitors. Include:
    - name: Actual competitor company/tool name (USE NAMES FROM MARKET DATA IF PROVIDED)
-   - strengths: 2 specific strengths
+   - strengths: 2 specific strengths with numbers where possible
    - weaknesses: 2 specific weaknesses or gaps you can exploit
-   
-10. riskMitigation: Array of 2 backup plans. Format: "IF [metric] is below [target], THEN [specific action]"
 
-11. roiProjection: ROI calculation object with:
-    - investment: Total investment for this phase (USE BENCHMARKS FROM MARKET DATA)
-    - expectedReturn: Expected return (BASE ON INDUSTRY CONVERSION RATES)
+10. riskMitigation: Array of 2 backup plans. Format EXACTLY like this:
+    "IF [specific metric] is below [specific target number], THEN [specific alternative action with tool name and URL]"
+    Example: "IF email signup rate is below 2%, THEN switch to exit-intent popup using OptinMonster (optinmonster.com) with 10% discount offer"
+
+11. roiProjection: ROI calculation object with REAL MATH:
+    - investment: Total investment for this phase with breakdown (e.g., "€200 total: €100 ads + €50 tools + €50 content")
+    - expectedReturn: Expected return WITH CALCULATION shown (e.g., "€600-900 based on: 200 clicks × 3% conversion = 6 customers × €100-150 avg order")
     - timeframe: When to expect returns
-    - assumptions: 2 assumptions behind the calculation
+    - assumptions: 2 assumptions with specific numbers (e.g., "Assumes industry-average 3% conversion rate", "Based on €2.50 CPC from market data")
 
-=== MANDATORY MARKET DATA INTEGRATION (PREMIUM REQUIREMENT) ===
+=== ROI CALCULATOR TEMPLATE - USE THIS FORMAT ===
+Investment Breakdown:
+- Ad Spend: €X
+- Tool Costs: €X  
+- Content Creation: €X (or X hours × €Y/hour)
+- Total: €X
+
+Expected Return Calculation:
+- Traffic: X visitors (from €X ad spend ÷ €X CPC)
+- Conversion: X% (industry benchmark)
+- Customers: X (traffic × conversion)
+- Revenue: €X-Y (customers × €X average order value)
+- ROI: X% ((revenue - investment) ÷ investment × 100)
+
+=== MANDATORY MARKET DATA INTEGRATION ===
 
 Your strategy MUST demonstrate that you used the market intelligence data:
 
-1. COMPETITOR INTEGRATION: At least 2 phases must reference actual competitors from the market data by name
-2. MARKET METRICS: Include market size or growth rate numbers in your objectives
-3. BENCHMARK-BASED PROJECTIONS: Your ROI calculations MUST reference the CAC/conversion benchmarks provided
-4. CHANNEL PRIORITIZATION: Recommend channels based on their actual ROI performance data
-5. TREND ALIGNMENT: Reference at least one key industry trend in your strategy
+1. COMPETITOR INTEGRATION: Reference actual competitors from market data BY NAME in competitorAnalysis
+2. MARKET METRICS: Include market size or growth rate numbers from research in your objectives
+3. BENCHMARK-BASED PROJECTIONS: Your ROI calculations MUST use the CAC/conversion benchmarks provided
+4. CHANNEL PRIORITIZATION: Recommend channels based on their actual ROI performance data from research
+5. TREND ALIGNMENT: Reference at least one specific industry trend from the research
 
-If specific data is not available, state "Based on industry estimates" rather than ignoring the requirement.
+If specific data is not available, state "Based on industry estimates" with a reasonable estimate.
 
-⚠️ QUALITY CHECK: A strategy that doesn't incorporate market data is NOT a premium deep analysis.
+⚠️ QUALITY CHECK: A strategy without specific numbers, URLs, and market data integration is NOT a premium deep analysis.
 
 CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
-- Be EXTREMELY specific and actionable
-- ⚠️ MINIMUM 4-5 resource URLs REQUIRED across all phases - distribute links to action items
-- Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
-- Only include resourceUrl if it's truly relevant to the action
+- Be EXTREMELY specific - every action should be copy-paste executable
+- ⚠️ MINIMUM 6-8 resource URLs REQUIRED across all phases
+- Each phase MUST have at least 2 actions with resourceUrl
+- Include ROI calculations with actual math, not vague projections
 
 Use the create_strategy function to return your response.`;
   } else {
@@ -870,7 +892,7 @@ Use the create_strategy function to return your response.`;
   const abortController = new AbortController();
   const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
-  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights };
+  let result: { strategies: StrategyPhase[]; marketInsights?: string; sources?: string[]; websiteAnalysis?: WebsiteInsights; structuredMarketData?: StructuredMarketData };
 
   if (isDeepMode) {
     const deepModeJsonInstructions = `
@@ -1099,9 +1121,15 @@ Return EXACTLY 4 phases. Each phase MUST have competitorAnalysis, riskMitigation
     }
   }
 
-  // Add market insights and website analysis to result
+  // Add market insights, structured data, and website analysis to result
   if (hasMarketResearch) {
     result.marketInsights = marketResearch.insights;
+    result.sources = marketResearch.citations.map(c => c.url);
+    
+    // Include structured market data for Deep Mode display
+    if (isDeepMode && marketResearch.structuredData) {
+      result.structuredMarketData = marketResearch.structuredData;
+    }
   }
   
   if (websiteInsights) {

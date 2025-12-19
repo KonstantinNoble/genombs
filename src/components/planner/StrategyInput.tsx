@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, X, Globe, Loader2 } from 'lucide-react';
+import { Plus, X, Globe, Loader2, Sparkles } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -34,6 +34,7 @@ interface StrategyInputProps {
   onOptionalParamsChange: (params: OptionalParams) => void;
   placeholder?: string;
   disabled?: boolean;
+  analysisMode?: 'standard' | 'deep';
 }
 
 const budgetOptions = [
@@ -108,12 +109,14 @@ export function StrategyInput({
   onOptionalParamsChange,
   placeholder = "Describe your goals in a few words...",
   disabled = false,
+  analysisMode = 'standard',
 }: StrategyInputProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [urlError, setUrlError] = useState<string | undefined>();
   const charCount = value.length;
   const isAtLimit = charCount >= MAX_CHARS;
   const urlCharCount = optionalParams.websiteUrl?.length || 0;
+  const isDeepMode = analysisMode === 'deep';
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -139,6 +142,19 @@ export function StrategyInput({
 
   return (
     <div className="space-y-3">
+      {/* Powered by Perplexity Badge for Deep Mode */}
+      {isDeepMode && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20">
+          <Sparkles className="h-4 w-4 text-cyan-500" />
+          <span className="text-sm font-medium text-cyan-600 dark:text-cyan-400">
+            Powered by Perplexity AI Research
+          </span>
+          <Badge variant="outline" className="ml-auto text-[10px] bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+            LIVE MARKET DATA
+          </Badge>
+        </div>
+      )}
+      
       {/* Main Input Container */}
       <div className="relative">
         <div className="flex items-start gap-2 p-3 rounded-2xl border border-border bg-background shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all">

@@ -292,10 +292,27 @@ export function StrategyInput({
         </div>
       </div>
 
-      {/* Website URL Input */}
+      {/* Website URL Input - Prominent Design */}
       <div className="relative">
-        <div className={`flex items-center gap-2 p-2 rounded-xl border bg-background/50 ${urlError ? 'border-destructive' : 'border-border'}`}>
-          <Globe className={`h-4 w-4 shrink-0 ml-1 ${urlError ? 'text-destructive' : 'text-muted-foreground'}`} />
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-1.5 text-primary">
+            <Globe className="h-4 w-4" />
+            <span className="text-sm font-medium">Website-Analyse</span>
+          </div>
+          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+            Empfohlen
+          </span>
+        </div>
+        <div className={`flex items-center gap-2 p-3 rounded-xl border-2 bg-gradient-to-r from-primary/5 to-transparent transition-all duration-200 ${
+          urlError 
+            ? 'border-destructive' 
+            : optionalParams.websiteUrl 
+              ? 'border-primary/50 shadow-sm shadow-primary/10' 
+              : 'border-primary/30 hover:border-primary/50'
+        }`}>
+          <Globe className={`h-5 w-5 shrink-0 ${
+            urlError ? 'text-destructive' : optionalParams.websiteUrl ? 'text-primary' : 'text-primary/60'
+          }`} />
           <Input
             type="url"
             value={optionalParams.websiteUrl || ''}
@@ -308,10 +325,10 @@ export function StrategyInput({
                 updateParam('websiteUrl', newUrl || 'none');
               }
             }}
-            placeholder="https://your-website.com (optional)"
+            placeholder="https://ihre-website.de"
             disabled={disabled}
             maxLength={MAX_URL_CHARS}
-            className="border-0 p-0 h-8 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm"
+            className="border-0 p-0 h-8 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm font-medium"
           />
           {optionalParams.websiteUrl && (
             <button
@@ -331,13 +348,19 @@ export function StrategyInput({
           </span>
         </div>
         {urlError && (
-          <p className="text-xs text-destructive mt-1 ml-1">
+          <p className="text-xs text-destructive mt-1.5 ml-1 flex items-center gap-1">
             {urlError}
           </p>
         )}
+        {!optionalParams.websiteUrl && !urlError && (
+          <p className="text-xs text-muted-foreground mt-1.5 ml-1">
+            Für eine personalisierte Strategie basierend auf Ihrer Website
+          </p>
+        )}
         {optionalParams.websiteUrl && !urlError && (
-          <p className="text-xs text-muted-foreground mt-1 ml-1">
-            We'll analyze your website to create a personalized strategy
+          <p className="text-xs text-primary mt-1.5 ml-1 flex items-center gap-1">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            Website wird bei der Analyse berücksichtigt
           </p>
         )}
       </div>

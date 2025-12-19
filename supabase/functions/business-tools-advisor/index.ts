@@ -614,45 +614,45 @@ serve(async (req) => {
 function buildStructuredMarketDataPrompt(structuredData: StructuredMarketData): string {
   const sections: string[] = [];
   
-  sections.push('=== 📊 MARKET INTELLIGENCE DATA (You MUST incorporate these into your strategy) ===\n');
+  sections.push('=== MARKET INTELLIGENCE DATA (You MUST incorporate these into your strategy) ===\n');
   
   // Market Size and Growth
   if (structuredData.marketSize || structuredData.growthRate) {
-    sections.push(`📈 MARKET SIZE: ${structuredData.marketSize || 'Data not available'} (Growing ${structuredData.growthRate || 'N/A'})`);
+    sections.push(`MARKET SIZE: ${structuredData.marketSize || 'Data not available'} (Growing ${structuredData.growthRate || 'N/A'})`);
   }
   
   // Competitors
   if (structuredData.topCompetitors && structuredData.topCompetitors.length > 0) {
-    sections.push('\n🏆 TOP COMPETITORS (Reference in your competitorAnalysis):');
+    sections.push('\nTOP COMPETITORS (Reference in your competitorAnalysis):');
     for (const comp of structuredData.topCompetitors) {
-      sections.push(`• ${comp.name}${comp.marketShare ? ` - ${comp.marketShare} market share` : ''}`);
+      sections.push(`- ${comp.name}${comp.marketShare ? ` - ${comp.marketShare} market share` : ''}`);
     }
   }
   
   // Benchmarks
   if (structuredData.averageCAC || structuredData.conversionRateBenchmark) {
-    sections.push('\n💰 INDUSTRY BENCHMARKS (Use in your ROI projections):');
-    if (structuredData.averageCAC) sections.push(`• Average CAC: ${structuredData.averageCAC}`);
-    if (structuredData.conversionRateBenchmark) sections.push(`• Conversion Rate: ${structuredData.conversionRateBenchmark}`);
+    sections.push('\nINDUSTRY BENCHMARKS (Use in your ROI projections):');
+    if (structuredData.averageCAC) sections.push(`- Average CAC: ${structuredData.averageCAC}`);
+    if (structuredData.conversionRateBenchmark) sections.push(`- Conversion Rate: ${structuredData.conversionRateBenchmark}`);
   }
   
   // Marketing Channels
   if (structuredData.bestChannels && structuredData.bestChannels.length > 0) {
-    sections.push('\n📣 BEST PERFORMING CHANNELS (Prioritize in your recommendations):');
+    sections.push('\nBEST PERFORMING CHANNELS (Prioritize in your recommendations):');
     for (const channel of structuredData.bestChannels) {
-      sections.push(`• ${channel.channel}${channel.roi ? ` - ROI: ${channel.roi}` : ' - High ROI'}`);
+      sections.push(`- ${channel.channel}${channel.roi ? ` - ROI: ${channel.roi}` : ' - High ROI'}`);
     }
   }
   
   // Key Trends
   if (structuredData.keyTrends && structuredData.keyTrends.length > 0) {
-    sections.push('\n🔥 KEY TRENDS:');
+    sections.push('\nKEY TRENDS:');
     for (const trend of structuredData.keyTrends) {
-      sections.push(`• ${trend}`);
+      sections.push(`- ${trend}`);
     }
   }
   
-  sections.push('\n\n⚠️ MANDATORY INTEGRATION REQUIREMENTS:');
+  sections.push('\n\nMANDATORY INTEGRATION REQUIREMENTS:');
   sections.push('1. Reference at least one competitor by name in competitorAnalysis for each phase');
   sections.push('2. Include market size or growth rate in at least one objective');
   sections.push('3. Base your ROI projections on the industry benchmarks provided above');
@@ -691,14 +691,14 @@ CRITICAL OUTPUT RULES - BE EXTREMELY CONCRETE:
 - NEVER give generic advice like: "increase brand awareness", "drive engagement", "build presence", "maximize potential", "implement a strategy"
 
 === ACTION TEMPLATE - USE THIS FORMAT FOR EVERY ACTION ===
-✅ WHAT: [Exact Tool/Platform] at [URL]
-⏱️ TIME: [X minutes/hours to complete]
-💰 COST: [Free / €X per month / one-time €X]
-📋 STEPS:
+WHAT: [Exact Tool/Platform] at [URL]
+TIME: [X minutes/hours to complete]
+COST: [Free / EUR X per month / one-time EUR X]
+STEPS:
    1. Go to [exact URL]
    2. Click [exact button/link]
    3. Enter/Select [specific values]
-📊 RESULT: Expect [specific metric] within [timeframe]
+RESULT: Expect [specific metric] within [timeframe]
 
 EXAMPLE ACTION (follow this level of detail):
 "Set up email capture with ConvertKit (convertkit.com). TIME: 45 minutes, COST: Free up to 1,000 subscribers. STEPS: 1) Go to convertkit.com/signup 2) Create account 3) Click 'Landing Pages' → 'Create New' 4) Choose 'Charlotte' template 5) Change headline to '[Your Product] - Get 20% Off Your First Order' 6) Add form fields: Email only 7) Set thank-you redirect to your website. RESULT: Expect 2-5% visitor conversion rate, aim for 50 subscribers in first week."
@@ -785,13 +785,13 @@ Your strategy MUST demonstrate that you used the market intelligence data:
 
 If specific data is not available, state "Based on industry estimates" with a reasonable estimate.
 
-⚠️ QUALITY CHECK: A strategy without specific numbers, URLs, and market data integration is NOT a premium deep analysis.
+QUALITY CHECK: A strategy without specific numbers, URLs, and market data integration is NOT a premium deep analysis.
 
 CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific - every action should be copy-paste executable
-- ⚠️ MINIMUM 6-8 resource URLs REQUIRED across all phases
+- MINIMUM 6-8 resource URLs REQUIRED across all phases
 - Each phase MUST have at least 2 actions with resourceUrl
 - Include ROI calculations with actual math, not vague projections
 
@@ -810,7 +810,7 @@ CRITICAL:
 - Output must be in English
 - No markdown formatting in the output
 - Be EXTREMELY specific and actionable
-- ⚠️ MINIMUM 4 resource URLs REQUIRED across all phases - distribute links to action items
+- MINIMUM 4 resource URLs REQUIRED across all phases - distribute links to action items
 - Each phase should have at least ONE action with a resourceUrl from AVAILABLE RESOURCES
 - Only include resourceUrl if it's truly relevant to the action
 
@@ -828,37 +828,37 @@ Use the create_strategy function to return your response.`;
 
   // Add website insights if available (PERSONALIZED STRATEGY)
   if (websiteInsights) {
-    userPromptText += `\n\n=== 🔍 WEBSITE ANALYSIS - PERSONALIZE YOUR STRATEGY TO THIS ===`;
+    userPromptText += `\n\n=== WEBSITE ANALYSIS - PERSONALIZE YOUR STRATEGY TO THIS ===`;
     userPromptText += `\n\nWe analyzed the user's actual website and found:`;
-    userPromptText += `\n\n📌 Business Type: ${websiteInsights.businessType}`;
+    userPromptText += `\n\nBusiness Type: ${websiteInsights.businessType}`;
     
     if (websiteInsights.offerings && websiteInsights.offerings.length > 0) {
-      userPromptText += `\n📦 What They Sell: ${websiteInsights.offerings.join(', ')}`;
+      userPromptText += `\nWhat They Sell: ${websiteInsights.offerings.join(', ')}`;
     }
     
     if (websiteInsights.targetAudience) {
-      userPromptText += `\n👥 Target Audience: ${websiteInsights.targetAudience}`;
+      userPromptText += `\nTarget Audience: ${websiteInsights.targetAudience}`;
     }
     
     if (websiteInsights.currentChannels && websiteInsights.currentChannels.length > 0) {
-      userPromptText += `\n📣 Current Marketing Channels: ${websiteInsights.currentChannels.join(', ')}`;
+      userPromptText += `\nCurrent Marketing Channels: ${websiteInsights.currentChannels.join(', ')}`;
     }
     
     if (websiteInsights.problems && websiteInsights.problems.length > 0) {
-      userPromptText += `\n\n⚠️ PROBLEMS WE FOUND ON THEIR WEBSITE (ADDRESS THESE IN YOUR STRATEGY):`;
+      userPromptText += `\n\nPROBLEMS WE FOUND ON THEIR WEBSITE (ADDRESS THESE IN YOUR STRATEGY):`;
       websiteInsights.problems.forEach((problem, i) => {
         userPromptText += `\n${i + 1}. ${problem}`;
       });
     }
     
     if (websiteInsights.improvements && websiteInsights.improvements.length > 0) {
-      userPromptText += `\n\n💡 IMPROVEMENT SUGGESTIONS (INCORPORATE THESE):`;
+      userPromptText += `\n\nIMPROVEMENT SUGGESTIONS (INCORPORATE THESE):`;
       websiteInsights.improvements.forEach((improvement, i) => {
         userPromptText += `\n${i + 1}. ${improvement}`;
       });
     }
     
-    userPromptText += `\n\n⚠️ IMPORTANT: Your strategy MUST address the problems found on their website. Make Phase 1 focus on fixing the most critical website issues. Reference specific problems and improvements in your actions.`;
+    userPromptText += `\n\nIMPORTANT: Your strategy MUST address the problems found on their website. Make Phase 1 focus on fixing the most critical website issues. Reference specific problems and improvements in your actions.`;
   }
 
   // Add market research context (DIFFERENTIATED BY MODE)
@@ -879,7 +879,7 @@ Use the create_strategy function to return your response.`;
     userPromptText += `\n\n=== AVAILABLE RESOURCES ===\nUse these URLs for resourceUrl in actions when relevant:\n${resourcesList}`;
     
     if (isDeepMode) {
-      userPromptText += `\n\n⚠️ REMINDER: This is a PREMIUM deep analysis. Your strategy MUST incorporate the market intelligence data above. Generic strategies without market data integration are not acceptable.`;
+      userPromptText += `\n\nREMINDER: This is a PREMIUM deep analysis. Your strategy MUST incorporate the market intelligence data above. Generic strategies without market data integration are not acceptable.`;
     }
   }
 

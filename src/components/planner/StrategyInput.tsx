@@ -297,10 +297,10 @@ export function StrategyInput({
         <div className="flex items-center gap-2 mb-2">
           <div className="flex items-center gap-1.5 text-primary">
             <Globe className="h-4 w-4" />
-            <span className="text-sm font-medium">Website-Analyse</span>
+            <span className="text-sm font-medium">Website Analysis</span>
           </div>
           <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-            Empfohlen
+            Recommended
           </span>
         </div>
         <div className={`flex items-center gap-2 p-3 rounded-xl border-2 bg-gradient-to-r from-primary/5 to-transparent transition-all duration-200 ${
@@ -325,7 +325,7 @@ export function StrategyInput({
                 updateParam('websiteUrl', newUrl || 'none');
               }
             }}
-            placeholder="https://ihre-website.de"
+            placeholder="https://your-website.com"
             disabled={disabled}
             maxLength={MAX_URL_CHARS}
             className="border-0 p-0 h-8 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm font-medium"
@@ -354,13 +354,13 @@ export function StrategyInput({
         )}
         {!optionalParams.websiteUrl && !urlError && (
           <p className="text-xs text-muted-foreground mt-1.5 ml-1">
-            Für eine personalisierte Strategie basierend auf Ihrer Website
+            Get a personalized strategy based on your website
           </p>
         )}
         {optionalParams.websiteUrl && !urlError && (
           <p className="text-xs text-primary mt-1.5 ml-1 flex items-center gap-1">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Website wird bei der Analyse berücksichtigt
+            Your website will be analyzed for personalized insights
           </p>
         )}
       </div>

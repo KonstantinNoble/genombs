@@ -156,6 +156,7 @@ export default function BusinessToolsAdvisor() {
     if (optionalParams.channels) body.channels = optionalParams.channels;
     if (optionalParams.timeline) body.timeline = optionalParams.timeline;
     if (optionalParams.geographic) body.geographic = optionalParams.geographic;
+    if (optionalParams.websiteUrl) body.websiteUrl = optionalParams.websiteUrl;
 
     try {
       await analyze(body);

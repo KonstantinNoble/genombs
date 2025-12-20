@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -11,7 +10,8 @@ import Features from "@/components/home/Features";
 import Pricing from "@/components/home/Pricing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
-import { WebPageSchema } from "@/components/seo/StructuredData";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { WebPageSchema, OrganizationSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 
 
@@ -72,18 +72,22 @@ const Home = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <Helmet>
-        <title>Synoptas - AI Website Advisor | Smart Tool Recommendations</title>
-        <meta 
-          name="description" 
-          content="Optimize your website with AI-powered tool recommendations. Screenshot analysis with real-time market research from 10-20+ sources. Free daily analysis!" 
-        />
-        <meta name="keywords" content="AI Website Advisor, Website Tools, Website Optimization, AI Website Analysis, Screenshot Analysis, E-Commerce Tools, Blog Tools, Real-Time Market Research, Tool Recommendations" />
-        <link rel="canonical" href="https://synoptas.com/" />
-      </Helmet>
+      <SEOHead
+        title="AI Business Strategy Planner"
+        description="Turn your business goals into actionable AI-powered strategies. Get personalized plans with real-time market research from 10-20+ sources. Free daily analyses!"
+        keywords="AI business strategy, business planner, AI strategy generator, market research AI, business goals, actionable strategies, website analysis"
+        canonical="/"
+        ogImage="https://synoptas.com/favicon.png"
+      />
+      <OrganizationSchema
+        name="Synoptas"
+        url="https://synoptas.com"
+        logo="https://synoptas.com/favicon.png"
+        description="AI-powered business strategy planner with real-time market research"
+      />
       <WebPageSchema
-        name="Synoptas - AI Website Advisor"
-        description="Optimize your website with AI-powered tool recommendations. Screenshot analysis for website-specific strategies."
+        name="Synoptas - AI Business Strategy Planner"
+        description="Turn your business goals into actionable AI-powered strategies with real-time market research."
         url="https://synoptas.com/"
       />
       <Navbar />

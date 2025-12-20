@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { FAQSchema } from "@/components/seo/StructuredData";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -143,15 +144,16 @@ const PricingPage = () => {
 
   return (
     <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
-      <Helmet>
-        <title>Pricing - AI Website Analysis Plans | Synoptas</title>
-        <meta 
-          name="description" 
-          content="Get AI-powered business recommendations starting at $0. Premium plan just $9.99/mo with deep analysis, ROI calculations, and PDF reports. No credit card required for free plan." 
-        />
-        <meta name="keywords" content="pricing, AI website analysis, website optimization pricing, business analysis plans, premium features" />
-        <link rel="canonical" href="https://synoptas.com/pricing" />
-      </Helmet>
+      <SEOHead
+        title="Pricing - AI Business Strategy Plans"
+        description="Get AI-powered business strategies starting at $0. Premium plan $9.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
+        keywords="pricing, AI business strategy, business analysis plans, premium features, deep analysis, ROI projections"
+        canonical="/pricing"
+        ogImage="https://synoptas.com/favicon.png"
+      />
+      <FAQSchema
+        faqs={faqs.map(faq => ({ question: faq.question, answer: faq.answer }))}
+      />
 
       <Navbar />
 

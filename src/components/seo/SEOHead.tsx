@@ -13,10 +13,10 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  keywords = "AI business tools, business intelligence, AI recommendations, advertising strategy, business analysis",
+  keywords = "AI business strategy, business planner, AI strategy generator, market research, actionable strategies",
   canonical,
   ogType = "website",
-  ogImage = "https://storage.googleapis.com/gpt-engineer-file-uploads/1V6ymqHAwYaZZhk3iJbk6DSvvY92/social-images/social-1762282229478-Bildschirmfoto_4-11-2025_195020_preview--wealthconomy.lovable.app.jpeg",
+  ogImage = "https://synoptas.com/favicon.png",
   noindex = false
 }: SEOHeadProps) => {
   const siteUrl = "https://synoptas.com";

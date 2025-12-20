@@ -36,7 +36,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Get AI-powered strategies based on live market data — not outdated generic advice. Turn your goals into a step-by-step action plan in under 2 minutes.
+            Get AI-powered strategies based on live market data. No more outdated generic advice. Turn your goals into a step-by-step action plan in under 2 minutes.
           </p>
 
           <div

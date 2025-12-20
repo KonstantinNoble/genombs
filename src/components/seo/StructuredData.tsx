@@ -48,7 +48,7 @@ export const WebPageSchema = ({ name, description, url }: WebPageSchemaProps) =>
       "name": "Synoptas",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/1V6ymqHAwYaZZhk3iJbk6DSvvY92/uploads/1761387705030-gemini-2.5-flash-image-preview_Ein_elegantes_minimalistisches_logo_von_einem_goldenen_pfeil_alles_gleichmäßig-0.jpg"
+        "url": "https://synoptas.com/favicon.png"
       }
     }
   };

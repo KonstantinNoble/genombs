@@ -8,6 +8,7 @@ export interface BlogPost {
   readTime: string;
   category: string;
   image: string;
+  imageAlt?: string;
   keywords: string[];
 }
 
@@ -50,10 +51,11 @@ As AI technology continues to evolve, the gap between AI-adopters and traditiona
 The future of entrepreneurship is here, and it's powered by artificial intelligence.
     `,
     author: "Synoptas Team",
-    date: "2025-01-15",
+    date: "2024-12-15",
     readTime: "5 min read",
     category: "Entrepreneurship",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=450&fit=crop",
+    imageAlt: "Robot hand reaching toward human hand representing AI and human collaboration in business",
     keywords: ["AI entrepreneurship", "business automation", "startup AI tools", "digital transformation", "AI-powered business"]
   },
   {
@@ -102,10 +104,11 @@ AI-powered financial tools are no longer optional—they're essential for compet
 The question isn't whether to adopt AI for financial planning, but how quickly you can integrate these tools into your business operations.
     `,
     author: "Synoptas Team",
-    date: "2025-01-10",
+    date: "2024-12-10",
     readTime: "6 min read",
     category: "Finance",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+    imageAlt: "Financial dashboard with charts and analytics representing AI-powered financial planning",
     keywords: ["AI financial planning", "business finance automation", "predictive analytics", "cash flow management", "financial AI tools"]
   },
   {
@@ -162,10 +165,11 @@ The businesses that thrive in this new era will be those that embrace AI not as 
 The AI revolution isn't coming—it's here. The only question is whether your business will lead, follow, or be left behind.
     `,
     author: "Synoptas Team",
-    date: "2025-01-05",
+    date: "2024-12-05",
     readTime: "7 min read",
     category: "Business Strategy",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
+    imageAlt: "Business strategy meeting with laptops and charts showing profitable business planning",
     keywords: ["AI business strategy", "profitable business", "AI-first mindset", "business automation", "digital business transformation"]
   },
   {
@@ -258,10 +262,11 @@ AI investments should be treated like any business investment: with clear object
 The businesses that win with AI aren't necessarily those that invest the most—they're the ones that invest smartly and measure effectively.
     `,
     author: "Synoptas Team",
-    date: "2024-12-28",
+    date: "2024-11-28",
     readTime: "8 min read",
     category: "Finance",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=800&h=450&fit=crop",
+    imageAlt: "Calculator and financial documents representing ROI measurement for AI investments",
     keywords: ["AI ROI", "AI investment", "small business AI", "measuring AI success", "business automation ROI"]
   },
   {
@@ -356,10 +361,11 @@ We're at the beginning of the AI revolution, not the end. The opportunities for 
 The future belongs to entrepreneurs who can combine human creativity and judgment with AI's computational power and scale. That future is being built today.
     `,
     author: "Synoptas Team",
-    date: "2024-12-20",
+    date: "2024-11-20",
     readTime: "9 min read",
     category: "Entrepreneurship",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=450&fit=crop",
+    imageAlt: "Futuristic technology visualization representing AI and machine learning in business",
     keywords: ["AI entrepreneurship", "machine learning business", "future of business", "AI innovation", "entrepreneurial technology"]
   },
   {
@@ -557,10 +563,11 @@ AI-powered financial forecasting isn't just a nice-to-have—it's becoming essen
 The question for entrepreneurs isn't whether to adopt AI forecasting, but how quickly you can integrate it into your financial planning process.
     `,
     author: "Synoptas Team",
-    date: "2024-12-15",
+    date: "2024-11-15",
     readTime: "10 min read",
     category: "Finance",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop",
+    imageAlt: "Financial forecasting charts and graphs representing AI-powered business predictions",
     keywords: ["AI financial forecasting", "predictive analytics", "cash flow prediction", "financial planning AI", "business forecasting tools"]
   }
 ];

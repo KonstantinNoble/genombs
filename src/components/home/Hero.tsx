@@ -25,10 +25,10 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-          {/* Benefit-Driven Headline */}
+          {/* Problem-First Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-fade-in bg-[length:200%_auto] transition-all duration-300">
-              Turn Your Business Goals Into a Clear Action Plan
+              Stop Guessing What to Do Next.
             </span>
           </h1>
 
@@ -36,7 +36,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            AI-powered strategies backed by real-time market research. Get actionable insights tailored to your industry in under 2 minutes.
+            Get AI-powered strategies based on live market data — not outdated generic advice. Turn your goals into a step-by-step action plan in under 2 minutes.
           </p>
 
           <div
@@ -69,15 +69,15 @@ const Hero = () => {
           >
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              No Credit Card Required
+              No more endless Googling
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.5s" }} />
-              {isPremium && user ? "Premium Member" : "2 Free Analyses Daily"}
+              {isPremium && user ? "Premium Member" : "No more generic AI advice"}
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "1s" }} />
-              Website Analysis Included
+              Get a real plan in 2 minutes
             </span>
           </div>
         </div>

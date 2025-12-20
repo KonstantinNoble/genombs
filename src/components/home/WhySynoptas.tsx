@@ -22,10 +22,10 @@ const WhySynoptas = () => {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Why Not Just Ask ChatGPT?
+            This Is Why You're Still Stuck
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Great question. Here's the difference.
+            Generic AI advice doesn't work. Here's the difference.
           </p>
         </div>
 

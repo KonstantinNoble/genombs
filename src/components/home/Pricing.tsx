@@ -5,6 +5,7 @@ import { Check, X, Sparkles, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface PricingProps {
   compact?: boolean;
@@ -15,6 +16,10 @@ const Pricing = ({ compact = false }: PricingProps) => {
   const { user, isPremium } = useAuth();
   const { openCheckout } = useFreemiusCheckout();
   const isLoggedIn = !!user;
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: freeCardRef, isVisible: freeCardVisible } = useScrollReveal();
+  const { ref: premiumCardRef, isVisible: premiumCardVisible } = useScrollReveal();
+  const { ref: trustRef, isVisible: trustVisible } = useScrollReveal();
 
   const handlePlanClick = async (plan: 'free' | 'premium') => {
     if (!user) {
@@ -37,7 +42,10 @@ const Pricing = ({ compact = false }: PricingProps) => {
     return (
       <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
+          <div 
+            ref={headerRef}
+            className={`max-w-3xl mx-auto text-center space-y-6 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          >
             <Badge className="bg-primary text-primary-foreground">
               <Sparkles className="w-3 h-3 mr-1" />
               Premium Member
@@ -85,7 +93,10 @@ const Pricing = ({ compact = false }: PricingProps) => {
     <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center space-y-4 mb-16 animate-fade-in">
+          <div 
+            ref={headerRef}
+            className={`text-center space-y-4 mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          >
             <Badge variant="outline" className="mb-2">Simple Pricing</Badge>
             <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
               Choose Your Plan
@@ -97,7 +108,10 @@ const Pricing = ({ compact = false }: PricingProps) => {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <Card className="relative flex flex-col border border-border shadow-md hover:shadow-lg transition-all duration-300">
+            <Card 
+              ref={freeCardRef}
+              className={`relative flex flex-col border border-border shadow-md hover:shadow-lg transition-all duration-300 scroll-reveal ${freeCardVisible ? 'revealed' : ''}`}
+            >
               <CardHeader className="pb-4">
                 <CardTitle className="text-2xl">Free Plan</CardTitle>
                 <CardDescription>Perfect for getting started</CardDescription>
@@ -136,7 +150,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
             </Card>
 
             {/* Premium Plan */}
-            <Card className="relative flex flex-col border-2 border-primary shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-primary/5 to-transparent">
+            <Card 
+              ref={premiumCardRef}
+              className={`relative flex flex-col border-2 border-primary shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-primary/5 to-transparent scroll-reveal ${premiumCardVisible ? 'revealed' : ''}`}
+              style={{ transitionDelay: '0.1s' }}
+            >
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                 <Badge className="bg-primary text-primary-foreground px-4 py-1 shadow-lg">
                   <Zap className="w-3 h-3 mr-1" />
@@ -179,7 +197,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-6 mt-12 text-sm text-muted-foreground">
+          <div 
+            ref={trustRef}
+            className={`flex flex-wrap justify-center items-center gap-6 mt-12 text-sm text-muted-foreground scroll-reveal ${trustVisible ? 'revealed' : ''}`}
+            style={{ transitionDelay: '0.2s' }}
+          >
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 text-primary" />
               <span>Cancel anytime</span>

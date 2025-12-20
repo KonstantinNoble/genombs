@@ -1,4 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const features = [
   {
@@ -23,17 +24,43 @@ const features = [
   },
 ];
 
+const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: number }) => {
+  const { ref, isVisible } = useScrollReveal();
+  
+  return (
+    <Card
+      ref={ref}
+      className={`p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm group relative overflow-hidden scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      style={{ transitionDelay: `${index * 0.1}s` }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-transparent transition-all duration-500 rounded-lg" />
+      
+      <div className="relative z-10">
+        <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-all duration-500 flex items-center gap-2">
+          {feature.title}
+          <span className="inline-block w-0 group-hover:w-2 h-2 bg-primary rounded-full transition-all duration-500" />
+        </h3>
+        <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+      </div>
+    </Card>
+  );
+};
+
 const Features = () => {
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+
   return (
     <section
       className="py-20 sm:py-24 md:py-32 relative overflow-hidden"
       aria-label="Features section"
     >
-      {/* Subtle Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16 space-y-4 animate-fade-in">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+        >
           <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent bg-[length:200%_auto]">
             AI-Powered Business Strategy
           </h2>
@@ -44,22 +71,7 @@ const Features = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <Card
-              key={index}
-              className="p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm group animate-fade-in relative overflow-hidden"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-transparent transition-all duration-500 rounded-lg" />
-              
-              <div className="relative z-10">
-                <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-all duration-500 flex items-center gap-2">
-                  {feature.title}
-                  <span className="inline-block w-0 group-hover:w-2 h-2 bg-primary rounded-full transition-all duration-500" />
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </div>
-            </Card>
+            <FeatureCard key={index} feature={feature} index={index} />
           ))}
         </div>
       </div>

@@ -49,13 +49,13 @@ const CTA = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            {isPremium && isLoggedIn ? "Continue Your Business Strategy" : "Ready to Plan Your Business Growth?"}
+            {isPremium && isLoggedIn ? "Continue Your Business Strategy" : "Ready to Stop Guessing and Start Executing?"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {isPremium && isLoggedIn 
               ? "Access all your premium features including Deep Analysis with 6 phases, ROI projections, and competitor analysis."
-              : "Get your first AI business strategy free. No credit card required."}
+              : "Get a clear action plan based on real market data. No more generic advice. No credit card required."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -83,15 +83,15 @@ const CTA = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Free Plan Available
+              Real market data
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              No Credit Card
+              No credit card
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Instant Access
+              Results in 2 minutes
             </span>
           </div>
         </div>

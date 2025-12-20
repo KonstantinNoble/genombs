@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const CTA = () => {
   const [isPremium, setIsPremium] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { ref, isVisible } = useScrollReveal();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,7 +49,10 @@ const CTA = () => {
   return (
     <section className="py-20 sm:py-24 md:py-32 bg-background/40 backdrop-blur-sm border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+        <div 
+          ref={ref}
+          className={`max-w-3xl mx-auto text-center space-y-8 scroll-reveal ${isVisible ? 'revealed' : ''}`}
+        >
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
             {isPremium && isLoggedIn ? "Continue Your Business Strategy" : "Ready to Stop Guessing and Start Executing?"}
           </h2>

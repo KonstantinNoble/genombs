@@ -1,4 +1,11 @@
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
 const WhySynoptas = () => {
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: chatGptRef, isVisible: chatGptVisible } = useScrollReveal();
+  const { ref: synoptasRef, isVisible: synoptasVisible } = useScrollReveal();
+  const { ref: footerRef, isVisible: footerVisible } = useScrollReveal();
+
   const chatGptPoints = [
     "Generic advice without market context",
     "Outdated information (training cutoff)",
@@ -20,7 +27,10 @@ const WhySynoptas = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-12">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-12 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+        >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             This Is Why You're Still Stuck
           </h2>
@@ -31,7 +41,10 @@ const WhySynoptas = () => {
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {/* ChatGPT Card */}
-          <div className="bg-card/50 border border-border rounded-xl p-6 md:p-8 relative overflow-hidden">
+          <div 
+            ref={chatGptRef}
+            className={`bg-card/50 border border-border rounded-xl p-6 md:p-8 relative overflow-hidden scroll-reveal-scale ${chatGptVisible ? 'revealed' : ''}`}
+          >
             <div className="absolute inset-0 bg-destructive/5 pointer-events-none" />
             
             <div className="relative z-10">
@@ -49,7 +62,11 @@ const WhySynoptas = () => {
           </div>
 
           {/* Synoptas Card */}
-          <div className="bg-card/50 border border-primary/30 rounded-xl p-6 md:p-8 relative overflow-hidden shadow-[0_0_30px_-10px_hsl(var(--primary)/0.3)]">
+          <div 
+            ref={synoptasRef}
+            className={`bg-card/50 border border-primary/30 rounded-xl p-6 md:p-8 relative overflow-hidden shadow-[0_0_30px_-10px_hsl(var(--primary)/0.3)] scroll-reveal-scale ${synoptasVisible ? 'revealed' : ''}`}
+            style={{ transitionDelay: '0.15s' }}
+          >
             <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
             
             <div className="absolute top-4 right-4">
@@ -74,7 +91,11 @@ const WhySynoptas = () => {
           </div>
         </div>
 
-        <p className="text-center text-muted-foreground mt-10 text-sm">
+        <p 
+          ref={footerRef}
+          className={`text-center text-muted-foreground mt-10 text-sm scroll-reveal ${footerVisible ? 'revealed' : ''}`}
+          style={{ transitionDelay: '0.3s' }}
+        >
           Stop getting generic advice. Get actionable strategies based on real market data.
         </p>
       </div>

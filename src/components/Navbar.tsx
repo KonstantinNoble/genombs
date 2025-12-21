@@ -108,6 +108,11 @@ const Navbar = () => {
                   )}
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/ideas" className="cursor-pointer">
+                  Ideas Community
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -202,6 +207,13 @@ const Navbar = () => {
                   {!isPremium && (
                     <Crown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                   )}
+                </Link>
+                <Link
+                  to="/ideas"
+                  className="block text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Ideas Community
                 </Link>
               </CollapsibleContent>
             </Collapsible>

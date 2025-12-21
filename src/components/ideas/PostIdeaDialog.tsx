@@ -21,7 +21,7 @@ interface PostIdeaDialogProps {
 }
 
 const MAX_CONTENT_LENGTH = 500;
-const MAX_URL_LENGTH = 200;
+const MAX_URL_LENGTH = 100;
 
 const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogProps) => {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,7 @@ const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogPr
 
   const handleSubmit = async () => {
     if (!content.trim() || content.length > MAX_CONTENT_LENGTH) return;
-    if (websiteUrl && websiteUrl.length > MAX_URL_LENGTH) return;
+    if (websiteUrl && (websiteUrl.length > MAX_URL_LENGTH || !websiteUrl.startsWith("https://"))) return;
 
     setIsSubmitting(true);
     const success = await onSubmit(content.trim(), websiteUrl.trim() || undefined);
@@ -44,9 +44,10 @@ const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogPr
     }
   };
 
+  const isValidUrl = !websiteUrl || (websiteUrl.startsWith("https://") && websiteUrl.length <= MAX_URL_LENGTH);
   const isValid = content.trim().length > 0 && 
                   content.length <= MAX_CONTENT_LENGTH && 
-                  (!websiteUrl || websiteUrl.length <= MAX_URL_LENGTH);
+                  isValidUrl;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -91,9 +92,13 @@ const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogPr
               value={websiteUrl}
               onChange={(e) => setWebsiteUrl(e.target.value)}
               maxLength={MAX_URL_LENGTH}
+              className={websiteUrl && !websiteUrl.startsWith("https://") ? "border-destructive" : ""}
             />
+            {websiteUrl && !websiteUrl.startsWith("https://") && (
+              <p className="text-xs text-destructive">URL must start with https://</p>
+            )}
             <p className="text-xs text-muted-foreground">
-              Add a link to your website or project
+              {websiteUrl.length}/{MAX_URL_LENGTH} characters
             </p>
           </div>
         </div>

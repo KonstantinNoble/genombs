@@ -470,6 +470,7 @@ export type Database = {
           id: string
           is_premium: boolean
           last_analysis_at: string | null
+          last_idea_post_at: string | null
           last_reset_date: string
           next_payment_date: string | null
           premium_since: string | null
@@ -499,6 +500,7 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
+          last_idea_post_at?: string | null
           last_reset_date?: string
           next_payment_date?: string | null
           premium_since?: string | null
@@ -528,6 +530,7 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
+          last_idea_post_at?: string | null
           last_reset_date?: string
           next_payment_date?: string | null
           premium_since?: string | null
@@ -566,7 +569,9 @@ export type Database = {
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
+      get_next_idea_post_time: { Args: { p_user_id: string }; Returns: string }
       get_remaining_idea_posts: { Args: { p_user_id: string }; Returns: number }
+      record_idea_post: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,11 +13,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Lightbulb, Loader2, Crown, Lock } from "lucide-react";
+import { Lightbulb, Loader2, Crown, Lock, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface PostIdeaDialogProps {
   remainingPosts: number;
+  nextPostTime: string | null;
   onSubmit: (content: string, websiteUrl?: string) => Promise<boolean>;
   disabled?: boolean;
   isPremium?: boolean;
@@ -26,7 +27,42 @@ interface PostIdeaDialogProps {
 const MAX_CONTENT_LENGTH = 500;
 const MAX_URL_LENGTH = 100;
 
-const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled, isPremium = false }: PostIdeaDialogProps) => {
+// Countdown Timer Component
+const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const target = new Date(targetTime).getTime();
+      const now = Date.now();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setTimeLeft("Available now!");
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, [targetTime]);
+
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mr-auto">
+      <Clock className="h-3.5 w-3.5" />
+      <span>Next post in: <span className="font-mono font-medium text-foreground">{timeLeft}</span></span>
+    </div>
+  );
+};
+
+const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPremium = false }: PostIdeaDialogProps) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -134,9 +170,17 @@ const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled, isPremium = false 
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <p className="text-xs text-muted-foreground mr-auto">
-            {remainingPosts}/2 posts remaining today
-          </p>
+          {remainingPosts > 0 ? (
+            <p className="text-xs text-muted-foreground mr-auto">
+              {remainingPosts}/1 post available
+            </p>
+          ) : nextPostTime ? (
+            <CountdownTimer targetTime={nextPostTime} />
+          ) : (
+            <p className="text-xs text-muted-foreground mr-auto">
+              No posts available
+            </p>
+          )}
           <Button
             onClick={handleSubmit}
             disabled={!isValid || isSubmitting || remainingPosts <= 0}

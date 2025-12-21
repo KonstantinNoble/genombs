@@ -7,10 +7,12 @@ import Footer from "@/components/Footer";
 import IdeaCard from "@/components/ideas/IdeaCard";
 import PostIdeaDialog from "@/components/ideas/PostIdeaDialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, TrendingUp, Clock, LogIn } from "lucide-react";
+import { Loader2, TrendingUp, Clock, LogIn, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type SortMode = "latest" | "top";
+
+const ITEMS_PER_PAGE = 20;
 
 interface IdeaWithRatings {
   id: string;
@@ -29,23 +31,47 @@ const BusinessIdeas = () => {
   const { toast } = useToast();
   const [ideas, setIdeas] = useState<IdeaWithRatings[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("latest");
   const [remainingPosts, setRemainingPosts] = useState(2);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
 
-  const fetchIdeas = useCallback(async () => {
-    setLoading(true);
+  const fetchIdeas = useCallback(async (reset = false) => {
+    const currentOffset = reset ? 0 : offset;
+    
+    if (reset) {
+      setLoading(true);
+      setOffset(0);
+    } else {
+      setLoadingMore(true);
+    }
 
-    // Fetch ideas
-    const { data: ideasData, error: ideasError } = await supabase
-      .from("business_ideas")
-      .select("id, user_id, content, website_url, created_at")
-      .order("created_at", { ascending: false });
+    // Use the optimized view for aggregated stats
+    const query = supabase
+      .from("ideas_with_stats")
+      .select("id, user_id, content, website_url, created_at, average_rating, total_ratings");
+
+    // Apply sorting
+    if (sortMode === "top") {
+      query.order("average_rating", { ascending: false });
+    } else {
+      query.order("created_at", { ascending: false });
+    }
+
+    // Apply pagination
+    const { data: ideasData, error: ideasError } = await query
+      .range(currentOffset, currentOffset + ITEMS_PER_PAGE - 1);
 
     if (ideasError) {
       console.error("Error fetching ideas:", ideasError);
       setLoading(false);
+      setLoadingMore(false);
       return;
     }
+
+    // Check if there are more items
+    setHasMore((ideasData || []).length === ITEMS_PER_PAGE);
 
     // Get unique user IDs to fetch profiles
     const userIds = [...new Set((ideasData || []).map((i) => i.user_id))];
@@ -60,43 +86,44 @@ const BusinessIdeas = () => {
       (profilesData || []).map((p) => [p.id, p.display_name])
     );
 
-    // Fetch all ratings
-    const { data: ratingsData } = await supabase
-      .from("idea_ratings")
-      .select("idea_id, rating, user_id");
-
-    // Process ideas with ratings
-    const processedIdeas: IdeaWithRatings[] = (ideasData || []).map((idea) => {
-      const ideaRatings = (ratingsData || []).filter((r) => r.idea_id === idea.id);
-      const totalRatings = ideaRatings.length;
-      const averageRating = totalRatings > 0
-        ? ideaRatings.reduce((sum, r) => sum + r.rating, 0) / totalRatings
-        : 0;
-      const userRating = user
-        ? ideaRatings.find((r) => r.user_id === user.id)?.rating
-        : undefined;
-
-      return {
-        id: idea.id,
-        user_id: idea.user_id,
-        content: idea.content,
-        website_url: idea.website_url,
-        created_at: idea.created_at,
-        display_name: profilesMap.get(idea.user_id) || null,
-        average_rating: averageRating,
-        total_ratings: totalRatings,
-        user_rating: userRating,
-      };
-    });
-
-    // Sort based on mode
-    if (sortMode === "top") {
-      processedIdeas.sort((a, b) => b.average_rating - a.average_rating);
+    // Fetch user's ratings only for the loaded ideas (if logged in)
+    let userRatingsMap = new Map<string, number>();
+    if (user && ideasData && ideasData.length > 0) {
+      const ideaIds = ideasData.map(i => i.id);
+      const { data: userRatings } = await supabase
+        .from("idea_ratings")
+        .select("idea_id, rating")
+        .eq("user_id", user.id)
+        .in("idea_id", ideaIds);
+      
+      userRatingsMap = new Map(
+        (userRatings || []).map((r) => [r.idea_id, r.rating])
+      );
     }
 
-    setIdeas(processedIdeas);
+    // Process ideas - stats already come from the view
+    const processedIdeas: IdeaWithRatings[] = (ideasData || []).map((idea) => ({
+      id: idea.id,
+      user_id: idea.user_id,
+      content: idea.content,
+      website_url: idea.website_url,
+      created_at: idea.created_at,
+      display_name: profilesMap.get(idea.user_id) || null,
+      average_rating: Number(idea.average_rating) || 0,
+      total_ratings: idea.total_ratings || 0,
+      user_rating: userRatingsMap.get(idea.id),
+    }));
+
+    if (reset) {
+      setIdeas(processedIdeas);
+    } else {
+      setIdeas(prev => [...prev, ...processedIdeas]);
+    }
+
+    setOffset(currentOffset + ITEMS_PER_PAGE);
     setLoading(false);
-  }, [user, sortMode]);
+    setLoadingMore(false);
+  }, [user, sortMode, offset]);
 
   const fetchRemainingPosts = useCallback(async () => {
     if (!user) {
@@ -113,10 +140,20 @@ const BusinessIdeas = () => {
     }
   }, [user]);
 
+  // Initial load and reload on sort change
   useEffect(() => {
-    fetchIdeas();
+    fetchIdeas(true);
+  }, [sortMode, user]);
+
+  useEffect(() => {
     fetchRemainingPosts();
-  }, [fetchIdeas, fetchRemainingPosts]);
+  }, [fetchRemainingPosts]);
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchIdeas(false);
+    }
+  };
 
   const handlePostIdea = async (content: string, websiteUrl?: string): Promise<boolean> => {
     if (!user) return false;
@@ -155,7 +192,7 @@ const BusinessIdeas = () => {
       description: "Your business idea has been shared with the community.",
     });
 
-    fetchIdeas();
+    fetchIdeas(true);
     fetchRemainingPosts();
     return true;
   };
@@ -184,7 +221,15 @@ const BusinessIdeas = () => {
       return;
     }
 
-    fetchIdeas();
+    // Optimistic update for user rating
+    setIdeas(prev => prev.map(idea => 
+      idea.id === ideaId 
+        ? { ...idea, user_rating: rating }
+        : idea
+    ));
+
+    // Refresh to get updated averages
+    fetchIdeas(true);
   };
 
   const handleDelete = async (ideaId: string) => {
@@ -210,7 +255,8 @@ const BusinessIdeas = () => {
       description: "Your idea has been removed.",
     });
 
-    fetchIdeas();
+    // Remove from local state immediately
+    setIdeas(prev => prev.filter(idea => idea.id !== ideaId));
     fetchRemainingPosts();
   };
 
@@ -303,6 +349,25 @@ const BusinessIdeas = () => {
                   onDelete={handleDelete}
                 />
               ))}
+
+              {/* Load More Button */}
+              {hasMore && (
+                <div className="flex justify-center pt-6">
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="gap-2"
+                  >
+                    {loadingMore ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                    Load More
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

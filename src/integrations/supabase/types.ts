@@ -190,6 +190,33 @@ export type Database = {
           },
         ]
       }
+      business_ideas: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       business_tools_history: {
         Row: {
           analysis_mode: string | null
@@ -246,6 +273,38 @@ export type Database = {
           reason?: string | null
         }
         Relationships: []
+      }
+      idea_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_ratings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "business_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pending_premium: {
         Row: {
@@ -307,16 +366,19 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          display_name: string | null
           email: string | null
           id: string
         }
         Insert: {
           created_at?: string
+          display_name?: string | null
           email?: string | null
           id: string
         }
         Update: {
           created_at?: string
+          display_name?: string | null
           email?: string | null
           id?: string
         }
@@ -481,9 +543,11 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      check_idea_post_limit: { Args: { p_user_id: string }; Returns: boolean }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
+      get_remaining_idea_posts: { Args: { p_user_id: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never

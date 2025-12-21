@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import MyStrategies from "./pages/MyStrategies";
 import StrategyDetail from "./pages/StrategyDetail";
+import BusinessIdeas from "./pages/BusinessIdeas";
 
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
               <Route path="/my-strategies" element={<MyStrategies />} />
               <Route path="/strategy/:id" element={<StrategyDetail />} />
+              <Route path="/ideas" element={<BusinessIdeas />} />
               
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/blog" element={<Blog />} />

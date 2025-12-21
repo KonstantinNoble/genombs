@@ -138,17 +138,18 @@ const BusinessIdeas = () => {
     });
 
     if (!remainingError && remaining !== null) {
-      setRemainingPosts(remaining);
-    }
-
-    // Fetch next post time if limit is reached
-    if (remaining === 0) {
-      const { data: nextTime } = await supabase.rpc("get_next_idea_post_time", {
-        p_user_id: user.id,
-      });
-      setNextPostTime(nextTime);
-    } else {
-      setNextPostTime(null);
+      const numRemaining = Number(remaining);
+      setRemainingPosts(numRemaining);
+      
+      // Fetch next post time if limit is reached
+      if (numRemaining <= 0) {
+        const { data: nextTime } = await supabase.rpc("get_next_idea_post_time", {
+          p_user_id: user.id,
+        });
+        setNextPostTime(nextTime);
+      } else {
+        setNextPostTime(null);
+      }
     }
   }, [user]);
 

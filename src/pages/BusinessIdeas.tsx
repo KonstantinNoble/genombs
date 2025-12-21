@@ -27,7 +27,7 @@ interface IdeaWithRatings {
 }
 
 const BusinessIdeas = () => {
-  const { user } = useAuth();
+  const { user, isPremium } = useAuth();
   const { toast } = useToast();
   const [ideas, setIdeas] = useState<IdeaWithRatings[]>([]);
   const [loading, setLoading] = useState(true);
@@ -303,6 +303,7 @@ const BusinessIdeas = () => {
               <PostIdeaDialog
                 remainingPosts={remainingPosts}
                 onSubmit={handlePostIdea}
+                isPremium={isPremium}
               />
             ) : (
               <Button asChild variant="outline" className="gap-2">

@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 17, 2025 | Version 2.6</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 21, 2025 | Version 2.7</p>
 
           <div className="space-y-8">
             <section>
@@ -308,6 +308,73 @@ const TermsOfService = () => {
                 mail@wealthconomy.com.
               </p>
             </section>
+            {/* Section V.A - Community Content */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">V.A Community Content (Business Ideas)</h2>
+
+              <p className="mb-4">
+                Our platform offers a Business Ideas Community where registered users can share business ideas 
+                and provide feedback through ratings.
+              </p>
+
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
+                <p className="font-bold mb-2">⚠️ PUBLIC VISIBILITY</p>
+                <p>
+                  <strong>All business ideas you post are publicly visible</strong> to all users, including 
+                  non-registered visitors. Your display name will be shown alongside your ideas. Do NOT share 
+                  confidential information, trade secrets, or personal data.
+                </p>
+              </div>
+
+              <p className="mb-4">
+                <strong>Your Content Rights:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>You retain all intellectual property rights to your posted ideas</li>
+                <li>By posting, you grant us a non-exclusive, worldwide, royalty-free license to display and distribute your content on our platform</li>
+                <li>You may delete your ideas at any time, which terminates this license</li>
+              </ul>
+
+              <p className="mb-4">
+                <strong>Prohibited Content:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>Spam, excessive self-promotion, or commercial advertisements</li>
+                <li>Illegal, fraudulent, or misleading content</li>
+                <li>Offensive, discriminatory, or hateful content</li>
+                <li>Copyright-infringing material or third-party intellectual property violations</li>
+                <li>Personal data of third parties without their consent</li>
+                <li>Malicious links or phishing attempts</li>
+              </ul>
+
+              <p className="mb-4">
+                <strong>URL Requirements:</strong> Website URLs must begin with <code className="bg-muted px-1 rounded">https://</code> and 
+                not exceed 100 characters. Invalid URLs will be rejected.
+              </p>
+
+              <p className="mb-4">
+                <strong>Rating Guidelines:</strong> Ratings should be fair, constructive, and based on the quality 
+                and viability of the idea. Manipulation of ratings (fake accounts, coordinated voting) is prohibited.
+              </p>
+
+              <p className="mb-4">
+                <strong>Moderation Rights:</strong> We reserve the right to:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>Remove content that violates these Terms without prior notice</li>
+                <li>Warn, suspend, or terminate accounts that repeatedly violate community guidelines</li>
+                <li>Modify or remove content that poses legal risks</li>
+              </ul>
+
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
+                <p className="font-semibold mb-2">📋 Disclaimer for User-Generated Content</p>
+                <p>
+                  Business ideas shared by users represent their personal opinions and are not endorsed, verified, 
+                  or guaranteed by Synoptas. We are not responsible for the accuracy, legality, or viability of 
+                  user-generated content. Always conduct your own due diligence before acting on any ideas.
+                </p>
+              </div>
+            </section>
             {/* Section VI - Liability */}
             {/* Section VI - Liability */}
             <section>
@@ -448,6 +515,8 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Profile data, complete analysis history from all services, and credit tracking data are permanently deleted</li>
+                <li><strong>Business Ideas:</strong> All your posted ideas and ratings are permanently deleted</li>
+                <li><strong>Ratings on your ideas:</strong> Ratings from other users on your ideas are also deleted</li>
                 <li>Local device data must be cleared manually via browser settings</li>
                 <li>
                   <strong>Email Hash:</strong> A SHA-256 hash of your email is stored for <strong>24 hours</strong>{" "}
@@ -700,9 +769,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: December 17, 2025
+                Last updated: December 21, 2025
                 <br />
-                Version 2.5 (Freemius Vendor Compliance Update)
+                Version 2.7 (Business Ideas Community Update)
               </p>
             </div>
           </div>

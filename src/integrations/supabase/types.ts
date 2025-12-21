@@ -304,6 +304,13 @@ export type Database = {
             referencedRelation: "business_ideas"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "idea_ratings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas_with_stats"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pending_premium: {
@@ -536,7 +543,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      ideas_with_stats: {
+        Row: {
+          average_rating: number | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          total_ratings: number | null
+          updated_at: string | null
+          user_id: string | null
+          website_url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_and_update_analysis_limit: {

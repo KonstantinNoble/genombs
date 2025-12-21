@@ -8,6 +8,7 @@ import PainPoints from "@/components/home/PainPoints";
 import WhySynoptas from "@/components/home/WhySynoptas";
 import HowItWorks from "@/components/home/HowItWorks";
 import Features from "@/components/home/Features";
+import IdeasPreview from "@/components/home/IdeasPreview";
 import Pricing from "@/components/home/Pricing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
@@ -98,6 +99,7 @@ const Home = () => {
         <WhySynoptas />
         <HowItWorks />
         <Features />
+        <IdeasPreview />
         
         {(!isLoggedIn || !isPremium) && (
           <div id="pricing-section">

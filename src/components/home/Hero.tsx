@@ -5,10 +5,6 @@ import { useAuth } from "@/contexts/AuthContext";
 const Hero = () => {
   const { user, isPremium } = useAuth();
 
-  const scrollToHowItWorks = () => {
-    const section = document.getElementById("how-it-works");
-    section?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section
@@ -56,9 +52,9 @@ const Hero = () => {
                 size="lg"
                 variant="outline"
                 className="text-base px-8 transition-all duration-300 hover:scale-105 hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/30"
-                onClick={scrollToHowItWorks}
+                asChild
               >
-                See How It Works
+                <Link to="/ideas">Explore Business Ideas</Link>
               </Button>
             )}
           </div>

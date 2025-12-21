@@ -12,18 +12,21 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lightbulb, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Lightbulb, Loader2, Crown, Lock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface PostIdeaDialogProps {
   remainingPosts: number;
   onSubmit: (content: string, websiteUrl?: string) => Promise<boolean>;
   disabled?: boolean;
+  isPremium?: boolean;
 }
 
 const MAX_CONTENT_LENGTH = 500;
 const MAX_URL_LENGTH = 100;
 
-const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogProps) => {
+const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled, isPremium = false }: PostIdeaDialogProps) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -84,22 +87,49 @@ const PostIdeaDialog = ({ remainingPosts, onSubmit, disabled }: PostIdeaDialogPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="website-url">Website URL (optional)</Label>
-            <Input
-              id="website-url"
-              type="url"
-              placeholder="https://example.com"
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              maxLength={MAX_URL_LENGTH}
-              className={websiteUrl && !websiteUrl.startsWith("https://") ? "border-destructive" : ""}
-            />
-            {websiteUrl && !websiteUrl.startsWith("https://") && (
-              <p className="text-xs text-destructive">URL must start with https://</p>
+            <Label htmlFor="website-url" className="flex items-center gap-2">
+              Website URL (optional)
+              {!isPremium && (
+                <Badge variant="secondary" className="text-xs gap-1">
+                  <Crown className="h-3 w-3" />
+                  Premium
+                </Badge>
+              )}
+            </Label>
+            {isPremium ? (
+              <>
+                <Input
+                  id="website-url"
+                  type="url"
+                  placeholder="https://example.com"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  maxLength={MAX_URL_LENGTH}
+                  className={websiteUrl && !websiteUrl.startsWith("https://") ? "border-destructive" : ""}
+                />
+                {websiteUrl && !websiteUrl.startsWith("https://") && (
+                  <p className="text-xs text-destructive">URL must start with https://</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {websiteUrl.length}/{MAX_URL_LENGTH} characters
+                </p>
+              </>
+            ) : (
+              <>
+                <Input
+                  disabled
+                  placeholder="https://example.com"
+                  className="bg-muted cursor-not-allowed opacity-60"
+                />
+                <Link 
+                  to="/pricing" 
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  <Lock className="h-3 w-3" />
+                  Upgrade to Premium to promote your website
+                </Link>
+              </>
             )}
-            <p className="text-xs text-muted-foreground">
-              {websiteUrl.length}/{MAX_URL_LENGTH} characters
-            </p>
           </div>
         </div>
 

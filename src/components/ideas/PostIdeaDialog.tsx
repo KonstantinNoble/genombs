@@ -28,8 +28,9 @@ const MAX_CONTENT_LENGTH = 500;
 const MAX_URL_LENGTH = 100;
 
 // Countdown Timer Component
-const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
+const CountdownTimer = ({ targetTime, variant = "inline" }: { targetTime: string; variant?: "inline" | "button" }) => {
   const [timeLeft, setTimeLeft] = useState("");
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -39,6 +40,7 @@ const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
 
       if (diff <= 0) {
         setTimeLeft("Available now!");
+        setIsExpired(true);
         return;
       }
 
@@ -53,6 +55,15 @@ const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
     const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [targetTime]);
+
+  if (variant === "button") {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 rounded-md bg-muted text-muted-foreground">
+        <Clock className="h-4 w-4" />
+        <span className="text-sm">Next post in: <span className="font-mono font-medium text-foreground">{timeLeft}</span></span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-1.5 text-xs text-muted-foreground mr-auto">
@@ -88,10 +99,15 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
                   content.length <= MAX_CONTENT_LENGTH && 
                   isValidUrl;
 
+  // Show timer on button when limit is reached
+  if (remainingPosts <= 0 && nextPostTime) {
+    return <CountdownTimer targetTime={nextPostTime} variant="button" />;
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={disabled || remainingPosts <= 0} className="gap-2">
+        <Button disabled={disabled} className="gap-2">
           <Lightbulb className="h-4 w-4" />
           Share Your Idea
         </Button>

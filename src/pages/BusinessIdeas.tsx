@@ -35,17 +35,10 @@ const BusinessIdeas = () => {
   const fetchIdeas = useCallback(async () => {
     setLoading(true);
 
-    // Fetch ideas with profiles
+    // Fetch ideas
     const { data: ideasData, error: ideasError } = await supabase
       .from("business_ideas")
-      .select(`
-        id,
-        user_id,
-        content,
-        website_url,
-        created_at,
-        profiles!business_ideas_user_id_fkey (display_name)
-      `)
+      .select("id, user_id, content, website_url, created_at")
       .order("created_at", { ascending: false });
 
     if (ideasError) {
@@ -54,13 +47,26 @@ const BusinessIdeas = () => {
       return;
     }
 
+    // Get unique user IDs to fetch profiles
+    const userIds = [...new Set((ideasData || []).map((i) => i.user_id))];
+    
+    // Fetch profiles for display names
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id, display_name")
+      .in("id", userIds.length > 0 ? userIds : ["00000000-0000-0000-0000-000000000000"]);
+
+    const profilesMap = new Map(
+      (profilesData || []).map((p) => [p.id, p.display_name])
+    );
+
     // Fetch all ratings
     const { data: ratingsData } = await supabase
       .from("idea_ratings")
       .select("idea_id, rating, user_id");
 
     // Process ideas with ratings
-    const processedIdeas: IdeaWithRatings[] = (ideasData || []).map((idea: any) => {
+    const processedIdeas: IdeaWithRatings[] = (ideasData || []).map((idea) => {
       const ideaRatings = (ratingsData || []).filter((r) => r.idea_id === idea.id);
       const totalRatings = ideaRatings.length;
       const averageRating = totalRatings > 0
@@ -76,7 +82,7 @@ const BusinessIdeas = () => {
         content: idea.content,
         website_url: idea.website_url,
         created_at: idea.created_at,
-        display_name: idea.profiles?.display_name || null,
+        display_name: profilesMap.get(idea.user_id) || null,
         average_rating: averageRating,
         total_ratings: totalRatings,
         user_rating: userRating,

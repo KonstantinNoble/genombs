@@ -33,7 +33,8 @@ const BusinessIdeas = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("latest");
-  const [remainingPosts, setRemainingPosts] = useState(2);
+  const [remainingPosts, setRemainingPosts] = useState(1);
+  const [nextPostTime, setNextPostTime] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
 
@@ -128,15 +129,26 @@ const BusinessIdeas = () => {
   const fetchRemainingPosts = useCallback(async () => {
     if (!user) {
       setRemainingPosts(0);
+      setNextPostTime(null);
       return;
     }
 
-    const { data, error } = await supabase.rpc("get_remaining_idea_posts", {
+    const { data: remaining, error: remainingError } = await supabase.rpc("get_remaining_idea_posts", {
       p_user_id: user.id,
     });
 
-    if (!error && data !== null) {
-      setRemainingPosts(data);
+    if (!remainingError && remaining !== null) {
+      setRemainingPosts(remaining);
+    }
+
+    // Fetch next post time if limit is reached
+    if (remaining === 0) {
+      const { data: nextTime } = await supabase.rpc("get_next_idea_post_time", {
+        p_user_id: user.id,
+      });
+      setNextPostTime(nextTime);
+    } else {
+      setNextPostTime(null);
     }
   }, [user]);
 
@@ -177,6 +189,11 @@ const BusinessIdeas = () => {
       content,
       website_url: websiteUrl || null,
     });
+
+    // Record the post attempt (this updates the timestamp for rate limiting)
+    if (!error) {
+      await supabase.rpc("record_idea_post", { p_user_id: user.id });
+    }
 
     if (error) {
       toast({
@@ -302,6 +319,7 @@ const BusinessIdeas = () => {
             {user ? (
               <PostIdeaDialog
                 remainingPosts={remainingPosts}
+                nextPostTime={nextPostTime}
                 onSubmit={handlePostIdea}
                 isPremium={isPremium}
               />

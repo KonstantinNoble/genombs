@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 19, 2025 | Version 2.9</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 21, 2025 | Version 3.0</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -1027,6 +1027,102 @@ const PrivacyPolicy = () => {
               <li>All data access requires valid authentication credentials</li>
             </ul>
 
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Business Ideas Community</h3>
+            <p className="text-muted-foreground mb-4">
+              Our platform provides a Business Ideas Community feature that allows registered users to share business 
+              ideas publicly and interact with ideas shared by other users through a rating system. This feature is 
+              designed to foster entrepreneurial exchange and community feedback.
+            </p>
+            
+            <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
+              <p className="font-bold mb-2">⚠️ IMPORTANT: Public Visibility</p>
+              <p>
+                <strong>All business ideas posted through this feature are publicly visible</strong> to all users of the 
+                platform (including non-registered visitors). Your display name will be shown alongside your posted ideas. 
+                Please do not share confidential business information, trade secrets, or personal data through this feature.
+              </p>
+            </div>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed for Business Ideas</h4>
+            <p className="text-muted-foreground mb-4">
+              When you post a business idea or interact with the community, the following personal data is processed:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Idea Content Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Idea text content (max. 2,000 characters)</li>
+                  <li>Website URL (optional, max. 100 characters, must start with https://)</li>
+                  <li>Creation and update timestamps</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Display Name:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Your display name (from your profile) is shown publicly alongside your posted ideas</li>
+                  <li>If no display name is set, your email address prefix may be displayed</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Rating Data:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Ratings you give to other ideas (1-5 stars)</li>
+                  <li>Ratings received on your ideas (aggregated as average rating)</li>
+                  <li>Total rating count per idea</li>
+                </ul>
+              </li>
+              <li>
+                <strong>User Account Association:</strong>
+                <ul className="list-disc pl-6 mt-2">
+                  <li>User ID (to associate ideas and ratings with your account)</li>
+                  <li>All data is linked to your authenticated user account</li>
+                </ul>
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              The processing of Business Ideas Community data is based on:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR – Contract Performance:</strong> Processing is necessary to provide the 
+                community sharing and feedback service you requested as a registered user. By posting an idea, you are 
+                requesting the contractual service of public idea sharing and community interaction.
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR – Legitimate Interest:</strong> Our legitimate interest in providing 
+                a community platform that enables constructive feedback and entrepreneurial exchange.
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage and Retention</h4>
+            <p className="text-muted-foreground mb-4">
+              Business Ideas data is stored as long as your account remains active. You retain full control over 
+              your data:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>You may delete your own ideas at any time through the Business Ideas interface</li>
+              <li>Deleting an idea also removes all ratings associated with that idea</li>
+              <li>All your ideas and ratings are permanently deleted when you delete your account</li>
+              <li>
+                Upon account deletion, all business ideas, associated ratings, and your ratings on other ideas 
+                are immediately removed through a secure cascade deletion process (ON DELETE CASCADE)
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Security</h4>
+            <p className="text-muted-foreground mb-4">
+              Business Ideas data is protected by Row-Level Security (RLS) policies in our database:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Ideas are publicly readable by all users (intended public feature)</li>
+              <li>Only you can edit or delete your own ideas</li>
+              <li>Only authenticated users can post new ideas or ratings</li>
+              <li>Only you can modify or delete your own ratings</li>
+              <li>All write operations require valid authentication credentials</li>
+            </ul>
+
           </section>
 
           <section className="mb-8">
@@ -1302,6 +1398,16 @@ const PrivacyPolicy = () => {
                   <li>Phase progress (phase names, status, completed actions, completed milestones)</li>
                   <li>User-entered notes (optional personal annotations per phase)</li>
                   <li>Timestamps (strategy creation, updates, phase start/completion dates)</li>
+                </ul>
+              </li>
+              <li>
+                Business Ideas Community data:
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Idea content (text, max. 2,000 characters)</li>
+                  <li>Website URLs (optional, max. 100 characters)</li>
+                  <li>Ratings given and received (1-5 star scale)</li>
+                  <li>Display name (publicly visible with posted ideas)</li>
+                  <li>Timestamps (creation, updates)</li>
                 </ul>
               </li>
             </ul>

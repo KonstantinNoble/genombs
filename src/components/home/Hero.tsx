@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import auroraBackground from "@/assets/aurora-background-blurred.png";
 
 const Hero = () => {
   const { user, isPremium } = useAuth();
@@ -10,16 +11,16 @@ const Hero = () => {
       className="relative min-h-[85vh] flex items-center justify-center py-20 sm:py-24 md:py-32 overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Clean background */}
-      <div className="absolute inset-0 bg-background" />
-      
-      {/* Subtle floating dots only */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ top: '20%', left: '25%' }} />
-        <div className="absolute w-1.5 h-1.5 rounded-full bg-accent-warm/60 animate-bounce-soft" style={{ top: '40%', right: '20%', animationDelay: '0.5s' }} />
-        <div className="absolute w-2 h-2 rounded-full bg-accent-cool/60 animate-bounce-soft" style={{ bottom: '30%', left: '15%', animationDelay: '1s' }} />
-        <div className="absolute w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce-soft" style={{ top: '60%', right: '35%', animationDelay: '1.5s' }} />
-      </div>
+      {/* Aurora background image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${auroraBackground})`,
+          filter: 'blur(2px)'
+        }}
+      />
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-background/40" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">

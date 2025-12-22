@@ -117,33 +117,39 @@ const CommentItem = ({
         <form onSubmit={handleSubmitReply} className="mt-2 ml-4 space-y-2">
           <Textarea
             value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
+            onChange={(e) => setReplyContent(e.target.value.slice(0, 2000))}
             placeholder={`Reply to ${comment.display_name || "Anonymous"}...`}
             className="min-h-[60px] resize-none text-sm"
+            maxLength={2000}
           />
-          <div className="flex items-center gap-2 justify-end">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setShowReplyForm(false);
-                setReplyContent("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              size="sm"
-              disabled={submitting || !replyContent.trim()}
-            >
-              {submitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                "Reply"
-              )}
-            </Button>
+          <div className="flex items-center justify-between">
+            <span className={`text-xs ${replyContent.length >= 1800 ? (replyContent.length >= 2000 ? "text-destructive" : "text-warning") : "text-muted-foreground"}`}>
+              {replyContent.length}/2,000
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowReplyForm(false);
+                  setReplyContent("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={submitting || !replyContent.trim() || replyContent.length > 2000}
+              >
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Reply"
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       )}

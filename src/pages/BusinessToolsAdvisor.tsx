@@ -62,7 +62,7 @@ export default function BusinessToolsAdvisor() {
       await loadPremiumStatus(user!.id);
       toast({ title: "Strategy Created", description: `Your ${analysisMode === 'deep' ? 'comprehensive' : 'quick'} business strategy is ready` });
       
-      // Show upgrade dialog for free users after their first strategy
+      // Show upgrade dialog for free users after their second strategy
       if (!isPremium && wasFirstAnalysisRef.current) {
         setShowUpgradeDialog(true);
         wasFirstAnalysisRef.current = false;
@@ -159,8 +159,8 @@ export default function BusinessToolsAdvisor() {
       return; 
     }
     
-    // Track if this is the user's first analysis (before starting)
-    wasFirstAnalysisRef.current = !isPremium && history.length === 0;
+    // Track if this is the user's second analysis (before starting)
+    wasFirstAnalysisRef.current = !isPremium && history.length === 1;
     
     setResult(null);
     

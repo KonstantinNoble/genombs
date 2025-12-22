@@ -390,10 +390,24 @@ const TermsOfService = () => {
 
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-2">📋 Disclaimer for User-Generated Content</p>
-                <p>
+                <p className="mb-3">
                   Business ideas, comments, and discussions shared by users represent their personal opinions and are not endorsed, verified, 
                   or guaranteed by Synoptas. We are not responsible for the accuracy, legality, or viability of 
                   user-generated content. Always conduct your own due diligence before acting on any ideas.
+                </p>
+                <p className="mb-3">
+                  <strong>Platform Liability:</strong> As a platform operator, we are not obligated to proactively monitor 
+                  user-generated content for potential legal violations. Pursuant to applicable hosting provider liability rules 
+                  (particularly § 10 TMG / Art. 6 DSA), we only become responsible for unlawful content once we gain actual 
+                  knowledge thereof and fail to remove it promptly.
+                </p>
+                <p>
+                  <strong>Reporting Violations:</strong> If you encounter content that violates these Terms or applicable law, 
+                  please report it to{" "}
+                  <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                    mail@wealthconomy.com
+                  </a>
+                  . We will review the reported content and take appropriate action, including removal if warranted.
                 </p>
               </div>
             </section>

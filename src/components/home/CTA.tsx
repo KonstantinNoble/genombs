@@ -48,13 +48,6 @@ const CTA = () => {
 
   return (
     <section className="py-20 sm:py-24 md:py-32 bg-card/50 border-t border-border relative overflow-hidden">
-      {/* Floating accent elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-32 h-32 rounded-full bg-primary/10 blur-2xl animate-float" style={{ top: '20%', left: '10%' }} />
-        <div className="absolute w-24 h-24 rounded-full bg-accent-warm/10 blur-2xl animate-float-delayed" style={{ bottom: '20%', right: '15%' }} />
-        <div className="absolute w-3 h-3 rounded-full bg-accent-cool animate-bounce-soft" style={{ top: '30%', right: '25%' }} />
-        <div className="absolute w-2 h-2 rounded-full bg-primary animate-bounce-soft" style={{ bottom: '40%', left: '20%', animationDelay: '0.7s' }} />
-      </div>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

@@ -1,59 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield, Globe, Link } from "lucide-react";
+import { Check, X, Zap, TrendingUp, BarChart3, Target, Sparkles, Brain, Shield, Globe, Link, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { FAQSchema } from "@/components/seo/StructuredData";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PricingPage = () => {
   const navigate = useNavigate();
   const { openCheckout } = useFreemiusCheckout();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      
-      if (session) {
-        const { data } = await supabase
-          .from('user_credits')
-          .select('is_premium')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        setIsPremium(data?.is_premium ?? false);
-      }
-    };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        setTimeout(async () => {
-          const { data } = await supabase
-            .from('user_credits')
-            .select('is_premium')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          setIsPremium(data?.is_premium ?? false);
-        }, 0);
-      } else {
-        setIsPremium(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, isPremium, isLoading } = useAuth();
+  const isLoggedIn = !!user;
 
   const features = [
     {
@@ -141,6 +103,29 @@ const PricingPage = () => {
       answer: "You can add budget range, industry, current marketing channels, timeline, and geographic target. The AI uses this context to create more relevant and specific strategies tailored to your situation."
     }
   ];
+
+  // Show loading state while auth is being determined
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
+        <SEOHead
+          title="Pricing - AI Business Strategy Plans"
+          description="Get AI-powered business strategies starting at $0. Premium plan $12.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
+          keywords="pricing, AI business strategy, business analysis plans, premium features, deep analysis, ROI projections"
+          canonical="/pricing"
+          ogImage="https://synoptas.com/favicon.png"
+        />
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+            <p className="text-muted-foreground">Loading pricing...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">

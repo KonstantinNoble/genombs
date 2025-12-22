@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Lightbulb, Loader2, Crown, Lock, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Lightbulb, Loader2, Crown, Clock } from "lucide-react";
+import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 interface PostIdeaDialogProps {
   remainingPosts: number;
@@ -78,6 +78,7 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
   const [content, setContent] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { openCheckout } = useFreemiusCheckout();
 
   const handleSubmit = async () => {
     if (!content.trim() || content.length > MAX_CONTENT_LENGTH) return;
@@ -173,9 +174,10 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
                   placeholder="https://example.com"
                   className="bg-muted cursor-not-allowed opacity-60"
                 />
-                <Link 
-                  to="/pricing" 
-                  className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-primary/10 border border-amber-500/20 hover:border-amber-500/40 transition-all group"
+                <button 
+                  type="button"
+                  onClick={() => openCheckout()}
+                  className="w-full flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-primary/10 border border-amber-500/20 hover:border-amber-500/40 transition-all group text-left"
                 >
                   <div className="p-1.5 rounded-full bg-amber-500/20">
                     <Crown className="h-4 w-4 text-amber-500" />
@@ -188,7 +190,7 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
                       Upgrade to Premium and showcase your website to the community
                     </p>
                   </div>
-                </Link>
+                </button>
               </div>
             )}
           </div>

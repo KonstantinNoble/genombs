@@ -51,22 +51,22 @@ const CTA = () => {
     <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden">
       {/* Aurora background image with dynamic animation */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-aurora-drift"
+        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-drift"
         style={{ 
           backgroundImage: `url(${auroraBackground})`,
         }}
       />
       {/* Animated glow overlay */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-aurora-glow pointer-events-none"
+        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-glow pointer-events-none"
         style={{ 
           backgroundImage: `url(${auroraBackground})`,
           mixBlendMode: 'screen',
-          opacity: 0.3,
+          animationDelay: '4s',
         }}
       />
       {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/50" />
+      <div className="absolute inset-0 bg-background/40" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

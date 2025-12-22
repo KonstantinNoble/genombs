@@ -192,6 +192,7 @@ export type Database = {
       }
       business_ideas: {
         Row: {
+          category: string | null
           content: string
           created_at: string
           id: string
@@ -200,6 +201,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          category?: string | null
           content: string
           created_at?: string
           id?: string
@@ -208,6 +210,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          category?: string | null
           content?: string
           created_at?: string
           id?: string
@@ -549,6 +552,7 @@ export type Database = {
       ideas_with_stats: {
         Row: {
           average_rating: number | null
+          category: string | null
           content: string | null
           created_at: string | null
           id: string | null

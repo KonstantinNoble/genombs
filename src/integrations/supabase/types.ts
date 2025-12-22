@@ -632,6 +632,7 @@ export type Database = {
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
+      get_next_comment_time: { Args: { p_user_id: string }; Returns: string }
       get_next_idea_post_time: { Args: { p_user_id: string }; Returns: string }
       get_remaining_comments: { Args: { p_user_id: string }; Returns: number }
       get_remaining_idea_posts: { Args: { p_user_id: string }; Returns: number }

@@ -317,16 +317,20 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
             <form onSubmit={handleSubmit} className="space-y-2">
               <Textarea
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(e) => setNewComment(e.target.value.slice(0, 2000))}
                 placeholder={nextCommentTime ? "You've reached your comment limit..." : "Write a comment..."}
                 className="min-h-[80px] resize-none"
                 disabled={!!nextCommentTime}
+                maxLength={2000}
               />
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <span className={`text-xs ${newComment.length >= 1800 ? (newComment.length >= 2000 ? "text-destructive" : "text-warning") : "text-muted-foreground"}`}>
+                  {newComment.length}/2,000
+                </span>
                 <Button
                   type="submit"
                   size="sm"
-                  disabled={submitting || !newComment.trim() || !!nextCommentTime}
+                  disabled={submitting || !newComment.trim() || !!nextCommentTime || newComment.length > 2000}
                 >
                   {submitting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

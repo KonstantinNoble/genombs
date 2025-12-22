@@ -8,8 +8,6 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --primary-rgb: 53, 211, 114;
-    
     --background: 0 0% 7%;
     --foreground: 0 0% 98%;
 
@@ -23,13 +21,21 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 15%;
-    --secondary-foreground: 142 76% 50%;
+    --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 18%;
     --muted-foreground: 0 0% 80%;
 
     --accent: 142 76% 50%;
     --accent-foreground: 0 0% 0%;
+    
+    /* New dynamic accent colors */
+    --accent-warm: 38 92% 50%;
+    --accent-warm-foreground: 0 0% 0%;
+    --accent-cool: 220 76% 55%;
+    --accent-cool-foreground: 0 0% 100%;
+    --accent-info: 199 89% 48%;
+    --accent-info-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -38,13 +44,16 @@ All colors MUST be HSL.
     --input: 0 0% 20%;
     --ring: 142 76% 50%;
 
-    --radius: 0.25rem;
+    --radius: 0.75rem;
     
-    /* Tech-style shadows with neon glow */
+    /* Enhanced shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.8);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.9);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.95);
     --shadow-glow: 0 0 20px hsl(142 76% 50% / 0.3);
+    --shadow-glow-warm: 0 0 20px hsl(38 92% 50% / 0.3);
+    --shadow-glow-cool: 0 0 20px hsl(220 76% 55% / 0.3);
+    --shadow-lift: 0 20px 40px -15px rgb(0 0 0 / 0.5);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -75,13 +84,21 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 12%;
-    --secondary-foreground: 142 76% 50%;
+    --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 85%;
 
     --accent: 142 76% 50%;
     --accent-foreground: 0 0% 0%;
+    
+    /* New dynamic accent colors */
+    --accent-warm: 38 92% 50%;
+    --accent-warm-foreground: 0 0% 0%;
+    --accent-cool: 220 76% 55%;
+    --accent-cool-foreground: 0 0% 100%;
+    --accent-info: 199 89% 48%;
+    --accent-info-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -158,4 +175,3 @@ All colors MUST be HSL.
   opacity: 1;
   transform: scale(1);
 }
-

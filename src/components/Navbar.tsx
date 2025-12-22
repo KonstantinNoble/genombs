@@ -62,11 +62,11 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 animate-fade-in-up">
         <Link to="/" className="flex items-center gap-3 transition-all duration-300 hover:scale-105 group">
-          <div className="relative w-10 h-10 overflow-hidden transition-all duration-300 group-hover:rotate-12">
+          <div className="relative w-10 h-10 overflow-hidden rounded-full transition-all duration-300 group-hover:rotate-12">
             <img 
               src={logo} 
               alt="Synoptas Logo" 
-              className="w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-cover"
             />
           </div>
           <span className="text-xl font-bold font-sans text-primary">Synoptas</span>

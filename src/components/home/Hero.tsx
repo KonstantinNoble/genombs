@@ -35,7 +35,12 @@ const Hero = () => {
           {/* Problem-First Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="text-foreground">
-              Stop Guessing What to Do Next.
+              Stop Guessing{" "}
+            </span>
+            <span 
+              className="text-neon-green drop-shadow-[0_0_20px_hsl(142_100%_50%/0.6)]"
+            >
+              What to Do Next.
             </span>
           </h1>
 

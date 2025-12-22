@@ -49,12 +49,20 @@ const CTA = () => {
 
   return (
     <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden">
-      {/* Aurora background image */}
+      {/* Aurora background image with dynamic animation */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-aurora-drift"
         style={{ 
           backgroundImage: `url(${auroraBackground})`,
-          filter: 'blur(2px)'
+        }}
+      />
+      {/* Animated glow overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-aurora-glow pointer-events-none"
+        style={{ 
+          backgroundImage: `url(${auroraBackground})`,
+          mixBlendMode: 'screen',
+          opacity: 0.3,
         }}
       />
       {/* Dark overlay for better text readability */}

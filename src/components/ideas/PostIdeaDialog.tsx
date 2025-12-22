@@ -167,7 +167,7 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
                 </p>
               </>
             ) : (
-              <>
+              <div className="space-y-3">
                 <Input
                   disabled
                   placeholder="https://example.com"
@@ -175,12 +175,21 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
                 />
                 <Link 
                   to="/pricing" 
-                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                  className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-primary/10 border border-amber-500/20 hover:border-amber-500/40 transition-all group"
                 >
-                  <Lock className="h-3 w-3" />
-                  Upgrade to Premium to promote your website
+                  <div className="p-1.5 rounded-full bg-amber-500/20">
+                    <Crown className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                      Unlock Website Promotion
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Upgrade to Premium and showcase your website to the community
+                    </p>
+                  </div>
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>

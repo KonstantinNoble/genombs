@@ -516,6 +516,8 @@ export type Database = {
           analysis_window_start: string | null
           auto_renew: boolean | null
           autopilot_generation_reset_date: string | null
+          comment_count: number | null
+          comment_window_start: string | null
           created_at: string
           daily_autopilot_generations: number | null
           deep_analysis_count: number | null
@@ -546,6 +548,8 @@ export type Database = {
           analysis_window_start?: string | null
           auto_renew?: boolean | null
           autopilot_generation_reset_date?: string | null
+          comment_count?: number | null
+          comment_window_start?: string | null
           created_at?: string
           daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
@@ -576,6 +580,8 @@ export type Database = {
           analysis_window_start?: string | null
           auto_renew?: boolean | null
           autopilot_generation_reset_date?: string | null
+          comment_count?: number | null
+          comment_window_start?: string | null
           created_at?: string
           daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
@@ -621,11 +627,13 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      check_comment_limit: { Args: { p_user_id: string }; Returns: boolean }
       check_idea_post_limit: { Args: { p_user_id: string }; Returns: boolean }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
       get_next_idea_post_time: { Args: { p_user_id: string }; Returns: string }
+      get_remaining_comments: { Args: { p_user_id: string }; Returns: number }
       get_remaining_idea_posts: { Args: { p_user_id: string }; Returns: number }
       record_idea_post: { Args: { p_user_id: string }; Returns: undefined }
     }

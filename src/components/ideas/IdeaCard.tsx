@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import IdeaRating from "./IdeaRating";
+import CommentSection from "./CommentSection";
 import { formatDistanceToNow } from "date-fns";
 import type { IdeaCategory } from "./PostIdeaDialog";
 
@@ -127,6 +128,8 @@ const IdeaCard = ({
             disabled={!isLoggedIn || isOwner}
           />
         </div>
+
+        <CommentSection ideaId={id} isLoggedIn={isLoggedIn} />
       </CardContent>
     </Card>
   );

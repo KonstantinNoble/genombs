@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo.png";
+const logo = "/synoptas-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { Crown, ChevronDown } from "lucide-react";
 import {
@@ -66,7 +66,7 @@ const Navbar = () => {
             <img 
               src={logo} 
               alt="Synoptas Logo" 
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain rounded-lg"
             />
           </div>
           <span className="text-xl font-bold font-sans text-primary">Synoptas</span>

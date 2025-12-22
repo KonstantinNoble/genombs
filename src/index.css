@@ -35,6 +35,8 @@ All colors MUST be HSL.
     --accent-cool: 220 76% 55%;
     --accent-cool-foreground: 0 0% 100%;
     --accent-info: 199 89% 48%;
+    --neon-green: 142 100% 50%;
+    --neon-green-glow: 0 0 20px hsl(142 100% 50% / 0.6), 0 0 40px hsl(142 100% 50% / 0.4);
     --accent-info-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
@@ -98,6 +100,8 @@ All colors MUST be HSL.
     --accent-cool: 220 76% 55%;
     --accent-cool-foreground: 0 0% 100%;
     --accent-info: 199 89% 48%;
+    --neon-green: 142 100% 50%;
+    --neon-green-glow: 0 0 20px hsl(142 100% 50% / 0.6), 0 0 40px hsl(142 100% 50% / 0.4);
     --accent-info-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;

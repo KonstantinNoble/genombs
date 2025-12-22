@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-const logo = "/synoptas-logo.png";
+const logo = "/synoptas-logo-circle.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { Crown, ChevronDown } from "lucide-react";
 import {

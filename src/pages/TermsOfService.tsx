@@ -310,22 +310,23 @@ const TermsOfService = () => {
             </section>
             {/* Section V.A - Community Content */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4">V.A Community Content (Business Ideas)</h2>
+              <h2 className="text-2xl font-semibold mb-4">V.A Community Content (Business Ideas & Comments)</h2>
 
               <p className="mb-4">
-                Our platform offers a Business Ideas Community where registered users can share business ideas 
-                and provide feedback through ratings.
+                Our platform offers a Business Ideas Community where registered users can share business ideas, 
+                provide feedback through ratings, and engage in discussions through comments and replies.
               </p>
 
               <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">⚠️ PUBLIC VISIBILITY</p>
                 <p>
-                  <strong>All business ideas you post are publicly visible</strong> to all users, including 
-                  non-registered visitors. Your display name will be shown alongside your ideas. Do NOT share 
+                  <strong>All business ideas, comments, and replies you post are publicly visible</strong> to all users, including 
+                  non-registered visitors. Your display name will be shown alongside your content. Do NOT share 
                   confidential information, trade secrets, or personal data.
                 </p>
               </div>
 
+              <h3 className="text-xl font-semibold mt-6 mb-3">Business Ideas</h3>
               <p className="mb-4">
                 <strong>Your Content Rights:</strong>
               </p>
@@ -333,6 +334,26 @@ const TermsOfService = () => {
                 <li>You retain all intellectual property rights to your posted ideas</li>
                 <li>By posting, you grant us a non-exclusive, worldwide, royalty-free license to display and distribute your content on our platform</li>
                 <li>You may delete your ideas at any time, which terminates this license</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">Comments and Replies</h3>
+              <p className="mb-4">
+                Registered users can post comments on business ideas and reply to other comments. Comments support 
+                nested discussions up to <strong>3 levels deep</strong>. All comments and replies are publicly visible.
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>You may delete your own comments and replies at any time</li>
+                <li>When you delete a comment, all nested replies to that comment are also removed</li>
+                <li>Comments on deleted ideas are automatically removed</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">Usage Limits</h3>
+              <p className="mb-4">
+                To maintain quality discussions and prevent spam, the following rate limits apply:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li><strong>Business Ideas:</strong> 1 idea per 24 hours per user</li>
+                <li><strong>Comments and Replies:</strong> 1 comment or reply per 10 hours per user</li>
               </ul>
 
               <p className="mb-4">
@@ -361,15 +382,16 @@ const TermsOfService = () => {
                 <strong>Moderation Rights:</strong> We reserve the right to:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Remove content that violates these Terms without prior notice</li>
+                <li>Remove any content (ideas, comments, replies) that violates these Terms without prior notice</li>
                 <li>Warn, suspend, or terminate accounts that repeatedly violate community guidelines</li>
                 <li>Modify or remove content that poses legal risks</li>
+                <li>Delete comments and replies to maintain discussion coherence when parent content is removed</li>
               </ul>
 
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-2">📋 Disclaimer for User-Generated Content</p>
                 <p>
-                  Business ideas shared by users represent their personal opinions and are not endorsed, verified, 
+                  Business ideas, comments, and discussions shared by users represent their personal opinions and are not endorsed, verified, 
                   or guaranteed by Synoptas. We are not responsible for the accuracy, legality, or viability of 
                   user-generated content. Always conduct your own due diligence before acting on any ideas.
                 </p>

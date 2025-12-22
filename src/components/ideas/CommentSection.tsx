@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, MessageCircle, ChevronDown, ChevronUp, Clock } from "lucide-react";
@@ -27,6 +28,7 @@ interface CommentSectionProps {
 const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isAdmin, isModerator } = useUserRole(user?.id);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -255,16 +257,23 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
   const handleDelete = async (commentId: string) => {
     if (!user) return;
 
-    const { error } = await supabase
+    // Admins/moderators can delete any comment, regular users only their own
+    let query = supabase
       .from("idea_comments")
       .delete()
-      .eq("id", commentId)
-      .eq("user_id", user.id);
+      .eq("id", commentId);
+
+    // If not admin/moderator, restrict to own comments only
+    if (!isAdmin && !isModerator) {
+      query = query.eq("user_id", user.id);
+    }
+
+    const { error } = await query;
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to delete your comment.",
+        description: "Failed to delete the comment.",
         variant: "destructive",
       });
       return;
@@ -272,7 +281,9 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
 
     toast({
       title: "Comment deleted",
-      description: "Your comment has been removed.",
+      description: isAdmin || isModerator 
+        ? "The comment has been removed." 
+        : "Your comment has been removed.",
     });
 
     fetchComments();
@@ -348,6 +359,8 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
                   comment={comment}
                   currentUserId={user?.id}
                   isLoggedIn={isLoggedIn}
+                  isAdmin={isAdmin}
+                  isModerator={isModerator}
                   onReply={handleReply}
                   onDelete={handleDelete}
                 />

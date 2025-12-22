@@ -1,44 +1,78 @@
 import { Card } from "@/components/ui/card";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Globe, Scan, Zap, BarChart3 } from "lucide-react";
 
 const features = [
   {
     title: "Real-Time Market Research",
     description:
       "Every strategy is backed by live web research. Our AI analyzes 10-20+ current sources including market trends, competitor data, and industry insights.",
+    icon: Globe,
+    color: "primary",
   },
   {
     title: "Website Analysis",
     description:
       "Enter your website URL and get personalized strategies based on your actual website content, branding, and business model.",
+    icon: Scan,
+    color: "accent-warm",
   },
   {
     title: "AI Autopilot",
     description:
       "Get 3 AI-generated daily focus tasks tailored to your active strategy. Stay on track with personalized action items and streak tracking.",
+    icon: Zap,
+    color: "accent-cool",
   },
   {
     title: "Deep Analysis Mode",
     description:
       "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
+    icon: BarChart3,
+    color: "accent-info",
   },
 ];
 
+const colorClasses = {
+  primary: {
+    icon: "text-primary",
+    border: "group-hover:border-primary/50",
+    bg: "group-hover:bg-primary/5",
+  },
+  "accent-warm": {
+    icon: "text-accent-warm",
+    border: "group-hover:border-accent-warm/50",
+    bg: "group-hover:bg-accent-warm/5",
+  },
+  "accent-cool": {
+    icon: "text-accent-cool",
+    border: "group-hover:border-accent-cool/50",
+    bg: "group-hover:bg-accent-cool/5",
+  },
+  "accent-info": {
+    icon: "text-accent-info",
+    border: "group-hover:border-accent-info/50",
+    bg: "group-hover:bg-accent-info/5",
+  },
+};
+
 const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: number }) => {
   const { ref, isVisible } = useScrollReveal();
+  const colors = colorClasses[feature.color as keyof typeof colorClasses];
+  const Icon = feature.icon;
   
   return (
     <Card
       ref={ref}
-      className={`p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm group relative overflow-hidden scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      className={`p-6 transition-all duration-500 hover:shadow-lift hover:-translate-y-2 border-border/50 bg-card group relative overflow-hidden scroll-reveal rounded-2xl ${colors.border} ${colors.bg} ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-transparent transition-all duration-500 rounded-lg" />
-      
       <div className="relative z-10">
-        <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-all duration-500 flex items-center gap-2">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-muted/50 ${colors.icon} transition-all duration-300 group-hover:scale-110`}>
+          <Icon className="w-6 h-6" />
+        </div>
+        <h3 className="text-xl font-semibold mb-3 text-foreground transition-all duration-500 flex items-center gap-2">
           {feature.title}
-          <span className="inline-block w-0 group-hover:w-2 h-2 bg-primary rounded-full transition-all duration-500" />
         </h3>
         <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
       </div>
@@ -54,14 +88,15 @@ const Features = () => {
       className="py-20 sm:py-24 md:py-32 relative overflow-hidden"
       aria-label="Features section"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+      {/* Subtle background accent */}
+      <div className="absolute inset-0 bg-muted/30" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 
           ref={headerRef}
           className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
-          <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent bg-[length:200%_auto]">
+          <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
             AI-Powered Business Strategy
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

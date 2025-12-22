@@ -40,13 +40,13 @@ const Pricing = ({ compact = false }: PricingProps) => {
   // Premium user view
   if (isLoggedIn && isPremium) {
     return (
-      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
+      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-card/30 border-y border-border"}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div 
             ref={headerRef}
             className={`max-w-3xl mx-auto text-center space-y-6 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           >
-            <Badge className="bg-primary text-primary-foreground">
+            <Badge className="bg-primary text-primary-foreground rounded-full px-4">
               <Sparkles className="w-3 h-3 mr-1" />
               Premium Member
             </Badge>
@@ -90,14 +90,14 @@ const Pricing = ({ compact = false }: PricingProps) => {
   ];
 
   return (
-    <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-background/80 sm:bg-background/60 sm:backdrop-blur-sm border-y border-border"}>
+    <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-card/30 border-y border-border"}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div 
             ref={headerRef}
             className={`text-center space-y-4 mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           >
-            <Badge variant="outline" className="mb-2">Simple Pricing</Badge>
+            <Badge variant="outline" className="mb-2 rounded-full">Simple Pricing</Badge>
             <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
               Choose Your Plan
             </h2>
@@ -110,7 +110,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
             {/* Free Plan */}
             <Card 
               ref={freeCardRef}
-              className={`relative flex flex-col border border-border shadow-md hover:shadow-lg transition-all duration-300 scroll-reveal ${freeCardVisible ? 'revealed' : ''}`}
+              className={`relative flex flex-col border border-border shadow-md hover:shadow-lift transition-all duration-300 rounded-2xl scroll-reveal ${freeCardVisible ? 'revealed' : ''}`}
             >
               <CardHeader className="pb-4">
                 <CardTitle className="text-2xl">Free Plan</CardTitle>
@@ -152,11 +152,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
             {/* Premium Plan */}
             <Card 
               ref={premiumCardRef}
-              className={`relative flex flex-col border-2 border-primary shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-primary/5 to-transparent scroll-reveal ${premiumCardVisible ? 'revealed' : ''}`}
+              className={`relative flex flex-col border-2 border-primary shadow-xl hover:shadow-lift transition-all duration-300 bg-primary/5 rounded-2xl scroll-reveal ${premiumCardVisible ? 'revealed' : ''}`}
               style={{ transitionDelay: '0.1s' }}
             >
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1 shadow-lg">
+                <Badge className="bg-primary text-primary-foreground px-4 py-1 shadow-lg rounded-full">
                   <Zap className="w-3 h-3 mr-1" />
                   Best Value
                 </Badge>
@@ -187,7 +187,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               <CardFooter className="pt-4">
                 <Button 
                   size="lg" 
-                  className="w-full bg-primary hover:bg-primary/90"
+                  className="w-full"
                   onClick={() => handlePlanClick('premium')}
                 >
                   {isLoggedIn ? 'Upgrade to Premium' : 'Get Premium Now'}
@@ -207,11 +207,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
               <span>Cancel anytime</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 text-accent-warm" />
               <span>Instant access</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 text-accent-cool" />
               <span>Secure payment</span>
             </div>
           </div>

@@ -110,11 +110,39 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
     }
   }, [isExpanded, ideaId]);
 
+  const checkCommentLimit = async (): Promise<boolean> => {
+    if (!user) return false;
+    
+    const { data, error } = await supabase.rpc("check_comment_limit", {
+      p_user_id: user.id,
+    });
+
+    if (error) {
+      console.error("Error checking comment limit:", error);
+      return false;
+    }
+
+    return data === true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
 
     setSubmitting(true);
+
+    // Check rate limit
+    const canComment = await checkCommentLimit();
+    if (!canComment) {
+      toast({
+        title: "Rate limit reached",
+        description: "You can only post 10 comments per hour. Please try again later.",
+        variant: "destructive",
+      });
+      setSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase.from("idea_comments").insert({
       idea_id: ideaId,
       user_id: user.id,
@@ -139,6 +167,17 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
 
   const handleReply = async (parentId: string, content: string) => {
     if (!user) return;
+
+    // Check rate limit for replies too
+    const canComment = await checkCommentLimit();
+    if (!canComment) {
+      toast({
+        title: "Rate limit reached",
+        description: "You can only post 10 comments per hour. Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const { error } = await supabase.from("idea_comments").insert({
       idea_id: ideaId,

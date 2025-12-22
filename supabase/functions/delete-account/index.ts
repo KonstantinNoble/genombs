@@ -68,7 +68,18 @@ serve(async (req) => {
     
     const userId = userData.user.id;
 
-    // Delete idea ratings first (child of business_ideas)
+    // Delete idea comments first (includes nested replies via CASCADE)
+    console.log('Deleting idea_comments for user:', userId);
+    const { error: commentsError } = await adminClient
+      .from('idea_comments')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (commentsError) {
+      console.error('Failed to delete idea_comments:', commentsError);
+    }
+
+    // Delete idea ratings (child of business_ideas)
     console.log('Deleting idea_ratings for user:', userId);
     const { error: ratingsError } = await adminClient
       .from('idea_ratings')

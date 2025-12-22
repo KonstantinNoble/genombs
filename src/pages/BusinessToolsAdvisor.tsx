@@ -14,6 +14,7 @@ import { User } from "@supabase/supabase-js";
 import { StrategyInput, OptionalParams } from "@/components/planner/StrategyInput";
 import { StrategyOutput, PlannerResult } from "@/components/planner/StrategyOutput";
 import { AnalysisLoader } from "@/components/planner/AnalysisLoader";
+import { UpgradeDialog } from "@/components/planner/UpgradeDialog";
 import { pdf } from "@react-pdf/renderer";
 import { StrategyPDF } from "@/components/planner/StrategyPDF";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
@@ -48,6 +49,8 @@ export default function BusinessToolsAdvisor() {
   const [standardAnalysisLimit, setStandardAnalysisLimit] = useState(2);
   const [canAnalyze, setCanAnalyze] = useState(true);
   const [nextAnalysisTime, setNextAnalysisTime] = useState<Date | null>(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const wasFirstAnalysisRef = useRef(false);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,9 +61,16 @@ export default function BusinessToolsAdvisor() {
       await loadHistory(user!.id);
       await loadPremiumStatus(user!.id);
       toast({ title: "Strategy Created", description: `Your ${analysisMode === 'deep' ? 'comprehensive' : 'quick'} business strategy is ready` });
+      
+      // Show upgrade dialog for free users after their first strategy
+      if (!isPremium && wasFirstAnalysisRef.current) {
+        setShowUpgradeDialog(true);
+        wasFirstAnalysisRef.current = false;
+      }
     },
     onError: (error) => {
       toast({ title: "Error", description: error, variant: "destructive" });
+      wasFirstAnalysisRef.current = false;
     }
   });
 
@@ -148,6 +158,10 @@ export default function BusinessToolsAdvisor() {
       toast({ title: "Missing Information", description: "Please describe your business goals", variant: "destructive" }); 
       return; 
     }
+    
+    // Track if this is the user's first analysis (before starting)
+    wasFirstAnalysisRef.current = !isPremium && history.length === 0;
+    
     setResult(null);
     
     const body: Record<string, any> = { prompt: prompt.trim(), analysisMode };
@@ -343,6 +357,15 @@ export default function BusinessToolsAdvisor() {
         </div>
       </div>
       <Footer />
+      
+      <UpgradeDialog 
+        open={showUpgradeDialog} 
+        onOpenChange={setShowUpgradeDialog}
+        onUpgrade={() => {
+          setShowUpgradeDialog(false);
+          openCheckout(user?.email || undefined);
+        }}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
+import ProductShowcase from "@/components/home/ProductShowcase";
 import PainPoints from "@/components/home/PainPoints";
 import WhySynoptas from "@/components/home/WhySynoptas";
 import HowItWorks from "@/components/home/HowItWorks";
@@ -94,6 +95,7 @@ const Home = () => {
       <Navbar />
       <main>
         <Hero />
+        <ProductShowcase />
         <PainPoints />
         <WhySynoptas />
         <HowItWorks />

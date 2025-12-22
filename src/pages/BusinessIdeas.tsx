@@ -5,9 +5,16 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import IdeaCard from "@/components/ideas/IdeaCard";
-import PostIdeaDialog from "@/components/ideas/PostIdeaDialog";
+import PostIdeaDialog, { IDEA_CATEGORIES, type IdeaCategory } from "@/components/ideas/PostIdeaDialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, TrendingUp, Clock, LogIn, ChevronDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, TrendingUp, Clock, LogIn, ChevronDown, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type SortMode = "latest" | "top";
@@ -18,6 +25,7 @@ interface IdeaWithRatings {
   id: string;
   user_id: string;
   content: string;
+  category: IdeaCategory | null;
   website_url: string | null;
   created_at: string;
   display_name: string | null;
@@ -33,6 +41,7 @@ const BusinessIdeas = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("latest");
+  const [categoryFilter, setCategoryFilter] = useState<IdeaCategory | "all">("all");
   const [remainingPosts, setRemainingPosts] = useState(1);
   const [nextPostTime, setNextPostTime] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -49,9 +58,14 @@ const BusinessIdeas = () => {
     }
 
     // Use the optimized view for aggregated stats
-    const query = supabase
+    let query = supabase
       .from("ideas_with_stats")
-      .select("id, user_id, content, website_url, created_at, average_rating, total_ratings");
+      .select("id, user_id, content, category, website_url, created_at, average_rating, total_ratings");
+
+    // Apply category filter
+    if (categoryFilter !== "all") {
+      query = query.eq("category", categoryFilter);
+    }
 
     // Apply sorting
     if (sortMode === "top") {
@@ -107,6 +121,7 @@ const BusinessIdeas = () => {
       id: idea.id,
       user_id: idea.user_id,
       content: idea.content,
+      category: (idea as { category?: string }).category as IdeaCategory | null,
       website_url: idea.website_url,
       created_at: idea.created_at,
       display_name: profilesMap.get(idea.user_id) || null,
@@ -124,7 +139,7 @@ const BusinessIdeas = () => {
     setOffset(currentOffset + ITEMS_PER_PAGE);
     setLoading(false);
     setLoadingMore(false);
-  }, [user, sortMode, offset]);
+  }, [user, sortMode, categoryFilter, offset]);
 
   const fetchRemainingPosts = useCallback(async () => {
     if (!user) {
@@ -153,10 +168,10 @@ const BusinessIdeas = () => {
     }
   }, [user]);
 
-  // Initial load and reload on sort change
+  // Initial load and reload on sort/filter change
   useEffect(() => {
     fetchIdeas(true);
-  }, [sortMode, user]);
+  }, [sortMode, categoryFilter, user]);
 
   useEffect(() => {
     fetchRemainingPosts();
@@ -168,7 +183,7 @@ const BusinessIdeas = () => {
     }
   };
 
-  const handlePostIdea = async (content: string, websiteUrl?: string): Promise<boolean> => {
+  const handlePostIdea = async (content: string, category: IdeaCategory, websiteUrl?: string): Promise<boolean> => {
     if (!user) return false;
 
     // Check rate limit
@@ -188,6 +203,7 @@ const BusinessIdeas = () => {
     const { error } = await supabase.from("business_ideas").insert({
       user_id: user.id,
       content,
+      category,
       website_url: websiteUrl || null,
     });
 
@@ -296,7 +312,7 @@ const BusinessIdeas = () => {
 
           {/* Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant={sortMode === "latest" ? "default" : "outline"}
                 size="sm"
@@ -315,6 +331,27 @@ const BusinessIdeas = () => {
                 <TrendingUp className="h-4 w-4" />
                 Top Rated
               </Button>
+
+              <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value as IdeaCategory | "all")}>
+                <SelectTrigger className="w-[160px] h-9">
+                  <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {IDEA_CATEGORIES.map((cat) => {
+                    const Icon = cat.icon;
+                    return (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4 text-muted-foreground" />
+                          <span>{cat.label}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
 
             {user ? (
@@ -358,6 +395,7 @@ const BusinessIdeas = () => {
                   id={idea.id}
                   displayName={idea.display_name || "Anonymous"}
                   content={idea.content}
+                  category={idea.category}
                   websiteUrl={idea.website_url}
                   createdAt={idea.created_at}
                   averageRating={idea.average_rating}

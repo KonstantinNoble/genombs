@@ -9,17 +9,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Lightbulb, Loader2, Crown, Clock } from "lucide-react";
+import { Lightbulb, Loader2, Crown, Clock, Laptop, Smartphone, ShoppingCart, Users, Brain, Banknote, HeartPulse, GraduationCap, Cpu, Briefcase, FileText, MoreHorizontal } from "lucide-react";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+
+export const IDEA_CATEGORIES = [
+  { value: "SaaS", label: "SaaS", icon: Laptop },
+  { value: "Mobile App", label: "Mobile App", icon: Smartphone },
+  { value: "E-Commerce", label: "E-Commerce", icon: ShoppingCart },
+  { value: "Marketplace", label: "Marketplace", icon: Users },
+  { value: "AI/ML", label: "AI/ML", icon: Brain },
+  { value: "FinTech", label: "FinTech", icon: Banknote },
+  { value: "HealthTech", label: "HealthTech", icon: HeartPulse },
+  { value: "EdTech", label: "EdTech", icon: GraduationCap },
+  { value: "Hardware", label: "Hardware", icon: Cpu },
+  { value: "Service", label: "Service", icon: Briefcase },
+  { value: "Content", label: "Content", icon: FileText },
+  { value: "Other", label: "Other", icon: MoreHorizontal },
+] as const;
+
+export type IdeaCategory = typeof IDEA_CATEGORIES[number]["value"];
 
 interface PostIdeaDialogProps {
   remainingPosts: number;
   nextPostTime: string | null;
-  onSubmit: (content: string, websiteUrl?: string) => Promise<boolean>;
+  onSubmit: (content: string, category: IdeaCategory, websiteUrl?: string) => Promise<boolean>;
   disabled?: boolean;
   isPremium?: boolean;
 }
@@ -76,20 +100,22 @@ const CountdownTimer = ({ targetTime, variant = "inline" }: { targetTime: string
 const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPremium = false }: PostIdeaDialogProps) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
+  const [category, setCategory] = useState<IdeaCategory | "">("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { openCheckout } = useFreemiusCheckout();
 
   const handleSubmit = async () => {
-    if (!content.trim() || content.length > MAX_CONTENT_LENGTH) return;
+    if (!content.trim() || content.length > MAX_CONTENT_LENGTH || !category) return;
     if (websiteUrl && (websiteUrl.length > MAX_URL_LENGTH || !websiteUrl.startsWith("https://"))) return;
 
     setIsSubmitting(true);
-    const success = await onSubmit(content.trim(), websiteUrl.trim() || undefined);
+    const success = await onSubmit(content.trim(), category, websiteUrl.trim() || undefined);
     setIsSubmitting(false);
 
     if (success) {
       setContent("");
+      setCategory("");
       setWebsiteUrl("");
       setOpen(false);
     }
@@ -98,7 +124,8 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
   const isValidUrl = !websiteUrl || (websiteUrl.startsWith("https://") && websiteUrl.length <= MAX_URL_LENGTH);
   const isValid = content.trim().length > 0 && 
                   content.length <= MAX_CONTENT_LENGTH && 
-                  isValidUrl;
+                  isValidUrl &&
+                  category !== "";
 
   // Show timer on button when limit is reached
   if (remainingPosts <= 0 && nextPostTime) {
@@ -123,7 +150,29 @@ const PostIdeaDialog = ({ remainingPosts, nextPostTime, onSubmit, disabled, isPr
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="idea-content">Your Idea</Label>
+            <Label htmlFor="idea-category">Category *</Label>
+            <Select value={category} onValueChange={(value) => setCategory(value as IdeaCategory)}>
+              <SelectTrigger id="idea-category">
+                <SelectValue placeholder="Select a category..." />
+              </SelectTrigger>
+              <SelectContent>
+                {IDEA_CATEGORIES.map((cat) => {
+                  const Icon = cat.icon;
+                  return (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span>{cat.label}</span>
+                      </div>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="idea-content">Your Idea *</Label>
             <Textarea
               id="idea-content"
               placeholder="Describe your business idea..."

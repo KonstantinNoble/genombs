@@ -277,6 +277,58 @@ export type Database = {
         }
         Relationships: []
       }
+      idea_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          idea_id: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          idea_id: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          idea_id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "business_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "idea_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idea_ratings: {
         Row: {
           created_at: string

@@ -19,6 +19,8 @@ interface CommentItemProps {
   comment: Comment;
   currentUserId?: string;
   isLoggedIn: boolean;
+  isAdmin?: boolean;
+  isModerator?: boolean;
   onReply: (parentId: string, content: string) => Promise<void>;
   onDelete: (commentId: string) => Promise<void>;
   depth?: number;
@@ -30,6 +32,8 @@ const CommentItem = ({
   comment,
   currentUserId,
   isLoggedIn,
+  isAdmin = false,
+  isModerator = false,
   onReply,
   onDelete,
   depth = 0,
@@ -40,6 +44,7 @@ const CommentItem = ({
   const [deleting, setDeleting] = useState(false);
 
   const isOwner = currentUserId === comment.user_id;
+  const canDelete = isOwner || isAdmin || isModerator;
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
 
   const handleSubmitReply = async (e: React.FormEvent) => {
@@ -83,13 +88,14 @@ const CommentItem = ({
                 Reply
               </Button>
             )}
-            {isOwner && (
+            {canDelete && (
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-destructive"
                 onClick={handleDelete}
                 disabled={deleting}
+                title={isOwner ? "Delete your comment" : "Delete comment (moderator)"}
               >
                 {deleting ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -151,6 +157,8 @@ const CommentItem = ({
               comment={reply}
               currentUserId={currentUserId}
               isLoggedIn={isLoggedIn}
+              isAdmin={isAdmin}
+              isModerator={isModerator}
               onReply={onReply}
               onDelete={onDelete}
               depth={depth + 1}

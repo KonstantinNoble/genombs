@@ -136,7 +136,7 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
     if (!canComment) {
       toast({
         title: "Rate limit reached",
-        description: "You can only post 10 comments per hour. Please try again later.",
+        description: "You can only post 1 comment every 10 hours. Please try again later.",
         variant: "destructive",
       });
       setSubmitting(false);
@@ -173,7 +173,7 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
     if (!canComment) {
       toast({
         title: "Rate limit reached",
-        description: "You can only post 10 comments per hour. Please try again later.",
+        description: "You can only post 1 comment every 10 hours. Please try again later.",
         variant: "destructive",
       });
       return;

@@ -10,36 +10,15 @@ const Hero = () => {
       className="relative min-h-[85vh] flex items-center justify-center py-20 sm:py-24 md:py-32 overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Animated Background - Solid colors with floating elements */}
+      {/* Clean background */}
       <div className="absolute inset-0 bg-background" />
       
-      {/* Floating geometric shapes */}
+      {/* Subtle floating dots only */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Primary colored circles */}
-        <div 
-          className="absolute w-72 h-72 rounded-full bg-primary/10 blur-3xl animate-float"
-          style={{ top: '10%', left: '10%' }}
-        />
-        <div 
-          className="absolute w-96 h-96 rounded-full bg-accent-warm/10 blur-3xl animate-float-delayed"
-          style={{ top: '50%', right: '5%' }}
-        />
-        <div 
-          className="absolute w-64 h-64 rounded-full bg-accent-cool/10 blur-3xl animate-float"
-          style={{ bottom: '10%', left: '30%', animationDelay: '2s' }}
-        />
-        
-        {/* Small floating dots */}
-        <div className="absolute w-3 h-3 rounded-full bg-primary animate-bounce-soft" style={{ top: '20%', left: '25%' }} />
-        <div className="absolute w-2 h-2 rounded-full bg-accent-warm animate-bounce-soft" style={{ top: '40%', right: '20%', animationDelay: '0.5s' }} />
-        <div className="absolute w-4 h-4 rounded-full bg-accent-cool animate-bounce-soft" style={{ bottom: '30%', left: '15%', animationDelay: '1s' }} />
-        <div className="absolute w-2 h-2 rounded-full bg-primary animate-bounce-soft" style={{ top: '60%', right: '35%', animationDelay: '1.5s' }} />
-        
-        {/* Rotating ring */}
-        <div 
-          className="absolute w-[600px] h-[600px] rounded-full border border-primary/10 animate-spin-slow"
-          style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-        />
+        <div className="absolute w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ top: '20%', left: '25%' }} />
+        <div className="absolute w-1.5 h-1.5 rounded-full bg-accent-warm/60 animate-bounce-soft" style={{ top: '40%', right: '20%', animationDelay: '0.5s' }} />
+        <div className="absolute w-2 h-2 rounded-full bg-accent-cool/60 animate-bounce-soft" style={{ bottom: '30%', left: '15%', animationDelay: '1s' }} />
+        <div className="absolute w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce-soft" style={{ top: '60%', right: '35%', animationDelay: '1.5s' }} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

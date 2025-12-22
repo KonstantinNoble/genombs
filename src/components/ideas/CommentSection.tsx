@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, MessageCircle, ChevronDown, ChevronUp, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import CommentItem from "./CommentItem";
 
 interface Comment {
@@ -32,6 +33,57 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const [nextCommentTime, setNextCommentTime] = useState<Date | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
+
+  const fetchNextCommentTime = useCallback(async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase.rpc("get_next_comment_time", {
+      p_user_id: user.id,
+    });
+
+    if (error) {
+      console.error("Error fetching next comment time:", error);
+      return;
+    }
+
+    if (data) {
+      setNextCommentTime(new Date(data));
+    } else {
+      setNextCommentTime(null);
+    }
+  }, [user]);
+
+  // Update timer every minute
+  useEffect(() => {
+    if (!nextCommentTime) {
+      setTimeRemaining("");
+      return;
+    }
+
+    const updateTimer = () => {
+      const now = new Date();
+      if (nextCommentTime <= now) {
+        setNextCommentTime(null);
+        setTimeRemaining("");
+        return;
+      }
+      setTimeRemaining(formatDistanceToNow(nextCommentTime, { addSuffix: true }));
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [nextCommentTime]);
+
+  // Fetch next comment time when expanded
+  useEffect(() => {
+    if (isExpanded && user) {
+      fetchNextCommentTime();
+    }
+  }, [isExpanded, user, fetchNextCommentTime]);
 
   const fetchComments = async () => {
     setLoading(true);
@@ -163,6 +215,7 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
     setNewComment("");
     setSubmitting(false);
     fetchComments();
+    fetchNextCommentTime();
   };
 
   const handleReply = async (parentId: string, content: string) => {
@@ -196,6 +249,7 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
     }
 
     fetchComments();
+    fetchNextCommentTime();
   };
 
   const handleDelete = async (commentId: string) => {
@@ -239,20 +293,29 @@ const CommentSection = ({ ideaId, isLoggedIn }: CommentSectionProps) => {
 
       {isExpanded && (
         <div className="mt-4 space-y-4">
+          {/* Rate limit timer */}
+          {nextCommentTime && timeRemaining && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+              <Clock className="h-4 w-4" />
+              <span>Next comment available {timeRemaining}</span>
+            </div>
+          )}
+
           {/* New comment form */}
           {isLoggedIn ? (
             <form onSubmit={handleSubmit} className="space-y-2">
               <Textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment..."
+                placeholder={nextCommentTime ? "You've reached your comment limit..." : "Write a comment..."}
                 className="min-h-[80px] resize-none"
+                disabled={!!nextCommentTime}
               />
               <div className="flex justify-end">
                 <Button
                   type="submit"
                   size="sm"
-                  disabled={submitting || !newComment.trim()}
+                  disabled={submitting || !newComment.trim() || !!nextCommentTime}
                 >
                   {submitting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

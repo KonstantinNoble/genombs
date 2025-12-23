@@ -33,8 +33,8 @@ const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
       <div 
-        className={`hidden sm:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-500 pointer-events-none ${
-          isHomePage ? 'blur-[2px]' : 'blur-[8px]'
+        className={`hidden sm:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none transition-all duration-1000 ease-in-out ${
+          isHomePage ? 'blur-[2px] opacity-100' : 'blur-[8px] opacity-90'
         }`}
         style={{ backgroundImage: `url(${heroBackground})` }}
         aria-hidden="true"

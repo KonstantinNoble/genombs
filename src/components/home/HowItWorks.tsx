@@ -40,7 +40,11 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-20 sm:py-28 bg-muted/30" id="how-it-works">
+    <section className="py-20 sm:py-28 bg-muted/30 relative overflow-hidden" id="how-it-works">
+      {/* Top fade transition from previous section */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-muted/50 to-transparent pointer-events-none" />
+      {/* Bottom fade transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/30 to-transparent pointer-events-none" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           ref={headerRef}

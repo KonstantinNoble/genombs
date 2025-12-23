@@ -67,6 +67,8 @@ const CTA = () => {
       />
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-background/40" />
+      {/* Top fade transition from previous section */}
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/60 to-transparent pointer-events-none z-[1]" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

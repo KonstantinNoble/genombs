@@ -29,6 +29,8 @@ const Hero = () => {
       />
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-background/40" />
+      {/* Bottom fade transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-muted/50 to-transparent pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">

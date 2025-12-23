@@ -18,6 +18,10 @@ const TrustSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-muted/30 to-primary/10 animate-fade-in" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary-rgb),0.1),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(var(--primary-rgb),0.08),transparent_50%)]" />
+      {/* Top fade transition from previous section */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-muted/40 to-transparent pointer-events-none z-[1]" />
+      {/* Bottom fade transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/40 to-transparent pointer-events-none z-[1]" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Trust Points */}

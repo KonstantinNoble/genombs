@@ -16,8 +16,7 @@ import MyStrategies from "./pages/MyStrategies";
 import StrategyDetail from "./pages/StrategyDetail";
 import BusinessIdeas from "./pages/BusinessIdeas";
 
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
 import PricingPage from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
@@ -67,8 +66,7 @@ const App = () => (
               <Route path="/ideas" element={<BusinessIdeas />} />
               
               <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/imprint" element={<Imprint />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />

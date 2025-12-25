@@ -11,24 +11,15 @@ const Hero = () => {
       className="relative min-h-[85vh] flex items-center justify-center py-20 sm:py-24 md:py-32 overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Aurora background image with dynamic animation */}
+      {/* Static, pale, blurred aurora background */}
       <div 
-        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-drift"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-xl opacity-40"
         style={{ 
           backgroundImage: `url(${auroraBackground})`,
-        }}
-      />
-      {/* Animated glow overlay */}
-      <div 
-        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-glow pointer-events-none"
-        style={{ 
-          backgroundImage: `url(${auroraBackground})`,
-          mixBlendMode: 'screen',
-          animationDelay: '4s',
         }}
       />
       {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/40" />
+      <div className="absolute inset-0 bg-background/60" />
       {/* Bottom fade transition to next section */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-muted/50 to-transparent pointer-events-none" />
 

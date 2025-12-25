@@ -49,24 +49,15 @@ const CTA = () => {
 
   return (
     <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden">
-      {/* Aurora background image with dynamic animation */}
+      {/* Static, pale, blurred aurora background */}
       <div 
-        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-drift"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-xl opacity-40"
         style={{ 
           backgroundImage: `url(${auroraBackground})`,
-        }}
-      />
-      {/* Animated glow overlay */}
-      <div 
-        className="absolute -inset-[20%] bg-cover bg-center bg-no-repeat animate-aurora-glow pointer-events-none"
-        style={{ 
-          backgroundImage: `url(${auroraBackground})`,
-          mixBlendMode: 'screen',
-          animationDelay: '4s',
         }}
       />
       {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/40" />
+      <div className="absolute inset-0 bg-background/60" />
       {/* Top fade transition from previous section */}
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/60 to-transparent pointer-events-none z-[1]" />
       

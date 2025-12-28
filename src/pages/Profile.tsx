@@ -198,7 +198,7 @@ const Profile = () => {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  This name will be shown in the Ideas Community ({displayName.length}/30)
+                  Display name for your account ({displayName.length}/30)
                 </p>
               </div>
 

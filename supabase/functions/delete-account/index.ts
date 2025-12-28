@@ -68,39 +68,6 @@ serve(async (req) => {
     
     const userId = userData.user.id;
 
-    // Delete idea comments first (includes nested replies via CASCADE)
-    console.log('Deleting idea_comments for user:', userId);
-    const { error: commentsError } = await adminClient
-      .from('idea_comments')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (commentsError) {
-      console.error('Failed to delete idea_comments:', commentsError);
-    }
-
-    // Delete idea ratings (child of business_ideas)
-    console.log('Deleting idea_ratings for user:', userId);
-    const { error: ratingsError } = await adminClient
-      .from('idea_ratings')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (ratingsError) {
-      console.error('Failed to delete idea_ratings:', ratingsError);
-    }
-
-    // Delete business ideas
-    console.log('Deleting business_ideas for user:', userId);
-    const { error: ideasError } = await adminClient
-      .from('business_ideas')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (ideasError) {
-      console.error('Failed to delete business_ideas:', ideasError);
-    }
-
     // Delete strategy phase progress (contains actions_completed and milestones_completed arrays)
     console.log('Deleting strategy_phase_progress for user:', userId);
     const { data: strategies } = await adminClient

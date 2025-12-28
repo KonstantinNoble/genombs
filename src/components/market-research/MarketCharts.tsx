@@ -64,7 +64,10 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                 paddingAngle={2}
                 dataKey="marketShare"
                 nameKey="name"
-                label={({ name, marketShare }) => `${name}: ${marketShare}%`}
+                label={({ name, marketShare }) => {
+                  const shortName = name.length > 12 ? name.slice(0, 12) + "..." : name;
+                  return `${shortName}: ${marketShare}%`;
+                }}
                 labelLine={false}
               >
                 {chartData.map((entry, index) => (
@@ -122,28 +125,35 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sortedData} layout="vertical" margin={{ left: 20, right: 20 }}>
+            <BarChart data={sortedData} layout="vertical" margin={{ left: 20, right: 30 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis type="number" domain={[0, 100]} stroke="hsl(var(--muted-foreground))" />
+              <XAxis 
+                type="number" 
+                domain={[0, 100]} 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                stroke="hsl(var(--border))"
+              />
               <YAxis 
                 dataKey="name" 
                 type="category" 
-                width={100}
-                stroke="hsl(var(--muted-foreground))"
-                tick={{ fontSize: 12 }}
+                width={120}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                stroke="hsl(var(--border))"
+                tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + "..." : value}
               />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px"
+                  borderRadius: "8px",
+                  color: "hsl(var(--foreground))"
                 }}
                 formatter={(value: number, name: string) => [
                   name === "effectiveness" ? `${value}%` : `${value}% ROI`,
                   name === "effectiveness" ? "Effectiveness" : "Average ROI"
                 ]}
               />
-              <Legend />
+              <Legend wrapperStyle={{ color: "hsl(var(--muted-foreground))" }} />
               <Bar 
                 dataKey="effectiveness" 
                 fill="hsl(var(--primary))" 
@@ -194,25 +204,31 @@ export function TrendImpactChart({ data }: TrendChartProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="name" 
-                stroke="hsl(var(--muted-foreground))"
-                tick={{ fontSize: 11 }}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                stroke="hsl(var(--border))"
                 angle={-45}
                 textAnchor="end"
                 height={80}
+                tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + "..." : value}
               />
-              <YAxis domain={[0, 10]} stroke="hsl(var(--muted-foreground))" />
+              <YAxis 
+                domain={[0, 10]} 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                stroke="hsl(var(--border))"
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px"
+                  borderRadius: "8px",
+                  color: "hsl(var(--foreground))"
                 }}
                 formatter={(value: number, name: string) => [
                   `${value}/10`,
                   name === "impact" ? "Impact Score" : "Growth Potential"
                 ]}
               />
-              <Legend />
+              <Legend wrapperStyle={{ color: "hsl(var(--muted-foreground))" }} />
               <Bar 
                 dataKey="impact" 
                 fill="hsl(var(--primary))" 
@@ -357,8 +373,15 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={projectionData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="year" stroke="hsl(var(--muted-foreground))" />
-              <YAxis stroke="hsl(var(--muted-foreground))" />
+              <XAxis 
+                dataKey="year" 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                stroke="hsl(var(--border))"
+              />
+              <YAxis 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                stroke="hsl(var(--border))"
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",

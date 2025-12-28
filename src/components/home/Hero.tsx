@@ -55,6 +55,14 @@ const Hero = () => {
             >
               <Link to="/business-tools">{isPremium && user ? "Go to Planner" : "Create Your Strategy"}</Link>
             </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base px-8"
+              asChild
+            >
+              <Link to="/market-research">Market Research</Link>
+            </Button>
           </div>
 
           <div

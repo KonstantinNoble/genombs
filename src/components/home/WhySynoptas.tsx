@@ -15,11 +15,11 @@ const WhySynoptas = () => {
   ];
 
   const synoptasPoints = [
-    "Real-time research from 10-20+ live sources",
-    "Current data from today's web",
-    "Structured, phased action plans",
-    "Daily focus tasks with AI Autopilot",
-    "Progress tracking & strategy comparison",
+    "Live data from Bloomberg, Statista & industry reports",
+    "Market size, CAGR & competitor analysis in seconds",
+    "Structured visualizations with citations",
+    "AI-generated daily focus tasks based on your strategy",
+    "Track progress & compare multiple strategies",
   ];
 
   return (

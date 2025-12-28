@@ -48,69 +48,34 @@ interface MarketResearchResult {
 }
 
 function buildPerplexityPrompt(industry: string, options: AnalysisOptions): string {
-  const sections: string[] = [];
-  const currentYear = new Date().getFullYear();
-  const nextYear = currentYear + 1;
-  
-  // Detect if this is a local/regional market query
-  const localKeywords = /\b(local|city|town|regional|london|berlin|paris|new york|munich|hamburg|frankfurt|cologne|düsseldorf|stuttgart|vienna|zurich|amsterdam|brussels|madrid|rome|milan|barcelona|tokyo|singapore|sydney|melbourne|toronto|vancouver|chicago|los angeles|san francisco|seattle|boston|miami|atlanta|dallas|houston|phoenix|denver|portland|austin|nashville|charlotte|philadelphia|detroit|minneapolis|cleveland|pittsburgh|baltimore|washington dc|orlando|tampa|indianapolis|columbus|kansas city|st louis|milwaukee|sacramento|san diego|san jose|oakland|riverside|las vegas|raleigh|jacksonville|memphis|louisville|oklahoma city|richmond|virginia beach|providence|hartford|buffalo|rochester|albany|syracuse|new orleans|salt lake city|tucson|albuquerque|fresno|birmingham|el paso|boise|des moines|omaha|tulsa|wichita|little rock|madison|grand rapids|dayton|akron|spokane|tacoma|modesto|shreveport|montgomery|lubbock|garland|hialeah|irving|glendale|scottsdale|fremont|gilbert|chandler|henderson|north las vegas|reno|irvine|chesapeake|norfolk|greensboro|durham|winston-salem|fayetteville|cary|wilmington|high point|greenville|asheville|concord|gastonia|jacksonville nc|chapel hill|huntersville|apex|wake forest|morrisville|holly springs|fuquay-varina|clayton|sanford|burlington|rocky mount|wilson|kinston|new bern|havelock|morehead city|beaufort|atlantic beach|emerald isle|carolina beach|wrightsville beach|kure beach|southport|oak island|holden beach|sunset beach|ocean isle beach|calabash|shallotte|bolivia|leland|hampstead|surf city|topsail beach|north topsail beach|sneads ferry|richlands|swansboro|hubert|maysville|pollocksville|trenton|pink hill|la grange|snow hill|farmville|greenville|winterville|ayden|grifton|bethel|tarboro|pinetops|macclesfield|princeville|speed|whitakers|battleboro|red oak|nashville|spring hope|bailey|middlesex|zebulon|wendell|knightdale|rolesville|wake forest|youngsville|franklinton|louisburg|henderson|oxford|creedmoor|butner|stem|roxboro|person county|caswell county|alamance county|orange county|chatham county|lee county|harnett county|johnston county|wayne county|lenoir county|craven county|carteret county|onslow county|pender county|new hanover county|brunswick county|columbus county|robeson county|scotland county|richmond county|moore county|montgomery county|stanly county|cabarrus county|rowan county|davidson county|randolph county|guilford county|forsyth county|stokes county|surry county|yadkin county|davie county|iredell county|alexander county|catawba county|burke county|caldwell county|watauga county|ashe county|alleghany county|wilkes county|avery county|mitchell county|yancey county|madison county|buncombe county|henderson county|transylvania county|haywood county|jackson county|swain county|graham county|cherokee county|clay county|macon county|polk county|rutherford county|cleveland county|gaston county|lincoln county|mecklenburg county|union county|anson county|richmond county|scotland county|hoke county|cumberland county|bladen county|sampson county|duplin county|jones county|pamlico county|beaufort county|pitt county|martin county|edgecombe county|nash county|halifax county|warren county|vance county|granville county|franklin county|wake county|durham county)\b/i;
-  const isLocalMarket = localKeywords.test(industry);
-  const sizeUnit = isLocalMarket ? "millions USD" : "billions USD";
+  const requestedData: string[] = [];
   
   if (options.marketSize) {
-    sections.push(`- Market Size: Provide these THREE values in ${sizeUnit}:
-    1. "value" = CURRENT total market size for THIS SPECIFIC product/service niche (the actual market today)
-    2. "tam" = Total Addressable Market (the MAXIMUM theoretical market if 100% adoption - must be >= value)
-    3. "sam" = Serviceable Addressable Market (realistic reachable market - must be <= tam and >= value)
-    The relationship MUST be: value <= sam <= tam`);
+    requestedData.push('"marketSize": { "value": <number>, "unit": "billions USD", "tam": <number>, "sam": <number> }');
   }
   if (options.growth) {
-    sections.push(`- Growth Metrics: CAGR percentage, Year-over-year growth rate, Projected market size for ${nextYear} in ${sizeUnit}`);
+    requestedData.push('"growth": { "cagr": <number>, "yearOverYear": <number>, "projectionNextYear": <number> }');
   }
   if (options.competitors) {
-    sections.push(`- Top 5-7 DIRECT Competitors: Companies that offer SIMILAR products/services to "${industry}". Include company name, market share percentage within this niche, estimated annual revenue if available. Do NOT include general tech giants unless they have a specific competing product.`);
+    requestedData.push('"competitors": [{ "name": "<string>", "marketShare": <number>, "revenue": <number or null> }]');
   }
   if (options.trends) {
-    sections.push(`- 4-6 Key Trends: Name each trend and provide a 1-2 sentence description explaining WHY this trend matters for "${industry}" and how it impacts businesses in this space. NO numerical scores.`);
+    requestedData.push('"trends": [{ "name": "<string>", "description": "<string>" }]');
   }
   if (options.channels) {
-    sections.push(`- 5-6 Marketing Channels: Name each channel and provide a 1-2 sentence description explaining WHY this channel works well for "${industry}" and what makes it effective. NO numerical scores or percentages.`);
+    requestedData.push('"channels": [{ "name": "<string>", "description": "<string>" }]');
   }
   if (options.demographics) {
-    sections.push(`- 4-6 Target Customer Segments: Name each buyer persona and provide a 1-2 sentence description explaining WHO they are, their pain points, and why they would buy "${industry}". NO numerical percentages.`);
+    requestedData.push('"demographics": [{ "segment": "<string>", "description": "<string>" }]');
   }
 
-  const geographicInstruction = isLocalMarket 
-    ? `\n7. This is a LOCAL/REGIONAL market query - all data must be specific to the mentioned geographic area
-8. Use MILLIONS (not billions) for market size values - local markets are typically in the millions range
-9. If you cannot find specific local data, clearly state this and provide the closest regional data available`
-    : '';
+  return `Research the "${industry}" market.
 
-  return `You are researching "${industry}" as a SPECIFIC PRODUCT or SERVICE category.
-
-CRITICAL INSTRUCTIONS:
-1. Interpret "${industry}" as describing a specific PRODUCT/SERVICE type, NOT a broad industry
-2. Find DIRECT COMPETITORS - companies that offer the same or very similar solutions
-3. If the query mentions "AI tools for X" or "software for X", research AI TOOLS/SOFTWARE vendors, NOT companies in industry X
-4. Example: "AI business planner for ecommerce" = find AI planning tools (like Notion AI, Monday.com AI features, etc.), NOT ecommerce companies (like Amazon, Shopify)
-5. Competitors should be companies a customer would evaluate INSTEAD of the product described
-6. All data should be specific to this product/service niche, not the broader industry${geographicInstruction}
-
-Required data points:
-${sections.join('\n')}
-
-Respond with a JSON object matching this exact structure (include only sections that were requested):
+Return JSON only:
 {
-  ${options.marketSize ? `"marketSize": { "value": <current market size in ${sizeUnit}>, "unit": "${sizeUnit}", "tam": <total addressable market, must be >= value>, "sam": <serviceable addressable market, must be between value and tam> },` : ''}
-  ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projectionNextYear": <number in ${sizeUnit}> },` : ''}
-  ${options.competitors ? `"competitors": [{ "name": "<direct competitor company name>", "marketShare": <percentage within this niche>, "revenue": <number in millions or null> }],` : ''}
-  ${options.trends ? `"trends": [{ "name": "<trend name>", "description": "<1-2 sentence explanation of why this trend matters>" }],` : ''}
-  ${options.channels ? `"channels": [{ "name": "<channel name>", "description": "<1-2 sentence explanation of why this channel works>" }],` : ''}
-  ${options.demographics ? `"demographics": [{ "segment": "<buyer persona name>", "description": "<1-2 sentence description of this customer segment>" }],` : ''}
+  ${requestedData.join(',\n  ')},
   "citations": [{ "url": "<string>", "title": "<string>" }]
-}
-
-Use real, current market data from ${currentYear - 1}-${currentYear}. All numbers must be realistic and based on actual market research for this specific product/service category.`;
+}`;
 }
 
 function parsePerplexityResponse(content: string, citations: any[]): MarketResearchResult {
@@ -257,31 +222,7 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: `You are a specialized market research analyst focusing on PRODUCT and SERVICE categories.
-
-CRITICAL MARKET SIZE RULES:
-- "value" = the CURRENT market size (what the market is worth TODAY)
-- "tam" = Total Addressable Market (theoretical MAXIMUM if everyone bought - always LARGEST number)
-- "sam" = Serviceable Addressable Market (realistic reachable portion - between value and tam)
-- The relationship MUST be: value <= sam <= tam
-- Example: value=$5B, sam=$12B, tam=$25B (tam is ALWAYS the largest!)
-
-CRITICAL GEOGRAPHIC RULES:
-- If the query mentions a specific CITY, REGION, or "local", provide data for THAT GEOGRAPHIC AREA ONLY
-- Use MILLIONS (not billions) for local/regional markets
-- Use BILLIONS only for national/global markets
-
-CRITICAL PRODUCT/SERVICE RULES:
-- When a user describes "AI tool for X" or "software for Y", research the TOOL market, NOT industry X
-- Find DIRECT COMPETITORS that offer similar products/services
-- Do NOT return major industry players unless they have a specific competing product
-
-CRITICAL DATA QUALITY RULES:
-- Do NOT invent data. If you cannot find reliable data for a specific metric, use realistic estimates based on comparable markets.
-- All numbers must be internally consistent (tam >= sam >= value)
-- For trends and channels: Describe WHY they matter, do NOT assign numerical scores
-
-Provide accurate, current market data in JSON format only. No explanations or additional text.`
+            content: 'You are a market research analyst. Return accurate data as JSON only. No markdown, no explanations.'
           },
           { role: 'user', content: prompt }
         ],

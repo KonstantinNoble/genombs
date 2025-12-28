@@ -190,36 +190,6 @@ export type Database = {
           },
         ]
       }
-      business_ideas: {
-        Row: {
-          category: string | null
-          content: string
-          created_at: string
-          id: string
-          updated_at: string
-          user_id: string
-          website_url: string | null
-        }
-        Insert: {
-          category?: string | null
-          content: string
-          created_at?: string
-          id?: string
-          updated_at?: string
-          user_id: string
-          website_url?: string | null
-        }
-        Update: {
-          category?: string | null
-          content?: string
-          created_at?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
       business_tools_history: {
         Row: {
           analysis_mode: string | null
@@ -276,97 +246,6 @@ export type Database = {
           reason?: string | null
         }
         Relationships: []
-      }
-      idea_comments: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          idea_id: string
-          parent_id: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          idea_id: string
-          parent_id?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          idea_id?: string
-          parent_id?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "idea_comments_idea_id_fkey"
-            columns: ["idea_id"]
-            isOneToOne: false
-            referencedRelation: "business_ideas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "idea_comments_idea_id_fkey"
-            columns: ["idea_id"]
-            isOneToOne: false
-            referencedRelation: "ideas_with_stats"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "idea_comments_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "idea_comments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      idea_ratings: {
-        Row: {
-          created_at: string
-          id: string
-          idea_id: string
-          rating: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          idea_id: string
-          rating: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          idea_id?: string
-          rating?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "idea_ratings_idea_id_fkey"
-            columns: ["idea_id"]
-            isOneToOne: false
-            referencedRelation: "business_ideas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "idea_ratings_idea_id_fkey"
-            columns: ["idea_id"]
-            isOneToOne: false
-            referencedRelation: "ideas_with_stats"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       pending_premium: {
         Row: {
@@ -513,8 +392,6 @@ export type Database = {
           analysis_window_start: string | null
           auto_renew: boolean | null
           autopilot_generation_reset_date: string | null
-          comment_count: number | null
-          comment_window_start: string | null
           created_at: string
           daily_autopilot_generations: number | null
           deep_analysis_count: number | null
@@ -524,7 +401,6 @@ export type Database = {
           id: string
           is_premium: boolean
           last_analysis_at: string | null
-          last_idea_post_at: string | null
           last_reset_date: string
           next_payment_date: string | null
           premium_since: string | null
@@ -545,8 +421,6 @@ export type Database = {
           analysis_window_start?: string | null
           auto_renew?: boolean | null
           autopilot_generation_reset_date?: string | null
-          comment_count?: number | null
-          comment_window_start?: string | null
           created_at?: string
           daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
@@ -556,7 +430,6 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
-          last_idea_post_at?: string | null
           last_reset_date?: string
           next_payment_date?: string | null
           premium_since?: string | null
@@ -577,8 +450,6 @@ export type Database = {
           analysis_window_start?: string | null
           auto_renew?: boolean | null
           autopilot_generation_reset_date?: string | null
-          comment_count?: number | null
-          comment_window_start?: string | null
           created_at?: string
           daily_autopilot_generations?: number | null
           deep_analysis_count?: number | null
@@ -588,7 +459,6 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
-          last_idea_post_at?: string | null
           last_reset_date?: string
           next_payment_date?: string | null
           premium_since?: string | null
@@ -625,20 +495,7 @@ export type Database = {
       }
     }
     Views: {
-      ideas_with_stats: {
-        Row: {
-          average_rating: number | null
-          category: string | null
-          content: string | null
-          created_at: string | null
-          id: string | null
-          total_ratings: number | null
-          updated_at: string | null
-          user_id: string | null
-          website_url: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_and_update_analysis_limit: {
@@ -646,14 +503,11 @@ export type Database = {
         Returns: boolean
       }
       check_comment_limit: { Args: { p_user_id: string }; Returns: boolean }
-      check_idea_post_limit: { Args: { p_user_id: string }; Returns: boolean }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
       get_next_comment_time: { Args: { p_user_id: string }; Returns: string }
-      get_next_idea_post_time: { Args: { p_user_id: string }; Returns: string }
       get_remaining_comments: { Args: { p_user_id: string }; Returns: number }
-      get_remaining_idea_posts: { Args: { p_user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -661,7 +515,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      record_idea_post: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -14,8 +14,6 @@ import Profile from "./pages/Profile";
 import BusinessToolsAdvisor from "./pages/BusinessToolsAdvisor";
 import MyStrategies from "./pages/MyStrategies";
 import StrategyDetail from "./pages/StrategyDetail";
-import BusinessIdeas from "./pages/BusinessIdeas";
-
 import Contact from "./pages/Contact";
 import PricingPage from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -63,8 +61,6 @@ const App = () => (
               <Route path="/business-tools" element={<BusinessToolsAdvisor />} />
               <Route path="/my-strategies" element={<MyStrategies />} />
               <Route path="/strategy/:id" element={<StrategyDetail />} />
-              <Route path="/ideas" element={<BusinessIdeas />} />
-              
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

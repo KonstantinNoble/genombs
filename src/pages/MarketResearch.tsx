@@ -12,12 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnalysisOptions, type AnalysisOptionsType } from "@/components/market-research/AnalysisOptions";
 import { MarketOverview } from "@/components/market-research/MarketOverview";
 import { 
-  CompetitorPieChart, 
-  ChannelBarChart, 
-  TrendImpactChart, 
-  DemographicsDonutChart,
-  GrowthProjectionChart 
-} from "@/components/market-research/MarketCharts";
+  CompetitorsList, 
+  TrendsList, 
+  ChannelsList, 
+  DemographicsList,
+  GrowthMetrics 
+} from "@/components/market-research/MarketDataCards";
 import { CitationsList } from "@/components/market-research/CitationsList";
 import { MarketUpgradeDialog } from "@/components/market-research/MarketUpgradeDialog";
 
@@ -31,7 +31,7 @@ interface MarketResearchResult {
   growth?: {
     cagr: number;
     yearOverYear: number;
-    projection2026: number;
+    projectionNextYear?: number;
   };
   competitors?: Array<{
     name: string;
@@ -371,33 +371,32 @@ export default function MarketResearch() {
                     <MarketOverview marketSize={result.marketSize} />
                   )}
 
-                  {/* Charts Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    {result.competitors && (
-                      <CompetitorPieChart data={result.competitors} />
-                    )}
-                    
-                    {result.channels && (
-                      <ChannelBarChart data={result.channels} />
-                    )}
-                    
-                    {result.trends && (
-                      <TrendImpactChart data={result.trends} />
-                    )}
-                    
-                    {result.demographics && (
-                      <DemographicsDonutChart data={result.demographics} />
-                    )}
-                  </div>
-
-                  {/* Growth Projection */}
+                  {/* Growth Metrics */}
                   {result.growth && (
-                    <GrowthProjectionChart 
+                    <GrowthMetrics 
                       data={result.growth} 
-                      currentMarketSize={result.marketSize?.value}
                       marketUnit={result.marketSize?.unit}
                     />
                   )}
+
+                  {/* Data Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    {result.competitors && (
+                      <CompetitorsList data={result.competitors} />
+                    )}
+                    
+                    {result.trends && (
+                      <TrendsList data={result.trends} />
+                    )}
+                    
+                    {result.channels && (
+                      <ChannelsList data={result.channels} />
+                    )}
+                    
+                    {result.demographics && (
+                      <DemographicsList data={result.demographics} />
+                    )}
+                  </div>
 
                   {/* Citations */}
                   {result.citations && result.citations.length > 0 && (

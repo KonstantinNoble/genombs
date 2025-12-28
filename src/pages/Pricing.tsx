@@ -21,7 +21,7 @@ const PricingPage = () => {
     {
       icon: <Globe className="h-6 w-6" />,
       title: "Live Market Intelligence",
-      description: "Every analysis is powered by real-time web research, analyzing 20+ sources to deliver current market trends and competitor insights."
+      description: "Powered by Perplexity AI's Sonar Pro. Get market size, CAGR, and growth projections from Bloomberg, Statista, IBISWorld & 20+ premium sources in real-time."
     },
     {
       icon: <Link className="h-6 w-6" />,
@@ -31,7 +31,7 @@ const PricingPage = () => {
     {
       icon: <Brain className="h-6 w-6" />,
       title: "Deep Analysis Mode",
-      description: "Advanced analysis with competitor insights, ROI projections, and risk mitigation strategies."
+      description: "Comprehensive analysis with competitor market share, ROI projections based on industry benchmarks, and risk mitigation strategies."
     },
     {
       icon: <Sparkles className="h-6 w-6" />,
@@ -41,7 +41,7 @@ const PricingPage = () => {
     {
       icon: <TrendingUp className="h-6 w-6" />,
       title: "ROI Projections",
-      description: "Every Deep Analysis includes expected return on investment with realistic assumptions to prioritize high-impact strategies."
+      description: "Expected returns calculated using industry-standard metrics like CAC, LTV, and conversion rates based on real market data."
     },
     {
       icon: <Target className="h-6 w-6" />,
@@ -51,7 +51,7 @@ const PricingPage = () => {
     {
       icon: <BarChart3 className="h-6 w-6" />,
       title: "Competitor Analysis",
-      description: "Know your competition's strengths and weaknesses to position yourself better in the market."
+      description: "Market share visualizations, pricing comparisons, and positioning analysis to identify competitive advantages."
     },
     {
       icon: <Shield className="h-6 w-6" />,
@@ -67,7 +67,7 @@ const PricingPage = () => {
 
   const comparisonFeatures = [
     { name: "Daily Analyses", free: "2 Standard", premium: "6 Standard + 2 Deep" },
-    { name: "Market Research Sources", free: "10+ sources", premium: "20+ sources" },
+    { name: "Market Research Sources", free: "Statista, Bloomberg & 10+", premium: "20+ incl. IBISWorld & company filings" },
     { name: "Phases per Analysis", free: "4", premium: "4" },
     { name: "Actionable Steps", free: true, premium: true },
     { name: "Google Search Links", free: true, premium: true },
@@ -76,15 +76,15 @@ const PricingPage = () => {
     { name: "Deep Analysis Mode", free: false, premium: true },
     { name: "AI Autopilot (3 daily tasks)", free: false, premium: true },
     { name: "Strategy Tracking", free: false, premium: true },
-    { name: "Competitor Analysis", free: false, premium: true },
-    { name: "ROI Projections", free: false, premium: true },
+    { name: "Competitor Market Share Analysis", free: false, premium: true },
+    { name: "ROI Projections (CAC, LTV, CAGR)", free: false, premium: true },
     { name: "Risk Mitigation Plans", free: false, premium: true }
   ];
 
   const faqs = [
     {
       question: "How does the real-time market research work?",
-      answer: "Our AI actively researches the web during each analysis, gathering current market data, competitor information, and industry trends from 10-20+ sources. This means your strategies are always based on up-to-date information, not outdated datasets."
+      answer: "Powered by Perplexity AI's Sonar Pro, our system actively queries premium data sources including Bloomberg, Statista, IBISWorld, and industry publications during each analysis. You get market size estimates, CAGR projections, and competitor insights based on today's data, not outdated datasets."
     },
     {
       question: "How does the Website Analysis feature work?",
@@ -92,15 +92,15 @@ const PricingPage = () => {
     },
     {
       question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links, backed by 10+ research sources. Deep Analysis (Premium only) adds competitor analysis, ROI projections, risk mitigation plans, and uses 20+ sources for more comprehensive insights."
+      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links, backed by 10+ verified sources. Deep Analysis (Premium only) adds competitor market share analysis, ROI projections using CAC/LTV/CAGR metrics, risk mitigation plans, and draws from 20+ premium sources for comprehensive insights."
     },
     {
       question: "How do the daily analysis limits work?",
       answer: "Free users get 2 Standard analyses per day. Premium users get 6 Standard + 2 Deep analyses daily - that's 8 total analyses! Limits reset every 24 hours from your first daily analysis."
     },
     {
-      question: "What optional context can I provide?",
-      answer: "You can add budget range, industry, current marketing channels, timeline, and geographic target. The AI uses this context to create more relevant and specific strategies tailored to your situation."
+      question: "What data sources are included?",
+      answer: "Our AI aggregates data from Bloomberg, Statista, IBISWorld, industry publications, company filings, market research reports, and 15+ additional verified sources. Premium users get access to the full source list with every analysis."
     }
   ];
 

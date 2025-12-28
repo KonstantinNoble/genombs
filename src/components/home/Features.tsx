@@ -4,9 +4,9 @@ import { Globe, Scan, Zap, BarChart3 } from "lucide-react";
 
 const features = [
   {
-    title: "Real-Time Market Research",
+    title: "Real-Time Market Intelligence",
     description:
-      "Every strategy is backed by live web research. Our AI analyzes 10-20+ current sources including market trends, competitor data, and industry insights.",
+      "Powered by Perplexity AI's Sonar Pro. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources in real-time.",
     icon: Globe,
     color: "primary",
   },

@@ -281,8 +281,12 @@ export default function MarketResearch() {
                       onChange={(e) => setIndustry(e.target.value)}
                       placeholder="e.g., Electric Vehicles, SaaS, Healthcare AI"
                       disabled={isLoading}
+                      maxLength={100}
                       className="bg-background/50"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {industry.length}/100 characters
+                    </p>
                   </div>
 
                   <AnalysisOptions

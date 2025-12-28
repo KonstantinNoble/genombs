@@ -9,19 +9,22 @@ interface CompetitorData {
 
 interface TrendData {
   name: string;
-  impact: number;
-  growthPotential: number;
+  description?: string;
+  impact?: number;
+  growthPotential?: number;
 }
 
 interface ChannelData {
   name: string;
-  effectiveness: number;
-  averageROI: number;
+  description?: string;
+  effectiveness?: number;
+  averageROI?: number;
 }
 
 interface DemographicData {
   segment: string;
-  percentage: number;
+  description?: string;
+  percentage?: number;
   averageSpend?: number;
 }
 
@@ -91,21 +94,14 @@ export function TrendsList({ data }: { data: TrendData[] }) {
             key={index}
             className="p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
           >
-            <p className="font-semibold text-foreground text-sm sm:text-base mb-2">
+            <p className="font-semibold text-foreground text-sm sm:text-base">
               {trend.name}
             </p>
-            <div className="flex gap-4 text-xs sm:text-sm">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-muted-foreground">Impact:</span>
-                <span className="font-semibold text-foreground">{trend.impact}/10</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-chart-3" />
-                <span className="text-muted-foreground">Growth:</span>
-                <span className="font-semibold text-foreground">{trend.growthPotential}/10</span>
-              </div>
-            </div>
+            {trend.description && (
+              <p className="text-sm text-muted-foreground mt-1.5">
+                {trend.description}
+              </p>
+            )}
           </div>
         ))}
         <p className="text-xs text-muted-foreground italic mt-2">
@@ -131,27 +127,16 @@ export function ChannelsList({ data }: { data: ChannelData[] }) {
         {data.map((channel, index) => (
           <div
             key={index}
-            className="flex items-center justify-between p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
+            className="p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
           >
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-foreground text-sm sm:text-base">
-                {channel.name}
+            <p className="font-semibold text-foreground text-sm sm:text-base">
+              {channel.name}
+            </p>
+            {channel.description && (
+              <p className="text-sm text-muted-foreground mt-1.5">
+                {channel.description}
               </p>
-            </div>
-            <div className="flex gap-4 text-right flex-shrink-0 ml-3">
-              <div>
-                <p className="font-bold text-foreground text-sm sm:text-base">
-                  {channel.effectiveness}%
-                </p>
-                <p className="text-xs text-muted-foreground">effectiveness</p>
-              </div>
-              <div>
-                <p className="font-bold text-primary text-sm sm:text-base">
-                  {channel.averageROI}%
-                </p>
-                <p className="text-xs text-muted-foreground">ROI</p>
-              </div>
-            </div>
+            )}
           </div>
         ))}
         <p className="text-xs text-muted-foreground italic mt-2">
@@ -177,24 +162,16 @@ export function DemographicsList({ data }: { data: DemographicData[] }) {
         {data.map((segment, index) => (
           <div
             key={index}
-            className="flex items-center justify-between p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
+            className="p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
           >
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-foreground text-sm sm:text-base">
-                {segment.segment}
+            <p className="font-semibold text-foreground text-sm sm:text-base">
+              {segment.segment}
+            </p>
+            {segment.description && (
+              <p className="text-sm text-muted-foreground mt-1.5">
+                {segment.description}
               </p>
-              {segment.averageSpend && (
-                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                  Avg. spend: ${segment.averageSpend}
-                </p>
-              )}
-            </div>
-            <div className="text-right flex-shrink-0 ml-3">
-              <p className="font-bold text-primary text-sm sm:text-lg">
-                {segment.percentage}%
-              </p>
-              <p className="text-xs text-muted-foreground">of market</p>
-            </div>
+            )}
           </div>
         ))}
         <p className="text-xs text-muted-foreground italic mt-2">

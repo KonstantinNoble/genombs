@@ -12,21 +12,25 @@ interface MarketOverviewProps {
 export function MarketOverview({ marketSize }: MarketOverviewProps) {
   if (!marketSize) return null;
 
+  // Dynamically determine unit from Perplexity data
+  const isMillions = marketSize.unit?.toLowerCase().includes('million');
+  const displayUnit = isMillions ? 'M' : 'B';
+
   const metrics = [
     {
       label: "Total Market Size",
       value: `$${marketSize.value}`,
-      unit: marketSize.unit.replace("billion ", "").replace("USD", "B")
+      unit: displayUnit
     },
     {
       label: "Total Addressable Market",
       value: `$${marketSize.tam}`,
-      unit: "B"
+      unit: displayUnit
     },
     {
       label: "Serviceable Addressable Market",
       value: `$${marketSize.sam}`,
-      unit: "B"
+      unit: displayUnit
     }
   ];
 

@@ -41,7 +41,7 @@ export function MarketOverview({ marketSize }: MarketOverviewProps) {
             <p className="text-sm text-muted-foreground mb-2">{metric.label}</p>
             <p className="text-3xl font-bold text-foreground">
               {metric.value}
-              <span className="text-lg font-normal text-muted-foreground ml-1">
+              <span className="text-3xl font-bold text-foreground ml-0.5">
                 {metric.unit}
               </span>
             </p>

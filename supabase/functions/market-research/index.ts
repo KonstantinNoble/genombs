@@ -304,6 +304,22 @@ serve(async (req) => {
         result: result
       });
 
+    // Clean up old history entries (keep only 5 newest)
+    const { data: allHistory } = await supabase
+      .from('market_research_history')
+      .select('id, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (allHistory && allHistory.length > 5) {
+      const idsToDelete = allHistory.slice(5).map(h => h.id);
+      await supabase
+        .from('market_research_history')
+        .delete()
+        .in('id', idsToDelete);
+      console.log(`Deleted ${idsToDelete.length} old history entries`);
+    }
+
     console.log('Market research completed successfully');
 
     return new Response(

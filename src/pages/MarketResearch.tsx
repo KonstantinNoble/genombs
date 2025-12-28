@@ -84,6 +84,8 @@ export default function MarketResearch() {
   const [usage, setUsage] = useState<{ count: number; limit: number; isPremium: boolean } | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [resetTime, setResetTime] = useState<Date | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -103,7 +105,7 @@ export default function MarketResearch() {
       .from("market_research_history")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(5);
 
     if (!error && data) {
       setHistory(data as unknown as HistoryItem[]);
@@ -131,8 +133,39 @@ export default function MarketResearch() {
         limit: dailyLimit,
         isPremium: data.is_premium || false
       });
+
+      // Set reset time if credits are exhausted
+      if (currentCount >= dailyLimit && windowStart && !windowExpired) {
+        setResetTime(new Date(windowStart.getTime() + 24 * 60 * 60 * 1000));
+      } else {
+        setResetTime(null);
+        setTimeRemaining("");
+      }
     }
   };
+
+  // Live countdown timer
+  useEffect(() => {
+    if (!resetTime) return;
+    
+    const updateTimer = () => {
+      const diff = resetTime.getTime() - Date.now();
+      if (diff <= 0) {
+        setTimeRemaining("");
+        setResetTime(null);
+        fetchUsage();
+      } else {
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        setTimeRemaining(`${hours}h ${mins}m ${secs}s`);
+      }
+    };
+    
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [resetTime]);
 
   const handleAnalyze = async () => {
     if (!industry.trim()) {
@@ -295,13 +328,26 @@ export default function MarketResearch() {
                     disabled={isLoading}
                   />
 
-                  <Button
-                    onClick={handleAnalyze}
-                    disabled={isLoading || !industry.trim()}
-                    className="w-full"
-                  >
-                    {isLoading ? "Analyzing..." : "Analyze Market"}
-                  </Button>
+                  {(() => {
+                    const creditsExhausted = usage && usage.count >= usage.limit && resetTime;
+                    return (
+                      <>
+                        <Button
+                          onClick={handleAnalyze}
+                          disabled={isLoading || !industry.trim() || !!creditsExhausted}
+                          className="w-full"
+                        >
+                          {isLoading ? "Analyzing..." : creditsExhausted ? "Limit Reached" : "Analyze Market"}
+                        </Button>
+                        {creditsExhausted && timeRemaining && (
+                          <div className="text-center text-sm text-muted-foreground mt-3 p-3 bg-muted/50 rounded-lg">
+                            <span className="block text-xs mb-1">Next credits available in:</span>
+                            <span className="font-mono font-semibold text-foreground">{timeRemaining}</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </CardContent>
               </Card>
 

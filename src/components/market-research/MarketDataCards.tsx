@@ -49,10 +49,10 @@ export function CompetitorsList({ data }: { data: CompetitorData[] }) {
         {data.map((competitor, index) => (
           <div
             key={index}
-            className="flex items-center justify-between p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
+            className="flex items-start justify-between gap-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
           >
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-foreground text-sm sm:text-base truncate">
+            <div className="flex-1">
+              <p className="font-semibold text-foreground text-sm sm:text-base break-words">
                 {competitor.name}
               </p>
               {competitor.revenue && (
@@ -61,7 +61,7 @@ export function CompetitorsList({ data }: { data: CompetitorData[] }) {
                 </p>
               )}
             </div>
-            <div className="text-right flex-shrink-0 ml-3">
+            <div className="text-right flex-shrink-0">
               <p className="font-bold text-primary text-sm sm:text-lg">
                 {competitor.marketShare}%
               </p>

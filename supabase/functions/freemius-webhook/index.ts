@@ -159,20 +159,20 @@ serve(async (req) => {
 
     console.log('Processing webhook for email:', userEmail);
 
-    // Find user by email in profiles table (case-insensitive)
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .ilike('email', userEmail)
-      .maybeSingle();
-
-    if (profileError) {
-      console.error('Error fetching profile:', profileError);
+    // Find user by email using Auth Admin API (profiles table no longer has email column)
+    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
+    
+    if (usersError) {
+      console.error('Error fetching users:', usersError);
       return new Response(
         JSON.stringify({ error: 'Database error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Find the user by email (case-insensitive)
+    const authUser = users?.find(u => u.email?.toLowerCase() === userEmail);
+    const profile = authUser ? { id: authUser.id } : null;
 
     if (!profile) {
       console.log('❌ USER NOT FOUND IN DATABASE');

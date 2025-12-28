@@ -14,8 +14,6 @@ import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [displayName, setDisplayName] = useState("");
-  const [savingDisplayName, setSavingDisplayName] = useState(false);
   const [credits, setCredits] = useState<{
     is_premium: boolean;
     premium_since: string | null;
@@ -49,17 +47,6 @@ const Profile = () => {
           .maybeSingle();
         
         setCredits(data);
-
-        // Fetch display name from profiles
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        if (profileData?.display_name) {
-          setDisplayName(profileData.display_name);
-        }
       }
     };
 
@@ -84,30 +71,6 @@ const Profile = () => {
     navigate("/");
   };
 
-  const handleSaveDisplayName = async () => {
-    if (!user) return;
-    
-    setSavingDisplayName(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update({ display_name: displayName.trim().slice(0, 30) })
-      .eq('id', user.id);
-    
-    setSavingDisplayName(false);
-    
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save display name.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Saved",
-        description: "Your display name has been updated.",
-      });
-    }
-  };
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -177,30 +140,6 @@ const Profile = () => {
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="displayName"
-                    type="text"
-                    placeholder="Enter a display name"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value.slice(0, 30))}
-                    maxLength={30}
-                    className="flex-1"
-                  />
-                  <Button
-                    onClick={handleSaveDisplayName}
-                    disabled={savingDisplayName}
-                    size="sm"
-                  >
-                    {savingDisplayName ? "Saving..." : "Save"}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Display name for your account ({displayName.length}/30)
-                </p>
-              </div>
 
               <div className="space-y-2">
                 <Label>Premium Status</Label>

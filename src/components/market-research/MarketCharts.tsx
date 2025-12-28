@@ -28,7 +28,14 @@ const CHART_COLORS = [
 const AXIS_TICK = {
   fill: "hsl(var(--foreground))",
   fillOpacity: 0.92,
-  fontSize: 14,
+  fontSize: 11,
+  fontWeight: 600,
+} as const;
+
+const AXIS_TICK_MOBILE = {
+  fill: "hsl(var(--foreground))",
+  fillOpacity: 0.92,
+  fontSize: 9,
   fontWeight: 600,
 } as const;
 
@@ -54,8 +61,8 @@ const TOOLTIP_ITEM_STYLE = {
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex items-center gap-2 text-base">
-      <span className="h-2.5 w-2.5 rounded-[3px]" style={{ backgroundColor: color }} />
+    <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-base">
+      <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-[3px]" style={{ backgroundColor: color }} />
       <span className="text-foreground/80 font-medium">{label}</span>
     </div>
   );
@@ -82,47 +89,23 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">Competitor Market Share</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-xl font-bold text-foreground">Competitor Market Share</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
+      <CardContent className="px-3 sm:px-6">
+        <div className={`h-[260px] sm:h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={96}
+                innerRadius={40}
+                outerRadius={70}
                 paddingAngle={2}
                 dataKey="marketShare"
                 nameKey="name"
-                label={(p: any) => {
-                  const name = String(p?.name ?? "");
-                  const marketShare = Number(p?.marketShare ?? 0);
-                  const x = Number(p?.x ?? 0);
-                  const y = Number(p?.y ?? 0);
-                  const cx = Number(p?.cx ?? 0);
-                  const shortName = name.length > 14 ? name.slice(0, 14) + "…" : name;
-                  const isRight = x > cx;
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="hsl(var(--foreground))"
-                      fillOpacity={0.92}
-                      fontSize={14}
-                      fontWeight={600}
-                      textAnchor={isRight ? "start" : "end"}
-                      dominantBaseline="central"
-                    >
-                      <title>{`${name}: ${marketShare}%`}</title>
-                      {`${shortName}: ${marketShare}%`}
-                    </text>
-                  );
-                }}
+                label={false}
                 labelLine={false}
               >
                 {chartData.map((entry, index) => (
@@ -139,19 +122,19 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="mt-3 sm:mt-5 grid grid-cols-1 gap-2 sm:gap-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-start gap-2 text-lg">
+            <div key={index} className="flex items-center gap-2 text-sm sm:text-lg">
               <div
-                className="w-4 h-4 rounded-sm flex-shrink-0 mt-1"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm flex-shrink-0"
                 style={{ backgroundColor: item.fill }}
               />
               <div className="min-w-0 flex-1">
-                <div className="text-foreground/80 font-medium break-words" title={item.name}>
+                <span className="text-foreground/80 font-medium text-xs sm:text-base" title={item.name}>
                   {item.name}
-                </div>
+                </span>
               </div>
-              <div className="font-bold text-foreground ml-2 flex-shrink-0">{item.marketShare}%</div>
+              <span className="font-bold text-foreground text-xs sm:text-base flex-shrink-0">{item.marketShare}%</span>
             </div>
           ))}
         </div>
@@ -175,29 +158,29 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">Marketing Channel Performance</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-xl font-bold text-foreground">Marketing Channels</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
+      <CardContent className="px-3 sm:px-6">
+        <div className={`h-[280px] sm:h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sortedData} layout="vertical" margin={{ left: 56, right: 28, top: 8, bottom: 8 }}>
+            <BarChart data={sortedData} layout="vertical" margin={{ left: 8, right: 12, top: 8, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 type="number"
                 domain={[0, 100]}
-                tick={AXIS_TICK}
-                tickMargin={10}
+                tick={AXIS_TICK_MOBILE}
+                tickMargin={6}
                 stroke="hsl(var(--border))"
               />
               <YAxis
                 dataKey="name"
                 type="category"
-                width={170}
-                tick={{ ...AXIS_TICK, fontSize: 13 }}
-                tickMargin={10}
+                width={100}
+                tick={AXIS_TICK_MOBILE}
+                tickMargin={6}
                 stroke="hsl(var(--border))"
-                tickFormatter={(value) => (value.length > 24 ? value.slice(0, 24) + "…" : value)}
+                tickFormatter={(value) => (value.length > 12 ? value.slice(0, 12) + "…" : value)}
               />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
@@ -214,7 +197,7 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <div className="mt-3 sm:mt-5 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2">
           <LegendItem color="hsl(var(--chart-1))" label="Effectiveness" />
           <LegendItem color="hsl(var(--chart-2))" label="Average ROI" />
         </div>
@@ -236,25 +219,25 @@ export function TrendImpactChart({ data }: TrendChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">Market Trends Analysis</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-xl font-bold text-foreground">Market Trends</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className={`h-[360px] ${CHART_FRAME_CLASS}`}>
+      <CardContent className="px-3 sm:px-6">
+        <div className={`h-[300px] sm:h-[360px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ left: 24, right: 20, bottom: 90, top: 10 }}>
+            <BarChart data={data} margin={{ left: 8, right: 8, bottom: 70, top: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="name"
-                tick={{ ...AXIS_TICK, fontSize: 13 }}
-                tickMargin={12}
+                tick={AXIS_TICK_MOBILE}
+                tickMargin={8}
                 stroke="hsl(var(--border))"
-                angle={-40}
+                angle={-45}
                 textAnchor="end"
-                height={95}
-                tickFormatter={(value) => (value.length > 22 ? value.slice(0, 22) + "…" : value)}
+                height={80}
+                tickFormatter={(value) => (value.length > 14 ? value.slice(0, 14) + "…" : value)}
               />
-              <YAxis domain={[0, 10]} tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
+              <YAxis domain={[0, 10]} tick={AXIS_TICK_MOBILE} tickMargin={6} stroke="hsl(var(--border))" />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
                 labelStyle={TOOLTIP_LABEL_STYLE}
@@ -275,9 +258,9 @@ export function TrendImpactChart({ data }: TrendChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          <LegendItem color="hsl(var(--chart-1))" label="Impact Score" />
-          <LegendItem color="hsl(var(--chart-3))" label="Growth Potential" />
+        <div className="mt-3 sm:mt-5 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2">
+          <LegendItem color="hsl(var(--chart-1))" label="Impact" />
+          <LegendItem color="hsl(var(--chart-3))" label="Growth" />
         </div>
       </CardContent>
     </Card>
@@ -304,19 +287,19 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">Customer Demographics</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-xl font-bold text-foreground">Demographics</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
+      <CardContent className="px-3 sm:px-6">
+        <div className={`h-[240px] sm:h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={72}
-                outerRadius={102}
+                innerRadius={50}
+                outerRadius={80}
                 paddingAngle={2}
                 dataKey="value"
                 nameKey="name"
@@ -328,7 +311,7 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
               <Tooltip
                 formatter={(value: number, name: string, props: any) => {
                   const item = props.payload;
-                  return [`${value}%${item.averageSpend ? ` (Avg Spend: $${item.averageSpend})` : ""}`, name];
+                  return [`${value}%${item.averageSpend ? ` (Avg: $${item.averageSpend})` : ""}`, name];
                 }}
                 contentStyle={TOOLTIP_STYLE}
                 labelStyle={TOOLTIP_LABEL_STYLE}
@@ -338,19 +321,19 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-3 sm:mt-5 space-y-2 sm:space-y-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-start justify-between gap-3 text-lg">
-              <div className="flex items-start gap-2 min-w-0 flex-1">
+            <div key={index} className="flex items-center justify-between gap-2 text-sm sm:text-lg">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <div
-                  className="w-4 h-4 rounded-sm flex-shrink-0 mt-1"
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm flex-shrink-0"
                   style={{ backgroundColor: item.fill }}
                 />
-                <span className="text-foreground/80 font-medium break-words" title={item.name}>
+                <span className="text-foreground/80 font-medium text-xs sm:text-base" title={item.name}>
                   {item.name}
                 </span>
               </div>
-              <span className="font-bold text-foreground flex-shrink-0">{item.value}%</span>
+              <span className="font-bold text-foreground text-xs sm:text-base flex-shrink-0">{item.value}%</span>
             </div>
           ))}
         </div>
@@ -384,31 +367,31 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">Growth Projections</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-xl font-bold text-foreground">Growth Projections</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-primary">{data.cagr}%</p>
-            <p className="text-sm text-muted-foreground mt-1">CAGR</p>
+      <CardContent className="px-3 sm:px-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
+            <p className="text-xl sm:text-3xl font-bold text-primary">{data.cagr}%</p>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">CAGR</p>
           </div>
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
-            <p className="text-sm text-muted-foreground mt-1">YoY Growth</p>
+          <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
+            <p className="text-xl sm:text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">YoY</p>
           </div>
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-foreground">${data.projection2026}B</p>
-            <p className="text-sm text-muted-foreground mt-1">2026 Projection</p>
+          <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
+            <p className="text-xl sm:text-3xl font-bold text-foreground">${data.projection2026}B</p>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">2026</p>
           </div>
         </div>
 
-        <div className={`h-[240px] ${CHART_FRAME_CLASS}`}>
+        <div className={`h-[180px] sm:h-[240px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={projectionData} margin={{ left: 18, right: 18, top: 8, bottom: 8 }}>
+            <AreaChart data={projectionData} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="year" tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
-              <YAxis tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
+              <XAxis dataKey="year" tick={AXIS_TICK_MOBILE} tickMargin={6} stroke="hsl(var(--border))" />
+              <YAxis tick={AXIS_TICK_MOBILE} tickMargin={6} stroke="hsl(var(--border))" />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
                 labelStyle={TOOLTIP_LABEL_STYLE}

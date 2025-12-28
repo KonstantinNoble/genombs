@@ -6,7 +6,7 @@ const features = [
   {
     title: "Real-Time Market Intelligence",
     description:
-      "Powered by Perplexity AI's Sonar Pro. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources in real-time.",
+      "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources. Premium users get an enhanced AI model for more accurate insights.",
     icon: Globe,
     color: "primary",
   },

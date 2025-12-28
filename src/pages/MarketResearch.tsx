@@ -395,6 +395,7 @@ export default function MarketResearch() {
                     <GrowthProjectionChart 
                       data={result.growth} 
                       currentMarketSize={result.marketSize?.value}
+                      marketUnit={result.marketSize?.unit}
                     />
                   )}
 

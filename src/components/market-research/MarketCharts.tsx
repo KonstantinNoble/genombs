@@ -326,24 +326,41 @@ interface GrowthChartProps {
   data: {
     cagr: number;
     yearOverYear: number;
-    projection2026: number;
+    projectionNextYear?: number;
+    projection2026?: number; // Legacy support
   };
   currentMarketSize?: number;
+  marketUnit?: string;
 }
 
-export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartProps) {
+export function GrowthProjectionChart({ data, currentMarketSize, marketUnit }: GrowthChartProps) {
   if (!data) return null;
 
+  const currentYear = new Date().getFullYear();
   const baseValue = currentMarketSize || 100;
+  const projectionValue = data.projectionNextYear || data.projection2026 || baseValue * Math.pow(1 + data.cagr / 100, 2);
+  
+  // Determine if we're dealing with millions or billions
+  const isMillions = marketUnit?.toLowerCase().includes('million') || projectionValue < 1;
+  const displayUnit = isMillions ? 'M' : 'B';
+  
   const projectionData = [
-    { year: "2024", value: baseValue, type: "Actual" },
-    { year: "2025", value: baseValue * (1 + data.yearOverYear / 100), type: "Actual" },
+    { year: String(currentYear - 1), value: baseValue, type: "Actual" },
+    { year: String(currentYear), value: baseValue * (1 + data.yearOverYear / 100), type: "Actual" },
     {
-      year: "2026",
-      value: data.projection2026 || baseValue * Math.pow(1 + data.cagr / 100, 2),
+      year: String(currentYear + 1),
+      value: projectionValue,
       type: "Projected",
     },
   ];
+
+  // Format value based on unit
+  const formatValue = (value: number) => {
+    if (isMillions) {
+      return `$${value.toFixed(0)}M`;
+    }
+    return `$${value.toFixed(1)}B`;
+  };
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
@@ -361,8 +378,8 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">YoY</p>
           </div>
           <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
-            <p className="text-lg sm:text-3xl font-bold text-foreground">${data.projection2026}B</p>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">2026</p>
+            <p className="text-lg sm:text-3xl font-bold text-foreground">${projectionValue}{displayUnit}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">{currentYear + 1}</p>
           </div>
         </div>
 
@@ -376,7 +393,7 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
                 contentStyle={TOOLTIP_STYLE}
                 labelStyle={TOOLTIP_LABEL_STYLE}
                 itemStyle={TOOLTIP_ITEM_STYLE}
-                formatter={(value: number) => [`$${value.toFixed(1)}B`, "Market Size"]}
+                formatter={(value: number) => [formatValue(value), "Market Size"]}
               />
               <Area
                 type="monotone"
@@ -388,6 +405,10 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
             </AreaChart>
           </ResponsiveContainer>
         </div>
+        
+        <p className="text-xs text-muted-foreground italic mt-3 text-center">
+          Data is AI-generated based on web research. Verify with primary sources.
+        </p>
       </CardContent>
     </Card>
   );

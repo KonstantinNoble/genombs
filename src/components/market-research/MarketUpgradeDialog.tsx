@@ -18,9 +18,9 @@ export function MarketUpgradeDialog({ open, onOpenChange }: MarketUpgradeDialogP
 
   const benefits = [
     "3 market research analyses per day",
+    "Enhanced AI model for more accurate results",
     "Access to all analysis options",
     "Detailed competitor insights",
-    "Historical data comparison",
     "Priority data processing"
   ];
 

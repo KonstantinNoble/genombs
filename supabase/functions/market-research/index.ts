@@ -218,7 +218,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'sonar-pro',
+        model: isPremium ? 'sonar-pro' : 'sonar',
         messages: [
           { 
             role: 'system', 
@@ -321,7 +321,8 @@ serve(async (req) => {
         usage: {
           count: newCount,
           limit: dailyLimit,
-          isPremium
+          isPremium,
+          model: isPremium ? 'enhanced' : 'standard'
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

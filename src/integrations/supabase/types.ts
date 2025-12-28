@@ -247,6 +247,36 @@ export type Database = {
         }
         Relationships: []
       }
+      market_research_history: {
+        Row: {
+          analysis_options: Json
+          created_at: string | null
+          id: string
+          industry: string | null
+          query: string
+          result: Json
+          user_id: string
+        }
+        Insert: {
+          analysis_options: Json
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          query: string
+          result: Json
+          user_id: string
+        }
+        Update: {
+          analysis_options?: Json
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          query?: string
+          result?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       pending_premium: {
         Row: {
           auto_renew: boolean | null
@@ -399,6 +429,8 @@ export type Database = {
           is_premium: boolean
           last_analysis_at: string | null
           last_reset_date: string
+          market_research_count: number | null
+          market_research_window_start: string | null
           next_payment_date: string | null
           premium_since: string | null
           standard_analysis_count: number | null
@@ -428,6 +460,8 @@ export type Database = {
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          market_research_count?: number | null
+          market_research_window_start?: string | null
           next_payment_date?: string | null
           premium_since?: string | null
           standard_analysis_count?: number | null
@@ -457,6 +491,8 @@ export type Database = {
           is_premium?: boolean
           last_analysis_at?: string | null
           last_reset_date?: string
+          market_research_count?: number | null
+          market_research_window_start?: string | null
           next_payment_date?: string | null
           premium_since?: string | null
           standard_analysis_count?: number | null

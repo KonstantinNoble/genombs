@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 3.2</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 3.3</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -942,7 +942,79 @@ const PrivacyPolicy = () => {
             </p>
 
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Data Storage and Retention</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Market Research Feature</h3>
+            <p className="text-muted-foreground mb-4">
+              Our standalone Market Research feature allows you to analyze market data for specific industries. 
+              This feature is powered by Perplexity AI and provides structured market intelligence including 
+              market size, growth metrics, competitor analysis, market trends, marketing channels, and customer demographics.
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Industry sector query you enter</li>
+              <li>Selected analysis options (market size, competitors, trends, channels, demographics, growth)</li>
+              <li>Search results and market data from real-time web research</li>
+              <li>Source citations for transparency</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Market research results are stored in your analysis history</li>
+              <li>The <strong>5 most recent</strong> analyses are retained; older entries are automatically deleted</li>
+              <li>All data is permanently deleted upon account deletion</li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Usage Limits</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Free users: 1 market research analysis per 24-hour period</li>
+              <li>Premium users: 3 market research analyses per 24-hour period</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Usage tracking data processed:</strong> <code className="text-sm">market_research_count</code>, 
+              <code className="text-sm">market_research_window_start</code>
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">AI Provider</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Perplexity AI, Inc. (San Francisco, CA, USA)
+              <br />
+              <strong>Model:</strong> Sonar Pro
+              <br />
+              <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
+            </p>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Protection Measures</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Server-side processing:</strong> Your IP address is NOT disclosed to Perplexity AI; 
+                requests are made from our backend servers
+              </li>
+              <li>
+                <strong>No personal identifiers:</strong> Only industry/business queries are transmitted, 
+                not your name, email, or other identifying information
+              </li>
+              <li>
+                <strong>Encryption:</strong> All data encrypted in transit using TLS/SSL
+              </li>
+            </ul>
+            
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+                (providing the market research feature you requested as a registered user)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing market intelligence services. 
+                Your interests are protected through data minimization and server-side processing.
+              </li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest, 
+              you have the right to object at any time. To exercise this right, contact us at mail@wealthconomy.com.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Data Storage and Retention</h3>
             <p className="text-muted-foreground mb-4">
               <strong>AI Provider Retention:</strong> Google retains API request data for a limited period
               for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
@@ -1312,6 +1384,17 @@ const PrivacyPolicy = () => {
                 </ul>
               </li>
               <li>
+                Market research data:
+                <ul className="list-disc pl-6 mt-2">
+                  <li>Industry queries submitted</li>
+                  <li>Analysis options selected (market size, competitors, trends, channels, demographics, growth)</li>
+                  <li>Market research results (market size, competitors, trends, etc.)</li>
+                  <li>Source citations</li>
+                  <li>Research history (5 most recent analyses)</li>
+                  <li>Usage tracking (<code className="text-sm">market_research_count</code>, <code className="text-sm">market_research_window_start</code>)</li>
+                </ul>
+              </li>
+              <li>
                 Credit tracking data:
                 <ul className="list-disc pl-6 mt-2">
                   <li>Standard analysis count (number of standard-depth analyses)</li>
@@ -1395,11 +1478,11 @@ const PrivacyPolicy = () => {
                 </p>
               </li>
               <li>
-                <strong>Market research provider (for Strategy Resource Links):</strong> Perplexity AI, Inc. 
+                <strong>Market research provider (for Strategy Resource Links and Market Research Feature):</strong> Perplexity AI, Inc. 
                 (San Francisco, CA, USA)
                 <ul className="list-disc pl-6 mt-2">
                   <li>
-                    Provides real-time web search to generate relevant resource URLs embedded in strategy recommendations
+                    Provides real-time web search for strategy resource URLs and standalone market research feature
                   </li>
                   <li>
                     <strong>Data transmitted:</strong> Business context queries only (industry, goals, budget range). 
@@ -1578,6 +1661,11 @@ const PrivacyPolicy = () => {
                 as your account remains active. You may delete individual strategies at any time through the My 
                 Strategies interface. All strategy data is permanently deleted when you delete your account.
               </li>
+              <li>
+                <strong>Market Research History:</strong> Only your <strong>5 most recent</strong> market research 
+                analyses are retained. Older entries are automatically deleted when new analyses are created. All 
+                market research data is permanently deleted when you delete your account.
+              </li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Legal Retention Obligations:</strong> In certain cases, we may be legally required to retain 
@@ -1667,7 +1755,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 28, 2025 (Version 3.2)
+              <strong>Last updated:</strong> December 28, 2025 (Version 3.3)
             </p>
           </section>
         </article>

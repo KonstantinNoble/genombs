@@ -10,23 +10,36 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   Area,
-  AreaChart
+  AreaChart,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Professional color palette - no icons, clean design
+// Chart palette uses design-system tokens (defined in index.css).
 const CHART_COLORS = [
-  "hsl(var(--primary))",
+  "hsl(var(--chart-1))",
   "hsl(var(--chart-2))",
   "hsl(var(--chart-3))",
   "hsl(var(--chart-4))",
   "hsl(var(--chart-5))",
-  "hsl(220, 70%, 50%)",
-  "hsl(280, 60%, 50%)"
+  "hsl(var(--chart-6))",
+  "hsl(var(--chart-7))",
 ];
+
+const AXIS_TICK = {
+  fill: "hsl(var(--foreground))",
+  fillOpacity: 0.78,
+  fontSize: 11,
+} as const;
+
+const LEGEND_STYLE = { color: "hsl(var(--muted-foreground))" } as const;
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "hsl(var(--card))",
+  border: "1px solid hsl(var(--border))",
+  borderRadius: "8px",
+  color: "hsl(var(--foreground))",
+} as const;
 
 interface CompetitorChartProps {
   data: Array<{
@@ -41,7 +54,7 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
 
   const chartData = data.map((item, index) => ({
     ...item,
-    fill: CHART_COLORS[index % CHART_COLORS.length]
+    fill: CHART_COLORS[index % CHART_COLORS.length],
   }));
 
   return (
@@ -64,9 +77,28 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                 paddingAngle={2}
                 dataKey="marketShare"
                 nameKey="name"
-                label={({ name, marketShare }) => {
+                label={(p: any) => {
+                  const name = String(p?.name ?? "");
+                  const marketShare = Number(p?.marketShare ?? 0);
+                  const x = Number(p?.x ?? 0);
+                  const y = Number(p?.y ?? 0);
+                  const cx = Number(p?.cx ?? 0);
                   const shortName = name.length > 12 ? name.slice(0, 12) + "..." : name;
-                  return `${shortName}: ${marketShare}%`;
+                  const isRight = x > cx;
+
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="hsl(var(--foreground))"
+                      fillOpacity={0.82}
+                      fontSize={11}
+                      textAnchor={isRight ? "start" : "end"}
+                      dominantBaseline="central"
+                    >
+                      {`${shortName}: ${marketShare}%`}
+                    </text>
+                  );
                 }}
                 labelLine={false}
               >
@@ -76,20 +108,17 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
               </Pie>
               <Tooltip
                 formatter={(value: number) => [`${value}%`, "Market Share"]}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px"
-                }}
+                contentStyle={TOOLTIP_STYLE}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
+
         <div className="mt-4 grid grid-cols-2 gap-2">
           {chartData.map((item, index) => (
             <div key={index} className="flex items-center gap-2 text-sm">
-              <div 
-                className="w-3 h-3 rounded-sm flex-shrink-0" 
+              <div
+                className="w-3 h-3 rounded-sm flex-shrink-0"
                 style={{ backgroundColor: item.fill }}
               />
               <span className="text-muted-foreground truncate">{item.name}</span>
@@ -127,42 +156,34 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sortedData} layout="vertical" margin={{ left: 20, right: 30 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                type="number" 
-                domain={[0, 100]} 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                stroke="hsl(var(--border))"
-              />
-              <YAxis 
-                dataKey="name" 
-                type="category" 
+              <XAxis type="number" domain={[0, 100]} tick={AXIS_TICK} stroke="hsl(var(--border))" />
+              <YAxis
+                dataKey="name"
+                type="category"
                 width={120}
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                tick={{ ...AXIS_TICK, fontSize: 10 }}
                 stroke="hsl(var(--border))"
-                tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + "..." : value}
+                tickFormatter={(value) =>
+                  value.length > 18 ? value.slice(0, 18) + "..." : value
+                }
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                  color: "hsl(var(--foreground))"
-                }}
+                contentStyle={TOOLTIP_STYLE}
                 formatter={(value: number, name: string) => [
                   name === "effectiveness" ? `${value}%` : `${value}% ROI`,
-                  name === "effectiveness" ? "Effectiveness" : "Average ROI"
+                  name === "effectiveness" ? "Effectiveness" : "Average ROI",
                 ]}
               />
-              <Legend wrapperStyle={{ color: "hsl(var(--muted-foreground))" }} />
-              <Bar 
-                dataKey="effectiveness" 
-                fill="hsl(var(--primary))" 
+              <Legend wrapperStyle={LEGEND_STYLE} />
+              <Bar
+                dataKey="effectiveness"
+                fill="hsl(var(--chart-1))"
                 name="Effectiveness"
                 radius={[0, 4, 4, 0]}
               />
-              <Bar 
-                dataKey="averageROI" 
-                fill="hsl(var(--chart-2))" 
+              <Bar
+                dataKey="averageROI"
+                fill="hsl(var(--chart-2))"
                 name="Average ROI"
                 radius={[0, 4, 4, 0]}
               />
@@ -185,11 +206,6 @@ interface TrendChartProps {
 export function TrendImpactChart({ data }: TrendChartProps) {
   if (!data || data.length === 0) return null;
 
-  const chartData = data.map(item => ({
-    ...item,
-    impactColor: item.impact >= 7 ? "hsl(142, 71%, 45%)" : item.impact >= 4 ? "hsl(45, 93%, 47%)" : "hsl(0, 84%, 60%)"
-  }));
-
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
@@ -200,44 +216,35 @@ export function TrendImpactChart({ data }: TrendChartProps) {
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ left: 20, right: 20, bottom: 60 }}>
+            <BarChart data={data} margin={{ left: 20, right: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="name" 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+              <XAxis
+                dataKey="name"
+                tick={{ ...AXIS_TICK, fontSize: 10 }}
                 stroke="hsl(var(--border))"
                 angle={-45}
                 textAnchor="end"
                 height={80}
-                tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + "..." : value}
+                tickFormatter={(value) => (value.length > 15 ? value.slice(0, 15) + "..." : value)}
               />
-              <YAxis 
-                domain={[0, 10]} 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                stroke="hsl(var(--border))"
-              />
+              <YAxis domain={[0, 10]} tick={AXIS_TICK} stroke="hsl(var(--border))" />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                  color: "hsl(var(--foreground))"
-                }}
+                contentStyle={TOOLTIP_STYLE}
                 formatter={(value: number, name: string) => [
                   `${value}/10`,
-                  name === "impact" ? "Impact Score" : "Growth Potential"
+                  name === "impact" ? "Impact Score" : "Growth Potential",
                 ]}
               />
-              <Legend wrapperStyle={{ color: "hsl(var(--muted-foreground))" }} />
-              <Bar 
-                dataKey="impact" 
-                fill="hsl(var(--primary))" 
+              <Legend wrapperStyle={LEGEND_STYLE} />
+              <Bar
+                dataKey="impact"
+                fill="hsl(var(--chart-1))"
                 name="Impact Score"
                 radius={[4, 4, 0, 0]}
               />
-              <Bar 
-                dataKey="growthPotential" 
-                fill="hsl(var(--chart-3))" 
+              <Bar
+                dataKey="growthPotential"
+                fill="hsl(var(--chart-3))"
                 name="Growth Potential"
                 radius={[4, 4, 0, 0]}
               />
@@ -264,7 +271,7 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
     ...item,
     name: item.segment,
     value: item.percentage,
-    fill: CHART_COLORS[index % CHART_COLORS.length]
+    fill: CHART_COLORS[index % CHART_COLORS.length],
   }));
 
   return (
@@ -296,25 +303,22 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
                 formatter={(value: number, name: string, props: any) => {
                   const item = props.payload;
                   return [
-                    `${value}%${item.averageSpend ? ` (Avg Spend: $${item.averageSpend})` : ''}`,
-                    name
+                    `${value}%${item.averageSpend ? ` (Avg Spend: $${item.averageSpend})` : ""}`,
+                    name,
                   ];
                 }}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px"
-                }}
+                contentStyle={TOOLTIP_STYLE}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
+
         <div className="mt-4 space-y-2">
           {chartData.map((item, index) => (
             <div key={index} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-sm flex-shrink-0" 
+                <div
+                  className="w-3 h-3 rounded-sm flex-shrink-0"
                   style={{ backgroundColor: item.fill }}
                 />
                 <span className="text-muted-foreground">{item.name}</span>
@@ -344,15 +348,17 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
   const projectionData = [
     { year: "2024", value: baseValue, type: "Actual" },
     { year: "2025", value: baseValue * (1 + data.yearOverYear / 100), type: "Actual" },
-    { year: "2026", value: data.projection2026 || baseValue * Math.pow(1 + data.cagr / 100, 2), type: "Projected" }
+    {
+      year: "2026",
+      value: data.projection2026 || baseValue * Math.pow(1 + data.cagr / 100, 2),
+      type: "Projected",
+    },
   ];
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">
-          Growth Projections
-        </CardTitle>
+        <CardTitle className="text-lg font-semibold text-foreground">Growth Projections</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-6">
@@ -369,32 +375,22 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
             <p className="text-xs text-muted-foreground">2026 Projection</p>
           </div>
         </div>
+
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={projectionData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="year" 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                stroke="hsl(var(--border))"
-              />
-              <YAxis 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                stroke="hsl(var(--border))"
-              />
+              <XAxis dataKey="year" tick={AXIS_TICK} stroke="hsl(var(--border))" />
+              <YAxis tick={AXIS_TICK} stroke="hsl(var(--border))" />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px"
-                }}
+                contentStyle={TOOLTIP_STYLE}
                 formatter={(value: number) => [`$${value.toFixed(1)}B`, "Market Size"]}
               />
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke="hsl(var(--primary))"
-                fill="hsl(var(--primary) / 0.2)"
+                stroke="hsl(var(--chart-1))"
+                fill="hsl(var(--chart-1) / 0.2)"
                 strokeWidth={2}
               />
             </AreaChart>

@@ -19,8 +19,8 @@ interface MarketResearchResult {
   marketSize?: {
     value: number;
     unit: string;
-    tam: number;
-    sam: number;
+    projectedValue: number;
+    projectionYear: number;
   };
   growth?: {
     cagr: number;
@@ -51,7 +51,7 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
   const requestedData: string[] = [];
   
   if (options.marketSize) {
-    requestedData.push('"marketSize": { "value": <number>, "unit": "billions USD", "tam": <number>, "sam": <number> }');
+    requestedData.push('"marketSize": { "value": <number current market size in billions USD>, "unit": "billions USD", "projectedValue": <number projected market size in billions USD>, "projectionYear": <number year of projection e.g. 2030> }');
   }
   if (options.growth) {
     requestedData.push('"growth": { "cagr": <number>, "yearOverYear": <number>, "projectionNextYear": <number> }');
@@ -258,7 +258,7 @@ serve(async (req) => {
     // Parse the structured response
     const result = parsePerplexityResponse(content, citations);
     console.log('Parsed result keys:', Object.keys(result));
-    console.log('Market size values:', result.marketSize ? `value=${result.marketSize.value}, sam=${result.marketSize.sam}, tam=${result.marketSize.tam}` : 'N/A');
+    console.log('Market size values:', result.marketSize ? `value=${result.marketSize.value}, projectedValue=${result.marketSize.projectedValue}, projectionYear=${result.marketSize.projectionYear}` : 'N/A');
 
     // Update usage count
     const newCount = currentCount + 1;

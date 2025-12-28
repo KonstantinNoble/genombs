@@ -34,18 +34,15 @@ interface MarketResearchResult {
   }>;
   trends?: Array<{
     name: string;
-    impact: number;
-    growthPotential: number;
+    description: string;
   }>;
   channels?: Array<{
     name: string;
-    effectiveness: number;
-    averageROI: number;
+    description: string;
   }>;
   demographics?: Array<{
     segment: string;
-    percentage: number;
-    averageSpend?: number;
+    description: string;
   }>;
   citations: Array<{ url: string; title: string }>;
 }
@@ -70,13 +67,13 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
     sections.push(`- Top 5-7 DIRECT Competitors: Companies that offer SIMILAR products/services to "${industry}". Include company name, market share percentage within this niche, estimated annual revenue if available. Do NOT include general tech giants unless they have a specific competing product.`);
   }
   if (options.trends) {
-    sections.push(`- 4-6 Key Trends: Specific trends affecting THIS product/service category, not the broader industry. Trend name, impact score (1-10), growth potential score (1-10)`);
+    sections.push(`- 4-6 Key Trends: Name each trend and provide a 1-2 sentence description explaining WHY this trend matters for "${industry}" and how it impacts businesses in this space. NO numerical scores.`);
   }
   if (options.channels) {
-    sections.push(`- 5-6 Marketing Channels: Best channels to market THIS specific type of product/service. Channel name, effectiveness score (0-100), average ROI percentage`);
+    sections.push(`- 5-6 Marketing Channels: Name each channel and provide a 1-2 sentence description explaining WHY this channel works well for "${industry}" and what makes it effective. NO numerical scores or percentages.`);
   }
   if (options.demographics) {
-    sections.push(`- 4-6 Target Customer Segments: WHO would buy this specific product/service? Segment name, percentage of target market, average spend if available`);
+    sections.push(`- 4-6 Target Customer Segments: Name each buyer persona and provide a 1-2 sentence description explaining WHO they are, their pain points, and why they would buy "${industry}". NO numerical percentages.`);
   }
 
   const geographicInstruction = isLocalMarket 
@@ -103,9 +100,9 @@ Respond with a JSON object matching this exact structure (include only sections 
   ${options.marketSize ? `"marketSize": { "value": <number in ${sizeUnit} for this specific niche>, "unit": "${sizeUnit}", "tam": <number in ${sizeUnit}>, "sam": <number in ${sizeUnit}> },` : ''}
   ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projectionNextYear": <number in ${sizeUnit}> },` : ''}
   ${options.competitors ? `"competitors": [{ "name": "<direct competitor company name>", "marketShare": <percentage within this niche>, "revenue": <number in millions or null> }],` : ''}
-  ${options.trends ? `"trends": [{ "name": "<trend specific to this product/service type>", "impact": <1-10>, "growthPotential": <1-10> }],` : ''}
-  ${options.channels ? `"channels": [{ "name": "<marketing channel>", "effectiveness": <0-100>, "averageROI": <percentage number> }],` : ''}
-  ${options.demographics ? `"demographics": [{ "segment": "<buyer persona for this product>", "percentage": <number>, "averageSpend": <number or null> }],` : ''}
+  ${options.trends ? `"trends": [{ "name": "<trend name>", "description": "<1-2 sentence explanation of why this trend matters>" }],` : ''}
+  ${options.channels ? `"channels": [{ "name": "<channel name>", "description": "<1-2 sentence explanation of why this channel works>" }],` : ''}
+  ${options.demographics ? `"demographics": [{ "segment": "<buyer persona name>", "description": "<1-2 sentence description of this customer segment>" }],` : ''}
   "citations": [{ "url": "<string>", "title": "<string>" }]
 }
 

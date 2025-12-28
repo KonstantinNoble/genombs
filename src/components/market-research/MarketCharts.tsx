@@ -223,66 +223,24 @@ export function TrendImpactChart({ data }: TrendChartProps) {
         <CardTitle className="text-base sm:text-xl font-bold text-foreground">Market Trends</CardTitle>
       </CardHeader>
       <CardContent className="px-3 sm:px-6">
-        {/* Mobile: Show as list instead of chart */}
-        <div className="block sm:hidden space-y-3">
+        <div className="space-y-3">
           {data.map((item, index) => (
-            <div key={index} className="p-3 bg-background/50 rounded-lg">
-              <p className="text-sm font-medium text-foreground mb-2">{item.name}</p>
-              <div className="flex justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-1))" }} />
+            <div key={index} className="p-3 sm:p-4 bg-background/50 rounded-lg">
+              <p className="text-sm sm:text-base font-medium text-foreground mb-2">{item.name}</p>
+              <div className="flex justify-between text-xs sm:text-sm">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-1))" }} />
                   <span className="text-muted-foreground">Impact:</span>
                   <span className="font-semibold text-foreground">{item.impact}/10</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-3))" }} />
-                  <span className="text-muted-foreground">Growth:</span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-3))" }} />
+                  <span className="text-muted-foreground">Growth Potential:</span>
                   <span className="font-semibold text-foreground">{item.growthPotential}/10</span>
                 </div>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Desktop: Show chart */}
-        <div className={`hidden sm:block h-[360px] ${CHART_FRAME_CLASS}`}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ left: 8, right: 8, bottom: 70, top: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis
-                dataKey="name"
-                tick={AXIS_TICK}
-                tickMargin={8}
-                stroke="hsl(var(--border))"
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tickFormatter={(value) => (value.length > 18 ? value.slice(0, 18) + "…" : value)}
-              />
-              <YAxis domain={[0, 10]} tick={AXIS_TICK} tickMargin={6} stroke="hsl(var(--border))" />
-              <Tooltip
-                contentStyle={TOOLTIP_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
-                itemStyle={TOOLTIP_ITEM_STYLE}
-                formatter={(value: number, name: string) => [
-                  `${value}/10`,
-                  name === "impact" ? "Impact Score" : "Growth Potential",
-                ]}
-              />
-              <Bar dataKey="impact" fill="hsl(var(--chart-1))" name="Impact Score" radius={[4, 4, 0, 0]} />
-              <Bar
-                dataKey="growthPotential"
-                fill="hsl(var(--chart-3))"
-                name="Growth Potential"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="mt-3 sm:mt-5 hidden sm:flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2">
-          <LegendItem color="hsl(var(--chart-1))" label="Impact" />
-          <LegendItem color="hsl(var(--chart-3))" label="Growth" />
         </div>
       </CardContent>
     </Card>

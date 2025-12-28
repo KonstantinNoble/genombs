@@ -28,17 +28,23 @@ const CHART_COLORS = [
 
 const AXIS_TICK = {
   fill: "hsl(var(--foreground))",
-  fillOpacity: 0.78,
-  fontSize: 11,
+  fillOpacity: 0.9,
+  fontSize: 13,
+  fontWeight: 500,
 } as const;
 
-const LEGEND_STYLE = { color: "hsl(var(--muted-foreground))" } as const;
+const LEGEND_STYLE = { 
+  color: "hsl(var(--foreground))",
+  fontSize: 13,
+  fontWeight: 500,
+} as const;
 
 const TOOLTIP_STYLE = {
   backgroundColor: "hsl(var(--card))",
   border: "1px solid hsl(var(--border))",
   borderRadius: "8px",
   color: "hsl(var(--foreground))",
+  fontSize: 13,
 } as const;
 
 interface CompetitorChartProps {
@@ -59,8 +65,8 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-foreground">
           Competitor Market Share
         </CardTitle>
       </CardHeader>
@@ -91,8 +97,9 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                       x={x}
                       y={y}
                       fill="hsl(var(--foreground))"
-                      fillOpacity={0.82}
-                      fontSize={11}
+                      fillOpacity={0.92}
+                      fontSize={13}
+                      fontWeight={500}
                       textAnchor={isRight ? "start" : "end"}
                       dominantBaseline="central"
                     >
@@ -114,15 +121,15 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-center gap-2 text-sm">
+            <div key={index} className="flex items-center gap-2 text-base">
               <div
-                className="w-3 h-3 rounded-sm flex-shrink-0"
+                className="w-4 h-4 rounded-sm flex-shrink-0"
                 style={{ backgroundColor: item.fill }}
               />
-              <span className="text-muted-foreground truncate">{item.name}</span>
-              <span className="font-medium text-foreground ml-auto">{item.marketShare}%</span>
+              <span className="text-foreground/80 truncate font-medium">{item.name}</span>
+              <span className="font-bold text-foreground ml-auto">{item.marketShare}%</span>
             </div>
           ))}
         </div>
@@ -146,8 +153,8 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-foreground">
           Marketing Channel Performance
         </CardTitle>
       </CardHeader>
@@ -160,11 +167,11 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
               <YAxis
                 dataKey="name"
                 type="category"
-                width={120}
-                tick={{ ...AXIS_TICK, fontSize: 10 }}
+                width={130}
+                tick={{ ...AXIS_TICK, fontSize: 12 }}
                 stroke="hsl(var(--border))"
                 tickFormatter={(value) =>
-                  value.length > 18 ? value.slice(0, 18) + "..." : value
+                  value.length > 16 ? value.slice(0, 16) + "..." : value
                 }
               />
               <Tooltip
@@ -208,8 +215,8 @@ export function TrendImpactChart({ data }: TrendChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-foreground">
           Market Trends Analysis
         </CardTitle>
       </CardHeader>
@@ -220,12 +227,12 @@ export function TrendImpactChart({ data }: TrendChartProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="name"
-                tick={{ ...AXIS_TICK, fontSize: 10 }}
+                tick={{ ...AXIS_TICK, fontSize: 12 }}
                 stroke="hsl(var(--border))"
-                angle={-45}
+                angle={-35}
                 textAnchor="end"
-                height={80}
-                tickFormatter={(value) => (value.length > 15 ? value.slice(0, 15) + "..." : value)}
+                height={70}
+                tickFormatter={(value) => (value.length > 18 ? value.slice(0, 18) + "..." : value)}
               />
               <YAxis domain={[0, 10]} tick={AXIS_TICK} stroke="hsl(var(--border))" />
               <Tooltip
@@ -276,8 +283,8 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-foreground">
           Customer Demographics
         </CardTitle>
       </CardHeader>
@@ -313,17 +320,17 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between text-sm">
+            <div key={index} className="flex items-center justify-between text-base">
               <div className="flex items-center gap-2">
                 <div
-                  className="w-3 h-3 rounded-sm flex-shrink-0"
+                  className="w-4 h-4 rounded-sm flex-shrink-0"
                   style={{ backgroundColor: item.fill }}
                 />
-                <span className="text-muted-foreground">{item.name}</span>
+                <span className="text-foreground/80 font-medium">{item.name}</span>
               </div>
-              <span className="font-medium text-foreground">{item.value}%</span>
+              <span className="font-bold text-foreground">{item.value}%</span>
             </div>
           ))}
         </div>
@@ -357,22 +364,22 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-foreground">Growth Projections</CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-foreground">Growth Projections</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="text-center p-3 bg-background/50 rounded-lg">
-            <p className="text-2xl font-bold text-primary">{data.cagr}%</p>
-            <p className="text-xs text-muted-foreground">CAGR</p>
+          <div className="text-center p-4 bg-background/50 rounded-lg">
+            <p className="text-3xl font-bold text-primary">{data.cagr}%</p>
+            <p className="text-sm text-muted-foreground mt-1">CAGR</p>
           </div>
-          <div className="text-center p-3 bg-background/50 rounded-lg">
-            <p className="text-2xl font-bold text-foreground">{data.yearOverYear}%</p>
-            <p className="text-xs text-muted-foreground">YoY Growth</p>
+          <div className="text-center p-4 bg-background/50 rounded-lg">
+            <p className="text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
+            <p className="text-sm text-muted-foreground mt-1">YoY Growth</p>
           </div>
-          <div className="text-center p-3 bg-background/50 rounded-lg">
-            <p className="text-2xl font-bold text-foreground">${data.projection2026}B</p>
-            <p className="text-xs text-muted-foreground">2026 Projection</p>
+          <div className="text-center p-4 bg-background/50 rounded-lg">
+            <p className="text-3xl font-bold text-foreground">${data.projection2026}B</p>
+            <p className="text-sm text-muted-foreground mt-1">2026 Projection</p>
           </div>
         </div>
 

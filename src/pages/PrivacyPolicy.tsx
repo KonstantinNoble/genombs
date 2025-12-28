@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 3.1</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 3.2</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -411,6 +411,23 @@ const PrivacyPolicy = () => {
               decisions. Results may vary, and we make no guarantees regarding the effectiveness of recommended tools, strategies, 
               advertising campaigns, or business ideas for your specific business situation.
             </p>
+
+            <div className="bg-muted/30 border border-border rounded-lg p-4 mb-4">
+              <p className="text-muted-foreground mb-2">
+                <strong>⚠️ IMPORTANT – Sensitive Data Warning:</strong>
+              </p>
+              <p className="text-muted-foreground mb-2">
+                Please do <strong>not</strong> enter sensitive personal data (e.g., health information, religious beliefs, 
+                biometric data, or other special categories of data under Art. 9 GDPR) in free-text fields such as 
+                business goals, objectives, or strategy descriptions.
+              </p>
+              <p className="text-muted-foreground">
+                If you choose to analyze a website containing personal data of third parties (e.g., team pages, 
+                testimonials, contact information), this data may be processed as part of the analysis. By using 
+                the website analysis feature, you confirm that you have the necessary rights to submit this website 
+                URL for analysis, or that the data is publicly available.
+              </p>
+            </div>
             
             <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Business Tools Advisor</h3>
             <p className="text-muted-foreground mb-4">
@@ -562,9 +579,10 @@ const PrivacyPolicy = () => {
               <li>Queries for relevant tools, software solutions, and service providers</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Data NOT transmitted:</strong> No personal identifiers (name, email address, IP address) are 
-              sent to Perplexity AI. All requests are processed server-side through our backend infrastructure 
-              (Edge Functions), ensuring your client IP address remains hidden from Perplexity.
+              <strong>Data protection measures:</strong> We do not transmit direct personal identifiers such as your 
+              name or email address to Perplexity AI. Business context queries are designed to contain only 
+              business-related information. Requests are processed server-side through our backend infrastructure 
+              (Edge Functions), so your client IP address is generally not disclosed to Perplexity AI.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Provider:</strong> Perplexity AI, Inc. (San Francisco, CA, USA)
@@ -581,9 +599,15 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, research-backed 
-                business recommendations
+                business recommendations. A legitimate interest assessment has been conducted to balance our interests 
+                against your rights and freedoms.
               </li>
             </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest 
+              (Art. 6(1)(f) GDPR), you have the right to object at any time on grounds relating to your particular 
+              situation. To exercise this right, please contact us at mail@wealthconomy.com.
+            </p>
             <p className="text-muted-foreground mb-4">
               <strong>Third-country transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
             </p>
@@ -619,10 +643,21 @@ const PrivacyPolicy = () => {
               <li>Page metadata (title, description)</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Data NOT transmitted:</strong> No personal identifiers (your name, email address, IP address) are 
-              sent to Firecrawl. All requests are processed server-side through our backend infrastructure (Edge Functions), 
-              ensuring your client IP address remains hidden from Firecrawl.
+              <strong>Data protection measures:</strong> We do not transmit direct personal identifiers such as your 
+              name or email address to Firecrawl. Requests are processed server-side through our backend infrastructure 
+              (Edge Functions), so your client IP address is generally not disclosed to Firecrawl.
             </p>
+            <div className="bg-muted/30 border border-border rounded-lg p-4 mb-4">
+              <p className="text-muted-foreground mb-2">
+                <strong>Note on third-party personal data:</strong>
+              </p>
+              <p className="text-muted-foreground">
+                Websites you submit for analysis may contain personal data of third parties (e.g., team member names, 
+                contact information, testimonials). By using this feature, you confirm that you have the necessary 
+                rights to submit this website URL for analysis, or that the data is publicly available and its 
+                processing is covered by our legitimate interest in providing you with business recommendations.
+              </p>
+            </div>
             <p className="text-muted-foreground mb-4">
               <strong>Provider:</strong> Firecrawl, Inc. (San Francisco, CA, USA)
               <br />
@@ -638,7 +673,8 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, data-driven 
-                business recommendations based on your actual website content
+                business recommendations based on your actual website content. A legitimate interest assessment has 
+                been conducted to balance our interests against your rights and freedoms.
               </li>
             </ul>
             <p className="text-muted-foreground mb-4">
@@ -673,9 +709,17 @@ const PrivacyPolicy = () => {
               </li>
               <li>
                 <strong>Legitimate interest:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing
-                innovative, AI-powered business recommendation features to enhance user experience
+                innovative, AI-powered business recommendation features to enhance user experience. A legitimate 
+                interest assessment has been conducted to determine that the processing is necessary to provide 
+                comprehensive, research-backed business recommendations, and that your interests are adequately 
+                protected through data minimization, pseudonymization, and server-side processing.
               </li>
             </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest 
+              (Art. 6(1)(f) GDPR), you have the right to object at any time on grounds relating to your particular 
+              situation. To exercise this right, please contact us at mail@wealthconomy.com.
+            </p>
             <p className="text-muted-foreground mb-4">
               By using the "Get Recommendations" feature as a logged-in user, you are requesting the contractual service
               of receiving personalized business tool and strategy recommendations based on your stated business context
@@ -1310,10 +1354,10 @@ const PrivacyPolicy = () => {
               <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
               (Business Tools Advisor), your business profile data is transmitted server-side
               through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
-              <strong>Your client IP address is NOT transmitted to Google AI</strong>. Only
-              the IP address of our backend server is visible to the AI provider. This server-side architecture
-              protects your privacy by ensuring that the AI provider cannot directly identify or track individual users by
-              their IP addresses.
+              <strong>Your client IP address is generally not disclosed to Google AI or other AI providers</strong>. 
+              Requests to AI services are made from our servers, so only the backend server's IP address is visible 
+              to these providers. This server-side architecture protects your privacy by ensuring that the AI 
+              providers cannot directly identify or track individual users by their IP addresses.
             </p>
           </section>
 
@@ -1345,10 +1389,9 @@ const PrivacyPolicy = () => {
                 </ul>
                 <p className="mt-2 text-sm">
                   <strong>Data minimization and security:</strong> AI requests are processed through our backend 
-                  (Supabase Edge Functions), which means Google AI receives only your business profile data 
-                  (industry, team size, budget range, business goals) without personal identifiers such as your 
-                  name, email, or client IP address. Only the backend server's IP address is visible to Google. 
-                  All transmissions are encrypted using TLS/SSL protocols.
+                  (Supabase Edge Functions). We do not transmit direct personal identifiers such as your name or 
+                  email address to Google AI. Your client IP address is generally not disclosed to these services, 
+                  as requests are made from our backend servers. All transmissions are encrypted using TLS/SSL protocols.
                 </p>
               </li>
               <li>
@@ -1359,8 +1402,9 @@ const PrivacyPolicy = () => {
                     Provides real-time web search to generate relevant resource URLs embedded in strategy recommendations
                   </li>
                   <li>
-                    <strong>Data transmitted:</strong> Business context queries only (industry, goals, budget range) – 
-                    no personal identifiers (name, email, IP address)
+                    <strong>Data transmitted:</strong> Business context queries only (industry, goals, budget range). 
+                    We do not transmit direct personal identifiers such as your name or email address. Your client 
+                    IP address is generally not disclosed to Perplexity AI.
                   </li>
                   <li>
                     <strong>Models:</strong> Sonar (Standard) / Sonar Pro (Deep Analysis)
@@ -1623,7 +1667,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 17, 2025 (Version 3.0)
+              <strong>Last updated:</strong> December 28, 2025 (Version 3.2)
             </p>
           </section>
         </article>

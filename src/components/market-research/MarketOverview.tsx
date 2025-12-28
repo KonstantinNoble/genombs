@@ -4,8 +4,8 @@ interface MarketOverviewProps {
   marketSize?: {
     value: number;
     unit: string;
-    tam: number;
-    sam: number;
+    projectedValue: number;
+    projectionYear: number;
   };
 }
 
@@ -18,24 +18,19 @@ export function MarketOverview({ marketSize }: MarketOverviewProps) {
 
   const metrics = [
     {
-      label: "Total Market Size",
+      label: "Current Market Size",
       value: `$${marketSize.value}`,
       unit: displayUnit
     },
     {
-      label: "Total Addressable Market",
-      value: `$${marketSize.tam}`,
-      unit: displayUnit
-    },
-    {
-      label: "Serviceable Addressable Market",
-      value: `$${marketSize.sam}`,
+      label: `${marketSize.projectionYear || 2030} Projection`,
+      value: `$${marketSize.projectedValue}`,
       unit: displayUnit
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
       {metrics.map((metric, index) => (
         <Card 
           key={index} 

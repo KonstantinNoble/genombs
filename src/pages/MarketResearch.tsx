@@ -25,8 +25,8 @@ interface MarketResearchResult {
   marketSize?: {
     value: number;
     unit: string;
-    tam: number;
-    sam: number;
+    projectedValue: number;
+    projectionYear: number;
   };
   growth?: {
     cagr: number;

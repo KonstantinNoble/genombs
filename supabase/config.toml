@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.firecrawl-analyze]
 verify_jwt = true
+
+[functions.market-research]
+verify_jwt = true

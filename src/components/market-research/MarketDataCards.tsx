@@ -186,8 +186,14 @@ export function GrowthMetrics({ data, marketUnit }: { data: GrowthData; marketUn
   if (!data) return null;
 
   const currentYear = new Date().getFullYear();
-  const isMillions = marketUnit?.toLowerCase().includes('million');
-  const displayUnit = isMillions ? 'M' : 'B';
+  
+  // Smart formatting for projection value
+  const formatProjection = (val: number): { display: string; unit: string } => {
+    if (val < 1) {
+      return { display: `$${Math.round(val * 1000)}`, unit: 'M' };
+    }
+    return { display: `$${val}`, unit: 'B' };
+  };
 
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
@@ -207,14 +213,17 @@ export function GrowthMetrics({ data, marketUnit }: { data: GrowthData; marketUn
             <p className="text-xl sm:text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">Year-over-Year</p>
           </div>
-          {data.projectionNextYear && (
-            <div className="text-center p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
-              <p className="text-xl sm:text-3xl font-bold text-foreground">
-                ${data.projectionNextYear}{displayUnit}
-              </p>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{currentYear + 1} Projection</p>
-            </div>
-          )}
+          {data.projectionNextYear && (() => {
+            const formatted = formatProjection(data.projectionNextYear);
+            return (
+              <div className="text-center p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
+                <p className="text-xl sm:text-3xl font-bold text-foreground">
+                  {formatted.display}{formatted.unit}
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{currentYear + 1} Projection</p>
+              </div>
+            );
+          })()}
         </div>
         <p className="text-xs text-muted-foreground italic mt-4 text-center">
           Data sourced via AI web research. Verify with primary sources.

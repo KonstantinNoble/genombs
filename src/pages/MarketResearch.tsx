@@ -40,18 +40,15 @@ interface MarketResearchResult {
   }>;
   trends?: Array<{
     name: string;
-    impact: number;
-    growthPotential: number;
+    description?: string;
   }>;
   channels?: Array<{
     name: string;
-    effectiveness: number;
-    averageROI: number;
+    description?: string;
   }>;
   demographics?: Array<{
     segment: string;
-    percentage: number;
-    averageSpend?: number;
+    description?: string;
   }>;
   citations: Array<{ url: string; title: string }>;
 }

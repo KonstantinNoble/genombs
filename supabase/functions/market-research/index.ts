@@ -241,9 +241,10 @@ serve(async (req) => {
     }
 
     console.log(`Processing market research for industry: ${industry}`);
-    console.log('Analysis options:', analysisOptions);
+    console.log('Analysis options:', JSON.stringify(analysisOptions, null, 2));
 
     const prompt = buildPerplexityPrompt(industry, analysisOptions);
+    console.log('Generated prompt:', prompt.substring(0, 500) + '...');
 
     const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -302,6 +303,9 @@ Provide accurate, current market data in JSON format only. No explanations or ad
     const content = perplexityData.choices?.[0]?.message?.content;
     const citations = perplexityData.citations || [];
 
+    console.log('Raw Perplexity response content:', content?.substring(0, 1000) + '...');
+    console.log('Citations count:', citations?.length || 0);
+
     if (!content) {
       console.error('No content in Perplexity response');
       return new Response(
@@ -312,6 +316,8 @@ Provide accurate, current market data in JSON format only. No explanations or ad
 
     // Parse the structured response
     const result = parsePerplexityResponse(content, citations);
+    console.log('Parsed result keys:', Object.keys(result));
+    console.log('Market size values:', result.marketSize ? `value=${result.marketSize.value}, sam=${result.marketSize.sam}, tam=${result.marketSize.tam}` : 'N/A');
 
     // Update usage count
     const newCount = currentCount + 1;

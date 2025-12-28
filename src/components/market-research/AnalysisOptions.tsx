@@ -76,36 +76,36 @@ export function AnalysisOptions({ options, onChange, disabled }: AnalysisOptions
   const noneSelected = Object.values(options).every(v => !v);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-foreground">Analysis Options</h3>
+        <h3 className="text-xs sm:text-sm font-medium text-foreground">Analysis Options</h3>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={selectAll}
             disabled={disabled || allSelected}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            className="text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           >
             Select All
           </button>
-          <span className="text-muted-foreground">|</span>
+          <span className="text-muted-foreground text-[10px] sm:text-xs">|</span>
           <button
             type="button"
             onClick={clearAll}
             disabled={disabled || noneSelected}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            className="text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           >
             Clear All
           </button>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
         {(Object.keys(optionLabels) as Array<keyof AnalysisOptionsType>).map((key) => (
           <div
             key={key}
             className={`
-              flex items-start space-x-3 p-3 rounded-lg border transition-all
+              flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg border transition-all
               ${options[key] 
                 ? 'border-primary/50 bg-primary/5' 
                 : 'border-border bg-background/50 hover:border-border/80'
@@ -119,16 +119,16 @@ export function AnalysisOptions({ options, onChange, disabled }: AnalysisOptions
               checked={options[key]}
               onCheckedChange={(checked) => handleChange(key, checked === true)}
               disabled={disabled}
-              className="mt-0.5"
+              className="mt-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4"
             />
-            <div className="space-y-0.5">
+            <div className="space-y-0 sm:space-y-0.5 min-w-0">
               <Label 
                 htmlFor={key} 
-                className={`text-sm font-medium cursor-pointer ${disabled ? 'cursor-not-allowed' : ''}`}
+                className={`text-[11px] sm:text-sm font-medium cursor-pointer leading-tight ${disabled ? 'cursor-not-allowed' : ''}`}
               >
                 {optionLabels[key].label}
               </Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[9px] sm:text-xs text-muted-foreground leading-tight hidden sm:block">
                 {optionLabels[key].description}
               </p>
             </div>

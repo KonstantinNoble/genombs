@@ -63,7 +63,7 @@ export function CompetitorsList({ data }: { data: CompetitorData[] }) {
             </div>
             <div className="text-right flex-shrink-0">
               <p className="font-bold text-primary text-sm sm:text-lg">
-                {competitor.marketShare}%
+                {competitor.marketShare != null ? `${competitor.marketShare}%` : 'N/A'}
               </p>
               <p className="text-xs text-muted-foreground">market share</p>
             </div>

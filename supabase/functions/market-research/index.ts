@@ -57,7 +57,7 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
     requestedData.push('"growth": { "cagr": <number>, "yearOverYear": <number>, "projectionNextYear": <number> }');
   }
   if (options.competitors) {
-    requestedData.push('"competitors": [{ "name": "<string>", "marketShare": <number>, "revenue": <number or null> }]');
+    requestedData.push('"competitors": [{ "name": "<string>", "marketShare": <number 1-100 estimated percentage>, "revenue": <number in millions or null> }] (provide estimated percentages even if approximate)');
   }
   if (options.trends) {
     requestedData.push('"trends": [{ "name": "<string>", "description": "<string>" }]');

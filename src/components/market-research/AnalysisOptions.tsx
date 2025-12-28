@@ -19,27 +19,27 @@ interface AnalysisOptionsProps {
 const optionLabels: Record<keyof AnalysisOptionsType, { label: string; description: string }> = {
   marketSize: {
     label: "Market Size",
-    description: "Total market value, TAM, and SAM"
+    description: "Current value and future projections"
   },
   growth: {
     label: "Growth Projections",
-    description: "CAGR, YoY growth, and future projections"
+    description: "CAGR and year-over-year growth"
   },
   competitors: {
     label: "Competitor Analysis",
-    description: "Top competitors and market share distribution"
+    description: "Top competitors and market share"
   },
   trends: {
     label: "Market Trends",
-    description: "Key trends with impact and growth potential"
+    description: "Key industry trends and developments"
   },
   channels: {
     label: "Marketing Channels",
-    description: "Channel effectiveness and ROI analysis"
+    description: "Effective channels for your industry"
   },
   demographics: {
     label: "Demographics",
-    description: "Customer segments and spending patterns"
+    description: "Target customer segments"
   }
 };
 

@@ -87,7 +87,7 @@ const Navbar = () => {
           {/* Services Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger className={`text-sm font-semibold transition-all duration-300 flex items-center gap-1 ${
-              isActive("/business-tools") || isActive("/my-strategies")
+              isActive("/business-tools") || isActive("/my-strategies") || isActive("/market-research")
                 ? "text-primary" 
                 : "text-muted-foreground hover:text-foreground"
             }`}>
@@ -98,6 +98,11 @@ const Navbar = () => {
               <DropdownMenuItem asChild>
                 <Link to="/business-tools" className="cursor-pointer">
                   AI Business Planner
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/market-research" className="cursor-pointer">
+                  Market Research
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -192,6 +197,13 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   AI Business Planner
+                </Link>
+                <Link
+                  to="/market-research"
+                  className="block text-foreground font-medium hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Market Research
                 </Link>
                 <Link
                   to="/my-strategies"

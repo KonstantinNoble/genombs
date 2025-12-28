@@ -271,40 +271,40 @@ export default function MarketResearch() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         
-        <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+        <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Market Research
-            </h1>
-            <div className="flex items-center gap-4">
-              <p className="text-muted-foreground">
-                AI-powered market analysis with professional visualizations
-              </p>
+          <div className="mb-4 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+                Market Research
+              </h1>
               {usage && (
-                <span className={`text-sm px-3 py-1 rounded-full ${
+                <span className={`text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full w-fit ${
                   usage.isPremium 
                     ? 'bg-primary/10 text-primary' 
                     : 'bg-muted text-muted-foreground'
                 }`}>
-                  {usage.count}/{usage.limit} analyses today
-                  {usage.isPremium && " (Premium)"}
+                  {usage.count}/{usage.limit} today
+                  {usage.isPremium && " ✓"}
                 </span>
               )}
             </div>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+              AI-powered market analysis with visualizations
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-3 space-y-8">
+            <div className="lg:col-span-3 space-y-4 sm:space-y-8">
               {/* Input Section */}
               <Card className="bg-card/80 backdrop-blur-sm border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                  <CardTitle className="text-base sm:text-lg font-semibold text-foreground">
                     Configure Analysis
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="p-4 sm:p-6 pt-2 sm:pt-4 space-y-4 sm:space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Industry or Market
@@ -365,14 +365,14 @@ export default function MarketResearch() {
 
               {/* Results Section */}
               {result && !isLoading && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Market Overview */}
                   {result.marketSize && (
                     <MarketOverview marketSize={result.marketSize} />
                   )}
 
                   {/* Charts Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     {result.competitors && (
                       <CompetitorPieChart data={result.competitors} />
                     )}
@@ -406,31 +406,31 @@ export default function MarketResearch() {
               )}
             </div>
 
-            {/* History Sidebar */}
-            <div className="lg:col-span-1">
-              <Card className="bg-card/80 backdrop-blur-sm border-border/50 sticky top-24">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+            {/* History Sidebar - Hidden on mobile, shown at bottom or as collapsible */}
+            <div className="lg:col-span-1 order-first lg:order-last">
+              <Card className="bg-card/80 backdrop-blur-sm border-border/50 lg:sticky lg:top-24">
+                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-4">
+                  <CardTitle className="text-sm sm:text-lg font-semibold text-foreground">
                     Recent Analyses
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                   {history.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       No previous analyses yet.
                     </p>
                   ) : (
-                    <ul className="space-y-3">
+                    <ul className="flex lg:flex-col gap-2 sm:gap-3 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-1 px-1">
                       {history.map((item) => (
-                        <li key={item.id}>
+                        <li key={item.id} className="flex-shrink-0 lg:flex-shrink">
                           <button
                             onClick={() => loadFromHistory(item)}
-                            className="w-full text-left p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors"
+                            className="w-full min-w-[140px] lg:min-w-0 text-left p-2 sm:p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors"
                           >
-                            <p className="font-medium text-foreground text-sm truncate">
+                            <p className="font-medium text-foreground text-xs sm:text-sm truncate max-w-[120px] lg:max-w-full">
                               {item.industry || item.query}
                             </p>
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
                               {new Date(item.created_at).toLocaleDateString()}
                             </p>
                           </button>

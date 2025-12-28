@@ -55,17 +55,6 @@ const Hero = () => {
             >
               <Link to="/business-tools">{isPremium && user ? "Go to Planner" : "Create Your Strategy"}</Link>
             </Button>
-
-            {!(isPremium && user) && (
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-8"
-                asChild
-              >
-                <Link to="/ideas">Explore Business Ideas</Link>
-              </Button>
-            )}
           </div>
 
           <div

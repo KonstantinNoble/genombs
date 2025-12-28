@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 21, 2025 | Version 2.7</p>
+          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 2.8</p>
 
           <div className="space-y-8">
             <section>
@@ -307,109 +307,6 @@ const TermsOfService = () => {
                 accounts for Terms violations. Serious violations result in immediate termination. You may appeal via
                 mail@wealthconomy.com.
               </p>
-            </section>
-            {/* Section V.A - Community Content */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">V.A Community Content (Business Ideas & Comments)</h2>
-
-              <p className="mb-4">
-                Our platform offers a Business Ideas Community where registered users can share business ideas, 
-                provide feedback through ratings, and engage in discussions through comments and replies.
-              </p>
-
-              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">⚠️ PUBLIC VISIBILITY</p>
-                <p>
-                  <strong>All business ideas, comments, and replies you post are publicly visible</strong> to all users, including 
-                  non-registered visitors. Your display name will be shown alongside your content. Do NOT share 
-                  confidential information, trade secrets, or personal data.
-                </p>
-              </div>
-
-              <h3 className="text-xl font-semibold mt-6 mb-3">Business Ideas</h3>
-              <p className="mb-4">
-                <strong>Your Content Rights:</strong>
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>You retain all intellectual property rights to your posted ideas</li>
-                <li>By posting, you grant us a non-exclusive, worldwide, royalty-free license to display and distribute your content on our platform</li>
-                <li>You may delete your ideas at any time, which terminates this license</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold mt-6 mb-3">Comments and Replies</h3>
-              <p className="mb-4">
-                Registered users can post comments on business ideas and reply to other comments. Comments support 
-                nested discussions up to <strong>3 levels deep</strong>. All comments and replies are publicly visible.
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>You may delete your own comments and replies at any time</li>
-                <li>When you delete a comment, all nested replies to that comment are also removed</li>
-                <li>Comments on deleted ideas are automatically removed</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold mt-6 mb-3">Usage Limits</h3>
-              <p className="mb-4">
-                To maintain quality discussions and prevent spam, the following rate limits apply:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li><strong>Business Ideas:</strong> 1 idea per 24 hours per user</li>
-                <li><strong>Comments and Replies:</strong> 1 comment or reply per 10 hours per user</li>
-              </ul>
-
-              <p className="mb-4">
-                <strong>Prohibited Content:</strong>
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Spam, excessive self-promotion, or commercial advertisements</li>
-                <li>Illegal, fraudulent, or misleading content</li>
-                <li>Offensive, discriminatory, or hateful content</li>
-                <li>Copyright-infringing material or third-party intellectual property violations</li>
-                <li>Personal data of third parties without their consent</li>
-                <li>Malicious links or phishing attempts</li>
-              </ul>
-
-              <p className="mb-4">
-                <strong>URL Requirements:</strong> Website URLs must begin with <code className="bg-muted px-1 rounded">https://</code> and 
-                not exceed 100 characters. Invalid URLs will be rejected.
-              </p>
-
-              <p className="mb-4">
-                <strong>Rating Guidelines:</strong> Ratings should be fair, constructive, and based on the quality 
-                and viability of the idea. Manipulation of ratings (fake accounts, coordinated voting) is prohibited.
-              </p>
-
-              <p className="mb-4">
-                <strong>Moderation Rights:</strong> We reserve the right to:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Remove any content (ideas, comments, replies) that violates these Terms without prior notice</li>
-                <li>Warn, suspend, or terminate accounts that repeatedly violate community guidelines</li>
-                <li>Modify or remove content that poses legal risks</li>
-                <li>Delete comments and replies to maintain discussion coherence when parent content is removed</li>
-              </ul>
-
-              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
-                <p className="font-semibold mb-2">📋 Disclaimer for User-Generated Content</p>
-                <p className="mb-3">
-                  Business ideas, comments, and discussions shared by users represent their personal opinions and are not endorsed, verified, 
-                  or guaranteed by Synoptas. We are not responsible for the accuracy, legality, or viability of 
-                  user-generated content. Always conduct your own due diligence before acting on any ideas.
-                </p>
-                <p className="mb-3">
-                  <strong>Platform Liability:</strong> As a platform operator, we are not obligated to proactively monitor 
-                  user-generated content for potential legal violations. Pursuant to applicable hosting provider liability rules 
-                  (particularly § 10 TMG / Art. 6 DSA), we only become responsible for unlawful content once we gain actual 
-                  knowledge thereof and fail to remove it promptly.
-                </p>
-                <p>
-                  <strong>Reporting Violations:</strong> If you encounter content that violates these Terms or applicable law, 
-                  please report it to{" "}
-                  <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
-                    mail@wealthconomy.com
-                  </a>
-                  . We will review the reported content and take appropriate action, including removal if warranted.
-                </p>
-              </div>
             </section>
             {/* Section VI - Liability */}
             {/* Section VI - Liability */}

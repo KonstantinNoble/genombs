@@ -58,7 +58,7 @@ const Hero = () => {
             <Button
               size="lg"
               variant="outline"
-              className="text-base px-8"
+              className="text-base px-8 border-accent-cool/50 text-accent-cool hover:bg-accent-cool/10 hover:border-accent-cool drop-shadow-[0_0_12px_hsl(var(--accent-cool)/0.4)]"
               asChild
             >
               <Link to="/market-research">Market Research</Link>

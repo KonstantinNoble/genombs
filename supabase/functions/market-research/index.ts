@@ -54,41 +54,49 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
   const sections: string[] = [];
   
   if (options.marketSize) {
-    sections.push(`- Market Size: Total market value in billions USD, Total Addressable Market (TAM), Serviceable Addressable Market (SAM)`);
+    sections.push(`- Market Size: Total market value in billions USD for THIS SPECIFIC product/service category, TAM, SAM`);
   }
   if (options.growth) {
     sections.push(`- Growth Metrics: CAGR percentage, Year-over-year growth rate, Projected market size for 2026`);
   }
   if (options.competitors) {
-    sections.push(`- Top 5-7 Competitors: Company name, market share percentage, estimated annual revenue if available`);
+    sections.push(`- Top 5-7 DIRECT Competitors: Companies that offer SIMILAR products/services to "${industry}". Include company name, market share percentage within this niche, estimated annual revenue if available. Do NOT include general tech giants unless they have a specific competing product.`);
   }
   if (options.trends) {
-    sections.push(`- 4-6 Key Market Trends: Trend name, impact score (1-10), growth potential score (1-10)`);
+    sections.push(`- 4-6 Key Trends: Specific trends affecting THIS product/service category, not the broader industry. Trend name, impact score (1-10), growth potential score (1-10)`);
   }
   if (options.channels) {
-    sections.push(`- 5-6 Marketing Channels: Channel name, effectiveness score (0-100), average ROI percentage`);
+    sections.push(`- 5-6 Marketing Channels: Best channels to market THIS specific type of product/service. Channel name, effectiveness score (0-100), average ROI percentage`);
   }
   if (options.demographics) {
-    sections.push(`- 4-6 Customer Demographics: Segment name, percentage of market, average spend if available`);
+    sections.push(`- 4-6 Target Customer Segments: WHO would buy this specific product/service? Segment name, percentage of target market, average spend if available`);
   }
 
-  return `Provide current market research data for the "${industry}" industry/market. Return ONLY structured data in valid JSON format with no additional text or explanation.
+  return `You are researching "${industry}" as a SPECIFIC PRODUCT or SERVICE category.
+
+CRITICAL INSTRUCTIONS:
+1. Interpret "${industry}" as describing a specific PRODUCT/SERVICE type, NOT a broad industry
+2. Find DIRECT COMPETITORS - companies that offer the same or very similar solutions
+3. If the query mentions "AI tools for X" or "software for X", research AI TOOLS/SOFTWARE vendors, NOT companies in industry X
+4. Example: "AI business planner for ecommerce" = find AI planning tools (like Notion AI, Monday.com AI features, etc.), NOT ecommerce companies (like Amazon, Shopify)
+5. Competitors should be companies a customer would evaluate INSTEAD of the product described
+6. All data should be specific to this product/service niche, not the broader industry
 
 Required data points:
 ${sections.join('\n')}
 
 Respond with a JSON object matching this exact structure (include only sections that were requested):
 {
-  ${options.marketSize ? `"marketSize": { "value": <number in billions>, "unit": "billion USD", "tam": <number in billions>, "sam": <number in billions> },` : ''}
+  ${options.marketSize ? `"marketSize": { "value": <number in billions for this specific niche>, "unit": "billion USD", "tam": <number in billions>, "sam": <number in billions> },` : ''}
   ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projection2026": <number in billions> },` : ''}
-  ${options.competitors ? `"competitors": [{ "name": "<string>", "marketShare": <percentage number>, "revenue": <number in millions or null> }],` : ''}
-  ${options.trends ? `"trends": [{ "name": "<string>", "impact": <1-10>, "growthPotential": <1-10> }],` : ''}
-  ${options.channels ? `"channels": [{ "name": "<string>", "effectiveness": <0-100>, "averageROI": <percentage number> }],` : ''}
-  ${options.demographics ? `"demographics": [{ "segment": "<string>", "percentage": <number>, "averageSpend": <number or null> }],` : ''}
+  ${options.competitors ? `"competitors": [{ "name": "<direct competitor company name>", "marketShare": <percentage within this niche>, "revenue": <number in millions or null> }],` : ''}
+  ${options.trends ? `"trends": [{ "name": "<trend specific to this product/service type>", "impact": <1-10>, "growthPotential": <1-10> }],` : ''}
+  ${options.channels ? `"channels": [{ "name": "<marketing channel>", "effectiveness": <0-100>, "averageROI": <percentage number> }],` : ''}
+  ${options.demographics ? `"demographics": [{ "segment": "<buyer persona for this product>", "percentage": <number>, "averageSpend": <number or null> }],` : ''}
   "citations": [{ "url": "<string>", "title": "<string>" }]
 }
 
-Use real, current market data from 2024-2025. All numbers must be realistic and based on actual market research.`;
+Use real, current market data from 2024-2025. All numbers must be realistic and based on actual market research for this specific product/service category.`;
 }
 
 function parsePerplexityResponse(content: string, citations: any[]): MarketResearchResult {
@@ -234,11 +242,23 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are a market research analyst. Provide accurate, current market data in JSON format only. No explanations or additional text.' 
+            content: `You are a specialized market research analyst focusing on PRODUCT and SERVICE categories.
+
+CRITICAL: When a user describes something like "AI tool for X industry" or "software for Y sector":
+- Research the TOOL/SOFTWARE market, NOT the industry mentioned
+- Find DIRECT COMPETITORS that offer similar products/services
+- Do NOT return major industry players unless they have a specific competing product
+
+Example interpretations:
+- "AI business planner for ecommerce" → Research AI planning/productivity tools (Notion AI, Monday.com, Asana, etc.)
+- "CRM for healthcare" → Research CRM vendors targeting healthcare (Salesforce Health Cloud, Veeva, etc.)
+- "Accounting software for restaurants" → Research accounting software (QuickBooks, Xero, MarginEdge, etc.)
+
+Provide accurate, current market data in JSON format only. No explanations or additional text.` 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.1,
+        temperature: 0.2,
         max_tokens: 4000,
       }),
     });

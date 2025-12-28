@@ -25,7 +25,7 @@ interface MarketResearchResult {
   growth?: {
     cagr: number;
     yearOverYear: number;
-    projection2026: number;
+    projectionNextYear: number;
   };
   competitors?: Array<{
     name: string;
@@ -52,12 +52,19 @@ interface MarketResearchResult {
 
 function buildPerplexityPrompt(industry: string, options: AnalysisOptions): string {
   const sections: string[] = [];
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+  
+  // Detect if this is a local/regional market query
+  const localKeywords = /\b(local|city|town|regional|london|berlin|paris|new york|munich|hamburg|frankfurt|cologne|düsseldorf|stuttgart|vienna|zurich|amsterdam|brussels|madrid|rome|milan|barcelona|tokyo|singapore|sydney|melbourne|toronto|vancouver|chicago|los angeles|san francisco|seattle|boston|miami|atlanta|dallas|houston|phoenix|denver|portland|austin|nashville|charlotte|philadelphia|detroit|minneapolis|cleveland|pittsburgh|baltimore|washington dc|orlando|tampa|indianapolis|columbus|kansas city|st louis|milwaukee|sacramento|san diego|san jose|oakland|riverside|las vegas|raleigh|jacksonville|memphis|louisville|oklahoma city|richmond|virginia beach|providence|hartford|buffalo|rochester|albany|syracuse|new orleans|salt lake city|tucson|albuquerque|fresno|birmingham|el paso|boise|des moines|omaha|tulsa|wichita|little rock|madison|grand rapids|dayton|akron|spokane|tacoma|modesto|shreveport|montgomery|lubbock|garland|hialeah|irving|glendale|scottsdale|fremont|gilbert|chandler|henderson|north las vegas|reno|irvine|chesapeake|norfolk|greensboro|durham|winston-salem|fayetteville|cary|wilmington|high point|greenville|asheville|concord|gastonia|jacksonville nc|chapel hill|huntersville|apex|wake forest|morrisville|holly springs|fuquay-varina|clayton|sanford|burlington|rocky mount|wilson|kinston|new bern|havelock|morehead city|beaufort|atlantic beach|emerald isle|carolina beach|wrightsville beach|kure beach|southport|oak island|holden beach|sunset beach|ocean isle beach|calabash|shallotte|bolivia|leland|hampstead|surf city|topsail beach|north topsail beach|sneads ferry|richlands|swansboro|hubert|maysville|pollocksville|trenton|pink hill|la grange|snow hill|farmville|greenville|winterville|ayden|grifton|bethel|tarboro|pinetops|macclesfield|princeville|speed|whitakers|battleboro|red oak|nashville|spring hope|bailey|middlesex|zebulon|wendell|knightdale|rolesville|wake forest|youngsville|franklinton|louisburg|henderson|oxford|creedmoor|butner|stem|roxboro|person county|caswell county|alamance county|orange county|chatham county|lee county|harnett county|johnston county|wayne county|lenoir county|craven county|carteret county|onslow county|pender county|new hanover county|brunswick county|columbus county|robeson county|scotland county|richmond county|moore county|montgomery county|stanly county|cabarrus county|rowan county|davidson county|randolph county|guilford county|forsyth county|stokes county|surry county|yadkin county|davie county|iredell county|alexander county|catawba county|burke county|caldwell county|watauga county|ashe county|alleghany county|wilkes county|avery county|mitchell county|yancey county|madison county|buncombe county|henderson county|transylvania county|haywood county|jackson county|swain county|graham county|cherokee county|clay county|macon county|polk county|rutherford county|cleveland county|gaston county|lincoln county|mecklenburg county|union county|anson county|richmond county|scotland county|hoke county|cumberland county|bladen county|sampson county|duplin county|jones county|pamlico county|beaufort county|pitt county|martin county|edgecombe county|nash county|halifax county|warren county|vance county|granville county|franklin county|wake county|durham county)\b/i;
+  const isLocalMarket = localKeywords.test(industry);
+  const sizeUnit = isLocalMarket ? "millions USD" : "billions USD";
   
   if (options.marketSize) {
-    sections.push(`- Market Size: Total market value in billions USD for THIS SPECIFIC product/service category, TAM, SAM`);
+    sections.push(`- Market Size: Total market value in ${sizeUnit} for THIS SPECIFIC geographic area and product/service category, TAM, SAM`);
   }
   if (options.growth) {
-    sections.push(`- Growth Metrics: CAGR percentage, Year-over-year growth rate, Projected market size for 2026`);
+    sections.push(`- Growth Metrics: CAGR percentage, Year-over-year growth rate, Projected market size for ${nextYear} in ${sizeUnit}`);
   }
   if (options.competitors) {
     sections.push(`- Top 5-7 DIRECT Competitors: Companies that offer SIMILAR products/services to "${industry}". Include company name, market share percentage within this niche, estimated annual revenue if available. Do NOT include general tech giants unless they have a specific competing product.`);
@@ -72,6 +79,12 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
     sections.push(`- 4-6 Target Customer Segments: WHO would buy this specific product/service? Segment name, percentage of target market, average spend if available`);
   }
 
+  const geographicInstruction = isLocalMarket 
+    ? `\n7. This is a LOCAL/REGIONAL market query - all data must be specific to the mentioned geographic area
+8. Use MILLIONS (not billions) for market size values - local markets are typically in the millions range
+9. If you cannot find specific local data, clearly state this and provide the closest regional data available`
+    : '';
+
   return `You are researching "${industry}" as a SPECIFIC PRODUCT or SERVICE category.
 
 CRITICAL INSTRUCTIONS:
@@ -80,15 +93,15 @@ CRITICAL INSTRUCTIONS:
 3. If the query mentions "AI tools for X" or "software for X", research AI TOOLS/SOFTWARE vendors, NOT companies in industry X
 4. Example: "AI business planner for ecommerce" = find AI planning tools (like Notion AI, Monday.com AI features, etc.), NOT ecommerce companies (like Amazon, Shopify)
 5. Competitors should be companies a customer would evaluate INSTEAD of the product described
-6. All data should be specific to this product/service niche, not the broader industry
+6. All data should be specific to this product/service niche, not the broader industry${geographicInstruction}
 
 Required data points:
 ${sections.join('\n')}
 
 Respond with a JSON object matching this exact structure (include only sections that were requested):
 {
-  ${options.marketSize ? `"marketSize": { "value": <number in billions for this specific niche>, "unit": "billion USD", "tam": <number in billions>, "sam": <number in billions> },` : ''}
-  ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projection2026": <number in billions> },` : ''}
+  ${options.marketSize ? `"marketSize": { "value": <number in ${sizeUnit} for this specific niche>, "unit": "${sizeUnit}", "tam": <number in ${sizeUnit}>, "sam": <number in ${sizeUnit}> },` : ''}
+  ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projectionNextYear": <number in ${sizeUnit}> },` : ''}
   ${options.competitors ? `"competitors": [{ "name": "<direct competitor company name>", "marketShare": <percentage within this niche>, "revenue": <number in millions or null> }],` : ''}
   ${options.trends ? `"trends": [{ "name": "<trend specific to this product/service type>", "impact": <1-10>, "growthPotential": <1-10> }],` : ''}
   ${options.channels ? `"channels": [{ "name": "<marketing channel>", "effectiveness": <0-100>, "averageROI": <percentage number> }],` : ''}
@@ -96,7 +109,7 @@ Respond with a JSON object matching this exact structure (include only sections 
   "citations": [{ "url": "<string>", "title": "<string>" }]
 }
 
-Use real, current market data from 2024-2025. All numbers must be realistic and based on actual market research for this specific product/service category.`;
+Use real, current market data from ${currentYear - 1}-${currentYear}. All numbers must be realistic and based on actual market research for this specific product/service category.`;
 }
 
 function parsePerplexityResponse(content: string, citations: any[]): MarketResearchResult {
@@ -244,15 +257,21 @@ serve(async (req) => {
             role: 'system', 
             content: `You are a specialized market research analyst focusing on PRODUCT and SERVICE categories.
 
-CRITICAL: When a user describes something like "AI tool for X industry" or "software for Y sector":
-- Research the TOOL/SOFTWARE market, NOT the industry mentioned
+CRITICAL GEOGRAPHIC RULES:
+- If the query mentions a specific CITY, REGION, or "local", provide data for THAT GEOGRAPHIC AREA ONLY
+- "Local business for petstores in London" = London/UK pet retail market data, NOT global figures
+- Use MILLIONS (not billions) for local/regional markets
+- Use BILLIONS only for national/global markets
+
+CRITICAL PRODUCT/SERVICE RULES:
+- When a user describes "AI tool for X" or "software for Y", research the TOOL market, NOT industry X
 - Find DIRECT COMPETITORS that offer similar products/services
 - Do NOT return major industry players unless they have a specific competing product
 
 Example interpretations:
 - "AI business planner for ecommerce" → Research AI planning/productivity tools (Notion AI, Monday.com, Asana, etc.)
 - "CRM for healthcare" → Research CRM vendors targeting healthcare (Salesforce Health Cloud, Veeva, etc.)
-- "Accounting software for restaurants" → Research accounting software (QuickBooks, Xero, MarginEdge, etc.)
+- "Local petstores in London" → UK/London pet retail market in MILLIONS, local pet store chains
 
 Provide accurate, current market data in JSON format only. No explanations or additional text.` 
           },

@@ -28,14 +28,14 @@ const CHART_COLORS = [
 const AXIS_TICK = {
   fill: "hsl(var(--foreground))",
   fillOpacity: 0.92,
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 600,
 } as const;
 
 const AXIS_TICK_MOBILE = {
   fill: "hsl(var(--foreground))",
   fillOpacity: 0.92,
-  fontSize: 9,
+  fontSize: 10,
   fontWeight: 600,
 } as const;
 
@@ -130,11 +130,11 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                 style={{ backgroundColor: item.fill }}
               />
               <div className="min-w-0 flex-1">
-                <span className="text-foreground/80 font-medium text-xs sm:text-base" title={item.name}>
+                <span className="text-foreground/80 font-medium text-sm sm:text-base" title={item.name}>
                   {item.name}
                 </span>
               </div>
-              <span className="font-bold text-foreground text-xs sm:text-base flex-shrink-0">{item.marketShare}%</span>
+              <span className="font-bold text-foreground text-sm sm:text-base flex-shrink-0">{item.marketShare}%</span>
             </div>
           ))}
         </div>
@@ -223,21 +223,43 @@ export function TrendImpactChart({ data }: TrendChartProps) {
         <CardTitle className="text-base sm:text-xl font-bold text-foreground">Market Trends</CardTitle>
       </CardHeader>
       <CardContent className="px-3 sm:px-6">
-        <div className={`h-[300px] sm:h-[360px] ${CHART_FRAME_CLASS}`}>
+        {/* Mobile: Show as list instead of chart */}
+        <div className="block sm:hidden space-y-3">
+          {data.map((item, index) => (
+            <div key={index} className="p-3 bg-background/50 rounded-lg">
+              <p className="text-sm font-medium text-foreground mb-2">{item.name}</p>
+              <div className="flex justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-1))" }} />
+                  <span className="text-muted-foreground">Impact:</span>
+                  <span className="font-semibold text-foreground">{item.impact}/10</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-3))" }} />
+                  <span className="text-muted-foreground">Growth:</span>
+                  <span className="font-semibold text-foreground">{item.growthPotential}/10</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: Show chart */}
+        <div className={`hidden sm:block h-[360px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ left: 8, right: 8, bottom: 70, top: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="name"
-                tick={AXIS_TICK_MOBILE}
+                tick={AXIS_TICK}
                 tickMargin={8}
                 stroke="hsl(var(--border))"
                 angle={-45}
                 textAnchor="end"
                 height={80}
-                tickFormatter={(value) => (value.length > 14 ? value.slice(0, 14) + "…" : value)}
+                tickFormatter={(value) => (value.length > 18 ? value.slice(0, 18) + "…" : value)}
               />
-              <YAxis domain={[0, 10]} tick={AXIS_TICK_MOBILE} tickMargin={6} stroke="hsl(var(--border))" />
+              <YAxis domain={[0, 10]} tick={AXIS_TICK} tickMargin={6} stroke="hsl(var(--border))" />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
                 labelStyle={TOOLTIP_LABEL_STYLE}
@@ -258,7 +280,7 @@ export function TrendImpactChart({ data }: TrendChartProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-3 sm:mt-5 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2">
+        <div className="mt-3 sm:mt-5 hidden sm:flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2">
           <LegendItem color="hsl(var(--chart-1))" label="Impact" />
           <LegendItem color="hsl(var(--chart-3))" label="Growth" />
         </div>
@@ -329,11 +351,11 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
                   className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm flex-shrink-0"
                   style={{ backgroundColor: item.fill }}
                 />
-                <span className="text-foreground/80 font-medium text-xs sm:text-base" title={item.name}>
+                <span className="text-foreground/80 font-medium text-sm sm:text-base" title={item.name}>
                   {item.name}
                 </span>
               </div>
-              <span className="font-bold text-foreground text-xs sm:text-base flex-shrink-0">{item.value}%</span>
+              <span className="font-bold text-foreground text-sm sm:text-base flex-shrink-0">{item.value}%</span>
             </div>
           ))}
         </div>
@@ -373,16 +395,16 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
       <CardContent className="px-3 sm:px-6">
         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
-            <p className="text-xl sm:text-3xl font-bold text-primary">{data.cagr}%</p>
-            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">CAGR</p>
+            <p className="text-lg sm:text-3xl font-bold text-primary">{data.cagr}%</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">CAGR</p>
           </div>
           <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
-            <p className="text-xl sm:text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
-            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">YoY</p>
+            <p className="text-lg sm:text-3xl font-bold text-foreground">{data.yearOverYear}%</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">YoY</p>
           </div>
           <div className="text-center p-2 sm:p-4 bg-background/50 rounded-lg">
-            <p className="text-xl sm:text-3xl font-bold text-foreground">${data.projection2026}B</p>
-            <p className="text-[10px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">2026</p>
+            <p className="text-lg sm:text-3xl font-bold text-foreground">${data.projection2026}B</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">2026</p>
           </div>
         </div>
 

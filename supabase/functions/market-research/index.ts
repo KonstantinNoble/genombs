@@ -58,7 +58,11 @@ function buildPerplexityPrompt(industry: string, options: AnalysisOptions): stri
   const sizeUnit = isLocalMarket ? "millions USD" : "billions USD";
   
   if (options.marketSize) {
-    sections.push(`- Market Size: Total market value in ${sizeUnit} for THIS SPECIFIC geographic area and product/service category, TAM, SAM`);
+    sections.push(`- Market Size: Provide these THREE values in ${sizeUnit}:
+    1. "value" = CURRENT total market size for THIS SPECIFIC product/service niche (the actual market today)
+    2. "tam" = Total Addressable Market (the MAXIMUM theoretical market if 100% adoption - must be >= value)
+    3. "sam" = Serviceable Addressable Market (realistic reachable market - must be <= tam and >= value)
+    The relationship MUST be: value <= sam <= tam`);
   }
   if (options.growth) {
     sections.push(`- Growth Metrics: CAGR percentage, Year-over-year growth rate, Projected market size for ${nextYear} in ${sizeUnit}`);
@@ -97,7 +101,7 @@ ${sections.join('\n')}
 
 Respond with a JSON object matching this exact structure (include only sections that were requested):
 {
-  ${options.marketSize ? `"marketSize": { "value": <number in ${sizeUnit} for this specific niche>, "unit": "${sizeUnit}", "tam": <number in ${sizeUnit}>, "sam": <number in ${sizeUnit}> },` : ''}
+  ${options.marketSize ? `"marketSize": { "value": <current market size in ${sizeUnit}>, "unit": "${sizeUnit}", "tam": <total addressable market, must be >= value>, "sam": <serviceable addressable market, must be between value and tam> },` : ''}
   ${options.growth ? `"growth": { "cagr": <percentage number>, "yearOverYear": <percentage number>, "projectionNextYear": <number in ${sizeUnit}> },` : ''}
   ${options.competitors ? `"competitors": [{ "name": "<direct competitor company name>", "marketShare": <percentage within this niche>, "revenue": <number in millions or null> }],` : ''}
   ${options.trends ? `"trends": [{ "name": "<trend name>", "description": "<1-2 sentence explanation of why this trend matters>" }],` : ''}
@@ -254,9 +258,15 @@ serve(async (req) => {
             role: 'system', 
             content: `You are a specialized market research analyst focusing on PRODUCT and SERVICE categories.
 
+CRITICAL MARKET SIZE RULES:
+- "value" = the CURRENT market size (what the market is worth TODAY)
+- "tam" = Total Addressable Market (theoretical MAXIMUM if everyone bought - always LARGEST number)
+- "sam" = Serviceable Addressable Market (realistic reachable portion - between value and tam)
+- The relationship MUST be: value <= sam <= tam
+- Example: value=$5B, sam=$12B, tam=$25B (tam is ALWAYS the largest!)
+
 CRITICAL GEOGRAPHIC RULES:
 - If the query mentions a specific CITY, REGION, or "local", provide data for THAT GEOGRAPHIC AREA ONLY
-- "Local business for petstores in London" = London/UK pet retail market data, NOT global figures
 - Use MILLIONS (not billions) for local/regional markets
 - Use BILLIONS only for national/global markets
 
@@ -265,12 +275,12 @@ CRITICAL PRODUCT/SERVICE RULES:
 - Find DIRECT COMPETITORS that offer similar products/services
 - Do NOT return major industry players unless they have a specific competing product
 
-Example interpretations:
-- "AI business planner for ecommerce" → Research AI planning/productivity tools (Notion AI, Monday.com, Asana, etc.)
-- "CRM for healthcare" → Research CRM vendors targeting healthcare (Salesforce Health Cloud, Veeva, etc.)
-- "Local petstores in London" → UK/London pet retail market in MILLIONS, local pet store chains
+CRITICAL DATA QUALITY RULES:
+- Do NOT invent data. If you cannot find reliable data for a specific metric, use realistic estimates based on comparable markets.
+- All numbers must be internally consistent (tam >= sam >= value)
+- For trends and channels: Describe WHY they matter, do NOT assign numerical scores
 
-Provide accurate, current market data in JSON format only. No explanations or additional text.` 
+Provide accurate, current market data in JSON format only. No explanations or additional text.`
           },
           { role: 'user', content: prompt }
         ],

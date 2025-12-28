@@ -67,9 +67,9 @@ serve(async (req) => {
     // Order matters: child tables first, then parent tables, finally auth user
     
     const userId = userData.user.id;
+    console.log('Starting GDPR-compliant account deletion for user:', userId);
 
-    // Delete strategy phase progress (contains actions_completed and milestones_completed arrays)
-    console.log('Deleting strategy_phase_progress for user:', userId);
+    // 1. Get all strategy IDs for this user (needed for child table deletions)
     const { data: strategies } = await adminClient
       .from('active_strategies')
       .select('id')
@@ -77,7 +77,20 @@ serve(async (req) => {
 
     const strategyIds = strategies?.map(s => s.id) || [];
 
+    // 2. Delete autopilot_focus_tasks (references strategy_id)
+    console.log('Deleting autopilot_focus_tasks for user:', userId);
+    const { error: focusTasksError } = await adminClient
+      .from('autopilot_focus_tasks')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (focusTasksError) {
+      console.error('Failed to delete autopilot_focus_tasks:', focusTasksError);
+    }
+
+    // 3. Delete strategy_phase_progress (references strategy_id)
     if (strategyIds.length > 0) {
+      console.log('Deleting strategy_phase_progress for strategies:', strategyIds);
       const { error: phasesError } = await adminClient
         .from('strategy_phase_progress')
         .delete()
@@ -86,19 +99,42 @@ serve(async (req) => {
       if (phasesError) {
         console.error('Failed to delete strategy_phase_progress:', phasesError);
       }
-
-      // Now delete the parent strategies table
-      console.log('Deleting active_strategies for user:', userId);
-      const { error: strategiesDeleteError } = await adminClient
-        .from('active_strategies')
-        .delete()
-        .eq('user_id', userId);
-      
-      if (strategiesDeleteError) {
-        console.error('Failed to delete active_strategies:', strategiesDeleteError);
-      }
     }
 
+    // 4. Delete active_strategies
+    console.log('Deleting active_strategies for user:', userId);
+    const { error: strategiesDeleteError } = await adminClient
+      .from('active_strategies')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (strategiesDeleteError) {
+      console.error('Failed to delete active_strategies:', strategiesDeleteError);
+    }
+
+    // 5. Delete ads_advisor_history
+    console.log('Deleting ads_advisor_history for user:', userId);
+    const { error: adsError } = await adminClient
+      .from('ads_advisor_history')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (adsError) {
+      console.error('Failed to delete ads_advisor_history:', adsError);
+    }
+
+    // 6. Delete market_research_history
+    console.log('Deleting market_research_history for user:', userId);
+    const { error: marketError } = await adminClient
+      .from('market_research_history')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (marketError) {
+      console.error('Failed to delete market_research_history:', marketError);
+    }
+
+    // 7. Delete business_tools_history
     console.log('Deleting business_tools_history for user:', userId);
     const { error: toolsError } = await adminClient
       .from('business_tools_history')
@@ -109,6 +145,18 @@ serve(async (req) => {
       console.error('Failed to delete business_tools_history:', toolsError);
     }
 
+    // 8. Delete user_roles
+    console.log('Deleting user_roles for user:', userId);
+    const { error: rolesError } = await adminClient
+      .from('user_roles')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (rolesError) {
+      console.error('Failed to delete user_roles:', rolesError);
+    }
+
+    // 9. Delete user_credits
     console.log('Deleting user_credits for user:', userId);
     const { error: creditsError } = await adminClient
       .from('user_credits')
@@ -119,6 +167,7 @@ serve(async (req) => {
       console.error('Failed to delete user_credits:', creditsError);
     }
 
+    // 10. Delete profile
     console.log('Deleting profile for user:', userId);
     const { error: profileError } = await adminClient
       .from('profiles')
@@ -129,24 +178,24 @@ serve(async (req) => {
       console.error('Failed to delete profile:', profileError);
     }
 
-    // Finally: Delete auth.users entry (invalidates login immediately)
+    // 11. Finally: Delete auth.users entry (invalidates login immediately)
     console.log('Deleting auth user:', userId);
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {
-      console.error("Account deletion failed");
+      console.error("Account deletion failed:", deleteError);
       return new Response(JSON.stringify({ error: "Service unavailable" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    console.log('Account deletion complete - all data removed, login invalidated');
+    console.log('✅ Account deletion complete - all data removed, login invalidated');
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (e) {
-    console.error("Operation failed");
+    console.error("Operation failed:", e);
     return new Response(JSON.stringify({ error: "Service unavailable" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },

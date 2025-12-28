@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart,
@@ -28,24 +27,42 @@ const CHART_COLORS = [
 
 const AXIS_TICK = {
   fill: "hsl(var(--foreground))",
-  fillOpacity: 0.9,
-  fontSize: 13,
-  fontWeight: 500,
-} as const;
-
-const LEGEND_STYLE = { 
-  color: "hsl(var(--foreground))",
-  fontSize: 13,
-  fontWeight: 500,
+  fillOpacity: 0.92,
+  fontSize: 14,
+  fontWeight: 600,
 } as const;
 
 const TOOLTIP_STYLE = {
   backgroundColor: "hsl(var(--card))",
   border: "1px solid hsl(var(--border))",
-  borderRadius: "8px",
+  borderRadius: "10px",
   color: "hsl(var(--foreground))",
-  fontSize: 13,
+  fontSize: 14,
 } as const;
+
+const TOOLTIP_LABEL_STYLE = {
+  color: "hsl(var(--foreground))",
+  fontSize: 14,
+  fontWeight: 700,
+} as const;
+
+const TOOLTIP_ITEM_STYLE = {
+  color: "hsl(var(--foreground))",
+  fontSize: 14,
+  fontWeight: 600,
+} as const;
+
+function LegendItem({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex items-center gap-2 text-base">
+      <span className="h-2.5 w-2.5 rounded-[3px]" style={{ backgroundColor: color }} />
+      <span className="text-foreground/80 font-medium">{label}</span>
+    </div>
+  );
+}
+
+const CHART_FRAME_CLASS =
+  "[&_.recharts-wrapper]:overflow-visible [&_.recharts-surface]:overflow-visible";
 
 interface CompetitorChartProps {
   data: Array<{
@@ -66,12 +83,10 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">
-          Competitor Market Share
-        </CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">Competitor Market Share</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -79,7 +94,7 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
-                outerRadius={100}
+                outerRadius={96}
                 paddingAngle={2}
                 dataKey="marketShare"
                 nameKey="name"
@@ -89,7 +104,7 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                   const x = Number(p?.x ?? 0);
                   const y = Number(p?.y ?? 0);
                   const cx = Number(p?.cx ?? 0);
-                  const shortName = name.length > 12 ? name.slice(0, 12) + "..." : name;
+                  const shortName = name.length > 14 ? name.slice(0, 14) + "…" : name;
                   const isRight = x > cx;
 
                   return (
@@ -98,11 +113,12 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
                       y={y}
                       fill="hsl(var(--foreground))"
                       fillOpacity={0.92}
-                      fontSize={13}
-                      fontWeight={500}
+                      fontSize={14}
+                      fontWeight={600}
                       textAnchor={isRight ? "start" : "end"}
                       dominantBaseline="central"
                     >
+                      <title>{`${name}: ${marketShare}%`}</title>
                       {`${shortName}: ${marketShare}%`}
                     </text>
                   );
@@ -116,20 +132,26 @@ export function CompetitorPieChart({ data }: CompetitorChartProps) {
               <Tooltip
                 formatter={(value: number) => [`${value}%`, "Market Share"]}
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-center gap-2 text-base">
+            <div key={index} className="flex items-start gap-2 text-lg">
               <div
-                className="w-4 h-4 rounded-sm flex-shrink-0"
+                className="w-4 h-4 rounded-sm flex-shrink-0 mt-1"
                 style={{ backgroundColor: item.fill }}
               />
-              <span className="text-foreground/80 truncate font-medium">{item.name}</span>
-              <span className="font-bold text-foreground ml-auto">{item.marketShare}%</span>
+              <div className="min-w-0 flex-1">
+                <div className="text-foreground/80 font-medium break-words" title={item.name}>
+                  {item.name}
+                </div>
+              </div>
+              <div className="font-bold text-foreground ml-2 flex-shrink-0">{item.marketShare}%</div>
             </div>
           ))}
         </div>
@@ -154,48 +176,47 @@ export function ChannelBarChart({ data }: ChannelChartProps) {
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">
-          Marketing Channel Performance
-        </CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">Marketing Channel Performance</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sortedData} layout="vertical" margin={{ left: 20, right: 30 }}>
+            <BarChart data={sortedData} layout="vertical" margin={{ left: 56, right: 28, top: 8, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis type="number" domain={[0, 100]} tick={AXIS_TICK} stroke="hsl(var(--border))" />
+              <XAxis
+                type="number"
+                domain={[0, 100]}
+                tick={AXIS_TICK}
+                tickMargin={10}
+                stroke="hsl(var(--border))"
+              />
               <YAxis
                 dataKey="name"
                 type="category"
-                width={130}
-                tick={{ ...AXIS_TICK, fontSize: 12 }}
+                width={170}
+                tick={{ ...AXIS_TICK, fontSize: 13 }}
+                tickMargin={10}
                 stroke="hsl(var(--border))"
-                tickFormatter={(value) =>
-                  value.length > 16 ? value.slice(0, 16) + "..." : value
-                }
+                tickFormatter={(value) => (value.length > 24 ? value.slice(0, 24) + "…" : value)}
               />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={(value: number, name: string) => [
                   name === "effectiveness" ? `${value}%` : `${value}% ROI`,
                   name === "effectiveness" ? "Effectiveness" : "Average ROI",
                 ]}
               />
-              <Legend wrapperStyle={LEGEND_STYLE} />
-              <Bar
-                dataKey="effectiveness"
-                fill="hsl(var(--chart-1))"
-                name="Effectiveness"
-                radius={[0, 4, 4, 0]}
-              />
-              <Bar
-                dataKey="averageROI"
-                fill="hsl(var(--chart-2))"
-                name="Average ROI"
-                radius={[0, 4, 4, 0]}
-              />
+              <Bar dataKey="effectiveness" fill="hsl(var(--chart-1))" name="Effectiveness" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="averageROI" fill="hsl(var(--chart-2))" name="Average ROI" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <LegendItem color="hsl(var(--chart-1))" label="Effectiveness" />
+          <LegendItem color="hsl(var(--chart-2))" label="Average ROI" />
         </div>
       </CardContent>
     </Card>
@@ -216,39 +237,34 @@ export function TrendImpactChart({ data }: TrendChartProps) {
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">
-          Market Trends Analysis
-        </CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">Market Trends Analysis</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className={`h-[360px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ left: 20, right: 20, bottom: 60 }}>
+            <BarChart data={data} margin={{ left: 24, right: 20, bottom: 90, top: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
                 dataKey="name"
-                tick={{ ...AXIS_TICK, fontSize: 12 }}
+                tick={{ ...AXIS_TICK, fontSize: 13 }}
+                tickMargin={12}
                 stroke="hsl(var(--border))"
-                angle={-35}
+                angle={-40}
                 textAnchor="end"
-                height={70}
-                tickFormatter={(value) => (value.length > 18 ? value.slice(0, 18) + "..." : value)}
+                height={95}
+                tickFormatter={(value) => (value.length > 22 ? value.slice(0, 22) + "…" : value)}
               />
-              <YAxis domain={[0, 10]} tick={AXIS_TICK} stroke="hsl(var(--border))" />
+              <YAxis domain={[0, 10]} tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={(value: number, name: string) => [
                   `${value}/10`,
                   name === "impact" ? "Impact Score" : "Growth Potential",
                 ]}
               />
-              <Legend wrapperStyle={LEGEND_STYLE} />
-              <Bar
-                dataKey="impact"
-                fill="hsl(var(--chart-1))"
-                name="Impact Score"
-                radius={[4, 4, 0, 0]}
-              />
+              <Bar dataKey="impact" fill="hsl(var(--chart-1))" name="Impact Score" radius={[4, 4, 0, 0]} />
               <Bar
                 dataKey="growthPotential"
                 fill="hsl(var(--chart-3))"
@@ -257,6 +273,11 @@ export function TrendImpactChart({ data }: TrendChartProps) {
               />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <LegendItem color="hsl(var(--chart-1))" label="Impact Score" />
+          <LegendItem color="hsl(var(--chart-3))" label="Growth Potential" />
         </div>
       </CardContent>
     </Card>
@@ -284,20 +305,18 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">
-          Customer Demographics
-        </CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">Customer Demographics</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className={`h-[340px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={70}
-                outerRadius={100}
+                innerRadius={72}
+                outerRadius={102}
                 paddingAngle={2}
                 dataKey="value"
                 nameKey="name"
@@ -309,28 +328,29 @@ export function DemographicsDonutChart({ data }: DemographicsChartProps) {
               <Tooltip
                 formatter={(value: number, name: string, props: any) => {
                   const item = props.payload;
-                  return [
-                    `${value}%${item.averageSpend ? ` (Avg Spend: $${item.averageSpend})` : ""}`,
-                    name,
-                  ];
+                  return [`${value}%${item.averageSpend ? ` (Avg Spend: $${item.averageSpend})` : ""}`, name];
                 }}
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="mt-4 space-y-3">
+        <div className="mt-5 space-y-3">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between text-base">
-              <div className="flex items-center gap-2">
+            <div key={index} className="flex items-start justify-between gap-3 text-lg">
+              <div className="flex items-start gap-2 min-w-0 flex-1">
                 <div
-                  className="w-4 h-4 rounded-sm flex-shrink-0"
+                  className="w-4 h-4 rounded-sm flex-shrink-0 mt-1"
                   style={{ backgroundColor: item.fill }}
                 />
-                <span className="text-foreground/80 font-medium">{item.name}</span>
+                <span className="text-foreground/80 font-medium break-words" title={item.name}>
+                  {item.name}
+                </span>
               </div>
-              <span className="font-bold text-foreground">{item.value}%</span>
+              <span className="font-bold text-foreground flex-shrink-0">{item.value}%</span>
             </div>
           ))}
         </div>
@@ -368,7 +388,7 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
         <CardTitle className="text-xl font-bold text-foreground">Growth Projections</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="text-center p-4 bg-background/50 rounded-lg">
             <p className="text-3xl font-bold text-primary">{data.cagr}%</p>
             <p className="text-sm text-muted-foreground mt-1">CAGR</p>
@@ -383,14 +403,16 @@ export function GrowthProjectionChart({ data, currentMarketSize }: GrowthChartPr
           </div>
         </div>
 
-        <div className="h-[200px]">
+        <div className={`h-[240px] ${CHART_FRAME_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={projectionData}>
+            <AreaChart data={projectionData} margin={{ left: 18, right: 18, top: 8, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="year" tick={AXIS_TICK} stroke="hsl(var(--border))" />
-              <YAxis tick={AXIS_TICK} stroke="hsl(var(--border))" />
+              <XAxis dataKey="year" tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
+              <YAxis tick={AXIS_TICK} tickMargin={10} stroke="hsl(var(--border))" />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={(value: number) => [`$${value.toFixed(1)}B`, "Market Size"]}
               />
               <Area

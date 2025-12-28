@@ -12,20 +12,28 @@ interface MarketOverviewProps {
 export function MarketOverview({ marketSize }: MarketOverviewProps) {
   if (!marketSize) return null;
 
-  // Dynamically determine unit from Perplexity data
-  const isMillions = marketSize.unit?.toLowerCase().includes('million');
-  const displayUnit = isMillions ? 'M' : 'B';
+  // Smart formatting: convert to millions if value is less than 1 billion
+  const formatValue = (val: number): { display: string; unit: string } => {
+    if (val < 1) {
+      // Convert to millions (0.3B = 300M)
+      return { display: `$${Math.round(val * 1000)}`, unit: 'M' };
+    }
+    return { display: `$${val}`, unit: 'B' };
+  };
+
+  const currentFormatted = formatValue(marketSize.value);
+  const projectedFormatted = formatValue(marketSize.projectedValue);
 
   const metrics = [
     {
       label: "Current Market Size",
-      value: `$${marketSize.value}`,
-      unit: displayUnit
+      value: currentFormatted.display,
+      unit: currentFormatted.unit
     },
     {
       label: `${marketSize.projectionYear || 2030} Projection`,
-      value: `$${marketSize.projectedValue}`,
-      unit: displayUnit
+      value: projectedFormatted.display,
+      unit: projectedFormatted.unit
     }
   ];
 

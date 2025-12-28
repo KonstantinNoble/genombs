@@ -448,8 +448,6 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Profile data, complete analysis history from all services, and credit tracking data are permanently deleted</li>
-                <li><strong>Business Ideas:</strong> All your posted ideas and ratings are permanently deleted</li>
-                <li><strong>Ratings on your ideas:</strong> Ratings from other users on your ideas are also deleted</li>
                 <li>Local device data must be cleared manually via browser settings</li>
                 <li>
                   <strong>Email Hash:</strong> A SHA-256 hash of your email is stored for <strong>24 hours</strong>{" "}
@@ -702,9 +700,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: December 21, 2025
+                Last updated: December 28, 2025
                 <br />
-                Version 2.7 (Business Ideas Community Update)
+                Version 2.8
               </p>
             </div>
           </div>

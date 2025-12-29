@@ -26,7 +26,7 @@ const Contact = () => {
             Contact Us
           </h1>
           <p className="text-lg text-muted-foreground mb-12">
-            Have questions or need assistance? We'd love to hear from you.
+            Questions, feedback, or business inquiries – we're here to help.
           </p>
           
           <Card className="p-8 md:p-12 border-border bg-card/50 backdrop-blur-sm">

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
+import { SEOHead } from '@/components/seo/SEOHead';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -333,9 +333,11 @@ const StrategyDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Helmet>
-        <title>{strategy.name} - Strategy Tracker - Synoptas</title>
-      </Helmet>
+      <SEOHead
+        title={`${strategy.name} - Strategy Tracker`}
+        description="Track your business strategy progress and manage action items."
+        noindex={true}
+      />
 
       <Navbar />
 

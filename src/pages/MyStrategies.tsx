@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
+import { SEOHead } from '@/components/seo/SEOHead';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -143,10 +143,12 @@ const MyStrategies = () => {
   if (!isPremium) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Helmet>
-          <title>My Strategies - Premium Feature | Synoptas</title>
-          <meta name="description" content="Upgrade to Premium to track and manage your business strategies" />
-        </Helmet>
+        <SEOHead
+          title="My Strategies - Premium Feature"
+          description="Upgrade to Premium to track and manage your business strategies."
+          canonical="/my-strategies"
+          noindex={true}
+        />
 
         <Navbar />
 
@@ -188,10 +190,12 @@ const MyStrategies = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Helmet>
-        <title>My Strategies - Synoptas</title>
-        <meta name="description" content="Track and manage your active business strategies" />
-      </Helmet>
+      <SEOHead
+        title="My Strategies"
+        description="Track and manage your active business strategies."
+        canonical="/my-strategies"
+        noindex={true}
+      />
 
       <Navbar />
 

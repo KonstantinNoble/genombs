@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -58,7 +59,14 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background/80 backdrop-blur-[8px] p-4 relative overflow-hidden">
+    <>
+      <SEOHead
+        title="Sign In"
+        description="Sign in to Synoptas to access your AI-powered business strategies."
+        canonical="/auth"
+        noindex={true}
+      />
+      <div className="min-h-screen flex items-center justify-center bg-background/80 backdrop-blur-[8px] p-4 relative overflow-hidden">
       {/* Subtle background pattern */}
       <div
         className="absolute inset-0 opacity-20"
@@ -132,6 +140,7 @@ const Auth = () => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

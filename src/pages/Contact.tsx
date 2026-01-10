@@ -1,19 +1,19 @@
-import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Mail } from "lucide-react";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
 const Contact = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Contact Us | Synoptas</title>
-        <meta name="description" content="Get in touch with Synoptas. We're here to help with your AI-powered business strategy needs." />
-        <meta name="keywords" content="contact, support, Synoptas, business strategy, help" />
-        <link rel="canonical" href="https://synoptas.com/contact" />
-      </Helmet>
+      <SEOHead
+        title="Contact Us"
+        description="Get in touch with Synoptas. We're here to help with your AI-powered business strategy needs."
+        keywords="contact, support, Synoptas, business strategy, help"
+        canonical="/contact"
+      />
       <WebPageSchema
         name="Contact Us | Synoptas"
         description="Get in touch with Synoptas for AI-powered business strategy support."

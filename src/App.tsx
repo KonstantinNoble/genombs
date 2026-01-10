@@ -20,6 +20,8 @@ import PricingPage from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
+import HowToWriteBusinessPlan from "./pages/HowToWriteBusinessPlan";
+import BusinessStrategiesForSmallBusiness from "./pages/BusinessStrategiesForSmallBusiness";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const queryClient = new QueryClient();
@@ -65,6 +67,8 @@ const App = () => (
               <Route path="/strategy/:id" element={<StrategyDetail />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/how-to-write-a-business-plan" element={<HowToWriteBusinessPlan />} />
+              <Route path="/business-strategies-for-small-business" element={<BusinessStrategiesForSmallBusiness />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/imprint" element={<Imprint />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />

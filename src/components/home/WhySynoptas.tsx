@@ -1,4 +1,6 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const WhySynoptas = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
@@ -87,6 +89,14 @@ const WhySynoptas = () => {
                   </li>
                 ))}
               </ul>
+              
+              <Link 
+                to="/market-research" 
+                className="inline-flex items-center gap-1.5 mt-6 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
+              >
+                See live market data
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </div>

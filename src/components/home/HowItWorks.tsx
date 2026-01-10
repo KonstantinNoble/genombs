@@ -1,6 +1,8 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
-const StepCard = ({ number, title, description, index }: { number: string; title: string; description: string; index: number }) => {
+const StepCard = ({ number, title, description, index, link, linkText }: { number: string; title: string; description: string; index: number; link: string; linkText: string }) => {
   const { ref, isVisible } = useScrollReveal();
   
   return (
@@ -13,7 +15,14 @@ const StepCard = ({ number, title, description, index }: { number: string; title
         {number}
       </span>
       <h3 className="text-xl font-semibold mt-2 mb-4">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
+      <p className="text-muted-foreground leading-relaxed mb-4">{description}</p>
+      <Link 
+        to={link} 
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
+      >
+        {linkText}
+        <ArrowRight className="w-4 h-4" />
+      </Link>
     </div>
   );
 };
@@ -25,17 +34,23 @@ const HowItWorks = () => {
     {
       number: "1",
       title: "Describe Your Goal",
-      description: "Enter your business objective. Add your website URL for personalized insights, plus optional context like budget, team size, or industry."
+      description: "Enter your business objective. Add your website URL for personalized insights, plus optional context like budget, team size, or industry.",
+      link: "/business-tools",
+      linkText: "Start Planning"
     },
     {
       number: "2",
       title: "AI Creates Your Strategy",
-      description: "Our AI analyzes your input and generates a phased roadmap with weekly actions, realistic budgets, and measurable milestones."
+      description: "Our AI analyzes your input and generates a phased roadmap with weekly actions, realistic budgets, and measurable milestones.",
+      link: "/market-research",
+      linkText: "Try Market Research"
     },
     {
       number: "3",
       title: "Track Your Progress",
-      description: "Activate your strategy and monitor completion. Mark phases and actions as done to stay on track with your goals."
+      description: "Activate your strategy and monitor completion. Mark phases and actions as done to stay on track with your goals.",
+      link: "/my-strategies",
+      linkText: "View Your Strategies"
     }
   ];
 

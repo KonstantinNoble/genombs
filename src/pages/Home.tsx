@@ -9,6 +9,7 @@ import WhySynoptas from "@/components/home/WhySynoptas";
 import HowItWorks from "@/components/home/HowItWorks";
 import Features from "@/components/home/Features";
 import Pricing from "@/components/home/Pricing";
+import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -104,6 +105,7 @@ const Home = () => {
             <Pricing />
           </div>
         )}
+        <FAQ />
         <CTA />
       </main>
       <Footer />

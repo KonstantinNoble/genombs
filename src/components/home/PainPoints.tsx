@@ -2,17 +2,20 @@ import { X, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link } from "react-router-dom";
 
-const PainPointItem = ({ point, index }: { point: string; index: number }) => {
+const PainPointItem = ({ point, index }: { point: { title: string; detail: string }; index: number }) => {
   const { ref, isVisible } = useScrollReveal();
   
   return (
     <div
       ref={ref}
-      className={`flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-left scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      className={`flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-left scroll-reveal ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <X className="w-5 h-5 text-destructive shrink-0" />
-      <span className="text-muted-foreground">{point}</span>
+      <X className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+      <div>
+        <span className="text-muted-foreground block font-medium">{point.title}</span>
+        <span className="text-muted-foreground/70 text-sm">{point.detail}</span>
+      </div>
     </div>
   );
 };
@@ -22,10 +25,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    "You've Googled 'how to grow my business' 100 times",
-    "ChatGPT gave you generic fluff that didn't help",
-    "You have goals but no structured plan to reach them",
-    "You're spending hours researching instead of executing",
+    { title: "You've Googled 'how to grow my business' 100 times", detail: "And every article says the same vague things about 'building a brand'" },
+    { title: "ChatGPT gave you generic fluff that didn't help", detail: "Long paragraphs of advice that sounds smart but doesn't tell you what to actually DO" },
+    { title: "You have goals but no structured plan to reach them", detail: "You know where you want to be, but the path there feels overwhelming and unclear" },
+    { title: "You're spending hours researching instead of executing", detail: "Analysis paralysis keeps you stuck while competitors move forward" },
   ];
 
   return (

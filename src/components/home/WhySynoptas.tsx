@@ -9,19 +9,19 @@ const WhySynoptas = () => {
   const { ref: footerRef, isVisible: footerVisible } = useScrollReveal();
 
   const chatGptPoints = [
-    "Generic advice without market context",
-    "Outdated information (training cutoff)",
-    "No structure – just walls of text",
-    "You figure out what to do next",
-    "No tracking or follow-up",
+    { title: "Generic advice without market context", detail: "No real data about your specific industry or competitors" },
+    { title: "Outdated information (training cutoff)", detail: "Can't access current market trends or recent developments" },
+    { title: "No structure – just walls of text", detail: "You get paragraphs, not actionable step-by-step plans" },
+    { title: "You figure out what to do next", detail: "No prioritization, no timeline, no accountability" },
+    { title: "No tracking or follow-up", detail: "Every conversation starts from zero – no memory of your progress" },
   ];
 
   const synoptasPoints = [
-    "Live data from Bloomberg, Statista & industry reports",
-    "Market size, CAGR & competitor analysis in seconds",
-    "Structured visualizations with citations",
-    "AI-generated daily focus tasks based on your strategy",
-    "Track progress & compare multiple strategies",
+    { title: "Live data from Bloomberg, Statista & industry reports", detail: "Real-time market intelligence from 20+ premium sources" },
+    { title: "Market size, CAGR & competitor analysis in seconds", detail: "The same research Fortune 500 companies pay thousands for" },
+    { title: "Structured visualizations with citations", detail: "Every data point is verifiable with source links included" },
+    { title: "AI-generated daily focus tasks based on your strategy", detail: "Wake up knowing exactly what to work on today" },
+    { title: "Track progress & compare multiple strategies", detail: "Visual dashboards, streak tracking, and milestone celebrations" },
   ];
 
   return (
@@ -52,11 +52,14 @@ const WhySynoptas = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-semibold text-foreground mb-6">Asking ChatGPT</h3>
               
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {chatGptPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="text-destructive font-bold mt-0.5">•</span>
-                    <span className="text-muted-foreground">{point}</span>
+                    <div>
+                      <span className="text-muted-foreground block">{point.title}</span>
+                      <span className="text-muted-foreground/70 text-sm">{point.detail}</span>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -81,11 +84,14 @@ const WhySynoptas = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-semibold text-foreground mb-6">Using Synoptas</h3>
               
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {synoptasPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="text-primary font-bold mt-0.5">•</span>
-                    <span className="text-foreground">{point}</span>
+                    <div>
+                      <span className="text-foreground block">{point.title}</span>
+                      <span className="text-muted-foreground text-sm">{point.detail}</span>
+                    </div>
                   </li>
                 ))}
               </ul>

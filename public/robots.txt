@@ -1,16 +1,29 @@
+# Synoptas SEO Configuration
+# Updated: 2025-01-10
+
+# Google - Priority Crawler
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
+# Bing
 User-agent: Bingbot
 Allow: /
 
+# Twitter/X Card Crawler
 User-agent: Twitterbot
 Allow: /
 
+# Facebook/Meta Crawler
 User-agent: facebookexternalhit
 Allow: /
 
+# All other crawlers
 User-agent: *
 Allow: /
 
+# Sitemap location
 Sitemap: https://synoptas.com/sitemap.xml
+
+# Canonical host (prevents duplicate content)
+Host: https://synoptas.com

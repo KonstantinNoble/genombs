@@ -109,9 +109,9 @@ const PricingPage = () => {
     return (
       <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
         <SEOHead
-          title="Pricing - AI Business Strategy Plans"
+          title="Pricing - AI Business Plan Generator Plans"
           description="Get AI-powered business strategies starting at $0. Premium plan $24.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
-          keywords="pricing, AI business strategy, business analysis plans, premium features, deep analysis, ROI projections"
+          keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
           canonical="/pricing"
           ogImage="https://synoptas.com/favicon.png"
         />
@@ -130,9 +130,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <SEOHead
-        title="Pricing - AI Business Strategy Plans"
+        title="Pricing - AI Business Plan Generator Plans"
         description="Get AI-powered business strategies starting at $0. Premium plan $24.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
-        keywords="pricing, AI business strategy, business analysis plans, premium features, deep analysis, ROI projections"
+        keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
         canonical="/pricing"
         ogImage="https://synoptas.com/favicon.png"
       />

@@ -5,36 +5,36 @@ import { Link } from "react-router-dom";
 
 const features = [
   {
-    title: "Real-Time Market Intelligence",
+    title: "AI Business Plan Generator",
     description:
-      "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources. Premium users get an enhanced AI model for more accurate insights.",
+      "Stop wondering how to write a business plan. Enter your goals and get a professional, phased strategy with growth projections – no MBA required.",
     icon: Globe,
     color: "primary",
+    link: "/business-tools",
+    linkText: "Generate Your Plan",
+  },
+  {
+    title: "Real-Time Market Intelligence",
+    description:
+      "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources.",
+    icon: Scan,
+    color: "accent-warm",
     link: "/market-research",
     linkText: "Try Market Research",
   },
   {
-    title: "Website Analysis",
+    title: "Business Strategies for Growth",
     description:
-      "Enter your website URL and get personalized strategies based on your actual website content, branding, and business model.",
-    icon: Scan,
-    color: "accent-warm",
-    link: "/business-tools",
-    linkText: "Analyze Your Website",
-  },
-  {
-    title: "AI Autopilot",
-    description:
-      "Get 3 AI-generated daily focus tasks tailored to your active strategy. Stay on track with personalized action items and streak tracking.",
+      "Get actionable business strategies to increase sales. Our AI creates step-by-step plans tailored for small business owners and solopreneurs.",
     icon: Zap,
     color: "accent-cool",
-    link: "/my-strategies",
-    linkText: "View Your Strategies",
+    link: "/business-tools",
+    linkText: "Start Planning",
   },
   {
     title: "Deep Analysis Mode",
     description:
-      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
+      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans for sustainable growth.",
     icon: BarChart3,
     color: "accent-info",
     link: "/pricing",

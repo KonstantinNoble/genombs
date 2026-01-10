@@ -74,9 +74,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <SEOHead
-        title="AI Business Strategy Planner – Actionable Plans in 2 Minutes"
-        description="Stop guessing, start executing. Turn business goals into AI-powered strategies with live market research from Bloomberg, Statista & 20+ sources. Free to try!"
-        keywords="AI business strategy, business planner, AI strategy generator, market research AI, business goals, actionable strategies, website analysis"
+        title="AI Business Plan Generator – Create Business Strategies in 2 Minutes"
+        description="Learn how to write a business plan in minutes. Our AI business plan generator creates actionable strategies for growth. Perfect for small business owners. Free to try!"
+        keywords="AI business plan generator, how to write a business plan, how to make a business plan, business strategies for growth, business strategies for small business, business strategies to increase sales, market research AI, actionable strategies"
         canonical="/"
         ogImage="https://synoptas.com/favicon.png"
       />

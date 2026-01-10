@@ -195,9 +195,9 @@ export default function BusinessToolsAdvisor() {
   if (!user) return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
-        title="AI Business Planner"
-        description="Create AI-powered phased business strategies tailored to your goals. Get actionable plans with timelines, budgets, and market insights."
-        keywords="AI business planner, business strategy generator, strategic planning, market analysis"
+        title="AI Business Plan Generator – Create Your Strategy"
+        description="How to write a business plan? Let AI do it. Generate actionable business strategies for growth with our AI-powered planner. Perfect for small business owners."
+        keywords="AI business plan generator, how to make a business plan, business strategies for growth, business strategies for small business, strategy generator"
         canonical="/business-tools"
       />
       <Navbar />
@@ -215,9 +215,9 @@ export default function BusinessToolsAdvisor() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
-        title="AI Business Planner"
-        description="Create AI-powered phased business strategies tailored to your goals. Get actionable plans with timelines, budgets, and market insights."
-        keywords="AI business planner, business strategy generator, strategic planning, market analysis"
+        title="AI Business Plan Generator – Create Your Strategy"
+        description="How to write a business plan? Let AI do it. Generate actionable business strategies for growth with our AI-powered planner. Perfect for small business owners."
+        keywords="AI business plan generator, how to make a business plan, business strategies for growth, business strategies for small business, strategy generator"
         canonical="/business-tools"
       />
       <Navbar />

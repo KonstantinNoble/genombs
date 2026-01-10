@@ -155,6 +155,11 @@ export default {
           "0%, 100%": { opacity: "0.5" },
           "50%": { opacity: "1" },
         },
+        "gradient": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -172,6 +177,7 @@ export default {
         "bounce-soft": "bounce-soft 2s ease-in-out infinite",
         "aurora-drift": "aurora-drift 12s ease-in-out infinite",
         "aurora-glow": "aurora-glow 5s ease-in-out infinite",
+        "gradient": "gradient 4s ease infinite",
       },
     },
   },

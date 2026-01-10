@@ -1,5 +1,6 @@
-import { X } from "lucide-react";
+import { X, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Link } from "react-router-dom";
 
 const PainPointItem = ({ point, index }: { point: string; index: number }) => {
   const { ref, isVisible } = useScrollReveal();
@@ -49,11 +50,20 @@ const PainPoints = () => {
 
         <div 
           ref={badgeRef}
-          className={`inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
+          className={`flex flex-col items-center gap-4 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: "0.5s" }}
         >
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-foreground font-medium">Synoptas fixes this.</span>
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-foreground font-medium">Synoptas fixes this.</span>
+          </div>
+          <Link 
+            to="/business-tools" 
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
+          >
+            Get your first strategy free
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </section>

@@ -25,16 +25,9 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-          {/* Problem-First Headline */}
+          {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
-            <span className="text-foreground">
-              Stop Guessing{" "}
-            </span>
-            <span 
-              className="text-neon-green drop-shadow-[0_0_20px_hsl(142_100%_50%/0.6)]"
-            >
-              What to Do Next.
-            </span>
+            AI Business Strategy Planner – Stop Guessing, Start Executing
           </h1>
 
           <p

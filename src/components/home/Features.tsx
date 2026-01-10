@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { Globe, Scan, Zap, BarChart3 } from "lucide-react";
+import { Globe, Scan, Zap, BarChart3, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -9,6 +10,8 @@ const features = [
       "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources. Premium users get an enhanced AI model for more accurate insights.",
     icon: Globe,
     color: "primary",
+    link: "/market-research",
+    linkText: "Try Market Research",
   },
   {
     title: "Website Analysis",
@@ -16,6 +19,8 @@ const features = [
       "Enter your website URL and get personalized strategies based on your actual website content, branding, and business model.",
     icon: Scan,
     color: "accent-warm",
+    link: "/business-tools",
+    linkText: "Analyze Your Website",
   },
   {
     title: "AI Autopilot",
@@ -23,6 +28,8 @@ const features = [
       "Get 3 AI-generated daily focus tasks tailored to your active strategy. Stay on track with personalized action items and streak tracking.",
     icon: Zap,
     color: "accent-cool",
+    link: "/my-strategies",
+    linkText: "View Your Strategies",
   },
   {
     title: "Deep Analysis Mode",
@@ -30,6 +37,8 @@ const features = [
       "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans.",
     icon: BarChart3,
     color: "accent-info",
+    link: "/pricing",
+    linkText: "See Premium Features",
   },
 ];
 
@@ -74,7 +83,14 @@ const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: n
         <h3 className="text-xl font-semibold mb-3 text-foreground transition-all duration-500 flex items-center gap-2">
           {feature.title}
         </h3>
-        <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+        <p className="text-muted-foreground leading-relaxed mb-4">{feature.description}</p>
+        <Link 
+          to={feature.link} 
+          className={`inline-flex items-center gap-1.5 text-sm font-medium ${colors.icon} hover:underline transition-all duration-300 group-hover:gap-2`}
+        >
+          {feature.linkText}
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </Card>
   );

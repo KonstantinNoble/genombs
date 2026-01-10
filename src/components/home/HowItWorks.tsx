@@ -33,22 +33,22 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Describe Your Goal",
-      description: "Enter your business objective. Add your website URL for personalized insights, plus optional context like budget, team size, or industry.",
+      title: "Describe Your Business Goal",
+      description: "Enter your business objective – whether you're learning how to write a business plan or scaling an existing small business. Add optional context like budget or industry.",
       link: "/business-tools",
-      linkText: "Start Planning"
+      linkText: "Start Your Business Plan"
     },
     {
       number: "2",
-      title: "AI Creates Your Strategy",
-      description: "Our AI analyzes your input and generates a phased roadmap with weekly actions, realistic budgets, and measurable milestones.",
+      title: "AI Creates Your Business Strategy",
+      description: "Our AI business plan generator analyzes your input and creates business strategies for growth with weekly actions, realistic budgets, and measurable milestones.",
       link: "/market-research",
       linkText: "Try Market Research"
     },
     {
       number: "3",
-      title: "Track Your Progress",
-      description: "Activate your strategy and monitor completion. Mark phases and actions as done to stay on track with your goals.",
+      title: "Execute & Track Progress",
+      description: "Activate your strategy and monitor completion. Perfect for small business owners who want actionable business strategies to increase sales.",
       link: "/my-strategies",
       linkText: "View Your Strategies"
     }

@@ -13,7 +13,7 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  keywords = "AI business strategy, business planner, AI strategy generator, market research, actionable strategies",
+  keywords = "AI business plan generator, how to write a business plan, business strategies for growth, business planner, AI strategy generator, market research, actionable strategies, business strategies for small business",
   canonical,
   ogType = "website",
   ogImage = "https://synoptas.com/favicon.png",

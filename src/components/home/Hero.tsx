@@ -27,14 +27,14 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
-            AI Business Strategy Planner – Stop Guessing, Start Executing
+            AI Business Plan Generator – From Ideas to Actionable Strategy
           </h1>
 
           <p
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Get AI-powered strategies based on live market data. No more outdated generic advice. Turn your goals into a step-by-step action plan in under 2 minutes.
+            Learn how to make a business plan in minutes, not days. Our AI business plan generator creates growth strategies tailored for small business owners – powered by live market research.
           </p>
 
           <div

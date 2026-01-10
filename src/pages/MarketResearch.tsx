@@ -260,9 +260,9 @@ export default function MarketResearch() {
   return (
     <>
       <SEOHead
-        title="Market Research | Synoptas"
+        title="Market Research"
         description="AI-powered market research with professional charts and data visualization. Analyze competitors, trends, and demographics."
-        canonical="https://synoptas.com/market-research"
+        canonical="/market-research"
       />
       
       <div className="min-h-screen flex flex-col">

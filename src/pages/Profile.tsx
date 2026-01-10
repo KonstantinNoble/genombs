@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -107,8 +108,15 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-muted/30 to-background">
-      <Navbar />
+    <>
+      <SEOHead
+        title="Profile Settings"
+        description="Manage your Synoptas account settings and preferences."
+        canonical="/profile"
+        noindex={true}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-background via-muted/30 to-background">
+        <Navbar />
       
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
@@ -247,6 +255,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -194,7 +194,12 @@ export default function BusinessToolsAdvisor() {
 
   if (!user) return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Helmet><title>AI Business Planner - Strategic Business Planning</title></Helmet>
+      <SEOHead
+        title="AI Business Planner"
+        description="Create AI-powered phased business strategies tailored to your goals. Get actionable plans with timelines, budgets, and market insights."
+        keywords="AI business planner, business strategy generator, strategic planning, market analysis"
+        canonical="/business-tools"
+      />
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-16">
         <article className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
@@ -209,7 +214,12 @@ export default function BusinessToolsAdvisor() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Helmet><title>AI Business Planner - Strategic Business Planning</title></Helmet>
+      <SEOHead
+        title="AI Business Planner"
+        description="Create AI-powered phased business strategies tailored to your goals. Get actionable plans with timelines, budgets, and market insights."
+        keywords="AI business planner, business strategy generator, strategic planning, market analysis"
+        canonical="/business-tools"
+      />
       <Navbar />
       <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-6">

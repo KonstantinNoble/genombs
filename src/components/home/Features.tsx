@@ -8,6 +8,7 @@ const features = [
     title: "AI Business Plan Generator",
     description:
       "Stop wondering how to write a business plan. Enter your goals and get a professional, phased strategy with growth projections – no MBA required.",
+    details: "Our AI business plan generator transforms your ideas into structured, actionable plans. Whether you're a first-time entrepreneur learning how to make a business plan or a seasoned founder pivoting to new markets, you'll receive customized strategies complete with budget estimates, timeline projections, and measurable KPIs. No expensive consultants. No generic templates.",
     icon: Globe,
     color: "primary",
     link: "/business-tools",
@@ -17,6 +18,7 @@ const features = [
     title: "Real-Time Market Intelligence",
     description:
       "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources.",
+    details: "Access the same market research that Fortune 500 companies use. Our AI aggregates data from Bloomberg, Statista, IBISWorld, and industry-specific sources to deliver accurate market size estimates, growth projections (CAGR), and competitive landscape analysis. All citations included so you can verify every data point.",
     icon: Scan,
     color: "accent-warm",
     link: "/market-research",
@@ -26,6 +28,7 @@ const features = [
     title: "Business Strategies for Growth",
     description:
       "Get actionable business strategies to increase sales. Our AI creates step-by-step plans tailored for small business owners and solopreneurs.",
+    details: "Unlike generic ChatGPT advice, Synoptas delivers business strategies specifically designed for small businesses. Each action item includes the exact tool to use, time estimate, cost breakdown, and copy-paste templates. From marketing automation to sales funnel optimization – get strategies that actually work for limited budgets.",
     icon: Zap,
     color: "accent-cool",
     link: "/business-tools",
@@ -35,6 +38,7 @@ const features = [
     title: "Deep Analysis Mode",
     description:
       "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans for sustainable growth.",
+    details: "Go beyond surface-level recommendations. Deep Analysis mode provides multi-week implementation phases, detailed competitor SWOT analysis, customer acquisition cost (CAC) benchmarks, conversion rate optimization tactics, and projected ROI calculations. Perfect for serious entrepreneurs ready to scale.",
     icon: BarChart3,
     color: "accent-info",
     link: "/pricing",
@@ -83,7 +87,8 @@ const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: n
         <h3 className="text-xl font-semibold mb-3 text-foreground transition-all duration-500 flex items-center gap-2">
           {feature.title}
         </h3>
-        <p className="text-muted-foreground leading-relaxed mb-4">{feature.description}</p>
+        <p className="text-muted-foreground leading-relaxed mb-2">{feature.description}</p>
+        <p className="text-muted-foreground/80 text-sm leading-relaxed mb-4">{feature.details}</p>
         <Link 
           to={feature.link} 
           className={`inline-flex items-center gap-1.5 text-sm font-medium ${colors.icon} hover:underline transition-all duration-300 group-hover:gap-2`}

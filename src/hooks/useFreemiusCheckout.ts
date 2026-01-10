@@ -15,9 +15,10 @@ export const useFreemiusCheckout = () => {
       return;
     }
 
-    // Checkout-URL mit Email-Parameter erstellen
+    // Checkout-URL mit Email-Parameter erstellen (readonly_user macht Email unveränderlich)
     const checkoutUrl = new URL(CHECKOUT_BASE_URL);
     checkoutUrl.searchParams.set('user_email', userEmail);
+    checkoutUrl.searchParams.set('readonly_user', 'true');
     
     // In neuem Tab öffnen
     window.open(checkoutUrl.toString(), '_blank');

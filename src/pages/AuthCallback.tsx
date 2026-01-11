@@ -102,17 +102,21 @@ const AuthCallback = () => {
         const storedIntent = localStorage.getItem('auth_intent');
         localStorage.removeItem('auth_intent');
         
-        if (storedIntent === 'premium') {
-          // Open Freemius checkout and navigate to profile
+        // Neue User direkt zum Strategy Planner leiten (außer bei Premium-Intent)
+        if (isNewUser && storedIntent !== 'premium') {
+          toast.success("Welcome! Let's create your first strategy.");
+          navigate('/business-tools');
+        } else if (storedIntent === 'premium') {
+          // Premium-Intent (auch für neue User) -> Checkout öffnen
           const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user.email}&readonly_user=true`;
           window.open(checkoutUrl, '_blank');
-          toast.success("Successfully signed in!");
+          toast.success(isNewUser ? "Welcome! Your Premium checkout is ready." : "Successfully signed in!");
           navigate('/profile');
         } else if (storedIntent === 'free') {
           toast.success("Successfully signed in!");
           navigate('/business-tools');
         } else {
-          // All checks passed or existing user - redirect to home
+          // Existing user without intent - redirect to home
           toast.success("Successfully signed in!");
           navigate("/");
         }

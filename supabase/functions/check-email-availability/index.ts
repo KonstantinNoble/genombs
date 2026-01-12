@@ -67,7 +67,18 @@ serve(async (req) => {
     const ipHashArray = Array.from(new Uint8Array(ipHashBuffer));
     const ipHash = ipHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    // Check registration attempts in the last hour
+    // ZUERST: Versuch loggen (bevor wir das Limit prüfen)
+    // Das verhindert Race Conditions bei parallelen Requests
+    const { error: insertError } = await supabase
+      .from('registration_attempts')
+      .insert({ ip_hash: ipHash, email_hash: emailHash });
+
+    if (insertError) {
+      console.error('Failed to log registration attempt:', insertError);
+      // Continue anyway - don't block registration
+    }
+
+    // DANN: Aktuelle Anzahl prüfen (inkl. dem gerade eingefügten Eintrag)
     const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
     const { count, error: countError } = await supabase
       .from('registration_attempts')
@@ -78,15 +89,17 @@ serve(async (req) => {
     if (countError) {
       console.error('Rate limit check failed:', countError);
       // Fail-open on database error
-    } else if (count !== null && count >= RATE_LIMIT_MAX) {
-      console.log(`Rate limit exceeded for IP hash: ${ipHash.substring(0, 8)}...`);
+    } else if (count !== null && count > RATE_LIMIT_MAX) {
+      // Bei mehr als 3 Versuchen (inkl. aktuellem): Rate Limit Error
+      console.log(`Rate limit exceeded for IP hash: ${ipHash.substring(0, 8)}... (${count} attempts)`);
       return new Response(
         JSON.stringify({ 
           available: false, 
           reason: "RATE_LIMITED",
           message: "Too many registration attempts. Please try again in 1 hour."
         }),
-        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        // Status 200 damit supabase.functions.invoke() es als data zurückgibt, nicht als error
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -143,16 +156,7 @@ serve(async (req) => {
     const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
 
     if (!existingUser) {
-      // Email is available for registration - log the attempt
-      const { error: insertError } = await supabase
-        .from('registration_attempts')
-        .insert({ ip_hash: ipHash, email_hash: emailHash });
-      
-      if (insertError) {
-        console.error('Failed to log registration attempt:', insertError);
-        // Continue anyway - don't block registration
-      }
-
+      // Email is available for registration (attempt already logged at the beginning)
       return new Response(
         JSON.stringify({ available: true }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }

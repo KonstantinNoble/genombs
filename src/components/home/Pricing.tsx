@@ -167,7 +167,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 <CardTitle className="text-2xl">Premium Plan</CardTitle>
                 <CardDescription>For serious business optimization</CardDescription>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-foreground">$24.99</span>
+                  <span className="text-5xl font-bold text-foreground">$14.99</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-sm text-primary font-medium mt-2">

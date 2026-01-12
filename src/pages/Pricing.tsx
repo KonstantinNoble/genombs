@@ -110,7 +110,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
         <SEOHead
           title="Pricing - AI Business Plan Generator Plans"
-          description="Get AI-powered business strategies starting at $0. Premium plan $24.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
+          description="Get AI-powered business strategies starting at $0. Premium plan $14.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
           keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
           canonical="/pricing"
           ogImage="https://synoptas.com/favicon.png"
@@ -131,7 +131,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <SEOHead
         title="Pricing - AI Business Plan Generator Plans"
-        description="Get AI-powered business strategies starting at $0. Premium plan $24.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
+        description="Get AI-powered business strategies starting at $0. Premium plan $14.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
         keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
         canonical="/pricing"
         ogImage="https://synoptas.com/favicon.png"
@@ -157,7 +157,7 @@ const PricingPage = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
                 ? "You're on the Premium Plan!" 
-                : "Powerful AI Analysis for Just $24.99/mo"}
+                : "Powerful AI Analysis for Just $14.99/mo"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
@@ -264,7 +264,7 @@ const PricingPage = () => {
                           <Zap className="h-4 w-4 text-primary" />
                           Premium
                         </div>
-                        <div className="text-sm font-normal text-primary">$24.99/mo</div>
+                        <div className="text-sm font-normal text-primary">$14.99/mo</div>
                       </th>
                     </tr>
                   </thead>
@@ -362,7 +362,7 @@ const PricingPage = () => {
                     onClick={() => isLoggedIn ? openCheckout() : navigate('/auth?intent=premium')}
                     className="px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
                   >
-                    Get Premium - $24.99/mo
+                    Get Premium - $14.99/mo
                   </Button>
                 )}
               </div>

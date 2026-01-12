@@ -6,16 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Mail, ArrowLeft, CheckCircle, AlertCircle, Clock, UserPlus } from "lucide-react";
+import { Loader2, Mail, ArrowLeft, CheckCircle, Clock, UserPlus, LogIn } from "lucide-react";
 import { SEOHead } from "@/components/seo/SEOHead";
 
-type ResetState = "idle" | "loading" | "success" | "no_account" | "rate_limited";
+type ResetState = "idle" | "loading" | "success" | "no_account" | "rate_limited" | "oauth_only";
 
 const ResetPassword = () => {
   const [state, setState] = useState<ResetState>("idle");
   const [email, setEmail] = useState("");
   const [waitMinutes, setWaitMinutes] = useState(0);
   const [countdown, setCountdown] = useState(0);
+  const [oauthProvider, setOauthProvider] = useState<string>("");
   const navigate = useNavigate();
 
   // Countdown timer effect
@@ -75,6 +76,12 @@ const ResetPassword = () => {
         setState("rate_limited");
         setWaitMinutes(data.waitMinutes);
         setCountdown(data.waitMinutes * 60);
+        return;
+      }
+
+      if (data.error === "OAUTH_ONLY") {
+        setState("oauth_only");
+        setOauthProvider(data.provider || "google");
         return;
       }
 
@@ -181,6 +188,35 @@ const ResetPassword = () => {
           </div>
         );
 
+      case "oauth_only":
+        return (
+          <div className="text-center space-y-6">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-primary/10 p-4">
+                <LogIn className="h-12 w-12 text-primary" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-lg">Use {oauthProvider === 'google' ? 'Google' : oauthProvider} Sign-In</h3>
+              <p className="text-muted-foreground">
+                The account for <strong>{email}</strong> was created using {oauthProvider === 'google' ? 'Google' : oauthProvider} Sign-In and doesn't have a password.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Button onClick={() => navigate("/auth")} className="w-full">
+                Sign in with {oauthProvider === 'google' ? 'Google' : oauthProvider}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setState("idle")} 
+                className="w-full"
+              >
+                Try a Different Email
+              </Button>
+            </div>
+          </div>
+        );
+
       default:
         return (
           <form onSubmit={handleResetPassword} className="space-y-4">
@@ -232,6 +268,7 @@ const ResetPassword = () => {
       case "success": return "Check Your Email";
       case "no_account": return "Account Not Found";
       case "rate_limited": return "Too Many Requests";
+      case "oauth_only": return "No Password Required";
       default: return "Reset Password";
     }
   };
@@ -241,6 +278,7 @@ const ResetPassword = () => {
       case "success": return "We've sent you a link to reset your password.";
       case "no_account": return "We couldn't find an account with that email.";
       case "rate_limited": return "Please wait before requesting another reset.";
+      case "oauth_only": return "This account uses social sign-in.";
       default: return "Enter your email address and we'll send you a link to reset your password.";
     }
   };

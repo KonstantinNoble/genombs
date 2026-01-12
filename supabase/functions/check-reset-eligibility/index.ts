@@ -66,6 +66,25 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Check if user only has OAuth providers (no email/password)
+    const providers = user.app_metadata?.providers || [];
+    const hasEmailProvider = providers.includes('email');
+    
+    // If user has no 'email' provider, they registered via OAuth only
+    if (!hasEmailProvider && providers.length > 0) {
+      const oauthProvider = providers[0]; // e.g., 'google'
+      console.log(`OAuth-only account for email: ${email}, provider: ${oauthProvider}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "OAUTH_ONLY",
+          provider: oauthProvider,
+          message: `This account uses ${oauthProvider === 'google' ? 'Google' : oauthProvider} Sign-In. Please sign in with ${oauthProvider === 'google' ? 'Google' : oauthProvider} instead.`
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Step 2: Check rate limit from user_credits table
     const { data: credits, error: creditsError } = await supabaseAdmin
       .from("user_credits")

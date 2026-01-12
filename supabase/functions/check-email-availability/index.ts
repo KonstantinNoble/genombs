@@ -73,27 +73,81 @@ serve(async (req) => {
       
       // If older than 24h, treat as available (cron job will clean up soon)
       if (hoursSinceDeletion >= 24) {
+        // Continue to check auth.users
+      } else {
+        // Email is blocked - calculate remaining hours (always positive)
+        const hoursRemaining = Math.max(1, Math.ceil(24 - hoursSinceDeletion));
+
         return new Response(
-          JSON.stringify({ available: true }),
+          JSON.stringify({ 
+            available: false, 
+            reason: "RECENTLY_DELETED",
+            message: `This email address cannot be used. Please try again in ${hoursRemaining} hours.`
+          }),
           { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
+    }
 
-      // Email is blocked - calculate remaining hours (always positive)
-      const hoursRemaining = Math.max(1, Math.ceil(24 - hoursSinceDeletion));
+    // Check if email exists in auth.users
+    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
+    
+    if (listError) {
+      console.error("Error listing users:", listError);
+      // Fail open
+      return new Response(
+        JSON.stringify({ available: true }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
+    const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
+
+    if (!existingUser) {
+      // Email is available for registration
+      return new Response(
+        JSON.stringify({ available: true }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // User exists - check what providers they use
+    const providers = existingUser.app_metadata?.providers || [];
+    const hasEmailProvider = providers.includes('email');
+
+    if (providers.includes('google') && !hasEmailProvider) {
+      // User only has Google OAuth
       return new Response(
         JSON.stringify({ 
           available: false, 
-          reason: `This email address cannot be used. Please try again in ${hoursRemaining} hours.`
+          reason: "EXISTING_GOOGLE_ACCOUNT",
+          message: "An account with this email already exists. Please sign in with Google."
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Hash not found - email is available
+    if (hasEmailProvider) {
+      // User has email/password account
+      return new Response(
+        JSON.stringify({ 
+          available: false, 
+          reason: "EXISTING_EMAIL_ACCOUNT",
+          message: "An account with this email already exists. Please sign in instead."
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // User has some other OAuth provider
+    const primaryProvider = providers[0] || 'social';
     return new Response(
-      JSON.stringify({ available: true }),
+      JSON.stringify({ 
+        available: false, 
+        reason: "EXISTING_OAUTH_ACCOUNT",
+        provider: primaryProvider,
+        message: `An account with this email already exists. Please sign in with ${primaryProvider}.`
+      }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {

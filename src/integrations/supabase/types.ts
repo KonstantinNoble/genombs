@@ -428,6 +428,7 @@ export type Database = {
           id: string
           is_premium: boolean
           last_analysis_at: string | null
+          last_password_reset_at: string | null
           last_reset_date: string
           market_research_count: number | null
           market_research_window_start: string | null
@@ -459,6 +460,7 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
+          last_password_reset_at?: string | null
           last_reset_date?: string
           market_research_count?: number | null
           market_research_window_start?: string | null
@@ -490,6 +492,7 @@ export type Database = {
           id?: string
           is_premium?: boolean
           last_analysis_at?: string | null
+          last_password_reset_at?: string | null
           last_reset_date?: string
           market_research_count?: number | null
           market_research_window_start?: string | null

@@ -22,6 +22,8 @@ import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
 import HowToWriteBusinessPlan from "./pages/HowToWriteBusinessPlan";
 import BusinessStrategiesForSmallBusiness from "./pages/BusinessStrategiesForSmallBusiness";
+import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const queryClient = new QueryClient();
@@ -72,6 +74,8 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/imprint" element={<Imprint />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
               </Routes>

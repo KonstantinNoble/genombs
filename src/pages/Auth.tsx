@@ -62,6 +62,39 @@ const Auth = () => {
 
     setLoading(true);
     try {
+      // Check email availability before attempting signup
+      const { data: availabilityData, error: availabilityError } = await supabase.functions.invoke(
+        "check-email-availability",
+        { body: { email: email.trim() } }
+      );
+
+      if (availabilityError) {
+        console.error("Email availability check error:", availabilityError);
+        // Continue with signup if check fails (fail open)
+      } else if (availabilityData && !availabilityData.available) {
+        // Email is not available
+        if (availabilityData.reason === "EXISTING_GOOGLE_ACCOUNT") {
+          toast.error("An account with this email already exists. Please sign in with Google.", { duration: 6000 });
+          setIsSignUp(false);
+          setLoading(false);
+          return;
+        } else if (availabilityData.reason === "EXISTING_EMAIL_ACCOUNT") {
+          toast.error("An account with this email already exists. Please sign in instead.", { duration: 6000 });
+          setIsSignUp(false);
+          setLoading(false);
+          return;
+        } else if (availabilityData.reason === "EXISTING_OAUTH_ACCOUNT") {
+          toast.error(availabilityData.message || "An account with this email already exists.", { duration: 6000 });
+          setIsSignUp(false);
+          setLoading(false);
+          return;
+        } else if (availabilityData.reason === "RECENTLY_DELETED") {
+          toast.error(availabilityData.message || "This email was recently used for a deleted account.", { duration: 6000 });
+          setLoading(false);
+          return;
+        }
+      }
+
       // Store intent in localStorage to handle after email confirmation
       if (intent) {
         localStorage.setItem('auth_intent', intent);

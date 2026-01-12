@@ -87,6 +87,9 @@ const ResetPassword = () => {
 
       if (data.success) {
         setState("success");
+        // Start countdown immediately after successful email send (60 minutes)
+        setWaitMinutes(60);
+        setCountdown(60 * 60);
         toast.success("Check your email for the reset link!", { duration: 6000 });
       } else {
         throw new Error(data.message || "Failed to send reset email");
@@ -111,15 +114,15 @@ const ResetPassword = () => {
             <p className="text-muted-foreground">
               We've sent a password reset link to <strong>{email}</strong>. Please check your inbox.
             </p>
+            {countdown > 0 && (
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-sm text-muted-foreground">
+                  You can request another link in <span className="font-mono font-semibold text-foreground">{formatCountdown(countdown)}</span>
+                </p>
+              </div>
+            )}
             <p className="text-sm text-muted-foreground">
-              Didn't receive the email? Check your spam folder or{" "}
-              <button
-                onClick={() => setState("idle")}
-                className="text-primary hover:underline font-medium"
-              >
-                try again
-              </button>
-              .
+              Didn't receive the email? Check your spam folder.
             </p>
             <Button onClick={() => navigate("/auth")} className="w-full">
               Return to Sign In

@@ -73,7 +73,11 @@ const Auth = () => {
         // Continue with signup if check fails (fail open)
       } else if (availabilityData && !availabilityData.available) {
         // Email is not available
-        if (availabilityData.reason === "EXISTING_GOOGLE_ACCOUNT") {
+        if (availabilityData.reason === "RATE_LIMITED") {
+          toast.error("Too many registration attempts. Please try again in 1 hour.", { duration: 8000 });
+          setLoading(false);
+          return;
+        } else if (availabilityData.reason === "EXISTING_GOOGLE_ACCOUNT") {
           toast.error("An account with this email already exists. Please sign in with Google.", { duration: 6000 });
           setIsSignUp(false);
           setLoading(false);

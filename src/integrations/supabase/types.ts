@@ -349,6 +349,27 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_attempts: {
+        Row: {
+          attempted_at: string
+          email_hash: string | null
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          attempted_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          attempted_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       strategy_phase_progress: {
         Row: {
           actions_completed: number[] | null

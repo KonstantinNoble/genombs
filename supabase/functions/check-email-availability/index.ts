@@ -7,6 +7,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Rate limit: 3 registration attempts per hour per IP
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -50,6 +54,41 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false },
     });
+
+    // === IP-based Rate Limiting ===
+    // Extract client IP from headers
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
+      || req.headers.get('x-real-ip') 
+      || 'unknown';
+
+    // Hash the IP for privacy (GDPR compliance)
+    const ipData = encoder.encode(clientIP);
+    const ipHashBuffer = await crypto.subtle.digest('SHA-256', ipData);
+    const ipHashArray = Array.from(new Uint8Array(ipHashBuffer));
+    const ipHash = ipHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Check registration attempts in the last hour
+    const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+    const { count, error: countError } = await supabase
+      .from('registration_attempts')
+      .select('*', { count: 'exact', head: true })
+      .eq('ip_hash', ipHash)
+      .gte('attempted_at', oneHourAgo);
+
+    if (countError) {
+      console.error('Rate limit check failed:', countError);
+      // Fail-open on database error
+    } else if (count !== null && count >= RATE_LIMIT_MAX) {
+      console.log(`Rate limit exceeded for IP hash: ${ipHash.substring(0, 8)}...`);
+      return new Response(
+        JSON.stringify({ 
+          available: false, 
+          reason: "RATE_LIMITED",
+          message: "Too many registration attempts. Please try again in 1 hour."
+        }),
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     // Check if email hash exists in deleted_accounts
     const { data, error } = await supabase
@@ -104,7 +143,16 @@ serve(async (req) => {
     const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
 
     if (!existingUser) {
-      // Email is available for registration
+      // Email is available for registration - log the attempt
+      const { error: insertError } = await supabase
+        .from('registration_attempts')
+        .insert({ ip_hash: ipHash, email_hash: emailHash });
+      
+      if (insertError) {
+        console.error('Failed to log registration attempt:', insertError);
+        // Continue anyway - don't block registration
+      }
+
       return new Response(
         JSON.stringify({ available: true }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }

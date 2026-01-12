@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 3.3</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 12, 2026 | Version 3.4</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
@@ -138,20 +138,14 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Art. 6(1)(b) GDPR, § 25 Abs. 2 Nr. 2 TDDDG</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Freemius</strong></td>
-                    <td className="border border-border p-3">When you initiate Premium checkout</td>
-                    <td className="border border-border p-3">Payment session, subscription management</td>
-                    <td className="border border-border p-3">Art. 6(1)(b) GDPR, § 25 Abs. 2 Nr. 2 TDDDG</td>
-                  </tr>
-                  <tr>
                     <td className="border border-border p-3"><strong>Stripe</strong></td>
-                    <td className="border border-border p-3">When processing card payments</td>
+                    <td className="border border-border p-3">When processing card payments (via Freemius)</td>
                     <td className="border border-border p-3">Secure payment, fraud prevention</td>
                     <td className="border border-border p-3">Art. 6(1)(b) GDPR, Art. 6(1)(f) GDPR</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>PayPal</strong></td>
-                    <td className="border border-border p-3">When you select PayPal payment</td>
+                    <td className="border border-border p-3">When you select PayPal payment (via Freemius)</td>
                     <td className="border border-border p-3">Secure payment processing, authentication</td>
                     <td className="border border-border p-3">Art. 6(1)(b) GDPR, Art. 6(1)(f) GDPR</td>
                   </tr>
@@ -176,11 +170,6 @@ const PrivacyPolicy = () => {
                 </a>
               </li>
               <li>
-                <a href="https://freemius.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Freemius Privacy Policy
-                </a>
-              </li>
-              <li>
                 <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                   Stripe Privacy Policy
                 </a>
@@ -192,6 +181,26 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
+            <h3 className="text-xl font-semibold mb-3 mt-6">3.4 Freemius Checkout (No Cookies on This Website)</h3>
+            <p className="text-muted-foreground mb-4">
+              When you click to purchase a Premium subscription, you are redirected to the external 
+              Freemius checkout page (checkout.freemius.com) in a new browser tab. This is a direct 
+              link redirect, not an embedded popup or script.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important:</strong> Since the checkout process takes place entirely on the Freemius 
+              website (not on our website), <strong>no Freemius cookies or tracking scripts are set on 
+              our website</strong>. Any cookies set by Freemius during checkout are stored under the 
+              Freemius domain and are subject to the{" "}
+              <a href="https://freemius.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Freemius Privacy Policy
+              </a>.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              This approach was specifically chosen to minimize third-party tracking on our website and 
+              avoid the need for cookie consent banners related to payment processing.
+            </p>
+
             <p className="text-muted-foreground mb-4">
               You can manage cookies through your browser settings. However, please note that blocking these cookies 
               may prevent you from using the associated features (login, payment processing).
@@ -199,12 +208,140 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">4. User Authentication (Google OAuth)</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. User Authentication</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Authentication Method</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.1 Authentication Methods Overview</h3>
             <p className="text-muted-foreground mb-4">
-              Our website uses Google OAuth exclusively for user authentication. This means you log in using your existing 
-              Google account instead of creating a separate password for our website. This authentication method offers 
+              Our website offers two authentication methods for user accounts:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Email/Password Authentication:</strong> Register with your email address and a password of your choice</li>
+              <li><strong>Google OAuth:</strong> Log in using your existing Google account</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Both methods provide secure access to your account. If you register with email/password and 
+              later sign in with Google using the same email address, your accounts will be automatically 
+              linked for your convenience.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Email/Password Registration</h3>
+            <p className="text-muted-foreground mb-4">
+              When you register using email and password, the following data is collected and processed:
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Collected</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Email Address:</strong> Used as your primary account identifier, for sending 
+                confirmation and password reset emails, and for communications
+              </li>
+              <li>
+                <strong>Password:</strong> Stored exclusively in hashed form using industry-standard 
+                bcrypt algorithm. We NEVER store your password in plain text and cannot retrieve or 
+                view your original password.
+              </li>
+              <li>
+                <strong>Timestamps:</strong> Account creation date and last login time
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Email Verification</h4>
+            <p className="text-muted-foreground mb-4">
+              After registration, you will receive a confirmation email to verify your email address. 
+              This verification step ensures:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>You have access to the email address you provided</li>
+              <li>Protection against unauthorized account creation using your email</li>
+              <li>A secure and verified communication channel between us and you</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              The confirmation email contains a secure, time-limited link that expires after 1 hour.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Password Requirements and Security</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Minimum 8 characters required</li>
+              <li>Passwords are hashed using bcrypt before storage</li>
+              <li>Password comparison is performed using constant-time algorithms to prevent timing attacks</li>
+              <li>Failed login attempts are not rate-limited at the individual account level, but registration attempts are (see Section 4.10)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Password Reset</h4>
+            <p className="text-muted-foreground mb-4">
+              If you forget your password, you can request a password reset via the "Forgot password?" link. 
+              The process works as follows:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>You enter your email address on the password reset page</li>
+              <li>If an account exists with that email, a password reset link is sent</li>
+              <li>The reset link is valid for 1 hour</li>
+              <li>Password reset requests are rate-limited to 1 request per hour per email address to prevent abuse</li>
+              <li>The rate limit countdown is displayed in the user interface</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Note:</strong> If you registered using Google OAuth, password reset is not available. 
+              Please use "Sign in with Google" instead.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis for Email/Password Authentication</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
+                contract (providing authentication services required to access your account)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in secure account management 
+                and protection against unauthorized access
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Transactional Email Service (Resend)</h3>
+            <p className="text-muted-foreground mb-4">
+              We use Resend as our transactional email service provider to send authentication-related 
+              emails, including account confirmation emails and password reset emails.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to Resend</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your email address (recipient of the email)</li>
+              <li>Email content (confirmation link or password reset link)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Sender Domain</h4>
+            <p className="text-muted-foreground mb-4">
+              Authentication emails are sent from <strong>noreply@wealthconomy.com</strong>.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Resend, Inc. (San Francisco, CA, USA)
+              <br />
+              <strong>Purpose:</strong> Sending transactional authentication emails only (no marketing)
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
+                (email verification is essential to provide you with a secure account)
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Country Transfer</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 46(2)(c) GDPR - Standard Contractual Clauses (SCCs)
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://resend.com/legal/privacy-policy
+              </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Google OAuth Authentication</h3>
+            <p className="text-muted-foreground mb-4">
+              Alternatively, you can log in using your existing Google account. This authentication method offers 
               enhanced security through Google's infrastructure and provides a seamless login experience.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -217,7 +354,7 @@ const PrivacyPolicy = () => {
               <li>Streamlined login process across devices</li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Data Received from Google</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.5 Data Received from Google</h3>
             <p className="text-muted-foreground mb-4">
               When you authenticate via Google OAuth, we receive the following data from your Google account:
             </p>
@@ -233,7 +370,7 @@ const PrivacyPolicy = () => {
               infrastructure.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Legal Basis</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.6 Legal Basis for Google OAuth</h3>
             <p className="text-muted-foreground mb-4">
               The processing of your Google OAuth data is based on:
             </p>
@@ -248,7 +385,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Google as Third Party</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.7 Google as Third Party</h3>
             <p className="text-muted-foreground mb-4">
               <strong>Service provider:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
             </p>
@@ -288,7 +425,7 @@ const PrivacyPolicy = () => {
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.5 Backend Infrastructure</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.8 Backend Infrastructure</h3>
             <p className="text-muted-foreground mb-4">
               User authentication and data storage are handled through a secure backend infrastructure. All authentication 
               data and OAuth tokens are encrypted during transmission using industry-standard SSL/TLS protocols. The 
@@ -296,7 +433,7 @@ const PrivacyPolicy = () => {
               third countries secured through appropriate safeguards including adequacy decisions and Standard 
               Contractual Clauses (SCCs) where applicable.
             </p>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.6 Storage Duration</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.9 Storage Duration</h3>
             <p className="text-muted-foreground mb-4">
               Your account data is stored as long as your account remains active. You may delete your account at any 
               time through your account settings or by contacting us directly. When you delete your account:
@@ -319,12 +456,12 @@ const PrivacyPolicy = () => {
               </li>
               <li>Legal retention obligations may require us to keep certain records beyond this period</li>
             </ul>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.7 Account Management</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.10 Account Management</h3>
             <p className="text-muted-foreground mb-4">
               You can access your account information at any time by navigating to your profile page while logged in. 
               This page displays your profile information, including your email address and account creation date.
             </p>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.8 Account Deletion</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.11 Account Deletion</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to delete your account and all associated personal data at any time. Our website 
               provides a self-service account deletion feature accessible through your account settings. When you 
@@ -363,7 +500,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.9 Email Hash Storage for Abuse Prevention</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.12 Email Hash Storage for Abuse Prevention</h3>
             <p className="text-muted-foreground mb-4">
               To prevent abuse and protect against accidental re-registration, we create a cryptographic hash (SHA-256) 
               of your email address and store it temporarily for up to 24 hours after account deletion. This hash is a 
@@ -389,6 +526,79 @@ const PrivacyPolicy = () => {
               <strong>Data minimization:</strong> We use SHA-256 cryptographic hashing instead of storing plain email 
               addresses, ensuring that the stored hash cannot be used to identify you or be reversed to obtain your 
               email address.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.13 Registration Rate Limiting</h3>
+            <p className="text-muted-foreground mb-4">
+              To protect our service against spam and automated abuse attempts, we implement rate 
+              limiting for registration attempts. This system limits the number of registration 
+              attempts from a single source within a specified time period.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
+            <p className="text-muted-foreground mb-4">
+              When you attempt to register, the following data is temporarily processed:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>IP Address Hash:</strong> Your IP address is extracted from request headers 
+                and immediately converted to a SHA-256 cryptographic hash. The original IP address 
+                is never stored.
+              </li>
+              <li>
+                <strong>Email Address Hash:</strong> The email address you enter is converted to a 
+                SHA-256 cryptographic hash to associate attempts with email addresses without storing 
+                the actual email.
+              </li>
+              <li>
+                <strong>Timestamp:</strong> The date and time of each registration attempt.
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Rate Limit</h4>
+            <p className="text-muted-foreground mb-4">
+              A maximum of 3 registration attempts per IP address are permitted within any 1-hour period. 
+              If this limit is exceeded, further registration attempts from the same IP address are 
+              temporarily blocked until the oldest attempt expires.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Storage Duration</h4>
+            <p className="text-muted-foreground mb-4">
+              Registration attempt records are automatically deleted after 2 hours via an automated 
+              cleanup process (cron job). This ensures data minimization while maintaining effective 
+              protection against abuse.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Protection Measures</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Cryptographic Hashing:</strong> Both IP addresses and email addresses are 
+                converted to SHA-256 hashes before storage. These hashes are one-way encryptions 
+                that cannot be reversed to reveal the original data.
+              </li>
+              <li>
+                <strong>No Personal Identification:</strong> The stored hashes cannot be used to 
+                identify you personally or trace your browsing activity.
+              </li>
+              <li>
+                <strong>Automatic Deletion:</strong> All rate limiting data is automatically purged 
+                after 2 hours.
+              </li>
+              <li>
+                <strong>Server-Side Only:</strong> Rate limiting data is processed exclusively on 
+                our servers and is never transmitted to third parties.
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(f) GDPR:</strong> The processing is based on our legitimate interest 
+              in protecting our service against spam, automated abuse, and denial-of-service attacks. 
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Right to object (Art. 21 GDPR):</strong> You have the right to object to this 
+              processing on grounds relating to your particular situation. To exercise this right, 
+              please contact us at mail@wealthconomy.com.
             </p>
             
             <p className="text-muted-foreground mb-4 mt-6">
@@ -1666,6 +1876,20 @@ const PrivacyPolicy = () => {
                 analyses are retained. Older entries are automatically deleted when new analyses are created. All 
                 market research data is permanently deleted when you delete your account.
               </li>
+              <li>
+                <strong>Registration Rate Limiting Data:</strong> IP address hashes and email address 
+                hashes used for registration rate limiting are automatically deleted after 2 hours via 
+                an automated cleanup process.
+              </li>
+              <li>
+                <strong>Password Data:</strong> Hashed passwords are stored as long as your account 
+                remains active. Upon account deletion, password data is permanently removed.
+              </li>
+              <li>
+                <strong>Password Reset Timestamps:</strong> The timestamp of your last password reset 
+                request is stored to enforce the 1-hour rate limit. This data is deleted when you 
+                delete your account.
+              </li>
             </ul>
             <p className="text-muted-foreground mb-4">
               <strong>Legal Retention Obligations:</strong> In certain cases, we may be legally required to retain 
@@ -1755,7 +1979,7 @@ const PrivacyPolicy = () => {
               in our services. The latest version is always available on this website.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> December 28, 2025 (Version 3.3)
+              <strong>Last updated:</strong> January 12, 2026 (Version 3.4)
             </p>
           </section>
         </article>

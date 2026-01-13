@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: December 28, 2025 | Version 2.8</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 13, 2026 | Version 2.9</p>
 
           <div className="space-y-8">
             <section>
@@ -61,14 +61,31 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold mb-4">II. Registration</h2>
 
               <p className="mb-4">
-                To create an account, sign in with your Google account. Google OAuth handles authentication securely
-                through Google's infrastructure.
+                You can create an account using either <strong>email/password registration</strong> or <strong>Google OAuth authentication</strong>. 
+                Both methods provide secure access to your account.
+              </p>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">2.1 Email/Password Registration</h3>
+              <p className="mb-4">
+                When registering with email and password, the following applies:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li><strong>Email Verification:</strong> You must verify your email address via a confirmation link sent to your inbox. The link is valid for 1 hour.</li>
+                <li><strong>Password Requirements:</strong> Your password must be at least 8 characters long.</li>
+                <li><strong>Rate Limiting:</strong> To prevent abuse, registration attempts are limited to 3 per hour per IP address. If exceeded, you must wait before trying again.</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">2.2 Google OAuth Authentication</h3>
+              <p className="mb-4">
+                Alternatively, you can sign in with your Google account. Google OAuth handles authentication securely
+                through Google's infrastructure. If you register with email/password and later sign in with Google 
+                using the same email address, your accounts will be automatically linked.
               </p>
 
               <p className="mb-4">You agree to:</p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Provide accurate information through your Google account</li>
-                <li>Maintain the security of your Google account</li>
+                <li>Provide accurate information</li>
+                <li>Maintain the security of your account credentials</li>
                 <li>Accept responsibility for all activities under your account</li>
                 <li>Notify us immediately of any unauthorized access or security concerns</li>
               </ul>
@@ -77,7 +94,7 @@ const TermsOfService = () => {
                 We reserve the right to refuse registration, particularly in cases of fraud or Terms violations.
               </p>
 
-              <h3 className="text-xl font-semibold mt-6 mb-3">2.1 Linking Premium Purchases</h3>
+              <h3 className="text-xl font-semibold mt-6 mb-3">2.3 Linking Premium Purchases</h3>
               <p className="mb-4">
                 If you purchase a Premium subscription <strong>before</strong> creating an account, you must register
                 with the <strong>same email address</strong> used during the Freemius checkout. This is required for

@@ -95,8 +95,8 @@ const PrivacyPolicy = () => {
             
             <h3 className="text-xl font-semibold mb-3 mt-6">3.2 Authentication Session Management</h3>
             <p className="text-muted-foreground mb-4">
-              When you log in to your account via Google OAuth, we store a session token in your browser's local storage to maintain 
-              your logged-in state. This token originates from Google's authentication service and is technically necessary for 
+              When you log in to your account (via email/password or Google OAuth), we store a session token in your browser's local storage to maintain 
+              your logged-in state. This token is technically necessary for 
               authentication. This is covered by § 25 Abs. 2 Nr. 2 TTDSG, as it is essential for providing the requested service.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -1825,7 +1825,7 @@ const PrivacyPolicy = () => {
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Profile and Account Data:</strong> Stored as long as your account remains active. Permanently 
-                deleted when you delete your account (subject to backup retention periods as described in Section 4.6).
+                deleted when you delete your account (subject to backup retention periods as described in Section 4.9).
               </li>
               <li>
                 <strong>Analysis History:</strong> Only your <strong>10 most recent</strong> business tools analyses are 

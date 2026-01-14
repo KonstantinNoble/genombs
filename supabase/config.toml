@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.check-reset-eligibility]
 verify_jwt = false
+
+[functions.register-user]
+verify_jwt = false

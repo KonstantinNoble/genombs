@@ -6,8 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { SEOHead } from "@/components/seo/SEOHead";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -16,6 +23,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [searchParams] = useSearchParams();
   const intent = searchParams.get('intent');
   const navigate = useNavigate();
@@ -104,17 +113,24 @@ const Auth = () => {
         localStorage.setItem('auth_intent', intent);
       }
 
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+      // Use custom registration Edge Function with Resend email
+      const { data, error } = await supabase.functions.invoke("register-user", {
+        body: {
+          email: email.trim(),
+          password,
+          redirectUrl: `${window.location.origin}/auth/callback`,
         },
       });
 
       if (error) throw error;
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
-      toast.success("Check your email to confirm your account!", { duration: 6000 });
+      // Show confirmation modal instead of toast
+      setRegisteredEmail(email.trim());
+      setShowConfirmationModal(true);
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast.error(error.message || "Sign up failed");
@@ -416,6 +432,45 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Email Confirmation Modal */}
+      <Dialog open={showConfirmationModal} onOpenChange={setShowConfirmationModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <Mail className="w-8 h-8 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl font-bold">Check your Email</DialogTitle>
+            <DialogDescription className="text-base space-y-4">
+              <p>
+                We've sent a confirmation link to{" "}
+                <span className="font-semibold text-foreground">{registeredEmail}</span>
+              </p>
+              <p>
+                Please check your inbox to verify your account.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Button 
+              className="w-full h-12 text-base" 
+              onClick={() => {
+                setShowConfirmationModal(false);
+                setIsSignUp(false);
+                setEmail("");
+                setPassword("");
+                setConfirmPassword("");
+              }}
+            >
+              <CheckCircle className="mr-2 h-5 w-5" />
+              Go to Login
+            </Button>
+            <p className="text-sm text-center text-muted-foreground">
+              If you don't see the email, please check your spam folder.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

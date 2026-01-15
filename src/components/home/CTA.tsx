@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import auroraBackground from "@/assets/aurora-background-blurred.png";
 
 const CTA = () => {
   const [isPremium, setIsPremium] = useState(false);
@@ -48,18 +47,9 @@ const CTA = () => {
   }, []);
 
   return (
-    <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden">
-      {/* Static, pale, blurred aurora background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-xl opacity-40"
-        style={{ 
-          backgroundImage: `url(${auroraBackground})`,
-        }}
-      />
-      {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/60" />
+    <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden bg-muted/30">
       {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/60 to-transparent pointer-events-none z-[1]" />
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent pointer-events-none z-[1]" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

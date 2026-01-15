@@ -21,23 +21,12 @@ import HowToWriteBusinessPlan from "./pages/HowToWriteBusinessPlan";
 import BusinessStrategiesForSmallBusiness from "./pages/BusinessStrategiesForSmallBusiness";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
-import heroBackground from "@/assets/hero-background.jpg";
 
 const queryClient = new QueryClient();
 
 const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-  const isHomePage = location.pathname === "/";
-  
   return (
-    <div className="min-h-screen relative">
-      <div 
-        className={`hidden sm:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none transition-all duration-1000 ease-in-out ${
-          isHomePage ? 'blur-[2px] opacity-100' : 'blur-[8px] opacity-90'
-        }`}
-        style={{ backgroundImage: `url(${heroBackground})` }}
-        aria-hidden="true"
-      />
+    <div className="min-h-screen relative bg-background">
       <div className="relative z-10">
         {children}
       </div>

@@ -19,10 +19,7 @@ const Footer = () => {
                 <Link to="/business-strategies-for-small-business" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
                   → Business Strategies for Small Business
                 </Link>
-                <Link to="/market-research" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
-                  → AI Market Research
-                </Link>
-              </nav>
+                </nav>
             </div>
 
             <div className="space-y-4">

@@ -31,14 +31,6 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- Market Research -->
-  <url>
-    <loc>https://synoptas.com/market-research</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
   <!-- Pricing -->
   <url>
     <loc>https://synoptas.com/pricing</loc>

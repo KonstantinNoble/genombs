@@ -280,9 +280,6 @@ const BusinessStrategiesForSmallBusiness = () => {
                       Generate Your Strategy <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg" className="rounded-2xl">
-                    <Link to="/market-research">Explore Market Research</Link>
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -360,12 +357,12 @@ const BusinessStrategiesForSmallBusiness = () => {
               </Card>
               <Card className="bg-card/60 backdrop-blur-sm border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-6">
-                  <Link to="/market-research" className="block">
+                  <Link to="/business-tools" className="block">
                     <h3 className="font-semibold text-foreground mb-2 hover:text-primary transition-colors">
-                      AI Market Research →
+                      AI Business Planner →
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Get real-time market data and competitor analysis.
+                      Get a personalized strategy for your business.
                     </p>
                   </Link>
                 </CardContent>

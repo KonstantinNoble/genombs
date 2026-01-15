@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { Globe, Scan, Zap, BarChart3, ArrowRight } from "lucide-react";
+import { Globe, Zap, BarChart3, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const features = [
@@ -13,16 +13,6 @@ const features = [
     color: "primary",
     link: "/business-tools",
     linkText: "Generate Your Plan",
-  },
-  {
-    title: "Real-Time Market Intelligence",
-    description:
-      "Powered by Perplexity AI. Analyzes market trends, competitor data, and industry reports from Bloomberg, Statista, and 20+ premium sources.",
-    details: "Access the same market research that Fortune 500 companies use. Our AI aggregates data from Bloomberg, Statista, IBISWorld, and industry-specific sources to deliver accurate market size estimates, growth projections (CAGR), and competitive landscape analysis. All citations included so you can verify every data point.",
-    icon: Scan,
-    color: "accent-warm",
-    link: "/market-research",
-    linkText: "Try Market Research",
   },
   {
     title: "Business Strategies for Growth",
@@ -129,7 +119,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <FeatureCard key={index} feature={feature} index={index} />
           ))}

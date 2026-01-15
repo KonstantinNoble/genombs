@@ -10,6 +10,18 @@ const Hero = () => {
       className="relative min-h-[85vh] flex items-center justify-center py-20 sm:py-24 md:py-32 overflow-hidden"
       aria-label="Hero section"
     >
+      {/* Animated grid background accent */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Floating accent shapes */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-blob" />
+        <div className="absolute top-40 right-20 w-96 h-96 bg-accent-cool/5 rounded-full blur-3xl animate-blob" style={{ animationDelay: "2s" }} />
+        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-accent-warm/5 rounded-full blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
+        
+        {/* Animated line accents */}
+        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-line-flow" />
+        <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-cool/20 to-transparent animate-line-flow" style={{ animationDelay: "1.5s" }} />
+      </div>
+
       {/* Bottom fade transition to next section */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-muted/30 to-transparent pointer-events-none" />
 
@@ -39,7 +51,7 @@ const Hero = () => {
           >
             <Button
               size="lg"
-              className="text-base px-8"
+              className="text-base px-8 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               asChild
             >
               <Link to="/business-tools">{isPremium && user ? "Go to Planner" : "Create Your Strategy"}</Link>
@@ -51,15 +63,15 @@ const Hero = () => {
             style={{ animationDelay: "0.6s" }}
           >
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse-soft" />
+              <span className="w-2.5 h-2.5 rounded-full bg-primary animate-dot-pulse" />
               No more endless Googling
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-warm animate-pulse-soft" style={{ animationDelay: "0.5s" }} />
+              <span className="w-2.5 h-2.5 rounded-full bg-accent-warm animate-dot-pulse" style={{ animationDelay: "0.5s" }} />
               {isPremium && user ? "Premium Member" : "No more generic AI advice"}
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-cool animate-pulse-soft" style={{ animationDelay: "1s" }} />
+              <span className="w-2.5 h-2.5 rounded-full bg-accent-cool animate-dot-pulse" style={{ animationDelay: "1s" }} />
               Get a real plan in 2 minutes
             </span>
           </div>

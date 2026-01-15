@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen relative bg-background">
+    <div className="min-h-screen relative">
       <div className="relative z-10">
         {children}
       </div>

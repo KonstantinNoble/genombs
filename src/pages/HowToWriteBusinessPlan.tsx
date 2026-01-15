@@ -42,9 +42,8 @@ const steps = [
       "Calculate your Total Addressable Market (TAM)",
       "Identify market trends and growth projections",
       "Analyze at least 3-5 direct competitors",
-      "Use our AI Market Research tool for real-time data"
-    ],
-    cta: { text: "Try AI Market Research", link: "/market-research" }
+      "Use industry reports and market research data"
+    ]
   },
   {
     number: 4,
@@ -288,13 +287,6 @@ const HowToWriteBusinessPlan = () => {
                             </li>
                           ))}
                         </ul>
-                        {step.cta && (
-                          <Button asChild variant="outline" size="sm" className="rounded-xl">
-                            <Link to={step.cta.link}>
-                              {step.cta.text} <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -371,12 +363,12 @@ const HowToWriteBusinessPlan = () => {
               </Card>
               <Card className="bg-card/60 backdrop-blur-sm border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-6">
-                  <Link to="/market-research" className="block">
+                  <Link to="/pricing" className="block">
                     <h3 className="font-semibold text-foreground mb-2 hover:text-primary transition-colors">
-                      AI Market Research →
+                      Pricing Plans →
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Get real-time market data and competitor analysis.
+                      Compare our free and premium plans.
                     </p>
                   </Link>
                 </CardContent>

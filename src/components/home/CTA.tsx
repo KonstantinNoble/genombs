@@ -86,16 +86,6 @@ const CTA = () => {
                 {isPremium && isLoggedIn ? "Go to Planner" : "Start Free Analysis"}
               </Link>
             </Button>
-            {!isPremium && (
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-8 border-accent-cool/50 text-[hsl(200_100%_75%)] hover:text-[hsl(200_100%_85%)] hover:bg-accent-cool/10 hover:border-accent-cool drop-shadow-[0_0_12px_hsl(var(--accent-cool)/0.4)]"
-                asChild
-              >
-                <Link to="/market-research">Market Research</Link>
-              </Button>
-            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">

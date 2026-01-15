@@ -43,18 +43,18 @@ const HowItWorks = () => {
     {
       number: "2",
       title: "AI Creates Your Business Strategy",
-      description: "Our AI business plan generator analyzes your input using real-time market data from Perplexity AI. It creates business strategies for growth with weekly actions, realistic budgets, and measurable milestones tailored to your specific situation.",
+      description: "Our AI business plan generator analyzes your input using real-time market data. It creates business strategies for growth with weekly actions, realistic budgets, and measurable milestones tailored to your specific situation.",
       details: "Unlike ChatGPT, Synoptas doesn't rely on outdated training data. Every strategy is informed by current market trends, competitor activity, and industry benchmarks. You get actionable phases, not generic advice.",
-      link: "/market-research",
-      linkText: "Try Market Research"
+      link: "/business-tools",
+      linkText: "Try It Free"
     },
     {
       number: "3",
-      title: "Execute & Track Progress",
-      description: "Activate your strategy and track completion across all phases. Premium users unlock AI Autopilot – daily focus tasks selected by AI based on your strategy progress. Perfect for small business owners who want actionable business strategies to increase sales.",
-      details: "Build momentum with streak tracking, phase milestones, and visual progress indicators. Each completed action moves you closer to your business goals with clear next steps.",
-      link: "/my-strategies",
-      linkText: "View Your Strategies"
+      title: "Execute Your Strategy",
+      description: "Get a clear action plan with concrete steps, tool recommendations, and time estimates. Each phase builds on the previous one, guiding you from planning to execution.",
+      details: "Every action includes specific tools to use, time estimates, and copy-paste templates. Premium users unlock Deep Analysis mode with competitor insights, ROI projections, and 6-phase strategies.",
+      link: "/pricing",
+      linkText: "See Premium Features"
     }
   ];
 

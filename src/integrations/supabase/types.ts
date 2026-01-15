@@ -14,66 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      active_strategies: {
-        Row: {
-          autopilot_enabled: boolean | null
-          autopilot_last_generated: string | null
-          completed_actions: number
-          completed_phases: number
-          created_at: string
-          current_streak: number | null
-          id: string
-          is_deep_mode: boolean
-          longest_streak: number | null
-          name: string
-          original_result: Json
-          status: string
-          total_actions: number
-          total_focus_tasks_completed: number | null
-          total_phases: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          autopilot_enabled?: boolean | null
-          autopilot_last_generated?: string | null
-          completed_actions?: number
-          completed_phases?: number
-          created_at?: string
-          current_streak?: number | null
-          id?: string
-          is_deep_mode?: boolean
-          longest_streak?: number | null
-          name: string
-          original_result: Json
-          status?: string
-          total_actions?: number
-          total_focus_tasks_completed?: number | null
-          total_phases?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          autopilot_enabled?: boolean | null
-          autopilot_last_generated?: string | null
-          completed_actions?: number
-          completed_phases?: number
-          created_at?: string
-          current_streak?: number | null
-          id?: string
-          is_deep_mode?: boolean
-          longest_streak?: number | null
-          name?: string
-          original_result?: Json
-          status?: string
-          total_actions?: number
-          total_focus_tasks_completed?: number | null
-          total_phases?: number
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       ads_advisor_history: {
         Row: {
           advertising_budget: string
@@ -127,68 +67,6 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
-      }
-      autopilot_focus_tasks: {
-        Row: {
-          action_index: number | null
-          ai_reasoning: string | null
-          completed_at: string | null
-          created_at: string | null
-          estimated_duration: string | null
-          generated_for_date: string
-          id: string
-          is_completed: boolean | null
-          phase_index: number | null
-          priority: number | null
-          strategy_id: string
-          task_description: string | null
-          task_title: string
-          task_type: string | null
-          user_id: string
-        }
-        Insert: {
-          action_index?: number | null
-          ai_reasoning?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          estimated_duration?: string | null
-          generated_for_date: string
-          id?: string
-          is_completed?: boolean | null
-          phase_index?: number | null
-          priority?: number | null
-          strategy_id: string
-          task_description?: string | null
-          task_title: string
-          task_type?: string | null
-          user_id: string
-        }
-        Update: {
-          action_index?: number | null
-          ai_reasoning?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          estimated_duration?: string | null
-          generated_for_date?: string
-          id?: string
-          is_completed?: boolean | null
-          phase_index?: number | null
-          priority?: number | null
-          strategy_id?: string
-          task_description?: string | null
-          task_title?: string
-          task_type?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "autopilot_focus_tasks_strategy_id_fkey"
-            columns: ["strategy_id"]
-            isOneToOne: false
-            referencedRelation: "active_strategies"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       business_tools_history: {
         Row: {
@@ -244,36 +122,6 @@ export type Database = {
           email_hash?: string
           id?: string
           reason?: string | null
-        }
-        Relationships: []
-      }
-      market_research_history: {
-        Row: {
-          analysis_options: Json
-          created_at: string | null
-          id: string
-          industry: string | null
-          query: string
-          result: Json
-          user_id: string
-        }
-        Insert: {
-          analysis_options: Json
-          created_at?: string | null
-          id?: string
-          industry?: string | null
-          query: string
-          result: Json
-          user_id: string
-        }
-        Update: {
-          analysis_options?: Json
-          created_at?: string | null
-          id?: string
-          industry?: string | null
-          query?: string
-          result?: Json
-          user_id?: string
         }
         Relationships: []
       }
@@ -369,66 +217,6 @@ export type Database = {
           ip_hash?: string
         }
         Relationships: []
-      }
-      strategy_phase_progress: {
-        Row: {
-          actions_completed: number[] | null
-          completed_at: string | null
-          created_at: string
-          id: string
-          milestones_completed: number[] | null
-          notes: string | null
-          phase_index: number
-          phase_name: string
-          started_at: string | null
-          status: string
-          strategy_id: string
-          updated_at: string
-        }
-        Insert: {
-          actions_completed?: number[] | null
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          milestones_completed?: number[] | null
-          notes?: string | null
-          phase_index: number
-          phase_name: string
-          started_at?: string | null
-          status?: string
-          strategy_id: string
-          updated_at?: string
-        }
-        Update: {
-          actions_completed?: number[] | null
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          milestones_completed?: number[] | null
-          notes?: string | null
-          phase_index?: number
-          phase_name?: string
-          started_at?: string | null
-          status?: string
-          strategy_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_strategy_phase_progress_strategy"
-            columns: ["strategy_id"]
-            isOneToOne: false
-            referencedRelation: "active_strategies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "strategy_phase_progress_strategy_id_fkey"
-            columns: ["strategy_id"]
-            isOneToOne: false
-            referencedRelation: "active_strategies"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       user_credits: {
         Row: {

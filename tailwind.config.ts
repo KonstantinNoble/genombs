@@ -160,6 +160,29 @@ export default {
           "50%": { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
+        "grid-pulse": {
+          "0%, 100%": { opacity: "0.03" },
+          "50%": { opacity: "0.08" },
+        },
+        "line-flow": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "dot-pulse": {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.5" },
+          "50%": { transform: "scale(1.5)", opacity: "1" },
+        },
+        "wave": {
+          "0%": { transform: "translateX(0) translateY(0)" },
+          "25%": { transform: "translateX(5px) translateY(-5px)" },
+          "50%": { transform: "translateX(10px) translateY(0)" },
+          "75%": { transform: "translateX(5px) translateY(5px)" },
+          "100%": { transform: "translateX(0) translateY(0)" },
+        },
+        "morph": {
+          "0%, 100%": { borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
+          "50%": { borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -178,6 +201,11 @@ export default {
         "aurora-drift": "aurora-drift 12s ease-in-out infinite",
         "aurora-glow": "aurora-glow 5s ease-in-out infinite",
         "gradient": "gradient 4s ease infinite",
+        "grid-pulse": "grid-pulse 4s ease-in-out infinite",
+        "line-flow": "line-flow 3s ease-in-out infinite",
+        "dot-pulse": "dot-pulse 2s ease-in-out infinite",
+        "wave": "wave 4s ease-in-out infinite",
+        "morph": "morph 8s ease-in-out infinite",
       },
     },
   },

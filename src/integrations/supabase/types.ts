@@ -250,6 +250,8 @@ export type Database = {
           tools_window_start: string | null
           updated_at: string
           user_id: string
+          validation_count: number | null
+          validation_window_start: string | null
         }
         Insert: {
           ads_deep_analysis_count?: number | null
@@ -282,6 +284,8 @@ export type Database = {
           tools_window_start?: string | null
           updated_at?: string
           user_id: string
+          validation_count?: number | null
+          validation_window_start?: string | null
         }
         Update: {
           ads_deep_analysis_count?: number | null
@@ -314,6 +318,8 @@ export type Database = {
           tools_window_start?: string | null
           updated_at?: string
           user_id?: string
+          validation_count?: number | null
+          validation_window_start?: string | null
         }
         Relationships: []
       }
@@ -334,6 +340,60 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      validation_analyses: {
+        Row: {
+          consensus_points: Json | null
+          created_at: string | null
+          creativity_preference: number | null
+          dissent_points: Json | null
+          final_recommendation: Json | null
+          gemini_flash_response: Json | null
+          gemini_pro_response: Json | null
+          gpt_response: Json | null
+          id: string
+          majority_points: Json | null
+          overall_confidence: number | null
+          processing_time_ms: number | null
+          prompt: string
+          risk_preference: number | null
+          user_id: string
+        }
+        Insert: {
+          consensus_points?: Json | null
+          created_at?: string | null
+          creativity_preference?: number | null
+          dissent_points?: Json | null
+          final_recommendation?: Json | null
+          gemini_flash_response?: Json | null
+          gemini_pro_response?: Json | null
+          gpt_response?: Json | null
+          id?: string
+          majority_points?: Json | null
+          overall_confidence?: number | null
+          processing_time_ms?: number | null
+          prompt: string
+          risk_preference?: number | null
+          user_id: string
+        }
+        Update: {
+          consensus_points?: Json | null
+          created_at?: string | null
+          creativity_preference?: number | null
+          dissent_points?: Json | null
+          final_recommendation?: Json | null
+          gemini_flash_response?: Json | null
+          gemini_pro_response?: Json | null
+          gpt_response?: Json | null
+          id?: string
+          majority_points?: Json | null
+          overall_confidence?: number | null
+          processing_time_ms?: number | null
+          prompt?: string
+          risk_preference?: number | null
           user_id?: string
         }
         Relationships: []

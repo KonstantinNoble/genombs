@@ -15,14 +15,8 @@ verify_jwt = true
 [functions.delete-blocked-account]
 verify_jwt = true
 
-[functions.stock-analysis]
-verify_jwt = true
-
 [functions.check-email-availability]
 verify_jwt = false
-
-[functions.business-tools-advisor]
-verify_jwt = true
 
 [functions.sync-credits]
 verify_jwt = true
@@ -30,14 +24,8 @@ verify_jwt = true
 [functions.sync-freemius-subscription]
 verify_jwt = true
 
-[functions.ads-advisor]
-verify_jwt = true
-
 [functions.freemius-webhook]
 verify_jwt = false
-
-[functions.firecrawl-analyze]
-verify_jwt = true
 
 [functions.send-auth-email]
 verify_jwt = false
@@ -50,3 +38,9 @@ verify_jwt = false
 
 [functions.check-deleted-account-block]
 verify_jwt = false
+
+[functions.multi-ai-query]
+verify_jwt = true
+
+[functions.meta-evaluation]
+verify_jwt = true

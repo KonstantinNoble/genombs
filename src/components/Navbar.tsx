@@ -73,14 +73,14 @@ const Navbar = () => {
           </Link>
           
           <Link 
-            to="/business-tools" 
+            to="/validate" 
             className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
-              isActive("/business-tools") 
+              isActive("/validate") 
                 ? "text-primary after:w-full" 
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
-            AI Business Planner
+            Multi-AI Validator
           </Link>
           
           <Link 
@@ -152,11 +152,11 @@ const Navbar = () => {
             </Link>
             
             <Link
-              to="/business-tools"
+              to="/validate"
               className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
-              AI Business Planner
+              Multi-AI Validator
             </Link>
 
             <Link

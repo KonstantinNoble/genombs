@@ -25,10 +25,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "You've Googled 'how to grow my business' 100 times", detail: "And every article says the same vague things about 'building a brand'" },
-    { title: "ChatGPT gave you generic fluff that didn't help", detail: "Long paragraphs of advice that sounds smart but doesn't tell you what to actually DO" },
-    { title: "You have goals but no structured plan to reach them", detail: "You know where you want to be, but the path there feels overwhelming and unclear" },
-    { title: "You're spending hours researching instead of executing", detail: "Analysis paralysis keeps you stuck while competitors move forward" },
+    { title: "ChatGPT gave you one opinion – but is it right?", detail: "Single-AI advice sounds confident but you have no way to validate it" },
+    { title: "You're not sure if the AI missed important risks", detail: "One model can't catch everything. Critical blind spots go unnoticed." },
+    { title: "Different AIs give contradictory advice", detail: "You've tried multiple tools and gotten conflicting recommendations" },
+    { title: "You need confidence before making big decisions", detail: "Important business moves deserve more than one perspective" },
   ];
 
   return (
@@ -61,10 +61,10 @@ const PainPoints = () => {
             <span className="text-foreground font-medium">Synoptas fixes this.</span>
           </div>
           <Link 
-            to="/business-tools" 
+            to="/validate" 
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
           >
-            Get your first strategy free
+            Get your first validation free
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

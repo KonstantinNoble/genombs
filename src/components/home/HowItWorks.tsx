@@ -34,25 +34,25 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Describe Your Business Goal",
-      description: "Enter your business objective – whether you're learning how to write a business plan or scaling an existing small business. Add optional context like budget, industry, or target audience. You can even include your website URL for personalized analysis based on your existing content and offerings.",
-      details: "Be specific: 'I want to grow my freelance design business from $5k to $15k monthly revenue' works better than 'I want to make more money.' The more context you provide, the more tailored your strategy becomes.",
-      link: "/business-tools",
-      linkText: "Start Your Business Plan"
+      title: "Ask Your Business Question",
+      description: "Enter any strategic business question – from pricing strategies to market expansion decisions. Adjust your risk tolerance and analysis style preferences to tune how the AI models approach your problem.",
+      details: "Be specific: 'Should I expand to enterprise clients or focus on SMB?' works better than 'How do I grow?' The more context you provide, the more accurate the multi-model analysis becomes.",
+      link: "/validate",
+      linkText: "Start Your Validation"
     },
     {
       number: "2",
-      title: "AI Creates Your Business Strategy",
-      description: "Our AI business plan generator analyzes your input using real-time market data. It creates business strategies for growth with weekly actions, realistic budgets, and measurable milestones tailored to your specific situation.",
-      details: "Unlike ChatGPT, Synoptas doesn't rely on outdated training data. Every strategy is informed by current market trends, competitor activity, and industry benchmarks. You get actionable phases, not generic advice.",
-      link: "/business-tools",
+      title: "3 AI Models Analyze in Parallel",
+      description: "GPT-5.2, Gemini 3 Pro, and Gemini 2.5 Flash each analyze your question independently. Each model brings unique strengths – reasoning, creativity, and pragmatic execution.",
+      details: "Unlike single-AI tools, Synoptas queries multiple models simultaneously and streams results as they complete. You see each perspective before the final synthesis.",
+      link: "/validate",
       linkText: "Try It Free"
     },
     {
       number: "3",
-      title: "Execute Your Strategy",
-      description: "Get a clear action plan with concrete steps, tool recommendations, and time estimates. Each phase builds on the previous one, guiding you from planning to execution.",
-      details: "Every action includes specific tools to use, time estimates, and copy-paste templates. Premium users unlock Deep Analysis mode with competitor insights, ROI projections, and 6-phase strategies.",
+      title: "Get Validated Recommendations",
+      description: "Our meta-evaluation identifies where all 3 models agree (high confidence), where 2/3 agree (majority), and where they disagree (worth deeper consideration).",
+      details: "The final recommendation synthesizes all perspectives with a confidence score. Dissent points highlight risks you might have missed with single-AI advice.",
       link: "/pricing",
       linkText: "See Premium Features"
     }

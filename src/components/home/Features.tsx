@@ -5,30 +5,30 @@ import { Link } from "react-router-dom";
 
 const features = [
   {
-    title: "AI Business Plan Generator",
+    title: "Multi-Model AI Validation",
     description:
-      "Stop wondering how to write a business plan. Enter your goals and get a professional, phased strategy with growth projections – no MBA required.",
-    details: "Our AI business plan generator transforms your ideas into structured, actionable plans. Whether you're a first-time entrepreneur learning how to make a business plan or a seasoned founder pivoting to new markets, you'll receive customized strategies complete with budget estimates, timeline projections, and measurable KPIs. No expensive consultants. No generic templates.",
+      "Stop relying on single-AI advice. Get validated recommendations from 3 leading AI models – GPT-5.2, Gemini 3 Pro, and Gemini Flash working together.",
+    details: "Each model brings unique strengths: GPT-5.2 for deep reasoning, Gemini 3 Pro for creative solutions, and Gemini Flash for pragmatic execution. Our meta-evaluation identifies consensus, majority agreement, and dissent – giving you confidence scores for every recommendation.",
     icon: Globe,
     color: "primary",
-    link: "/business-tools",
-    linkText: "Generate Your Plan",
+    link: "/validate",
+    linkText: "Start Validation",
   },
   {
-    title: "Business Strategies for Growth",
+    title: "Consensus & Dissent Analysis",
     description:
-      "Get actionable business strategies to increase sales. Our AI creates step-by-step plans tailored for small business owners and solopreneurs.",
-    details: "Unlike generic ChatGPT advice, Synoptas delivers business strategies specifically designed for small businesses. Each action item includes the exact tool to use, time estimate, cost breakdown, and copy-paste templates. From marketing automation to sales funnel optimization – get strategies that actually work for limited budgets.",
+      "See where AI models agree and disagree. Consensus points are high-confidence recommendations. Dissent points reveal risks worth considering.",
+    details: "Unlike single-model tools, Synoptas shows you the full picture. When all 3 models agree, you can move forward confidently. When they disagree, you've uncovered nuances that need deeper thought. Each dissent point includes the reasoning from each model's perspective.",
     icon: Zap,
     color: "accent-cool",
-    link: "/business-tools",
-    linkText: "Start Planning",
+    link: "/validate",
+    linkText: "See How It Works",
   },
   {
-    title: "Deep Analysis Mode",
+    title: "Adjustable Risk & Creativity",
     description:
-      "Premium users get comprehensive phases with competitor analysis, ROI projections, and weekly action plans for sustainable growth.",
-    details: "Go beyond surface-level recommendations. Deep Analysis mode provides multi-week implementation phases, detailed competitor SWOT analysis, customer acquisition cost (CAC) benchmarks, conversion rate optimization tactics, and projected ROI calculations. Perfect for serious entrepreneurs ready to scale.",
+      "Tune the AI analysis to your preferences. Conservative or aggressive? Data-driven or innovative? Adjust sliders to get recommendations that match your style.",
+    details: "Your risk tolerance and creativity preference influence how models weigh their recommendations. Conservative settings prioritize proven approaches. Aggressive settings explore bold moves. The synthesis adapts to your business philosophy.",
     icon: BarChart3,
     color: "accent-info",
     link: "/pricing",

@@ -27,21 +27,17 @@ const AuthCallback = () => {
         const isNewUser = accountAge < 10000; // Less than 10 seconds old
 
         if (isNewUser) {
-          // Check if email is blocked (24h hash ban)
-          const { data, error } = await supabase.functions.invoke('check-email-availability', {
+          // Check ONLY for 24h deletion block (no rate limiting, no other checks)
+          const { data, error } = await supabase.functions.invoke('check-deleted-account-block', {
             body: { email: user.email }
           });
 
           if (error) {
-            console.error("Email check error:", error);
+            console.error("Deletion block check error:", error);
             // Fail-open: allow registration if check fails
-            navigate("/");
-            return;
-          }
-
-          if (!data.available) {
-            // Email is blocked - delete the just-created account properly
-            console.log("Email blocked, deleting newly created account");
+          } else if (data?.blocked) {
+            // Email is actually blocked due to recent account deletion
+            console.log("Email blocked due to recent deletion, removing newly created account");
             
             // Call edge function to delete the blocked account
             const { error: deleteError } = await supabase.functions.invoke('delete-blocked-account');
@@ -50,14 +46,15 @@ const AuthCallback = () => {
               console.error("Failed to delete blocked account:", deleteError);
             }
             
-            const hoursRemaining = data.reason?.match(/(\d+)/)?.[1] || "24";
+            // Use the message directly from backend
             toast.error(
-              `This email address cannot be used for another ${hoursRemaining} hours.`,
-              { duration: 6000 }
+              data.message || `This email address cannot be used for another ${data.hoursRemaining || 24} hours.`,
+              { duration: 8000 }
             );
             navigate("/auth");
             return;
           }
+          // If not blocked, continue with normal flow
         }
 
         // Check for pending premium activation

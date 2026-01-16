@@ -21,18 +21,18 @@ export function DissentSection({ points }: DissentSectionProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full bg-red-500" />
-        <h3 className="text-lg font-semibold text-foreground">
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="h-4 w-4 rounded-full bg-red-500" />
+        <h3 className="text-xl font-bold text-foreground">
           Points of Disagreement
         </h3>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-base text-muted-foreground">
           (Models have different views)
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {points.map((point, index) => {
           const isExpanded = expandedIndex === index;
           
@@ -43,48 +43,48 @@ export function DissentSection({ points }: DissentSectionProps) {
             >
               <button
                 onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-red-500/10 transition-colors"
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-red-500/10 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                <div className="flex items-center gap-4">
+                  <AlertTriangle className="h-6 w-6 text-red-500 shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-foreground">{point.topic}</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <h4 className="font-bold text-lg text-foreground">{point.topic}</h4>
+                    <p className="text-base text-muted-foreground">
                       {point.positions.length} different perspectives
                     </p>
                   </div>
                 </div>
                 {isExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </button>
 
               {isExpanded && (
-                <div className="px-4 pb-4 pt-0 border-t border-red-500/20 space-y-3">
-                  <p className="text-xs text-muted-foreground pt-3">
+                <div className="px-5 pb-5 pt-0 border-t border-red-500/20 space-y-4">
+                  <p className="text-sm text-muted-foreground pt-4">
                     Review each perspective to make an informed decision:
                   </p>
                   
-                  <div className="grid gap-3 sm:grid-cols-1 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
                     {point.positions.map((pos, i) => {
                       const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-foreground';
                       
                       return (
                         <div
                           key={i}
-                          className={`p-3 rounded-lg border ${colorClass}`}
+                          className={`p-4 rounded-lg border ${colorClass}`}
                         >
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs font-bold uppercase tracking-wide">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-sm font-bold uppercase tracking-wide">
                               {pos.modelName}
                             </span>
                           </div>
-                          <p className="text-sm font-medium text-foreground mb-1">
+                          <p className="text-base font-medium text-foreground mb-2">
                             {pos.position}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm text-muted-foreground">
                             {pos.reasoning}
                           </p>
                         </div>

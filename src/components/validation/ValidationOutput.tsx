@@ -26,11 +26,11 @@ export function ValidationOutput({ result }: ValidationOutputProps) {
   } = result;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* Processing Time Badge */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 border text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-sm text-muted-foreground">
+          <Clock className="h-4 w-4" />
           <span>Analysis completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
       </div>
@@ -45,18 +45,18 @@ export function ValidationOutput({ result }: ValidationOutputProps) {
 
       {/* Top Actions */}
       {finalRecommendation.topActions && finalRecommendation.topActions.length > 0 && (
-        <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <ArrowRight className="h-4 w-4 text-primary" />
+        <div className="p-6 rounded-xl bg-primary/5 border border-primary/20">
+          <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+            <ArrowRight className="h-5 w-5 text-primary" />
             Top Priority Actions
           </h3>
-          <ol className="space-y-2">
+          <ol className="space-y-3">
             {finalRecommendation.topActions.map((action, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm">
-                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+              <li key={i} className="flex items-start gap-4 text-base">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
                   {i + 1}
                 </span>
-                <span className="text-foreground pt-0.5">{action}</span>
+                <span className="text-foreground pt-1">{action}</span>
               </li>
             ))}
           </ol>

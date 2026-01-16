@@ -42,30 +42,30 @@ export function ConfidenceHeader({
   const Icon = getConfidenceIcon(confidence);
 
   return (
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
-      <div className="flex items-start justify-between gap-4 mb-4">
+    <div className="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+      <div className="flex items-start justify-between gap-6 mb-6">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
-          <p className="text-muted-foreground">{description}</p>
+          <h2 className="text-3xl font-bold text-foreground mb-3">{title}</h2>
+          <p className="text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <Icon className={cn("h-8 w-8", getConfidenceColor(confidence))} />
-          <span className={cn("text-3xl font-bold", getConfidenceColor(confidence))}>
+        <div className="flex flex-col items-center gap-2">
+          <Icon className={cn("h-10 w-10", getConfidenceColor(confidence))} />
+          <span className={cn("text-4xl font-bold", getConfidenceColor(confidence))}>
             {confidence}%
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             {getConfidenceLabel(confidence)}
           </span>
         </div>
       </div>
 
       {/* Confidence Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs text-muted-foreground">
+      <div className="space-y-3">
+        <div className="flex justify-between text-sm text-muted-foreground">
           <span>AI Consensus Level</span>
           <span>{confidence}%</span>
         </div>
-        <div className="h-3 bg-muted rounded-full overflow-hidden">
+        <div className="h-4 bg-muted rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-1000 ease-out",
@@ -77,7 +77,7 @@ export function ConfidenceHeader({
       </div>
 
       {reasoning && (
-        <p className="mt-4 text-sm text-muted-foreground italic border-t border-primary/10 pt-4">
+        <p className="mt-6 text-base text-muted-foreground italic border-t border-primary/10 pt-6">
           {reasoning}
         </p>
       )}

@@ -26,43 +26,38 @@ const AuthCallback = () => {
         const accountAge = new Date().getTime() - new Date(user.created_at).getTime();
         const isNewUser = accountAge < 10000; // Less than 10 seconds old
 
-        if (isNewUser) {
-          // Check ONLY for 24h deletion block (no rate limiting, no other checks)
-          const { data, error } = await supabase.functions.invoke('check-deleted-account-block', {
-            body: { email: user.email }
-          });
+        // Run deletion block check and pending premium check in parallel for speed
+        const [deletionBlockResult, pendingPremiumResult] = await Promise.all([
+          // Only check deletion block for new users
+          isNewUser 
+            ? supabase.functions.invoke('check-deleted-account-block', { body: { email: user.email } })
+            : Promise.resolve({ data: null, error: null }),
+          // Always check for pending premium
+          supabase.from('pending_premium').select('*').ilike('email', user.email!).maybeSingle()
+        ]);
 
-          if (error) {
-            console.error("Deletion block check error:", error);
-            // Fail-open: allow registration if check fails
-          } else if (data?.blocked) {
-            // Email is actually blocked due to recent account deletion
-            console.log("Email blocked due to recent deletion, removing newly created account");
-            
-            // Call edge function to delete the blocked account
-            const { error: deleteError } = await supabase.functions.invoke('delete-blocked-account');
-            
-            if (deleteError) {
-              console.error("Failed to delete blocked account:", deleteError);
-            }
-            
-            // Use the message directly from backend
-            toast.error(
-              data.message || `This email address cannot be used for another ${data.hoursRemaining || 24} hours.`,
-              { duration: 8000 }
-            );
-            navigate("/auth");
-            return;
+        // Handle deletion block (only for new users)
+        if (isNewUser && deletionBlockResult.data?.blocked) {
+          console.log("Email blocked due to recent deletion, removing newly created account");
+          
+          // Call edge function to delete the blocked account
+          const { error: deleteError } = await supabase.functions.invoke('delete-blocked-account');
+          
+          if (deleteError) {
+            console.error("Failed to delete blocked account:", deleteError);
           }
-          // If not blocked, continue with normal flow
+          
+          toast.error(
+            deletionBlockResult.data.message || `This email address cannot be used for another ${deletionBlockResult.data.hoursRemaining || 24} hours.`,
+            { duration: 8000 }
+          );
+          navigate("/auth");
+          return;
         }
 
-        // Check for pending premium activation
-        const { data: pendingPremium, error: pendingError } = await supabase
-          .from('pending_premium')
-          .select('*')
-          .ilike('email', user.email!)
-          .maybeSingle();
+        // Extract pending premium data
+        const pendingPremium = pendingPremiumResult.data;
+        const pendingError = pendingPremiumResult.error;
 
         if (!pendingError && pendingPremium) {
           console.log('Found pending premium for user, activating...');

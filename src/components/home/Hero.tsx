@@ -30,11 +30,11 @@ const Hero = () => {
           {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="bg-gradient-to-r from-primary via-[hsl(160_70%_35%)] to-[hsl(120_80%_40%)] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              AI Business Plan Generator
+              Multi-AI Business Validator
             </span>
             <br />
             <span className="text-foreground">
-              From Ideas to Actionable Strategy
+              3 AI Models. One Clear Answer.
             </span>
           </h1>
 
@@ -42,7 +42,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Learn how to make a business plan in minutes, not days. Our AI business plan generator creates growth strategies tailored for small business owners – powered by live market research.
+            Stop guessing with single-AI advice. Get validated business recommendations from GPT-5.2, Gemini 3 Pro, and Gemini Flash – with consensus and risk analysis.
           </p>
 
           <div
@@ -54,7 +54,7 @@ const Hero = () => {
               className="text-base px-8 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               asChild
             >
-              <Link to="/business-tools">{isPremium && user ? "Go to Planner" : "Create Your Strategy"}</Link>
+              <Link to="/validate">{isPremium && user ? "Go to Validator" : "Validate Your Strategy"}</Link>
             </Button>
           </div>
 
@@ -64,15 +64,15 @@ const Hero = () => {
           >
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-primary animate-dot-pulse" />
-              No more endless Googling
+              3 AI models working together
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-warm animate-dot-pulse" style={{ animationDelay: "0.5s" }} />
-              {isPremium && user ? "Premium Member" : "No more generic AI advice"}
+              {isPremium && user ? "Premium Member" : "Consensus + Dissent analysis"}
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-cool animate-dot-pulse" style={{ animationDelay: "1s" }} />
-              Get a real plan in 2 minutes
+              Validated recommendations
             </span>
           </div>
         </div>

@@ -32,7 +32,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
       if (plan === 'premium') {
         openCheckout();
       } else {
-        navigate('/business-tools');
+        navigate('/validate');
       }
     }
   };
@@ -54,14 +54,14 @@ const Pricing = ({ compact = false }: PricingProps) => {
               You're on the Premium Plan!
             </h2>
             <p className="text-lg text-muted-foreground">
-              Enjoy unlimited access to all premium features including Deep Analysis with ROI projections, competitor analysis, and risk mitigation.
+              Enjoy unlimited access to all premium features including 20 daily validations and detailed model comparisons.
             </p>
             <Button 
               size="lg" 
-              onClick={() => navigate('/business-tools')}
+              onClick={() => navigate('/validate')}
               className="mt-6"
             >
-              Go to Dashboard
+              Go to Validator
             </Button>
           </div>
         </div>
@@ -70,20 +70,20 @@ const Pricing = ({ compact = false }: PricingProps) => {
   }
 
   const freeFeatures = [
-    { text: "2 AI Business Analyses per day", included: true },
-    { text: "Website Analysis for personalized insights", included: true },
-    { text: "4 strategy phases per analysis", included: true },
-    { text: "Actionable steps with resource links", included: true },
-    { text: "Deep Analysis Mode", included: false },
+    { text: "2 Multi-AI Validations per day", included: true },
+    { text: "3 AI models (GPT-5.2, Gemini Pro, Flash)", included: true },
+    { text: "Consensus & Dissent analysis", included: true },
+    { text: "Risk & Creativity preference tuning", included: true },
+    { text: "Detailed model comparisons", included: false },
   ];
 
   const premiumFeatures = [
-    { text: "8 Analyses daily (6 Standard + 2 Deep)", included: true, highlight: true },
-    { text: "Website Analysis with detailed content extraction", included: true, highlight: true },
-    { text: "6 strategy phases with Deep Analysis", included: true, highlight: true },
-    { text: "Competitor Analysis with market insights", included: true },
-    { text: "ROI Projections with realistic growth metrics", included: true },
-    { text: "Risk mitigation strategies", included: true },
+    { text: "20 Validations daily", included: true, highlight: true },
+    { text: "3 AI models with full reasoning", included: true, highlight: true },
+    { text: "Detailed individual model responses", included: true, highlight: true },
+    { text: "Priority action items synthesis", included: true },
+    { text: "Confidence scoring with reasoning", included: true },
+    { text: "Full validation history", included: true },
   ];
 
   return (

@@ -114,7 +114,7 @@ interface ModelResponse {
   error?: string;
 }
 
-// Query a single AI model
+// Query a single AI model with timeout
 async function queryModel(
   modelConfig: typeof MODELS.gpt,
   prompt: string,
@@ -122,6 +122,12 @@ async function queryModel(
   isPremium: boolean
 ): Promise<ModelResponse> {
   const startTime = Date.now();
+  
+  // Create abort controller for 45-second timeout per model
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 45000);
+  
+  console.log(`[${modelConfig.name}] Starting query...`);
   
   try {
     // Different system prompts for Free vs Premium
@@ -163,11 +169,14 @@ PREMIUM ANALYSIS REQUIREMENTS:
         tools: [getRecommendationTool(isPremium)],
         tool_choice: { type: "function", function: { name: "provide_recommendations" } }
       }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`${modelConfig.name} error:`, response.status, errorText);
+      console.error(`[${modelConfig.name}] Error ${response.status}:`, errorText);
       
       if (response.status === 429) {
         throw new Error("Rate limit exceeded");
@@ -182,10 +191,14 @@ PREMIUM ANALYSIS REQUIREMENTS:
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     
     if (!toolCall?.function?.arguments) {
+      console.error(`[${modelConfig.name}] No tool call in response:`, JSON.stringify(data).slice(0, 500));
       throw new Error("No structured response from model");
     }
 
     const parsed = JSON.parse(toolCall.function.arguments);
+    const processingTime = Date.now() - startTime;
+    
+    console.log(`[${modelConfig.name}] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
     
     return {
       modelId: modelConfig.id,
@@ -193,7 +206,7 @@ PREMIUM ANALYSIS REQUIREMENTS:
       recommendations: parsed.recommendations || [],
       summary: parsed.summary || "",
       overallConfidence: parsed.overallConfidence || 50,
-      processingTimeMs: Date.now() - startTime,
+      processingTimeMs: processingTime,
       ...(isPremium && {
         marketContext: parsed.marketContext,
         strategicOutlook: parsed.strategicOutlook
@@ -201,14 +214,31 @@ PREMIUM ANALYSIS REQUIREMENTS:
     };
 
   } catch (error: any) {
-    console.error(`${modelConfig.name} query failed:`, error);
+    clearTimeout(timeoutId);
+    
+    const processingTime = Date.now() - startTime;
+    
+    if (error.name === 'AbortError') {
+      console.error(`[${modelConfig.name}] Timed out after ${processingTime}ms`);
+      return {
+        modelId: modelConfig.id,
+        modelName: modelConfig.name,
+        recommendations: [],
+        summary: "",
+        overallConfidence: 0,
+        processingTimeMs: processingTime,
+        error: "Request timed out"
+      };
+    }
+    
+    console.error(`[${modelConfig.name}] Failed after ${processingTime}ms:`, error.message);
     return {
       modelId: modelConfig.id,
       modelName: modelConfig.name,
       recommendations: [],
       summary: "",
       overallConfidence: 0,
-      processingTimeMs: Date.now() - startTime,
+      processingTimeMs: processingTime,
       error: error.message
     };
   }
@@ -311,13 +341,49 @@ Context for your analysis:
             sendSSE(controller, 'status', { message: 'Querying Gemini 3 Pro...', model: 'geminiPro' });
             sendSSE(controller, 'status', { message: 'Querying Gemini Flash...', model: 'geminiFlash' });
 
-            const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
+            console.log('Starting parallel model queries...');
+
+            // Use Promise.allSettled to handle individual model failures gracefully
+            const results = await Promise.allSettled([
               queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium),
               queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium),
               queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium)
             ]);
 
-            // Send individual model responses as they complete
+            // Extract responses, using error fallbacks for rejected promises
+            const gptResponse = results[0].status === 'fulfilled' ? results[0].value : {
+              modelId: MODELS.gpt.id,
+              modelName: MODELS.gpt.name,
+              recommendations: [],
+              summary: "",
+              overallConfidence: 0,
+              processingTimeMs: 0,
+              error: results[0].status === 'rejected' ? results[0].reason?.message : 'Unknown error'
+            };
+            
+            const geminiProResponse = results[1].status === 'fulfilled' ? results[1].value : {
+              modelId: MODELS.geminiPro.id,
+              modelName: MODELS.geminiPro.name,
+              recommendations: [],
+              summary: "",
+              overallConfidence: 0,
+              processingTimeMs: 0,
+              error: results[1].status === 'rejected' ? results[1].reason?.message : 'Unknown error'
+            };
+            
+            const geminiFlashResponse = results[2].status === 'fulfilled' ? results[2].value : {
+              modelId: MODELS.geminiFlash.id,
+              modelName: MODELS.geminiFlash.name,
+              recommendations: [],
+              summary: "",
+              overallConfidence: 0,
+              processingTimeMs: 0,
+              error: results[2].status === 'rejected' ? results[2].reason?.message : 'Unknown error'
+            };
+
+            console.log(`All queries completed. GPT: ${gptResponse.error ? 'ERROR' : 'OK'}, GeminiPro: ${geminiProResponse.error ? 'ERROR' : 'OK'}, GeminiFlash: ${geminiFlashResponse.error ? 'ERROR' : 'OK'}`);
+
+            // Send individual model responses
             sendSSE(controller, 'model_complete', { model: 'gpt', response: gptResponse });
             sendSSE(controller, 'model_complete', { model: 'geminiPro', response: geminiProResponse });
             sendSSE(controller, 'model_complete', { model: 'geminiFlash', response: geminiFlashResponse });

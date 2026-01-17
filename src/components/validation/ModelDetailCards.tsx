@@ -24,24 +24,19 @@ function ModelCard({ response, colorClass, bgClass, isPremium = false }: ModelCa
 
   if (!response || response.error) {
     return (
-      <div className={cn("rounded-xl border p-6", bgClass, "opacity-60")}>
-        <div className="flex items-center justify-between">
-          <span className="font-semibold text-lg">{response?.modelName || 'Unknown'}</span>
-          <Badge variant="outline" className="text-sm bg-destructive/10 text-destructive border-destructive/30">
+      <div className={cn("rounded-lg sm:rounded-xl border p-3 sm:p-6", bgClass, "opacity-60")}>
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-semibold text-base sm:text-lg">{response?.modelName || 'Unknown'}</span>
+          <Badge variant="outline" className="text-xs sm:text-sm bg-destructive/10 text-destructive border-destructive/30">
             {response?.error === "Request timed out" ? "Timed Out" : "Unavailable"}
           </Badge>
         </div>
-        <p className="text-base text-muted-foreground mt-3">
+        <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">
           {response?.error === "Request timed out" 
-            ? "This model took too long to respond. Analysis continued with other models."
+            ? "Model timed out. Analysis continued with other models."
             : response?.error || 'No response available'
           }
         </p>
-        {response?.isFallback && (
-          <p className="text-sm text-amber-600 mt-2">
-            A faster model was used as fallback.
-          </p>
-        )}
       </div>
     );
   }
@@ -52,36 +47,34 @@ function ModelCard({ response, colorClass, bgClass, isPremium = false }: ModelCa
   const maxActionItems = showFullContent ? 7 : 2;
 
   return (
-    <div className={cn("rounded-xl border overflow-hidden", bgClass)}>
+    <div className={cn("rounded-lg sm:rounded-xl border overflow-hidden", bgClass)}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-6 text-left hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between p-3 sm:p-6 text-left hover:bg-muted/50 transition-colors gap-2"
       >
-        <div className="flex items-center gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-lg text-foreground">{response.modelName}</h4>
-              {response.isFallback && (
-                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
-                  Fallback
-                </Badge>
-              )}
-              {!isPremium && (
-                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
-                  Limited
-                </Badge>
-              )}
-            </div>
-            <p className="text-base text-muted-foreground mt-1">
-              {response.recommendations.length} recommendations · {response.overallConfidence}% confident
-            </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <h4 className="font-semibold text-sm sm:text-lg text-foreground">{response.modelName}</h4>
+            {response.isFallback && (
+              <Badge variant="outline" className="text-[10px] sm:text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
+                Fallback
+              </Badge>
+            )}
+            {!isPremium && (
+              <Badge variant="outline" className="text-[10px] sm:text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
+                Limited
+              </Badge>
+            )}
           </div>
+          <p className="text-xs sm:text-base text-muted-foreground mt-0.5 sm:mt-1">
+            {response.recommendations.length} recs · {response.overallConfidence}%
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <span className={cn("text-base font-medium px-4 py-2 rounded-full", colorClass)}>
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <span className={cn("text-xs sm:text-base font-medium px-2 sm:px-4 py-1 sm:py-2 rounded-full", colorClass)}>
             {(response.processingTimeMs / 1000).toFixed(1)}s
           </span>
-          <span className="text-muted-foreground text-lg font-medium">
+          <span className="text-muted-foreground text-base sm:text-lg font-medium">
             {isExpanded ? "−" : "+"}
           </span>
         </div>
@@ -184,13 +177,13 @@ export function ModelDetailCards({
   isPremium = false
 }: ModelDetailCardsProps) {
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold text-foreground">
-          Individual Model Responses
+    <div className="space-y-3 sm:space-y-5">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-lg sm:text-2xl font-bold text-foreground">
+          Model Responses
         </h3>
         {isPremium && (
-          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">
             Full Details
           </Badge>
         )}

@@ -37,20 +37,20 @@ export function ActionCard({
   const selectedOutcome = OUTCOME_OPTIONS.find((o) => o.value === outcome);
 
   return (
-    <div className="py-2.5 border-b border-border/50 last:border-0">
-      <div className="flex items-center gap-3">
+    <div className="py-3 border-b border-border/50 last:border-0">
+      <div className="flex items-center gap-4">
         <Checkbox
           checked={completed}
           onCheckedChange={(checked) =>
             onUpdate({ completed: checked as boolean })
           }
           disabled={disabled}
-          className="h-4 w-4"
+          className="h-5 w-5"
         />
 
         <span
-          className={`flex-1 text-sm ${
-            completed ? "text-muted-foreground" : ""
+          className={`flex-1 text-base ${
+            completed ? "text-muted-foreground line-through" : "text-foreground"
           }`}
         >
           {title}
@@ -61,9 +61,9 @@ export function ActionCard({
           onValueChange={handleOutcomeChange}
           disabled={disabled}
         >
-          <SelectTrigger className="w-[120px] h-7 text-xs">
+          <SelectTrigger className="w-[130px] h-9 text-sm">
             {selectedOutcome ? (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <span className={selectedOutcome.color}>{selectedOutcome.label}</span>
               </div>
             ) : (
@@ -72,7 +72,7 @@ export function ActionCard({
           </SelectTrigger>
           <SelectContent>
             {OUTCOME_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem key={option.value} value={option.value} className="text-sm">
                 <span className={option.color}>{option.label}</span>
               </SelectItem>
             ))}

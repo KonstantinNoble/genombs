@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Target, Plus, X, BarChart3 } from "lucide-react";
 
 interface TopAction {
   action: string;
@@ -106,8 +105,7 @@ export function ExperimentSetupDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
+          <DialogTitle>
             Setup Business Decision
           </DialogTitle>
           <DialogDescription>
@@ -118,8 +116,7 @@ export function ExperimentSetupDialog({
         <div className="space-y-6 py-4">
           {/* Decision Question */}
           <div className="space-y-2">
-            <Label htmlFor="decisionQuestion" className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
+            <Label htmlFor="decisionQuestion">
               Decision Question
             </Label>
             <Input
@@ -152,8 +149,7 @@ export function ExperimentSetupDialog({
 
           {/* Scoring Criteria */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
+            <Label>
               Scoring Criteria
             </Label>
             <p className="text-xs text-muted-foreground mb-2">
@@ -177,11 +173,11 @@ export function ExperimentSetupDialog({
                   {scoringCriteria.length > 1 && (
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       onClick={() => handleRemoveCriterion(index)}
-                      className="shrink-0"
+                      className="shrink-0 px-2"
                     >
-                      <X className="h-4 w-4" />
+                      Remove
                     </Button>
                   )}
                 </div>
@@ -192,9 +188,7 @@ export function ExperimentSetupDialog({
                 variant="outline"
                 size="sm"
                 onClick={handleAddCriterion}
-                className="gap-1"
               >
-                <Plus className="h-3 w-3" />
                 Add Criterion
               </Button>
             )}

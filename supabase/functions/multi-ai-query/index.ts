@@ -398,14 +398,16 @@ Context for your analysis:
             })();
 
             // Wait for all to complete (they each send their own SSE when done)
-            await Promise.allSettled([gptPromise, geminiProPromise, geminiFlashPromise]);
+            const results = await Promise.allSettled([gptPromise, geminiProPromise, geminiFlashPromise]);
 
             const totalProcessingTime = Date.now() - totalStartTime;
 
-            const gptStatus = gptResponse?.error ? 'ERROR' : 'OK';
-            const proStatus = geminiProResponse?.error ? 'ERROR' : 'OK';
-            const flashStatus = geminiFlashResponse?.error ? 'ERROR' : 'OK';
-            console.log(`All queries completed in ${totalProcessingTime}ms. GPT: ${gptStatus}, GeminiPro: ${proStatus}, GeminiFlash: ${flashStatus}`);
+            // Extract responses from settled promises
+            const finalGptResponse = results[0].status === 'fulfilled' ? results[0].value : gptResponse;
+            const finalGeminiProResponse = results[1].status === 'fulfilled' ? results[1].value : geminiProResponse;
+            const finalGeminiFlashResponse = results[2].status === 'fulfilled' ? results[2].value : geminiFlashResponse;
+
+            console.log(`All queries completed in ${totalProcessingTime}ms. GPT: ${finalGptResponse?.error ? 'ERROR' : 'OK'}, GeminiPro: ${finalGeminiProResponse?.error ? 'ERROR' : 'OK'}, GeminiFlash: ${finalGeminiFlashResponse?.error ? 'ERROR' : 'OK'}`);
 
             // Update user credits
             const updateData: any = {
@@ -422,9 +424,9 @@ Context for your analysis:
 
             // Send final combined response with isPremium flag
             sendSSE(controller, 'complete', {
-              gptResponse: gptResponse || { modelId: MODELS.gpt.id, modelName: MODELS.gpt.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
-              geminiProResponse: geminiProResponse || { modelId: MODELS.geminiPro.id, modelName: MODELS.geminiPro.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
-              geminiFlashResponse: geminiFlashResponse || { modelId: MODELS.geminiFlash.id, modelName: MODELS.geminiFlash.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              gptResponse: finalGptResponse || { modelId: MODELS.gpt.id, modelName: MODELS.gpt.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              geminiProResponse: finalGeminiProResponse || { modelId: MODELS.geminiPro.id, modelName: MODELS.geminiPro.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              geminiFlashResponse: finalGeminiFlashResponse || { modelId: MODELS.geminiFlash.id, modelName: MODELS.geminiFlash.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
               processingTimeMs: totalProcessingTime,
               userPreferences: { riskPreference, creativityPreference },
               isPremium

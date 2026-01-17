@@ -359,14 +359,15 @@ Context for your analysis:
             // Query models in parallel but send SSE immediately when each completes
             const gptPromise = (async () => {
               sendSSE(controller, 'model_started', { model: 'gpt', name: 'GPT-5 Mini' });
-              // GPT-5 Mini is faster, 45s timeout should be sufficient
-              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 45000);
+              // OpenAI tool-calling can be slower for premium-sized outputs.
+              // To keep GPT consistently responsive, we intentionally use the standard (non-premium) schema for GPT.
+              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, false, 90000);
               
               // If GPT times out, try fallback to GPT-5-nano
               if (response.error === "Request timed out") {
                 console.log('[GPT] Primary timed out, trying GPT-5-nano fallback...');
                 sendSSE(controller, 'model_retry', { model: 'gpt', message: 'Switching to faster model...' });
-                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, isPremium, 30000);
+                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, false, 60000);
                 response.isFallback = true;
                 if (!response.error) {
                   response.modelName = 'GPT-5 Nano (Fallback)';
@@ -453,8 +454,20 @@ Context for your analysis:
 
     } else {
       // Non-streaming response
+      const gptTask = (async () => {
+        let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, false, 90000);
+        if (response.error === "Request timed out") {
+          response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, false, 60000);
+          response.isFallback = true;
+          if (!response.error) {
+            response.modelName = 'GPT-5 Nano (Fallback)';
+          }
+        }
+        return response;
+      })();
+
       const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
-        queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 70000),
+        gptTask,
         queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium, 60000),
         queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium, 45000)
       ]);

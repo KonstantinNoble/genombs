@@ -68,7 +68,29 @@ serve(async (req) => {
     const userId = userData.user.id;
     console.log('Starting GDPR-compliant account deletion for user:', userId);
 
-    // 1. Delete ads_advisor_history
+    // 1. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
+    console.log('Deleting experiments for user:', userId);
+    const { error: experimentsError } = await adminClient
+      .from('experiments')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (experimentsError) {
+      console.error('Failed to delete experiments:', experimentsError);
+    }
+
+    // 2. Delete validation_analyses
+    console.log('Deleting validation_analyses for user:', userId);
+    const { error: validationError } = await adminClient
+      .from('validation_analyses')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (validationError) {
+      console.error('Failed to delete validation_analyses:', validationError);
+    }
+
+    // 3. Delete ads_advisor_history
     console.log('Deleting ads_advisor_history for user:', userId);
     const { error: adsError } = await adminClient
       .from('ads_advisor_history')
@@ -79,7 +101,7 @@ serve(async (req) => {
       console.error('Failed to delete ads_advisor_history:', adsError);
     }
 
-    // 2. Delete business_tools_history
+    // 4. Delete business_tools_history
     console.log('Deleting business_tools_history for user:', userId);
     const { error: toolsError } = await adminClient
       .from('business_tools_history')
@@ -90,7 +112,7 @@ serve(async (req) => {
       console.error('Failed to delete business_tools_history:', toolsError);
     }
 
-    // 3. Delete user_roles
+    // 5. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     const { error: rolesError } = await adminClient
       .from('user_roles')
@@ -101,7 +123,7 @@ serve(async (req) => {
       console.error('Failed to delete user_roles:', rolesError);
     }
 
-    // 4. Delete user_credits
+    // 6. Delete user_credits
     console.log('Deleting user_credits for user:', userId);
     const { error: creditsError } = await adminClient
       .from('user_credits')
@@ -112,7 +134,7 @@ serve(async (req) => {
       console.error('Failed to delete user_credits:', creditsError);
     }
 
-    // 5. Delete profile
+    // 7. Delete profile
     console.log('Deleting profile for user:', userId);
     const { error: profileError } = await adminClient
       .from('profiles')
@@ -123,7 +145,7 @@ serve(async (req) => {
       console.error('Failed to delete profile:', profileError);
     }
 
-    // 6. Finally: Delete auth.users entry (invalidates login immediately)
+    // 8. Finally: Delete auth.users entry (invalidates login immediately)
     console.log('Deleting auth user:', userId);
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {
@@ -134,7 +156,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('✅ Account deletion complete - all data removed, login invalidated');
+    console.log('Account deletion complete - all data removed, login invalidated');
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },

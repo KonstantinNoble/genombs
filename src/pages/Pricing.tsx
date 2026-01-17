@@ -20,87 +20,81 @@ const PricingPage = () => {
   const features = [
     {
       icon: <Globe className="h-6 w-6" />,
-      title: "Live Market Intelligence",
-      description: "Powered by Perplexity AI's Sonar Pro. Get market size, CAGR, and growth projections from Bloomberg, Statista, IBISWorld & 20+ premium sources in real-time."
-    },
-    {
-      icon: <Link className="h-6 w-6" />,
-      title: "Website Analysis",
-      description: "Enter your website URL to receive strategies tailored to your actual website content, branding, and business offerings."
+      title: "3 AI Models in Parallel",
+      description: "GPT-5.2, Gemini 3 Pro, and Gemini 2.5 Flash analyze your question simultaneously. Get validated insights from multiple perspectives in ~20 seconds."
     },
     {
       icon: <Brain className="h-6 w-6" />,
-      title: "Deep Analysis Mode",
-      description: "Comprehensive analysis with competitor market share, ROI projections based on industry benchmarks, and risk mitigation strategies."
-    },
-    {
-      icon: <Sparkles className="h-6 w-6" />,
-      title: "AI Autopilot",
-      description: "Get 3 AI-generated daily focus tasks tailored to your strategy. Stay on track with personalized action items and streak tracking."
-    },
-    {
-      icon: <TrendingUp className="h-6 w-6" />,
-      title: "ROI Projections",
-      description: "Expected returns calculated using industry-standard metrics like CAC, LTV, and conversion rates based on real market data."
+      title: "Consensus & Dissent Analysis",
+      description: "See where all models agree (high confidence) and where they disagree (worth deeper consideration). Uncover hidden risks and nuances."
     },
     {
       icon: <Target className="h-6 w-6" />,
-      title: "Strategy Tracking",
-      description: "Activate strategies and track your progress. Monitor completed phases and actions with visual progress indicators."
+      title: "4-5 Recommendations per Model",
+      description: "Premium users get more detailed analysis with 4-5 recommendations per model instead of 2-3 for free users."
+    },
+    {
+      icon: <Sparkles className="h-6 w-6" />,
+      title: "5-7 Action Items",
+      description: "Concrete, prioritized action items you can execute immediately. Free users get 3 action items, Premium gets 5-7."
+    },
+    {
+      icon: <TrendingUp className="h-6 w-6" />,
+      title: "Strategic Alternatives",
+      description: "Exclusive Premium section with alternative approaches when your primary strategy faces obstacles."
     },
     {
       icon: <BarChart3 className="h-6 w-6" />,
-      title: "Competitor Analysis",
-      description: "Market share visualizations, pricing comparisons, and positioning analysis to identify competitive advantages."
+      title: "Competitor Insights",
+      description: "Premium-only analysis of how competitors might respond to your strategic moves and positioning."
     },
     {
       icon: <Shield className="h-6 w-6" />,
-      title: "Risk Mitigation",
-      description: "Backup strategies with specific triggers - IF metric drops below target, THEN execute this backup plan."
+      title: "Long-term Outlook",
+      description: "Premium section with 6-12 month projections and milestones to track your strategic progress."
     },
     {
       icon: <Zap className="h-6 w-6" />,
-      title: "8x Daily Analyses",
-      description: "6 Standard + 2 Deep analyses per day compared to 2 for free users. More strategies, more insights."
+      title: "20 Daily Validations",
+      description: "Premium users get 20 validations per day compared to 2 for free users. Validate more decisions, faster."
     }
   ];
 
   const comparisonFeatures = [
-    { name: "Daily Analyses", free: "2 Standard", premium: "6 Standard + 2 Deep" },
-    { name: "Market Research Sources", free: "Statista, Bloomberg & 10+", premium: "20+ incl. IBISWorld & company filings" },
-    { name: "Phases per Analysis", free: "4", premium: "4" },
-    { name: "Actionable Steps", free: true, premium: true },
-    { name: "Google Search Links", free: true, premium: true },
-    { name: "Website Analysis", free: true, premium: true },
-    { name: "Optional Context Input", free: true, premium: true },
-    { name: "Deep Analysis Mode", free: false, premium: true },
-    { name: "AI Autopilot (3 daily tasks)", free: false, premium: true },
-    { name: "Strategy Tracking", free: false, premium: true },
-    { name: "Competitor Market Share Analysis", free: false, premium: true },
-    { name: "ROI Projections (CAC, LTV, CAGR)", free: false, premium: true },
-    { name: "Risk Mitigation Plans", free: false, premium: true }
+    { name: "Daily Validations", free: "2", premium: "20" },
+    { name: "AI Models", free: "3 (GPT-5.2, Gemini 3 Pro, Flash)", premium: "3 (GPT-5.2, Gemini 3 Pro, Flash)" },
+    { name: "Consensus Analysis", free: true, premium: true },
+    { name: "Dissent Analysis", free: true, premium: true },
+    { name: "Risk/Creativity Sliders", free: true, premium: true },
+    { name: "Recommendations per Model", free: "2-3", premium: "4-5" },
+    { name: "Action Items", free: "3", premium: "5-7" },
+    { name: "Strategic Alternatives", free: false, premium: true },
+    { name: "Competitor Insights", free: false, premium: true },
+    { name: "Long-term Outlook", free: false, premium: true },
+    { name: "Full Model Responses", free: false, premium: true },
+    { name: "Experiment Workflow", free: true, premium: true }
   ];
 
   const faqs = [
     {
-      question: "How does the real-time market research work?",
-      answer: "Powered by Perplexity AI's Sonar Pro, our system actively queries premium data sources including Bloomberg, Statista, IBISWorld, and industry publications during each analysis. You get market size estimates, CAGR projections, and competitor insights based on today's data, not outdated datasets."
+      question: "How does multi-AI validation work?",
+      answer: "Synoptas queries 3 AI models (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash) in parallel. Each model analyzes your question independently, then our meta-evaluation identifies consensus (all agree), majority (2/3 agree), and dissent (disagreement) points – giving you validated recommendations with confidence scores."
     },
     {
-      question: "How does the Website Analysis feature work?",
-      answer: "When you enter your website URL, our AI scrapes and analyzes your website content, branding, and offerings. This information is then used to create highly personalized strategies that match your actual business, rather than generic recommendations."
+      question: "What's the difference between Free and Premium?",
+      answer: "Free users get 2 validations per day with 2-3 recommendations per model and 3 action items. Premium users get 20 daily validations, 4-5 recommendations per model, 5-7 action items, plus exclusive sections: Strategic Alternatives, Competitor Insights, and Long-term Outlook."
     },
     {
-      question: "What's the difference between Standard and Deep Analysis?",
-      answer: "Standard Analysis creates a 4-phase business strategy with actionable steps and Google search links, backed by 10+ verified sources. Deep Analysis (Premium only) adds competitor market share analysis, ROI projections using CAC/LTV/CAGR metrics, risk mitigation plans, and draws from 20+ premium sources for comprehensive insights."
+      question: "How do the daily validation limits work?",
+      answer: "Your limit resets 24 hours after your first validation of the day. Free users get 2 validations, Premium users get 20. You can see your remaining count and reset time on the validation page."
     },
     {
-      question: "How do the daily analysis limits work?",
-      answer: "Free users get 2 Standard analyses per day. Premium users get 6 Standard + 2 Deep analyses daily - that's 8 total analyses! Limits reset every 24 hours from your first daily analysis."
+      question: "What types of questions work best?",
+      answer: "Strategic business questions work best: pricing decisions, market expansion, product launches, competitive positioning, hiring decisions, etc. Be specific for better results – 'Should I expand to enterprise clients or focus on SMB?' works better than 'How do I grow?'"
     },
     {
-      question: "What data sources are included?",
-      answer: "Our AI aggregates data from Bloomberg, Statista, IBISWorld, industry publications, company filings, market research reports, and 15+ additional verified sources. Premium users get access to the full source list with every analysis."
+      question: "Can I try before subscribing?",
+      answer: "Yes! Free users get 2 validations per day with no credit card required. You can experience the multi-AI consensus analysis before deciding to upgrade for more validations and deeper insights."
     }
   ];
 
@@ -110,8 +104,8 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
         <SEOHead
           title="Pricing - AI Business Plan Generator Plans"
-          description="Get AI-powered business strategies starting at $0. Premium plan $14.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
-          keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
+          description="Get validated AI recommendations from $0. Premium $14.99/mo with 20 daily validations, detailed model analysis, and strategic insights. 3 AI models, one decision."
+          keywords="multi-AI validation pricing, AI business validator, GPT-5 Gemini consensus, business decision tool, strategic validation, AI comparison tool"
           canonical="/pricing"
           ogImage="https://synoptas.com/favicon.png"
         />
@@ -130,9 +124,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background/80 backdrop-blur-[8px] flex flex-col">
       <SEOHead
-        title="Pricing - AI Business Plan Generator Plans"
-        description="Get AI-powered business strategies starting at $0. Premium plan $14.99/mo with deep analysis, ROI projections, and AI Autopilot. No credit card required."
-        keywords="AI business plan generator pricing, business strategy plans, business plan creator, growth strategies, small business tools, deep analysis, ROI projections"
+        title="Pricing - Multi-AI Business Validator Plans"
+        description="Get validated AI recommendations from $0. Premium $14.99/mo with 20 daily validations, detailed model analysis, and strategic insights. 3 AI models, one decision."
+        keywords="multi-AI validation pricing, AI business validator, GPT-5 Gemini consensus, business decision tool, strategic validation, AI comparison tool"
         canonical="/pricing"
         ogImage="https://synoptas.com/favicon.png"
       />
@@ -161,8 +155,8 @@ const PricingPage = () => {
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "Enjoy unlimited access to all premium features including Deep Analysis with ROI projections, competitor analysis, and risk mitigation."
-                : "Start free with no credit card. Get AI-powered business strategies with actionable steps and Google search links."}
+                ? "Enjoy full access to all premium features including 20 daily validations, detailed model responses, and exclusive strategic insights."
+                : "Start free with no credit card. Get validated recommendations from 3 AI models analyzing your business questions in parallel."}
             </p>
             {!isPremium && !isLoggedIn && (
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
@@ -184,20 +178,20 @@ const PricingPage = () => {
                 <CardContent className="p-8">
                 <div className="grid md:grid-cols-4 gap-6 text-center">
                     <div>
-                      <div className="text-4xl font-bold text-primary">20+</div>
-                      <div className="text-sm text-muted-foreground mt-1">Sources Analyzed</div>
+                      <div className="text-4xl font-bold text-primary">3</div>
+                      <div className="text-sm text-muted-foreground mt-1">AI Models</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">8</div>
-                      <div className="text-sm text-muted-foreground mt-1">Daily Analyses</div>
+                      <div className="text-4xl font-bold text-primary">20</div>
+                      <div className="text-sm text-muted-foreground mt-1">Daily Validations</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">4</div>
-                      <div className="text-sm text-muted-foreground mt-1">Phases per Analysis</div>
+                      <div className="text-4xl font-bold text-primary">~20s</div>
+                      <div className="text-sm text-muted-foreground mt-1">Results Time</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-bold text-primary">ROI</div>
-                      <div className="text-sm text-muted-foreground mt-1">Projections Included</div>
+                      <div className="text-4xl font-bold text-primary">5-7</div>
+                      <div className="text-sm text-muted-foreground mt-1">Action Items</div>
                     </div>
                   </div>
                 </CardContent>
@@ -344,16 +338,16 @@ const PricingPage = () => {
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {isPremium && isLoggedIn 
-                  ? "Access your premium features and continue optimizing with advanced AI analysis."
-                  : "Join thousands of businesses using AI to make smarter decisions. Start free, upgrade anytime."}
+                  ? "Access your premium features and continue validating decisions with multi-AI analysis."
+                  : "Join thousands of businesses using multi-AI validation to make smarter decisions. Start free, upgrade anytime."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <Button 
                   size="lg"
-                  onClick={() => navigate(isPremium && isLoggedIn ? '/business-tools' : (isLoggedIn ? '/business-tools' : '/auth?intent=free'))}
+                  onClick={() => navigate(isPremium && isLoggedIn ? '/validate' : (isLoggedIn ? '/validate' : '/auth?intent=free'))}
                   className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-8 py-6 text-lg hover:scale-105 transition-all duration-300"
                 >
-                  {isPremium && isLoggedIn ? "Go to Dashboard" : "Start Free Analysis"}
+                  {isPremium && isLoggedIn ? "Go to Validator" : "Start Free Validation"}
                 </Button>
                 {!isPremium && (
                   <Button 

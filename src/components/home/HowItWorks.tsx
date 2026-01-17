@@ -73,7 +73,7 @@ const HowItWorks = () => {
             How It Works
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            From goal to action plan in three simple steps
+            From question to validated recommendation in 20 seconds
           </p>
         </div>
 

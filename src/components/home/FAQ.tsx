@@ -9,40 +9,40 @@ import {
 
 const faqs = [
   {
-    question: "What is an AI business plan generator?",
-    answer: "An AI business plan generator is a tool that uses artificial intelligence to create customized business strategies based on your goals, industry, and market data. Unlike generic templates, it analyzes real-time market information to provide actionable, data-driven recommendations tailored to your specific situation."
+    question: "What is multi-AI validation?",
+    answer: "Multi-AI validation queries 3 leading AI models (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash) in parallel to analyze your business question. Instead of relying on a single AI's perspective, you get validated recommendations where models agree, and see where they disagree – giving you confidence scores for every insight."
   },
   {
-    question: "How does Synoptas differ from ChatGPT?",
-    answer: "While ChatGPT provides general advice, Synoptas is purpose-built for business strategy. We integrate real-time market research from 20+ sources, provide structured action plans with specific tools and timelines, and offer AI Autopilot to track your progress. It's the difference between getting advice and getting a roadmap."
+    question: "Which AI models does Synoptas use?",
+    answer: "Synoptas uses three cutting-edge models: GPT-5.2 for deep reasoning and nuanced analysis, Gemini 3 Pro for creative strategic thinking, and Gemini 2.5 Flash for pragmatic, execution-focused recommendations. Each brings unique strengths to your business questions."
   },
   {
-    question: "How do I write a business plan?",
-    answer: "A business plan typically includes an executive summary, company description, market analysis, organization structure, product/service details, marketing strategy, and financial projections. With Synoptas, you simply describe your business goals and our AI generates a comprehensive, phased strategy – saving you hours of research and writing."
+    question: "What is consensus vs. dissent analysis?",
+    answer: "Consensus points are recommendations where all 3 AI models agree – these are high-confidence insights you can act on immediately. Dissent points show where models disagree, revealing risks, nuances, or alternative perspectives worth considering before making decisions."
   },
   {
-    question: "Is Synoptas suitable for small business owners?",
-    answer: "Absolutely! Synoptas is designed specifically for solopreneurs, small business owners, and growing companies. Our AI creates strategies that are practical and achievable, not theoretical frameworks that only work for large corporations with massive budgets."
+    question: "How does the risk tolerance slider work?",
+    answer: "The risk tolerance slider influences how models weigh their recommendations. Conservative settings prioritize proven, lower-risk approaches. Aggressive settings explore bolder strategies with higher potential returns. The synthesis adapts to match your business philosophy."
   },
   {
-    question: "What business strategies work best for growth?",
-    answer: "The best growth strategies depend on your business stage and market. However, common effective approaches include niche focus, customer retention, digital marketing optimization, and operational efficiency. Synoptas analyzes your specific situation to recommend strategies that will have the highest impact for your business."
+    question: "Is Synoptas suitable for business decisions?",
+    answer: "Absolutely! Synoptas is designed for strategic business decisions – from pricing strategies and market expansion to product launches and competitive positioning. The multi-model approach is particularly valuable when stakes are high and you need validated perspectives."
   },
   {
-    question: "How accurate is the market research?",
-    answer: "Our market research is powered by Perplexity AI, which aggregates data from 20+ authoritative sources in real-time. Premium users get enhanced analysis with more detailed insights. While no AI is perfect, our data provides a solid foundation for strategic decision-making."
+    question: "How accurate are the AI recommendations?",
+    answer: "The multi-model approach significantly increases reliability compared to single-AI tools. When 3 independent models reach the same conclusion, confidence is high. Dissent analysis helps you identify areas requiring deeper research. However, AI recommendations should complement, not replace, your business judgment."
   },
   {
-    question: "Can I download my business plan as a PDF?",
-    answer: "Yes! All users can generate PDF exports of their strategies. These professional documents are perfect for sharing with investors, partners, or team members. Premium users get enhanced PDF reports with additional data and visualizations."
+    question: "What's the difference between Free and Premium?",
+    answer: "Free users get 2 validations per day with 2-3 recommendations per model. Premium users ($14.99/mo) get 20 daily validations, 4-5 recommendations per model, 5-7 action items, plus exclusive sections: Strategic Alternatives, Long-term Outlook, and Competitor Insights."
   },
   {
-    question: "What is AI Autopilot?",
-    answer: "AI Autopilot is our unique feature that breaks your strategy into daily focus tasks. Instead of an overwhelming 50-page plan, you get 3-5 prioritized tasks each day that keep you moving toward your goals. Premium users get unlimited daily task generations."
+    question: "How fast are the results?",
+    answer: "Results typically arrive in about 20 seconds. All 3 models run in parallel, and you see each model's response as it completes. The meta-evaluation synthesizes everything into consensus, majority, and dissent points with a final recommendation."
   },
   {
     question: "Is my data secure?",
-    answer: "Yes, we take security seriously. Your data is encrypted, processed server-side to protect your IP, and automatically deleted after 30 days of inactivity. We never share your business information with third parties. See our Privacy Policy for full details."
+    answer: "Yes, we take security seriously. Your data is encrypted, processed server-side, and we're fully GDPR compliant. When you delete your account, all associated data is permanently removed. We never share your business questions with third parties. See our Privacy Policy for details."
   },
   {
     question: "Can I cancel my subscription anytime?",
@@ -61,7 +61,7 @@ const FAQ = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-muted-foreground">
-            Everything you need to know about AI business planning and Synoptas
+            Everything you need to know about multi-AI validation and Synoptas
           </p>
         </div>
         

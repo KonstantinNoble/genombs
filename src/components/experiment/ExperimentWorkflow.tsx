@@ -1,24 +1,22 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { TaskCard } from "./TaskCard";
-import { MetricsTracker } from "./MetricsTracker";
-import { DecisionSection } from "./DecisionSection";
+import { ActionCard } from "./ActionCard";
+import { Scorecard } from "./Scorecard";
+import { GoNoGoDecision } from "./GoNoGoDecision";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useToast } from "@/hooks/use-toast";
-import { FlaskConical, Loader2 } from "lucide-react";
+import { Target, Loader2 } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface ExperimentWorkflowProps {
   validationId: string;
 }
 
-interface MetricData {
+interface ScoreMetric {
   name: string;
-  startValue: string;
-  currentValue: string;
-  targetValue: string;
+  weight: number;
+  score: number;
 }
 
 export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
@@ -27,16 +25,15 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     getActiveExperiment,
     getExperimentWithDetails,
     updateTask,
+    updateExperimentDecision,
     updateCheckpoint,
-    completeExperiment,
-    abandonExperiment,
   } = useExperiment();
 
   const [isLoading, setIsLoading] = useState(true);
   const [experiment, setExperiment] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [checkpoints, setCheckpoints] = useState<any[]>([]);
-  const [metricsData, setMetricsData] = useState<MetricData[]>([]);
+  const [scoreMetrics, setScoreMetrics] = useState<ScoreMetric[]>([]);
 
   useEffect(() => {
     loadExperiment();
@@ -53,10 +50,22 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
           setTasks(details.tasks);
           setCheckpoints(details.checkpoints);
 
-          // Load metrics data from the first checkpoint if available
+          // Load score metrics from checkpoint or initialize from success_metrics
           const savedMetrics =
-            (details.checkpoints[0]?.metrics_data as MetricData[]) || [];
-          setMetricsData(savedMetrics);
+            (details.checkpoints[0]?.metrics_data as ScoreMetric[]) || null;
+
+          if (savedMetrics && Array.isArray(savedMetrics) && savedMetrics[0]?.score !== undefined) {
+            setScoreMetrics(savedMetrics);
+          } else {
+            // Convert old success_metrics (string[]) to new ScoreMetric format
+            const successMetrics = details.experiment.success_metrics as string[];
+            const initialMetrics: ScoreMetric[] = successMetrics.map((name) => ({
+              name,
+              weight: 1,
+              score: 5,
+            }));
+            setScoreMetrics(initialMetrics);
+          }
         }
       }
     } catch (error) {
@@ -66,9 +75,9 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     }
   };
 
-  const handleTaskUpdate = async (
+  const handleActionUpdate = async (
     taskId: string,
-    updates: { completed?: boolean; notes?: string }
+    updates: { completed?: boolean; outcome?: string }
   ) => {
     const success = await updateTask(taskId, updates);
     if (success) {
@@ -88,8 +97,8 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     }
   };
 
-  const handleMetricsUpdate = async (metrics: MetricData[]) => {
-    setMetricsData(metrics);
+  const handleScoreUpdate = async (metrics: ScoreMetric[]) => {
+    setScoreMetrics(metrics);
 
     // Save to the first checkpoint's metrics_data
     if (checkpoints.length > 0) {
@@ -99,28 +108,33 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     }
   };
 
-  const handleComplete = async (finalNotes: string) => {
-    if (!experiment) return;
-
-    const success = await completeExperiment(experiment.id);
-    if (success) {
-      setExperiment((prev: any) => ({ ...prev, status: "completed" }));
-      toast({
-        title: "Experiment Completed",
-        description: "Your experiment has been marked as complete.",
-      });
-    }
+  const calculateOverallScore = () => {
+    if (scoreMetrics.length === 0) return 0;
+    const totalWeight = scoreMetrics.reduce((sum, m) => sum + m.weight, 0);
+    const weightedSum = scoreMetrics.reduce(
+      (sum, m) => sum + m.score * m.weight,
+      0
+    );
+    return totalWeight > 0 ? weightedSum / totalWeight : 0;
   };
 
-  const handleAbandon = async (reason: string) => {
+  const handleDecision = async (decision: "go" | "no_go", rationale: string) => {
     if (!experiment) return;
 
-    const success = await abandonExperiment(experiment.id);
+    const success = await updateExperimentDecision(experiment.id, decision, rationale);
     if (success) {
-      setExperiment((prev: any) => ({ ...prev, status: "abandoned" }));
+      setExperiment((prev: any) => ({
+        ...prev,
+        status: "completed",
+        final_decision: decision,
+        decision_rationale: rationale,
+      }));
       toast({
-        title: "Experiment Abandoned",
-        description: "Your experiment has been abandoned.",
+        title: decision === "go" ? "GO Decision Made" : "NO-GO Decision Made",
+        description:
+          decision === "go"
+            ? "You've decided to proceed with this strategy."
+            : "You've decided not to pursue this strategy.",
       });
     }
   };
@@ -139,94 +153,80 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     return null;
   }
 
-  // Calculate progress
-  const completedTasks = tasks.filter((t) => t.completed).length;
-  const totalTasks = tasks.length;
-  const taskProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
-  const now = new Date();
-  const startDate = new Date(experiment.start_date);
-  const endDate = new Date(experiment.end_date);
-  const totalDays = Math.ceil(
-    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const elapsedDays = Math.max(
-    0,
-    Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-  );
-  const timeProgress = Math.min((elapsedDays / totalDays) * 100, 100);
-
   const isActive = experiment.status === "active";
+  const completedActions = tasks.filter((t) => t.completed).length;
+  const totalActions = tasks.length;
 
   return (
     <Card className="border-primary/20">
       <CardContent className="p-4 space-y-4">
-        {/* Compact Header */}
-        <div className="flex items-center justify-between">
+        {/* Decision Header */}
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <FlaskConical className="h-4 w-4 text-primary" />
-            <span className="font-medium text-sm">{experiment.title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              Day {Math.min(elapsedDays, totalDays)}/{totalDays}
+            <Target className="h-4 w-4 text-primary" />
+            <span className="font-medium text-sm">
+              Decision: {experiment.decision_question || experiment.title}
             </span>
-            <Progress value={timeProgress} className="w-16 h-1.5" />
             {experiment.status !== "active" && (
               <Badge
-                variant={experiment.status === "completed" ? "default" : "destructive"}
-                className="text-xs"
+                variant={experiment.final_decision === "go" ? "default" : "destructive"}
+                className="text-xs ml-auto"
               >
-                {experiment.status}
+                {experiment.final_decision === "go" ? "GO" : "NO-GO"}
               </Badge>
             )}
           </div>
+          <p className="text-xs text-muted-foreground italic pl-6">
+            "{experiment.hypothesis}"
+          </p>
         </div>
 
-        {/* Tasks Section */}
+        {/* Validation Actions */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-            <span className="font-medium uppercase tracking-wide">Tasks</span>
+            <span className="font-medium uppercase tracking-wide">
+              Validation Actions
+            </span>
             <span>
-              {completedTasks}/{totalTasks}
+              {completedActions}/{totalActions}
             </span>
           </div>
           <div className="bg-muted/30 rounded-lg px-3 py-1">
             {tasks.map((task) => (
-              <TaskCard
+              <ActionCard
                 key={task.id}
                 id={task.id}
                 title={task.title}
                 completed={task.completed}
-                notes={task.notes}
-                onUpdate={(updates) => handleTaskUpdate(task.id, updates)}
+                outcome={task.outcome}
+                onUpdate={(updates) => handleActionUpdate(task.id, updates)}
                 disabled={!isActive}
               />
             ))}
           </div>
         </div>
 
-        {/* Metrics Section */}
+        {/* Scorecard */}
         <div className="space-y-1">
           <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-2">
-            Metrics
+            Decision Scorecard
           </div>
-          <div className="bg-muted/30 rounded-lg px-3 py-2">
-            <MetricsTracker
-              successMetrics={experiment.success_metrics as string[]}
-              metricsData={metricsData}
-              onUpdate={handleMetricsUpdate}
+          <div className="bg-muted/30 rounded-lg px-3 py-3">
+            <Scorecard
+              metrics={scoreMetrics}
+              onUpdate={handleScoreUpdate}
               disabled={!isActive}
             />
           </div>
         </div>
 
-        {/* Decision Section */}
+        {/* Go/No-Go Decision */}
         <div className="pt-2 border-t border-border/50">
-          <DecisionSection
+          <GoNoGoDecision
             experimentStatus={experiment.status}
-            onComplete={handleComplete}
-            onAbandon={handleAbandon}
+            finalDecision={experiment.final_decision}
+            overallScore={calculateOverallScore()}
+            onDecision={handleDecision}
             disabled={!isActive}
           />
         </div>

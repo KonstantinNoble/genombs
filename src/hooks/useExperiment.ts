@@ -16,6 +16,9 @@ interface Experiment {
   status: "active" | "completed" | "abandoned";
   success_metrics: string[];
   final_review: Record<string, unknown> | null;
+  decision_question: string | null;
+  final_decision: string | null;
+  decision_rationale: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -29,6 +32,7 @@ interface ExperimentTask {
   completed: boolean;
   completed_at: string | null;
   notes: string | null;
+  outcome: string | null;
   order_index: number;
   created_at: string;
 }
@@ -84,6 +88,7 @@ export function useExperiment() {
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
           success_metrics: data.successMetrics,
+          decision_question: (data as any).decisionQuestion || null,
         })
         .select()
         .single();
@@ -194,18 +199,43 @@ export function useExperiment() {
     updates: Partial<ExperimentTask>
   ): Promise<boolean> => {
     try {
+      const updateData: Record<string, unknown> = { ...updates };
+      if (updates.completed !== undefined) {
+        updateData.completed_at = updates.completed ? new Date().toISOString() : null;
+      }
+      
       const { error } = await supabase
         .from("experiment_tasks")
-        .update({
-          ...updates,
-          completed_at: updates.completed ? new Date().toISOString() : null,
-        })
+        .update(updateData)
         .eq("id", taskId);
 
       if (error) throw error;
       return true;
     } catch (error) {
       console.error("Error updating task:", error);
+      return false;
+    }
+  };
+
+  const updateExperimentDecision = async (
+    experimentId: string,
+    decision: "go" | "no_go",
+    rationale: string
+  ): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from("experiments")
+        .update({
+          status: "completed",
+          final_decision: decision,
+          decision_rationale: rationale,
+        })
+        .eq("id", experimentId);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error("Error updating experiment decision:", error);
       return false;
     }
   };
@@ -268,6 +298,7 @@ export function useExperiment() {
     getExperimentWithDetails,
     updateTask,
     updateCheckpoint,
+    updateExperimentDecision,
     completeExperiment,
     abandonExperiment,
   };

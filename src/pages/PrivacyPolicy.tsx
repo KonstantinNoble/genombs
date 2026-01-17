@@ -464,9 +464,9 @@ const PrivacyPolicy = () => {
               When you submit a validation request, your prompt is analyzed by three AI models simultaneously:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>OpenAI GPT-5.2</strong> (with GPT-5-nano as automatic fallback for reliability)</li>
+              <li><strong>OpenAI GPT-5 Mini</strong> (with GPT-5-nano as automatic fallback for reliability)</li>
               <li><strong>Google Gemini 3 Pro</strong></li>
-              <li><strong>Google Gemini 2.5 Flash</strong> (also performs meta-evaluation/synthesis)</li>
+              <li><strong>Google Gemini 3 Flash</strong> (also performs meta-evaluation/synthesis)</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
@@ -509,13 +509,13 @@ const PrivacyPolicy = () => {
                 <tbody>
                   <tr>
                     <td className="border border-border p-3"><strong>OpenAI</strong> (via OpenRouter)</td>
-                    <td className="border border-border p-3">GPT-5.2, GPT-5-nano (fallback)</td>
+                    <td className="border border-border p-3">GPT-5 Mini, GPT-5-nano (fallback)</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Google LLC</strong></td>
-                    <td className="border border-border p-3">Gemini 3 Pro, Gemini 2.5 Flash</td>
+                    <td className="border border-border p-3">Gemini 3 Pro, Gemini 3 Flash</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
                   </tr>
@@ -1026,9 +1026,9 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Automatic cleanup (daily job)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3">Webhook event IDs</td>
-                    <td className="border border-border p-3">30 days</td>
-                    <td className="border border-border p-3">Automatic cleanup</td>
+                    <td className="border border-border p-3">Payment event identifiers</td>
+                    <td className="border border-border p-3">Indefinitely (deduplication)</td>
+                    <td className="border border-border p-3">Fraud prevention and duplicate payment detection</td>
                   </tr>
                 </tbody>
               </table>

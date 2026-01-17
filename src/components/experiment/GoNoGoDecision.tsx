@@ -7,8 +7,7 @@ import {
   Ban, 
   ChevronDown, 
   ChevronUp, 
-  Check, 
-  Archive, 
+  Trash2, 
   RefreshCw,
   MessageSquare
 } from "lucide-react";
@@ -20,8 +19,7 @@ interface GoNoGoDecisionProps {
   overallScore: number;
   onDecision: (decision: "go" | "no_go", rationale: string) => void;
   onStartNewExperiment?: () => void;
-  onMarkAsDone?: () => void;
-  onArchive?: () => void;
+  onDelete?: () => void;
   onNewValidation?: () => void;
   disabled?: boolean;
 }
@@ -33,8 +31,7 @@ export function GoNoGoDecision({
   overallScore,
   onDecision,
   onStartNewExperiment,
-  onMarkAsDone,
-  onArchive,
+  onDelete,
   onNewValidation,
   disabled,
 }: GoNoGoDecisionProps) {
@@ -78,47 +75,32 @@ export function GoNoGoDecision({
             Next Steps
           </div>
           <div className="flex flex-wrap gap-2">
-            {isGo ? (
-              <>
-                <Button 
-                  size="sm" 
-                  onClick={onStartNewExperiment}
-                  className="gap-1.5"
-                >
-                  <Rocket className="h-4 w-4" />
-                  Start New Experiment
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={onMarkAsDone}
-                  className="gap-1.5"
-                >
-                  <Check className="h-4 w-4" />
-                  Mark as Done
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={onArchive}
-                  className="gap-1.5"
-                >
-                  <Archive className="h-4 w-4" />
-                  Archive
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={onNewValidation}
-                  className="gap-1.5"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  New Validation
-                </Button>
-              </>
-            )}
+            <Button 
+              size="sm" 
+              onClick={onStartNewExperiment}
+              className="gap-1.5"
+            >
+              <Rocket className="h-4 w-4" />
+              Start New Experiment
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={onNewValidation}
+              className="gap-1.5"
+            >
+              <RefreshCw className="h-4 w-4" />
+              New Validation
+            </Button>
+            <Button 
+              size="sm" 
+              variant="destructive" 
+              onClick={onDelete}
+              className="gap-1.5"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
           </div>
         </div>
       </div>

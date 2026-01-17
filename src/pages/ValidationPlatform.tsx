@@ -16,7 +16,7 @@ import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
 import { ExperimentSetupDialog, ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import { ExperimentWorkflow } from "@/components/experiment/ExperimentWorkflow";
-import { ArchivedDecisions } from "@/components/experiment/ArchivedDecisions";
+
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
@@ -304,9 +304,6 @@ export default function ValidationPlatform() {
                 ))}
               </CardContent>
             </Card>
-            
-            {/* Archived Decisions */}
-            <ArchivedDecisions userId={user.id} />
           </aside>
 
           <main className="flex-1 space-y-6 order-1 lg:order-2">

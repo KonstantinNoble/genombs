@@ -261,47 +261,33 @@ export function useExperiment() {
     }
   };
 
-  const completeExperiment = async (experimentId: string): Promise<boolean> => {
+  const deleteExperiment = async (experimentId: string): Promise<boolean> => {
     try {
+      // 1. Delete dependent records first (foreign key constraints)
+      await supabase.from("experiment_tasks").delete().eq("experiment_id", experimentId);
+      await supabase.from("experiment_checkpoints").delete().eq("experiment_id", experimentId);
+      
+      // 2. Delete the experiment itself
       const { error } = await supabase
         .from("experiments")
-        .update({ status: "completed" })
+        .delete()
         .eq("id", experimentId);
 
       if (error) throw error;
+      
+      toast({
+        title: "Deleted",
+        description: "Decision block permanently deleted.",
+      });
+      
       return true;
     } catch (error) {
-      console.error("Error completing experiment:", error);
-      return false;
-    }
-  };
-
-  const abandonExperiment = async (experimentId: string): Promise<boolean> => {
-    try {
-      const { error } = await supabase
-        .from("experiments")
-        .update({ status: "abandoned" })
-        .eq("id", experimentId);
-
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error("Error abandoning experiment:", error);
-      return false;
-    }
-  };
-
-  const archiveExperiment = async (experimentId: string): Promise<boolean> => {
-    try {
-      const { error } = await supabase
-        .from("experiments")
-        .update({ status: "abandoned" })
-        .eq("id", experimentId);
-
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error("Error archiving experiment:", error);
+      console.error("Error deleting experiment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete experiment.",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -314,9 +300,7 @@ export function useExperiment() {
     updateTask,
     updateCheckpoint,
     updateExperimentDecision,
-    completeExperiment,
-    abandonExperiment,
-    archiveExperiment,
+    deleteExperiment,
   };
 }
 

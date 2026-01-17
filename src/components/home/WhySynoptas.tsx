@@ -17,11 +17,11 @@ const WhySynoptas = () => {
   ];
 
   const synoptasPoints = [
-    { title: "Live data from Bloomberg, Statista & industry reports", detail: "Real-time market intelligence from 20+ premium sources" },
-    { title: "Market size, CAGR & competitor analysis in seconds", detail: "The same research Fortune 500 companies pay thousands for" },
-    { title: "Structured visualizations with citations", detail: "Every data point is verifiable with source links included" },
-    { title: "AI-generated daily focus tasks based on your strategy", detail: "Wake up knowing exactly what to work on today" },
-    { title: "Track progress & compare multiple strategies", detail: "Visual dashboards, streak tracking, and milestone celebrations" },
+    { title: "3 AI models analyze your question in parallel", detail: "GPT-5.2, Gemini 3 Pro, and Gemini Flash working together" },
+    { title: "Consensus detection shows high-confidence moves", detail: "When all 3 models agree, you can move forward confidently" },
+    { title: "Dissent analysis reveals risks you'd miss", detail: "See where models disagree and why – hidden nuances exposed" },
+    { title: "Adjustable risk tolerance & creativity preferences", detail: "Tune the analysis to match your business philosophy" },
+    { title: "Actionable recommendations with clear priorities", detail: "Not just advice – structured action items you can execute" },
   ];
 
   return (
@@ -77,7 +77,7 @@ const WhySynoptas = () => {
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Live Research
+                3 AI Models
               </span>
             </div>
             
@@ -97,10 +97,10 @@ const WhySynoptas = () => {
               </ul>
               
               <Link 
-                to="/market-research" 
+                to="/validate" 
                 className="inline-flex items-center gap-1.5 mt-6 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
               >
-                See live market data
+                Start Multi-AI Validation
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -112,7 +112,7 @@ const WhySynoptas = () => {
           className={`text-center text-muted-foreground mt-10 text-sm scroll-reveal ${footerVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: '0.3s' }}
         >
-          Stop getting generic advice. Get actionable strategies based on real market data.
+          Stop relying on single-AI advice. Get validated recommendations from multiple models.
         </p>
       </div>
     </section>

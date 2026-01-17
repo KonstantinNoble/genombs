@@ -112,10 +112,10 @@ const Features = () => {
           className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            AI-Powered Business Strategy
+            Why Multi-AI Validation?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Turn your business goals into actionable, phased strategies
+            Single AI advice is unreliable. Here's what makes Synoptas different.
           </p>
         </div>
 

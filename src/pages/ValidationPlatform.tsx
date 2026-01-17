@@ -147,12 +147,29 @@ export default function ValidationPlatform() {
     }
   };
 
+  const HISTORY_LIMIT = 10;
+
   const loadHistory = async (userId: string) => {
-    const { data } = await supabase.from('validation_analyses')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(10);
+    // Prune DB to last 10 entries (delete oldest beyond limit)
+    const { data: allIds, error: idsError } = await supabase
+      .from("validation_analyses")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (!idsError && allIds && allIds.length > HISTORY_LIMIT) {
+      const idsToDelete = allIds.slice(HISTORY_LIMIT).map((r) => r.id);
+      await supabase.from("validation_analyses").delete().in("id", idsToDelete);
+    }
+
+    // Load UI list
+    const { data } = await supabase
+      .from("validation_analyses")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(HISTORY_LIMIT);
+
     if (data) setHistory(data as HistoryItem[]);
   };
 

@@ -34,20 +34,36 @@ export function ValidationInput({
     return "Balanced";
   };
 
+  const MAX_CHARACTERS = 500;
+  const charactersRemaining = MAX_CHARACTERS - prompt.length;
+  const isOverLimit = charactersRemaining < 0;
+
+  const handlePromptChange = (value: string) => {
+    if (value.length <= MAX_CHARACTERS) {
+      onPromptChange(value);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Main Question Input */}
       <div className="space-y-2">
-        <Label htmlFor="prompt" className="text-base font-semibold">
-          Your Business Question
-        </Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="prompt" className="text-base font-semibold">
+            Your Business Question
+          </Label>
+          <span className={`text-xs ${charactersRemaining <= 50 ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {prompt.length}/{MAX_CHARACTERS}
+          </span>
+        </div>
         <Textarea
           id="prompt"
           value={prompt}
-          onChange={(e) => onPromptChange(e.target.value)}
+          onChange={(e) => handlePromptChange(e.target.value)}
           placeholder="E.g., Should I expand my SaaS product to enterprise clients, or focus on growing the SMB market? What pricing strategy should I use?"
           className="min-h-[120px] text-base resize-none"
           disabled={disabled}
+          maxLength={MAX_CHARACTERS}
         />
         <p className="text-xs text-muted-foreground">
           Ask any strategic business question. 3 AI models will analyze and provide validated recommendations.

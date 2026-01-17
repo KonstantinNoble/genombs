@@ -306,8 +306,7 @@ export default function ValidationPlatform() {
             </Card>
             
             {/* Archived Decisions */}
-            <ArchivedDecisions />
-          </aside>
+            <ArchivedDecisions userId={user.id} />
 
           <main className="flex-1 space-y-6 order-1 lg:order-2">
             <div className="text-center space-y-3">

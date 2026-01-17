@@ -33,7 +33,11 @@ interface ArchivedExperiment {
   updated_at: string;
 }
 
-export function ArchivedDecisions() {
+type ArchivedDecisionsProps = {
+  userId?: string;
+};
+
+export function ArchivedDecisions({ userId }: ArchivedDecisionsProps) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [experiments, setExperiments] = useState<ArchivedExperiment[]>([]);
@@ -42,56 +46,86 @@ export function ArchivedDecisions() {
   const [selectedExperimentId, setSelectedExperimentId] = useState<string | null>(null);
 
   const ARCHIVE_LIMIT = 10;
+  const PRUNE_BATCH = 50;
 
   const pruneArchivedExperiments = async (idsToDelete: string[]) => {
     if (!idsToDelete.length) return;
-    try {
-      await Promise.all([
-        supabase.from("experiment_tasks").delete().in("experiment_id", idsToDelete),
-        supabase.from("experiment_checkpoints").delete().in("experiment_id", idsToDelete),
-      ]);
-      await supabase.from("experiments").delete().in("id", idsToDelete);
-    } catch (error) {
-      console.error("Error pruning archived experiments:", error);
+
+    const [tasksRes, checkpointsRes] = await Promise.all([
+      supabase.from("experiment_tasks").delete().in("experiment_id", idsToDelete),
+      supabase.from("experiment_checkpoints").delete().in("experiment_id", idsToDelete),
+    ]);
+
+    if (tasksRes.error || checkpointsRes.error) {
+      console.warn("Prune dependencies failed", {
+        tasks: tasksRes.error,
+        checkpoints: checkpointsRes.error,
+      });
+    }
+
+    const expRes = await supabase.from("experiments").delete().in("id", idsToDelete);
+    if (expRes.error) {
+      console.warn("Prune experiments failed", expRes.error);
     }
   };
 
   const loadArchivedExperiments = async () => {
     setIsLoading(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return;
+      const uid =
+        userId ??
+        (await supabase.auth.getUser()).data.user?.id ??
+        null;
 
+      if (!uid) return;
+
+      // Load the newest entries quickly for UI
       const { data, error } = await supabase
         .from("experiments")
         .select(
           "id, title, decision_question, hypothesis, final_decision, decision_rationale, created_at, updated_at",
         )
-        .eq("user_id", userData.user.id)
+        .eq("user_id", uid)
         .in("status", ["completed", "abandoned"])
-        .order("updated_at", { ascending: false });
+        .order("updated_at", { ascending: false })
+        .limit(ARCHIVE_LIMIT);
 
       if (error) throw error;
 
       const rows = data ?? [];
+      setExperiments(rows);
 
-      if (rows.length > ARCHIVE_LIMIT) {
-        const idsToDelete = rows.slice(ARCHIVE_LIMIT).map((e) => e.id);
-        await pruneArchivedExperiments(idsToDelete);
-      }
+      // Non-blocking retention cleanup in small batches to avoid UI jank
+      void (async () => {
+        const { data: oldRows, error: oldError } = await supabase
+          .from("experiments")
+          .select("id")
+          .eq("user_id", uid)
+          .in("status", ["completed", "abandoned"])
+          .order("updated_at", { ascending: false })
+          .range(ARCHIVE_LIMIT, ARCHIVE_LIMIT + PRUNE_BATCH - 1);
 
-      setExperiments(rows.slice(0, ARCHIVE_LIMIT));
+        if (oldError || !oldRows?.length) return;
+        await pruneArchivedExperiments(oldRows.map((r) => r.id));
+      })();
     } catch (error) {
       console.error("Error loading archived experiments:", error);
+      toast({
+        title: "Error",
+        description: "Archived decisions could not be loaded.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Load on mount
+  // Load when the list opens (keeps it up-to-date and avoids initial layout shift)
   useEffect(() => {
+    if (!isOpen) return;
     loadArchivedExperiments();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, userId]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -118,9 +152,14 @@ export function ArchivedDecisions() {
 
   return (
     <>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border rounded-lg bg-card">
+      <Collapsible
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="border rounded-lg bg-card"
+      >
         <CollapsibleTrigger
           type="button"
+          aria-expanded={isOpen}
           className="w-full p-3 flex items-center justify-between hover:bg-accent/50 transition-colors rounded-lg"
         >
           <div className="flex items-center gap-2">
@@ -141,88 +180,104 @@ export function ArchivedDecisions() {
           )}
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="px-3 pb-3 space-y-2">
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Loading...
-            </p>
-          ) : experiments.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              No archived decisions yet
-            </p>
-          ) : (
-            experiments.map((exp) => (
-              <div
-                key={exp.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  setSelectedExperimentId(exp.id);
-                  setDetailOpen(true);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelectedExperimentId(exp.id);
-                    setDetailOpen(true);
-                  }
-                }}
-                className="flex items-start justify-between gap-2 p-2 rounded-md border bg-background hover:bg-accent/30 transition-colors cursor-pointer"
-              >
-                <div className="flex-1 min-w-0 space-y-0.5">
-                  <div className="flex items-center gap-1.5">
-                    {exp.final_decision === "go" ? (
-                      <Rocket className="h-3 w-3 text-primary shrink-0" />
-                    ) : (
-                      <Ban className="h-3 w-3 text-destructive shrink-0" />
-                    )}
-                    <span className="font-medium text-xs truncate">
-                      {exp.decision_question || exp.title}
-                    </span>
-                    <Badge
-                      variant={exp.final_decision === "go" ? "default" : "destructive"}
-                      className="text-[9px] px-1 py-0 shrink-0"
-                    >
-                      {exp.final_decision === "go" ? "GO" : "NO-GO"}
-                    </Badge>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    {new Date(exp.updated_at).toLocaleDateString()}
-                  </p>
+        <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+          <div className="px-3 pb-3 pt-2">
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+              {isLoading ? (
+                <div className="space-y-2 py-1">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-10 rounded-md border bg-muted/20 animate-pulse"
+                    />
+                  ))}
                 </div>
+              ) : experiments.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No archived decisions yet
+                </p>
+              ) : (
+                experiments.map((exp) => {
+                  const isGo = exp.final_decision === "go";
+                  const isNoGo = exp.final_decision === "no_go";
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+                  return (
+                    <div
+                      key={exp.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        setSelectedExperimentId(exp.id);
+                        setDetailOpen(true);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedExperimentId(exp.id);
+                          setDetailOpen(true);
+                        }
+                      }}
+                      className="flex items-start justify-between gap-2 p-2 rounded-md border bg-background hover:bg-accent/30 transition-colors cursor-pointer"
                     >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Decision?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently delete this decision. This cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(exp.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            ))
-          )}
+                      <div className="flex-1 min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          {isGo ? (
+                            <Rocket className="h-3 w-3 text-primary shrink-0" />
+                          ) : isNoGo ? (
+                            <Ban className="h-3 w-3 text-destructive shrink-0" />
+                          ) : (
+                            <Archive className="h-3 w-3 text-muted-foreground shrink-0" />
+                          )}
+                          <span className="font-medium text-xs truncate">
+                            {exp.decision_question || exp.title}
+                          </span>
+                          <Badge
+                            variant={isGo ? "default" : isNoGo ? "destructive" : "secondary"}
+                            className="text-[9px] px-1 py-0 shrink-0"
+                          >
+                            {isGo ? "GO" : isNoGo ? "NO-GO" : "ARCHIVED"}
+                          </Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">
+                          {new Date(exp.updated_at).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => e.stopPropagation()}
+                            className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Decision?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete this decision. This cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(exp.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
         </CollapsibleContent>
       </Collapsible>
 

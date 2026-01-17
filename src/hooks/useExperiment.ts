@@ -61,6 +61,13 @@ export function useExperiment() {
         throw new Error("Not authenticated");
       }
 
+      // Deactivate any existing active experiments for this validation
+      await supabase
+        .from("experiments")
+        .update({ status: "abandoned" })
+        .eq("validation_id", validationId)
+        .eq("status", "active");
+
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + data.durationDays);

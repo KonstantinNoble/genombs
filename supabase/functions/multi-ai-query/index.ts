@@ -9,21 +9,21 @@ const corsHeaders = {
 // Model configurations
 const MODELS = {
   gpt: {
-    id: 'openai/gpt-5.2',
-    name: 'GPT-5.2',
-    characteristics: {
-      reasoning: 'excellent',
-      tendency: 'balanced',
-      strengths: ['Complex reasoning', 'Nuanced analysis', 'Accuracy']
-    }
-  },
-  gptFallback: {
     id: 'openai/gpt-5-mini',
     name: 'GPT-5 Mini',
     characteristics: {
       reasoning: 'good',
       tendency: 'balanced',
       strengths: ['Speed', 'Efficiency', 'Reliability']
+    }
+  },
+  gptFallback: {
+    id: 'openai/gpt-5-nano',
+    name: 'GPT-5 Nano',
+    characteristics: {
+      reasoning: 'good',
+      tendency: 'balanced',
+      strengths: ['Ultra-fast', 'High reliability', 'Efficient']
     }
   },
   geminiPro: {
@@ -358,18 +358,18 @@ Context for your analysis:
 
             // Query models in parallel but send SSE immediately when each completes
             const gptPromise = (async () => {
-              sendSSE(controller, 'model_started', { model: 'gpt', name: 'GPT-5.2' });
-              // GPT gets longer timeout (70s) since it's often slower
-              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 70000);
+              sendSSE(controller, 'model_started', { model: 'gpt', name: 'GPT-5 Mini' });
+              // GPT-5 Mini is faster, 45s timeout should be sufficient
+              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 45000);
               
-              // If GPT times out, try fallback to GPT-5-mini
+              // If GPT times out, try fallback to GPT-5-nano
               if (response.error === "Request timed out") {
-                console.log('[GPT] Primary timed out, trying GPT-5-mini fallback...');
+                console.log('[GPT] Primary timed out, trying GPT-5-nano fallback...');
                 sendSSE(controller, 'model_retry', { model: 'gpt', message: 'Switching to faster model...' });
-                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, isPremium, 40000);
+                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, isPremium, 30000);
                 response.isFallback = true;
                 if (!response.error) {
-                  response.modelName = 'GPT-5 Mini (Fallback)';
+                  response.modelName = 'GPT-5 Nano (Fallback)';
                 }
               }
               

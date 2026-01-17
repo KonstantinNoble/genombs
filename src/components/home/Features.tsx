@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { Globe, Zap, BarChart3, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const features = [
@@ -9,7 +9,6 @@ const features = [
     description:
       "Stop relying on single-AI advice. Get validated recommendations from 3 leading AI models – GPT-5.2, Gemini 3 Pro, and Gemini Flash working together.",
     details: "Each model brings unique strengths: GPT-5.2 for deep reasoning, Gemini 3 Pro for creative solutions, and Gemini Flash for pragmatic execution. Our meta-evaluation identifies consensus, majority agreement, and dissent – giving you confidence scores for every recommendation.",
-    icon: Globe,
     color: "primary",
     link: "/validate",
     linkText: "Start Validation",
@@ -19,7 +18,6 @@ const features = [
     description:
       "See where AI models agree and disagree. Consensus points are high-confidence recommendations. Dissent points reveal risks worth considering.",
     details: "Unlike single-model tools, Synoptas shows you the full picture. When all 3 models agree, you can move forward confidently. When they disagree, you've uncovered nuances that need deeper thought. Each dissent point includes the reasoning from each model's perspective.",
-    icon: Zap,
     color: "accent-cool",
     link: "/validate",
     linkText: "See How It Works",
@@ -29,7 +27,6 @@ const features = [
     description:
       "Tune the AI analysis to your preferences. Conservative or aggressive? Data-driven or innovative? Adjust sliders to get recommendations that match your style.",
     details: "Your risk tolerance and creativity preference influence how models weigh their recommendations. Conservative settings prioritize proven approaches. Aggressive settings explore bold moves. The synthesis adapts to your business philosophy.",
-    icon: BarChart3,
     color: "accent-info",
     link: "/pricing",
     linkText: "See Premium Features",
@@ -38,22 +35,22 @@ const features = [
 
 const colorClasses = {
   primary: {
-    icon: "text-primary",
+    text: "text-primary",
     border: "group-hover:border-primary/50",
     bg: "group-hover:bg-primary/5",
   },
   "accent-warm": {
-    icon: "text-accent-warm",
+    text: "text-accent-warm",
     border: "group-hover:border-accent-warm/50",
     bg: "group-hover:bg-accent-warm/5",
   },
   "accent-cool": {
-    icon: "text-accent-cool",
+    text: "text-accent-cool",
     border: "group-hover:border-accent-cool/50",
     bg: "group-hover:bg-accent-cool/5",
   },
   "accent-info": {
-    icon: "text-accent-info",
+    text: "text-accent-info",
     border: "group-hover:border-accent-info/50",
     bg: "group-hover:bg-accent-info/5",
   },
@@ -62,7 +59,6 @@ const colorClasses = {
 const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: number }) => {
   const { ref, isVisible } = useScrollReveal();
   const colors = colorClasses[feature.color as keyof typeof colorClasses];
-  const Icon = feature.icon;
   
   return (
     <Card
@@ -71,9 +67,6 @@ const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: n
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
       <div className="relative z-10">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-muted/50 ${colors.icon} transition-all duration-300 group-hover:scale-110`}>
-          <Icon className="w-6 h-6" />
-        </div>
         <h3 className="text-xl font-semibold mb-3 text-foreground transition-all duration-500 flex items-center gap-2">
           {feature.title}
         </h3>
@@ -81,7 +74,7 @@ const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: n
         <p className="text-muted-foreground/80 text-sm leading-relaxed mb-4">{feature.details}</p>
         <Link 
           to={feature.link} 
-          className={`inline-flex items-center gap-1.5 text-sm font-medium ${colors.icon} hover:underline transition-all duration-300 group-hover:gap-2`}
+          className={`inline-flex items-center gap-1.5 text-sm font-medium ${colors.text} hover:underline transition-all duration-300 group-hover:gap-2`}
         >
           {feature.linkText}
           <ArrowRight className="w-4 h-4" />

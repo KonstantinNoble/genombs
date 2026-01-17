@@ -1,4 +1,3 @@
-import { X, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link } from "react-router-dom";
 
@@ -11,7 +10,7 @@ const PainPointItem = ({ point, index }: { point: { title: string; detail: strin
       className={`flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-left scroll-reveal ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <X className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+      <span className="text-destructive font-bold mt-0.5">•</span>
       <div>
         <span className="text-muted-foreground block font-medium">{point.title}</span>
         <span className="text-muted-foreground/70 text-sm">{point.detail}</span>
@@ -64,8 +63,7 @@ const PainPoints = () => {
             to="/validate" 
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
           >
-            Get your first validation free
-            <ArrowRight className="w-4 h-4" />
+            Get your first validation free →
           </Link>
         </div>
       </div>

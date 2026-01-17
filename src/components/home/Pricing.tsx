@@ -95,7 +95,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               
               <ul className="space-y-3 text-left text-muted-foreground">
                 <li>• 2 validations per day</li>
-                <li>• 3 AI models (GPT-5.2, Gemini Pro, Flash)</li>
+                <li>• 3 AI models (GPT-5 Mini, Gemini Pro, Flash)</li>
                 <li>• Consensus & dissent analysis</li>
                 <li>• 2-3 recommendations per model</li>
                 <li>• 3 action items</li>

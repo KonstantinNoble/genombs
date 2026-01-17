@@ -17,7 +17,7 @@ const WhySynoptas = () => {
   ];
 
   const synoptasPoints = [
-    { title: "3 AI models analyze your question in parallel", detail: "GPT-5.2, Gemini 3 Pro, and Gemini Flash working together" },
+    { title: "3 AI models analyze your question in parallel", detail: "GPT-5 Mini, Gemini 3 Pro, and Gemini Flash working together" },
     { title: "Consensus detection shows high-confidence moves", detail: "When all 3 models agree, you can move forward confidently" },
     { title: "Dissent analysis reveals risks you'd miss", detail: "See where models disagree and why – hidden nuances exposed" },
     { title: "Adjustable risk tolerance & creativity preferences", detail: "Tune the analysis to match your business philosophy" },

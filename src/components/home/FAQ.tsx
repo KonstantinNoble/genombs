@@ -10,11 +10,11 @@ import {
 const faqs = [
   {
     question: "What is multi-AI validation?",
-    answer: "Multi-AI validation queries 3 leading AI models (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash) in parallel to analyze your business question. Instead of relying on a single AI's perspective, you get validated recommendations where models agree, and see where they disagree – giving you confidence scores for every insight."
+    answer: "Multi-AI validation queries 3 leading AI models (GPT-5 Mini, Gemini 3 Pro, Gemini 3 Flash) in parallel to analyze your business question. Instead of relying on a single AI's perspective, you get validated recommendations where models agree, and see where they disagree – giving you confidence scores for every insight."
   },
   {
     question: "Which AI models does Synoptas use?",
-    answer: "Synoptas uses three cutting-edge models: GPT-5.2 for deep reasoning and nuanced analysis, Gemini 3 Pro for creative strategic thinking, and Gemini 2.5 Flash for pragmatic, execution-focused recommendations. Each brings unique strengths to your business questions."
+    answer: "Synoptas uses three cutting-edge models: GPT-5 Mini for deep reasoning and nuanced analysis, Gemini 3 Pro for creative strategic thinking, and Gemini 3 Flash for pragmatic, execution-focused recommendations. Each brings unique strengths to your business questions."
   },
   {
     question: "What is consensus vs. dissent analysis?",

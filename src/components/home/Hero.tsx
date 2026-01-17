@@ -42,7 +42,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Stop guessing with single-AI advice. Get validated business recommendations from GPT-5.2, Gemini 3 Pro, and Gemini Flash – with consensus and risk analysis.
+            Stop guessing with single-AI advice. Get validated business recommendations from GPT-5 Mini, Gemini 3 Pro, and Gemini Flash – with consensus and risk analysis.
           </p>
 
           <div

@@ -321,9 +321,9 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         error: "Model unavailable"
       });
 
-      const finalGptResponse = gptResponse || createStubResponse('openai/gpt-5.2', 'GPT-5.2');
+      const finalGptResponse = gptResponse || createStubResponse('openai/gpt-5-mini', 'GPT-5 Mini');
       const finalGeminiProResponse = geminiProResponse || createStubResponse('google/gemini-3-pro-preview', 'Gemini 3 Pro');
-      const finalGeminiFlashResponse = geminiFlashResponse || createStubResponse('google/gemini-2.5-flash', 'Gemini 2.5 Flash');
+      const finalGeminiFlashResponse = geminiFlashResponse || createStubResponse('google/gemini-3-flash-preview', 'Gemini 3 Flash');
 
       // Step 2: Run meta-evaluation
       setStatus('evaluating');

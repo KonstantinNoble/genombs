@@ -14,13 +14,14 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 12, 2026 | Version 3.4</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 17, 2026 | Version 4.0</p>
 
+          {/* Section 1: Controller Information */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
             <p className="text-muted-foreground mb-4">
               We appreciate your interest in our website. This Privacy Policy explains how we handle personal data when
-              you visit our website.
+              you visit our website and use our Multi-AI Validation Platform.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Data Controller (as defined in the GDPR):</strong>
@@ -37,6 +38,7 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
+          {/* Section 2: Server Log Files */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">2. Data Collection When Visiting This Website</h2>
             <p className="text-muted-foreground mb-4">
@@ -63,6 +65,7 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
+          {/* Section 3: Cookies */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">3. Cookies</h2>
             <p className="text-muted-foreground mb-4">
@@ -207,6 +210,7 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
+          {/* Section 4: User Authentication */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">4. User Authentication</h2>
             
@@ -315,1671 +319,850 @@ const PrivacyPolicy = () => {
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Resend, Inc. (San Francisco, CA, USA)
+              <strong>Provider:</strong> Resend, Inc.
               <br />
-              <strong>Purpose:</strong> Sending transactional authentication emails only (no marketing)
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
-                (email verification is essential to provide you with a secure account)
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Country Transfer</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 46(2)(c) GDPR - Standard Contractual Clauses (SCCs)
-            </p>
-            <p className="text-muted-foreground mb-4">
+              <strong>Location:</strong> United States
+              <br />
               <strong>Privacy Policy:</strong>{" "}
               <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                 https://resend.com/legal/privacy-policy
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Google OAuth Authentication</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transfer to Third Countries</h4>
             <p className="text-muted-foreground mb-4">
-              Alternatively, you can log in using your existing Google account. This authentication method offers 
-              enhanced security through Google's infrastructure and provides a seamless login experience.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Why Google OAuth?</strong>
+              Resend is based in the United States. Data transfers to the USA are conducted in compliance 
+              with GDPR requirements using appropriate safeguards:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Enhanced security through Google's proven authentication infrastructure</li>
-              <li>No need to remember additional passwords</li>
-              <li>Two-factor authentication and advanced security features from Google</li>
-              <li>Streamlined login process across devices</li>
+              <li>Standard Contractual Clauses (SCCs) pursuant to Art. 46(2)(c) GDPR</li>
+              <li>EU-U.S. Data Privacy Framework (DPF) certification where applicable</li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.5 Data Received from Google</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
             <p className="text-muted-foreground mb-4">
-              When you authenticate via Google OAuth, we receive the following data from your Google account:
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
+              contract (sending confirmation and password reset emails as part of the authentication service).
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Google OAuth</h3>
+            <p className="text-muted-foreground mb-4">
+              When you choose to log in with Google, we use Google OAuth 2.0 for authentication.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Received from Google</h4>
+            <p className="text-muted-foreground mb-4">
+              When you authorize login via Google, we receive:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Email address</strong> (required) – Used as your primary account identifier and for communications</li>
-              <li><strong>Name</strong> (optional) – If provided by your Google profile, used for personalization</li>
-              <li><strong>Google User ID</strong> – A unique identifier from Google to link your account</li>
-              <li><strong>Profile picture URL</strong> (optional) – If available from your Google account</li>
-              <li><strong>Timestamps</strong> – Account creation date and last login time</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              We do NOT receive or store your Google password. Authentication is handled entirely by Google's secure 
-              infrastructure.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.6 Legal Basis for Google OAuth</h3>
-            <p className="text-muted-foreground mb-4">
-              The processing of your Google OAuth data is based on:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR</strong> – Processing is necessary for the performance of the contract. 
-                Authentication is required to provide you with user-specific features and services.
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR</strong> – Our legitimate interest in offering secure, convenient, and 
-                personalized services while protecting user accounts against unauthorized access.
-              </li>
+              <li><strong>Email address:</strong> Used as your account identifier</li>
+              <li><strong>Name:</strong> May be used for personalization (display name)</li>
+              <li><strong>Profile picture URL:</strong> May be displayed in your profile</li>
+              <li><strong>OAuth tokens:</strong> Used temporarily for authentication verification</li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.7 Google as Third Party</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Service provider:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data transfer to USA:</strong> When you use Google OAuth, your authentication data is processed 
-              by Google LLC in the United States. This involves a data transfer to a third country outside the European 
-              Economic Area (EEA).
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis for third-country transfer:</strong> Art. 45 GDPR (Adequacy Decision)
+              <strong>Provider:</strong> Google LLC
               <br />
-              Google LLC is certified under the EU-U.S. Data Privacy Framework (DPF). The European Commission has 
-              recognized the DPF as providing an adequate level of data protection equivalent to EU law. Therefore, 
-              data transfers to Google for authentication purposes are based on the adequacy decision pursuant to 
-              Art. 45 GDPR and do not require additional safeguards such as Standard Contractual Clauses.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Google Privacy Policy:</strong>{" "}
-              <a
-                href="https://policies.google.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
+              <strong>Location:</strong> 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                 https://policies.google.com/privacy
               </a>
             </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Google DPF Certification:</strong>{" "}
-              <a
-                href="https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt000000001L5AAI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Data Privacy Framework
-              </a>
-            </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.8 Backend Infrastructure</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transfer to Third Countries</h4>
             <p className="text-muted-foreground mb-4">
-              User authentication and data storage are handled through a secure backend infrastructure. All authentication 
-              data and OAuth tokens are encrypted during transmission using industry-standard SSL/TLS protocols. The 
-              backend infrastructure is hosted on servers that comply with GDPR requirements, with data transfers to 
-              third countries secured through appropriate safeguards including adequacy decisions and Standard 
-              Contractual Clauses (SCCs) where applicable.
-            </p>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.9 Storage Duration</h3>
-            <p className="text-muted-foreground mb-4">
-              Your account data is stored as long as your account remains active. You may delete your account at any 
-              time through your account settings or by contacting us directly. When you delete your account:
+              Google is based in the United States. Data transfers are conducted in compliance with GDPR 
+              requirements based on:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your personal data is immediately and permanently removed from our production database</li>
-              <li>
-                Copies in automated backup systems (maintained by our hosting provider for disaster recovery) are 
-                retained for a technically determined period and then permanently deleted. We do not have direct 
-                control over the backup infrastructure or retention periods, which are determined by our hosting 
-                provider's technical capabilities.
-              </li>
-              <li>
-                During the backup retention period, these data cannot be accessed, restored, or used for any operational
-                purposes
-              </li>
-              <li>
-                <strong>Important:</strong> We strongly recommend that you download and save your own copies of any 
-                important data before deleting your account, as we cannot guarantee recovery after deletion.
-              </li>
-              <li>Legal retention obligations may require us to keep certain records beyond this period</li>
-            </ul>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.10 Account Management</h3>
-            <p className="text-muted-foreground mb-4">
-              You can access your account information at any time by navigating to your profile page while logged in. 
-              This page displays your profile information, including your email address and account creation date.
-            </p>
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.11 Account Deletion</h3>
-            <p className="text-muted-foreground mb-4">
-              You have the right to delete your account and all associated personal data at any time. Our website 
-              provides a self-service account deletion feature accessible through your account settings. When you 
-              initiate account deletion:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                Your profile data (email, name, timestamps) is immediately and permanently deleted from our production
-                database
-              </li>
-              <li>
-                All authentication data (Google OAuth tokens, session tokens) are invalidated and removed from active
-                systems
-              </li>
-              <li>
-                All strategy tracking data (active strategies, phase progress, milestones, user notes) is permanently 
-                deleted
-              </li>
-              <li>All analysis history (Business Tools Advisor results) is permanently deleted</li>
-              <li>All credit and quota tracking data is permanently deleted</li>
-              <li>The deletion is irreversible and cannot be undone once processed</li>
-              <li>You will be automatically logged out and redirected to the homepage</li>
-              <li>
-                The deletion process uses a secure cascade mechanism to ensure no personal data remains accessible in
-                our production systems
-              </li>
-              <li>
-                Copies in automated backup systems (used solely for disaster recovery) are retained for a technically 
-                determined period and then permanently deleted. We do not have direct control over the backup 
-                infrastructure or retention periods. During this retention period, backup data cannot be accessed or 
-                restored for normal operations.
-              </li>
-              <li>
-                <strong>Recommendation:</strong> Please download your data before deletion if you need to retain it, 
-                as recovery cannot be guaranteed after account deletion.
-              </li>
-            </ul>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.12 Email Hash Storage for Abuse Prevention</h3>
-            <p className="text-muted-foreground mb-4">
-              To prevent abuse and protect against accidental re-registration, we create a cryptographic hash (SHA-256) 
-              of your email address and store it temporarily for up to 24 hours after account deletion. This hash is a 
-              one-way encryption that cannot be reversed to reveal your email address.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              During this period (up to 24 hours), the same email address cannot be used to create a new account. This prevents:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Accidental duplicate registrations immediately after deletion</li>
-              <li>Abuse of free trial or quota systems through repeated account creation</li>
-              <li>Confusion from rapid account deletion and recreation cycles</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              After this period, the hash is automatically deleted from our systems, and the email address becomes 
-              available for registration again.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR – Legitimate interest in preventing abuse, maintaining 
-              system integrity, and protecting against accidental duplicate registrations.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data minimization:</strong> We use SHA-256 cryptographic hashing instead of storing plain email 
-              addresses, ensuring that the stored hash cannot be used to identify you or be reversed to obtain your 
-              email address.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.13 Registration Rate Limiting</h3>
-            <p className="text-muted-foreground mb-4">
-              To protect our service against spam and automated abuse attempts, we implement rate 
-              limiting for registration attempts. This system limits the number of registration 
-              attempts from a single source within a specified time period.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
-            <p className="text-muted-foreground mb-4">
-              When you attempt to register, the following data is temporarily processed:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>IP Address Hash:</strong> Your IP address is extracted from request headers 
-                and immediately converted to a SHA-256 cryptographic hash. The original IP address 
-                is never stored.
-              </li>
-              <li>
-                <strong>Email Address Hash:</strong> The email address you enter is converted to a 
-                SHA-256 cryptographic hash to associate attempts with email addresses without storing 
-                the actual email.
-              </li>
-              <li>
-                <strong>Timestamp:</strong> The date and time of each registration attempt.
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Rate Limit</h4>
-            <p className="text-muted-foreground mb-4">
-              A maximum of 3 registration attempts per IP address are permitted within any 1-hour period. 
-              If this limit is exceeded, further registration attempts from the same IP address are 
-              temporarily blocked until the oldest attempt expires.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Storage Duration</h4>
-            <p className="text-muted-foreground mb-4">
-              Registration attempt records are automatically deleted after 2 hours via an automated 
-              cleanup process (cron job). This ensures data minimization while maintaining effective 
-              protection against abuse.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Protection Measures</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Cryptographic Hashing:</strong> Both IP addresses and email addresses are 
-                converted to SHA-256 hashes before storage. These hashes are one-way encryptions 
-                that cannot be reversed to reveal the original data.
-              </li>
-              <li>
-                <strong>No Personal Identification:</strong> The stored hashes cannot be used to 
-                identify you personally or trace your browsing activity.
-              </li>
-              <li>
-                <strong>Automatic Deletion:</strong> All rate limiting data is automatically purged 
-                after 2 hours.
-              </li>
-              <li>
-                <strong>Server-Side Only:</strong> Rate limiting data is processed exclusively on 
-                our servers and is never transmitted to third parties.
-              </li>
+              <li>EU-U.S. Data Privacy Framework (DPF) - Google LLC is certified</li>
+              <li>Standard Contractual Clauses (SCCs) as additional safeguard</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Art. 6(1)(f) GDPR:</strong> The processing is based on our legitimate interest 
-              in protecting our service against spam, automated abuse, and denial-of-service attacks. 
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
+              contract when you choose to authenticate via Google.
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.5 Account Deletion</h3>
             <p className="text-muted-foreground mb-4">
-              <strong>Right to object (Art. 21 GDPR):</strong> You have the right to object to this 
-              processing on grounds relating to your particular situation. To exercise this right, 
-              please contact us at mail@wealthconomy.com.
+              You can delete your account at any time through the Profile settings. When you request 
+              account deletion:
             </p>
-            
-            <p className="text-muted-foreground mb-4 mt-6">
-              Alternatively, you may also request account deletion by contacting us at mail@wealthconomy.com.
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your account and all associated personal data are permanently deleted</li>
+              <li>All your validation analyses, experiments, tasks, and checkpoints are deleted (via database CASCADE)</li>
+              <li>Your email address is hashed (using SHA-256) and stored for 24 hours to prevent immediate re-registration abuse</li>
+              <li>After 24 hours, the email hash is automatically deleted</li>
+              <li>This deletion is irreversible</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">24-Hour Block for Deleted Accounts</h4>
+            <p className="text-muted-foreground mb-4">
+              To prevent abuse (e.g., repeatedly creating and deleting accounts to reset usage limits), 
+              we implement a 24-hour cooling-off period. During this time:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>You cannot register a new account with the same email address</li>
+              <li>You cannot log in with Google OAuth using the same email address</li>
+              <li>Only a SHA-256 hash of your email is stored (your actual email is not retained)</li>
+              <li>The hash is automatically deleted after 24 hours by a scheduled cleanup job</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(f) GDPR (legitimate interest in preventing system abuse 
+              and ensuring fair usage of our services).
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.6 Registration Rate Limiting</h3>
+            <p className="text-muted-foreground mb-4">
+              To prevent abuse and protect our platform from automated attacks, registration attempts 
+              are rate-limited.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Rate Limits</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>3 registration attempts per hour</strong> per IP address (for email/password registration)</li>
+              <li>Google OAuth logins are not subject to IP-based rate limiting</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored for Rate Limiting</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>IP address hash:</strong> Your IP address is hashed using SHA-256 before storage (your actual IP is not stored)</li>
+              <li><strong>Email hash:</strong> A hash of the attempted email address (to detect repeated attempts)</li>
+              <li><strong>Timestamp:</strong> When the registration attempt occurred</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Automatic Cleanup</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>IP hashes are automatically deleted after 2 hours</li>
+              <li>Email hashes are automatically deleted after 24 hours</li>
+              <li>Cleanup is performed by an automated hourly job</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in protecting our platform from abuse, 
+              automated attacks, and ensuring service availability for legitimate users.
             </p>
           </section>
 
+          {/* Section 5: Multi-AI Validation Platform */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. AI-Powered Features</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. Multi-AI Validation Platform</h2>
             <p className="text-muted-foreground mb-4">
-              Our website offers an AI-powered advisory service that analyzes your business context, objectives, and requirements 
-              to provide personalized strategic recommendations. This feature is available to registered users and requires 
-              authentication. Generated strategies may be saved to your account and activated for progress tracking purposes.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>IMPORTANT DISCLAIMER:</strong> These features provide general recommendations and information for
-              educational and informational purposes only. They do NOT constitute professional business consulting,
-              legal advice, advertising consulting, or personalized business strategy consultation. You should consult with 
-              qualified business advisors, marketing professionals, and legal professionals before making significant business 
-              decisions. Results may vary, and we make no guarantees regarding the effectiveness of recommended tools, strategies, 
-              advertising campaigns, or business ideas for your specific business situation.
+              Our core service is the Multi-AI Validation Platform, which analyzes your business decisions 
+              and questions using multiple AI models in parallel to provide comprehensive, validated recommendations.
             </p>
 
-            <div className="bg-muted/30 border border-border rounded-lg p-4 mb-4">
-              <p className="text-muted-foreground mb-2">
-                <strong>⚠️ IMPORTANT – Sensitive Data Warning:</strong>
-              </p>
-              <p className="text-muted-foreground mb-2">
-                Please do <strong>not</strong> enter sensitive personal data (e.g., health information, religious beliefs, 
-                biometric data, or other special categories of data under Art. 9 GDPR) in free-text fields such as 
-                business goals, objectives, or strategy descriptions.
-              </p>
-              <p className="text-muted-foreground">
-                If you choose to analyze a website containing personal data of third parties (e.g., team pages, 
-                testimonials, contact information), this data may be processed as part of the analysis. By using 
-                the website analysis feature, you confirm that you have the necessary rights to submit this website 
-                URL for analysis, or that the data is publicly available.
-              </p>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Multi-AI Validation Service</h3>
+            <p className="text-muted-foreground mb-4">
+              When you submit a validation request, your prompt is analyzed by three AI models simultaneously:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>OpenAI GPT-5.2</strong> (with GPT-5-nano as automatic fallback for reliability)</li>
+              <li><strong>Google Gemini 3 Pro</strong></li>
+              <li><strong>Google Gemini 2.5 Flash</strong> (also performs meta-evaluation/synthesis)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
+            <p className="text-muted-foreground mb-4">
+              For each validation request, the following data is processed:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Your prompt:</strong> The business question or decision you want validated (maximum 500 characters)</li>
+              <li><strong>Risk tolerance preference:</strong> A value from 1-5 indicating your risk tolerance</li>
+              <li><strong>Analysis style preference:</strong> A value from 1-5 indicating your preferred analysis style (conservative to creative)</li>
+              <li><strong>User ID:</strong> Your authenticated user identifier (to associate results with your account)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored</h4>
+            <p className="text-muted-foreground mb-4">
+              After processing, the following data is stored in our database:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your original prompt</li>
+              <li>Your risk and creativity preferences</li>
+              <li>The responses from each AI model (GPT, Gemini Pro, Gemini Flash)</li>
+              <li>The meta-evaluation results (consensus points, majority opinions, dissenting views)</li>
+              <li>The final synthesized recommendation</li>
+              <li>Overall confidence score</li>
+              <li>Processing time</li>
+              <li>Timestamp of the analysis</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">AI Model Providers</h4>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
+                    <th className="border border-border p-3 text-left font-semibold">Models Used</th>
+                    <th className="border border-border p-3 text-left font-semibold">Location</th>
+                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (via OpenRouter)</td>
+                    <td className="border border-border p-3">GPT-5.2, GPT-5-nano (fallback)</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
+                    <td className="border border-border p-3">Gemini 3 Pro, Gemini 2.5 Flash</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenRouter</strong></td>
+                    <td className="border border-border p-3">API Gateway for OpenAI models</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
+                contract (providing the AI validation service you requested)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing accurate and reliable 
+                AI-powered business recommendations
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Validation Limits and Usage Tracking</h3>
+            <p className="text-muted-foreground mb-4">
+              To ensure fair usage and service sustainability, validation requests are subject to daily limits:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Free users:</strong> 2 validations per 24-hour rolling window</li>
+              <li><strong>Premium users ($14.99/month):</strong> 20 validations per 24-hour rolling window</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored for Usage Tracking</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>validation_count:</strong> Number of validations used in the current 24-hour window</li>
+              <li><strong>validation_window_start:</strong> Timestamp when the current 24-hour window began</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              The 24-hour window resets automatically when you make a new request after the previous window has expired.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary to enforce the terms of service 
+              and subscription limits.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Validation History</h3>
+            <p className="text-muted-foreground mb-4">
+              Your validation history is automatically managed to optimize storage:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Retention limit:</strong> Only your 10 most recent analyses are retained</li>
+              <li><strong>Automatic cleanup:</strong> When loading your history, older analyses (beyond the 10 most recent) are automatically deleted along with any associated experiments</li>
+              <li><strong>Manual deletion:</strong> You can delete individual analyses at any time through the platform interface</li>
+              <li><strong>Cascade deletion:</strong> When an analysis is deleted, all associated experiments, tasks, and checkpoints are automatically deleted (database CASCADE)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for providing the validation 
+              history feature as part of the service.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Experiment Workflow</h3>
+            <p className="text-muted-foreground mb-4">
+              You can convert validation results into structured experiments to track decision implementation. 
+              This feature helps you move from analysis to action with clear accountability.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Decision question:</strong> The specific question you're testing (maximum 300 characters)</li>
+              <li><strong>Hypothesis:</strong> Your expected outcome (maximum 300 characters)</li>
+              <li><strong>Experiment duration:</strong> The planned length of your experiment in days</li>
+              <li><strong>Success metrics:</strong> Configurable metrics with target values and weights for scoring</li>
+              <li><strong>Tasks:</strong> Individual action items with outcomes (positive/negative/neutral evidence)</li>
+              <li><strong>Scorecard results:</strong> 1-10 ratings for each success metric</li>
+              <li><strong>Final decision:</strong> GO or NO-GO determination</li>
+              <li><strong>Decision rationale:</strong> Your reasoning for the final decision (maximum 300 characters)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Experiment Lifecycle</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Experiments are linked to their parent validation analysis</li>
+              <li>Only one active experiment can exist per validation</li>
+              <li>Experiments are permanently deleted when completed (not archived)</li>
+              <li>Experiments are automatically deleted when the parent analysis is deleted (CASCADE)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for providing the experiment 
+                tracking feature as part of the service
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Premium Features and Gating</h3>
+            <p className="text-muted-foreground mb-4">
+              Premium subscribers receive enhanced analysis output:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Free users:</strong> Limited to 1 recommendation and 2 action items per analysis</li>
+              <li><strong>Premium users:</strong> Receive 4-5 recommendations, 5-7 action items, plus exclusive sections (strategic alternatives, long-term outlook, competitor insights)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Premium status is determined by your subscription status stored in the user_credits table.
+            </p>
+          </section>
+
+          {/* Section 6: Premium Subscription */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">6. Premium Subscription and Payment Processing</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Business Tools Advisor</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Subscription Overview</h3>
             <p className="text-muted-foreground mb-4">
-              The Business Tools Advisor analyzes your business profile to provide personalized recommendations for 
-              business tools, software solutions, and strategic approaches tailored to your industry, team size, budget, 
-              and business objectives.
+              We offer a Premium subscription at $14.99/month that provides enhanced validation limits 
+              and more detailed analysis output.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Data Processing for Business Tools Analysis</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Payment Processing via Freemius</h3>
             <p className="text-muted-foreground mb-4">
-              When you use this feature, the following personal data is processed:
+              Payment processing is handled by Freemius, a third-party payment and subscription management platform.
             </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to Freemius</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Business Profile Data (stated preferences):</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Industry sector (e.g., technology, retail, healthcare, manufacturing, etc.)</li>
-                  <li>Team size (solo, 2-10, 11-50, 51-200, 200+ employees)</li>
-                  <li>
-                    Budget range for business tools (e.g., &lt;$100/month, $100-500/month, $500-2000/month,
-                    $2000+/month)
-                  </li>
-                  <li>Business goals and objectives (text description of what you want to achieve)</li>
-                </ul>
-              </li>
-              <li>
-                <strong>User Account Data:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>User ID (to manage your analysis history and daily usage limit)</li>
-                  <li>Timestamps (date and time of analysis requests)</li>
-                </ul>
-              </li>
+              <li>Your email address (for payment receipts and subscription management)</li>
+              <li>Payment details (handled directly by Freemius; we do not receive or store payment card details)</li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Role of Lovable AI Gateway</h3>
-            <p className="text-muted-foreground mb-4">
-              The Lovable AI Gateway (operated by Lovable Labs Incorporated, 340 S Lemon Ave #9828, Walnut, CA 91789,
-              USA) acts as an intermediary service that routes AI requests to Google's AI models. The gateway:
-            </p>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Received from Freemius (via Webhooks)</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Receives your business profile data from our backend (Supabase Edge Functions)</li>
-              <li>Forwards the request to Google AI models</li>
-              <li>Returns the generated response to our backend</li>
-              <li>Acts as a data processor under Art. 28 GDPR on behalf of our website</li>
+              <li>Freemius customer ID</li>
+              <li>Freemius subscription ID</li>
+              <li>Subscription status (active, cancelled, expired)</li>
+              <li>Billing cycle (monthly)</li>
+              <li>Next payment date</li>
+              <li>Subscription end date</li>
+              <li>Auto-renewal status</li>
             </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data Processing Agreement:</strong> A Data Processing Agreement (DPA) pursuant to Art. 28 GDPR has
-              been concluded with Lovable Labs Incorporated covering all processing activities through the AI Gateway.
-            </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">AI Model Provider and Third-Country Transfer</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
             <p className="text-muted-foreground mb-4">
-              To generate business tool recommendations, your business profile data is transmitted through our
-              backend infrastructure and the Lovable AI Gateway to Google AI:
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Google AI Models</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Models:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Gemini 2.5 Flash Lite
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis for third-country transfer:</strong> Art. 45 GDPR (Adequacy Decision)
+              <strong>Provider:</strong> Freemius, Inc.
               <br />
-              Google LLC is certified under the EU-U.S. Data Privacy Framework (DPF). The European Commission has
-              recognized the DPF as providing an adequate level of data protection equivalent to EU law. Therefore, data
-              transfers to Google for AI processing are based on the adequacy decision pursuant to Art. 45 GDPR and do
-              not require additional safeguards such as Standard Contractual Clauses.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data usage by Google:</strong> According to Google Cloud's API data usage policies, input data
-              submitted through the Gemini API is not used to train or improve Google's models. Google retains API
-              request data for a limited period for abuse prevention and security monitoring purposes only.
-            </p>
-            <p className="text-muted-foreground mb-4">More information:</p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                Google Privacy Policy:{" "}
-                <a
-                  href="https://policies.google.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  https://policies.google.com/privacy
-                </a>
-              </li>
-              <li>
-                Google DPF Certification:{" "}
-                <a
-                  href="https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt000000001L5AAI"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Data Privacy Framework
-                </a>
-              </li>
-              <li>
-                Google Cloud API Data Usage:{" "}
-                <a
-                  href="https://cloud.google.com/terms/service-terms"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Google Cloud Terms
-                </a>
-              </li>
-            </ul>
-
-            <p className="text-muted-foreground mb-4 mt-4">
-              <strong>Lovable AI Gateway Documentation:</strong>{" "}
-              <a
-                href="https://docs.lovable.dev/features/ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://docs.lovable.dev/features/ai
+              <strong>Location:</strong> United States
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://freemius.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://freemius.com/privacy/
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Market Research and Strategic Content (Perplexity AI)</h3>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
             <p className="text-muted-foreground mb-4">
-              To enhance the quality and accuracy of strategic recommendations, our AI-powered features integrate 
-              real-time market research capabilities through Perplexity AI. When generating business strategies, 
-              Perplexity AI actively contributes to the content of your personalized plans by:
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
+              subscription contract.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.3 Subscription Status Synchronization</h3>
+            <p className="text-muted-foreground mb-4">
+              Your premium status is synchronized automatically via webhooks from Freemius:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Conducting competitor analysis and market positioning research</li>
-              <li>Gathering current industry trends and market data</li>
-              <li>Researching pricing strategies and business model insights relevant to your sector</li>
-              <li>Identifying best practices and successful approaches in your industry</li>
-              <li>Finding and embedding direct links to helpful tools, articles, and services</li>
+              <li><strong>subscription.created:</strong> Activates premium when you subscribe</li>
+              <li><strong>payment.created:</strong> Confirms payment and extends subscription</li>
+              <li><strong>subscription.cancelled:</strong> Marks auto-renewal as disabled (premium remains active until end date)</li>
+              <li><strong>payment.refund:</strong> Immediately deactivates premium</li>
+              <li><strong>subscription.renewal.failed.last:</strong> Deactivates premium after final failed renewal attempt</li>
             </ul>
+          </section>
+
+          {/* Section 7: Email Communication */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">7. Email Communication</h2>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.1 Transactional Emails</h3>
             <p className="text-muted-foreground mb-4">
-              This market research data is directly integrated into the AI-generated strategy phases, influencing 
-              the specific recommendations, action items, and strategic approaches tailored to your business context.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data transmitted to Perplexity AI:</strong>
+              We send transactional emails that are necessary for the operation of your account:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Business context queries (industry sector, business goals, budget range, team size)</li>
-              <li>Search queries for market research (competitor analysis, industry trends, pricing strategies)</li>
-              <li>Queries for relevant tools, software solutions, and service providers</li>
+              <li>Account confirmation emails</li>
+              <li>Password reset emails</li>
+              <li>Important account notifications</li>
             </ul>
             <p className="text-muted-foreground mb-4">
-              <strong>Data protection measures:</strong> We do not transmit direct personal identifiers such as your 
-              name or email address to Perplexity AI. Business context queries are designed to contain only 
-              business-related information. Requests are processed server-side through our backend infrastructure 
-              (Edge Functions), so your client IP address is generally not disclosed to Perplexity AI.
+              These emails are sent via Resend from <strong>noreply@wealthconomy.com</strong>.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Perplexity AI, Inc. (San Francisco, CA, USA)
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance).
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.2 Marketing Emails (Optional)</h3>
+            <p className="text-muted-foreground mb-4">
+              With your explicit consent, we may send you marketing communications about new features, 
+              tips for using the platform, and special offers.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Consent collection:</strong> Marketing consent is requested during your first login 
+              via an optional, unchecked-by-default checkbox. You are never automatically subscribed.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Consent management:</strong> You can withdraw your consent at any time through your 
+              Profile settings.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Data stored:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Marketing consent status (true/false)</li>
+              <li>Timestamp when consent was given or withdrawn</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(a) GDPR (consent).
+            </p>
+          </section>
+
+          {/* Section 8: Hosting */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">8. Hosting and Infrastructure</h2>
+            
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.1 Website Hosting</h3>
+            <p className="text-muted-foreground mb-4">
+              Our website is hosted on infrastructure provided by Lovable (Lovable Cloud), which utilizes 
+              Supabase for backend services including database, authentication, and edge functions.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Supabase, Inc. (via Lovable Cloud)
               <br />
-              <strong>Models used:</strong> Sonar (Standard Analysis) / Sonar Pro (Deep Analysis)
+              <strong>Location:</strong> Infrastructure distributed globally with EU data centers
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://supabase.com/privacy
+              </a>
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing a reliable, secure, and 
+              performant hosting infrastructure.
+            </p>
+          </section>
+
+          {/* Section 9: Contact */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">9. Contact Form and Email Inquiries</h2>
+            <p className="text-muted-foreground mb-4">
+              If you contact us via email (mail@wealthconomy.com), the data you provide (your email address, 
+              name if provided, and the content of your message) will be stored and processed for the purpose 
+              of handling your inquiry.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Storage duration:</strong> We retain your inquiry until the matter is resolved, plus 
+              any legally required retention period for business correspondence.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong>
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance (providing 
-                high-quality strategic recommendations with actionable resource links as part of the requested service)
+                <strong>Art. 6(1)(b) GDPR:</strong> If your inquiry relates to a contract or pre-contractual measures
               </li>
               <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, research-backed 
-                business recommendations. A legitimate interest assessment has been conducted to balance our interests 
-                against your rights and freedoms.
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in responding to inquiries and providing support
               </li>
             </ul>
+          </section>
+
+          {/* Section 10: External Links */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">10. External Links</h2>
             <p className="text-muted-foreground mb-4">
-              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest 
-              (Art. 6(1)(f) GDPR), you have the right to object at any time on grounds relating to your particular 
-              situation. To exercise this right, please contact us at mail@wealthconomy.com.
+              Our website may contain links to external websites. We have no control over the content or 
+              privacy practices of these external sites. Please refer to their respective privacy policies.
             </p>
+          </section>
+
+          {/* Section 11: Categories of Personal Data */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">11. Categories of Personal Data Processed</h2>
             <p className="text-muted-foreground mb-4">
-              <strong>Third-country transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Privacy Policy:</strong>{" "}
-              <a
-                href="https://www.perplexity.ai/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://www.perplexity.ai/privacy
-              </a>
+              The following categories of personal data may be processed through our platform:
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">Website Analysis (Firecrawl)</h3>
-            <p className="text-muted-foreground mb-4">
-              Our Strategy Planner includes an optional website analysis feature that allows you to receive personalized 
-              strategic recommendations based on your website's content. When you choose to enable this feature and enter 
-              your website URL, we use Firecrawl to analyze your website.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data transmitted to Firecrawl:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The website URL you voluntarily provide</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data received from Firecrawl:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Website content in Markdown format (text, headings, structure)</li>
-              <li>Page metadata (title, description)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data protection measures:</strong> We do not transmit direct personal identifiers such as your 
-              name or email address to Firecrawl. Requests are processed server-side through our backend infrastructure 
-              (Edge Functions), so your client IP address is generally not disclosed to Firecrawl.
-            </p>
-            <div className="bg-muted/30 border border-border rounded-lg p-4 mb-4">
-              <p className="text-muted-foreground mb-2">
-                <strong>Note on third-party personal data:</strong>
-              </p>
-              <p className="text-muted-foreground">
-                Websites you submit for analysis may contain personal data of third parties (e.g., team member names, 
-                contact information, testimonials). By using this feature, you confirm that you have the necessary 
-                rights to submit this website URL for analysis, or that the data is publicly available and its 
-                processing is covered by our legitimate interest in providing you with business recommendations.
-              </p>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Category</th>
+                    <th className="border border-border p-3 text-left font-semibold">Examples</th>
+                    <th className="border border-border p-3 text-left font-semibold">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Account Data</strong></td>
+                    <td className="border border-border p-3">Email address, hashed password, OAuth tokens</td>
+                    <td className="border border-border p-3">Authentication and account management</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Validation Data</strong></td>
+                    <td className="border border-border p-3">Prompts (max 500 chars), risk/creativity preferences</td>
+                    <td className="border border-border p-3">Multi-AI validation service</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>AI Responses</strong></td>
+                    <td className="border border-border p-3">GPT, Gemini Pro, Gemini Flash responses, meta-evaluation</td>
+                    <td className="border border-border p-3">Providing comprehensive analysis</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Experiment Data</strong></td>
+                    <td className="border border-border p-3">Hypotheses, tasks, outcomes, scorecard ratings, decisions</td>
+                    <td className="border border-border p-3">Decision tracking and accountability</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Usage Data</strong></td>
+                    <td className="border border-border p-3">Validation counts, timestamps, premium status</td>
+                    <td className="border border-border p-3">Service limits and subscription management</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Technical Data</strong></td>
+                    <td className="border border-border p-3">IP address (hashed), browser info, session tokens</td>
+                    <td className="border border-border p-3">Security, rate limiting, session management</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Payment Data</strong></td>
+                    <td className="border border-border p-3">Freemius IDs, subscription status, billing cycle</td>
+                    <td className="border border-border p-3">Payment and subscription management</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </section>
+
+          {/* Section 12: Recipients of Personal Data */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">12. Recipients of Personal Data</h2>
             <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Firecrawl, Inc. (San Francisco, CA, USA)
+              Your personal data may be shared with the following categories of recipients:
+            </p>
+
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Recipient</th>
+                    <th className="border border-border p-3 text-left font-semibold">Purpose</th>
+                    <th className="border border-border p-3 text-left font-semibold">Data Shared</th>
+                    <th className="border border-border p-3 text-left font-semibold">Transfer Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (via OpenRouter)</td>
+                    <td className="border border-border p-3">AI validation analysis</td>
+                    <td className="border border-border p-3">Validation prompts, preferences</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
+                    <td className="border border-border p-3">AI validation, OAuth</td>
+                    <td className="border border-border p-3">Validation prompts, OAuth data</td>
+                    <td className="border border-border p-3">DPF (Art. 45)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenRouter</strong></td>
+                    <td className="border border-border p-3">AI API gateway</td>
+                    <td className="border border-border p-3">Validation prompts</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Supabase</strong></td>
+                    <td className="border border-border p-3">Hosting, database</td>
+                    <td className="border border-border p-3">All stored data</td>
+                    <td className="border border-border p-3">DPF (Art. 45)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Resend</strong></td>
+                    <td className="border border-border p-3">Transactional emails</td>
+                    <td className="border border-border p-3">Email address</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Freemius</strong></td>
+                    <td className="border border-border p-3">Payment processing</td>
+                    <td className="border border-border p-3">Email, payment details</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-muted-foreground mb-4">
+              We do not sell your personal data to third parties.
+            </p>
+          </section>
+
+          {/* Section 13: Obligation to Provide Data */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">13. Obligation to Provide Personal Data</h2>
+            <p className="text-muted-foreground mb-4">
+              The provision of personal data is partially required by law or may result from contractual 
+              provisions. Specifically:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Email address:</strong> Required for account creation and authentication. Without 
+                providing an email address, you cannot create an account or use the validation services.
+              </li>
+              <li>
+                <strong>Validation prompt:</strong> Required to receive AI-powered analysis. Without 
+                submitting your question, we cannot provide recommendations.
+              </li>
+              <li>
+                <strong>Payment information:</strong> Required only if you wish to subscribe to Premium. 
+                Free users are not required to provide payment information.
+              </li>
+            </ul>
+          </section>
+
+          {/* Section 14: Automated Decision-Making */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">14. Automated Decision-Making and Profiling</h2>
+            <p className="text-muted-foreground mb-4">
+              Our Multi-AI Validation Platform uses artificial intelligence to analyze your business questions 
+              and provide recommendations. This constitutes automated processing but NOT automated decision-making 
+              with legal effects as defined in Art. 22 GDPR, because:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The AI provides recommendations and analysis, not binding decisions</li>
+              <li>You retain full control over whether to act on any recommendation</li>
+              <li>The output does not produce legal effects or similarly significantly affect you</li>
+              <li>The analysis is advisory in nature and requires your human judgment for implementation</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">How the AI Processing Works</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your prompt is sent to three AI models simultaneously (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash)</li>
+              <li>Each model provides independent analysis based on the prompt and your preferences</li>
+              <li>A fourth AI process (meta-evaluation by Gemini 2.5 Flash) synthesizes the responses</li>
+              <li>The system identifies consensus points, majority opinions, and dissenting views</li>
+              <li>A final recommendation is generated based on this multi-model analysis</li>
+            </ul>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Transparency:</strong> You can see the individual responses from each AI model, 
+              allowing you to understand how the final recommendation was derived.
+            </p>
+          </section>
+
+          {/* Section 15: Storage Duration */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">15. Storage Duration</h2>
+            <p className="text-muted-foreground mb-4">
+              We store your personal data only for as long as necessary for the purposes for which it was collected:
+            </p>
+
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Data Category</th>
+                    <th className="border border-border p-3 text-left font-semibold">Retention Period</th>
+                    <th className="border border-border p-3 text-left font-semibold">Deletion Trigger</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3">Account data</td>
+                    <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">User-initiated deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Validation analyses</td>
+                    <td className="border border-border p-3">10 most recent retained</td>
+                    <td className="border border-border p-3">Automatic cleanup or manual deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Experiments</td>
+                    <td className="border border-border p-3">Until completion or deletion</td>
+                    <td className="border border-border p-3">User completes/deletes experiment</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Usage counters</td>
+                    <td className="border border-border p-3">24-hour rolling window</td>
+                    <td className="border border-border p-3">Automatic reset after 24 hours</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Registration attempts (IP hash)</td>
+                    <td className="border border-border p-3">2 hours</td>
+                    <td className="border border-border p-3">Automatic cleanup</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Registration attempts (email hash)</td>
+                    <td className="border border-border p-3">24 hours</td>
+                    <td className="border border-border p-3">Automatic cleanup</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Deleted account email hash</td>
+                    <td className="border border-border p-3">24 hours</td>
+                    <td className="border border-border p-3">Automatic cleanup (daily job)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Webhook event IDs</td>
+                    <td className="border border-border p-3">30 days</td>
+                    <td className="border border-border p-3">Automatic cleanup</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-muted-foreground mb-4">
+              When you delete your account, all associated data is permanently deleted, except for the 
+              temporary email hash used to prevent immediate re-registration (deleted after 24 hours).
+            </p>
+          </section>
+
+          {/* Section 16: Your Rights */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">16. Your Rights Under GDPR</h2>
+            <p className="text-muted-foreground mb-4">
+              Under the General Data Protection Regulation (GDPR), you have the following rights regarding 
+              your personal data:
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.1 Right of Access (Art. 15 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to obtain confirmation as to whether personal data concerning you is being 
+              processed. If so, you have the right to access that data and receive information about the 
+              processing.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.2 Right to Rectification (Art. 16 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to request correction of inaccurate personal data and, where applicable, 
+              completion of incomplete personal data.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.3 Right to Erasure (Art. 17 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to request deletion of your personal data under certain conditions. You 
+              can delete your account at any time through the Profile settings, which will permanently 
+              erase all your data.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.4 Right to Restriction of Processing (Art. 18 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to request restriction of processing under certain conditions, for example, 
+              if you contest the accuracy of the data.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.5 Right to Data Portability (Art. 20 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to receive your personal data in a structured, commonly used, and 
+              machine-readable format and to transmit that data to another controller.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.6 Right to Object (Art. 21 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to object to processing based on legitimate interests (Art. 6(1)(f) GDPR). 
+              We will cease processing unless we demonstrate compelling legitimate grounds that override 
+              your interests.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.7 Right to Withdraw Consent (Art. 7(3) GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              Where processing is based on consent (e.g., marketing emails), you have the right to withdraw 
+              consent at any time. Withdrawal does not affect the lawfulness of processing before withdrawal.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.8 Right to Lodge a Complaint (Art. 77 GDPR)</h3>
+            <p className="text-muted-foreground mb-4">
+              You have the right to lodge a complaint with a supervisory authority. The responsible 
+              supervisory authority for us is:
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Berliner Beauftragte für Datenschutz und Informationsfreiheit</strong>
               <br />
-              <strong>API:</strong> firecrawl.dev
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance – you voluntarily 
-                request the website analysis feature to receive personalized strategic recommendations
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Our legitimate interest in providing comprehensive, data-driven 
-                business recommendations based on your actual website content. A legitimate interest assessment has 
-                been conducted to balance our interests against your rights and freedoms.
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Third-country transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data security:</strong> The website analysis is processed entirely server-side. Your browser never 
-              communicates directly with Firecrawl – all requests are routed through our secure backend infrastructure, 
-              providing an additional layer of privacy protection.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Storage duration:</strong> Website analysis results are stored as part of your analysis history 
-              for as long as you maintain an account. You can delete your account at any time to remove all stored data.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Privacy Policy:</strong>{" "}
-              <a
-                href="https://www.firecrawl.dev/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://www.firecrawl.dev/privacy
-              </a>
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">Purpose and Legal Basis</h3>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Primary legal basis:</strong> Art. 6(1)(b) GDPR – Processing is necessary for the performance of
-                the contract (providing the business tools recommendation feature you requested as a registered user)
-              </li>
-              <li>
-                <strong>Legitimate interest:</strong> Art. 6(1)(f) GDPR – Our legitimate interest in providing
-                innovative, AI-powered business recommendation features to enhance user experience. A legitimate 
-                interest assessment has been conducted to determine that the processing is necessary to provide 
-                comprehensive, research-backed business recommendations, and that your interests are adequately 
-                protected through data minimization, pseudonymization, and server-side processing.
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest 
-              (Art. 6(1)(f) GDPR), you have the right to object at any time on grounds relating to your particular 
-              situation. To exercise this right, please contact us at mail@wealthconomy.com.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              By using the "Get Recommendations" feature as a logged-in user, you are requesting the contractual service
-              of receiving personalized business tool and strategy recommendations based on your stated business context
-              and goals. The processing is necessary to fulfill this service request.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">Technical and Organizational Security Measures</h3>
-            <p className="text-muted-foreground mb-4">
-              We implement the following technical safeguards to protect your data during AI processing:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Data minimization:</strong> Only the minimum necessary business profile data is transmitted to
-                AI providers. We do not transmit identifying information such as your name, email address, or IP address
-                to the AI models.
-              </li>
-              <li>
-                <strong>Encryption in transit:</strong> All data transmissions between our backend, the Lovable AI
-                Gateway, and AI providers are encrypted using industry-standard TLS/SSL encryption protocols.
-              </li>
-              <li>
-                <strong>Server-side processing:</strong> AI requests are routed through our backend infrastructure
-                (Supabase Edge Functions), ensuring that your client IP address is NOT visible to AI providers. Only the
-                backend server's IP address is transmitted.
-              </li>
-              <li>
-                <strong>Pseudonymization:</strong> Your business profile data is processed without direct personal
-                identifiers, making it significantly more difficult for AI providers to link the data to your identity.
-              </li>
-              <li>
-                <strong>Access controls:</strong> Strict authentication requirements ensure only authorized users can
-                access the AI analysis feature.
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Credit System and Usage Quotas</h3>
-            <p className="text-muted-foreground mb-4">
-              To ensure fair use and prevent abuse, the Business Tools Advisor uses a quota system. The available limits depend on your account type:
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Standard Users (Free)</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>2 standard analyses per 24-hour period</li>
-              <li>Deep analysis mode is not available for free users</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Premium Users</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>6 standard analyses + 2 deep analyses per 24-hour period</li>
-              <li>Access to advanced deep analysis features</li>
-              <li>Premium status is managed via the <code className="text-sm">is_premium</code> flag in our database</li>
-            </ul>
-            
-            <p className="text-muted-foreground mb-4">
-              <strong>Credit tracking data processed:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><code className="text-sm">standard_analysis_count</code> – Number of standard analyses</li>
-              <li><code className="text-sm">deep_analysis_count</code> – Number of deep analyses (premium only)</li>
-              <li><code className="text-sm">analysis_window_start</code> – When the current 24-hour period began</li>
-              <li>Last analysis timestamp</li>
-              <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
-              <li>Freemius Customer ID and Subscription ID (optional external reference for premium subscriptions)</li>
-              <li>User ID (to associate credit tracking with your account)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance and fair use 
-              enforcement) and Art. 6(1)(f) GDPR (legitimate interest in preventing abuse and ensuring equitable 
-              service access for all users).
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Premium Subscriptions and Payment Processing (Freemius)</h3>
-            <p className="text-muted-foreground mb-4">
-              We offer premium subscription plans that provide enhanced features and extended usage limits. Payment 
-              processing and subscription management are handled exclusively by our payment partner.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Merchant of Record</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Freemius, Inc.</strong> (251 Little Falls Drive, Wilmington, Delaware 19808, USA) acts as the Merchant of Record for all 
-              premium subscriptions and payment processing. This means Freemius is the seller of record and handles 
-              all payment-related matters including:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Payment processing and transaction handling</li>
-              <li>VAT/tax compliance (including EU VAT)</li>
-              <li>Invoice generation and delivery</li>
-              <li>Refund processing and management</li>
-              <li>Payment data security and PCI compliance</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed by Freemius</h4>
-            <p className="text-muted-foreground mb-4">
-              When you purchase a premium subscription, Freemius processes the following data:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Email address (to identify your account and send purchase confirmations)</li>
-              <li>Name (if provided during checkout)</li>
-              <li>Payment information (credit card details, PayPal account - processed securely by Freemius)</li>
-              <li>Billing address (for tax compliance purposes)</li>
-              <li>Subscription ID and Customer ID (assigned by Freemius)</li>
-              <li>Transaction data (purchase date, amount, subscription status, renewal dates)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Important:</strong> We do NOT store or have access to your payment card details. Payment 
-              information is processed and secured entirely by Freemius using industry-standard PCI DSS compliance.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Webhook Data Processing and Security</h4>
-            <p className="text-muted-foreground mb-4">
-              To activate and manage your premium status, our system receives encrypted webhook notifications from 
-              Freemius about subscription events (e.g., new purchase, renewal, cancellation, refund). These webhooks 
-              contain:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Event ID (unique identifier for each webhook event)</li>
-              <li>Event type (e.g., "purchase.completed", "subscription.activated", "subscription.cancelled")</li>
-              <li>Subscription and Customer IDs (to link the payment to your account)</li>
-              <li>Email address (to identify which user account to update)</li>
-              <li>HMAC-SHA256 signature (cryptographic verification to prevent tampering)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Security measures:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Signature verification:</strong> Every webhook is cryptographically verified using HMAC-SHA256 
-                to ensure it genuinely comes from Freemius and has not been tampered with
-              </li>
-              <li>
-                <strong>Event deduplication:</strong> Webhook Event IDs are stored for 30 days to prevent replay 
-                attacks and ensure each event is processed only once
-              </li>
-              <li>
-                <strong>Encrypted transmission:</strong> All webhook data is transmitted over secure HTTPS connections
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              Based on these webhook events, your premium status in our database is automatically activated, renewed, 
-              or deactivated as appropriate.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored in Our Database</h4>
-            <p className="text-muted-foreground mb-4">
-              After receiving a verified webhook from Freemius, we store the following data in our database:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
-              <li>Freemius Customer ID (external reference linking to your Freemius account)</li>
-              <li>Webhook Event IDs (stored for 30 days for deduplication, then automatically deleted)</li>
-              <li>Event processing timestamps</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Pending Premium Records:</strong> If you purchase a premium subscription before creating an 
-              account on our platform, your premium status is stored in a pending table 
-              (<code className="text-sm">pending_premium</code>) until you register with the same email address 
-              used during checkout. Once you log in for the first time, the premium status is automatically activated.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR</strong> – Processing is necessary for the performance of the contract 
-                (providing premium subscription services you purchased)
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR</strong> – Legitimate interest in secure payment processing, fraud prevention, 
-                and accurate subscription management
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Country Data Transfer</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Service provider:</strong> Freemius, Inc., 251 Little Falls Drive, Wilmington, Delaware 19808, USA
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis for data transfer:</strong> Art. 46(2)(c) GDPR – Standard Contractual Clauses (SCCs)
-            </p>
-            <p className="text-muted-foreground mb-4">
-              Data transfers to Freemius in the United States are safeguarded by Standard Contractual Clauses approved 
-              by the European Commission. Freemius has also concluded a Data Processing Agreement (DPA) pursuant to 
-              Art. 28 GDPR ensuring GDPR-compliant data handling.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              For more information about Freemius's data protection practices, please refer to the Freemius Privacy Policy and Terms of Service, which are made available to you during the checkout process and in your purchase confirmation email.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Storage Duration</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Premium status data:</strong> Stored as long as your subscription is active. After 
-                cancellation or expiration, the premium flag is deactivated but the Freemius Customer ID may be 
-                retained for legal and accounting purposes (e.g., tax compliance, dispute resolution)
-              </li>
-              <li>
-                <strong>Webhook Event IDs:</strong> Automatically deleted after 30 days (security measure for 
-                deduplication)
-              </li>
-              <li>
-                <strong>Pending Premium Records:</strong> Stored until account activation or manual cleanup
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Refunds and Withdrawal Rights</h4>
-            <p className="text-muted-foreground mb-4">
-              As Freemius acts as the Merchant of Record, they are responsible for processing refunds and handling 
-              withdrawal requests in accordance with EU consumer protection laws.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>EU Withdrawal Right:</strong> Under EU law, you have a standard 14-day withdrawal right for 
-              online purchases. The specific refund policy (e.g., 7 days, 14 days, 30 days) depends on the 
-              subscription plan and is displayed during checkout.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>How to request a refund:</strong> Refund requests must be submitted directly to Freemius 
-              through their customer portal or support channels. We do not process refunds ourselves as Freemius is the seller of record.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              Contact information for Freemius is provided in your purchase confirmation email and accessible through your Freemius customer account.
-            </p>
-
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Market Research Feature</h3>
-            <p className="text-muted-foreground mb-4">
-              Our standalone Market Research feature allows you to analyze market data for specific industries. 
-              This feature is powered by Perplexity AI and provides structured market intelligence including 
-              market size, growth metrics, competitor analysis, market trends, marketing channels, and customer demographics.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Industry sector query you enter</li>
-              <li>Selected analysis options (market size, competitors, trends, channels, demographics, growth)</li>
-              <li>Search results and market data from real-time web research</li>
-              <li>Source citations for transparency</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Market research results are stored in your analysis history</li>
-              <li>The <strong>5 most recent</strong> analyses are retained; older entries are automatically deleted</li>
-              <li>All data is permanently deleted upon account deletion</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Usage Limits</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Free users: 1 market research analysis per 24-hour period</li>
-              <li>Premium users: 3 market research analyses per 24-hour period</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Usage tracking data processed:</strong> <code className="text-sm">market_research_count</code>, 
-              <code className="text-sm">market_research_window_start</code>
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">AI Provider</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Perplexity AI, Inc. (San Francisco, CA, USA)
+              Friedrichstr. 219
               <br />
-              <strong>Model:</strong> Sonar Pro
-              <br />
-              <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Protection Measures</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Server-side processing:</strong> Your IP address is NOT disclosed to Perplexity AI; 
-                requests are made from our backend servers
-              </li>
-              <li>
-                <strong>No personal identifiers:</strong> Only industry/business queries are transmitted, 
-                not your name, email, or other identifying information
-              </li>
-              <li>
-                <strong>Encryption:</strong> All data encrypted in transit using TLS/SSL
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
-                (providing the market research feature you requested as a registered user)
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing market intelligence services. 
-                Your interests are protected through data minimization and server-side processing.
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Right to object (Art. 21 GDPR):</strong> Where processing is based on our legitimate interest, 
-              you have the right to object at any time. To exercise this right, contact us at mail@wealthconomy.com.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Data Storage and Retention</h3>
-            <p className="text-muted-foreground mb-4">
-              <strong>AI Provider Retention:</strong> Google retains API request data for a limited period
-              for abuse monitoring and security purposes, after which it is permanently deleted. Your input data is NOT
-              used to train or improve Google's AI models.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Our Database Storage:</strong> Your <strong>10 most recent</strong> analysis entries are stored in our backend database:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>business_tools_history:</strong> Business profile inputs (industry, team size, budget range, 
-                business goals, analysis mode) and generated tool recommendations
-              </li>
-              <li>
-                <strong>user_credits:</strong> Credit tracking data including analysis counters, window start timestamps, 
-                premium status, and subscription information
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Automatic cleanup:</strong> To ensure optimal performance and manage storage, we automatically 
-              retain only your <strong>10 most recent</strong> analysis entries. When you create a new analysis and already 
-              have 10 stored entries, the oldest entry is automatically deleted to maintain this limit.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Your control:</strong> You can:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>View your 10 most recent analyses at any time through your profile page</li>
-              <li>Delete individual analysis entries from your history</li>
-              <li>
-                Delete your entire account, which permanently removes all analysis history, credit tracking data, 
-                and all associated personal data from our production database
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Backup retention:</strong> Deleted data may remain in encrypted backup systems (maintained by our 
-              hosting provider for disaster recovery) for a technically determined period beyond account deletion. During 
-              this period, backup data cannot be accessed or restored for normal operations. We recommend downloading your 
-              data before account deletion if you need to retain it.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Strategy Tracking (My Strategies)</h3>
-            <p className="text-muted-foreground mb-4">
-              Our platform provides a Strategy Tracking feature ("My Strategies") that enables registered users to 
-              activate AI-generated business strategies and monitor their implementation progress over time. This 
-              feature is designed to help users systematically execute recommended strategies by tracking phases, 
-              actions, and milestones.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed for Strategy Tracking</h4>
-            <p className="text-muted-foreground mb-4">
-              When you activate a strategy for tracking, the following personal data is processed and stored:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Strategy Data:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Strategy name (derived from the AI-generated recommendation)</li>
-                  <li>Strategy status (active, paused, or completed)</li>
-                  <li>Original AI-generated result data (stored as structured JSON)</li>
-                  <li>Analysis mode indicator (standard or deep analysis)</li>
-                  <li>Total and completed phase counts</li>
-                  <li>Total and completed action counts</li>
-                  <li>Creation and last update timestamps</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Phase Progress Data:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Phase name and index position</li>
-                  <li>Phase status (not started, in progress, or completed)</li>
-                  <li>Completed actions within each phase (stored as array indices)</li>
-                  <li>Completed milestones within each phase (stored as array indices)</li>
-                  <li>User-entered notes (optional free-text field for personal annotations)</li>
-                  <li>Phase start and completion timestamps</li>
-                </ul>
-              </li>
-              <li>
-                <strong>User Account Association:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>User ID (to associate strategies with your account)</li>
-                  <li>All strategy data is linked exclusively to your authenticated user account</li>
-                </ul>
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Purpose and Legal Basis</h4>
-            <p className="text-muted-foreground mb-4">
-              The processing of strategy tracking data is based on:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR – Contract Performance:</strong> Processing is necessary to provide the 
-                strategy tracking service you requested as a registered user. By activating a strategy, you are 
-                requesting the contractual service of progress tracking and implementation monitoring.
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR – Legitimate Interest:</strong> Our legitimate interest in providing 
-                valuable tools that help users implement and track their business strategies effectively.
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage and Retention</h4>
-            <p className="text-muted-foreground mb-4">
-              Strategy tracking data is stored as long as your account remains active. You retain full control over 
-              your strategy data:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>You may delete individual strategies at any time through the My Strategies interface</li>
-              <li>You may pause, resume, or mark strategies as completed at your discretion</li>
-              <li>All strategy data is permanently deleted when you delete your account</li>
-              <li>
-                Upon account deletion, both the strategy records and all associated phase progress data are 
-                immediately removed from our production database through a secure cascade deletion process
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Security</h4>
-            <p className="text-muted-foreground mb-4">
-              Strategy tracking data is protected by Row-Level Security (RLS) policies in our database, ensuring that:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Only authenticated users can access strategy tracking features</li>
-              <li>Users can only view, modify, and delete their own strategies</li>
-              <li>Phase progress data is accessible only through the associated parent strategy</li>
-              <li>All data access requires valid authentication credentials</li>
-            </ul>
-
-
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails</h3>
-            <p className="text-muted-foreground mb-4">
-              We send emails that are essential for your use of the service. These include:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Account security notifications</li>
-              <li>Payment confirmations and receipts (sent by Freemius)</li>
-              <li>Subscription status updates (sent by Freemius)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Note:</strong> Email verification during registration is not required because we use Google OAuth for authentication, which verifies your email address through Google's secure infrastructure.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal Basis:</strong> These emails are necessary for contract fulfillment (GDPR Art. 6(1)(b))
-              or legitimate security interests (GDPR Art. 6(1)(f)).
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Opt-Out:</strong> You cannot opt out of transactional emails as they are essential for the service.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Administrative Service Updates (Resend)</h3>
-            <p className="text-muted-foreground mb-4">
-              For important service communications, we use Resend (Plus Five Five, Inc., USA) to send:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Terms of Service updates</li>
-              <li>Privacy Policy changes</li>
-              <li>Critical service announcements</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed by Resend</h4>
-            <p className="text-muted-foreground mb-4">
-              When we send service update notifications through Resend, the following data is transmitted:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your email address (recipient address)</li>
-              <li>Your name/username (if included in the notification)</li>
-              <li>Email content (service update notifications)</li>
-              <li>Technical metadata (timestamps, delivery status)</li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">GDPR Compliance and Data Protection</h4>
-            <p className="text-muted-foreground mb-4">
-              Resend is fully GDPR-compliant and provides strong data protection guarantees:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Data Processing Agreement (DPA):</strong> We have a Data Processing Agreement with Resend 
-                that includes Standard Contractual Clauses (SCCs) approved by the European Commission for data transfers 
-                to the United States
-              </li>
-              <li>
-                <strong>EU-US Data Privacy Framework (DPF):</strong> Resend is certified under the EU-US Data Privacy 
-                Framework and the UK Extension to the EU-US DPF (certified March 2025), providing additional safeguards 
-                for transatlantic data transfers
-              </li>
-              <li>
-                <strong>SOC 2 Compliance:</strong> Resend maintains SOC 2 Type II certification, ensuring robust 
-                security controls and data protection measures
-              </li>
-              <li>
-                <strong>Limited data retention:</strong> Resend retains email delivery data only for operational 
-                purposes and deletes it according to their data retention policies
-              </li>
-              <li>
-                <strong>No data sharing:</strong> Resend does not sell or share your data with third parties for 
-                marketing purposes
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis for Processing</h4>
-            <p className="text-muted-foreground mb-4">
-              The processing of your email address and related data for service update notifications is based on:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(c) GDPR – Legal obligation:</strong> For mandatory privacy policy notifications 
-                required under GDPR
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR – Legitimate interest:</strong> We have a legitimate interest in keeping 
-                users informed about significant changes to Terms of Service and service announcements that affect 
-                your rights or service functionality
-              </li>
-            </ul>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Your Rights</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Important note:</strong> Service update emails are sent only when legally required or when 
-              significant changes affect your rights. These cannot be opted out of while maintaining an active account. These are
-              transactional emails required for the service, not marketing communications.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              If you do not wish to receive administrative emails, your only option is to delete your account through 
-              the account settings.
-            </p>
-            
-            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Party Links</h4>
-            <p className="text-muted-foreground mb-4">
-              For more information about Resend's data protection practices:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <a 
-                  href="https://resend.com/legal/privacy-policy" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Resend Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://resend.com/legal/dpa" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Resend Data Processing Agreement (DPA)
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://resend.com/security/gdpr" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Resend GDPR Compliance
-                </a>
-              </li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Hosting and Data Transfers</h2>
-            <p className="text-muted-foreground mb-4">
-              Our website is hosted by Lovable Labs Incorporated (lovable.dev). This may involve the transfer of data to
-              servers located outside the European Union (e.g., in the United States). The transfer is based on Standard
-              Contractual Clauses (SCCs) approved by the European Commission, which ensure an adequate level of data
-              protection.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              Lovable.dev engages third-party sub-processors to operate its infrastructure, including Supabase (backend
-              database and authentication services), Cloudflare (content delivery network), and others. These
-              sub-processors are bound by GDPR-compliant agreements. A current list is maintained at
-              https://lovable.dev/privacy. Data transfers to third countries (such as the United States) are safeguarded
-              by Standard Contractual Clauses (SCCs).
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data Processing Agreement (DPA):</strong> We have concluded a Data Processing Agreement pursuant
-              to Art. 28 GDPR with Lovable Labs Incorporated, which covers all data processing activities including
-              those performed by Lovable's sub-processors, to ensure GDPR-compliant data handling.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              More information:{" "}
-              <a
-                href="https://lovable.dev/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://lovable.dev/privacy
-              </a>
-            </p>
-            <p className="text-muted-foreground mb-4">
-              SSL/TLS encryption is used to secure communication and protect transmitted data. You can recognize an
-              encrypted connection by "https://" and the padlock symbol in your browser.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Contact</h2>
-            <p className="text-muted-foreground mb-4">
-              If you contact us (e.g., by email), we process the personal data you provide solely to respond to your
-              inquiry. The processing is based on our legitimate interest (Art. 6(1)(f) GDPR) in handling such requests.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              We use IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany, as our email provider for general 
-              correspondence. Data are stored on servers within the European Union, and no data are transferred to 
-              third countries. A Data Processing Agreement pursuant to Art. 28 GDPR has been concluded with IONOS to 
-              ensure GDPR-compliant data handling.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              Once your request has been completed, your data will be deleted unless legal obligations require
-              retention.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Contact information:</strong>
-              <br />
-              Muhammed Kagan Yilmaz
-              <br />
-              Aroser Allee 50, 13407 Berlin, Germany
-              <br />
-              Email: mail@wealthconomy.com
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. External Links</h2>
-            <p className="text-muted-foreground mb-4">
-              Our website may contain links to external websites or social media platforms such as Twitter (X). When you
-              click on these links, you will be redirected to the respective external platform. Please note that we have
-              no control over how these third-party websites process your personal data.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data</h2>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Contact data (email address, if you contact us)</li>
-              <li>User account data (email, user ID, timestamps)</li>
-              <li>Authentication data (hashed passwords, session tokens, JWT tokens)</li>
-              <li>
-                Email hash data (SHA-256 cryptographic hash of deleted account email addresses, stored temporarily 
-                for up to 24 hours to prevent abuse and accidental re-registration)
-              </li>
-              <li>
-                Usage data (IP address, browser type, OS, referrer URL) – stored by our hosting provider Lovable.dev for
-                technical purposes
-              </li>
-              <li>Technical connection data (server logs, encrypted SSL/TLS connections)</li>
-              <li>
-                Business profile data for Business Tools Advisor (industry sector, team size, budget range, business 
-                goals and objectives)
-              </li>
-              <li>
-                AI recommendation requests and responses:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Business tool recommendations, software suggestions, business strategies (Business Tools Advisor)</li>
-                  <li>Complete recommendation history</li>
-                </ul>
-              </li>
-              <li>
-                Market research data:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Industry queries submitted</li>
-                  <li>Analysis options selected (market size, competitors, trends, channels, demographics, growth)</li>
-                  <li>Market research results (market size, competitors, trends, etc.)</li>
-                  <li>Source citations</li>
-                  <li>Research history (5 most recent analyses)</li>
-                  <li>Usage tracking (<code className="text-sm">market_research_count</code>, <code className="text-sm">market_research_window_start</code>)</li>
-                </ul>
-              </li>
-              <li>
-                Credit tracking data:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Standard analysis count (number of standard-depth analyses)</li>
-                  <li>Deep analysis count (number of premium-depth analyses)</li>
-                  <li>Analysis window start timestamp (when the current 24-hour period began)</li>
-                  <li>Last analysis timestamp (most recent analysis request)</li>
-                  <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
-                </ul>
-              </li>
-              <li>
-                Premium subscription data:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Premium status flag (<code className="text-sm">is_premium</code> boolean)</li>
-                  <li>Freemius Customer ID (external reference for premium subscriptions)</li>
-                  <li>Standard and deep analysis counts (for quota management)</li>
-                  <li>Analysis window tracking data</li>
-                </ul>
-              </li>
-              <li>
-                Webhook processing data (for premium subscriptions):
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Event IDs (stored for 30 days for deduplication and security)</li>
-                  <li>Event types (e.g., purchase, renewal, cancellation, refund)</li>
-                  <li>Processing timestamps</li>
-                  <li>HMAC-SHA256 signatures (for cryptographic verification)</li>
-                </ul>
-              </li>
-              <li>
-                Strategy tracking data (My Strategies feature):
-                <ul className="list-disc pl-6 mt-2">
-                  <li>Active strategies (name, status, analysis mode, completion counts)</li>
-                  <li>Original AI-generated strategy results (stored as structured JSON)</li>
-                  <li>Phase progress (phase names, status, completed actions, completed milestones)</li>
-                  <li>User-entered notes (optional personal annotations per phase)</li>
-                  <li>Timestamps (strategy creation, updates, phase start/completion dates)</li>
-                </ul>
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4 mt-4">
-              <strong>Important Note on IP Addresses and AI Processing:</strong> When you use the AI-powered features 
-              (Business Tools Advisor), your business profile data is transmitted server-side
-              through our backend infrastructure (Supabase Edge Functions) to the Lovable AI Gateway.{" "}
-              <strong>Your client IP address is generally not disclosed to Google AI or other AI providers</strong>. 
-              Requests to AI services are made from our servers, so only the backend server's IP address is visible 
-              to these providers. This server-side architecture protects your privacy by ensuring that the AI 
-              providers cannot directly identify or track individual users by their IP addresses.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Hosting provider:</strong> Lovable Labs Incorporated (lovable.dev) – hosts website, manages
-                infrastructure, and processes technical connection data (IP addresses, server logs)
-              </li>
-              <li>
-                <strong>Backend services:</strong> Operated by Lovable.dev and their GDPR-compliant sub-processors
-                including Supabase (database, authentication, serverless functions, realtime subscriptions)
-              </li>
-              <li>
-                <strong>AI service provider (for Business Tools Advisor):</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>
-                    Lovable AI Gateway (operated by Lovable Labs Incorporated, Walnut, CA, USA) – acts as data processor
-                    and intermediary service that routes AI requests to:
-                  </li>
-                  <li>
-                    Google LLC (Mountain View, CA, USA) – Gemini 2.5 models (Pro, Flash, Flash Lite)
-                    <br />
-                    <em className="text-sm">
-                      Third-country transfer basis: Art. 45 GDPR (EU-U.S. Data Privacy Framework adequacy decision)
-                    </em>
-                  </li>
-                </ul>
-                <p className="mt-2 text-sm">
-                  <strong>Data minimization and security:</strong> AI requests are processed through our backend 
-                  (Supabase Edge Functions). We do not transmit direct personal identifiers such as your name or 
-                  email address to Google AI. Your client IP address is generally not disclosed to these services, 
-                  as requests are made from our backend servers. All transmissions are encrypted using TLS/SSL protocols.
-                </p>
-              </li>
-              <li>
-                <strong>Market research provider (for Strategy Resource Links and Market Research Feature):</strong> Perplexity AI, Inc. 
-                (San Francisco, CA, USA)
-                <ul className="list-disc pl-6 mt-2">
-                  <li>
-                    Provides real-time web search for strategy resource URLs and standalone market research feature
-                  </li>
-                  <li>
-                    <strong>Data transmitted:</strong> Business context queries only (industry, goals, budget range). 
-                    We do not transmit direct personal identifiers such as your name or email address. Your client 
-                    IP address is generally not disclosed to Perplexity AI.
-                  </li>
-                  <li>
-                    <strong>Models:</strong> Sonar (Standard) / Sonar Pro (Deep Analysis)
-                  </li>
-                  <li>
-                    <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
-                  </li>
-                  <li>
-                    <strong>Privacy Policy:</strong>{" "}
-                    <a
-                      href="https://www.perplexity.ai/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      https://www.perplexity.ai/privacy
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <strong>Payment processor and Merchant of Record:</strong> Freemius, Inc. (Wilmington, Delaware, USA)
-                <ul className="list-disc pl-6 mt-2">
-                  <li>
-                    Processes payment transactions, manages premium subscriptions, handles refunds
-                  </li>
-                  <li>
-                    Acts as seller of record for all premium purchases
-                  </li>
-                  <li>
-                    Sends webhook notifications to activate/deactivate premium status
-                  </li>
-                  <li>
-                    <strong>Data transferred:</strong> Email address, name (if provided), payment information, 
-                    subscription/customer IDs, transaction data
-                  </li>
-                  <li>
-                    <strong>Third-country transfer basis:</strong> Art. 46(2)(c) GDPR (Standard Contractual Clauses)
-                  </li>
-                  <li>
-                    <strong>DPA:</strong> Data Processing Agreement concluded pursuant to Art. 28 GDPR
-                  </li>
-                  <li>
-                    <strong>Privacy Policy:</strong> Available during checkout and in your purchase confirmation email
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <strong>Administrative email service provider:</strong> Resend (Plus Five Five, Inc., USA) – 
-                transactional and administrative email delivery (account notifications, security alerts, password 
-                resets). Certified under EU-US Data Privacy Framework, GDPR-compliant with DPA and Standard 
-                Contractual Clauses
-              </li>
-              <li>
-                <strong>Email providers:</strong>
-                <ul className="list-disc pl-6 mt-2">
-                  <li>IONOS SE (Montabaur, Germany) – general correspondence</li>
-                  <li>Resend (Plus Five Five Inc., USA) – service update notifications</li>
-                </ul>
-              </li>
-              <li>
-                <strong>Authentication email provider:</strong> Supabase Auth (Supabase Inc., USA) – transactional 
-                emails (as part of Lovable Cloud hosting)
-              </li>
-              <li>
-                <strong>Public authorities:</strong> Only if legally required by applicable law
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4 mt-4">
-              All third-party processors are bound by GDPR-compliant Data Processing Agreements (DPAs) or Standard
-              Contractual Clauses (SCCs) where data is transferred to third countries outside the European Economic
-              Area.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Data</h2>
-            <p className="text-muted-foreground mb-4">
-              You are generally neither legally nor contractually obliged to provide personal data. Exception: Without
-              the provision of technical data (e.g., your IP address), the website cannot be displayed (based on our
-              legitimate interest according to Art. 6(1)(f) GDPR). Furthermore, to use our registration-required AI 
-              feature (Business Tools Advisor), the provision of your email address and your business profile data 
-              is mandatory, as this processing is necessary for the performance of the contract (Art. 6(1)(b) GDPR). 
-              We cannot otherwise fulfill the contractually agreed-upon service.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making / Profiling</h2>
-            <p className="text-muted-foreground mb-4">
-              <strong>AI-Powered Business Tools Advisor:</strong> Our AI-powered feature 
-              (Business Tools Advisor) uses automated processing to generate educational 
-              business recommendations and tool suggestions. However, this does NOT constitute
-              automated decision-making within the meaning of Art. 22 GDPR because:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The results are purely informational and educational in nature</li>
-              <li>No legal effects or similarly significant effects arise for you</li>
-              <li>You retain full control over whether and how to use the suggestions</li>
-              <li>No binding decisions are made without human intervention</li>
-              <li>The recommendations serve only as guidance and do not determine any outcomes automatically</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Your right to object:</strong> You may object to the use of the AI features at any time by 
-              simply not using them or by deleting your account.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>No other automated decisions:</strong> Apart from the AI features described above, we do not 
-              engage in automated decision-making or profiling pursuant to Art. 22 GDPR.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Data Security</h2>
-            <p className="text-muted-foreground mb-4">
-              We implement technical and organizational measures to protect your data, including encryption (SSL/TLS),
-              restricted server access, and regular security reviews by our hosting provider.
-            </p>
-            
-            <h3 className="text-xl font-semibold mb-3 mt-6">14.1 Storage Duration for Specific Data Categories</h3>
-            <p className="text-muted-foreground mb-4">
-              Different categories of personal data are stored for different periods depending on their purpose and 
-              legal requirements:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Profile and Account Data:</strong> Stored as long as your account remains active. Permanently 
-                deleted when you delete your account (subject to backup retention periods as described in Section 4.9).
-              </li>
-              <li>
-                <strong>Analysis History:</strong> Only your <strong>10 most recent</strong> business tools analyses are 
-                retained. Older entries are automatically deleted when new analyses are created. You can also manually 
-                delete individual entries at any time.
-              </li>
-              <li>
-                <strong>User Credits and Quota Data:</strong> Analysis counts, window start timestamps, and last 
-                analysis timestamps are stored as long as your account is active. Deleted when you delete your account.
-              </li>
-              <li>
-                <strong>Premium Status:</strong> Premium status flag and Freemius Customer ID are stored as long as 
-                your subscription is active. After subscription expiration or cancellation, the premium flag is 
-                deactivated, but the Customer ID may be retained for legal and accounting purposes (e.g., tax 
-                compliance, dispute resolution) in accordance with applicable statutory retention periods.
-              </li>
-              <li>
-                <strong>Webhook Event IDs:</strong> Event IDs used for webhook deduplication are automatically deleted 
-                after 30 days. This is a security measure to prevent replay attacks while minimizing data storage.
-              </li>
-              <li>
-                <strong>Pending Premium Records:</strong> If you purchase a premium subscription before creating an 
-                account, your premium status is stored in the <code className="text-sm">pending_premium</code> table 
-                until you register and activate your account. These records may be manually cleaned up periodically if 
-                unclaimed.
-              </li>
-              <li>
-                <strong>Email Hashes (Account Deletion):</strong> SHA-256 cryptographic hashes of deleted account 
-                email addresses are stored for up to 24 hours to prevent abuse and accidental re-registration. 
-                Automatically deleted after this period.
-              </li>
-              <li>
-                <strong>Server Log Files:</strong> Technical log files (IP addresses, browser data, access times) are 
-                stored only for as long as necessary to ensure website stability and security, then automatically 
-                deleted or anonymized by our hosting provider.
-              </li>
-              <li>
-                <strong>Contact Correspondence:</strong> Email correspondence with our support is stored only as long 
-                as necessary to handle your inquiry, then deleted unless legal retention obligations apply.
-              </li>
-              <li>
-                <strong>Strategy Tracking Data:</strong> Active strategies and phase progress data are stored as long 
-                as your account remains active. You may delete individual strategies at any time through the My 
-                Strategies interface. All strategy data is permanently deleted when you delete your account.
-              </li>
-              <li>
-                <strong>Market Research History:</strong> Only your <strong>5 most recent</strong> market research 
-                analyses are retained. Older entries are automatically deleted when new analyses are created. All 
-                market research data is permanently deleted when you delete your account.
-              </li>
-              <li>
-                <strong>Registration Rate Limiting Data:</strong> IP address hashes and email address 
-                hashes used for registration rate limiting are automatically deleted after 2 hours via 
-                an automated cleanup process.
-              </li>
-              <li>
-                <strong>Password Data:</strong> Hashed passwords are stored as long as your account 
-                remains active. Upon account deletion, password data is permanently removed.
-              </li>
-              <li>
-                <strong>Password Reset Timestamps:</strong> The timestamp of your last password reset 
-                request is stored to enforce the 1-hour rate limit. This data is deleted when you 
-                delete your account.
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal Retention Obligations:</strong> In certain cases, we may be legally required to retain 
-              specific data for longer periods (e.g., tax records, accounting data, payment records). When applicable 
-              statutory retention periods apply, we will retain the necessary data only for the legally required 
-              duration and then permanently delete it.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Your Rights</h2>
-            <p className="text-muted-foreground mb-4">You have the following rights under the GDPR:</p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Right of access (Art. 15 GDPR)</strong> – You have the right to obtain confirmation as to
-                whether personal data concerning you is being processed and, if so, to access that data.
-              </li>
-              <li>
-                <strong>Right to rectification (Art. 16 GDPR)</strong> – You have the right to obtain the rectification
-                of inaccurate personal data and to have incomplete personal data completed.
-              </li>
-              <li>
-                <strong>Right to erasure / "Right to be forgotten" (Art. 17 GDPR)</strong> – You may delete your account
-                and all associated personal data at any time via your profile page. Please note:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>
-                    Copies in automated backup systems (maintained for disaster recovery) are retained for a 
-                    technically determined period and then permanently deleted. We do not have direct control over the 
-                    backup infrastructure or retention periods, which are determined by our hosting provider's 
-                    technical capabilities.
-                  </li>
-                  <li>
-                    We recommend downloading your data before deletion if you need to retain it.
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <strong>Right to restriction of processing (Art. 18 GDPR)</strong> – You have the right to request the
-                restriction of processing under certain circumstances.
-              </li>
-              <li>
-                <strong>Right to data portability (Art. 20 GDPR)</strong> – You have the right to receive your personal
-                data in a structured, commonly used, and machine-readable format.
-              </li>
-              <li>
-                <strong>Right to object (Art. 21 GDPR)</strong> – You have the right to object to the processing of your
-                personal data on grounds relating to your particular situation.
-              </li>
-              <li>
-                <strong>Right to lodge a complaint with a supervisory authority (Art. 77 GDPR)</strong> – You have the
-                right to file a complaint with a data protection supervisory authority.
-              </li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              You may withdraw any consent you have given for the processing of your personal data at any time with
-              future effect. The withdrawal does not affect the lawfulness of the processing carried out before the
-              withdrawal.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              You may file a complaint, for example, with:
-              <br />
-              <strong>Berlin Commissioner for Data Protection and Freedom of Information</strong>
-              <br />
-              Alt-Moabit 59–61
-              <br />
-              10555 Berlin, Germany
+              10969 Berlin, Germany
               <br />
               Email: mailbox@datenschutz-berlin.de
               <br />
               Website:{" "}
-              <a
-                href="https://www.datenschutz-berlin.de"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://www.datenschutz-berlin.de
+              <a href="https://www.datenschutz-berlin.de" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                www.datenschutz-berlin.de
               </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">16.9 Exercising Your Rights</h3>
+            <p className="text-muted-foreground mb-4">
+              To exercise any of these rights, please contact us at:
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Email:</strong> mail@wealthconomy.com
+            </p>
+            <p className="text-muted-foreground mb-4">
+              We will respond to your request within one month. In complex cases, this period may be 
+              extended by two additional months, in which case we will inform you of the extension.
             </p>
           </section>
 
-
+          {/* Section 17: Changes to Privacy Policy */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
-              We may update this Privacy Policy from time to time to comply with legal requirements or reflect changes
-              in our services. The latest version is always available on this website.
+              We may update this Privacy Policy from time to time to reflect changes in our services, 
+              legal requirements, or operational practices. Changes will be indicated by updating the 
+              "Effective Date" and version number at the top of this document.
             </p>
             <p className="text-muted-foreground mb-4">
-              <strong>Last updated:</strong> January 12, 2026 (Version 3.4)
+              For significant changes that materially affect how we process your personal data, we may 
+              also notify you via email or through a prominent notice on our website.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              We encourage you to review this Privacy Policy periodically to stay informed about our 
+              data practices.
+            </p>
+          </section>
+
+          {/* Version History */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Version History</h2>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Removed obsolete features (Business Tools Advisor, Market Research, Ads Advisor). Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>
+              <li><strong>Version 3.4 (January 12, 2026):</strong> Updated credit limits and registration security.</li>
+              <li><strong>Version 3.0 (December 19, 2025):</strong> Added Business Ideas Community documentation.</li>
+              <li><strong>Version 2.9 (December 19, 2025):</strong> Added Firecrawl website analysis documentation.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8 border-t border-border pt-8">
+            <p className="text-muted-foreground text-center">
+              Last updated: January 17, 2026
+              <br />
+              If you have any questions about this Privacy Policy, please contact us at{" "}
+              <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
+                mail@wealthconomy.com
+              </a>
             </p>
           </section>
         </article>

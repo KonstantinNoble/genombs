@@ -15,6 +15,7 @@ import { ValidationOutput } from "@/components/validation/ValidationOutput";
 import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
 import { ExperimentSetupDialog, ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
+import { ExperimentWorkflow } from "@/components/experiment/ExperimentWorkflow";
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
@@ -61,6 +62,7 @@ export default function ValidationPlatform() {
   const [limitIsPremium, setLimitIsPremium] = useState(false);
   
   const [showExperimentDialog, setShowExperimentDialog] = useState(false);
+  const [experimentKey, setExperimentKey] = useState(0);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -207,6 +209,8 @@ export default function ValidationPlatform() {
     const experiment = await createExperiment(currentValidationId, data);
     if (experiment) {
       setShowExperimentDialog(false);
+      // Trigger experiment workflow to reload
+      setExperimentKey(prev => prev + 1);
       toast({
         title: "Experiment Started!",
         description: `Your ${data.durationDays}-day experiment "${data.title}" has begun.`,
@@ -337,7 +341,7 @@ export default function ValidationPlatform() {
             )}
 
             {displayedResult && !isValidating && (
-              <div ref={resultRef} className="animate-fade-in">
+              <div ref={resultRef} className="animate-fade-in space-y-6">
                 <Card className="border-primary/20 shadow-elegant">
                   <CardHeader>
                     <CardTitle>Validation Results</CardTitle>
@@ -351,6 +355,14 @@ export default function ValidationPlatform() {
                     />
                   </CardContent>
                 </Card>
+
+                {/* Experiment Workflow - appears below validation results */}
+                {currentValidationId && (
+                  <ExperimentWorkflow 
+                    key={experimentKey} 
+                    validationId={currentValidationId} 
+                  />
+                )}
               </div>
             )}
           </main>

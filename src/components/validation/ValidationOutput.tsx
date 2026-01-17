@@ -3,15 +3,18 @@ import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
 import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
+import { StartExperimentButton } from "@/components/experiment/StartExperimentButton";
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
 import { Clock, ArrowRight } from "lucide-react";
 
 interface ValidationOutputProps {
   result: ValidationResult;
+  validationId?: string;
+  onStartExperiment?: () => void;
 }
 
-export function ValidationOutput({ result }: ValidationOutputProps) {
+export function ValidationOutput({ result, validationId, onStartExperiment }: ValidationOutputProps) {
   const {
     gptResponse,
     geminiProResponse,
@@ -24,6 +27,8 @@ export function ValidationOutput({ result }: ValidationOutputProps) {
     synthesisReasoning,
     processingTimeMs
   } = result;
+
+  const hasTopActions = finalRecommendation.topActions && finalRecommendation.topActions.length > 0;
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -44,14 +49,14 @@ export function ValidationOutput({ result }: ValidationOutputProps) {
       />
 
       {/* Top Actions */}
-      {finalRecommendation.topActions && finalRecommendation.topActions.length > 0 && (
+      {hasTopActions && (
         <div className="p-6 rounded-xl bg-primary/5 border border-primary/20">
           <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
             <ArrowRight className="h-5 w-5 text-primary" />
             Top Priority Actions
           </h3>
           <ol className="space-y-3">
-            {finalRecommendation.topActions.map((action, i) => (
+            {finalRecommendation.topActions!.map((action, i) => (
               <li key={i} className="flex items-start gap-4 text-base">
                 <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
                   {i + 1}
@@ -60,6 +65,13 @@ export function ValidationOutput({ result }: ValidationOutputProps) {
               </li>
             ))}
           </ol>
+
+          {/* Start Experiment Button */}
+          {validationId && onStartExperiment && (
+            <div className="mt-6 pt-4 border-t border-primary/20">
+              <StartExperimentButton onClick={onStartExperiment} />
+            </div>
+          )}
         </div>
       )}
 

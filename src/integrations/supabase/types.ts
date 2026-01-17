@@ -125,6 +125,156 @@ export type Database = {
         }
         Relationships: []
       }
+      experiment_checkpoints: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          due_date: string
+          experiment_id: string
+          id: string
+          metrics_data: Json | null
+          order_index: number
+          reflection: string | null
+          title: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_date: string
+          experiment_id: string
+          id?: string
+          metrics_data?: Json | null
+          order_index?: number
+          reflection?: string | null
+          title: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string
+          experiment_id?: string
+          id?: string
+          metrics_data?: Json | null
+          order_index?: number
+          reflection?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiment_checkpoints_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiment_tasks: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          experiment_id: string
+          id: string
+          notes: string | null
+          order_index: number
+          title: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          experiment_id: string
+          id?: string
+          notes?: string | null
+          order_index?: number
+          title: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          experiment_id?: string
+          id?: string
+          notes?: string | null
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiment_tasks_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiments: {
+        Row: {
+          created_at: string
+          duration_days: number
+          end_date: string
+          final_review: Json | null
+          hypothesis: string
+          id: string
+          start_date: string
+          status: string
+          success_metrics: Json
+          title: string
+          updated_at: string
+          user_id: string
+          validation_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_days: number
+          end_date: string
+          final_review?: Json | null
+          hypothesis: string
+          id?: string
+          start_date?: string
+          status?: string
+          success_metrics?: Json
+          title: string
+          updated_at?: string
+          user_id: string
+          validation_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_days?: number
+          end_date?: string
+          final_review?: Json | null
+          hypothesis?: string
+          id?: string
+          start_date?: string
+          status?: string
+          success_metrics?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+          validation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiments_validation_id_fkey"
+            columns: ["validation_id"]
+            isOneToOne: false
+            referencedRelation: "validation_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pending_premium: {
         Row: {
           auto_renew: boolean | null

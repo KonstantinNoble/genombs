@@ -66,6 +66,7 @@ export interface ValidationResult {
   overallConfidence: number;
   synthesisReasoning: string;
   processingTimeMs: number;
+  validationId?: string;
 }
 
 export type ValidationStatus = 
@@ -265,7 +266,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         },
         overallConfidence: evalData.overallConfidence || 50,
         synthesisReasoning: evalData.synthesisReasoning || '',
-        processingTimeMs: evalData.processingTimeMs || 0
+        processingTimeMs: evalData.processingTimeMs || 0,
+        validationId: evalData.validationId || undefined
       };
 
       setResult(finalResult);

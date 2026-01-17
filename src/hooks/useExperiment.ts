@@ -291,6 +291,21 @@ export function useExperiment() {
     }
   };
 
+  const archiveExperiment = async (experimentId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from("experiments")
+        .update({ status: "abandoned" })
+        .eq("id", experimentId);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error("Error archiving experiment:", error);
+      return false;
+    }
+  };
+
   return {
     isLoading,
     createExperiment,
@@ -301,6 +316,7 @@ export function useExperiment() {
     updateExperimentDecision,
     completeExperiment,
     abandonExperiment,
+    archiveExperiment,
   };
 }
 

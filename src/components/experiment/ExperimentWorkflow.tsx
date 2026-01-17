@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ActionCard } from "./ActionCard";
 import { Scorecard } from "./Scorecard";
 import { GoNoGoDecision } from "./GoNoGoDecision";
+import { ExperimentSetupDialog } from "./ExperimentSetupDialog";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useToast } from "@/hooks/use-toast";
 import { Target, Loader2 } from "lucide-react";
@@ -11,6 +13,7 @@ import type { Json } from "@/integrations/supabase/types";
 
 interface ExperimentWorkflowProps {
   validationId: string;
+  onNewValidation?: () => void;
 }
 
 interface ScoreMetric {
@@ -19,7 +22,8 @@ interface ScoreMetric {
   score: number;
 }
 
-export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
+export function ExperimentWorkflow({ validationId, onNewValidation }: ExperimentWorkflowProps) {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const {
     getActiveExperiment,
@@ -27,6 +31,8 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     updateTask,
     updateExperimentDecision,
     updateCheckpoint,
+    archiveExperiment,
+    createExperiment,
   } = useExperiment();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +40,7 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
   const [tasks, setTasks] = useState<any[]>([]);
   const [checkpoints, setCheckpoints] = useState<any[]>([]);
   const [scoreMetrics, setScoreMetrics] = useState<ScoreMetric[]>([]);
+  const [showSetupDialog, setShowSetupDialog] = useState(false);
 
   useEffect(() => {
     loadExperiment();
@@ -139,6 +146,52 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     }
   };
 
+  // Follow-up action handlers
+  const handleStartNewExperiment = () => {
+    setShowSetupDialog(true);
+  };
+
+  const handleMarkAsDone = async () => {
+    if (!experiment) return;
+    const success = await archiveExperiment(experiment.id);
+    if (success) {
+      setExperiment(null);
+      toast({
+        title: "Marked as Done",
+        description: "The decision block has been completed and archived.",
+      });
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!experiment) return;
+    const success = await archiveExperiment(experiment.id);
+    if (success) {
+      setExperiment(null);
+      toast({
+        title: "Archived",
+        description: "The decision block has been archived.",
+      });
+    }
+  };
+
+  const handleNewValidation = () => {
+    if (onNewValidation) {
+      onNewValidation();
+    } else {
+      // Scroll to top where ValidationInput is
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleCreateExperiment = async (data: any) => {
+    const newExperiment = await createExperiment(validationId, data);
+    if (newExperiment) {
+      await loadExperiment();
+      setShowSetupDialog(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="border-primary/20">
@@ -225,12 +278,27 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
           <GoNoGoDecision
             experimentStatus={experiment.status}
             finalDecision={experiment.final_decision}
+            decisionRationale={experiment.decision_rationale}
             overallScore={calculateOverallScore()}
             onDecision={handleDecision}
+            onStartNewExperiment={handleStartNewExperiment}
+            onMarkAsDone={handleMarkAsDone}
+            onArchive={handleArchive}
+            onNewValidation={handleNewValidation}
             disabled={!isActive}
           />
         </div>
       </CardContent>
+
+      {/* New Experiment Setup Dialog */}
+      <ExperimentSetupDialog
+        open={showSetupDialog}
+        onOpenChange={setShowSetupDialog}
+        onSubmit={handleCreateExperiment}
+        hypothesis={experiment?.hypothesis || ""}
+        topActions={[]}
+        isPremium={true}
+      />
     </Card>
   );
 }

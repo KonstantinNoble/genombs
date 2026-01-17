@@ -107,7 +107,7 @@ export function GoNoGoDecision({
           placeholder="Why are you making this decision?"
           className="min-h-[80px] resize-none text-base"
           disabled={disabled}
-          maxLength={500}
+          maxLength={300}
         />
       )}
 

@@ -124,7 +124,7 @@ export function ExperimentSetupDialog({
               value={decisionQuestion}
               onChange={(e) => setDecisionQuestion(e.target.value)}
               placeholder="E.g., Should I pivot to enterprise market?"
-              maxLength={150}
+              maxLength={300}
             />
             <p className="text-xs text-muted-foreground">
               What business decision are you trying to make?
@@ -140,7 +140,7 @@ export function ExperimentSetupDialog({
               onChange={(e) => setEditedHypothesis(e.target.value)}
               placeholder="If I do X, then Y will happen..."
               className="min-h-[80px] resize-none"
-              maxLength={500}
+              maxLength={300}
             />
             <p className="text-xs text-muted-foreground">
               What outcome do you expect if you proceed?

@@ -33,31 +33,31 @@ export function GoNoGoDecision({
       <div className="space-y-4">
         {/* Prominent Decision Status */}
         <div 
-          className={`flex items-center gap-3 p-4 rounded-lg ${
+          className={`flex items-center gap-3 p-5 rounded-xl ${
             isGo ? "bg-primary/10" : "bg-destructive/10"
           }`}
         >
           <Badge 
             variant={isGo ? "default" : "destructive"}
-            className="text-sm px-3 py-1"
+            className="text-base px-4 py-1.5"
           >
             {isGo ? "GO" : "NO-GO"}
           </Badge>
-          <span className={`font-medium ${isGo ? "text-primary" : "text-destructive"}`}>
+          <span className={`text-base font-semibold ${isGo ? "text-primary" : "text-destructive"}`}>
             {isGo ? "Proceed with this strategy" : "Strategy not pursued"}
           </span>
         </div>
 
         {/* Decision Rationale (if provided) */}
         {decisionRationale && (
-          <div className="flex items-start gap-2 text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
+          <div className="flex items-start gap-2 text-base text-muted-foreground bg-muted/30 rounded-xl p-4">
             <p className="italic">"{decisionRationale}"</p>
           </div>
         )}
 
         {/* Single Completed Button */}
         <Button 
-          size="sm" 
+          size="default" 
           onClick={onComplete}
           className="w-full"
         >
@@ -80,13 +80,13 @@ export function GoNoGoDecision({
   const recommendation = getRecommendation();
 
   return (
-    <div className="space-y-3">
-      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+    <div className="space-y-4">
+      <div className="text-base text-muted-foreground font-semibold uppercase tracking-wide">
         Your Decision
       </div>
 
       {overallScore > 0 && (
-        <div className={`text-sm ${recommendation.color}`}>
+        <div className={`text-base font-medium ${recommendation.color}`}>
           {recommendation.text}
         </div>
       )}
@@ -94,7 +94,7 @@ export function GoNoGoDecision({
       {/* Optional Rationale Toggle */}
       <button
         onClick={() => setShowRationale(!showRationale)}
-        className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+        className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
       >
         <span>{showRationale ? "−" : "+"}</span>
         Add decision rationale (optional)
@@ -105,18 +105,18 @@ export function GoNoGoDecision({
           value={rationale}
           onChange={(e) => setRationale(e.target.value)}
           placeholder="Why are you making this decision?"
-          className="min-h-[60px] resize-none text-sm"
+          className="min-h-[80px] resize-none text-base"
           disabled={disabled}
           maxLength={500}
         />
       )}
 
       {/* Decision Buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <Button
           onClick={() => onDecision("go", rationale)}
           disabled={disabled}
-          size="sm"
+          size="default"
           className="flex-1 bg-primary hover:bg-primary/90"
         >
           GO
@@ -125,7 +125,7 @@ export function GoNoGoDecision({
           variant="outline"
           onClick={() => onDecision("no_go", rationale)}
           disabled={disabled}
-          size="sm"
+          size="default"
           className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
         >
           NO-GO

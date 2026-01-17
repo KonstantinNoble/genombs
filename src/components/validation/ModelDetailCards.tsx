@@ -103,12 +103,12 @@ export function ModelDetailCards({
   geminiFlashResponse
 }: ModelDetailCardsProps) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-foreground">
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-foreground">
         Individual Model Responses
       </h3>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <ModelCard
           response={gptResponse}
           colorClass="bg-blue-500/20 text-blue-600"

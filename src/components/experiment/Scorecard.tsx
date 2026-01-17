@@ -47,24 +47,24 @@ export function Scorecard({ metrics, onUpdate, disabled }: ScorecardProps) {
 
   if (localMetrics.length === 0) {
     return (
-      <div className="text-center py-3 text-muted-foreground text-sm">
+      <div className="text-center py-4 text-muted-foreground text-base">
         No scoring criteria defined.
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {localMetrics.map((metric, index) => (
-        <div key={metric.name} className="space-y-1.5">
+        <div key={metric.name} className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{metric.name}</span>
-            <span className="text-sm font-medium tabular-nums">
+            <span className="text-base text-foreground">{metric.name}</span>
+            <span className="text-base font-semibold tabular-nums">
               {metric.score}/10
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all ${getScoreColor(metric.score)}`}
                 style={{ width: `${metric.score * 10}%` }}
@@ -77,18 +77,18 @@ export function Scorecard({ metrics, onUpdate, disabled }: ScorecardProps) {
               max={10}
               step={1}
               disabled={disabled}
-              className="w-24"
+              className="w-28"
             />
           </div>
         </div>
       ))}
 
       {/* Overall Score */}
-      <div className="pt-3 border-t border-border">
+      <div className="pt-4 border-t border-border">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Overall Score</span>
+          <span className="text-base font-semibold">Overall Score</span>
           <span
-            className={`text-xl font-bold tabular-nums ${
+            className={`text-2xl font-bold tabular-nums ${
               overallScore >= 7
                 ? "text-primary"
                 : overallScore >= 4

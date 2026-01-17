@@ -171,38 +171,38 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
 
   return (
     <Card className="border-primary/20">
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-5 space-y-5">
         {/* Decision Header */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-sm">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-base text-foreground">
               Decision: {experiment.decision_question || experiment.title}
             </span>
             {experiment.status !== "active" && (
               <Badge
                 variant={experiment.final_decision === "go" ? "default" : "destructive"}
-                className="text-xs ml-auto"
+                className="text-sm ml-auto"
               >
                 {experiment.final_decision === "go" ? "GO" : "NO-GO"}
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground italic pl-0">
+          <p className="text-base text-muted-foreground italic">
             "{experiment.hypothesis}"
           </p>
         </div>
 
         {/* Validation Actions */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-            <span className="font-medium uppercase tracking-wide">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-base text-muted-foreground mb-3">
+            <span className="font-semibold uppercase tracking-wide">
               Validation Actions
             </span>
-            <span>
+            <span className="font-medium">
               {completedActions}/{totalActions}
             </span>
           </div>
-          <div className="bg-muted/30 rounded-lg px-3 py-1">
+          <div className="bg-muted/30 rounded-xl px-4 py-2">
             {tasks.map((task) => (
               <ActionCard
                 key={task.id}
@@ -218,11 +218,11 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
         </div>
 
         {/* Scorecard */}
-        <div className="space-y-1">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-2">
+        <div className="space-y-2">
+          <div className="text-base text-muted-foreground font-semibold uppercase tracking-wide mb-3">
             Decision Scorecard
           </div>
-          <div className="bg-muted/30 rounded-lg px-3 py-3">
+          <div className="bg-muted/30 rounded-xl px-4 py-4">
             <Scorecard
               metrics={scoreMetrics}
               onUpdate={handleScoreUpdate}
@@ -232,7 +232,7 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
         </div>
 
         {/* Go/No-Go Decision */}
-        <div className="pt-2 border-t border-border/50">
+        <div className="pt-3 border-t border-border/50">
           <GoNoGoDecision
             experimentStatus={experiment.status}
             finalDecision={experiment.final_decision}

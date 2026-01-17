@@ -7,8 +7,7 @@ import {
   Ban, 
   ChevronDown, 
   ChevronUp, 
-  Trash2, 
-  RefreshCw,
+  Check,
   MessageSquare
 } from "lucide-react";
 
@@ -18,9 +17,7 @@ interface GoNoGoDecisionProps {
   decisionRationale: string | null;
   overallScore: number;
   onDecision: (decision: "go" | "no_go", rationale: string) => void;
-  onStartNewExperiment?: () => void;
-  onDelete?: () => void;
-  onNewValidation?: () => void;
+  onComplete?: () => void;
   disabled?: boolean;
 }
 
@@ -30,9 +27,7 @@ export function GoNoGoDecision({
   decisionRationale,
   overallScore,
   onDecision,
-  onStartNewExperiment,
-  onDelete,
-  onNewValidation,
+  onComplete,
   disabled,
 }: GoNoGoDecisionProps) {
   const [rationale, setRationale] = useState("");
@@ -69,40 +64,15 @@ export function GoNoGoDecision({
           </div>
         )}
 
-        {/* Follow-up Actions */}
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-            Next Steps
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button 
-              size="sm" 
-              onClick={onStartNewExperiment}
-              className="gap-1.5"
-            >
-              <Rocket className="h-4 w-4" />
-              Start New Experiment
-            </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={onNewValidation}
-              className="gap-1.5"
-            >
-              <RefreshCw className="h-4 w-4" />
-              New Validation
-            </Button>
-            <Button 
-              size="sm" 
-              variant="destructive" 
-              onClick={onDelete}
-              className="gap-1.5"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
-          </div>
-        </div>
+        {/* Single Completed Button */}
+        <Button 
+          size="sm" 
+          onClick={onComplete}
+          className="w-full gap-1.5"
+        >
+          <Check className="h-4 w-4" />
+          Completed
+        </Button>
       </div>
     );
   }

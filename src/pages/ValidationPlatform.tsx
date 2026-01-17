@@ -212,9 +212,23 @@ export default function ValidationPlatform() {
   };
 
   const handleDeleteHistory = async (id: string) => {
+    // Database CASCADE automatically deletes: experiments, experiment_tasks, experiment_checkpoints
     await supabase.from('validation_analyses').delete().eq('id', id);
+    
+    // Update history list
     setHistory(history.filter(item => item.id !== id));
-    toast({ title: "Deleted", description: "Analysis removed from history" });
+    
+    // If the currently displayed analysis was deleted: reset UI
+    if (currentValidationId === id) {
+      setDisplayedResult(null);
+      setCurrentValidationId(null);
+      setExperimentKey(prev => prev + 1); // Reload ExperimentWorkflow (shows nothing)
+    }
+    
+    toast({ 
+      title: "Deleted", 
+      description: "Analysis and associated experiments permanently removed" 
+    });
   };
 
   const handleStartExperiment = () => {

@@ -9,18 +9,7 @@ const Footer = () => {
             <span className="font-sans font-bold text-2xl text-primary">Synoptas</span>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <h3 className="font-bold text-base sm:text-lg text-foreground text-center sm:text-left">Resources</h3>
-              <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Resource links">
-                <Link to="/how-to-write-a-business-plan" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
-                  → How to Write a Business Plan
-                </Link>
-                <Link to="/business-strategies-for-small-business" className="text-xs sm:text-sm text-muted-foreground hover:text-primary hover:translate-x-1 transition-all duration-300 inline-block">
-                  → Business Strategies for Small Business
-                </Link>
-                </nav>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
 
             <div className="space-y-4">
               <h3 className="font-bold text-base sm:text-lg text-foreground text-center sm:text-left">Legal</h3>

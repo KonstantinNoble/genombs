@@ -16,21 +16,6 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- SEO Landing Pages -->
-  <url>
-    <loc>https://synoptas.com/how-to-write-a-business-plan</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://synoptas.com/business-strategies-for-small-business</loc>
-    <lastmod>2025-01-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
   <!-- Pricing -->
   <url>
     <loc>https://synoptas.com/pricing</loc>

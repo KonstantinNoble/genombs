@@ -41,6 +41,21 @@ export function ArchivedDecisions() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedExperimentId, setSelectedExperimentId] = useState<string | null>(null);
 
+  const ARCHIVE_LIMIT = 10;
+
+  const pruneArchivedExperiments = async (idsToDelete: string[]) => {
+    if (!idsToDelete.length) return;
+    try {
+      await Promise.all([
+        supabase.from("experiment_tasks").delete().in("experiment_id", idsToDelete),
+        supabase.from("experiment_checkpoints").delete().in("experiment_id", idsToDelete),
+      ]);
+      await supabase.from("experiments").delete().in("id", idsToDelete);
+    } catch (error) {
+      console.error("Error pruning archived experiments:", error);
+    }
+  };
+
   const loadArchivedExperiments = async () => {
     setIsLoading(true);
     try {
@@ -49,13 +64,23 @@ export function ArchivedDecisions() {
 
       const { data, error } = await supabase
         .from("experiments")
-        .select("id, title, decision_question, hypothesis, final_decision, decision_rationale, created_at, updated_at")
+        .select(
+          "id, title, decision_question, hypothesis, final_decision, decision_rationale, created_at, updated_at",
+        )
         .eq("user_id", userData.user.id)
         .in("status", ["completed", "abandoned"])
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      setExperiments(data || []);
+
+      const rows = data ?? [];
+
+      if (rows.length > ARCHIVE_LIMIT) {
+        const idsToDelete = rows.slice(ARCHIVE_LIMIT).map((e) => e.id);
+        await pruneArchivedExperiments(idsToDelete);
+      }
+
+      setExperiments(rows.slice(0, ARCHIVE_LIMIT));
     } catch (error) {
       console.error("Error loading archived experiments:", error);
     } finally {

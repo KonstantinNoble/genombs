@@ -22,6 +22,7 @@ export interface ModelResponse {
   overallConfidence: number;
   processingTimeMs: number;
   error?: string;
+  isFallback?: boolean;
 }
 
 export interface ConsensusPoint {
@@ -97,6 +98,12 @@ export type ValidationStatus =
   | 'complete'
   | 'error';
 
+export interface ModelStates {
+  gpt: 'queued' | 'running' | 'done' | 'failed';
+  geminiPro: 'queued' | 'running' | 'done' | 'failed';
+  geminiFlash: 'queued' | 'running' | 'done' | 'failed';
+}
+
 export interface LimitReachedInfo {
   limitReached: true;
   isPremium: boolean;
@@ -112,6 +119,11 @@ interface UseMultiAIValidationOptions {
 export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
   const [isValidating, setIsValidating] = useState(false);
   const [status, setStatus] = useState<ValidationStatus>('idle');
+  const [modelStates, setModelStates] = useState<ModelStates>({
+    gpt: 'queued',
+    geminiPro: 'queued',
+    geminiFlash: 'queued'
+  });
   const [partialResponses, setPartialResponses] = useState<{
     gpt?: ModelResponse;
     geminiPro?: ModelResponse;
@@ -121,6 +133,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
 
   const resetState = useCallback(() => {
     setStatus('idle');
+    setModelStates({ gpt: 'queued', geminiPro: 'queued', geminiFlash: 'queued' });
     setPartialResponses({});
     setResult(null);
   }, []);
@@ -133,12 +146,13 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     setIsValidating(true);
     resetState();
     setStatus('querying_models');
+    setModelStates({ gpt: 'running', geminiPro: 'running', geminiFlash: 'running' });
 
     // Create abort controller for overall timeout
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
-    }, 90000); // 90 second overall timeout
+    }, 120000); // 120 second overall timeout (increased for GPT fallback)
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -215,11 +229,24 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             try {
               const data = JSON.parse(line.slice(6));
               
-              if (data.error) {
+              if (data.error && currentEvent === 'error') {
                 throw new Error(data.error);
               }
 
-              // Handle based on event type or data structure
+              // Handle model_started events
+              if (currentEvent === 'model_started') {
+                const model = data.model as keyof ModelStates;
+                if (model) {
+                  setModelStates(prev => ({ ...prev, [model]: 'running' }));
+                }
+              }
+
+              // Handle model_retry events (GPT fallback)
+              if (currentEvent === 'model_retry') {
+                console.log(`Model retry: ${data.model} - ${data.message}`);
+              }
+
+              // Handle model_complete events - update immediately
               if (currentEvent === 'model_complete' || (data.model && data.response)) {
                 const model = data.model;
                 const response = data.response;
@@ -227,18 +254,23 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
                 if (model === 'gpt' && response) {
                   gptResponse = response;
                   setPartialResponses(prev => ({ ...prev, gpt: response }));
+                  setModelStates(prev => ({ ...prev, gpt: response.error ? 'failed' : 'done' }));
                   setStatus('gpt_complete');
                 } else if (model === 'geminiPro' && response) {
                   geminiProResponse = response;
                   setPartialResponses(prev => ({ ...prev, geminiPro: response }));
+                  setModelStates(prev => ({ ...prev, geminiPro: response.error ? 'failed' : 'done' }));
                   setStatus('gemini_pro_complete');
                 } else if (model === 'geminiFlash' && response) {
                   geminiFlashResponse = response;
                   setPartialResponses(prev => ({ ...prev, geminiFlash: response }));
+                  setModelStates(prev => ({ ...prev, geminiFlash: response.error ? 'failed' : 'done' }));
                   setStatus('gemini_flash_complete');
                 }
-              } else if (currentEvent === 'complete' || (data.gptResponse && data.geminiProResponse && data.geminiFlashResponse)) {
-                // Complete event with all responses
+              }
+
+              // Handle complete event with all responses
+              if (currentEvent === 'complete' || (data.gptResponse && data.geminiProResponse && data.geminiFlashResponse)) {
                 gptResponse = data.gptResponse || gptResponse;
                 geminiProResponse = data.geminiProResponse || geminiProResponse;
                 geminiFlashResponse = data.geminiFlashResponse || geminiFlashResponse;
@@ -265,14 +297,33 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         }
       }
 
-      // Ensure we have all responses
-      if (!gptResponse || !geminiProResponse || !geminiFlashResponse) {
-        const missing = [];
-        if (!gptResponse) missing.push('GPT-5.2');
-        if (!geminiProResponse) missing.push('Gemini Pro');
-        if (!geminiFlashResponse) missing.push('Gemini Flash');
-        throw new Error(`Missing responses from: ${missing.join(', ')}`);
+      // Count valid responses (at least 2 required to proceed)
+      const validResponses = [gptResponse, geminiProResponse, geminiFlashResponse].filter(
+        r => r && !r.error && r.recommendations.length > 0
+      );
+
+      if (validResponses.length < 2) {
+        const errors = [];
+        if (!gptResponse || gptResponse.error) errors.push(`GPT: ${gptResponse?.error || 'No response'}`);
+        if (!geminiProResponse || geminiProResponse.error) errors.push(`Gemini Pro: ${geminiProResponse?.error || 'No response'}`);
+        if (!geminiFlashResponse || geminiFlashResponse.error) errors.push(`Gemini Flash: ${geminiFlashResponse?.error || 'No response'}`);
+        throw new Error(`Insufficient model responses. Errors: ${errors.join(', ')}`);
       }
+
+      // Create stub responses for any missing models
+      const createStubResponse = (modelId: string, modelName: string): ModelResponse => ({
+        modelId,
+        modelName,
+        recommendations: [],
+        summary: "",
+        overallConfidence: 0,
+        processingTimeMs: 0,
+        error: "Model unavailable"
+      });
+
+      const finalGptResponse = gptResponse || createStubResponse('openai/gpt-5.2', 'GPT-5.2');
+      const finalGeminiProResponse = geminiProResponse || createStubResponse('google/gemini-3-pro-preview', 'Gemini 3 Pro');
+      const finalGeminiFlashResponse = geminiFlashResponse || createStubResponse('google/gemini-2.5-flash', 'Gemini 2.5 Flash');
 
       // Step 2: Run meta-evaluation
       setStatus('evaluating');
@@ -286,9 +337,9 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            gptResponse,
-            geminiProResponse,
-            geminiFlashResponse,
+            gptResponse: finalGptResponse,
+            geminiProResponse: finalGeminiProResponse,
+            geminiFlashResponse: finalGeminiFlashResponse,
             userPreferences: { riskPreference, creativityPreference },
             prompt,
             saveToHistory: true,
@@ -305,9 +356,9 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       const evalData = await evalResponse.json();
 
       const finalResult: ValidationResult = {
-        gptResponse,
-        geminiProResponse,
-        geminiFlashResponse,
+        gptResponse: finalGptResponse,
+        geminiProResponse: finalGeminiProResponse,
+        geminiFlashResponse: finalGeminiFlashResponse,
         consensusPoints: evalData.consensusPoints || [],
         majorityPoints: evalData.majorityPoints || [],
         dissentPoints: evalData.dissentPoints || [],
@@ -354,6 +405,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     validate,
     isValidating,
     status,
+    modelStates,
     partialResponses,
     result,
     resetState

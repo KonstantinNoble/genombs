@@ -2,10 +2,11 @@ import { useState } from "react";
 import type { DissentPoint } from "@/hooks/useMultiAIValidation";
 
 const MODEL_COLORS: Record<string, string> = {
+  'GPT-5 Mini': 'bg-blue-500/10 border-blue-500/30 text-blue-600',
   'GPT-5.2': 'bg-blue-500/10 border-blue-500/30 text-blue-600',
   'Gemini 3 Pro': 'bg-purple-500/10 border-purple-500/30 text-purple-600',
   'Gemini Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
-  'Gemini 2.5 Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
+  'Gemini 3 Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
 };
 
 interface DissentSectionProps {

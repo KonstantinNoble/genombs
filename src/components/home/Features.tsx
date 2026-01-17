@@ -7,8 +7,8 @@ const features = [
   {
     title: "Multi-Model AI Validation",
     description:
-      "Stop relying on single-AI advice. Get validated recommendations from 3 leading AI models – GPT-5.2, Gemini 3 Pro, and Gemini Flash working together.",
-    details: "Each model brings unique strengths: GPT-5.2 for deep reasoning, Gemini 3 Pro for creative solutions, and Gemini Flash for pragmatic execution. Our meta-evaluation identifies consensus, majority agreement, and dissent – giving you confidence scores for every recommendation.",
+      "Stop relying on single-AI advice. Get validated recommendations from 3 leading AI models – GPT-5 Mini, Gemini 3 Pro, and Gemini Flash working together.",
+    details: "Each model brings unique strengths: GPT-5 Mini for deep reasoning, Gemini 3 Pro for creative solutions, and Gemini Flash for pragmatic execution. Our meta-evaluation identifies consensus, majority agreement, and dissent – giving you confidence scores for every recommendation.",
     color: "primary",
     link: "/validate",
     linkText: "Start Validation",

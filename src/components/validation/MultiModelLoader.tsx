@@ -144,7 +144,7 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
 
       {/* Model cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <ModelStatus name="GPT-5.2" state={states.gpt} index={0} />
+        <ModelStatus name="GPT-5 Mini" state={states.gpt} index={0} />
         <ModelStatus name="Gemini 3 Pro" state={states.geminiPro} index={1} />
         <ModelStatus name="Gemini Flash" state={states.geminiFlash} index={2} />
       </div>

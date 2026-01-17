@@ -960,9 +960,9 @@ const PrivacyPolicy = () => {
 
             <h4 className="text-lg font-semibold mb-2 mt-4">How the AI Processing Works</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your prompt is sent to three AI models simultaneously (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash)</li>
+              <li>Your prompt is sent to three AI models simultaneously (GPT-5 Mini, Gemini 3 Pro, Gemini 3 Flash)</li>
               <li>Each model provides independent analysis based on the prompt and your preferences</li>
-              <li>A fourth AI process (meta-evaluation by Gemini 2.5 Flash) synthesizes the responses</li>
+              <li>A fourth AI process (meta-evaluation by Gemini 3 Flash) synthesizes the responses</li>
               <li>The system identifies consensus points, majority opinions, and dissenting views</li>
               <li>A final recommendation is generated based on this multi-model analysis</li>
             </ul>

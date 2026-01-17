@@ -43,7 +43,7 @@ const HowItWorks = () => {
     {
       number: "2",
       title: "3 AI Models Analyze in Parallel",
-      description: "GPT-5.2, Gemini 3 Pro, and Gemini 2.5 Flash each analyze your question independently. Each model brings unique strengths – reasoning, creativity, and pragmatic execution.",
+      description: "GPT-5 Mini, Gemini 3 Pro, and Gemini 3 Flash each analyze your question independently. Each model brings unique strengths – reasoning, creativity, and pragmatic execution.",
       details: "Unlike single-AI tools, Synoptas queries multiple models simultaneously and streams results as they complete. You see each perspective before the final synthesis.",
       link: "/validate",
       linkText: "Try It Free"

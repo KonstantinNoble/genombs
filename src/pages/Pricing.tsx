@@ -29,7 +29,7 @@ const PricingPage = () => {
   const faqs = [
     {
       question: "How does multi-AI validation work?",
-      answer: "Synoptas queries 3 AI models (GPT-5.2, Gemini 3 Pro, Gemini 2.5 Flash) in parallel. Each model analyzes your question independently, then our meta-evaluation identifies consensus (all agree), majority (2/3 agree), and dissent (disagreement) points – giving you validated recommendations with confidence scores."
+      answer: "Synoptas queries 3 AI models (GPT-5 Mini, Gemini 3 Pro, Gemini 3 Flash) in parallel. Each model analyzes your question independently, then our meta-evaluation identifies consensus (all agree), majority (2/3 agree), and dissent (disagreement) points – giving you validated recommendations with confidence scores."
     },
     {
       question: "What's the difference between Free and Premium?",

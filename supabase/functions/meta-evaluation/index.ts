@@ -213,13 +213,13 @@ serve(async (req) => {
 
     // Build context from all model responses
     const modelSummaries = [
-      gptResponse?.error ? null : `GPT-5.2 (${gptResponse?.overallConfidence || 0}% confidence): ${gptResponse?.summary || 'No response'}${isPremium && gptResponse?.marketContext ? `\nMarket Context: ${gptResponse.marketContext}` : ''}`,
+      gptResponse?.error ? null : `GPT-5 Mini (${gptResponse?.overallConfidence || 0}% confidence): ${gptResponse?.summary || 'No response'}${isPremium && gptResponse?.marketContext ? `\nMarket Context: ${gptResponse.marketContext}` : ''}`,
       geminiProResponse?.error ? null : `Gemini 3 Pro (${geminiProResponse?.overallConfidence || 0}% confidence): ${geminiProResponse?.summary || 'No response'}${isPremium && geminiProResponse?.marketContext ? `\nMarket Context: ${geminiProResponse.marketContext}` : ''}`,
       geminiFlashResponse?.error ? null : `Gemini Flash (${geminiFlashResponse?.overallConfidence || 0}% confidence): ${geminiFlashResponse?.summary || 'No response'}${isPremium && geminiFlashResponse?.marketContext ? `\nMarket Context: ${geminiFlashResponse.marketContext}` : ''}`
     ].filter(Boolean).join('\n\n');
 
     const allRecommendations = [
-      ...(gptResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'GPT-5.2' })),
+      ...(gptResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'GPT-5 Mini' })),
       ...(geminiProResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'Gemini 3 Pro' })),
       ...(geminiFlashResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'Gemini Flash' }))
     ];
@@ -249,7 +249,7 @@ Your task:
 Model weight guide:
 - For conservative users: Weight Gemini Flash (pragmatic) higher
 - For aggressive users: Weight creative suggestions higher
-- For factual preference: Weight GPT-5.2 (accurate) higher
+- For factual preference: Weight GPT-5 Mini (accurate) higher
 - For creative preference: Weight Gemini 3 Pro higher`;
 
     const userPrompt = `Here are the recommendations from 3 AI models:

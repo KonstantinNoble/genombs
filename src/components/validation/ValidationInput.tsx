@@ -124,7 +124,7 @@ export function ValidationInput({
       {/* Model Info Pills */}
       <div className="flex flex-wrap gap-3 justify-center">
         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-500/10 border border-blue-500/20">
-          <span className="text-base font-semibold text-blue-600">GPT-5.2</span>
+          <span className="text-base font-semibold text-blue-600">GPT-5 Mini</span>
           <span className="text-base text-muted-foreground">Reasoning</span>
         </div>
         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20">

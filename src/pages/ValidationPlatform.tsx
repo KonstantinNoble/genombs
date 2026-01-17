@@ -271,7 +271,7 @@ export default function ValidationPlatform() {
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
         title="Multi-AI Business Validator – Get Consensus from 3 AI Models"
-        description="Validate your business decisions with 3 AI models. GPT-5.2, Gemini 3 Pro, and Gemini Flash analyze your strategy to find consensus and highlight risks."
+        description="Validate your business decisions with 3 AI models. GPT-5 Mini, Gemini 3 Pro, and Gemini Flash analyze your strategy to find consensus and highlight risks."
         keywords="AI business validation, multi-model AI, business strategy, AI consensus, decision validation"
         canonical="/validate"
       />
@@ -291,7 +291,7 @@ export default function ValidationPlatform() {
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
         title="Multi-AI Business Validator – Get Consensus from 3 AI Models"
-        description="Validate your business decisions with 3 AI models. GPT-5.2, Gemini 3 Pro, and Gemini Flash analyze your strategy to find consensus and highlight risks."
+        description="Validate your business decisions with 3 AI models. GPT-5 Mini, Gemini 3 Pro, and Gemini Flash analyze your strategy to find consensus and highlight risks."
         keywords="AI business validation, multi-model AI, business strategy, AI consensus, decision validation"
         canonical="/validate"
       />
@@ -327,7 +327,7 @@ export default function ValidationPlatform() {
                 {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">Premium</Badge>}
               </div>
               <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
-              <p className="text-lg text-muted-foreground">Get consensus from GPT-5.2, Gemini 3 Pro & Gemini Flash</p>
+              <p className="text-lg text-muted-foreground">Get consensus from GPT-5 Mini, Gemini 3 Pro & Gemini Flash</p>
               <div className="flex items-center justify-center gap-4">
                 <span className="text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
               </div>

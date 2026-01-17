@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface MetricData {
   name: string;
@@ -25,44 +23,38 @@ export function MetricsTracker({
   disabled,
 }: MetricsTrackerProps) {
   const [localMetrics, setLocalMetrics] = useState<MetricData[]>(() => {
-    // Initialize with existing data or create new entries
-    return successMetrics.map((name, index) => {
+    return successMetrics.map((name) => {
       const existing = metricsData.find((m) => m.name === name);
       return (
         existing || {
           name,
-          startValue: "",
-          currentValue: "",
-          targetValue: "",
+          startValue: "0",
+          currentValue: "0",
+          targetValue: "100",
         }
       );
     });
   });
 
   useEffect(() => {
-    // Sync when successMetrics change
     setLocalMetrics(
       successMetrics.map((name) => {
         const existing = metricsData.find((m) => m.name === name);
         return (
           existing || {
             name,
-            startValue: "",
-            currentValue: "",
-            targetValue: "",
+            startValue: "0",
+            currentValue: "0",
+            targetValue: "100",
           }
         );
       })
     );
-  }, [successMetrics]);
+  }, [successMetrics, metricsData]);
 
-  const handleChange = (
-    index: number,
-    field: keyof MetricData,
-    value: string
-  ) => {
+  const handleChange = (index: number, value: string) => {
     const updated = [...localMetrics];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], currentValue: value };
     setLocalMetrics(updated);
   };
 
@@ -70,120 +62,56 @@ export function MetricsTracker({
     onUpdate(localMetrics);
   };
 
-  const calculateProgress = (metric: MetricData): number => {
-    const start = parseFloat(metric.startValue) || 0;
-    const current = parseFloat(metric.currentValue) || 0;
-    const target = parseFloat(metric.targetValue) || 0;
-
-    if (target === start) return 0;
-
-    const progress = ((current - start) / (target - start)) * 100;
-    return Math.min(Math.max(progress, 0), 100);
-  };
-
   const getTrendIcon = (metric: MetricData) => {
     const start = parseFloat(metric.startValue) || 0;
     const current = parseFloat(metric.currentValue) || 0;
 
-    if (!metric.startValue || !metric.currentValue) return null;
-
     if (current > start) {
-      return <TrendingUp className="h-4 w-4 text-primary" />;
+      return <TrendingUp className="h-3.5 w-3.5 text-primary" />;
     } else if (current < start) {
-      return <TrendingDown className="h-4 w-4 text-destructive" />;
+      return <TrendingDown className="h-3.5 w-3.5 text-destructive" />;
     }
-    return <Minus className="h-4 w-4 text-muted-foreground" />;
+    return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
   };
 
   if (localMetrics.length === 0) {
     return (
-      <div className="text-center py-6 text-muted-foreground">
-        No success metrics defined for this experiment.
+      <div className="text-center py-3 text-muted-foreground text-sm">
+        No metrics defined.
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {localMetrics.map((metric, index) => {
-        const progress = calculateProgress(metric);
-        const hasValues =
-          metric.startValue && metric.currentValue && metric.targetValue;
-
-        return (
-          <div
-            key={metric.name}
-            className="p-4 rounded-xl border-2 border-border bg-card/50 space-y-3"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
-                <span className="font-medium">{metric.name}</span>
-              </div>
-              {getTrendIcon(metric)}
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">
-                  Start Value
-                </Label>
-                <Input
-                  type="text"
-                  value={metric.startValue}
-                  onChange={(e) =>
-                    handleChange(index, "startValue", e.target.value)
-                  }
-                  onBlur={handleBlur}
-                  placeholder="0"
-                  className="h-9"
-                  disabled={disabled}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">
-                  Current Value
-                </Label>
-                <Input
-                  type="text"
-                  value={metric.currentValue}
-                  onChange={(e) =>
-                    handleChange(index, "currentValue", e.target.value)
-                  }
-                  onBlur={handleBlur}
-                  placeholder="0"
-                  className="h-9"
-                  disabled={disabled}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Target</Label>
-                <Input
-                  type="text"
-                  value={metric.targetValue}
-                  onChange={(e) =>
-                    handleChange(index, "targetValue", e.target.value)
-                  }
-                  onBlur={handleBlur}
-                  placeholder="100"
-                  className="h-9"
-                  disabled={disabled}
-                />
-              </div>
-            </div>
-
-            {hasValues && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Progress</span>
-                  <span>{Math.round(progress)}%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-            )}
+    <div className="space-y-2">
+      {localMetrics.map((metric, index) => (
+        <div
+          key={metric.name}
+          className="flex items-center justify-between gap-3 py-1.5"
+        >
+          <span className="text-sm text-muted-foreground truncate flex-1">
+            {metric.name}
+          </span>
+          
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs text-muted-foreground">
+              {metric.startValue} →
+            </span>
+            <Input
+              type="text"
+              value={metric.currentValue}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onBlur={handleBlur}
+              className="w-16 h-7 text-center text-sm"
+              disabled={disabled}
+            />
+            <span className="text-xs text-muted-foreground">
+              / {metric.targetValue}
+            </span>
+            {getTrendIcon(metric)}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }

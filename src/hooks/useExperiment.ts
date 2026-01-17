@@ -95,11 +95,11 @@ export function useExperiment() {
 
       if (experimentError) throw experimentError;
 
-      // Create tasks from selected actions
+      // Create tasks from selected actions (limit title to 300 characters)
       const tasks = data.selectedActions.map((action, index) => ({
         experiment_id: experiment.id,
-        title: action.action,
-        description: action.reasoning,
+        title: action.action.slice(0, 300),
+        description: action.reasoning?.slice(0, 300) || null,
         order_index: index,
       }));
 

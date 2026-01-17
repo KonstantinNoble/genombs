@@ -183,6 +183,7 @@ export type Database = {
           id: string
           notes: string | null
           order_index: number
+          outcome: string | null
           title: string
         }
         Insert: {
@@ -195,6 +196,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_index?: number
+          outcome?: string | null
           title: string
         }
         Update: {
@@ -207,6 +209,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_index?: number
+          outcome?: string | null
           title?: string
         }
         Relationships: [
@@ -222,8 +225,11 @@ export type Database = {
       experiments: {
         Row: {
           created_at: string
+          decision_question: string | null
+          decision_rationale: string | null
           duration_days: number
           end_date: string
+          final_decision: string | null
           final_review: Json | null
           hypothesis: string
           id: string
@@ -237,8 +243,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          decision_question?: string | null
+          decision_rationale?: string | null
           duration_days: number
           end_date: string
+          final_decision?: string | null
           final_review?: Json | null
           hypothesis: string
           id?: string
@@ -252,8 +261,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          decision_question?: string | null
+          decision_rationale?: string | null
           duration_days?: number
           end_date?: string
+          final_decision?: string | null
           final_review?: Json | null
           hypothesis?: string
           id?: string

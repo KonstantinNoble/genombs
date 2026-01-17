@@ -34,7 +34,7 @@ export function ValidationInput({
     return "Balanced";
   };
 
-  const MAX_CHARACTERS = 500;
+  const MAX_CHARACTERS = 300;
   const charactersRemaining = MAX_CHARACTERS - prompt.length;
 
   const handlePromptChange = (value: string) => {

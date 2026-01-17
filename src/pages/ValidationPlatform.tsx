@@ -307,6 +307,7 @@ export default function ValidationPlatform() {
             
             {/* Archived Decisions */}
             <ArchivedDecisions userId={user.id} />
+          </aside>
 
           <main className="flex-1 space-y-6 order-1 lg:order-2">
             <div className="text-center space-y-3">

@@ -63,80 +63,56 @@ serve(async (req) => {
     // GDPR-compliant: Delete ALL user data in correct order
     // Order matters: child tables first, then parent tables, finally auth user
 
-    // 1. Get all strategy IDs for this user (needed for child table deletions)
-    const { data: strategies } = await adminClient
-      .from('active_strategies')
-      .select('id')
-      .eq('user_id', userId);
-
-    const strategyIds = strategies?.map(s => s.id) || [];
-
-    // 2. Delete autopilot_focus_tasks (references strategy_id)
-    console.log('Deleting autopilot_focus_tasks for user:', userId);
+    // 1. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
+    console.log('Deleting experiments for user:', userId);
     await adminClient
-      .from('autopilot_focus_tasks')
+      .from('experiments')
       .delete()
       .eq('user_id', userId);
 
-    // 3. Delete strategy_phase_progress (references strategy_id)
-    if (strategyIds.length > 0) {
-      console.log('Deleting strategy_phase_progress for strategies:', strategyIds);
-      await adminClient
-        .from('strategy_phase_progress')
-        .delete()
-        .in('strategy_id', strategyIds);
-    }
-
-    // 4. Delete active_strategies
-    console.log('Deleting active_strategies for user:', userId);
+    // 2. Delete validation_analyses
+    console.log('Deleting validation_analyses for user:', userId);
     await adminClient
-      .from('active_strategies')
+      .from('validation_analyses')
       .delete()
       .eq('user_id', userId);
 
-    // 5. Delete ads_advisor_history
+    // 3. Delete ads_advisor_history
     console.log('Deleting ads_advisor_history for user:', userId);
     await adminClient
       .from('ads_advisor_history')
       .delete()
       .eq('user_id', userId);
 
-    // 6. Delete market_research_history
-    console.log('Deleting market_research_history for user:', userId);
-    await adminClient
-      .from('market_research_history')
-      .delete()
-      .eq('user_id', userId);
-
-    // 7. Delete business_tools_history
+    // 4. Delete business_tools_history
     console.log('Deleting business_tools_history for user:', userId);
     await adminClient
       .from('business_tools_history')
       .delete()
       .eq('user_id', userId);
 
-    // 8. Delete user_roles
+    // 5. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     await adminClient
       .from('user_roles')
       .delete()
       .eq('user_id', userId);
 
-    // 9. Delete user_credits
+    // 6. Delete user_credits
     console.log('Deleting user_credits for user:', userId);
     await adminClient
       .from('user_credits')
       .delete()
       .eq('user_id', userId);
 
-    // 10. Delete profile
+    // 7. Delete profile
     console.log('Deleting profile for user:', userId);
     await adminClient
       .from('profiles')
       .delete()
       .eq('id', userId);
 
-    // 11. Finally: Delete auth user
+    // 8. Finally: Delete auth user
     console.log('Deleting auth user:', userId);
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {
@@ -147,7 +123,7 @@ serve(async (req) => {
       });
     }
 
-    console.log(`✅ Successfully deleted blocked account: ${userEmail}`);
+    console.log(`Successfully deleted blocked account: ${userEmail}`);
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },

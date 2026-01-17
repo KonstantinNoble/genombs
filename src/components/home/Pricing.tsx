@@ -73,17 +73,20 @@ const Pricing = ({ compact = false }: PricingProps) => {
     { text: "2 Multi-AI Validations per day", included: true },
     { text: "3 AI models (GPT-5.2, Gemini Pro, Flash)", included: true },
     { text: "Consensus & Dissent analysis", included: true },
-    { text: "Risk & Creativity preference tuning", included: true },
-    { text: "Detailed model comparisons", included: false },
+    { text: "Basic recommendations (2-3 per model)", included: true },
+    { text: "Detailed model responses", included: false },
+    { text: "Strategic alternatives & outlook", included: false },
   ];
 
   const premiumFeatures = [
     { text: "20 Validations daily", included: true, highlight: true },
-    { text: "3 AI models with full reasoning", included: true, highlight: true },
-    { text: "Detailed individual model responses", included: true, highlight: true },
-    { text: "Priority action items synthesis", included: true },
-    { text: "Confidence scoring with reasoning", included: true },
-    { text: "Full validation history", included: true },
+    { text: "Enhanced AI prompts with deeper reasoning", included: true, highlight: true },
+    { text: "4-5 detailed recommendations per model", included: true, highlight: true },
+    { text: "5-7 action items per recommendation", included: true },
+    { text: "Strategic alternatives & 12-month outlook", included: true, highlight: true },
+    { text: "Competitor insights synthesis", included: true },
+    { text: "Full individual model responses", included: true },
+    { text: "7 prioritized top actions (vs 5)", included: true },
   ];
 
   return (

@@ -37,8 +37,8 @@ const MODELS = {
   }
 };
 
-// Structured output schema for tool calling
-const RECOMMENDATION_TOOL = {
+// Structured output schema for tool calling - base schema
+const getRecommendationTool = (isPremium: boolean) => ({
   type: "function",
   function: {
     name: "provide_recommendations",
@@ -52,33 +52,42 @@ const RECOMMENDATION_TOOL = {
             type: "object",
             properties: {
               title: { type: "string", description: "Short, actionable recommendation title" },
-              description: { type: "string", description: "Detailed explanation (2-3 sentences)" },
+              description: { type: "string", description: isPremium ? "Detailed explanation (4-5 sentences with comprehensive reasoning)" : "Detailed explanation (2-3 sentences)" },
               confidence: { type: "number", description: "Confidence level 0-100" },
               riskLevel: { type: "number", description: "Risk level 1-5 (1=conservative, 5=aggressive)" },
               creativityLevel: { type: "number", description: "Creativity level 1-5 (1=factual, 5=innovative)" },
-              reasoning: { type: "string", description: "Why this recommendation makes sense" },
+              reasoning: { type: "string", description: isPremium ? "Comprehensive reasoning with market context and competitive considerations" : "Why this recommendation makes sense" },
               actionItems: {
                 type: "array",
                 items: { type: "string" },
-                description: "3-5 concrete next steps"
+                description: isPremium ? "5-7 concrete, detailed next steps with specific metrics where applicable" : "3-5 concrete next steps"
               },
               potentialRisks: {
                 type: "array",
                 items: { type: "string" },
-                description: "2-3 potential risks to consider"
+                description: isPremium ? "3-5 potential risks with mitigation strategies" : "2-3 potential risks to consider"
               },
-              timeframe: { type: "string", description: "Expected implementation timeframe" }
+              timeframe: { type: "string", description: "Expected implementation timeframe" },
+              ...(isPremium && {
+                competitiveAdvantage: { type: "string", description: "How this creates competitive advantage in the market" },
+                longTermImplications: { type: "string", description: "Long-term strategic implications (12+ months)" },
+                resourceRequirements: { type: "string", description: "Key resources needed (budget, team, tools)" }
+              })
             },
             required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
           }
         },
-        summary: { type: "string", description: "Overall summary of recommendations (2-3 sentences)" },
-        overallConfidence: { type: "number", description: "Overall confidence in these recommendations 0-100" }
+        summary: { type: "string", description: isPremium ? "Comprehensive summary of recommendations with strategic context (4-5 sentences)" : "Overall summary of recommendations (2-3 sentences)" },
+        overallConfidence: { type: "number", description: "Overall confidence in these recommendations 0-100" },
+        ...(isPremium && {
+          marketContext: { type: "string", description: "Brief market context and competitive landscape relevant to these recommendations" },
+          strategicOutlook: { type: "string", description: "12-month strategic outlook based on these recommendations" }
+        })
       },
       required: ["recommendations", "summary", "overallConfidence"]
     }
   }
-};
+});
 
 interface ModelResponse {
   modelId: string;
@@ -93,10 +102,15 @@ interface ModelResponse {
     actionItems: string[];
     potentialRisks: string[];
     timeframe: string;
+    competitiveAdvantage?: string;
+    longTermImplications?: string;
+    resourceRequirements?: string;
   }[];
   summary: string;
   overallConfidence: number;
   processingTimeMs: number;
+  marketContext?: string;
+  strategicOutlook?: string;
   error?: string;
 }
 
@@ -104,20 +118,35 @@ interface ModelResponse {
 async function queryModel(
   modelConfig: typeof MODELS.gpt,
   prompt: string,
-  apiKey: string
+  apiKey: string,
+  isPremium: boolean
 ): Promise<ModelResponse> {
   const startTime = Date.now();
   
   try {
+    // Different system prompts for Free vs Premium
+    const recommendationCount = isPremium ? "4-5" : "2-3";
+    const detailLevel = isPremium 
+      ? "Provide comprehensive, detailed analysis with market context, competitive considerations, and long-term strategic implications."
+      : "Provide clear, actionable analysis.";
+    
     const systemPrompt = `You are a senior business strategist providing actionable recommendations.
     
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
 
-Analyze the user's business question and provide 2-4 concrete, actionable recommendations.
+Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
+${detailLevel}
 Each recommendation should be practical and implementable.
 Be specific with numbers, timeframes, and concrete steps.
-Consider both opportunities and risks.`;
+Consider both opportunities and risks.${isPremium ? `
+
+PREMIUM ANALYSIS REQUIREMENTS:
+- Include competitive advantage analysis for each recommendation
+- Provide long-term implications (12+ month outlook)
+- Add resource requirements (budget estimates, team needs, tools)
+- Include market context in your summary
+- Provide a 12-month strategic outlook` : ''}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -131,7 +160,7 @@ Consider both opportunities and risks.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
-        tools: [RECOMMENDATION_TOOL],
+        tools: [getRecommendationTool(isPremium)],
         tool_choice: { type: "function", function: { name: "provide_recommendations" } }
       }),
     });
@@ -164,7 +193,11 @@ Consider both opportunities and risks.`;
       recommendations: parsed.recommendations || [],
       summary: parsed.summary || "",
       overallConfidence: parsed.overallConfidence || 50,
-      processingTimeMs: Date.now() - startTime
+      processingTimeMs: Date.now() - startTime,
+      ...(isPremium && {
+        marketContext: parsed.marketContext,
+        strategicOutlook: parsed.strategicOutlook
+      })
     };
 
   } catch (error: any) {
@@ -239,6 +272,8 @@ serve(async (req) => {
     const isPremium = creditsData?.is_premium ?? false;
     const validationLimit = isPremium ? 20 : 2; // Free: 2/day, Premium: 20/day
     
+    console.log(`User ${user.id} is ${isPremium ? 'PREMIUM' : 'FREE'} - using ${isPremium ? 'enhanced' : 'standard'} analysis`);
+    
     // Check if within 24h window
     const now = new Date();
     const windowStart = creditsData?.validation_window_start ? new Date(creditsData.validation_window_start) : null;
@@ -271,15 +306,15 @@ Context for your analysis:
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            // Query all 3 models in parallel
+            // Query all 3 models in parallel with premium flag
             sendSSE(controller, 'status', { message: 'Querying GPT-5.2...', model: 'gpt' });
             sendSSE(controller, 'status', { message: 'Querying Gemini 3 Pro...', model: 'geminiPro' });
             sendSSE(controller, 'status', { message: 'Querying Gemini Flash...', model: 'geminiFlash' });
 
             const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
-              queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey),
-              queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey),
-              queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey)
+              queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium),
+              queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium),
+              queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium)
             ]);
 
             // Send individual model responses as they complete
@@ -302,13 +337,14 @@ Context for your analysis:
               .update(updateData)
               .eq('user_id', user.id);
 
-            // Send final combined response
+            // Send final combined response with isPremium flag
             sendSSE(controller, 'complete', {
               gptResponse,
               geminiProResponse,
               geminiFlashResponse,
               processingTimeMs: totalProcessingTime,
-              userPreferences: { riskPreference, creativityPreference }
+              userPreferences: { riskPreference, creativityPreference },
+              isPremium
             });
 
             controller.close();
@@ -327,9 +363,9 @@ Context for your analysis:
     } else {
       // Non-streaming response
       const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
-        queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey),
-        queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey),
-        queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey)
+        queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium),
+        queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium),
+        queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium)
       ]);
 
       const totalProcessingTime = Date.now() - totalStartTime;
@@ -353,7 +389,8 @@ Context for your analysis:
           geminiProResponse,
           geminiFlashResponse,
           processingTimeMs: totalProcessingTime,
-          userPreferences: { riskPreference, creativityPreference }
+          userPreferences: { riskPreference, creativityPreference },
+          isPremium
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

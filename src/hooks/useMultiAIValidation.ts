@@ -134,6 +134,12 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     resetState();
     setStatus('querying_models');
 
+    // Create abort controller for overall timeout
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => {
+      abortController.abort();
+    }, 90000); // 90 second overall timeout
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -155,6 +161,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             creativityPreference,
             streaming: true
           }),
+          signal: abortController.signal
         }
       );
 
@@ -169,6 +176,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             resetAt: new Date(errorData.resetAt)
           };
           setIsValidating(false);
+          clearTimeout(timeoutId);
           options?.onLimitReached?.(limitInfo);
           return;
         }
@@ -176,7 +184,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         throw new Error(errorData.error || `Query failed: ${queryResponse.status}`);
       }
 
-      // Parse SSE stream
+      // Parse SSE stream with proper event handling
       const reader = queryResponse.body?.getReader();
       if (!reader) throw new Error('No response body');
 
@@ -186,6 +194,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       let geminiProResponse: ModelResponse | undefined;
       let geminiFlashResponse: ModelResponse | undefined;
       let isPremiumUser = false;
+      let currentEvent = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -196,6 +205,12 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         buffer = lines.pop() || '';
 
         for (const line of lines) {
+          // Track event type from "event:" lines
+          if (line.startsWith('event: ')) {
+            currentEvent = line.slice(7).trim();
+            continue;
+          }
+          
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
@@ -204,23 +219,29 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
                 throw new Error(data.error);
               }
 
-              if (data.model === 'gpt' && data.response) {
-                gptResponse = data.response;
-                setPartialResponses(prev => ({ ...prev, gpt: data.response }));
-                setStatus('gpt_complete');
-              } else if (data.model === 'geminiPro' && data.response) {
-                geminiProResponse = data.response;
-                setPartialResponses(prev => ({ ...prev, geminiPro: data.response }));
-                setStatus('gemini_pro_complete');
-              } else if (data.model === 'geminiFlash' && data.response) {
-                geminiFlashResponse = data.response;
-                setPartialResponses(prev => ({ ...prev, geminiFlash: data.response }));
-                setStatus('gemini_flash_complete');
-              } else if (data.gptResponse && data.geminiProResponse && data.geminiFlashResponse) {
-                // Complete response from non-streaming fallback
-                gptResponse = data.gptResponse;
-                geminiProResponse = data.geminiProResponse;
-                geminiFlashResponse = data.geminiFlashResponse;
+              // Handle based on event type or data structure
+              if (currentEvent === 'model_complete' || (data.model && data.response)) {
+                const model = data.model;
+                const response = data.response;
+                
+                if (model === 'gpt' && response) {
+                  gptResponse = response;
+                  setPartialResponses(prev => ({ ...prev, gpt: response }));
+                  setStatus('gpt_complete');
+                } else if (model === 'geminiPro' && response) {
+                  geminiProResponse = response;
+                  setPartialResponses(prev => ({ ...prev, geminiPro: response }));
+                  setStatus('gemini_pro_complete');
+                } else if (model === 'geminiFlash' && response) {
+                  geminiFlashResponse = response;
+                  setPartialResponses(prev => ({ ...prev, geminiFlash: response }));
+                  setStatus('gemini_flash_complete');
+                }
+              } else if (currentEvent === 'complete' || (data.gptResponse && data.geminiProResponse && data.geminiFlashResponse)) {
+                // Complete event with all responses
+                gptResponse = data.gptResponse || gptResponse;
+                geminiProResponse = data.geminiProResponse || geminiProResponse;
+                geminiFlashResponse = data.geminiFlashResponse || geminiFlashResponse;
                 isPremiumUser = data.isPremium || false;
                 setPartialResponses({
                   gpt: gptResponse,
@@ -229,10 +250,13 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
                 });
               }
               
-              // Capture isPremium from the complete event
+              // Capture isPremium from any event
               if (data.isPremium !== undefined) {
                 isPremiumUser = data.isPremium;
               }
+              
+              // Reset event after processing
+              currentEvent = '';
             } catch (e) {
               if (e instanceof SyntaxError) continue;
               throw e;
@@ -243,7 +267,11 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
 
       // Ensure we have all responses
       if (!gptResponse || !geminiProResponse || !geminiFlashResponse) {
-        throw new Error('Not all model responses received');
+        const missing = [];
+        if (!gptResponse) missing.push('GPT-5.2');
+        if (!geminiProResponse) missing.push('Gemini Pro');
+        if (!geminiFlashResponse) missing.push('Gemini Flash');
+        throw new Error(`Missing responses from: ${missing.join(', ')}`);
       }
 
       // Step 2: Run meta-evaluation
@@ -308,9 +336,16 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     } catch (error: any) {
       console.error('Multi-AI validation error:', error);
       setStatus('error');
-      options?.onError?.(error.message || 'Validation failed');
+      
+      // Handle abort/timeout specifically
+      if (error.name === 'AbortError') {
+        options?.onError?.('Request timed out. Please try again.');
+      } else {
+        options?.onError?.(error.message || 'Validation failed');
+      }
       throw error;
     } finally {
+      clearTimeout(timeoutId);
       setIsValidating(false);
     }
   }, [options, resetState]);

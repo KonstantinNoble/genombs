@@ -300,19 +300,19 @@ export default function ValidationPlatform() {
         <div className="flex flex-col lg:flex-row gap-6">
           <aside className="w-full lg:w-80 shrink-0 order-2 lg:order-1 space-y-4">
             <Card className="shadow-elegant border-primary/10">
-              <CardHeader className="pb-3"><CardTitle className="text-lg">Previous Analyses</CardTitle></CardHeader>
-              <CardContent className="space-y-2 max-h-96 overflow-y-auto">
-                {history.length === 0 ? <p className="text-sm text-muted-foreground text-center py-8">No history yet</p> : history.map(item => (
-                  <div key={item.id} className="p-3 border rounded-lg hover:bg-accent/50 cursor-pointer group" onClick={() => handleHistoryClick(item)}>
-                    <div className="flex justify-between items-start gap-2">
+              <CardHeader className="pb-3"><CardTitle className="text-xl">Previous Analyses</CardTitle></CardHeader>
+              <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+                {history.length === 0 ? <p className="text-base text-muted-foreground text-center py-8">No history yet</p> : history.map(item => (
+                  <div key={item.id} className="p-4 border rounded-xl hover:bg-accent/50 cursor-pointer group transition-colors" onClick={() => handleHistoryClick(item)}>
+                    <div className="flex justify-between items-start gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{item.prompt?.substring(0, 50)}...</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-[10px]">{item.overall_confidence}% confidence</Badge>
-                          <span className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
+                        <p className="font-medium text-base truncate">{item.prompt?.substring(0, 50)}...</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="text-sm">{item.overall_confidence}%</Badge>
+                          <span className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-6 px-2 text-xs" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}>Delete</Button>
+                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-8 px-3 text-sm" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}>Delete</Button>
                     </div>
                   </div>
                 ))}
@@ -321,15 +321,15 @@ export default function ValidationPlatform() {
           </aside>
 
           <main className="flex-1 space-y-6 order-1 lg:order-2">
-            <div className="text-center space-y-3">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                <span className="text-sm font-semibold">3-Model AI Validation</span>
-                {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">Premium</Badge>}
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-base font-semibold">3-Model AI Validation</span>
+                {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">Premium</Badge>}
               </div>
-              <h1 className="text-3xl lg:text-5xl font-extrabold">Multi-AI Validator</h1>
-              <p className="text-muted-foreground">Get consensus from GPT-5.2, Gemini 3 Pro & Gemini Flash</p>
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span className="text-muted-foreground">Validations: <span className="font-bold">{validationCount}/{validationLimit}</span> daily</span>
+              <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
+              <p className="text-lg text-muted-foreground">Get consensus from GPT-5.2, Gemini 3 Pro & Gemini Flash</p>
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
               </div>
             </div>
 

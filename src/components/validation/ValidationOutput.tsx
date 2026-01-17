@@ -33,7 +33,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
     <div className="space-y-8 animate-fade-in">
       {/* Processing Time Badge */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-sm text-muted-foreground">
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border text-base text-muted-foreground">
           <span>Analysis completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
       </div>
@@ -49,16 +49,16 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {/* Top Actions */}
       {hasTopActions && (
         <div className="p-6 rounded-xl bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-lg text-foreground mb-4">
+          <h3 className="font-bold text-xl text-foreground mb-5">
             Top Priority Actions
           </h3>
-          <ol className="space-y-3">
+          <ol className="space-y-4">
             {finalRecommendation.topActions!.map((action, i) => (
-              <li key={i} className="flex items-start gap-4 text-base">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+              <li key={i} className="flex items-start gap-4">
+                <span className="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold">
                   {i + 1}
                 </span>
-                <span className="text-foreground pt-1">{action}</span>
+                <span className="text-base text-foreground pt-1.5 leading-relaxed">{action}</span>
               </li>
             ))}
           </ol>

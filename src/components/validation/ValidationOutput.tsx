@@ -38,12 +38,12 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Processing Time Badge */}
-      <div className="flex justify-center gap-2">
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border text-base text-muted-foreground">
+      <div className="flex justify-center gap-3">
+        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-muted/50 border text-lg text-muted-foreground">
           <span>Analysis completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
         {isPremium && (
-          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-base px-4 py-2">
             Premium Analysis
           </Badge>
         )}
@@ -59,25 +59,25 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
 
       {/* Top Actions */}
       {hasTopActions && (
-        <div className="p-6 rounded-xl bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-xl text-foreground mb-5">
+        <div className="p-8 rounded-xl bg-primary/5 border border-primary/20">
+          <h3 className="font-bold text-2xl text-foreground mb-6">
             Top Priority Actions
-            {isPremium && <span className="text-sm font-normal text-muted-foreground ml-2">(Premium: 7 actions)</span>}
+            {isPremium && <span className="text-base font-normal text-muted-foreground ml-3">(Premium: 7 actions)</span>}
           </h3>
-          <ol className="space-y-4">
+          <ol className="space-y-5">
             {finalRecommendation.topActions!.map((action, i) => (
-              <li key={i} className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold">
+              <li key={i} className="flex items-start gap-5">
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold">
                   {i + 1}
                 </span>
-                <span className="text-base text-foreground pt-1.5 leading-relaxed">{action}</span>
+                <span className="text-lg text-foreground pt-2 leading-relaxed">{action}</span>
               </li>
             ))}
           </ol>
 
           {/* Start Experiment Button */}
           {validationId && onStartExperiment && (
-            <div className="mt-6 pt-4 border-t border-primary/20">
+            <div className="mt-8 pt-5 border-t border-primary/20">
               <StartExperimentButton onClick={onStartExperiment} />
             </div>
           )}
@@ -88,23 +88,23 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {isPremium && strategicAlternatives && strategicAlternatives.length > 0 && (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-3 text-xl">
               <span>Strategic Alternatives</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
+              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
                 Premium
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             {strategicAlternatives.map((alt, i) => (
-              <div key={i} className="p-4 rounded-lg bg-background border">
-                <h4 className="font-semibold text-base mb-2">{alt.scenario}</h4>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div key={i} className="p-5 rounded-lg bg-background border">
+                <h4 className="font-semibold text-lg mb-3">{alt.scenario}</h4>
+                <div className="grid md:grid-cols-2 gap-5">
                   <div>
-                    <p className="font-medium text-primary mb-1">Pros</p>
-                    <ul className="space-y-1">
+                    <p className="font-medium text-primary mb-2 text-base">Pros</p>
+                    <ul className="space-y-2">
                       {alt.pros.map((pro, j) => (
-                        <li key={j} className="flex items-start gap-2">
+                        <li key={j} className="flex items-start gap-2 text-base">
                           <span className="text-primary">+</span>
                           <span>{pro}</span>
                         </li>
@@ -112,10 +112,10 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
                     </ul>
                   </div>
                   <div>
-                    <p className="font-medium text-destructive mb-1">Cons</p>
-                    <ul className="space-y-1">
+                    <p className="font-medium text-destructive mb-2 text-base">Cons</p>
+                    <ul className="space-y-2">
                       {alt.cons.map((con, j) => (
-                        <li key={j} className="flex items-start gap-2">
+                        <li key={j} className="flex items-start gap-2 text-base">
                           <span className="text-destructive">−</span>
                           <span>{con}</span>
                         </li>
@@ -123,7 +123,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
                     </ul>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">
+                <p className="text-base text-muted-foreground mt-4">
                   <span className="font-medium">Best for:</span> {alt.bestFor}
                 </p>
               </div>
@@ -136,30 +136,30 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {isPremium && longTermOutlook && (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-3 text-xl">
               <span>Long-term Outlook</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
+              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
                 Premium
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="p-4 rounded-lg bg-background border">
-                <p className="text-sm font-medium text-muted-foreground mb-1">6-Month Projection</p>
-                <p className="text-base">{longTermOutlook.sixMonths}</p>
+              <div className="p-5 rounded-lg bg-background border">
+                <p className="text-base font-medium text-muted-foreground mb-2">6-Month Projection</p>
+                <p className="text-lg">{longTermOutlook.sixMonths}</p>
               </div>
-              <div className="p-4 rounded-lg bg-background border">
-                <p className="text-sm font-medium text-muted-foreground mb-1">12-Month Projection</p>
-                <p className="text-base">{longTermOutlook.twelveMonths}</p>
+              <div className="p-5 rounded-lg bg-background border">
+                <p className="text-base font-medium text-muted-foreground mb-2">12-Month Projection</p>
+                <p className="text-lg">{longTermOutlook.twelveMonths}</p>
               </div>
             </div>
             {longTermOutlook.keyMilestones.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Key Milestones</p>
-                <ul className="space-y-2">
+                <p className="text-base font-medium text-muted-foreground mb-3">Key Milestones</p>
+                <ul className="space-y-3">
                   {longTermOutlook.keyMilestones.map((milestone, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
+                    <li key={i} className="flex items-start gap-3 text-base">
                       <span className="text-primary font-bold">{i + 1}.</span>
                       <span>{milestone}</span>
                     </li>
@@ -175,15 +175,15 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {isPremium && competitorInsights && (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-3 text-xl">
               <span>Competitor Insights</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
+              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
                 Premium
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-base">{competitorInsights}</p>
+            <p className="text-lg leading-relaxed">{competitorInsights}</p>
           </CardContent>
         </Card>
       )}

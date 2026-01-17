@@ -17,6 +17,15 @@ const MODELS = {
       strengths: ['Complex reasoning', 'Nuanced analysis', 'Accuracy']
     }
   },
+  gptFallback: {
+    id: 'openai/gpt-5-mini',
+    name: 'GPT-5 Mini',
+    characteristics: {
+      reasoning: 'good',
+      tendency: 'balanced',
+      strengths: ['Speed', 'Efficiency', 'Reliability']
+    }
+  },
   geminiPro: {
     id: 'google/gemini-3-pro-preview',
     name: 'Gemini 3 Pro',
@@ -112,6 +121,7 @@ interface ModelResponse {
   marketContext?: string;
   strategicOutlook?: string;
   error?: string;
+  isFallback?: boolean;
 }
 
 // Query a single AI model with timeout
@@ -119,15 +129,16 @@ async function queryModel(
   modelConfig: typeof MODELS.gpt,
   prompt: string,
   apiKey: string,
-  isPremium: boolean
+  isPremium: boolean,
+  timeoutMs: number = 45000
 ): Promise<ModelResponse> {
   const startTime = Date.now();
   
-  // Create abort controller for 45-second timeout per model
+  // Create abort controller for timeout
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 45000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  console.log(`[${modelConfig.name}] Starting query...`);
+  console.log(`[${modelConfig.name}] Starting query with ${timeoutMs}ms timeout...`);
   
   try {
     // Different system prompts for Free vs Premium
@@ -332,63 +343,69 @@ Context for your analysis:
 - User values ${creativityPreference <= 2 ? 'data-driven, factual' : creativityPreference >= 4 ? 'creative, innovative' : 'a mix of practical and creative'} approaches`;
 
     if (streaming) {
-      // Streaming response
+      // Streaming response with proper headers to prevent buffering
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            // Query all 3 models in parallel with premium flag
-            sendSSE(controller, 'status', { message: 'Querying GPT-5.2...', model: 'gpt' });
-            sendSSE(controller, 'status', { message: 'Querying Gemini 3 Pro...', model: 'geminiPro' });
-            sendSSE(controller, 'status', { message: 'Querying Gemini Flash...', model: 'geminiFlash' });
+            let gptResponse: ModelResponse | null = null;
+            let geminiProResponse: ModelResponse | null = null;
+            let geminiFlashResponse: ModelResponse | null = null;
 
-            console.log('Starting parallel model queries...');
+            // Send initial status
+            sendSSE(controller, 'status', { message: 'Starting AI models...', phase: 'starting' });
 
-            // Use Promise.allSettled to handle individual model failures gracefully
-            const results = await Promise.allSettled([
-              queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium),
-              queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium),
-              queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium)
-            ]);
+            console.log('Starting parallel model queries with immediate SSE updates...');
 
-            // Extract responses, using error fallbacks for rejected promises
-            const gptResponse = results[0].status === 'fulfilled' ? results[0].value : {
-              modelId: MODELS.gpt.id,
-              modelName: MODELS.gpt.name,
-              recommendations: [],
-              summary: "",
-              overallConfidence: 0,
-              processingTimeMs: 0,
-              error: results[0].status === 'rejected' ? results[0].reason?.message : 'Unknown error'
-            };
-            
-            const geminiProResponse = results[1].status === 'fulfilled' ? results[1].value : {
-              modelId: MODELS.geminiPro.id,
-              modelName: MODELS.geminiPro.name,
-              recommendations: [],
-              summary: "",
-              overallConfidence: 0,
-              processingTimeMs: 0,
-              error: results[1].status === 'rejected' ? results[1].reason?.message : 'Unknown error'
-            };
-            
-            const geminiFlashResponse = results[2].status === 'fulfilled' ? results[2].value : {
-              modelId: MODELS.geminiFlash.id,
-              modelName: MODELS.geminiFlash.name,
-              recommendations: [],
-              summary: "",
-              overallConfidence: 0,
-              processingTimeMs: 0,
-              error: results[2].status === 'rejected' ? results[2].reason?.message : 'Unknown error'
-            };
+            // Query models in parallel but send SSE immediately when each completes
+            const gptPromise = (async () => {
+              sendSSE(controller, 'model_started', { model: 'gpt', name: 'GPT-5.2' });
+              // GPT gets longer timeout (70s) since it's often slower
+              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 70000);
+              
+              // If GPT times out, try fallback to GPT-5-mini
+              if (response.error === "Request timed out") {
+                console.log('[GPT] Primary timed out, trying GPT-5-mini fallback...');
+                sendSSE(controller, 'model_retry', { model: 'gpt', message: 'Switching to faster model...' });
+                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, isPremium, 40000);
+                response.isFallback = true;
+                if (!response.error) {
+                  response.modelName = 'GPT-5 Mini (Fallback)';
+                }
+              }
+              
+              gptResponse = response;
+              console.log(`[GPT] Sending model_complete SSE (error: ${response.error || 'none'})`);
+              sendSSE(controller, 'model_complete', { model: 'gpt', response });
+              return response;
+            })();
 
-            console.log(`All queries completed. GPT: ${gptResponse.error ? 'ERROR' : 'OK'}, GeminiPro: ${geminiProResponse.error ? 'ERROR' : 'OK'}, GeminiFlash: ${geminiFlashResponse.error ? 'ERROR' : 'OK'}`);
+            const geminiProPromise = (async () => {
+              sendSSE(controller, 'model_started', { model: 'geminiPro', name: 'Gemini 3 Pro' });
+              const response = await queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium, 60000);
+              geminiProResponse = response;
+              console.log(`[Gemini Pro] Sending model_complete SSE (error: ${response.error || 'none'})`);
+              sendSSE(controller, 'model_complete', { model: 'geminiPro', response });
+              return response;
+            })();
 
-            // Send individual model responses
-            sendSSE(controller, 'model_complete', { model: 'gpt', response: gptResponse });
-            sendSSE(controller, 'model_complete', { model: 'geminiPro', response: geminiProResponse });
-            sendSSE(controller, 'model_complete', { model: 'geminiFlash', response: geminiFlashResponse });
+            const geminiFlashPromise = (async () => {
+              sendSSE(controller, 'model_started', { model: 'geminiFlash', name: 'Gemini 2.5 Flash' });
+              const response = await queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium, 45000);
+              geminiFlashResponse = response;
+              console.log(`[Gemini Flash] Sending model_complete SSE (error: ${response.error || 'none'})`);
+              sendSSE(controller, 'model_complete', { model: 'geminiFlash', response });
+              return response;
+            })();
+
+            // Wait for all to complete (they each send their own SSE when done)
+            await Promise.allSettled([gptPromise, geminiProPromise, geminiFlashPromise]);
 
             const totalProcessingTime = Date.now() - totalStartTime;
+
+            const gptStatus = gptResponse?.error ? 'ERROR' : 'OK';
+            const proStatus = geminiProResponse?.error ? 'ERROR' : 'OK';
+            const flashStatus = geminiFlashResponse?.error ? 'ERROR' : 'OK';
+            console.log(`All queries completed in ${totalProcessingTime}ms. GPT: ${gptStatus}, GeminiPro: ${proStatus}, GeminiFlash: ${flashStatus}`);
 
             // Update user credits
             const updateData: any = {
@@ -405,9 +422,9 @@ Context for your analysis:
 
             // Send final combined response with isPremium flag
             sendSSE(controller, 'complete', {
-              gptResponse,
-              geminiProResponse,
-              geminiFlashResponse,
+              gptResponse: gptResponse || { modelId: MODELS.gpt.id, modelName: MODELS.gpt.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              geminiProResponse: geminiProResponse || { modelId: MODELS.geminiPro.id, modelName: MODELS.geminiPro.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              geminiFlashResponse: geminiFlashResponse || { modelId: MODELS.geminiFlash.id, modelName: MODELS.geminiFlash.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
               processingTimeMs: totalProcessingTime,
               userPreferences: { riskPreference, creativityPreference },
               isPremium
@@ -423,15 +440,21 @@ Context for your analysis:
       });
 
       return new Response(stream, {
-        headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache, no-transform',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no'
+        }
       });
 
     } else {
       // Non-streaming response
       const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
-        queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium),
-        queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium),
-        queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium)
+        queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, isPremium, 70000),
+        queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium, 60000),
+        queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium, 45000)
       ]);
 
       const totalProcessingTime = Date.now() - totalStartTime;

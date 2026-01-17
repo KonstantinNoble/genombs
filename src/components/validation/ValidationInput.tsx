@@ -1,6 +1,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 
 interface ValidationInputProps {
   prompt: string;
@@ -45,12 +46,15 @@ export function ValidationInput({
   return (
     <div className="space-y-6">
       {/* Main Question Input */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label htmlFor="prompt" className="text-base font-semibold">
+          <Label htmlFor="prompt" className="text-base font-semibold text-foreground">
             Your Business Question
           </Label>
-          <span className={`text-xs ${charactersRemaining <= 50 ? 'text-destructive' : 'text-muted-foreground'}`}>
+          <span className={cn(
+            "text-sm tabular-nums font-medium",
+            charactersRemaining <= 50 ? 'text-destructive' : 'text-muted-foreground'
+          )}>
             {prompt.length}/{MAX_CHARACTERS}
           </span>
         </div>
@@ -59,22 +63,22 @@ export function ValidationInput({
           value={prompt}
           onChange={(e) => handlePromptChange(e.target.value)}
           placeholder="E.g., Should I expand my SaaS product to enterprise clients, or focus on growing the SMB market? What pricing strategy should I use?"
-          className="min-h-[120px] text-base resize-none"
+          className="min-h-[140px] text-base resize-none leading-relaxed"
           disabled={disabled}
           maxLength={MAX_CHARACTERS}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Ask any strategic business question. 3 AI models will analyze and provide validated recommendations.
         </p>
       </div>
 
       {/* Preference Sliders */}
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         {/* Risk Preference */}
-        <div className="space-y-4 p-4 rounded-xl bg-muted/30 border">
+        <div className="space-y-4 p-5 rounded-xl bg-muted/30 border">
           <div className="flex items-center justify-between">
-            <Label className="font-medium">Risk Tolerance</Label>
-            <span className="text-sm font-semibold text-primary">
+            <Label className="text-base font-semibold">Risk Tolerance</Label>
+            <span className="text-sm font-bold text-primary px-3 py-1 rounded-full bg-primary/10">
               {getRiskLabel(riskPreference)}
             </span>
           </div>
@@ -87,17 +91,17 @@ export function ValidationInput({
             disabled={disabled}
             className="cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-sm text-muted-foreground">
             <span>Safe choices</span>
             <span>Bold moves</span>
           </div>
         </div>
 
         {/* Creativity Preference */}
-        <div className="space-y-4 p-4 rounded-xl bg-muted/30 border">
+        <div className="space-y-4 p-5 rounded-xl bg-muted/30 border">
           <div className="flex items-center justify-between">
-            <Label className="font-medium">Analysis Style</Label>
-            <span className="text-sm font-semibold text-primary">
+            <Label className="text-base font-semibold">Analysis Style</Label>
+            <span className="text-sm font-bold text-primary px-3 py-1 rounded-full bg-primary/10">
               {getCreativityLabel(creativityPreference)}
             </span>
           </div>
@@ -110,7 +114,7 @@ export function ValidationInput({
             disabled={disabled}
             className="cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-sm text-muted-foreground">
             <span>Facts & Data</span>
             <span>Creative Ideas</span>
           </div>
@@ -118,18 +122,18 @@ export function ValidationInput({
       </div>
 
       {/* Model Info Pills */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs">
-          <span className="font-medium">GPT-5.2</span>
-          <span className="text-muted-foreground">Reasoning</span>
+      <div className="flex flex-wrap gap-3 justify-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20">
+          <span className="text-sm font-semibold text-blue-600">GPT-5.2</span>
+          <span className="text-sm text-muted-foreground">Reasoning</span>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs">
-          <span className="font-medium">Gemini 3 Pro</span>
-          <span className="text-muted-foreground">Creative</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
+          <span className="text-sm font-semibold text-purple-600">Gemini 3 Pro</span>
+          <span className="text-sm text-muted-foreground">Creative</span>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-xs">
-          <span className="font-medium">Gemini Flash</span>
-          <span className="text-muted-foreground">Pragmatic</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
+          <span className="text-sm font-semibold text-green-600">Gemini Flash</span>
+          <span className="text-sm text-muted-foreground">Pragmatic</span>
         </div>
       </div>
     </div>

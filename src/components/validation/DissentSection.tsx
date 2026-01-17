@@ -59,7 +59,7 @@ export function DissentSection({ points }: DissentSectionProps) {
 
               {isExpanded && (
                 <div className="px-5 pb-5 pt-0 border-t border-red-500/20 space-y-4">
-                  <p className="text-sm text-muted-foreground pt-4">
+                  <p className="text-base text-muted-foreground pt-4">
                     Review each perspective to make an informed decision:
                   </p>
                   
@@ -70,17 +70,17 @@ export function DissentSection({ points }: DissentSectionProps) {
                       return (
                         <div
                           key={i}
-                          className={`p-4 rounded-lg border ${colorClass}`}
+                          className={`p-5 rounded-xl border ${colorClass}`}
                         >
                           <div className="flex items-center gap-2 mb-3">
                             <span className="text-sm font-bold uppercase tracking-wide">
                               {pos.modelName}
                             </span>
                           </div>
-                          <p className="text-base font-medium text-foreground mb-2">
+                          <p className="text-base font-semibold text-foreground mb-2">
                             {pos.position}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-base text-muted-foreground">
                             {pos.reasoning}
                           </p>
                         </div>

@@ -160,8 +160,8 @@ All colors MUST be HSL.
 /* Scroll Reveal Animations */
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scroll-reveal.revealed {
@@ -171,8 +171,8 @@ All colors MUST be HSL.
 
 .scroll-reveal-left {
   opacity: 0;
-  transform: translateX(-30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateX(-20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scroll-reveal-left.revealed {
@@ -182,8 +182,8 @@ All colors MUST be HSL.
 
 .scroll-reveal-right {
   opacity: 0;
-  transform: translateX(30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateX(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scroll-reveal-right.revealed {
@@ -193,11 +193,59 @@ All colors MUST be HSL.
 
 .scroll-reveal-scale {
   opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: scale(0.98);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scroll-reveal-scale.revealed {
   opacity: 1;
   transform: scale(1);
 }
+
+/* Technical Animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes progress-stripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.progress-striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 40px 40px;
+  animation: progress-stripe 1s linear infinite;
+}
+
+/* Stagger delays for list items */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }

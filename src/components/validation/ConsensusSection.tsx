@@ -1,4 +1,3 @@
-import { CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ConsensusPoint } from "@/hooks/useMultiAIValidation";
@@ -40,7 +39,6 @@ export function ConsensusSection({ points }: ConsensusSectionProps) {
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-green-500/10 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-green-500 shrink-0" />
                   <div>
                     <h4 className="font-bold text-lg text-foreground">{point.topic}</h4>
                     <p className="text-base text-muted-foreground line-clamp-1">
@@ -52,11 +50,9 @@ export function ConsensusSection({ points }: ConsensusSectionProps) {
                   <span className="text-sm font-medium text-green-600 bg-green-500/20 px-3 py-1.5 rounded-full">
                     {point.confidence}% confident
                   </span>
-                  {isExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                  )}
+                  <span className="text-muted-foreground text-sm">
+                    {isExpanded ? "−" : "+"}
+                  </span>
                 </div>
               </button>
 

@@ -1,4 +1,3 @@
-import { ChevronDown, ChevronUp, Zap, TrendingUp, Shield } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ModelResponse } from "@/hooks/useMultiAIValidation";
@@ -11,19 +10,17 @@ interface ModelDetailCardsProps {
 
 interface ModelCardProps {
   response?: ModelResponse;
-  icon: React.ReactNode;
   colorClass: string;
   bgClass: string;
 }
 
-function ModelCard({ response, icon, colorClass, bgClass }: ModelCardProps) {
+function ModelCard({ response, colorClass, bgClass }: ModelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!response || response.error) {
     return (
       <div className={cn("rounded-xl border p-4", bgClass, "opacity-50")}>
         <div className="flex items-center gap-2">
-          {icon}
           <span className="font-semibold">{response?.modelName || 'Unknown'}</span>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
@@ -40,7 +37,6 @@ function ModelCard({ response, icon, colorClass, bgClass }: ModelCardProps) {
         className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          {icon}
           <div>
             <h4 className="font-semibold text-foreground">{response.modelName}</h4>
             <p className="text-sm text-muted-foreground">
@@ -52,11 +48,9 @@ function ModelCard({ response, icon, colorClass, bgClass }: ModelCardProps) {
           <span className={cn("text-xs font-medium px-2 py-1 rounded-full", colorClass)}>
             {response.processingTimeMs}ms
           </span>
-          {isExpanded ? (
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          )}
+          <span className="text-muted-foreground text-sm">
+            {isExpanded ? "−" : "+"}
+          </span>
         </div>
       </button>
 
@@ -116,19 +110,16 @@ export function ModelDetailCards({
       <div className="space-y-2">
         <ModelCard
           response={gptResponse}
-          icon={<Zap className="h-5 w-5 text-blue-500" />}
           colorClass="bg-blue-500/20 text-blue-600"
           bgClass="border-blue-500/30 bg-blue-500/5"
         />
         <ModelCard
           response={geminiProResponse}
-          icon={<TrendingUp className="h-5 w-5 text-purple-500" />}
           colorClass="bg-purple-500/20 text-purple-600"
           bgClass="border-purple-500/30 bg-purple-500/5"
         />
         <ModelCard
           response={geminiFlashResponse}
-          icon={<Shield className="h-5 w-5 text-green-500" />}
           colorClass="bg-green-500/20 text-green-600"
           bgClass="border-green-500/30 bg-green-500/5"
         />

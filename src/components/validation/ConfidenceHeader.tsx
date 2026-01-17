@@ -1,4 +1,3 @@
-import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ConfidenceHeaderProps {
@@ -26,20 +25,12 @@ export function ConfidenceHeader({
     return "bg-red-500";
   };
 
-  const getConfidenceIcon = (value: number) => {
-    if (value >= 80) return CheckCircle2;
-    if (value >= 50) return AlertTriangle;
-    return XCircle;
-  };
-
   const getConfidenceLabel = (value: number) => {
     if (value >= 80) return "High Confidence";
     if (value >= 60) return "Good Confidence";
     if (value >= 40) return "Moderate Confidence";
     return "Low Confidence";
   };
-
-  const Icon = getConfidenceIcon(confidence);
 
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
@@ -49,7 +40,6 @@ export function ConfidenceHeader({
           <p className="text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <Icon className={cn("h-10 w-10", getConfidenceColor(confidence))} />
           <span className={cn("text-4xl font-bold", getConfidenceColor(confidence))}>
             {confidence}%
           </span>

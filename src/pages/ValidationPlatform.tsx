@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Trash2, BrainCircuit } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
@@ -265,7 +265,7 @@ export default function ValidationPlatform() {
     return `${Math.floor(diff / 3600000)}h ${Math.floor((diff % 3600000) / 60000)}m`;
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><span className="text-lg text-muted-foreground">Loading...</span></div>;
 
   if (!user) return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -312,7 +312,7 @@ export default function ValidationPlatform() {
                           <span className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 h-6 w-6" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}><Trash2 className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-6 px-2 text-xs" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}>Delete</Button>
                     </div>
                   </div>
                 ))}
@@ -323,7 +323,6 @@ export default function ValidationPlatform() {
           <main className="flex-1 space-y-6 order-1 lg:order-2">
             <div className="text-center space-y-3">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                <BrainCircuit className="h-4 w-4 text-primary" />
                 <span className="text-sm font-semibold">3-Model AI Validation</span>
                 {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">Premium</Badge>}
               </div>
@@ -363,7 +362,7 @@ export default function ValidationPlatform() {
                 )}
                 
                 <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim()} className="w-full" size="lg">
-                  {isValidating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Validating with 3 AI Models...</> : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : 'Validate with 3 AI Models'}
+                  {isValidating ? 'Validating with 3 AI Models...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : 'Validate with 3 AI Models'}
                 </Button>
               </CardContent>
             </Card>

@@ -67,7 +67,7 @@ export default function ValidationPlatform() {
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
-  const { validate, isValidating, status, result } = useMultiAIValidation({
+  const { validate, isValidating, status, modelStates, result } = useMultiAIValidation({
     onComplete: async (data) => {
       setDisplayedResult(data);
       setCurrentValidationId(data.validationId || null);
@@ -368,7 +368,7 @@ export default function ValidationPlatform() {
             </Card>
 
             {isValidating && (
-              <MultiModelLoader status={status} />
+              <MultiModelLoader status={status} modelStates={modelStates} />
             )}
 
             {displayedResult && !isValidating && (

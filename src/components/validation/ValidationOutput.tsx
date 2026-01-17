@@ -6,7 +6,6 @@ import { ModelDetailCards } from "./ModelDetailCards";
 import { StartExperimentButton } from "@/components/experiment/StartExperimentButton";
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
-import { Clock, ArrowRight } from "lucide-react";
 
 interface ValidationOutputProps {
   result: ValidationResult;
@@ -35,7 +34,6 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {/* Processing Time Badge */}
       <div className="flex justify-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
           <span>Analysis completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
       </div>
@@ -51,8 +49,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {/* Top Actions */}
       {hasTopActions && (
         <div className="p-6 rounded-xl bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-            <ArrowRight className="h-5 w-5 text-primary" />
+          <h3 className="font-bold text-lg text-foreground mb-4">
             Top Priority Actions
           </h3>
           <ol className="space-y-3">

@@ -1,10 +1,5 @@
-import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import type { DissentPoint } from "@/hooks/useMultiAIValidation";
-
-interface DissentSectionProps {
-  points: DissentPoint[];
-}
 
 const MODEL_COLORS: Record<string, string> = {
   'GPT-5.2': 'bg-blue-500/10 border-blue-500/30 text-blue-600',
@@ -12,6 +7,10 @@ const MODEL_COLORS: Record<string, string> = {
   'Gemini Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
   'Gemini 2.5 Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
 };
+
+interface DissentSectionProps {
+  points: DissentPoint[];
+}
 
 export function DissentSection({ points }: DissentSectionProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
@@ -46,7 +45,6 @@ export function DissentSection({ points }: DissentSectionProps) {
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-red-500/10 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <AlertTriangle className="h-6 w-6 text-red-500 shrink-0" />
                   <div>
                     <h4 className="font-bold text-lg text-foreground">{point.topic}</h4>
                     <p className="text-base text-muted-foreground">
@@ -54,11 +52,9 @@ export function DissentSection({ points }: DissentSectionProps) {
                     </p>
                   </div>
                 </div>
-                {isExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                )}
+                <span className="text-muted-foreground text-sm">
+                  {isExpanded ? "−" : "+"}
+                </span>
               </button>
 
               {isExpanded && (

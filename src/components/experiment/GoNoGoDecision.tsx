@@ -1,49 +1,131 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Rocket, Ban, CheckCircle2, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Rocket, 
+  Ban, 
+  ChevronDown, 
+  ChevronUp, 
+  Check, 
+  Archive, 
+  RefreshCw,
+  MessageSquare
+} from "lucide-react";
 
 interface GoNoGoDecisionProps {
   experimentStatus: "active" | "completed" | "abandoned";
   finalDecision: string | null;
+  decisionRationale: string | null;
   overallScore: number;
   onDecision: (decision: "go" | "no_go", rationale: string) => void;
+  onStartNewExperiment?: () => void;
+  onMarkAsDone?: () => void;
+  onArchive?: () => void;
+  onNewValidation?: () => void;
   disabled?: boolean;
 }
 
 export function GoNoGoDecision({
   experimentStatus,
   finalDecision,
+  decisionRationale,
   overallScore,
   onDecision,
+  onStartNewExperiment,
+  onMarkAsDone,
+  onArchive,
+  onNewValidation,
   disabled,
 }: GoNoGoDecisionProps) {
   const [rationale, setRationale] = useState("");
   const [showRationale, setShowRationale] = useState(false);
 
+  // Post-decision state: Show status + follow-up actions
   if (experimentStatus === "completed" || experimentStatus === "abandoned") {
     const isGo = finalDecision === "go";
+    
     return (
-      <div
-        className={`flex items-center gap-2 text-sm ${
-          isGo ? "text-primary" : "text-destructive"
-        }`}
-      >
-        {isGo ? (
-          <>
-            <Rocket className="h-4 w-4" />
-            <span>Decision: GO - Proceed with this strategy</span>
-          </>
-        ) : (
-          <>
-            <Ban className="h-4 w-4" />
-            <span>Decision: NO-GO - Strategy not pursued</span>
-          </>
+      <div className="space-y-4">
+        {/* Prominent Decision Status */}
+        <div 
+          className={`flex items-center gap-3 p-4 rounded-lg ${
+            isGo ? "bg-primary/10" : "bg-destructive/10"
+          }`}
+        >
+          <Badge 
+            variant={isGo ? "default" : "destructive"}
+            className="text-sm px-3 py-1"
+          >
+            {isGo ? "GO" : "NO-GO"}
+          </Badge>
+          <span className={`font-medium ${isGo ? "text-primary" : "text-destructive"}`}>
+            {isGo ? "Proceed with this strategy" : "Strategy not pursued"}
+          </span>
+        </div>
+
+        {/* Decision Rationale (if provided) */}
+        {decisionRationale && (
+          <div className="flex items-start gap-2 text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
+            <MessageSquare className="h-4 w-4 mt-0.5 shrink-0" />
+            <p className="italic">"{decisionRationale}"</p>
+          </div>
         )}
+
+        {/* Follow-up Actions */}
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+            Next Steps
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {isGo ? (
+              <>
+                <Button 
+                  size="sm" 
+                  onClick={onStartNewExperiment}
+                  className="gap-1.5"
+                >
+                  <Rocket className="h-4 w-4" />
+                  Start New Experiment
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onMarkAsDone}
+                  className="gap-1.5"
+                >
+                  <Check className="h-4 w-4" />
+                  Mark as Done
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={onArchive}
+                  className="gap-1.5"
+                >
+                  <Archive className="h-4 w-4" />
+                  Archive
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={onNewValidation}
+                  className="gap-1.5"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  New Validation
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Active state: Show decision buttons
   const getRecommendation = () => {
     if (overallScore >= 7) {
       return { text: "Score suggests: GO", color: "text-primary" };

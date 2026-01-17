@@ -80,7 +80,7 @@ const Navbar = () => {
                 : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
             }`}
           >
-            Multi-AI Validator
+            Features
           </Link>
           
           <Link 
@@ -156,7 +156,7 @@ const Navbar = () => {
               className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
               onClick={() => setIsOpen(false)}
             >
-              Multi-AI Validator
+              Features
             </Link>
 
             <Link

@@ -45,7 +45,7 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
   return (
     <div 
       className={cn(
-        "flex flex-col gap-3 p-5 rounded-xl border transition-all duration-300",
+        "flex flex-col gap-2 sm:gap-3 p-3 sm:p-5 rounded-lg sm:rounded-xl border transition-all duration-300",
         state === 'done' 
           ? "border-primary/40 bg-primary/5" 
           : state === 'failed'
@@ -58,7 +58,7 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
     >
       <div className="flex items-center justify-between">
         <span className={cn(
-          "font-semibold text-lg transition-colors",
+          "font-semibold text-base sm:text-lg transition-colors",
           state === 'done' ? "text-primary" : 
           state === 'failed' ? "text-destructive" :
           state === 'running' ? "text-foreground" : "text-muted-foreground"
@@ -66,7 +66,7 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
           {name}
         </span>
         <span className={cn(
-          "text-base font-medium tabular-nums",
+          "text-sm sm:text-base font-medium tabular-nums",
           state === 'done' ? "text-primary" : 
           state === 'failed' ? "text-destructive" :
           "text-muted-foreground"
@@ -74,7 +74,7 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
           {getStatusText()}
         </span>
       </div>
-      <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+      <div className="h-2 sm:h-2.5 bg-muted rounded-full overflow-hidden">
         <div 
           className={cn(
             "h-full rounded-full transition-all duration-500 ease-out",
@@ -112,29 +112,29 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
   if (status === 'complete') overallProgress = 100;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h3 className="text-2xl font-bold text-foreground">
+      <div className="text-center space-y-1.5 sm:space-y-2">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
           {isEvaluating ? "Synthesizing Results" : "Querying AI Models"}
         </h3>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-sm sm:text-lg text-muted-foreground px-2">
           {isEvaluating 
-            ? "Meta-analysis in progress — comparing perspectives"
-            : "Parallel analysis across 3 independent models"
+            ? "Meta-analysis in progress"
+            : "Parallel analysis across 3 models"
           }
         </p>
       </div>
 
       {/* Overall progress */}
-      <div className="space-y-3 p-5 rounded-xl border bg-card">
+      <div className="space-y-2 sm:space-y-3 p-3 sm:p-5 rounded-lg sm:rounded-xl border bg-card">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-medium text-foreground">Overall Progress</span>
-          <span className="text-xl font-bold text-primary tabular-nums">
+          <span className="text-base sm:text-lg font-medium text-foreground">Overall Progress</span>
+          <span className="text-lg sm:text-xl font-bold text-primary tabular-nums">
             {Math.round(overallProgress)}%
           </span>
         </div>
-        <div className="h-3.5 bg-muted rounded-full overflow-hidden">
+        <div className="h-2.5 sm:h-3.5 bg-muted rounded-full overflow-hidden">
           <div 
             className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out"
             style={{ width: `${overallProgress}%` }}
@@ -142,8 +142,8 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
         </div>
       </div>
 
-      {/* Model cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      {/* Model cards - Stack on mobile */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
         <ModelStatus name="GPT-5 Mini" state={states.gpt} index={0} />
         <ModelStatus name="Gemini 3 Pro" state={states.geminiPro} index={1} />
         <ModelStatus name="Gemini Flash" state={states.geminiFlash} index={2} />
@@ -151,20 +151,20 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
 
       {/* Meta-evaluation indicator */}
       {isEvaluating && (
-        <div className="p-5 rounded-xl border border-primary/30 bg-primary/5 space-y-3">
+        <div className="p-3 sm:p-5 rounded-lg sm:rounded-xl border border-primary/30 bg-primary/5 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-foreground">Meta-Evaluation</span>
-            <span className="text-base text-primary font-medium">Processing...</span>
+            <span className="text-base sm:text-lg font-semibold text-foreground">Meta-Evaluation</span>
+            <span className="text-sm sm:text-base text-primary font-medium">Processing...</span>
           </div>
-          <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+          <div className="h-2 sm:h-2.5 bg-muted rounded-full overflow-hidden">
             <div className="h-full w-3/4 rounded-full bg-primary progress-striped" />
           </div>
         </div>
       )}
 
-      {/* Time estimate - updated for realistic times */}
-      <p className="text-center text-base text-muted-foreground">
-        Typical: 30-60 seconds (Premium analysis may take longer)
+      {/* Time estimate */}
+      <p className="text-center text-sm sm:text-base text-muted-foreground">
+        Typical: 30-60 seconds
       </p>
     </div>
   );

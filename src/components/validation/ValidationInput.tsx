@@ -44,15 +44,15 @@ export function ValidationInput({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Main Question Input */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="prompt" className="text-lg font-semibold text-foreground">
+      <div className="space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="prompt" className="text-base sm:text-lg font-semibold text-foreground">
             Your Business Question
           </Label>
           <span className={cn(
-            "text-base tabular-nums font-medium",
+            "text-sm sm:text-base tabular-nums font-medium shrink-0",
             charactersRemaining <= 50 ? 'text-destructive' : 'text-muted-foreground'
           )}>
             {prompt.length}/{MAX_CHARACTERS}
@@ -62,23 +62,23 @@ export function ValidationInput({
           id="prompt"
           value={prompt}
           onChange={(e) => handlePromptChange(e.target.value)}
-          placeholder="E.g., Should I expand my SaaS product to enterprise clients, or focus on growing the SMB market? What pricing strategy should I use?"
-          className="min-h-[160px] text-lg resize-none leading-relaxed"
+          placeholder="E.g., Should I expand my SaaS product to enterprise clients?"
+          className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed"
           disabled={disabled}
           maxLength={MAX_CHARACTERS}
         />
-        <p className="text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Ask any strategic business question. 3 AI models will analyze and provide validated recommendations.
         </p>
       </div>
 
-      {/* Preference Sliders */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      {/* Preference Sliders - Stack on mobile */}
+      <div className="grid gap-3 sm:gap-5 grid-cols-1 sm:grid-cols-2">
         {/* Risk Preference */}
-        <div className="space-y-4 p-6 rounded-xl bg-muted/30 border">
-          <div className="flex items-center justify-between">
-            <Label className="text-lg font-semibold">Risk Tolerance</Label>
-            <span className="text-base font-bold text-primary px-4 py-1.5 rounded-full bg-primary/10">
+        <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
+          <div className="flex items-center justify-between gap-2">
+            <Label className="text-base sm:text-lg font-semibold">Risk Tolerance</Label>
+            <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
               {getRiskLabel(riskPreference)}
             </span>
           </div>
@@ -91,17 +91,17 @@ export function ValidationInput({
             disabled={disabled}
             className="cursor-pointer"
           />
-          <div className="flex justify-between text-base text-muted-foreground">
+          <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
             <span>Safe choices</span>
             <span>Bold moves</span>
           </div>
         </div>
 
         {/* Creativity Preference */}
-        <div className="space-y-4 p-6 rounded-xl bg-muted/30 border">
-          <div className="flex items-center justify-between">
-            <Label className="text-lg font-semibold">Analysis Style</Label>
-            <span className="text-base font-bold text-primary px-4 py-1.5 rounded-full bg-primary/10">
+        <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
+          <div className="flex items-center justify-between gap-2">
+            <Label className="text-base sm:text-lg font-semibold">Analysis Style</Label>
+            <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
               {getCreativityLabel(creativityPreference)}
             </span>
           </div>
@@ -114,26 +114,26 @@ export function ValidationInput({
             disabled={disabled}
             className="cursor-pointer"
           />
-          <div className="flex justify-between text-base text-muted-foreground">
+          <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
             <span>Facts & Data</span>
             <span>Creative Ideas</span>
           </div>
         </div>
       </div>
 
-      {/* Model Info Pills */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-500/10 border border-blue-500/20">
-          <span className="text-base font-semibold text-blue-600">GPT-5 Mini</span>
-          <span className="text-base text-muted-foreground">Reasoning</span>
+      {/* Model Info Pills - Responsive */}
+      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+          <span className="text-sm sm:text-base font-semibold text-blue-600">GPT-5 Mini</span>
+          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Reasoning</span>
         </div>
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20">
-          <span className="text-base font-semibold text-purple-600">Gemini 3 Pro</span>
-          <span className="text-base text-muted-foreground">Creative</span>
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+          <span className="text-sm sm:text-base font-semibold text-purple-600">Gemini 3 Pro</span>
+          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Creative</span>
         </div>
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-500/10 border border-green-500/20">
-          <span className="text-base font-semibold text-green-600">Gemini Flash</span>
-          <span className="text-base text-muted-foreground">Pragmatic</span>
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-green-500/10 border border-green-500/20">
+          <span className="text-sm sm:text-base font-semibold text-green-600">Gemini Flash</span>
+          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Pragmatic</span>
         </div>
       </div>
     </div>

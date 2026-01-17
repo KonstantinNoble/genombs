@@ -296,23 +296,39 @@ export default function ValidationPlatform() {
         canonical="/validate"
       />
       <Navbar />
-      <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="w-full lg:w-80 shrink-0 order-2 lg:order-1 space-y-4">
+      <div className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-7xl">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+          {/* History Sidebar - Collapsible on mobile */}
+          <aside className="w-full lg:w-72 xl:w-80 shrink-0 order-2 lg:order-1 space-y-3">
             <Card className="shadow-elegant border-primary/10">
-              <CardHeader className="pb-3"><CardTitle className="text-xl">Previous Analyses</CardTitle></CardHeader>
-              <CardContent className="space-y-3 max-h-96 overflow-y-auto">
-                {history.length === 0 ? <p className="text-base text-muted-foreground text-center py-8">No history yet</p> : history.map(item => (
-                  <div key={item.id} className="p-4 border rounded-xl hover:bg-accent/50 cursor-pointer group transition-colors" onClick={() => handleHistoryClick(item)}>
-                    <div className="flex justify-between items-start gap-3">
+              <CardHeader className="pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+                <CardTitle className="text-lg sm:text-xl">Previous Analyses</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 max-h-64 sm:max-h-96 overflow-y-auto px-3 sm:px-6 pb-3 sm:pb-6">
+                {history.length === 0 ? (
+                  <p className="text-sm sm:text-base text-muted-foreground text-center py-4 sm:py-8">No history yet</p>
+                ) : history.map(item => (
+                  <div 
+                    key={item.id} 
+                    className="p-3 sm:p-4 border rounded-lg sm:rounded-xl hover:bg-accent/50 cursor-pointer group transition-colors" 
+                    onClick={() => handleHistoryClick(item)}
+                  >
+                    <div className="flex justify-between items-start gap-2 sm:gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-base truncate">{item.prompt?.substring(0, 50)}...</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="outline" className="text-sm">{item.overall_confidence}%</Badge>
-                          <span className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
+                        <p className="font-medium text-sm sm:text-base truncate">{item.prompt?.substring(0, 40)}...</p>
+                        <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 flex-wrap">
+                          <Badge variant="outline" className="text-xs sm:text-sm">{item.overall_confidence}%</Badge>
+                          <span className="text-xs sm:text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-8 px-3 text-sm" onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}>Delete</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="opacity-100 lg:opacity-0 group-hover:opacity-100 h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm shrink-0" 
+                        onClick={(e) => { e.stopPropagation(); handleDeleteHistory(item.id); }}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -320,25 +336,26 @@ export default function ValidationPlatform() {
             </Card>
           </aside>
 
-          <main className="flex-1 space-y-6 order-1 lg:order-2">
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20">
-                <span className="text-base font-semibold">3-Model AI Validation</span>
-                {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">Premium</Badge>}
+          <main className="flex-1 space-y-4 sm:space-y-6 order-1 lg:order-2">
+            {/* Header Section - Optimized for mobile */}
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-sm sm:text-base font-semibold">3-Model AI Validation</span>
+                {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">Premium</Badge>}
               </div>
-              <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
-              <p className="text-lg text-muted-foreground">Get consensus from GPT-5 Mini, Gemini 3 Pro & Gemini Flash</p>
-              <div className="flex items-center justify-center gap-4">
-                <span className="text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
+              <p className="text-sm sm:text-lg text-muted-foreground px-2">Get consensus from GPT-5 Mini, Gemini 3 Pro & Gemini Flash</p>
+              <div className="flex items-center justify-center">
+                <span className="text-sm sm:text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
               </div>
             </div>
 
             <Card className="border-primary/20 shadow-elegant">
-              <CardHeader>
-                <CardTitle>Ask Your Business Question</CardTitle>
-                <CardDescription>Adjust risk & creativity preferences to tune the AI analysis style.</CardDescription>
+              <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">
+                <CardTitle className="text-lg sm:text-xl">Ask Your Business Question</CardTitle>
+                <CardDescription className="text-sm">Adjust risk & creativity preferences to tune the AI analysis style.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
                 <ValidationInput
                   prompt={prompt}
                   onPromptChange={setPrompt}
@@ -350,19 +367,19 @@ export default function ValidationPlatform() {
                 />
                 
                 {!isPremium && (
-                  <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20">
-                    <span className="text-sm text-muted-foreground">Unlock more validations daily</span>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20">
+                    <span className="text-xs sm:text-sm text-muted-foreground text-center">Unlock more validations daily</span>
                     <button 
                       onClick={() => openCheckout(user?.email || undefined)}
-                      className="text-sm font-semibold text-amber-600 hover:text-amber-500 underline underline-offset-2 transition-colors"
+                      className="text-xs sm:text-sm font-semibold text-amber-600 hover:text-amber-500 underline underline-offset-2 transition-colors"
                     >
                       Upgrade to Premium →
                     </button>
                   </div>
                 )}
                 
-                <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim()} className="w-full" size="lg">
-                  {isValidating ? 'Validating with 3 AI Models...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : 'Validate with 3 AI Models'}
+                <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim()} className="w-full h-11 sm:h-12 text-sm sm:text-base" size="lg">
+                  {isValidating ? 'Validating...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : 'Validate with 3 AI Models'}
                 </Button>
               </CardContent>
             </Card>
@@ -372,13 +389,13 @@ export default function ValidationPlatform() {
             )}
 
             {displayedResult && !isValidating && (
-              <div ref={resultRef} className="animate-fade-in space-y-6">
+              <div ref={resultRef} className="animate-fade-in space-y-4 sm:space-y-6">
                 <Card className="border-primary/20 shadow-elegant">
-                  <CardHeader>
-                    <CardTitle>Validation Results</CardTitle>
-                    <CardDescription>Cross-validated analysis from 3 AI models</CardDescription>
+                  <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Validation Results</CardTitle>
+                    <CardDescription className="text-sm">Cross-validated analysis from 3 AI models</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
                     <ValidationOutput 
                       result={displayedResult} 
                       validationId={currentValidationId || undefined}

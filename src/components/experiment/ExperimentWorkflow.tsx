@@ -31,7 +31,7 @@ export function ExperimentWorkflow({ validationId, onNewValidation }: Experiment
     updateTask,
     updateExperimentDecision,
     updateCheckpoint,
-    archiveExperiment,
+    deleteExperiment,
     createExperiment,
   } = useExperiment();
 
@@ -151,27 +151,11 @@ export function ExperimentWorkflow({ validationId, onNewValidation }: Experiment
     setShowSetupDialog(true);
   };
 
-  const handleMarkAsDone = async () => {
+  const handleDelete = async () => {
     if (!experiment) return;
-    const success = await archiveExperiment(experiment.id);
+    const success = await deleteExperiment(experiment.id);
     if (success) {
       setExperiment(null);
-      toast({
-        title: "Marked as Done",
-        description: "The decision block has been completed and archived.",
-      });
-    }
-  };
-
-  const handleArchive = async () => {
-    if (!experiment) return;
-    const success = await archiveExperiment(experiment.id);
-    if (success) {
-      setExperiment(null);
-      toast({
-        title: "Archived",
-        description: "The decision block has been archived.",
-      });
     }
   };
 
@@ -282,8 +266,7 @@ export function ExperimentWorkflow({ validationId, onNewValidation }: Experiment
             overallScore={calculateOverallScore()}
             onDecision={handleDecision}
             onStartNewExperiment={handleStartNewExperiment}
-            onMarkAsDone={handleMarkAsDone}
-            onArchive={handleArchive}
+            onDelete={handleDelete}
             onNewValidation={handleNewValidation}
             disabled={!isActive}
           />

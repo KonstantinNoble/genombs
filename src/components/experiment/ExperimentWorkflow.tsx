@@ -6,7 +6,6 @@ import { Scorecard } from "./Scorecard";
 import { GoNoGoDecision } from "./GoNoGoDecision";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useToast } from "@/hooks/use-toast";
-import { Target, Loader2 } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface ExperimentWorkflowProps {
@@ -156,7 +155,7 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     return (
       <Card className="border-primary/20">
         <CardContent className="py-8 flex items-center justify-center">
-          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm text-muted-foreground">Loading...</span>
         </CardContent>
       </Card>
     );
@@ -176,7 +175,6 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
         {/* Decision Header */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-primary" />
             <span className="font-medium text-sm">
               Decision: {experiment.decision_question || experiment.title}
             </span>
@@ -189,7 +187,7 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground italic pl-6">
+          <p className="text-xs text-muted-foreground italic pl-0">
             "{experiment.hypothesis}"
           </p>
         </div>

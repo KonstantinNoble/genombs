@@ -2,14 +2,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Rocket, 
-  Ban, 
-  ChevronDown, 
-  ChevronUp, 
-  Check,
-  MessageSquare
-} from "lucide-react";
 
 interface GoNoGoDecisionProps {
   experimentStatus: "active" | "completed" | "abandoned";
@@ -59,7 +51,6 @@ export function GoNoGoDecision({
         {/* Decision Rationale (if provided) */}
         {decisionRationale && (
           <div className="flex items-start gap-2 text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
-            <MessageSquare className="h-4 w-4 mt-0.5 shrink-0" />
             <p className="italic">"{decisionRationale}"</p>
           </div>
         )}
@@ -68,9 +59,8 @@ export function GoNoGoDecision({
         <Button 
           size="sm" 
           onClick={onComplete}
-          className="w-full gap-1.5"
+          className="w-full"
         >
-          <Check className="h-4 w-4" />
           Completed
         </Button>
       </div>
@@ -106,11 +96,7 @@ export function GoNoGoDecision({
         onClick={() => setShowRationale(!showRationale)}
         className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
       >
-        {showRationale ? (
-          <ChevronUp className="h-3 w-3" />
-        ) : (
-          <ChevronDown className="h-3 w-3" />
-        )}
+        <span>{showRationale ? "−" : "+"}</span>
         Add decision rationale (optional)
       </button>
 
@@ -133,7 +119,6 @@ export function GoNoGoDecision({
           size="sm"
           className="flex-1 bg-primary hover:bg-primary/90"
         >
-          <Rocket className="h-4 w-4 mr-1.5" />
           GO
         </Button>
         <Button
@@ -143,7 +128,6 @@ export function GoNoGoDecision({
           size="sm"
           className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
         >
-          <Ban className="h-4 w-4 mr-1.5" />
           NO-GO
         </Button>
       </div>

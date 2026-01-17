@@ -16,6 +16,9 @@ interface ModelRecommendation {
   actionItems: string[];
   potentialRisks: string[];
   timeframe: string;
+  competitiveAdvantage?: string;
+  longTermImplications?: string;
+  resourceRequirements?: string;
 }
 
 interface ModelResponse {
@@ -24,6 +27,8 @@ interface ModelResponse {
   recommendations: ModelRecommendation[];
   summary: string;
   overallConfidence: number;
+  marketContext?: string;
+  strategicOutlook?: string;
   error?: string;
 }
 
@@ -42,7 +47,6 @@ interface DissentPoint {
     modelName: string;
     position: string;
     reasoning: string;
-    riskLevel: number;
   }[];
 }
 
@@ -55,8 +59,8 @@ interface FinalRecommendation {
   sourceModels: string[];
 }
 
-// Meta-evaluation tool schema
-const META_EVALUATION_TOOL = {
+// Meta-evaluation tool schema - dynamic based on premium
+const getMetaEvaluationTool = (isPremium: boolean) => ({
   type: "function",
   function: {
     name: "provide_meta_evaluation",
@@ -119,17 +123,51 @@ const META_EVALUATION_TOOL = {
             description: { type: "string" },
             confidence: { type: "number" },
             reasoning: { type: "string" },
-            topActions: { type: "array", items: { type: "string" }, description: "Top 5 prioritized actions" }
+            topActions: { 
+              type: "array", 
+              items: { type: "string" }, 
+              description: isPremium ? "Top 7 prioritized actions with specific metrics and deadlines" : "Top 5 prioritized actions" 
+            }
           },
           required: ["title", "description", "confidence", "reasoning", "topActions"]
         },
         overallConfidence: { type: "number", description: "Overall confidence in the meta-analysis 0-100" },
-        synthesisReasoning: { type: "string", description: "Explanation of how the synthesis was created" }
+        synthesisReasoning: { type: "string", description: "Explanation of how the synthesis was created" },
+        ...(isPremium && {
+          strategicAlternatives: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                scenario: { type: "string", description: "Alternative strategic path" },
+                pros: { type: "array", items: { type: "string" } },
+                cons: { type: "array", items: { type: "string" } },
+                bestFor: { type: "string", description: "When this alternative is best suited" }
+              },
+              required: ["scenario", "pros", "cons", "bestFor"]
+            },
+            description: "2-3 alternative strategic paths if main recommendations don't fit"
+          },
+          longTermOutlook: {
+            type: "object",
+            properties: {
+              sixMonths: { type: "string", description: "Expected position in 6 months" },
+              twelveMonths: { type: "string", description: "Expected position in 12 months" },
+              keyMilestones: { type: "array", items: { type: "string" } }
+            },
+            required: ["sixMonths", "twelveMonths", "keyMilestones"],
+            description: "Long-term outlook if recommendations are followed"
+          },
+          competitorInsights: {
+            type: "string",
+            description: "Key competitive considerations synthesized from all models"
+          }
+        })
       },
       required: ["consensusPoints", "majorityPoints", "dissentPoints", "finalRecommendation", "overallConfidence", "synthesisReasoning"]
     }
   }
-};
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -166,17 +204,18 @@ serve(async (req) => {
       geminiFlashResponse,
       userPreferences,
       prompt,
-      saveToHistory = true
+      saveToHistory = true,
+      isPremium = false
     } = await req.json();
 
-    console.log(`Meta-evaluation started for user ${user.id}`);
+    console.log(`Meta-evaluation started for user ${user.id} (Premium: ${isPremium})`);
     const startTime = Date.now();
 
     // Build context from all model responses
     const modelSummaries = [
-      gptResponse?.error ? null : `GPT-5.2 (${gptResponse?.overallConfidence || 0}% confidence): ${gptResponse?.summary || 'No response'}`,
-      geminiProResponse?.error ? null : `Gemini 3 Pro (${geminiProResponse?.overallConfidence || 0}% confidence): ${geminiProResponse?.summary || 'No response'}`,
-      geminiFlashResponse?.error ? null : `Gemini Flash (${geminiFlashResponse?.overallConfidence || 0}% confidence): ${geminiFlashResponse?.summary || 'No response'}`
+      gptResponse?.error ? null : `GPT-5.2 (${gptResponse?.overallConfidence || 0}% confidence): ${gptResponse?.summary || 'No response'}${isPremium && gptResponse?.marketContext ? `\nMarket Context: ${gptResponse.marketContext}` : ''}`,
+      geminiProResponse?.error ? null : `Gemini 3 Pro (${geminiProResponse?.overallConfidence || 0}% confidence): ${geminiProResponse?.summary || 'No response'}${isPremium && geminiProResponse?.marketContext ? `\nMarket Context: ${geminiProResponse.marketContext}` : ''}`,
+      geminiFlashResponse?.error ? null : `Gemini Flash (${geminiFlashResponse?.overallConfidence || 0}% confidence): ${geminiFlashResponse?.summary || 'No response'}${isPremium && geminiFlashResponse?.marketContext ? `\nMarket Context: ${geminiFlashResponse.marketContext}` : ''}`
     ].filter(Boolean).join('\n\n');
 
     const allRecommendations = [
@@ -188,6 +227,13 @@ serve(async (req) => {
     const riskPref = userPreferences?.riskPreference || 3;
     const creativityPref = userPreferences?.creativityPreference || 3;
 
+    const premiumInstructions = isPremium ? `
+PREMIUM ANALYSIS REQUIREMENTS:
+5. Provide STRATEGIC ALTERNATIVES: 2-3 alternative paths if main recommendations don't fit
+6. Include LONG-TERM OUTLOOK: 6-month and 12-month projections with key milestones
+7. Synthesize COMPETITOR INSIGHTS from all model recommendations
+8. Provide 7 top actions (instead of 5) with specific metrics and deadlines` : '';
+
     const systemPrompt = `You are a meta-analyst synthesizing recommendations from multiple AI models.
 
 User preferences:
@@ -198,7 +244,7 @@ Your task:
 1. Identify CONSENSUS: Where do all 3 models agree? (green - high confidence)
 2. Identify MAJORITY: Where do 2/3 models agree? (yellow - medium confidence)
 3. Identify DISSENT: Where do models disagree? Present each position fairly (red - requires user decision)
-4. Create FINAL RECOMMENDATION: Weight based on user's risk/creativity preferences
+4. Create FINAL RECOMMENDATION: Weight based on user's risk/creativity preferences${premiumInstructions}
 
 Model weight guide:
 - For conservative users: Weight Gemini Flash (pragmatic) higher
@@ -213,7 +259,7 @@ ${modelSummaries}
 DETAILED RECOMMENDATIONS:
 ${JSON.stringify(allRecommendations, null, 2)}
 
-Please analyze these and provide a meta-evaluation.`;
+Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 'standard'} meta-evaluation.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -227,7 +273,7 @@ Please analyze these and provide a meta-evaluation.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        tools: [META_EVALUATION_TOOL],
+        tools: [getMetaEvaluationTool(isPremium)],
         tool_choice: { type: "function", function: { name: "provide_meta_evaluation" } }
       }),
     });
@@ -248,7 +294,7 @@ Please analyze these and provide a meta-evaluation.`;
     const evaluation = JSON.parse(toolCall.function.arguments);
     const processingTime = Date.now() - startTime;
 
-    console.log(`Meta-evaluation completed in ${processingTime}ms`);
+    console.log(`Meta-evaluation completed in ${processingTime}ms (Premium features: ${isPremium})`);
 
     // Save to history if requested
     let validationId: string | null = null;
@@ -287,7 +333,8 @@ Please analyze these and provide a meta-evaluation.`;
       JSON.stringify({
         ...evaluation,
         processingTimeMs: processingTime,
-        validationId
+        validationId,
+        isPremium
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -47,6 +47,19 @@ export interface DissentPoint {
   }[];
 }
 
+export interface StrategicAlternative {
+  scenario: string;
+  pros: string[];
+  cons: string[];
+  bestFor: string;
+}
+
+export interface LongTermOutlook {
+  sixMonths: string;
+  twelveMonths: string;
+  keyMilestones: string[];
+}
+
 export interface FinalRecommendation {
   title: string;
   description: string;
@@ -67,6 +80,11 @@ export interface ValidationResult {
   synthesisReasoning: string;
   processingTimeMs: number;
   validationId?: string;
+  isPremium?: boolean;
+  // Premium-only fields
+  strategicAlternatives?: StrategicAlternative[];
+  longTermOutlook?: LongTermOutlook;
+  competitorInsights?: string;
 }
 
 export type ValidationStatus = 
@@ -167,6 +185,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       let gptResponse: ModelResponse | undefined;
       let geminiProResponse: ModelResponse | undefined;
       let geminiFlashResponse: ModelResponse | undefined;
+      let isPremiumUser = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -202,11 +221,17 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
                 gptResponse = data.gptResponse;
                 geminiProResponse = data.geminiProResponse;
                 geminiFlashResponse = data.geminiFlashResponse;
+                isPremiumUser = data.isPremium || false;
                 setPartialResponses({
                   gpt: gptResponse,
                   geminiPro: geminiProResponse,
                   geminiFlash: geminiFlashResponse
                 });
+              }
+              
+              // Capture isPremium from the complete event
+              if (data.isPremium !== undefined) {
+                isPremiumUser = data.isPremium;
               }
             } catch (e) {
               if (e instanceof SyntaxError) continue;
@@ -238,7 +263,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             geminiFlashResponse,
             userPreferences: { riskPreference, creativityPreference },
             prompt,
-            saveToHistory: true
+            saveToHistory: true,
+            isPremium: isPremiumUser
           }),
         }
       );
@@ -267,7 +293,12 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         overallConfidence: evalData.overallConfidence || 50,
         synthesisReasoning: evalData.synthesisReasoning || '',
         processingTimeMs: evalData.processingTimeMs || 0,
-        validationId: evalData.validationId || undefined
+        validationId: evalData.validationId || undefined,
+        isPremium: isPremiumUser,
+        // Premium-only fields
+        strategicAlternatives: evalData.strategicAlternatives,
+        longTermOutlook: evalData.longTermOutlook,
+        competitorInsights: evalData.competitorInsights
       };
 
       setResult(finalResult);

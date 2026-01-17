@@ -16,6 +16,7 @@ import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
 import { ExperimentSetupDialog, ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import { ExperimentWorkflow } from "@/components/experiment/ExperimentWorkflow";
+import { ArchivedDecisions } from "@/components/experiment/ArchivedDecisions";
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
@@ -266,7 +267,7 @@ export default function ValidationPlatform() {
       <Navbar />
       <div className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="w-full lg:w-80 shrink-0 order-2 lg:order-1">
+          <aside className="w-full lg:w-80 shrink-0 order-2 lg:order-1 space-y-4">
             <Card className="shadow-elegant border-primary/10">
               <CardHeader className="pb-3"><CardTitle className="text-lg">Previous Analyses</CardTitle></CardHeader>
               <CardContent className="space-y-2 max-h-96 overflow-y-auto">
@@ -286,6 +287,9 @@ export default function ValidationPlatform() {
                 ))}
               </CardContent>
             </Card>
+            
+            {/* Archived Decisions */}
+            <ArchivedDecisions />
           </aside>
 
           <main className="flex-1 space-y-6 order-1 lg:order-2">

@@ -33,6 +33,7 @@ export function ArchivedDecisions() {
   const [isOpen, setIsOpen] = useState(false);
   const [experiments, setExperiments] = useState<ArchivedExperiment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const loadArchivedExperiments = async () => {
     setIsLoading(true);
@@ -49,6 +50,7 @@ export function ArchivedDecisions() {
 
       if (error) throw error;
       setExperiments(data || []);
+      setHasLoaded(true);
     } catch (error) {
       console.error("Error loading archived experiments:", error);
     } finally {
@@ -56,8 +58,14 @@ export function ArchivedDecisions() {
     }
   };
 
+  // Load on mount to show count
   useEffect(() => {
-    if (isOpen) {
+    loadArchivedExperiments();
+  }, []);
+
+  // Reload when opened
+  useEffect(() => {
+    if (isOpen && !hasLoaded) {
       loadArchivedExperiments();
     }
   }, [isOpen]);
@@ -87,10 +95,6 @@ export function ArchivedDecisions() {
       });
     }
   };
-
-  if (experiments.length === 0 && !isOpen) {
-    return null;
-  }
 
   return (
     <Card className="border-muted">

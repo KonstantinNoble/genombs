@@ -251,9 +251,10 @@ Please analyze these and provide a meta-evaluation.`;
     console.log(`Meta-evaluation completed in ${processingTime}ms`);
 
     // Save to history if requested
+    let validationId: string | null = null;
     if (saveToHistory && prompt) {
       try {
-        await supabase
+        const { data: insertedData, error: insertError } = await supabase
           .from('validation_analyses')
           .insert({
             user_id: user.id,
@@ -269,8 +270,13 @@ Please analyze these and provide a meta-evaluation.`;
             final_recommendation: evaluation.finalRecommendation,
             overall_confidence: evaluation.overallConfidence,
             processing_time_ms: processingTime
-          });
-        console.log('Validation analysis saved to history');
+          })
+          .select('id')
+          .single();
+        
+        if (insertError) throw insertError;
+        validationId = insertedData?.id || null;
+        console.log('Validation analysis saved to history, id:', validationId);
       } catch (saveError) {
         console.error('Failed to save to history:', saveError);
         // Don't fail the request if saving fails
@@ -280,7 +286,8 @@ Please analyze these and provide a meta-evaluation.`;
     return new Response(
       JSON.stringify({
         ...evaluation,
-        processingTimeMs: processingTime
+        processingTimeMs: processingTime,
+        validationId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -14,7 +14,9 @@ import { ValidationInput } from "@/components/validation/ValidationInput";
 import { ValidationOutput } from "@/components/validation/ValidationOutput";
 import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
+import { ExperimentSetupDialog, ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
+import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 interface HistoryItem {
@@ -35,6 +37,8 @@ interface HistoryItem {
 export default function ValidationPlatform() {
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
+  const { createExperiment, isLoading: isCreatingExperiment } = useExperiment();
+  
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
@@ -44,6 +48,7 @@ export default function ValidationPlatform() {
   const [creativityPreference, setCreativityPreference] = useState(3);
   
   const [displayedResult, setDisplayedResult] = useState<ValidationResult | null>(null);
+  const [currentValidationId, setCurrentValidationId] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   
   const [validationCount, setValidationCount] = useState(0);
@@ -54,12 +59,15 @@ export default function ValidationPlatform() {
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [limitResetAt, setLimitResetAt] = useState<Date | null>(null);
   const [limitIsPremium, setLimitIsPremium] = useState(false);
+  
+  const [showExperimentDialog, setShowExperimentDialog] = useState(false);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
   const { validate, isValidating, status, result } = useMultiAIValidation({
     onComplete: async (data) => {
       setDisplayedResult(data);
+      setCurrentValidationId(data.validationId || null);
       if (user) {
         await loadHistory(user.id);
         await loadPremiumStatus(user.id);
@@ -180,12 +188,39 @@ export default function ValidationPlatform() {
       processingTimeMs: item.processing_time_ms || 0
     };
     setDisplayedResult(reconstructedResult);
+    setCurrentValidationId(item.id);
   };
 
   const handleDeleteHistory = async (id: string) => {
     await supabase.from('validation_analyses').delete().eq('id', id);
     setHistory(history.filter(item => item.id !== id));
     toast({ title: "Deleted", description: "Analysis removed from history" });
+  };
+
+  const handleStartExperiment = () => {
+    setShowExperimentDialog(true);
+  };
+
+  const handleCreateExperiment = async (data: ExperimentSetupData) => {
+    if (!currentValidationId) return;
+    
+    const experiment = await createExperiment(currentValidationId, data);
+    if (experiment) {
+      setShowExperimentDialog(false);
+      toast({
+        title: "Experiment Started!",
+        description: `Your ${data.durationDays}-day experiment "${data.title}" has begun.`,
+      });
+    }
+  };
+
+  const getTopActionsForExperiment = (): { action: string; reasoning: string; priority: string }[] => {
+    if (!displayedResult?.finalRecommendation?.topActions) return [];
+    return displayedResult.finalRecommendation.topActions.map((action, i) => ({
+      action: typeof action === 'string' ? action : String(action),
+      reasoning: '',
+      priority: i === 0 ? 'high' : i === 1 ? 'medium' : 'low'
+    }));
   };
 
   const getTimeUntilNextValidation = (): string => {
@@ -309,7 +344,11 @@ export default function ValidationPlatform() {
                     <CardDescription>Cross-validated analysis from 3 AI models</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ValidationOutput result={displayedResult} />
+                    <ValidationOutput 
+                      result={displayedResult} 
+                      validationId={currentValidationId || undefined}
+                      onStartExperiment={handleStartExperiment}
+                    />
                   </CardContent>
                 </Card>
               </div>
@@ -325,6 +364,16 @@ export default function ValidationPlatform() {
         isPremium={limitIsPremium}
         resetAt={limitResetAt}
         onUpgrade={() => openCheckout(user?.email || undefined)}
+      />
+      
+      <ExperimentSetupDialog
+        open={showExperimentDialog}
+        onOpenChange={setShowExperimentDialog}
+        onSubmit={handleCreateExperiment}
+        hypothesis={displayedResult?.finalRecommendation?.description || ''}
+        topActions={getTopActionsForExperiment()}
+        isPremium={isPremium}
+        isLoading={isCreatingExperiment}
       />
     </div>
   );

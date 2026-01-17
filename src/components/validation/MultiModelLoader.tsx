@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
 import type { ValidationStatus } from "@/hooks/useMultiAIValidation";
 
 interface MultiModelLoaderProps {
@@ -9,21 +10,32 @@ interface ModelStatusProps {
   name: string;
   isComplete: boolean;
   isActive: boolean;
-  colorClass: string;
+  progress: number;
 }
 
-function ModelStatus({ name, isComplete, isActive, colorClass }: ModelStatusProps) {
+function ModelStatus({ name, isComplete, isActive, progress }: ModelStatusProps) {
   return (
     <div className={cn(
-      "flex items-center gap-3 p-4 rounded-xl border transition-all duration-500",
-      isComplete ? `${colorClass} scale-100` : isActive ? "border-primary/50 bg-primary/5 animate-pulse" : "border-muted bg-muted/20 opacity-50"
+      "flex flex-col gap-2 p-4 rounded-xl border transition-all duration-500",
+      isComplete 
+        ? "border-primary/30 bg-primary/5" 
+        : isActive 
+          ? "border-primary/50 bg-primary/5" 
+          : "border-muted bg-muted/20 opacity-50"
     )}>
-      <div className="flex-1">
+      <div className="flex items-center justify-between">
         <p className="font-medium text-foreground">{name}</p>
         <p className="text-xs text-muted-foreground">
           {isComplete ? "Complete" : isActive ? "Analyzing..." : "Waiting..."}
         </p>
       </div>
+      <Progress 
+        value={progress} 
+        className={cn(
+          "h-2 transition-all duration-300",
+          isComplete ? "[&>div]:bg-primary" : isActive ? "[&>div]:bg-primary/70" : "[&>div]:bg-muted"
+        )}
+      />
     </div>
   );
 }
@@ -34,6 +46,31 @@ export function MultiModelLoader({ status }: MultiModelLoaderProps) {
   const geminiProComplete = ['gemini_pro_complete', 'gemini_flash_complete', 'evaluating', 'complete'].includes(status);
   const geminiFlashComplete = ['gemini_flash_complete', 'evaluating', 'complete'].includes(status);
   const isEvaluating = status === 'evaluating';
+
+  // Calculate progress for each model
+  const getProgress = (isComplete: boolean, isActive: boolean) => {
+    if (isComplete) return 100;
+    if (isActive) return 65; // Shows progress is happening
+    return 0;
+  };
+
+  // Calculate overall progress
+  const overallProgress = (() => {
+    let progress = 0;
+    if (gptComplete) progress += 25;
+    else if (isQueryingModels) progress += 12;
+    
+    if (geminiProComplete) progress += 25;
+    else if (isQueryingModels || gptComplete) progress += 12;
+    
+    if (geminiFlashComplete) progress += 25;
+    else if (isQueryingModels || geminiProComplete) progress += 12;
+    
+    if (isEvaluating) progress += 15;
+    if (status === 'complete') progress = 100;
+    
+    return progress;
+  })();
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -49,33 +86,49 @@ export function MultiModelLoader({ status }: MultiModelLoaderProps) {
         </p>
       </div>
 
+      {/* Overall progress bar */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Overall Progress</span>
+          <span className="font-medium text-foreground">{Math.round(overallProgress)}%</span>
+        </div>
+        <Progress 
+          value={overallProgress} 
+          className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-primary/70 [&>div]:transition-all [&>div]:duration-500"
+        />
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-3">
         <ModelStatus
           name="GPT-5.2"
           isComplete={gptComplete}
           isActive={isQueryingModels}
-          colorClass="border-blue-500/30 bg-blue-500/10"
+          progress={getProgress(gptComplete, isQueryingModels)}
         />
         <ModelStatus
           name="Gemini 3 Pro"
           isComplete={geminiProComplete}
           isActive={isQueryingModels || gptComplete}
-          colorClass="border-purple-500/30 bg-purple-500/10"
+          progress={getProgress(geminiProComplete, isQueryingModels || gptComplete)}
         />
         <ModelStatus
           name="Gemini Flash"
           isComplete={geminiFlashComplete}
           isActive={isQueryingModels || geminiProComplete}
-          colorClass="border-green-500/30 bg-green-500/10"
+          progress={getProgress(geminiFlashComplete, isQueryingModels || geminiProComplete)}
         />
       </div>
 
       {isEvaluating && (
-        <div className="flex items-center justify-center gap-3 p-4 rounded-xl border border-primary/30 bg-primary/5">
-          <div>
+        <div className="space-y-2 p-4 rounded-xl border border-primary/30 bg-primary/5">
+          <div className="flex items-center justify-between">
             <p className="font-medium text-foreground">Meta-Evaluation</p>
-            <p className="text-xs text-muted-foreground">Synthesizing recommendations...</p>
+            <p className="text-xs text-muted-foreground">Synthesizing...</p>
           </div>
+          <Progress 
+            value={75} 
+            className="h-2 [&>div]:bg-primary"
+          />
         </div>
       )}
 

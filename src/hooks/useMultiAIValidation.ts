@@ -78,9 +78,16 @@ export type ValidationStatus =
   | 'complete'
   | 'error';
 
+export interface LimitReachedInfo {
+  limitReached: true;
+  isPremium: boolean;
+  resetAt: Date;
+}
+
 interface UseMultiAIValidationOptions {
   onComplete?: (result: ValidationResult) => void;
   onError?: (error: string) => void;
+  onLimitReached?: (info: LimitReachedInfo) => void;
 }
 
 export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
@@ -134,6 +141,19 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
 
       if (!queryResponse.ok) {
         const errorData = await queryResponse.json();
+        
+        // Handle limit reached specially - don't throw, call callback
+        if (errorData.error === "LIMIT_REACHED") {
+          const limitInfo: LimitReachedInfo = {
+            limitReached: true,
+            isPremium: errorData.isPremium,
+            resetAt: new Date(errorData.resetAt)
+          };
+          setIsValidating(false);
+          options?.onLimitReached?.(limitInfo);
+          return;
+        }
+        
         throw new Error(errorData.error || `Query failed: ${queryResponse.status}`);
       }
 

@@ -13,7 +13,8 @@ import { User } from "@supabase/supabase-js";
 import { ValidationInput } from "@/components/validation/ValidationInput";
 import { ValidationOutput } from "@/components/validation/ValidationOutput";
 import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
-import { useMultiAIValidation, ValidationResult } from "@/hooks/useMultiAIValidation";
+import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
+import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 
 interface HistoryItem {
@@ -49,6 +50,10 @@ export default function ValidationPlatform() {
   const [validationLimit, setValidationLimit] = useState(2);
   const [canValidate, setCanValidate] = useState(true);
   const [nextValidationTime, setNextValidationTime] = useState<Date | null>(null);
+  
+  const [showLimitDialog, setShowLimitDialog] = useState(false);
+  const [limitResetAt, setLimitResetAt] = useState<Date | null>(null);
+  const [limitIsPremium, setLimitIsPremium] = useState(false);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -63,6 +68,11 @@ export default function ValidationPlatform() {
     },
     onError: (error) => {
       toast({ title: "Error", description: error, variant: "destructive" });
+    },
+    onLimitReached: (info: LimitReachedInfo) => {
+      setLimitResetAt(info.resetAt);
+      setLimitIsPremium(info.isPremium);
+      setShowLimitDialog(true);
     }
   });
 
@@ -308,6 +318,14 @@ export default function ValidationPlatform() {
         </div>
       </div>
       <Footer />
+      
+      <LimitReachedDialog
+        open={showLimitDialog}
+        onClose={() => setShowLimitDialog(false)}
+        isPremium={limitIsPremium}
+        resetAt={limitResetAt}
+        onUpgrade={() => openCheckout(user?.email || undefined)}
+      />
     </div>
   );
 }

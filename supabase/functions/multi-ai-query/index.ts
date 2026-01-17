@@ -237,7 +237,7 @@ serve(async (req) => {
       .maybeSingle();
 
     const isPremium = creditsData?.is_premium ?? false;
-    const validationLimit = isPremium ? 999999 : 1; // Free: 1/day, Premium: unlimited
+    const validationLimit = isPremium ? 20 : 2; // Free: 2/day, Premium: 20/day
     
     // Check if within 24h window
     const now = new Date();
@@ -245,11 +245,16 @@ serve(async (req) => {
     const windowExpired = !windowStart || now.getTime() - windowStart.getTime() > 24 * 60 * 60 * 1000;
     const currentCount = windowExpired ? 0 : (creditsData?.validation_count ?? 0);
 
-    if (!isPremium && currentCount >= validationLimit) {
+    if (currentCount >= validationLimit) {
       const windowEndsAt = new Date(windowStart!.getTime() + 24 * 60 * 60 * 1000);
-      const hoursRemaining = Math.ceil((windowEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60));
       return new Response(
-        JSON.stringify({ error: `Daily limit reached. Try again in ${hoursRemaining} hours or upgrade to Premium.` }),
+        JSON.stringify({ 
+          error: "LIMIT_REACHED",
+          isPremium,
+          currentCount,
+          limit: validationLimit,
+          resetAt: windowEndsAt.toISOString()
+        }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

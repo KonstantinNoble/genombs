@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ActionCard } from "./ActionCard";
 import { Scorecard } from "./Scorecard";
 import { GoNoGoDecision } from "./GoNoGoDecision";
+import { DecisionEvidenceLog, ExperimentEvidence } from "./DecisionEvidenceLog";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useToast } from "@/hooks/use-toast";
 import type { Json } from "@/integrations/supabase/types";
@@ -27,12 +28,15 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     updateExperimentDecision,
     updateCheckpoint,
     deleteExperiment,
+    addEvidence,
+    deleteEvidence,
   } = useExperiment();
 
   const [isLoading, setIsLoading] = useState(true);
   const [experiment, setExperiment] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [checkpoints, setCheckpoints] = useState<any[]>([]);
+  const [evidence, setEvidence] = useState<ExperimentEvidence[]>([]);
   const [scoreMetrics, setScoreMetrics] = useState<ScoreMetric[]>([]);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
           setExperiment(details.experiment);
           setTasks(details.tasks);
           setCheckpoints(details.checkpoints);
+          setEvidence(details.evidence || []);
 
           // Load score metrics from checkpoint or initialize from success_metrics
           const savedMetrics =
@@ -151,6 +156,23 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
     }
   };
 
+  const handleAddEvidence = async (
+    newEvidence: Omit<ExperimentEvidence, "id" | "experiment_id" | "created_at" | "order_index">
+  ) => {
+    if (!experiment) return;
+    const result = await addEvidence(experiment.id, newEvidence);
+    if (result) {
+      setEvidence((prev) => [result, ...prev]);
+    }
+  };
+
+  const handleDeleteEvidence = async (evidenceId: string) => {
+    const success = await deleteEvidence(evidenceId);
+    if (success) {
+      setEvidence((prev) => prev.filter((e) => e.id !== evidenceId));
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="border-primary/20">
@@ -227,6 +249,18 @@ export function ExperimentWorkflow({ validationId }: ExperimentWorkflowProps) {
               metrics={scoreMetrics}
               onUpdate={handleScoreUpdate}
               disabled={!isActive}
+            />
+          </div>
+        </div>
+
+        {/* Decision Evidence Log */}
+        <div className="space-y-2">
+          <div className="bg-muted/30 rounded-xl px-4 py-4">
+            <DecisionEvidenceLog
+              evidence={evidence}
+              onAddEvidence={handleAddEvidence}
+              onDeleteEvidence={handleDeleteEvidence}
+              isCompleted={!isActive}
             />
           </div>
         </div>

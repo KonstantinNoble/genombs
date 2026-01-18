@@ -9,14 +9,14 @@ const Contact = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title="Contact Us"
-        description="Get in touch with Synoptas. We're here to help with your AI-powered business strategy needs."
-        keywords="contact, support, Synoptas, business strategy, help"
+        title="Contact - Questions or Feedback"
+        description="Have a question about how it works? Run into an issue? Drop us a line. We usually reply within a day."
+        keywords="Synoptas contact, support, feedback"
         canonical="/contact"
       />
       <WebPageSchema
-        name="Contact Us | Synoptas"
-        description="Get in touch with Synoptas for AI-powered business strategy support."
+        name="Contact | Synoptas"
+        description="Got questions about the multi-AI validator? We're happy to help."
         url="https://synoptas.com/contact"
       />
       <Navbar />

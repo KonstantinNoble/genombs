@@ -54,11 +54,11 @@ const PricingPage = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
-          title="Pricing - Multi-AI Business Validator Plans"
-          description="Get validated AI recommendations from $0. Premium $14.99/mo with 20 daily validations, detailed model analysis, and strategic insights. 3 AI models, one decision."
-          keywords="multi-AI validation pricing, AI business validator, GPT-5 Gemini consensus, business decision tool, strategic validation, AI comparison tool"
+          title="Pricing - Start Free, Upgrade When You Need More"
+          description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 20 daily validations for $14.99/month."
+          keywords="AI tool pricing, business validation cost, GPT Gemini price"
           canonical="/pricing"
-          ogImage="https://synoptas.com/favicon.png"
+          ogImage="https://synoptas.com/synoptas-favicon.png"
         />
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
@@ -75,11 +75,11 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing - Multi-AI Business Validator Plans"
-        description="Get validated AI recommendations from $0. Premium $14.99/mo with 20 daily validations, detailed model analysis, and strategic insights. 3 AI models, one decision."
-        keywords="multi-AI validation pricing, AI business validator, GPT-5 Gemini consensus, business decision tool, strategic validation, AI comparison tool"
+        title="Pricing - Start Free, Upgrade When You Need More"
+        description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 20 daily validations for $14.99/month."
+        keywords="AI tool pricing, business validation cost, GPT Gemini price"
         canonical="/pricing"
-        ogImage="https://synoptas.com/favicon.png"
+        ogImage="https://synoptas.com/synoptas-favicon.png"
       />
       <FAQSchema
         faqs={faqs.map(faq => ({ question: faq.question, answer: faq.answer }))}

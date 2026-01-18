@@ -10,8 +10,7 @@ export function StartExperimentButton({ onClick, disabled }: StartExperimentButt
     <Button
       onClick={onClick}
       disabled={disabled}
-      variant="outline"
-      className="w-full gap-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+      className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-0"
     >
       Turn into Experiment
     </Button>

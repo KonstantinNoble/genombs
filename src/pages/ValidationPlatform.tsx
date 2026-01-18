@@ -39,7 +39,7 @@ interface HistoryItem {
 export default function ValidationPlatform() {
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
-  const { createExperiment, isLoading: isCreatingExperiment } = useExperiment();
+  const { createExperiment, getActiveExperiment, isLoading: isCreatingExperiment } = useExperiment();
   
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -233,7 +233,25 @@ export default function ValidationPlatform() {
     });
   };
 
-  const handleStartExperiment = () => {
+  const handleStartExperiment = async () => {
+    if (!currentValidationId) return;
+    
+    // Check if an experiment already exists for this validation
+    const existingExperiment = await getActiveExperiment(currentValidationId);
+    if (existingExperiment) {
+      toast({
+        title: "Experiment already exists",
+        description: "Delete the existing experiment below before creating a new one.",
+        variant: "destructive",
+      });
+      // Scroll to the experiment so user can see it
+      if (experimentRef.current) {
+        const top = experimentRef.current.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+      return;
+    }
+    
     setShowExperimentDialog(true);
   };
 

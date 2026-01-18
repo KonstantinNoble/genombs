@@ -180,13 +180,21 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       );
 
       if (!queryResponse.ok) {
-        const errorData = await queryResponse.json();
+        let errorData: any = {};
+        try {
+          const errorText = await queryResponse.text();
+          errorData = JSON.parse(errorText);
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          throw new Error(`Query failed: ${queryResponse.status}`);
+        }
         
         // Handle limit reached specially - don't throw, call callback
         if (errorData.error === "LIMIT_REACHED") {
+          console.log('Limit reached - showing dialog', errorData);
           const limitInfo: LimitReachedInfo = {
             limitReached: true,
-            isPremium: errorData.isPremium,
+            isPremium: errorData.isPremium ?? false,
             resetAt: new Date(errorData.resetAt)
           };
           setIsValidating(false);

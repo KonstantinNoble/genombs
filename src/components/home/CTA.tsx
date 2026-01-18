@@ -49,7 +49,7 @@ const CTA = () => {
   return (
     <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden bg-muted/30">
       {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent pointer-events-none z-[1]" />
+      <div className="absolute top-0 left-0 right-0 h-32 bg-background/60 pointer-events-none z-[1]" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

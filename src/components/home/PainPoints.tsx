@@ -33,9 +33,9 @@ const PainPoints = () => {
   return (
     <section className="py-16 px-4 bg-muted/30 border-y border-border relative overflow-hidden">
       {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-background/40 to-transparent pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-20 bg-background/30 pointer-events-none" />
       {/* Bottom fade transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-muted/40 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-muted/30 pointer-events-none" />
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <h2 
           ref={headerRef}

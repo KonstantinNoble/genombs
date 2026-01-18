@@ -95,9 +95,9 @@ const Features = () => {
       {/* Subtle background accent */}
       <div className="absolute inset-0 bg-muted/30" />
       {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background/60 to-transparent pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-24 bg-background/40 pointer-events-none" />
       {/* Bottom fade transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-muted/40 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-muted/30 pointer-events-none" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 

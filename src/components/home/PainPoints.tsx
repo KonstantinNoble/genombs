@@ -24,10 +24,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "ChatGPT gave you one opinion – but is it right?", detail: "Single-AI advice sounds confident but you have no way to validate it" },
-    { title: "You're not sure if the AI missed important risks", detail: "One model can't catch everything. Critical blind spots go unnoticed." },
-    { title: "Different AIs give contradictory advice", detail: "You've tried multiple tools and gotten conflicting recommendations" },
-    { title: "You need confidence before making big decisions", detail: "Important business moves deserve more than one perspective" },
+    { title: "ChatGPT said one thing, but is it actually right?", detail: "You got an answer, but you have no idea if it's missing something important." },
+    { title: "You tried asking again and got a different answer", detail: "Same question, different response. Which one should you trust?" },
+    { title: "The advice sounds good but feels generic", detail: "It's not wrong exactly, but it doesn't feel like it's really for your situation." },
+    { title: "You're about to make a big decision and want to be sure", detail: "This matters too much to rely on just one opinion." },
   ];
 
   return (
@@ -41,7 +41,7 @@ const PainPoints = () => {
           ref={headerRef}
           className={`text-2xl md:text-3xl font-bold text-foreground mb-8 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
-          Sound familiar?
+          Does this sound familiar?
         </h2>
 
         <div className="grid sm:grid-cols-2 gap-4 mb-10">
@@ -57,13 +57,13 @@ const PainPoints = () => {
         >
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-foreground font-medium">Synoptas fixes this.</span>
+            <span className="text-foreground font-medium">That's why we built this.</span>
           </div>
           <Link 
             to="/validate" 
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
           >
-            Get your first validation free →
+            Try it yourself →
           </Link>
         </div>
       </div>

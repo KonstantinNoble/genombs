@@ -9,19 +9,19 @@ const WhySynoptas = () => {
   const { ref: footerRef, isVisible: footerVisible } = useScrollReveal();
 
   const chatGptPoints = [
-    { title: "Generic advice without market context", detail: "No real data about your specific industry or competitors" },
-    { title: "Outdated information (training cutoff)", detail: "Can't access current market trends or recent developments" },
-    { title: "No structure – just walls of text", detail: "You get paragraphs, not actionable step-by-step plans" },
-    { title: "You figure out what to do next", detail: "No prioritization, no timeline, no accountability" },
-    { title: "No tracking or follow-up", detail: "Every conversation starts from zero – no memory of your progress" },
+    { title: "You get one answer", detail: "Sounds confident, but you have no way to know if it's missing something." },
+    { title: "Ask again, get a different response", detail: "The same prompt can give you contradicting advice." },
+    { title: "Generic suggestions", detail: "It doesn't know your specific situation or industry." },
+    { title: "No structure", detail: "Walls of text, not actionable steps." },
+    { title: "Starts fresh every time", detail: "No memory of your previous questions or context." },
   ];
 
   const synoptasPoints = [
-    { title: "3 AI models analyze your question in parallel", detail: "GPT-5 Mini, Gemini 3 Pro, and Gemini Flash working together" },
-    { title: "Consensus detection shows high-confidence moves", detail: "When all 3 models agree, you can move forward confidently" },
-    { title: "Dissent analysis reveals risks you'd miss", detail: "See where models disagree and why – hidden nuances exposed" },
-    { title: "Adjustable risk tolerance & creativity preferences", detail: "Tune the analysis to match your business philosophy" },
-    { title: "Actionable recommendations with clear priorities", detail: "Not just advice – structured action items you can execute" },
+    { title: "Three models, not one", detail: "GPT-5, Gemini Pro, and Gemini Flash each weigh in." },
+    { title: "See where they agree", detail: "When all three say the same thing, that's a strong signal." },
+    { title: "See where they don't", detail: "Disagreement often reveals risks you hadn't considered." },
+    { title: "Adjust to your style", detail: "Risk tolerance and creativity sliders shape the output." },
+    { title: "Clear next steps", detail: "Actual recommendations you can act on, not just ideas." },
   ];
 
   return (
@@ -34,10 +34,10 @@ const WhySynoptas = () => {
           className={`text-center mb-12 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            This Is Why You're Still Stuck
+            The problem with asking ChatGPT
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Generic AI advice doesn't work. Here's the difference.
+            One model gives you one perspective. That's not enough for real decisions.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ const WhySynoptas = () => {
             <div className="absolute inset-0 bg-destructive/5 pointer-events-none" />
             
             <div className="relative z-10">
-              <h3 className="text-xl font-semibold text-foreground mb-6">Asking ChatGPT</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-6">With ChatGPT</h3>
               
               <ul className="space-y-4">
                 {chatGptPoints.map((point, index) => (
@@ -82,7 +82,7 @@ const WhySynoptas = () => {
             </div>
             
             <div className="relative z-10">
-              <h3 className="text-xl font-semibold text-foreground mb-6">Using Synoptas</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-6">With Synoptas</h3>
               
               <ul className="space-y-4">
                 {synoptasPoints.map((point, index) => (
@@ -100,7 +100,7 @@ const WhySynoptas = () => {
                 to="/validate" 
                 className="inline-flex items-center gap-1.5 mt-6 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
               >
-                Start Multi-AI Validation
+                Try the difference
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -112,7 +112,7 @@ const WhySynoptas = () => {
           className={`text-center text-muted-foreground mt-10 text-sm scroll-reveal ${footerVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: '0.3s' }}
         >
-          Stop relying on single-AI advice. Get validated recommendations from multiple models.
+          One opinion isn't enough. Get three.
         </p>
       </div>
     </section>

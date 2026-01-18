@@ -30,11 +30,11 @@ const Hero = () => {
           {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="bg-gradient-to-r from-primary via-[hsl(160_70%_35%)] to-[hsl(120_80%_40%)] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              Multi-AI Business Validator
+              Get a Second Opinion
             </span>
             <br />
             <span className="text-foreground">
-              3 AI Models. One Clear Answer.
+              From 3 AI Models at Once
             </span>
           </h1>
 
@@ -42,7 +42,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Stop guessing with single-AI advice. Get validated business recommendations from GPT-5 Mini, Gemini 3 Pro, and Gemini Flash – with consensus and risk analysis.
+            Not sure if your business idea is solid? Run it through GPT and Gemini. See where they agree, where they don't, and what that actually means.
           </p>
 
           <div
@@ -54,7 +54,7 @@ const Hero = () => {
               className="text-base px-8 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               asChild
             >
-              <Link to="/validate">{isPremium && user ? "Go to Validator" : "Validate Your Strategy"}</Link>
+              <Link to="/validate">{isPremium && user ? "Back to Validator" : "Try It Free"}</Link>
             </Button>
           </div>
 
@@ -64,15 +64,15 @@ const Hero = () => {
           >
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-primary animate-dot-pulse" />
-              3 AI models working together
+              Takes about 20 seconds
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-warm animate-dot-pulse" style={{ animationDelay: "0.5s" }} />
-              {isPremium && user ? "Premium Member" : "Consensus + Dissent analysis"}
+              {isPremium && user ? "Premium access" : "No credit card needed"}
             </span>
             <span className="flex items-center gap-2 transition-all duration-300 hover:text-foreground group">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-cool animate-dot-pulse" style={{ animationDelay: "1s" }} />
-              Validated recommendations
+              2 free checks per day
             </span>
           </div>
         </div>

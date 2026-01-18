@@ -57,13 +57,13 @@ const CTA = () => {
           className={`max-w-3xl mx-auto text-center space-y-8 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            {isPremium && isLoggedIn ? "Continue Your AI Validation" : "Ready for Validated Business Decisions?"}
+            {isPremium && isLoggedIn ? "Back to the validator" : "Want to try it?"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {isPremium && isLoggedIn 
-              ? "Access your premium multi-AI validation with 20 daily validations and detailed model comparisons."
-              : "Get consensus-driven recommendations from 3 AI models. No more guessing. No credit card required."}
+              ? "Your premium access is ready. 20 validations per day."
+              : "Two free checks per day. No credit card. See if it's useful for you."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -73,7 +73,7 @@ const CTA = () => {
               asChild
             >
               <Link to="/validate">
-                {isPremium && isLoggedIn ? "Go to Validator" : "Start Free Validation"}
+                {isPremium && isLoggedIn ? "Open Validator" : "Try It Free"}
               </Link>
             </Button>
           </div>
@@ -85,11 +85,11 @@ const CTA = () => {
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-warm" />
-              No credit card
+              No signup required
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-accent-cool" />
-              Results in 20 seconds
+              About 20 seconds
             </span>
           </div>
         </div>

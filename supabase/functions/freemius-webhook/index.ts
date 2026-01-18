@@ -159,8 +159,12 @@ serve(async (req) => {
 
     console.log('Processing webhook for email:', userEmail);
 
-    // Find user by email using Auth Admin API (profiles table no longer has email column)
-    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
+    // Find user by email using Auth Admin API
+    // Note: listUsers doesn't support email filter directly, but we limit fetch and search
+    // For scalability at 10k+ users, consider using a custom profiles table with email index
+    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers({
+      perPage: 1000 // Fetch in smaller batches
+    });
     
     if (usersError) {
       console.error('Error fetching users:', usersError);

@@ -410,18 +410,11 @@ Context for your analysis:
 
             console.log(`All queries completed in ${totalProcessingTime}ms. GPT: ${finalGptResponse?.error ? 'ERROR' : 'OK'}, GeminiPro: ${finalGeminiProResponse?.error ? 'ERROR' : 'OK'}, GeminiFlash: ${finalGeminiFlashResponse?.error ? 'ERROR' : 'OK'}`);
 
-            // Update user credits
-            const updateData: any = {
-              validation_count: windowExpired ? 1 : currentCount + 1,
-            };
-            if (windowExpired) {
-              updateData.validation_window_start = now.toISOString();
-            }
-            
-            await supabase
-              .from('user_credits')
-              .update(updateData)
-              .eq('user_id', user.id);
+            // Update user credits atomically (prevents race conditions)
+            await supabase.rpc('increment_validation_count', {
+              user_uuid: user.id,
+              reset_window: windowExpired
+            });
 
             // Send final combined response with isPremium flag
             sendSSE(controller, 'complete', {

@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import type { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: SupabaseUser | null;
@@ -27,6 +28,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper function to calculate actual premium status
+  const calculatePremiumStatus = useCallback((data: { 
+    is_premium?: boolean | null; 
+    subscription_end_date?: string | null; 
+    auto_renew?: boolean | null;
+  } | null): boolean => {
+    if (!data) return false;
+    
+    let actualPremiumStatus = data.is_premium ?? false;
+    
+    // Fallback check: If subscription was cancelled
+    if (actualPremiumStatus && data.auto_renew === false) {
+      if (data.subscription_end_date) {
+        const endDate = new Date(data.subscription_end_date);
+        if (endDate < new Date()) {
+          actualPremiumStatus = false;
+        }
+      } else {
+        actualPremiumStatus = false;
+      }
+    }
+    
+    return actualPremiumStatus;
+  }, []);
+
+  // Realtime subscription for premium status changes
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`user_credits_${user.id}`)
+      .on<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_credits',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload: RealtimePostgresUpdatePayload<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>) => {
+          console.log('Realtime premium status update:', payload.new);
+          const newPremiumStatus = calculatePremiumStatus(payload.new);
+          setIsPremium(newPremiumStatus);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, calculatePremiumStatus]);
+
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -41,23 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               .eq('user_id', session.user.id)
               .single();
             
-            let actualPremiumStatus = data?.is_premium ?? false;
-            
-            // Fallback check: If subscription was cancelled
-            if (actualPremiumStatus && data?.auto_renew === false) {
-              if (data?.subscription_end_date) {
-                // Case 1: End date exists -> Check if it's in the past
-                const endDate = new Date(data.subscription_end_date);
-                if (endDate < new Date()) {
-                  actualPremiumStatus = false;
-                }
-              } else {
-                // Case 2: No end date but subscription cancelled -> Treat as expired
-                actualPremiumStatus = false;
-              }
-            }
-            
-            setIsPremium(actualPremiumStatus);
+            setIsPremium(calculatePremiumStatus(data));
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);
@@ -84,23 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               .eq('user_id', session.user.id)
               .single();
             
-            let actualPremiumStatus = data?.is_premium ?? false;
-            
-            // Fallback check: If subscription was cancelled
-            if (actualPremiumStatus && data?.auto_renew === false) {
-              if (data?.subscription_end_date) {
-                // Case 1: End date exists -> Check if it's in the past
-                const endDate = new Date(data.subscription_end_date);
-                if (endDate < new Date()) {
-                  actualPremiumStatus = false;
-                }
-              } else {
-                // Case 2: No end date but subscription cancelled -> Treat as expired
-                actualPremiumStatus = false;
-              }
-            }
-            
-            setIsPremium(actualPremiumStatus);
+            setIsPremium(calculatePremiumStatus(data));
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);

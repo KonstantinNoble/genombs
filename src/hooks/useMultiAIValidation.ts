@@ -149,10 +149,11 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     setModelStates({ gpt: 'running', geminiPro: 'running', geminiFlash: 'running' });
 
     // Create abort controller for overall timeout
+    // 180s = GPT primary (90s) + GPT fallback (60s) + buffer (30s)
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
-    }, 120000); // 120 second overall timeout (increased for GPT fallback)
+    }, 180000);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();

@@ -624,6 +624,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_validation_count: {
+        Args: { reset_window?: boolean; user_uuid: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

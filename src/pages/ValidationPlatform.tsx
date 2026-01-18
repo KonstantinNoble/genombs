@@ -75,7 +75,24 @@ export default function ValidationPlatform() {
       setCurrentValidationId(data.validationId || null);
       if (user) {
         await loadHistory(user.id);
-        await loadPremiumStatus(user.id);
+        const updatedCredits = await loadPremiumStatus(user.id);
+        
+        // After successful validation, check if limit is NOW reached (show popup automatically)
+        if (updatedCredits && !updatedCredits.is_premium) {
+          const limit = 2;
+          const now = new Date();
+          const windowExpired = !updatedCredits.validation_window_start || 
+            now.getTime() >= new Date(updatedCredits.validation_window_start).getTime() + 24 * 60 * 60 * 1000;
+          const effectiveCount = windowExpired ? 0 : (updatedCredits.validation_count || 0);
+          
+          if (effectiveCount >= limit) {
+            // Calculate reset time
+            const windowEndsAt = new Date(new Date(updatedCredits.validation_window_start!).getTime() + 24 * 60 * 60 * 1000);
+            setLimitResetAt(windowEndsAt);
+            setLimitIsPremium(false);
+            setShowLimitDialog(true);
+          }
+        }
       }
       toast({ title: "Validation Complete", description: "Your multi-AI analysis is ready" });
     },
@@ -130,7 +147,11 @@ export default function ValidationPlatform() {
     return false;
   };
 
-  const loadPremiumStatus = async (userId: string) => {
+  const loadPremiumStatus = async (userId: string): Promise<{
+    is_premium: boolean;
+    validation_count: number | null;
+    validation_window_start: string | null;
+  } | null> => {
     const { data } = await supabase.from('user_credits')
       .select('is_premium, validation_count, validation_window_start')
       .eq('user_id', userId).single();
@@ -146,7 +167,10 @@ export default function ValidationPlatform() {
       const effectiveCount = windowExpired ? 0 : (data.validation_count || 0);
       setValidationCount(effectiveCount);
       setCanValidate(checkCanValidate(effectiveCount, data.validation_window_start, limit));
+      
+      return data;
     }
+    return null;
   };
 
   const HISTORY_LIMIT = 10;

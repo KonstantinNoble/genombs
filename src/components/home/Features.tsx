@@ -5,31 +5,31 @@ import { Link } from "react-router-dom";
 
 const features = [
   {
-    title: "Multi-Model AI Validation",
+    title: "Three Models, Not One",
     description:
-      "Stop relying on single-AI advice. Get validated recommendations from 3 leading AI models – GPT-5 Mini, Gemini 3 Pro, and Gemini Flash working together.",
-    details: "Each model brings unique strengths: GPT-5 Mini for deep reasoning, Gemini 3 Pro for creative solutions, and Gemini Flash for pragmatic execution. Our meta-evaluation identifies consensus, majority agreement, and dissent – giving you confidence scores for every recommendation.",
+      "You type in a question. GPT-5, Gemini Pro, and Gemini Flash each give you their take. Independently. No copy-pasting between tools.",
+    details: "Each model thinks differently. GPT tends to be thorough, Gemini Pro gets creative, Flash is more practical. You see all three perspectives side by side before we synthesize them.",
     color: "primary",
     link: "/validate",
-    linkText: "Start Validation",
+    linkText: "Try it out",
   },
   {
-    title: "Consensus & Dissent Analysis",
+    title: "See Where They Agree (and Don't)",
     description:
-      "See where AI models agree and disagree. Consensus points are high-confidence recommendations. Dissent points reveal risks worth considering.",
-    details: "Unlike single-model tools, Synoptas shows you the full picture. When all 3 models agree, you can move forward confidently. When they disagree, you've uncovered nuances that need deeper thought. Each dissent point includes the reasoning from each model's perspective.",
+      "When all three models say the same thing? That's probably solid advice. When they disagree? That's where you should dig deeper.",
+    details: "We don't just show you three answers. We analyze them and tell you: here's what they all agree on, here's where two out of three agree, and here's where they see things differently.",
     color: "accent-cool",
     link: "/validate",
-    linkText: "See How It Works",
+    linkText: "See how it works",
   },
   {
-    title: "Adjustable Risk & Creativity",
+    title: "Adjust to Your Style",
     description:
-      "Tune the AI analysis to your preferences. Conservative or aggressive? Data-driven or innovative? Adjust sliders to get recommendations that match your style.",
-    details: "Your risk tolerance and creativity preference influence how models weigh their recommendations. Conservative settings prioritize proven approaches. Aggressive settings explore bold moves. The synthesis adapts to your business philosophy.",
+      "Playing it safe or willing to take risks? Want creative ideas or practical ones? Move the sliders and the recommendations adjust.",
+    details: "Your business, your call. The sliders change how we weight the responses. Conservative mode prioritizes the safer bets. Aggressive mode surfaces the bolder moves.",
     color: "accent-info",
     link: "/pricing",
-    linkText: "See Premium Features",
+    linkText: "See all features",
   },
 ];
 
@@ -105,10 +105,10 @@ const Features = () => {
           className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Why Multi-AI Validation?
+            What makes this different
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Single AI advice is unreliable. Here's what makes Synoptas different.
+            One AI gives you one opinion. We give you three, then tell you what they mean.
           </p>
         </div>
 

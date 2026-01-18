@@ -34,27 +34,27 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Ask Your Business Question",
-      description: "Enter any strategic business question – from pricing strategies to market expansion decisions. Adjust your risk tolerance and analysis style preferences to tune how the AI models approach your problem.",
-      details: "Be specific: 'Should I expand to enterprise clients or focus on SMB?' works better than 'How do I grow?' The more context you provide, the more accurate the multi-model analysis becomes.",
+      title: "Type in your question",
+      description: "What are you trying to figure out? Pricing, hiring, expanding to a new market, whatever. Just ask it like you'd ask a smart friend.",
+      details: "Be specific if you can. 'Should I raise prices by 20%?' works better than 'How do I make more money?' But honestly, even vague questions get interesting answers.",
       link: "/validate",
-      linkText: "Start Your Validation"
+      linkText: "Try it now"
     },
     {
       number: "2",
-      title: "3 AI Models Analyze in Parallel",
-      description: "GPT-5 Mini, Gemini 3 Pro, and Gemini 3 Flash each analyze your question independently. Each model brings unique strengths – reasoning, creativity, and pragmatic execution.",
-      details: "Unlike single-AI tools, Synoptas queries multiple models simultaneously and streams results as they complete. You see each perspective before the final synthesis.",
+      title: "Three models think it over",
+      description: "GPT-5, Gemini Pro, and Gemini Flash each analyze your question separately. You watch them work in real-time.",
+      details: "They don't know what each other are saying. That's the point. You get three independent perspectives, not one model agreeing with itself.",
       link: "/validate",
-      linkText: "Try It Free"
+      linkText: "See it in action"
     },
     {
       number: "3",
-      title: "Get Validated Recommendations",
-      description: "Our meta-evaluation identifies where all 3 models agree (high confidence), where 2/3 agree (majority), and where they disagree (worth deeper consideration).",
-      details: "The final recommendation synthesizes all perspectives with a confidence score. Dissent points highlight risks you might have missed with single-AI advice.",
+      title: "See what they think",
+      description: "We show you where all three agree, where two out of three agree, and where they see things differently.",
+      details: "The disagreements are often the most interesting part. If all three say 'yes, do it' – great. If one says 'wait, have you considered...' – that's worth knowing.",
       link: "/pricing",
-      linkText: "See Premium Features"
+      linkText: "What's included"
     }
   ];
 
@@ -70,10 +70,10 @@ const HowItWorks = () => {
           className={`text-center mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            How It Works
+            How it works
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            From question to validated recommendation in 20 seconds
+            Question in, three perspectives out. About 20 seconds.
           </p>
         </div>
 

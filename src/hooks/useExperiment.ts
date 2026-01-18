@@ -4,6 +4,18 @@ import { useToast } from "@/hooks/use-toast";
 import { ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import type { Json } from "@/integrations/supabase/types";
 
+// Types for experiment evidence
+export interface ExperimentEvidence {
+  id: string;
+  experiment_id: string;
+  evidence_type: string;
+  direction: "positive" | "negative" | "neutral";
+  strength: "weak" | "medium" | "strong";
+  note: string;
+  order_index: number;
+  created_at: string;
+}
+
 interface Experiment {
   id: string;
   user_id: string;
@@ -166,7 +178,7 @@ export function useExperiment() {
 
   const getExperimentWithDetails = async (experimentId: string) => {
     try {
-      const [experimentResult, tasksResult, checkpointsResult] =
+      const [experimentResult, tasksResult, checkpointsResult, evidenceResult] =
         await Promise.all([
           supabase.from("experiments").select("*").eq("id", experimentId).single(),
           supabase
@@ -179,6 +191,11 @@ export function useExperiment() {
             .select("*")
             .eq("experiment_id", experimentId)
             .order("order_index"),
+          supabase
+            .from("experiment_evidence")
+            .select("*")
+            .eq("experiment_id", experimentId)
+            .order("created_at", { ascending: false }),
         ]);
 
       if (experimentResult.error) throw experimentResult.error;
@@ -187,6 +204,7 @@ export function useExperiment() {
         experiment: experimentResult.data as Experiment,
         tasks: (tasksResult.data || []) as ExperimentTask[],
         checkpoints: (checkpointsResult.data || []) as ExperimentCheckpoint[],
+        evidence: (evidenceResult.data || []) as ExperimentEvidence[],
       };
     } catch (error) {
       console.error("Error fetching experiment details:", error);
@@ -264,6 +282,8 @@ export function useExperiment() {
   const deleteExperiment = async (experimentId: string): Promise<boolean> => {
     try {
       // 1. Delete dependent records first (foreign key constraints)
+      // Note: CASCADE would handle this, but explicit deletion is safer
+      await supabase.from("experiment_evidence").delete().eq("experiment_id", experimentId);
       await supabase.from("experiment_tasks").delete().eq("experiment_id", experimentId);
       await supabase.from("experiment_checkpoints").delete().eq("experiment_id", experimentId);
       
@@ -292,6 +312,79 @@ export function useExperiment() {
     }
   };
 
+  // Evidence management functions
+  const addEvidence = async (
+    experimentId: string,
+    evidence: Omit<ExperimentEvidence, "id" | "experiment_id" | "created_at" | "order_index">
+  ): Promise<ExperimentEvidence | null> => {
+    try {
+      // Get current max order_index
+      const { data: existing } = await supabase
+        .from("experiment_evidence")
+        .select("order_index")
+        .eq("experiment_id", experimentId)
+        .order("order_index", { ascending: false })
+        .limit(1);
+
+      const nextOrderIndex = existing && existing.length > 0 ? existing[0].order_index + 1 : 0;
+
+      const { data, error } = await supabase
+        .from("experiment_evidence")
+        .insert({
+          experiment_id: experimentId,
+          evidence_type: evidence.evidence_type,
+          direction: evidence.direction,
+          strength: evidence.strength,
+          note: evidence.note.slice(0, 200),
+          order_index: nextOrderIndex,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ExperimentEvidence;
+    } catch (error) {
+      console.error("Error adding evidence:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add evidence.",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
+  const deleteEvidence = async (evidenceId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from("experiment_evidence")
+        .delete()
+        .eq("id", evidenceId);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error("Error deleting evidence:", error);
+      return false;
+    }
+  };
+
+  const getExperimentEvidence = async (experimentId: string): Promise<ExperimentEvidence[]> => {
+    try {
+      const { data, error } = await supabase
+        .from("experiment_evidence")
+        .select("*")
+        .eq("experiment_id", experimentId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as ExperimentEvidence[];
+    } catch (error) {
+      console.error("Error fetching evidence:", error);
+      return [];
+    }
+  };
+
   return {
     isLoading,
     createExperiment,
@@ -301,6 +394,9 @@ export function useExperiment() {
     updateCheckpoint,
     updateExperimentDecision,
     deleteExperiment,
+    addEvidence,
+    deleteEvidence,
+    getExperimentEvidence,
   };
 }
 

@@ -172,6 +172,47 @@ export type Database = {
           },
         ]
       }
+      experiment_evidence: {
+        Row: {
+          created_at: string
+          direction: string
+          evidence_type: string
+          experiment_id: string
+          id: string
+          note: string
+          order_index: number
+          strength: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          evidence_type: string
+          experiment_id: string
+          id?: string
+          note: string
+          order_index?: number
+          strength: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          evidence_type?: string
+          experiment_id?: string
+          id?: string
+          note?: string
+          order_index?: number
+          strength?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiment_evidence_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       experiment_tasks: {
         Row: {
           completed: boolean

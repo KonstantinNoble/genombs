@@ -75,21 +75,21 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <SEOHead
-        title="AI Business Plan Generator – Create Business Strategies in 2 Minutes"
-        description="Learn how to write a business plan in minutes. Our AI business plan generator creates actionable strategies for growth. Perfect for small business owners. Free to try!"
-        keywords="AI business plan generator, how to write a business plan, how to make a business plan, business strategies for growth, business strategies for small business, business strategies to increase sales, market research AI, actionable strategies"
+        title="Multi-AI Validator for Business Decisions"
+        description="Run your business question through 3 AI models and see where they agree. Helps you spot blind spots before making big moves."
+        keywords="business decision validation, AI comparison tool, strategic second opinion, GPT vs Gemini, risk assessment"
         canonical="/"
-        ogImage="https://synoptas.com/favicon.png"
+        ogImage="https://synoptas.com/synoptas-favicon.png"
       />
       <OrganizationSchema
         name="Synoptas"
         url="https://synoptas.com"
-        logo="https://synoptas.com/favicon.png"
-        description="AI-powered business strategy planner with real-time market research"
+        logo="https://synoptas.com/synoptas-favicon.png"
+        description="Multi-AI validation tool for business decisions"
       />
       <WebPageSchema
-        name="Synoptas - AI Business Strategy Planner"
-        description="Turn your business goals into actionable AI-powered strategies with real-time market research."
+        name="Synoptas - Validate Business Decisions with Multiple AI Models"
+        description="Get a second opinion from 3 AI models before making important business decisions."
         url="https://synoptas.com/"
       />
       <Navbar />

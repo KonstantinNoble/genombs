@@ -12,12 +12,12 @@ interface LimitReachedDialogProps {
 }
 
 const PREMIUM_BENEFITS = [
-  "20 validations per day (vs. 2 for free)",
-  "More detailed AI recommendations (4-5 vs. 2-3)",
-  "5-7 action items per analysis",
-  "Strategic Alternatives section",
-  "Long-term Outlook insights",
-  "Competitor Insights analysis"
+  "20 validations per day instead of 2",
+  "4-5 detailed recommendations per model",
+  "5-7 concrete action items",
+  "Strategic Alternatives analysis",
+  "Long-term Outlook predictions",
+  "Competitor Intelligence insights"
 ];
 
 export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrade }: LimitReachedDialogProps) {
@@ -79,21 +79,24 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            Daily Limit Reached
+            You've Hit Today's Limit
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
           {/* Current status */}
           <div className="text-center">
-            <p className="text-muted-foreground">
-              You've used your <span className="font-semibold text-foreground">2 free</span> daily validations.
+            <p className="text-muted-foreground text-lg">
+              Your <span className="font-semibold text-foreground">2 free</span> daily validations are used up.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Don't let decision paralysis slow you down.
             </p>
           </div>
 
           {/* Reset timer */}
           <div className="bg-muted/50 rounded-xl p-4 text-center">
-            <p className="text-sm text-muted-foreground mb-1">Next reset in:</p>
+            <p className="text-sm text-muted-foreground mb-1">Next free validation in:</p>
             <p className={`text-2xl font-bold font-mono ${isReset ? 'text-primary' : 'text-foreground'}`}>
               {timeRemaining}
             </p>
@@ -109,25 +112,28 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
               {/* Divider */}
               <div className="flex items-center gap-4">
                 <Separator className="flex-1" />
-                <span className="text-sm text-muted-foreground font-medium">OR</span>
+                <span className="text-sm text-muted-foreground font-medium">or skip the wait</span>
                 <Separator className="flex-1" />
               </div>
 
               {/* Premium upgrade section */}
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6">
-                <div className="text-center mb-4">
-                  <p className="text-lg font-bold text-foreground">
-                    Upgrade to Premium
+                <div className="text-center mb-5">
+                  <p className="text-xl font-bold text-foreground">
+                    Go Premium Today
                   </p>
-                  <p className="text-3xl font-bold text-primary mt-1">
+                  <p className="text-3xl font-bold text-primary mt-2">
                     $14.99<span className="text-base font-normal text-muted-foreground">/month</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Cancel anytime. No questions asked.
                   </p>
                 </div>
 
-                <ul className="space-y-2 mb-6">
+                <ul className="space-y-3 mb-6">
                   {PREMIUM_BENEFITS.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <span className="text-primary font-bold mt-0.5">✓</span>
+                    <li key={index} className="flex items-start gap-3 text-sm">
+                      <span className="text-primary font-bold shrink-0">—</span>
                       <span className="text-foreground">{benefit}</span>
                     </li>
                   ))}
@@ -135,21 +141,20 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
 
                 <Button 
                   onClick={() => { onUpgrade(); onClose(); }}
-                  className="w-full text-base py-5 font-semibold"
+                  className="w-full text-base py-6 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                   size="lg"
                 >
-                  Upgrade Now
+                  Unlock Premium Access
                 </Button>
               </div>
 
               {/* Maybe later */}
-              <Button 
-                variant="ghost" 
+              <button 
                 onClick={onClose}
-                className="w-full text-muted-foreground"
+                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
               >
-                Maybe Later
-              </Button>
+                I'll wait for the reset
+              </button>
             </>
           )}
         </div>

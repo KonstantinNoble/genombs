@@ -115,7 +115,6 @@ const Navbar = () => {
           ) : (
             <Button
               size="sm"
-              variant="outline"
               asChild
             >
               <Link to="/auth">Sign In</Link>
@@ -187,7 +186,6 @@ const Navbar = () => {
             ) : (
               <Button
                 size="sm"
-                variant="outline"
                 className="w-full"
                 onClick={() => setIsOpen(false)}
                 asChild

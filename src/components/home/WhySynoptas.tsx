@@ -26,7 +26,7 @@ const WhySynoptas = () => {
 
   return (
     <section className="py-20 px-4 bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-primary/3 pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div 

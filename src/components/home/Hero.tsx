@@ -18,18 +18,18 @@ const Hero = () => {
         <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-accent-warm/5 rounded-full blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
         
         {/* Animated line accents */}
-        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-line-flow" />
-        <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-cool/20 to-transparent animate-line-flow" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-1/4 left-0 w-full h-px bg-primary/10 animate-line-flow" />
+        <div className="absolute top-3/4 left-0 w-full h-px bg-accent-cool/10 animate-line-flow" style={{ animationDelay: "1.5s" }} />
       </div>
 
       {/* Bottom fade transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-muted/30 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-muted/20 pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
           {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
-            <span className="bg-gradient-to-r from-primary via-[hsl(160_70%_35%)] to-[hsl(120_80%_40%)] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+            <span className="text-primary">
               Get a Second Opinion
             </span>
             <br />

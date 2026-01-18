@@ -64,8 +64,10 @@ export default function ValidationPlatform() {
   
   const [showExperimentDialog, setShowExperimentDialog] = useState(false);
   const [experimentKey, setExperimentKey] = useState(0);
+  const [shouldScrollToExperiment, setShouldScrollToExperiment] = useState(false);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
+  const experimentRef = useRef<HTMLDivElement | null>(null);
 
   const { validate, isValidating, status, modelStates, result } = useMultiAIValidation({
     onComplete: async (data) => {
@@ -243,12 +245,29 @@ export default function ValidationPlatform() {
       setShowExperimentDialog(false);
       // Trigger experiment workflow to reload
       setExperimentKey(prev => prev + 1);
+      // Trigger scroll to experiment after it loads
+      setShouldScrollToExperiment(true);
       toast({
         title: "Experiment Started!",
         description: `Your ${data.durationDays}-day experiment "${data.title}" has begun.`,
       });
     }
   };
+
+  // Scroll to experiment when it becomes visible
+  useEffect(() => {
+    if (shouldScrollToExperiment && experimentRef.current) {
+      const timer = setTimeout(() => {
+        const element = experimentRef.current;
+        if (element) {
+          const top = element.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+        setShouldScrollToExperiment(false);
+      }, 300); // Wait for ExperimentWorkflow to load
+      return () => clearTimeout(timer);
+    }
+  }, [shouldScrollToExperiment, experimentKey]);
 
   const getTopActionsForExperiment = (): { action: string; reasoning: string; priority: string }[] => {
     if (!displayedResult?.finalRecommendation?.topActions) return [];
@@ -406,10 +425,12 @@ export default function ValidationPlatform() {
 
                 {/* Experiment Workflow - appears below validation results */}
                 {currentValidationId && (
-                  <ExperimentWorkflow 
-                    key={experimentKey} 
-                    validationId={currentValidationId} 
-                  />
+                  <div ref={experimentRef}>
+                    <ExperimentWorkflow 
+                      key={experimentKey} 
+                      validationId={currentValidationId} 
+                    />
+                  </div>
                 )}
               </div>
             )}

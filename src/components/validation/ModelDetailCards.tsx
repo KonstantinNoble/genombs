@@ -3,30 +3,35 @@ import { cn } from "@/lib/utils";
 import type { ModelResponse } from "@/hooks/useMultiAIValidation";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { AVAILABLE_MODELS } from "./ModelSelector";
 
 interface ModelDetailCardsProps {
-  gptResponse?: ModelResponse;
-  geminiProResponse?: ModelResponse;
-  geminiFlashResponse?: ModelResponse;
+  modelResponses: Record<string, ModelResponse>;
+  selectedModels: string[];
+  modelWeights: Record<string, number>;
   isPremium?: boolean;
+  citations?: string[];
 }
 
 interface ModelCardProps {
   response?: ModelResponse;
+  modelKey: string;
+  weight: number;
   colorClass: string;
   bgClass: string;
   isPremium?: boolean;
 }
 
-function ModelCard({ response, colorClass, bgClass, isPremium = false }: ModelCardProps) {
+function ModelCard({ response, modelKey, weight, colorClass, bgClass, isPremium = false }: ModelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+  const modelConfig = AVAILABLE_MODELS[modelKey];
 
   if (!response || response.error) {
     return (
       <div className={cn("rounded-lg sm:rounded-xl border p-3 sm:p-6", bgClass, "opacity-60")}>
         <div className="flex items-center justify-between gap-2">
-          <span className="font-semibold text-base sm:text-lg">{response?.modelName || 'Unknown'}</span>
+          <span className="font-semibold text-base sm:text-lg">{modelConfig?.name || response?.modelName || 'Unknown'}</span>
           <Badge variant="outline" className="text-xs sm:text-sm bg-destructive/10 text-destructive border-destructive/30">
             {response?.error === "Request timed out" ? "Timed Out" : "Unavailable"}
           </Badge>
@@ -54,7 +59,8 @@ function ModelCard({ response, colorClass, bgClass, isPremium = false }: ModelCa
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-            <h4 className="font-semibold text-sm sm:text-lg text-foreground">{response.modelName}</h4>
+            <h4 className="font-semibold text-sm sm:text-lg text-foreground">{modelConfig?.name || response.modelName}</h4>
+            <span className="text-xs sm:text-sm text-muted-foreground">({weight}%)</span>
             {response.isFallback && (
               <Badge variant="outline" className="text-[10px] sm:text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
                 Fallback
@@ -170,11 +176,22 @@ function ModelCard({ response, colorClass, bgClass, isPremium = false }: ModelCa
   );
 }
 
+// Model color mappings
+const MODEL_COLORS: Record<string, { colorClass: string; bgClass: string }> = {
+  gptMini: { colorClass: "bg-blue-500/20 text-blue-600", bgClass: "border-blue-500/30 bg-blue-500/5" },
+  gpt52: { colorClass: "bg-indigo-500/20 text-indigo-600", bgClass: "border-indigo-500/30 bg-indigo-500/5" },
+  geminiPro: { colorClass: "bg-purple-500/20 text-purple-600", bgClass: "border-purple-500/30 bg-purple-500/5" },
+  geminiFlash: { colorClass: "bg-green-500/20 text-green-600", bgClass: "border-green-500/30 bg-green-500/5" },
+  claude: { colorClass: "bg-orange-500/20 text-orange-600", bgClass: "border-orange-500/30 bg-orange-500/5" },
+  perplexity: { colorClass: "bg-cyan-500/20 text-cyan-600", bgClass: "border-cyan-500/30 bg-cyan-500/5" },
+};
+
 export function ModelDetailCards({
-  gptResponse,
-  geminiProResponse,
-  geminiFlashResponse,
-  isPremium = false
+  modelResponses,
+  selectedModels,
+  modelWeights,
+  isPremium = false,
+  citations
 }: ModelDetailCardsProps) {
   return (
     <div className="space-y-3 sm:space-y-5">
@@ -190,25 +207,45 @@ export function ModelDetailCards({
       </div>
 
       <div className="space-y-4">
-        <ModelCard
-          response={gptResponse}
-          colorClass="bg-blue-500/20 text-blue-600"
-          bgClass="border-blue-500/30 bg-blue-500/5"
-          isPremium={isPremium}
-        />
-        <ModelCard
-          response={geminiProResponse}
-          colorClass="bg-purple-500/20 text-purple-600"
-          bgClass="border-purple-500/30 bg-purple-500/5"
-          isPremium={isPremium}
-        />
-        <ModelCard
-          response={geminiFlashResponse}
-          colorClass="bg-green-500/20 text-green-600"
-          bgClass="border-green-500/30 bg-green-500/5"
-          isPremium={isPremium}
-        />
+        {selectedModels.map(modelKey => {
+          const colors = MODEL_COLORS[modelKey] || { colorClass: "bg-muted text-muted-foreground", bgClass: "border-border bg-muted/5" };
+          return (
+            <ModelCard
+              key={modelKey}
+              response={modelResponses[modelKey]}
+              modelKey={modelKey}
+              weight={modelWeights[modelKey] || 0}
+              colorClass={colors.colorClass}
+              bgClass={colors.bgClass}
+              isPremium={isPremium}
+            />
+          );
+        })}
       </div>
+
+      {/* Web Sources from Perplexity */}
+      {citations && citations.length > 0 && (
+        <div className="mt-6 p-4 sm:p-6 rounded-lg border border-cyan-500/30 bg-cyan-500/5">
+          <h4 className="font-semibold text-base sm:text-lg text-foreground mb-3 sm:mb-4">
+            Web Sources (Perplexity)
+          </h4>
+          <ul className="space-y-2">
+            {citations.map((citation, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm sm:text-base">
+                <span className="text-cyan-600 shrink-0">[{i + 1}]</span>
+                <a 
+                  href={citation} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-cyan-600 hover:text-cyan-500 underline underline-offset-2 break-all"
+                >
+                  {citation}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,29 +6,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Model configurations
-const MODELS = {
-  gpt: {
+// All available model configurations
+const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } }> = {
+  gptMini: {
     id: 'openai/gpt-5-mini',
     name: 'GPT-5 Mini',
+    gateway: 'lovable',
     characteristics: {
       reasoning: 'good',
       tendency: 'balanced',
       strengths: ['Speed', 'Efficiency', 'Reliability']
     }
   },
-  gptFallback: {
-    id: 'openai/gpt-5-nano',
-    name: 'GPT-5 Nano',
+  gpt52: {
+    id: 'openai/gpt-5.2',
+    name: 'GPT-5.2',
+    gateway: 'lovable',
     characteristics: {
-      reasoning: 'good',
-      tendency: 'balanced',
-      strengths: ['Ultra-fast', 'High reliability', 'Efficient']
+      reasoning: 'excellent',
+      tendency: 'analytical',
+      strengths: ['Deep analysis', 'Complex reasoning', 'Accuracy']
     }
   },
   geminiPro: {
     id: 'google/gemini-3-pro-preview',
     name: 'Gemini 3 Pro',
+    gateway: 'lovable',
     characteristics: {
       reasoning: 'strong',
       tendency: 'creative',
@@ -37,16 +40,37 @@ const MODELS = {
   },
   geminiFlash: {
     id: 'google/gemini-2.5-flash',
-    name: 'Gemini 2.5 Flash',
+    name: 'Gemini Flash',
+    gateway: 'lovable',
     characteristics: {
       reasoning: 'good',
       tendency: 'pragmatic',
       strengths: ['Speed', 'Efficiency', 'Practical solutions']
     }
+  },
+  claude: {
+    id: 'claude-3-5-sonnet-20241022',
+    name: 'Claude 3.5 Sonnet',
+    gateway: 'anthropic',
+    characteristics: {
+      reasoning: 'excellent',
+      tendency: 'nuanced',
+      strengths: ['Nuanced thinking', 'Ethical considerations', 'Balanced views']
+    }
+  },
+  perplexity: {
+    id: 'sonar-pro',
+    name: 'Perplexity Sonar',
+    gateway: 'perplexity',
+    characteristics: {
+      reasoning: 'good',
+      tendency: 'research-focused',
+      strengths: ['Real-time web search', 'Current data', 'Source citations']
+    }
   }
 };
 
-// Structured output schema for tool calling - base schema
+// Structured output schema for tool calling
 const getRecommendationTool = (isPremium: boolean) => ({
   type: "function",
   function: {
@@ -98,6 +122,38 @@ const getRecommendationTool = (isPremium: boolean) => ({
   }
 });
 
+// Claude-specific tool schema (uses input_schema instead of parameters)
+const getClaudeRecommendationTool = (isPremium: boolean) => ({
+  name: "provide_recommendations",
+  description: "Provide structured business recommendations based on the query",
+  input_schema: {
+    type: "object",
+    properties: {
+      recommendations: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string", description: "Short, actionable recommendation title" },
+            description: { type: "string", description: isPremium ? "Detailed explanation (4-5 sentences)" : "Detailed explanation (2-3 sentences)" },
+            confidence: { type: "number", description: "Confidence level 0-100" },
+            riskLevel: { type: "number", description: "Risk level 1-5" },
+            creativityLevel: { type: "number", description: "Creativity level 1-5" },
+            reasoning: { type: "string", description: "Why this recommendation makes sense" },
+            actionItems: { type: "array", items: { type: "string" } },
+            potentialRisks: { type: "array", items: { type: "string" } },
+            timeframe: { type: "string", description: "Expected implementation timeframe" }
+          },
+          required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
+        }
+      },
+      summary: { type: "string", description: "Overall summary of recommendations" },
+      overallConfidence: { type: "number", description: "Overall confidence 0-100" }
+    },
+    required: ["recommendations", "summary", "overallConfidence"]
+  }
+});
+
 interface ModelResponse {
   modelId: string;
   modelName: string;
@@ -122,26 +178,25 @@ interface ModelResponse {
   strategicOutlook?: string;
   error?: string;
   isFallback?: boolean;
+  citations?: string[];
 }
 
-// Query a single AI model with timeout
-async function queryModel(
-  modelConfig: typeof MODELS.gpt,
+// Query Lovable Gateway models (GPT, Gemini)
+async function queryLovableModel(
+  modelKey: string,
+  modelConfig: typeof ALL_MODELS.gptMini,
   prompt: string,
   apiKey: string,
   isPremium: boolean,
-  timeoutMs: number = 45000
+  timeoutMs: number = 60000
 ): Promise<ModelResponse> {
   const startTime = Date.now();
-  
-  // Create abort controller for timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  console.log(`[${modelConfig.name}] Starting query with ${timeoutMs}ms timeout...`);
+  console.log(`[${modelConfig.name}] Starting query via Lovable Gateway...`);
   
   try {
-    // Different system prompts for Free vs Premium
     const recommendationCount = isPremium ? "4-5" : "2-3";
     const detailLevel = isPremium 
       ? "Provide comprehensive, detailed analysis with market context, competitive considerations, and long-term strategic implications."
@@ -189,12 +244,8 @@ PREMIUM ANALYSIS REQUIREMENTS:
       const errorText = await response.text();
       console.error(`[${modelConfig.name}] Error ${response.status}:`, errorText);
       
-      if (response.status === 429) {
-        throw new Error("Rate limit exceeded");
-      }
-      if (response.status === 402) {
-        throw new Error("Payment required");
-      }
+      if (response.status === 429) throw new Error("Rate limit exceeded");
+      if (response.status === 402) throw new Error("Payment required");
       throw new Error(`API error: ${response.status}`);
     }
 
@@ -202,7 +253,7 @@ PREMIUM ANALYSIS REQUIREMENTS:
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     
     if (!toolCall?.function?.arguments) {
-      console.error(`[${modelConfig.name}] No tool call in response:`, JSON.stringify(data).slice(0, 500));
+      console.error(`[${modelConfig.name}] No tool call in response`);
       throw new Error("No structured response from model");
     }
 
@@ -226,7 +277,6 @@ PREMIUM ANALYSIS REQUIREMENTS:
 
   } catch (error: any) {
     clearTimeout(timeoutId);
-    
     const processingTime = Date.now() - startTime;
     
     if (error.name === 'AbortError') {
@@ -255,6 +305,264 @@ PREMIUM ANALYSIS REQUIREMENTS:
   }
 }
 
+// Query Claude via Anthropic API
+async function queryClaudeModel(
+  prompt: string,
+  apiKey: string,
+  isPremium: boolean,
+  timeoutMs: number = 60000
+): Promise<ModelResponse> {
+  const startTime = Date.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  console.log(`[Claude 3.5 Sonnet] Starting query via Anthropic API...`);
+  
+  const modelConfig = ALL_MODELS.claude;
+  
+  try {
+    const recommendationCount = isPremium ? "4-5" : "2-3";
+    
+    const systemPrompt = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
+Each recommendation should be practical and implementable.
+Be specific with numbers, timeframes, and concrete steps.
+Consider both opportunities and risks.`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-3-5-sonnet-20241022",
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: "user", content: prompt }],
+        tools: [getClaudeRecommendationTool(isPremium)],
+        tool_choice: { type: "tool", name: "provide_recommendations" }
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[Claude] Error ${response.status}:`, errorText);
+      throw new Error(`Claude API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Claude returns tool_use in content array
+    const toolBlock = data.content?.find((block: any) => block.type === "tool_use");
+    if (!toolBlock?.input) {
+      console.error(`[Claude] No tool_use block in response`);
+      throw new Error("No structured response from Claude");
+    }
+
+    const parsed = toolBlock.input;
+    const processingTime = Date.now() - startTime;
+    
+    console.log(`[Claude] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
+    
+    return {
+      modelId: modelConfig.id,
+      modelName: modelConfig.name,
+      recommendations: parsed.recommendations || [],
+      summary: parsed.summary || "",
+      overallConfidence: parsed.overallConfidence || 50,
+      processingTimeMs: processingTime
+    };
+
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    const processingTime = Date.now() - startTime;
+    
+    if (error.name === 'AbortError') {
+      console.error(`[Claude] Timed out after ${processingTime}ms`);
+      return {
+        modelId: modelConfig.id,
+        modelName: modelConfig.name,
+        recommendations: [],
+        summary: "",
+        overallConfidence: 0,
+        processingTimeMs: processingTime,
+        error: "Request timed out"
+      };
+    }
+    
+    console.error(`[Claude] Failed after ${processingTime}ms:`, error.message);
+    return {
+      modelId: modelConfig.id,
+      modelName: modelConfig.name,
+      recommendations: [],
+      summary: "",
+      overallConfidence: 0,
+      processingTimeMs: processingTime,
+      error: error.message
+    };
+  }
+}
+
+// Query Perplexity API with web search
+async function queryPerplexityModel(
+  prompt: string,
+  apiKey: string,
+  isPremium: boolean,
+  timeoutMs: number = 60000
+): Promise<ModelResponse> {
+  const startTime = Date.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  console.log(`[Perplexity Sonar] Starting query with web search...`);
+  
+  const modelConfig = ALL_MODELS.perplexity;
+  
+  try {
+    const recommendationCount = isPremium ? "4-5" : "2-3";
+    
+    const systemPrompt = `You are a senior business strategist with access to real-time web data.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question using current market data and trends.
+Provide ${recommendationCount} concrete, actionable recommendations.
+Focus on recent developments and current industry benchmarks.
+Include relevant statistics and data points from your web search.
+
+IMPORTANT: Structure your response as valid JSON with these exact fields:
+{
+  "recommendations": [
+    {
+      "title": "string",
+      "description": "string",
+      "confidence": number (0-100),
+      "riskLevel": number (1-5),
+      "creativityLevel": number (1-5),
+      "reasoning": "string",
+      "actionItems": ["string"],
+      "potentialRisks": ["string"],
+      "timeframe": "string"
+    }
+  ],
+  "summary": "string",
+  "overallConfidence": number (0-100)
+}`;
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: isPremium ? "sonar-pro" : "sonar",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt }
+        ],
+        search_recency_filter: "week"
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[Perplexity] Error ${response.status}:`, errorText);
+      throw new Error(`Perplexity API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    const citations = data.citations || [];
+    
+    console.log(`[Perplexity] Got response with ${citations.length} citations`);
+    
+    // Try to parse JSON from content
+    let parsed;
+    try {
+      // Extract JSON from content (might be wrapped in markdown code blocks)
+      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : content;
+      parsed = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.error(`[Perplexity] Failed to parse JSON response, creating structured response`);
+      // Create a structured response from unstructured text
+      parsed = {
+        recommendations: [{
+          title: "Web Research Summary",
+          description: content.substring(0, 500),
+          confidence: 70,
+          riskLevel: 3,
+          creativityLevel: 3,
+          reasoning: "Based on current web research and market data",
+          actionItems: ["Review the detailed analysis", "Validate with additional sources"],
+          potentialRisks: ["Data may change as market evolves"],
+          timeframe: "Immediate review recommended"
+        }],
+        summary: content.substring(0, 300),
+        overallConfidence: 70
+      };
+    }
+    
+    const processingTime = Date.now() - startTime;
+    
+    console.log(`[Perplexity] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
+    
+    return {
+      modelId: isPremium ? "sonar-pro" : "sonar",
+      modelName: modelConfig.name,
+      recommendations: parsed.recommendations || [],
+      summary: parsed.summary || "",
+      overallConfidence: parsed.overallConfidence || 50,
+      processingTimeMs: processingTime,
+      citations: citations
+    };
+
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    const processingTime = Date.now() - startTime;
+    
+    if (error.name === 'AbortError') {
+      console.error(`[Perplexity] Timed out after ${processingTime}ms`);
+      return {
+        modelId: modelConfig.id,
+        modelName: modelConfig.name,
+        recommendations: [],
+        summary: "",
+        overallConfidence: 0,
+        processingTimeMs: processingTime,
+        error: "Request timed out",
+        citations: []
+      };
+    }
+    
+    console.error(`[Perplexity] Failed after ${processingTime}ms:`, error.message);
+    return {
+      modelId: modelConfig.id,
+      modelName: modelConfig.name,
+      recommendations: [],
+      summary: "",
+      overallConfidence: 0,
+      processingTimeMs: processingTime,
+      error: error.message,
+      citations: []
+    };
+  }
+}
+
 // Helper function to send SSE
 function sendSSE(controller: ReadableStreamDefaultController, event: string, data: any) {
   const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -275,6 +583,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const claudeApiKey = Deno.env.get('CLAUDE_API_KEY');
+    const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
     
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY not configured');
@@ -291,8 +601,15 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { prompt, riskPreference = 3, creativityPreference = 3, streaming = true } = await req.json();
+    const { 
+      prompt, 
+      riskPreference = 3, 
+      selectedModels,
+      modelWeights,
+      streaming = true 
+    } = await req.json();
 
+    // Validate request
     if (!prompt?.trim()) {
       return new Response(
         JSON.stringify({ error: "Please provide a business question" }),
@@ -300,7 +617,56 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Multi-AI query started for user ${user.id}`);
+    // Validate selectedModels
+    if (!selectedModels || !Array.isArray(selectedModels) || selectedModels.length !== 3) {
+      return new Response(
+        JSON.stringify({ error: "Exactly 3 models must be selected" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate all selected models exist
+    for (const modelKey of selectedModels) {
+      if (!ALL_MODELS[modelKey]) {
+        return new Response(
+          JSON.stringify({ error: `Unknown model: ${modelKey}` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Validate modelWeights
+    if (!modelWeights || typeof modelWeights !== 'object') {
+      return new Response(
+        JSON.stringify({ error: "Model weights must be provided" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const weightSum = selectedModels.reduce((sum: number, key: string) => sum + (modelWeights[key] || 0), 0);
+    if (Math.abs(weightSum - 100) > 1) {
+      return new Response(
+        JSON.stringify({ error: `Model weights must sum to 100% (got ${weightSum}%)` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if Claude or Perplexity is selected but API key is missing
+    if (selectedModels.includes('claude') && !claudeApiKey) {
+      return new Response(
+        JSON.stringify({ error: "Claude API key not configured. Please contact support." }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (selectedModels.includes('perplexity') && !perplexityApiKey) {
+      return new Response(
+        JSON.stringify({ error: "Perplexity API key not configured. Please contact support." }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Multi-AI query started for user ${user.id} with models: ${selectedModels.join(', ')}`);
     const totalStartTime = Date.now();
 
     // Check user limits
@@ -311,7 +677,7 @@ serve(async (req) => {
       .maybeSingle();
 
     const isPremium = creditsData?.is_premium ?? false;
-    const validationLimit = isPremium ? 20 : 2; // Free: 2/day, Premium: 20/day
+    const validationLimit = isPremium ? 20 : 2;
     
     console.log(`User ${user.id} is ${isPremium ? 'PREMIUM' : 'FREE'} - using ${isPremium ? 'enhanced' : 'standard'} analysis`);
     
@@ -339,90 +705,62 @@ serve(async (req) => {
     const enhancedPrompt = `${prompt}
 
 Context for your analysis:
-- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations
-- User values ${creativityPreference <= 2 ? 'data-driven, factual' : creativityPreference >= 4 ? 'creative, innovative' : 'a mix of practical and creative'} approaches`;
+- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations`;
 
     if (streaming) {
-      // Streaming response with proper headers to prevent buffering
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            let gptResponse: ModelResponse | null = null;
-            let geminiProResponse: ModelResponse | null = null;
-            let geminiFlashResponse: ModelResponse | null = null;
+            const modelResponses: Record<string, ModelResponse> = {};
 
-            // Send initial status
             sendSSE(controller, 'status', { message: 'Starting AI models...', phase: 'starting' });
 
-            console.log('Starting parallel model queries with immediate SSE updates...');
+            console.log('Starting parallel model queries...');
 
-            // Query models in parallel but send SSE immediately when each completes
-            const gptPromise = (async () => {
-              sendSSE(controller, 'model_started', { model: 'gpt', name: 'GPT-5 Mini' });
-              // OpenAI tool-calling can be slower for premium-sized outputs.
-              // To keep GPT consistently responsive, we intentionally use the standard (non-premium) schema for GPT.
-              let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, false, 90000);
+            // Query all selected models in parallel
+            const modelPromises = selectedModels.map(async (modelKey: string) => {
+              const modelConfig = ALL_MODELS[modelKey];
+              sendSSE(controller, 'model_started', { model: modelKey, name: modelConfig.name });
               
-              // If GPT times out, try fallback to GPT-5-nano
-              if (response.error === "Request timed out") {
-                console.log('[GPT] Primary timed out, trying GPT-5-nano fallback...');
-                sendSSE(controller, 'model_retry', { model: 'gpt', message: 'Switching to faster model...' });
-                response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, false, 60000);
-                response.isFallback = true;
-                if (!response.error) {
-                  response.modelName = 'GPT-5 Nano (Fallback)';
-                }
+              let response: ModelResponse;
+              
+              switch (modelConfig.gateway) {
+                case 'lovable':
+                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
+                  break;
+                case 'anthropic':
+                  response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
+                  break;
+                case 'perplexity':
+                  response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);
+                  break;
+                default:
+                  throw new Error(`Unknown gateway: ${modelConfig.gateway}`);
               }
               
-              gptResponse = response;
-              console.log(`[GPT] Sending model_complete SSE (error: ${response.error || 'none'})`);
-              sendSSE(controller, 'model_complete', { model: 'gpt', response });
-              return response;
-            })();
+              modelResponses[modelKey] = response;
+              console.log(`[${modelConfig.name}] Sending model_complete SSE (error: ${response.error || 'none'})`);
+              sendSSE(controller, 'model_complete', { model: modelKey, response });
+              return { modelKey, response };
+            });
 
-            const geminiProPromise = (async () => {
-              sendSSE(controller, 'model_started', { model: 'geminiPro', name: 'Gemini 3 Pro' });
-              const response = await queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium, 60000);
-              geminiProResponse = response;
-              console.log(`[Gemini Pro] Sending model_complete SSE (error: ${response.error || 'none'})`);
-              sendSSE(controller, 'model_complete', { model: 'geminiPro', response });
-              return response;
-            })();
-
-            const geminiFlashPromise = (async () => {
-              sendSSE(controller, 'model_started', { model: 'geminiFlash', name: 'Gemini 2.5 Flash' });
-              const response = await queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium, 45000);
-              geminiFlashResponse = response;
-              console.log(`[Gemini Flash] Sending model_complete SSE (error: ${response.error || 'none'})`);
-              sendSSE(controller, 'model_complete', { model: 'geminiFlash', response });
-              return response;
-            })();
-
-            // Wait for all to complete (they each send their own SSE when done)
-            const results = await Promise.allSettled([gptPromise, geminiProPromise, geminiFlashPromise]);
+            await Promise.allSettled(modelPromises);
 
             const totalProcessingTime = Date.now() - totalStartTime;
 
-            // Extract responses from settled promises
-            const finalGptResponse = results[0].status === 'fulfilled' ? results[0].value : gptResponse;
-            const finalGeminiProResponse = results[1].status === 'fulfilled' ? results[1].value : geminiProResponse;
-            const finalGeminiFlashResponse = results[2].status === 'fulfilled' ? results[2].value : geminiFlashResponse;
-
-            console.log(`All queries completed in ${totalProcessingTime}ms. GPT: ${finalGptResponse?.error ? 'ERROR' : 'OK'}, GeminiPro: ${finalGeminiProResponse?.error ? 'ERROR' : 'OK'}, GeminiFlash: ${finalGeminiFlashResponse?.error ? 'ERROR' : 'OK'}`);
-
-            // Update user credits atomically (prevents race conditions)
+            // Update user credits atomically
             await supabase.rpc('increment_validation_count', {
               user_uuid: user.id,
               reset_window: windowExpired
             });
 
-            // Send final combined response with isPremium flag
+            // Send final combined response
             sendSSE(controller, 'complete', {
-              gptResponse: finalGptResponse || { modelId: MODELS.gpt.id, modelName: MODELS.gpt.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
-              geminiProResponse: finalGeminiProResponse || { modelId: MODELS.geminiPro.id, modelName: MODELS.geminiPro.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
-              geminiFlashResponse: finalGeminiFlashResponse || { modelId: MODELS.geminiFlash.id, modelName: MODELS.geminiFlash.name, recommendations: [], summary: "", overallConfidence: 0, processingTimeMs: 0, error: "No response" },
+              modelResponses,
+              selectedModels,
+              modelWeights,
               processingTimeMs: totalProcessingTime,
-              userPreferences: { riskPreference, creativityPreference },
+              userPreferences: { riskPreference },
               isPremium
             });
 
@@ -447,23 +785,31 @@ Context for your analysis:
 
     } else {
       // Non-streaming response
-      const gptTask = (async () => {
-        let response = await queryModel(MODELS.gpt, enhancedPrompt, lovableApiKey, false, 90000);
-        if (response.error === "Request timed out") {
-          response = await queryModel(MODELS.gptFallback, enhancedPrompt, lovableApiKey, false, 60000);
-          response.isFallback = true;
-          if (!response.error) {
-            response.modelName = 'GPT-5 Nano (Fallback)';
-          }
-        }
-        return response;
-      })();
+      const modelResponses: Record<string, ModelResponse> = {};
 
-      const [gptResponse, geminiProResponse, geminiFlashResponse] = await Promise.all([
-        gptTask,
-        queryModel(MODELS.geminiPro, enhancedPrompt, lovableApiKey, isPremium, 60000),
-        queryModel(MODELS.geminiFlash, enhancedPrompt, lovableApiKey, isPremium, 45000)
-      ]);
+      const modelPromises = selectedModels.map(async (modelKey: string) => {
+        const modelConfig = ALL_MODELS[modelKey];
+        let response: ModelResponse;
+        
+        switch (modelConfig.gateway) {
+          case 'lovable':
+            response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
+            break;
+          case 'anthropic':
+            response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
+            break;
+          case 'perplexity':
+            response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);
+            break;
+          default:
+            throw new Error(`Unknown gateway: ${modelConfig.gateway}`);
+        }
+        
+        modelResponses[modelKey] = response;
+        return { modelKey, response };
+      });
+
+      await Promise.allSettled(modelPromises);
 
       const totalProcessingTime = Date.now() - totalStartTime;
 
@@ -482,11 +828,11 @@ Context for your analysis:
 
       return new Response(
         JSON.stringify({
-          gptResponse,
-          geminiProResponse,
-          geminiFlashResponse,
+          modelResponses,
+          selectedModels,
+          modelWeights,
           processingTimeMs: totalProcessingTime,
-          userPreferences: { riskPreference, creativityPreference },
+          userPreferences: { riskPreference },
           isPremium
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

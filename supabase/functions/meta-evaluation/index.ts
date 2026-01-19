@@ -30,6 +30,7 @@ interface ModelResponse {
   marketContext?: string;
   strategicOutlook?: string;
   error?: string;
+  citations?: string[];
 }
 
 interface ConsensusPoint {
@@ -199,9 +200,9 @@ serve(async (req) => {
     }
 
     const { 
-      gptResponse, 
-      geminiProResponse, 
-      geminiFlashResponse,
+      modelResponses,
+      selectedModels,
+      modelWeights,
       userPreferences,
       prompt,
       saveToHistory = true,
@@ -209,23 +210,43 @@ serve(async (req) => {
     } = await req.json();
 
     console.log(`Meta-evaluation started for user ${user.id} (Premium: ${isPremium})`);
+    console.log(`Selected models: ${selectedModels?.join(', ')}, Weights: ${JSON.stringify(modelWeights)}`);
     const startTime = Date.now();
 
-    // Build context from all model responses
-    const modelSummaries = [
-      gptResponse?.error ? null : `GPT-5 Mini (${gptResponse?.overallConfidence || 0}% confidence): ${gptResponse?.summary || 'No response'}${isPremium && gptResponse?.marketContext ? `\nMarket Context: ${gptResponse.marketContext}` : ''}`,
-      geminiProResponse?.error ? null : `Gemini 3 Pro (${geminiProResponse?.overallConfidence || 0}% confidence): ${geminiProResponse?.summary || 'No response'}${isPremium && geminiProResponse?.marketContext ? `\nMarket Context: ${geminiProResponse.marketContext}` : ''}`,
-      geminiFlashResponse?.error ? null : `Gemini Flash (${geminiFlashResponse?.overallConfidence || 0}% confidence): ${geminiFlashResponse?.summary || 'No response'}${isPremium && geminiFlashResponse?.marketContext ? `\nMarket Context: ${geminiFlashResponse.marketContext}` : ''}`
-    ].filter(Boolean).join('\n\n');
+    // Build context from all model responses with weights
+    const modelSummaries: string[] = [];
+    const allRecommendations: any[] = [];
+    let allCitations: string[] = [];
 
-    const allRecommendations = [
-      ...(gptResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'GPT-5 Mini' })),
-      ...(geminiProResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'Gemini 3 Pro' })),
-      ...(geminiFlashResponse?.recommendations || []).map((r: any) => ({ ...r, model: 'Gemini Flash' }))
-    ];
+    for (const modelKey of (selectedModels || Object.keys(modelResponses))) {
+      const response = modelResponses[modelKey];
+      if (!response || response.error) continue;
+      
+      const weight = modelWeights?.[modelKey] || 33;
+      
+      modelSummaries.push(
+        `${response.modelName} (Weight: ${weight}%, Confidence: ${response.overallConfidence || 0}%): ${response.summary || 'No response'}${isPremium && response.marketContext ? `\nMarket Context: ${response.marketContext}` : ''}`
+      );
+      
+      // Add recommendations with model name and weight
+      (response.recommendations || []).forEach((r: any) => {
+        allRecommendations.push({ ...r, model: response.modelName, weight });
+      });
+      
+      // Collect citations from Perplexity
+      if (response.citations && response.citations.length > 0) {
+        allCitations = [...allCitations, ...response.citations];
+      }
+    }
 
     const riskPref = userPreferences?.riskPreference || 3;
-    const creativityPref = userPreferences?.creativityPreference || 3;
+
+    // Build weighted context explanation
+    const weightedContext = selectedModels?.map((key: string) => {
+      const weight = modelWeights?.[key] || 33;
+      const modelName = modelResponses[key]?.modelName || key;
+      return `${modelName}: ${weight}%`;
+    }).join(', ') || 'Equal weights';
 
     const premiumInstructions = isPremium ? `
 PREMIUM ANALYSIS REQUIREMENTS:
@@ -236,30 +257,36 @@ PREMIUM ANALYSIS REQUIREMENTS:
 
     const systemPrompt = `You are a meta-analyst synthesizing recommendations from multiple AI models.
 
+MODEL WEIGHTS (user-configured):
+${weightedContext}
+
+When synthesizing, give proportionally more influence to higher-weighted models.
+A model with 60% weight should have roughly double the influence of a model with 30% weight.
+
 User preferences:
 - Risk tolerance: ${riskPref <= 2 ? 'Conservative (prefer safe options)' : riskPref >= 4 ? 'Aggressive (open to bold moves)' : 'Balanced'}
-- Creativity preference: ${creativityPref <= 2 ? 'Factual/Data-driven' : creativityPref >= 4 ? 'Creative/Innovative' : 'Balanced mix'}
 
 Your task:
 1. Identify CONSENSUS: Where do all 3 models agree? (green - high confidence)
 2. Identify MAJORITY: Where do 2/3 models agree? (yellow - medium confidence)
 3. Identify DISSENT: Where do models disagree? Present each position fairly (red - requires user decision)
-4. Create FINAL RECOMMENDATION: Weight based on user's risk/creativity preferences${premiumInstructions}
+4. Create FINAL RECOMMENDATION: Weight based on user-configured model weights AND risk preferences${premiumInstructions}
 
-Model weight guide:
-- For conservative users: Weight Gemini Flash (pragmatic) higher
-- For aggressive users: Weight creative suggestions higher
-- For factual preference: Weight GPT-5 Mini (accurate) higher
-- For creative preference: Weight Gemini 3 Pro higher`;
+Weight interpretation guide:
+- Models with higher weights (50%+) should strongly influence the final recommendation
+- Models with medium weights (25-50%) contribute significant input
+- Models with lower weights (<25%) provide supporting perspective`;
 
-    const userPrompt = `Here are the recommendations from 3 AI models:
+    const userPrompt = `Here are the recommendations from the selected AI models:
 
-${modelSummaries}
+${modelSummaries.join('\n\n')}
 
 DETAILED RECOMMENDATIONS:
 ${JSON.stringify(allRecommendations, null, 2)}
 
-Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 'standard'} meta-evaluation.`;
+${allCitations.length > 0 ? `\nWEB SOURCES (from Perplexity research):\n${allCitations.slice(0, 10).map((c, i) => `${i + 1}. ${c}`).join('\n')}` : ''}
+
+Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 'standard'} meta-evaluation, respecting the configured model weights.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -268,7 +295,7 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview", // Fast model for meta-analysis
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
@@ -300,16 +327,19 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
     let validationId: string | null = null;
     if (saveToHistory && prompt) {
       try {
+        // For backward compatibility, we store the first 3 responses in the legacy columns
+        const modelKeys = selectedModels || Object.keys(modelResponses);
+        
         const { data: insertedData, error: insertError } = await supabase
           .from('validation_analyses')
           .insert({
             user_id: user.id,
             prompt: prompt,
             risk_preference: riskPref,
-            creativity_preference: creativityPref,
-            gpt_response: gptResponse,
-            gemini_pro_response: geminiProResponse,
-            gemini_flash_response: geminiFlashResponse,
+            creativity_preference: 3, // No longer used, default value
+            gpt_response: modelResponses[modelKeys[0]] || null,
+            gemini_pro_response: modelResponses[modelKeys[1]] || null,
+            gemini_flash_response: modelResponses[modelKeys[2]] || null,
             consensus_points: evaluation.consensusPoints,
             majority_points: evaluation.majorityPoints,
             dissent_points: evaluation.dissentPoints,
@@ -325,7 +355,6 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
         console.log('Validation analysis saved to history, id:', validationId);
       } catch (saveError) {
         console.error('Failed to save to history:', saveError);
-        // Don't fail the request if saving fails
       }
     }
 
@@ -334,7 +363,10 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
         ...evaluation,
         processingTimeMs: processingTime,
         validationId,
-        isPremium
+        isPremium,
+        citations: allCitations.length > 0 ? allCitations : undefined,
+        selectedModels,
+        modelWeights
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

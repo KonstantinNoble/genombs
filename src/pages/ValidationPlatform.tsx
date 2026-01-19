@@ -47,7 +47,8 @@ export default function ValidationPlatform() {
   
   const [prompt, setPrompt] = useState("");
   const [riskPreference, setRiskPreference] = useState(3);
-  const [creativityPreference, setCreativityPreference] = useState(3);
+  const [selectedModels, setSelectedModels] = useState<string[]>(['gptMini', 'geminiPro', 'geminiFlash']);
+  const [modelWeights, setModelWeights] = useState<Record<string, number>>({ gptMini: 34, geminiPro: 33, geminiFlash: 33 });
   
   const [displayedResult, setDisplayedResult] = useState<ValidationResult | null>(null);
   const [currentValidationId, setCurrentValidationId] = useState<string | null>(null);
@@ -208,17 +209,24 @@ export default function ValidationPlatform() {
     setDisplayedResult(null);
     
     try {
-      await validate(prompt.trim(), riskPreference, creativityPreference);
+      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights);
     } catch (error) {
       // Error already handled in onError callback
     }
   };
 
   const handleHistoryClick = (item: HistoryItem) => {
+    // Reconstruct model responses from legacy storage
+    const modelResponses: Record<string, any> = {};
+    const legacyModels = ['gptMini', 'geminiPro', 'geminiFlash'];
+    if (item.gpt_response) modelResponses.gptMini = item.gpt_response;
+    if (item.gemini_pro_response) modelResponses.geminiPro = item.gemini_pro_response;
+    if (item.gemini_flash_response) modelResponses.geminiFlash = item.gemini_flash_response;
+    
     const reconstructedResult: ValidationResult = {
-      gptResponse: item.gpt_response,
-      geminiProResponse: item.gemini_pro_response,
-      geminiFlashResponse: item.gemini_flash_response,
+      modelResponses,
+      selectedModels: legacyModels,
+      modelWeights: { gptMini: 34, geminiPro: 33, geminiFlash: 33 },
       consensusPoints: item.consensus_points || [],
       majorityPoints: item.majority_points || [],
       dissentPoints: item.dissent_points || [],
@@ -422,8 +430,10 @@ export default function ValidationPlatform() {
                   onPromptChange={setPrompt}
                   riskPreference={riskPreference}
                   onRiskChange={setRiskPreference}
-                  creativityPreference={creativityPreference}
-                  onCreativityChange={setCreativityPreference}
+                  selectedModels={selectedModels}
+                  onModelsChange={setSelectedModels}
+                  modelWeights={modelWeights}
+                  onWeightsChange={setModelWeights}
                   disabled={isValidating}
                 />
                 
@@ -446,7 +456,7 @@ export default function ValidationPlatform() {
             </Card>
 
             {isValidating && (
-              <MultiModelLoader status={status} modelStates={modelStates} />
+              <MultiModelLoader status={status} modelStates={modelStates} selectedModels={selectedModels} modelWeights={modelWeights} />
             )}
 
             {displayedResult && !isValidating && (

@@ -1,24 +1,28 @@
 import { cn } from "@/lib/utils";
 import type { ValidationStatus, ModelStates } from "@/hooks/useMultiAIValidation";
+import { AVAILABLE_MODELS } from "./ModelSelector";
 import { useEffect, useState } from "react";
 
 interface MultiModelLoaderProps {
   status: ValidationStatus;
   modelStates?: ModelStates;
+  selectedModels?: string[];
+  modelWeights?: Record<string, number>;
 }
 
 interface ModelStatusProps {
+  modelKey: string;
   name: string;
   state: 'queued' | 'running' | 'done' | 'failed';
+  weight?: number;
   index: number;
 }
 
-function ModelStatus({ name, state, index }: ModelStatusProps) {
+function ModelStatus({ modelKey, name, state, weight, index }: ModelStatusProps) {
   const [progress, setProgress] = useState(0);
   
   useEffect(() => {
     if (state === 'running') {
-      // Gradual progress while running
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) return prev;
@@ -42,12 +46,15 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
     }
   };
 
+  const model = AVAILABLE_MODELS[modelKey];
+  const colorClass = model?.colorClass || '';
+
   return (
     <div 
       className={cn(
         "flex flex-col gap-2 sm:gap-3 p-3 sm:p-5 rounded-lg sm:rounded-xl border transition-all duration-300",
         state === 'done' 
-          ? "border-primary/40 bg-primary/5" 
+          ? `${colorClass} border-current/30` 
           : state === 'failed'
             ? "border-destructive/40 bg-destructive/5"
             : state === 'running' 
@@ -57,14 +64,21 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center justify-between">
-        <span className={cn(
-          "font-semibold text-base sm:text-lg transition-colors",
-          state === 'done' ? "text-primary" : 
-          state === 'failed' ? "text-destructive" :
-          state === 'running' ? "text-foreground" : "text-muted-foreground"
-        )}>
-          {name}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={cn(
+            "font-semibold text-base sm:text-lg transition-colors",
+            state === 'done' ? colorClass.split(' ')[0] : 
+            state === 'failed' ? "text-destructive" :
+            state === 'running' ? "text-foreground" : "text-muted-foreground"
+          )}>
+            {name}
+          </span>
+          {weight !== undefined && (
+            <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+              ({weight}%)
+            </span>
+          )}
+        </div>
         <span className={cn(
           "text-sm sm:text-base font-medium tabular-nums",
           state === 'done' ? "text-primary" : 
@@ -85,29 +99,39 @@ function ModelStatus({ name, state, index }: ModelStatusProps) {
           style={{ width: `${progress}%` }}
         />
       </div>
+      {modelKey === 'perplexity' && state === 'running' && (
+        <span className="text-xs sm:text-sm text-muted-foreground italic">
+          Searching the web...
+        </span>
+      )}
     </div>
   );
 }
 
-export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps) {
+export function MultiModelLoader({ status, modelStates, selectedModels, modelWeights }: MultiModelLoaderProps) {
   const isEvaluating = status === 'evaluating';
 
-  // Default states if not provided
-  const states: ModelStates = modelStates || {
-    gpt: status === 'querying_models' ? 'running' : 
-         ['gpt_complete', 'gemini_pro_complete', 'gemini_flash_complete', 'evaluating', 'complete'].includes(status) ? 'done' : 'queued',
-    geminiPro: status === 'querying_models' ? 'running' : 
-               ['gemini_pro_complete', 'gemini_flash_complete', 'evaluating', 'complete'].includes(status) ? 'done' : 'queued',
-    geminiFlash: status === 'querying_models' ? 'running' : 
-                 ['gemini_flash_complete', 'evaluating', 'complete'].includes(status) ? 'done' : 'queued'
+  // Use selected models or default to legacy models
+  const modelsToShow = selectedModels || ['gptMini', 'geminiPro', 'geminiFlash'];
+  
+  // Get states for each model
+  const getModelState = (modelKey: string): 'queued' | 'running' | 'done' | 'failed' => {
+    if (modelStates && modelStates[modelKey]) {
+      return modelStates[modelKey];
+    }
+    // Default state based on status
+    if (status === 'querying_models') return 'running';
+    if (['evaluating', 'complete'].includes(status)) return 'done';
+    return 'queued';
   };
 
-  // Calculate overall progress based on actual model states
-  const completedCount = [states.gpt, states.geminiPro, states.geminiFlash].filter(
-    s => s === 'done' || s === 'failed'
-  ).length;
+  // Calculate overall progress
+  const completedCount = modelsToShow.filter(key => {
+    const state = getModelState(key);
+    return state === 'done' || state === 'failed';
+  }).length;
   
-  let overallProgress = (completedCount / 3) * 75; // Models take 75% of progress
+  let overallProgress = (completedCount / modelsToShow.length) * 75;
   if (isEvaluating) overallProgress += 20;
   if (status === 'complete') overallProgress = 100;
 
@@ -120,8 +144,8 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
         </h3>
         <p className="text-sm sm:text-lg text-muted-foreground px-2">
           {isEvaluating 
-            ? "Meta-analysis in progress"
-            : "Parallel analysis across 3 models"
+            ? "Meta-analysis with weighted synthesis"
+            : `Parallel analysis across ${modelsToShow.length} models`
           }
         </p>
       </div>
@@ -144,16 +168,30 @@ export function MultiModelLoader({ status, modelStates }: MultiModelLoaderProps)
 
       {/* Model cards - Stack on mobile */}
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
-        <ModelStatus name="GPT-5 Mini" state={states.gpt} index={0} />
-        <ModelStatus name="Gemini 3 Pro" state={states.geminiPro} index={1} />
-        <ModelStatus name="Gemini Flash" state={states.geminiFlash} index={2} />
+        {modelsToShow.map((modelKey, index) => {
+          const model = AVAILABLE_MODELS[modelKey];
+          const name = model?.name || modelKey;
+          const state = getModelState(modelKey);
+          const weight = modelWeights?.[modelKey];
+          
+          return (
+            <ModelStatus 
+              key={modelKey}
+              modelKey={modelKey}
+              name={name} 
+              state={state} 
+              weight={weight}
+              index={index} 
+            />
+          );
+        })}
       </div>
 
       {/* Meta-evaluation indicator */}
       {isEvaluating && (
         <div className="p-3 sm:p-5 rounded-lg sm:rounded-xl border border-primary/30 bg-primary/5 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-base sm:text-lg font-semibold text-foreground">Meta-Evaluation</span>
+            <span className="text-base sm:text-lg font-semibold text-foreground">Weighted Meta-Evaluation</span>
             <span className="text-sm sm:text-base text-primary font-medium">Processing...</span>
           </div>
           <div className="h-2 sm:h-2.5 bg-muted rounded-full overflow-hidden">

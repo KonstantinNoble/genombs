@@ -23,6 +23,7 @@ export interface ModelResponse {
   processingTimeMs: number;
   error?: string;
   isFallback?: boolean;
+  citations?: string[];
 }
 
 export interface ConsensusPoint {
@@ -70,9 +71,9 @@ export interface FinalRecommendation {
 }
 
 export interface ValidationResult {
-  gptResponse: ModelResponse;
-  geminiProResponse: ModelResponse;
-  geminiFlashResponse: ModelResponse;
+  modelResponses: Record<string, ModelResponse>;
+  selectedModels: string[];
+  modelWeights: Record<string, number>;
   consensusPoints: ConsensusPoint[];
   majorityPoints: MajorityPoint[];
   dissentPoints: DissentPoint[];
@@ -82,26 +83,28 @@ export interface ValidationResult {
   processingTimeMs: number;
   validationId?: string;
   isPremium?: boolean;
+  citations?: string[];
   // Premium-only fields
   strategicAlternatives?: StrategicAlternative[];
   longTermOutlook?: LongTermOutlook;
   competitorInsights?: string;
+  // Legacy compatibility
+  gptResponse?: ModelResponse;
+  geminiProResponse?: ModelResponse;
+  geminiFlashResponse?: ModelResponse;
 }
 
 export type ValidationStatus = 
   | 'idle'
   | 'querying_models'
-  | 'gpt_complete'
-  | 'gemini_pro_complete'
-  | 'gemini_flash_complete'
   | 'evaluating'
   | 'complete'
   | 'error';
 
+export type ModelState = 'queued' | 'running' | 'done' | 'failed';
+
 export interface ModelStates {
-  gpt: 'queued' | 'running' | 'done' | 'failed';
-  geminiPro: 'queued' | 'running' | 'done' | 'failed';
-  geminiFlash: 'queued' | 'running' | 'done' | 'failed';
+  [modelKey: string]: ModelState;
 }
 
 export interface LimitReachedInfo {
@@ -119,21 +122,13 @@ interface UseMultiAIValidationOptions {
 export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
   const [isValidating, setIsValidating] = useState(false);
   const [status, setStatus] = useState<ValidationStatus>('idle');
-  const [modelStates, setModelStates] = useState<ModelStates>({
-    gpt: 'queued',
-    geminiPro: 'queued',
-    geminiFlash: 'queued'
-  });
-  const [partialResponses, setPartialResponses] = useState<{
-    gpt?: ModelResponse;
-    geminiPro?: ModelResponse;
-    geminiFlash?: ModelResponse;
-  }>({});
+  const [modelStates, setModelStates] = useState<ModelStates>({});
+  const [partialResponses, setPartialResponses] = useState<Record<string, ModelResponse>>({});
   const [result, setResult] = useState<ValidationResult | null>(null);
 
   const resetState = useCallback(() => {
     setStatus('idle');
-    setModelStates({ gpt: 'queued', geminiPro: 'queued', geminiFlash: 'queued' });
+    setModelStates({});
     setPartialResponses({});
     setResult(null);
   }, []);
@@ -141,15 +136,21 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
   const validate = useCallback(async (
     prompt: string,
     riskPreference: number = 3,
-    creativityPreference: number = 3
+    selectedModels: string[],
+    modelWeights: Record<string, number>
   ) => {
     setIsValidating(true);
     resetState();
     setStatus('querying_models');
-    setModelStates({ gpt: 'running', geminiPro: 'running', geminiFlash: 'running' });
+    
+    // Initialize model states
+    const initialStates: ModelStates = {};
+    selectedModels.forEach(key => {
+      initialStates[key] = 'running';
+    });
+    setModelStates(initialStates);
 
-    // Create abort controller for overall timeout
-    // 180s = GPT primary (90s) + GPT fallback (60s) + buffer (30s)
+    // Create abort controller for overall timeout (180s)
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
@@ -161,7 +162,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         throw new Error('Not authenticated');
       }
 
-      // Step 1: Query all 3 AI models in parallel
+      // Step 1: Query all selected AI models in parallel
       const queryResponse = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/multi-ai-query`,
         {
@@ -173,7 +174,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           body: JSON.stringify({
             prompt,
             riskPreference,
-            creativityPreference,
+            selectedModels,
+            modelWeights,
             streaming: true
           }),
           signal: abortController.signal
@@ -190,7 +192,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           throw new Error(`Query failed: ${queryResponse.status}`);
         }
         
-        // Handle limit reached specially - don't throw, call callback
+        // Handle limit reached specially
         if (errorData.error === "LIMIT_REACHED") {
           console.log('Limit reached - showing dialog', errorData);
           const limitInfo: LimitReachedInfo = {
@@ -207,15 +209,13 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         throw new Error(errorData.error || `Query failed: ${queryResponse.status}`);
       }
 
-      // Parse SSE stream with proper event handling
+      // Parse SSE stream
       const reader = queryResponse.body?.getReader();
       if (!reader) throw new Error('No response body');
 
       const decoder = new TextDecoder();
       let buffer = '';
-      let gptResponse: ModelResponse | undefined;
-      let geminiProResponse: ModelResponse | undefined;
-      let geminiFlashResponse: ModelResponse | undefined;
+      let modelResponses: Record<string, ModelResponse> = {};
       let isPremiumUser = false;
       let currentEvent = '';
 
@@ -228,7 +228,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         buffer = lines.pop() || '';
 
         for (const line of lines) {
-          // Track event type from "event:" lines
           if (line.startsWith('event: ')) {
             currentEvent = line.slice(7).trim();
             continue;
@@ -244,51 +243,34 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
 
               // Handle model_started events
               if (currentEvent === 'model_started') {
-                const model = data.model as keyof ModelStates;
+                const model = data.model as string;
                 if (model) {
                   setModelStates(prev => ({ ...prev, [model]: 'running' }));
                 }
               }
 
-              // Handle model_retry events (GPT fallback)
-              if (currentEvent === 'model_retry') {
-                console.log(`Model retry: ${data.model} - ${data.message}`);
-              }
-
-              // Handle model_complete events - update immediately
-              if (currentEvent === 'model_complete' || (data.model && data.response)) {
+              // Handle model_complete events
+              if (currentEvent === 'model_complete') {
                 const model = data.model;
                 const response = data.response;
                 
-                if (model === 'gpt' && response) {
-                  gptResponse = response;
-                  setPartialResponses(prev => ({ ...prev, gpt: response }));
-                  setModelStates(prev => ({ ...prev, gpt: response.error ? 'failed' : 'done' }));
-                  setStatus('gpt_complete');
-                } else if (model === 'geminiPro' && response) {
-                  geminiProResponse = response;
-                  setPartialResponses(prev => ({ ...prev, geminiPro: response }));
-                  setModelStates(prev => ({ ...prev, geminiPro: response.error ? 'failed' : 'done' }));
-                  setStatus('gemini_pro_complete');
-                } else if (model === 'geminiFlash' && response) {
-                  geminiFlashResponse = response;
-                  setPartialResponses(prev => ({ ...prev, geminiFlash: response }));
-                  setModelStates(prev => ({ ...prev, geminiFlash: response.error ? 'failed' : 'done' }));
-                  setStatus('gemini_flash_complete');
+                if (model && response) {
+                  modelResponses[model] = response;
+                  setPartialResponses(prev => ({ ...prev, [model]: response }));
+                  setModelStates(prev => ({ 
+                    ...prev, 
+                    [model]: response.error ? 'failed' : 'done' 
+                  }));
                 }
               }
 
               // Handle complete event with all responses
-              if (currentEvent === 'complete' || (data.gptResponse && data.geminiProResponse && data.geminiFlashResponse)) {
-                gptResponse = data.gptResponse || gptResponse;
-                geminiProResponse = data.geminiProResponse || geminiProResponse;
-                geminiFlashResponse = data.geminiFlashResponse || geminiFlashResponse;
+              if (currentEvent === 'complete') {
+                if (data.modelResponses) {
+                  modelResponses = data.modelResponses;
+                  setPartialResponses(data.modelResponses);
+                }
                 isPremiumUser = data.isPremium || false;
-                setPartialResponses({
-                  gpt: gptResponse,
-                  geminiPro: geminiProResponse,
-                  geminiFlash: geminiFlashResponse
-                });
               }
               
               // Capture isPremium from any event
@@ -296,7 +278,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
                 isPremiumUser = data.isPremium;
               }
               
-              // Reset event after processing
               currentEvent = '';
             } catch (e) {
               if (e instanceof SyntaxError) continue;
@@ -306,33 +287,17 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         }
       }
 
-      // Count valid responses (at least 2 required to proceed)
-      const validResponses = [gptResponse, geminiProResponse, geminiFlashResponse].filter(
-        r => r && !r.error && r.recommendations.length > 0
+      // Count valid responses (at least 2 required)
+      const validResponses = Object.values(modelResponses).filter(
+        r => r && !r.error && r.recommendations && r.recommendations.length > 0
       );
 
       if (validResponses.length < 2) {
-        const errors = [];
-        if (!gptResponse || gptResponse.error) errors.push(`GPT: ${gptResponse?.error || 'No response'}`);
-        if (!geminiProResponse || geminiProResponse.error) errors.push(`Gemini Pro: ${geminiProResponse?.error || 'No response'}`);
-        if (!geminiFlashResponse || geminiFlashResponse.error) errors.push(`Gemini Flash: ${geminiFlashResponse?.error || 'No response'}`);
+        const errors = Object.entries(modelResponses)
+          .filter(([_, r]) => !r || r.error)
+          .map(([key, r]) => `${key}: ${r?.error || 'No response'}`);
         throw new Error(`Insufficient model responses. Errors: ${errors.join(', ')}`);
       }
-
-      // Create stub responses for any missing models
-      const createStubResponse = (modelId: string, modelName: string): ModelResponse => ({
-        modelId,
-        modelName,
-        recommendations: [],
-        summary: "",
-        overallConfidence: 0,
-        processingTimeMs: 0,
-        error: "Model unavailable"
-      });
-
-      const finalGptResponse = gptResponse || createStubResponse('openai/gpt-5-mini', 'GPT-5 Mini');
-      const finalGeminiProResponse = geminiProResponse || createStubResponse('google/gemini-3-pro-preview', 'Gemini 3 Pro');
-      const finalGeminiFlashResponse = geminiFlashResponse || createStubResponse('google/gemini-3-flash-preview', 'Gemini 3 Flash');
 
       // Step 2: Run meta-evaluation
       setStatus('evaluating');
@@ -346,10 +311,10 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            gptResponse: finalGptResponse,
-            geminiProResponse: finalGeminiProResponse,
-            geminiFlashResponse: finalGeminiFlashResponse,
-            userPreferences: { riskPreference, creativityPreference },
+            modelResponses,
+            selectedModels,
+            modelWeights,
+            userPreferences: { riskPreference },
             prompt,
             saveToHistory: true,
             isPremium: isPremiumUser
@@ -365,9 +330,9 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       const evalData = await evalResponse.json();
 
       const finalResult: ValidationResult = {
-        gptResponse: finalGptResponse,
-        geminiProResponse: finalGeminiProResponse,
-        geminiFlashResponse: finalGeminiFlashResponse,
+        modelResponses,
+        selectedModels,
+        modelWeights,
         consensusPoints: evalData.consensusPoints || [],
         majorityPoints: evalData.majorityPoints || [],
         dissentPoints: evalData.dissentPoints || [],
@@ -383,6 +348,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         processingTimeMs: evalData.processingTimeMs || 0,
         validationId: evalData.validationId || undefined,
         isPremium: isPremiumUser,
+        citations: evalData.citations,
         // Premium-only fields
         strategicAlternatives: evalData.strategicAlternatives,
         longTermOutlook: evalData.longTermOutlook,
@@ -397,7 +363,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       console.error('Multi-AI validation error:', error);
       setStatus('error');
       
-      // Handle abort/timeout specifically
       if (error.name === 'AbortError') {
         options?.onError?.('Request timed out. Please try again.');
       } else {

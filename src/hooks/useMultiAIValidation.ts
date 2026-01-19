@@ -73,7 +73,6 @@ export interface FinalRecommendation {
 export interface ValidationResult {
   modelResponses: Record<string, ModelResponse>;
   selectedModels: string[];
-  modelWeights: Record<string, number>;
   consensusPoints: ConsensusPoint[];
   majorityPoints: MajorityPoint[];
   dissentPoints: DissentPoint[];
@@ -136,8 +135,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
   const validate = useCallback(async (
     prompt: string,
     riskPreference: number = 3,
-    selectedModels: string[],
-    modelWeights: Record<string, number>
+    selectedModels: string[]
   ) => {
     setIsValidating(true);
     resetState();
@@ -150,7 +148,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     });
     setModelStates(initialStates);
 
-    // Create abort controller for overall timeout (180s - all models are fast now)
+    // Create abort controller for overall timeout (180s)
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
@@ -175,7 +173,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             prompt,
             riskPreference,
             selectedModels,
-            modelWeights,
             streaming: true
           }),
           signal: abortController.signal
@@ -313,7 +310,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           body: JSON.stringify({
             modelResponses,
             selectedModels,
-            modelWeights,
             userPreferences: { riskPreference },
             prompt,
             saveToHistory: true,
@@ -332,7 +328,6 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       const finalResult: ValidationResult = {
         modelResponses,
         selectedModels,
-        modelWeights,
         consensusPoints: evalData.consensusPoints || [],
         majorityPoints: evalData.majorityPoints || [],
         dissentPoints: evalData.dissentPoints || [],

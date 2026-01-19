@@ -8,7 +8,6 @@ import { AVAILABLE_MODELS } from "./ModelSelector";
 interface ModelDetailCardsProps {
   modelResponses: Record<string, ModelResponse>;
   selectedModels: string[];
-  modelWeights: Record<string, number>;
   isPremium?: boolean;
   citations?: string[];
 }
@@ -16,13 +15,12 @@ interface ModelDetailCardsProps {
 interface ModelCardProps {
   response?: ModelResponse;
   modelKey: string;
-  weight: number;
   colorClass: string;
   bgClass: string;
   isPremium?: boolean;
 }
 
-function ModelCard({ response, modelKey, weight, colorClass, bgClass, isPremium = false }: ModelCardProps) {
+function ModelCard({ response, modelKey, colorClass, bgClass, isPremium = false }: ModelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
   const modelConfig = AVAILABLE_MODELS[modelKey];
@@ -60,7 +58,6 @@ function ModelCard({ response, modelKey, weight, colorClass, bgClass, isPremium 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <h4 className="font-semibold text-sm sm:text-lg text-foreground">{modelConfig?.name || response.modelName}</h4>
-            <span className="text-xs sm:text-sm text-muted-foreground">({weight}%)</span>
             {response.isFallback && (
               <Badge variant="outline" className="text-[10px] sm:text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
                 Fallback
@@ -179,7 +176,7 @@ function ModelCard({ response, modelKey, weight, colorClass, bgClass, isPremium 
 // Model color mappings
 const MODEL_COLORS: Record<string, { colorClass: string; bgClass: string }> = {
   gptMini: { colorClass: "bg-blue-500/20 text-blue-600", bgClass: "border-blue-500/30 bg-blue-500/5" },
-  gpt52: { colorClass: "bg-indigo-500/20 text-indigo-600", bgClass: "border-indigo-500/30 bg-indigo-500/5" },
+  sonarReasoning: { colorClass: "bg-indigo-500/20 text-indigo-600", bgClass: "border-indigo-500/30 bg-indigo-500/5" },
   geminiPro: { colorClass: "bg-purple-500/20 text-purple-600", bgClass: "border-purple-500/30 bg-purple-500/5" },
   geminiFlash: { colorClass: "bg-green-500/20 text-green-600", bgClass: "border-green-500/30 bg-green-500/5" },
   claude: { colorClass: "bg-orange-500/20 text-orange-600", bgClass: "border-orange-500/30 bg-orange-500/5" },
@@ -189,7 +186,6 @@ const MODEL_COLORS: Record<string, { colorClass: string; bgClass: string }> = {
 export function ModelDetailCards({
   modelResponses,
   selectedModels,
-  modelWeights,
   isPremium = false,
   citations
 }: ModelDetailCardsProps) {
@@ -214,7 +210,6 @@ export function ModelDetailCards({
               key={modelKey}
               response={modelResponses[modelKey]}
               modelKey={modelKey}
-              weight={modelWeights[modelKey] || 0}
               colorClass={colors.colorClass}
               bgClass={colors.bgClass}
               isPremium={isPremium}

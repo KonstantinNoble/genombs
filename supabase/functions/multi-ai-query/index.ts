@@ -49,13 +49,13 @@ const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' 
     }
   },
   claude: {
-    id: 'claude-3-5-sonnet-20241022',
-    name: 'Claude 3.5 Sonnet',
+    id: 'claude-sonnet-4-20250514',
+    name: 'Claude Sonnet 4',
     gateway: 'anthropic',
     characteristics: {
       reasoning: 'excellent',
       tendency: 'nuanced',
-      strengths: ['Nuanced thinking', 'Ethical considerations', 'Balanced views']
+      strengths: ['Advanced reasoning', 'Nuanced analysis', 'Ethical considerations', 'Balanced views']
     }
   },
   perplexity: {
@@ -316,7 +316,7 @@ async function queryClaudeModel(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  console.log(`[Claude 3.5 Sonnet] Starting query via Anthropic API...`);
+  console.log(`[${ALL_MODELS.claude.name}] Starting query via Anthropic API...`);
   
   const modelConfig = ALL_MODELS.claude;
   
@@ -341,7 +341,7 @@ Consider both opportunities and risks.`;
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
+        model: modelConfig.id,
         max_tokens: 4096,
         system: systemPrompt,
         messages: [{ role: "user", content: prompt }],

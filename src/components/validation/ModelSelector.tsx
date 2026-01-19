@@ -38,7 +38,7 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
   },
   claude: { 
     id: 'claude', 
-    name: 'Claude 3.5 Sonnet', 
+    name: 'Claude Sonnet 4', 
     description: 'Nuanced',
     colorClass: 'text-orange-600 bg-orange-500/10 border-orange-500/20'
   },

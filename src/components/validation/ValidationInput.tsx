@@ -2,14 +2,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { ModelSelector } from "./ModelSelector";
 
 interface ValidationInputProps {
   prompt: string;
   onPromptChange: (value: string) => void;
   riskPreference: number;
   onRiskChange: (value: number) => void;
-  creativityPreference: number;
-  onCreativityChange: (value: number) => void;
+  selectedModels: string[];
+  onModelsChange: (models: string[]) => void;
+  modelWeights: Record<string, number>;
+  onWeightsChange: (weights: Record<string, number>) => void;
   disabled?: boolean;
 }
 
@@ -18,19 +21,15 @@ export function ValidationInput({
   onPromptChange,
   riskPreference,
   onRiskChange,
-  creativityPreference,
-  onCreativityChange,
+  selectedModels,
+  onModelsChange,
+  modelWeights,
+  onWeightsChange,
   disabled = false
 }: ValidationInputProps) {
   const getRiskLabel = (value: number) => {
     if (value <= 2) return "Conservative";
     if (value >= 4) return "Aggressive";
-    return "Balanced";
-  };
-
-  const getCreativityLabel = (value: number) => {
-    if (value <= 2) return "Data-Driven";
-    if (value >= 4) return "Innovative";
     return "Balanced";
   };
 
@@ -68,72 +67,39 @@ export function ValidationInput({
           maxLength={MAX_CHARACTERS}
         />
         <p className="text-sm sm:text-base text-muted-foreground">
-          Ask any strategic business question. 3 AI models will analyze and provide validated recommendations.
+          Ask any strategic business question. Your selected AI models will analyze and provide validated recommendations.
         </p>
       </div>
 
-      {/* Preference Sliders - Stack on mobile */}
-      <div className="grid gap-3 sm:gap-5 grid-cols-1 sm:grid-cols-2">
-        {/* Risk Preference */}
-        <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
-          <div className="flex items-center justify-between gap-2">
-            <Label className="text-base sm:text-lg font-semibold">Risk Tolerance</Label>
-            <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
-              {getRiskLabel(riskPreference)}
-            </span>
-          </div>
-          <Slider
-            value={[riskPreference]}
-            onValueChange={([value]) => onRiskChange(value)}
-            min={1}
-            max={5}
-            step={1}
-            disabled={disabled}
-            className="cursor-pointer"
-          />
-          <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
-            <span>Safe choices</span>
-            <span>Bold moves</span>
-          </div>
-        </div>
+      {/* Model Selector */}
+      <ModelSelector
+        selectedModels={selectedModels}
+        onModelsChange={onModelsChange}
+        modelWeights={modelWeights}
+        onWeightsChange={onWeightsChange}
+        disabled={disabled}
+      />
 
-        {/* Creativity Preference */}
-        <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
-          <div className="flex items-center justify-between gap-2">
-            <Label className="text-base sm:text-lg font-semibold">Analysis Style</Label>
-            <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
-              {getCreativityLabel(creativityPreference)}
-            </span>
-          </div>
-          <Slider
-            value={[creativityPreference]}
-            onValueChange={([value]) => onCreativityChange(value)}
-            min={1}
-            max={5}
-            step={1}
-            disabled={disabled}
-            className="cursor-pointer"
-          />
-          <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
-            <span>Facts & Data</span>
-            <span>Creative Ideas</span>
-          </div>
+      {/* Risk Preference Slider */}
+      <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
+        <div className="flex items-center justify-between gap-2">
+          <Label className="text-base sm:text-lg font-semibold">Risk Tolerance</Label>
+          <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
+            {getRiskLabel(riskPreference)}
+          </span>
         </div>
-      </div>
-
-      {/* Model Info Pills - Responsive */}
-      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-blue-500/10 border border-blue-500/20">
-          <span className="text-sm sm:text-base font-semibold text-blue-600">GPT-5 Mini</span>
-          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Reasoning</span>
-        </div>
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20">
-          <span className="text-sm sm:text-base font-semibold text-purple-600">Gemini 3 Pro</span>
-          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Creative</span>
-        </div>
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-green-500/10 border border-green-500/20">
-          <span className="text-sm sm:text-base font-semibold text-green-600">Gemini Flash</span>
-          <span className="text-xs sm:text-base text-muted-foreground hidden sm:inline">Pragmatic</span>
+        <Slider
+          value={[riskPreference]}
+          onValueChange={([value]) => onRiskChange(value)}
+          min={1}
+          max={5}
+          step={1}
+          disabled={disabled}
+          className="cursor-pointer"
+        />
+        <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
+          <span>Safe choices</span>
+          <span>Bold moves</span>
         </div>
       </div>
     </div>

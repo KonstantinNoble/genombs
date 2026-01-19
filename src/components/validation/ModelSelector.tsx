@@ -20,7 +20,7 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
   },
   gpt52: { 
     id: 'gpt52', 
-    name: 'GPT-5.2', 
+    name: 'GPT-5', 
     description: 'Deep Analysis',
     colorClass: 'text-indigo-600 bg-indigo-500/10 border-indigo-500/20'
   },

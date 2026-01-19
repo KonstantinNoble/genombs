@@ -19,13 +19,13 @@ const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' 
     }
   },
   gpt52: {
-    id: 'openai/gpt-5.2',
-    name: 'GPT-5.2',
+    id: 'openai/gpt-5',
+    name: 'GPT-5',
     gateway: 'lovable',
     characteristics: {
       reasoning: 'excellent',
       tendency: 'analytical',
-      strengths: ['Deep analysis', 'Complex reasoning', 'Accuracy']
+      strengths: ['Deep analysis', 'Complex reasoning', 'Accuracy', 'Multimodal']
     }
   },
   geminiPro: {

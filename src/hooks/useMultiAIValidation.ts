@@ -150,11 +150,11 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     });
     setModelStates(initialStates);
 
-    // Create abort controller for overall timeout (240s to accommodate GPT-5's 180s timeout)
+    // Create abort controller for overall timeout (180s - all models are fast now)
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => {
       abortController.abort();
-    }, 240000);
+    }, 180000);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();

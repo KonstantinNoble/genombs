@@ -18,14 +18,14 @@ const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' 
       strengths: ['Speed', 'Efficiency', 'Reliability']
     }
   },
-  gpt52: {
-    id: 'openai/gpt-5',
-    name: 'GPT-5',
-    gateway: 'lovable',
+  sonarReasoning: {
+    id: 'sonar-reasoning-pro',
+    name: 'Sonar Reasoning Pro',
+    gateway: 'perplexity',
     characteristics: {
       reasoning: 'excellent',
       tendency: 'analytical',
-      strengths: ['Deep analysis', 'Complex reasoning', 'Accuracy', 'Multimodal']
+      strengths: ['Chain-of-thought', 'Real-time search', 'Deep reasoning', 'Citations']
     }
   },
   geminiPro: {
@@ -718,25 +718,20 @@ Context for your analysis:
             console.log('Starting parallel model queries...');
 
             // Query all selected models in parallel
-            // Helper: GPT-5 needs longer timeout (180s), others stay at 90s
-            const getTimeoutMs = (modelKey: string): number => {
-              if (modelKey === 'gpt52') return 180000; // GPT-5 is slower
-              return 90000;
-            };
+            // All models use 90s timeout (Perplexity reasoning models are fast)
 
             const modelPromises = selectedModels.map(async (modelKey: string) => {
               const modelConfig = ALL_MODELS[modelKey];
               sendSSE(controller, 'model_started', { model: modelKey, name: modelConfig.name });
               
               let response: ModelResponse;
-              const timeout = getTimeoutMs(modelKey);
               
               switch (modelConfig.gateway) {
                 case 'lovable':
-                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, timeout);
+                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
                   break;
                 case 'anthropic':
-                  response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, timeout);
+                  response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
                   break;
                 case 'perplexity':
                   response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);

@@ -18,10 +18,10 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
     description: 'Reasoning',
     colorClass: 'text-blue-600 bg-blue-500/10 border-blue-500/20'
   },
-  gpt52: { 
-    id: 'gpt52', 
-    name: 'GPT-5', 
-    description: 'Deep Analysis',
+  sonarReasoning: { 
+    id: 'sonarReasoning', 
+    name: 'Sonar Reasoning Pro', 
+    description: 'Deep Reasoning + Search',
     colorClass: 'text-indigo-600 bg-indigo-500/10 border-indigo-500/20'
   },
   geminiPro: { 

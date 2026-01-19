@@ -47,8 +47,7 @@ export default function ValidationPlatform() {
   
   const [prompt, setPrompt] = useState("");
   const [riskPreference, setRiskPreference] = useState(3);
-  const [selectedModels, setSelectedModels] = useState<string[]>(['gptMini', 'geminiPro', 'geminiFlash']);
-  const [modelWeights, setModelWeights] = useState<Record<string, number>>({ gptMini: 34, geminiPro: 33, geminiFlash: 33 });
+  const [selectedModels, setSelectedModels] = useState<string[]>(['gptMini', 'geminiFlash', 'claude']);
   
   const [displayedResult, setDisplayedResult] = useState<ValidationResult | null>(null);
   const [currentValidationId, setCurrentValidationId] = useState<string | null>(null);
@@ -209,7 +208,7 @@ export default function ValidationPlatform() {
     setDisplayedResult(null);
     
     try {
-      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights);
+      await validate(prompt.trim(), riskPreference, selectedModels);
     } catch (error) {
       // Error already handled in onError callback
     }
@@ -226,7 +225,6 @@ export default function ValidationPlatform() {
     const reconstructedResult: ValidationResult = {
       modelResponses,
       selectedModels: legacyModels,
-      modelWeights: { gptMini: 34, geminiPro: 33, geminiFlash: 33 },
       consensusPoints: item.consensus_points || [],
       majorityPoints: item.majority_points || [],
       dissentPoints: item.dissent_points || [],
@@ -432,9 +430,8 @@ export default function ValidationPlatform() {
                   onRiskChange={setRiskPreference}
                   selectedModels={selectedModels}
                   onModelsChange={setSelectedModels}
-                  modelWeights={modelWeights}
-                  onWeightsChange={setModelWeights}
                   disabled={isValidating}
+                  isPremium={isPremium}
                 />
                 
                 {!isPremium && (
@@ -456,7 +453,7 @@ export default function ValidationPlatform() {
             </Card>
 
             {isValidating && (
-              <MultiModelLoader status={status} modelStates={modelStates} selectedModels={selectedModels} modelWeights={modelWeights} />
+              <MultiModelLoader status={status} modelStates={modelStates} selectedModels={selectedModels} />
             )}
 
             {displayedResult && !isValidating && (

@@ -20,7 +20,6 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
   const {
     modelResponses,
     selectedModels,
-    modelWeights,
     consensusPoints,
     majorityPoints,
     dissentPoints,
@@ -37,9 +36,9 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
 
   const hasTopActions = finalRecommendation.topActions && finalRecommendation.topActions.length > 0;
 
-  // Build model summary string
+  // Build model summary string (no weights anymore)
   const modelSummary = selectedModels
-    .map(key => `${AVAILABLE_MODELS[key]?.name || key} (${modelWeights[key] || 0}%)`)
+    .map(key => AVAILABLE_MODELS[key]?.name || key)
     .join(' · ');
 
   return (
@@ -215,7 +214,6 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       <ModelDetailCards
         modelResponses={modelResponses || {}}
         selectedModels={selectedModels || []}
-        modelWeights={modelWeights || {}}
         isPremium={isPremium}
         citations={citations}
       />

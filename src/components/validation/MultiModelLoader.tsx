@@ -7,18 +7,16 @@ interface MultiModelLoaderProps {
   status: ValidationStatus;
   modelStates?: ModelStates;
   selectedModels?: string[];
-  modelWeights?: Record<string, number>;
 }
 
 interface ModelStatusProps {
   modelKey: string;
   name: string;
   state: 'queued' | 'running' | 'done' | 'failed';
-  weight?: number;
   index: number;
 }
 
-function ModelStatus({ modelKey, name, state, weight, index }: ModelStatusProps) {
+function ModelStatus({ modelKey, name, state, index }: ModelStatusProps) {
   const [progress, setProgress] = useState(0);
   
   useEffect(() => {
@@ -64,21 +62,14 @@ function ModelStatus({ modelKey, name, state, weight, index }: ModelStatusProps)
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className={cn(
-            "font-semibold text-base sm:text-lg transition-colors",
-            state === 'done' ? colorClass.split(' ')[0] : 
-            state === 'failed' ? "text-destructive" :
-            state === 'running' ? "text-foreground" : "text-muted-foreground"
-          )}>
-            {name}
-          </span>
-          {weight !== undefined && (
-            <span className="text-xs sm:text-sm text-muted-foreground font-medium">
-              ({weight}%)
-            </span>
-          )}
-        </div>
+        <span className={cn(
+          "font-semibold text-base sm:text-lg transition-colors",
+          state === 'done' ? colorClass.split(' ')[0] : 
+          state === 'failed' ? "text-destructive" :
+          state === 'running' ? "text-foreground" : "text-muted-foreground"
+        )}>
+          {name}
+        </span>
         <span className={cn(
           "text-sm sm:text-base font-medium tabular-nums",
           state === 'done' ? "text-primary" : 
@@ -104,11 +95,16 @@ function ModelStatus({ modelKey, name, state, weight, index }: ModelStatusProps)
           Searching the web...
         </span>
       )}
+      {modelKey === 'sonarReasoning' && state === 'running' && (
+        <span className="text-xs sm:text-sm text-muted-foreground italic">
+          Deep reasoning + web search...
+        </span>
+      )}
     </div>
   );
 }
 
-export function MultiModelLoader({ status, modelStates, selectedModels, modelWeights }: MultiModelLoaderProps) {
+export function MultiModelLoader({ status, modelStates, selectedModels }: MultiModelLoaderProps) {
   const isEvaluating = status === 'evaluating';
 
   // Use selected models or default to legacy models
@@ -144,7 +140,7 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
         </h3>
         <p className="text-sm sm:text-lg text-muted-foreground px-2">
           {isEvaluating 
-            ? "Meta-analysis with weighted synthesis"
+            ? "Meta-analysis in progress"
             : `Parallel analysis across ${modelsToShow.length} models`
           }
         </p>
@@ -172,7 +168,6 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
           const model = AVAILABLE_MODELS[modelKey];
           const name = model?.name || modelKey;
           const state = getModelState(modelKey);
-          const weight = modelWeights?.[modelKey];
           
           return (
             <ModelStatus 
@@ -180,7 +175,6 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
               modelKey={modelKey}
               name={name} 
               state={state} 
-              weight={weight}
               index={index} 
             />
           );
@@ -191,7 +185,7 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
       {isEvaluating && (
         <div className="p-3 sm:p-5 rounded-lg sm:rounded-xl border border-primary/30 bg-primary/5 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-base sm:text-lg font-semibold text-foreground">Weighted Meta-Evaluation</span>
+            <span className="text-base sm:text-lg font-semibold text-foreground">Meta-Evaluation</span>
             <span className="text-sm sm:text-base text-primary font-medium">Processing...</span>
           </div>
           <div className="h-2 sm:h-2.5 bg-muted rounded-full overflow-hidden">

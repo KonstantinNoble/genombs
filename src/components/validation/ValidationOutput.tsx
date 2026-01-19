@@ -8,6 +8,7 @@ import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AVAILABLE_MODELS } from "./ModelSelector";
 
 interface ValidationOutputProps {
   result: ValidationResult;
@@ -17,9 +18,9 @@ interface ValidationOutputProps {
 
 export function ValidationOutput({ result, validationId, onStartExperiment }: ValidationOutputProps) {
   const {
-    gptResponse,
-    geminiProResponse,
-    geminiFlashResponse,
+    modelResponses,
+    selectedModels,
+    modelWeights,
     consensusPoints,
     majorityPoints,
     dissentPoints,
@@ -28,6 +29,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
     synthesisReasoning,
     processingTimeMs,
     isPremium,
+    citations,
     strategicAlternatives,
     longTermOutlook,
     competitorInsights
@@ -35,12 +37,20 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
 
   const hasTopActions = finalRecommendation.topActions && finalRecommendation.topActions.length > 0;
 
+  // Build model summary string
+  const modelSummary = selectedModels
+    .map(key => `${AVAILABLE_MODELS[key]?.name || key} (${modelWeights[key] || 0}%)`)
+    .join(' · ');
+
   return (
     <div className="space-y-5 sm:space-y-8 animate-fade-in">
-      {/* Processing Time Badge */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+      {/* Processing Time & Models Badge */}
+      <div className="flex flex-col items-center gap-2 sm:gap-3">
         <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full bg-muted/50 border text-sm sm:text-lg text-muted-foreground">
           <span>Completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
+        </div>
+        <div className="text-xs sm:text-sm text-muted-foreground text-center">
+          {modelSummary}
         </div>
         {isPremium && (
           <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-base px-3 sm:px-4 py-1.5 sm:py-2">
@@ -203,10 +213,11 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
 
       {/* Individual Model Details */}
       <ModelDetailCards
-        gptResponse={gptResponse}
-        geminiProResponse={geminiProResponse}
-        geminiFlashResponse={geminiFlashResponse}
+        modelResponses={modelResponses || {}}
+        selectedModels={selectedModels || []}
+        modelWeights={modelWeights || {}}
         isPremium={isPremium}
+        citations={citations}
       />
     </div>
   );

@@ -718,18 +718,25 @@ Context for your analysis:
             console.log('Starting parallel model queries...');
 
             // Query all selected models in parallel
+            // Helper: GPT-5 needs longer timeout (180s), others stay at 90s
+            const getTimeoutMs = (modelKey: string): number => {
+              if (modelKey === 'gpt52') return 180000; // GPT-5 is slower
+              return 90000;
+            };
+
             const modelPromises = selectedModels.map(async (modelKey: string) => {
               const modelConfig = ALL_MODELS[modelKey];
               sendSSE(controller, 'model_started', { model: modelKey, name: modelConfig.name });
               
               let response: ModelResponse;
+              const timeout = getTimeoutMs(modelKey);
               
               switch (modelConfig.gateway) {
                 case 'lovable':
-                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
+                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, timeout);
                   break;
                 case 'anthropic':
-                  response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
+                  response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, timeout);
                   break;
                 case 'perplexity':
                   response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);

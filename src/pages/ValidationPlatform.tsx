@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/home/Pricing";
 import { User } from "@supabase/supabase-js";
-import { ValidationInput } from "@/components/validation/ValidationInput";
+import { ValidationInput, ValidationInputRef } from "@/components/validation/ValidationInput";
 import { ValidationOutput } from "@/components/validation/ValidationOutput";
 import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
@@ -69,6 +69,7 @@ export default function ValidationPlatform() {
 
   const resultRef = useRef<HTMLDivElement | null>(null);
   const experimentRef = useRef<HTMLDivElement | null>(null);
+  const modelSelectorRef = useRef<ValidationInputRef>(null);
 
   const { validate, isValidating, status, modelStates, result } = useMultiAIValidation({
     onComplete: async (data) => {
@@ -425,6 +426,7 @@ export default function ValidationPlatform() {
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-4 sm:pb-6">
                 <ValidationInput
+                  ref={modelSelectorRef}
                   prompt={prompt}
                   onPromptChange={setPrompt}
                   riskPreference={riskPreference}
@@ -449,7 +451,18 @@ export default function ValidationPlatform() {
                   </div>
                 )}
                 
-                <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim() || selectedModels.length !== 3} className="w-full h-11 sm:h-12 text-sm sm:text-base" size="lg">
+                <Button 
+                  onClick={() => {
+                    if (selectedModels.length !== 3) {
+                      modelSelectorRef.current?.openAndScroll();
+                    } else {
+                      handleValidate();
+                    }
+                  }} 
+                  disabled={isValidating || !canValidate || !prompt.trim()} 
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base" 
+                  size="lg"
+                >
                   {isValidating ? 'Validating...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : selectedModels.length !== 3 ? `Select ${3 - selectedModels.length} more model${selectedModels.length === 2 ? '' : 's'}` : 'Validate with 3 AI Models'}
                 </Button>
               </CardContent>

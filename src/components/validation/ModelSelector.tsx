@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -69,6 +69,10 @@ interface ModelSelectorProps {
   onWeightsChange: (weights: Record<string, number>) => void;
   disabled?: boolean;
   isPremium?: boolean;
+}
+
+export interface ModelSelectorRef {
+  openAndScroll: () => void;
 }
 
 const MIN_WEIGHT = 10;
@@ -150,16 +154,27 @@ function rebalanceWeights(
   return newWeights;
 }
 
-export function ModelSelector({
+export const ModelSelector = forwardRef<ModelSelectorRef, ModelSelectorProps>(({
   selectedModels,
   onModelsChange,
   modelWeights,
   onWeightsChange,
   disabled = false,
   isPremium = false
-}: ModelSelectorProps) {
+}, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Expose method to open and scroll to the selector
+  useImperativeHandle(ref, () => ({
+    openAndScroll: () => {
+      setIsOpen(true);
+      setTimeout(() => {
+        containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  }));
   
   // Order: Free models first, then premium models
   const freeModels = Object.keys(AVAILABLE_MODELS).filter(k => !AVAILABLE_MODELS[k].isPremium);
@@ -234,7 +249,7 @@ export function ModelSelector({
   const weightSum = Object.values(modelWeights).reduce((a, b) => a + b, 0);
 
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="space-y-2">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <button
@@ -380,4 +395,6 @@ export function ModelSelector({
       )}
     </div>
   );
-}
+});
+
+ModelSelector.displayName = 'ModelSelector';

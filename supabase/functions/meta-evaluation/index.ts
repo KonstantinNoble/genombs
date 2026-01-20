@@ -312,9 +312,51 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
     }
 
     const data = await response.json();
+    console.log('Meta-evaluation API response structure:', JSON.stringify({
+      hasChoices: !!data.choices,
+      choicesLength: data.choices?.length,
+      hasMessage: !!data.choices?.[0]?.message,
+      hasToolCalls: !!data.choices?.[0]?.message?.tool_calls,
+      toolCallsLength: data.choices?.[0]?.message?.tool_calls?.length,
+      finishReason: data.choices?.[0]?.finish_reason,
+      messageContent: data.choices?.[0]?.message?.content?.substring?.(0, 200)
+    }));
+    
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     
     if (!toolCall?.function?.arguments) {
+      // Log more detail about what we received
+      console.error('No tool call in response. Full message:', JSON.stringify(data.choices?.[0]?.message));
+      
+      // Try to extract from content if tool call failed
+      const content = data.choices?.[0]?.message?.content;
+      if (content) {
+        console.log('Attempting to parse from content instead');
+        try {
+          // Sometimes the model returns JSON in content instead of tool call
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const evaluation = JSON.parse(jsonMatch[0]);
+            if (evaluation.consensusPoints || evaluation.finalRecommendation) {
+              console.log('Successfully parsed evaluation from content');
+              const processingTime = Date.now() - startTime;
+              return new Response(
+                JSON.stringify({
+                  ...evaluation,
+                  processingTimeMs: processingTime,
+                  isPremium,
+                  selectedModels,
+                  modelWeights
+                }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+          }
+        } catch (parseError) {
+          console.error('Failed to parse content as JSON:', parseError);
+        }
+      }
+      
       throw new Error("No structured response from meta-evaluation");
     }
 

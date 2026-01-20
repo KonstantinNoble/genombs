@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { ModelSelector } from "./ModelSelector";
+import { ModelSelector, ModelSelectorRef } from "./ModelSelector";
 
 interface ValidationInputProps {
   prompt: string;
@@ -17,7 +18,9 @@ interface ValidationInputProps {
   isPremium?: boolean;
 }
 
-export function ValidationInput({
+export type ValidationInputRef = ModelSelectorRef;
+
+export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputProps>(({
   prompt,
   onPromptChange,
   riskPreference,
@@ -28,7 +31,7 @@ export function ValidationInput({
   onWeightsChange,
   disabled = false,
   isPremium = false
-}: ValidationInputProps) {
+}, ref) => {
   const getRiskLabel = (value: number) => {
     if (value <= 2) return "Conservative";
     if (value >= 4) return "Aggressive";
@@ -75,6 +78,7 @@ export function ValidationInput({
 
       {/* Model Selector */}
       <ModelSelector
+        ref={ref}
         selectedModels={selectedModels}
         onModelsChange={onModelsChange}
         modelWeights={modelWeights}
@@ -107,4 +111,6 @@ export function ValidationInput({
       </div>
     </div>
   );
-}
+});
+
+ValidationInput.displayName = 'ValidationInput';

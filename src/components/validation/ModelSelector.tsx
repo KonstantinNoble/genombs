@@ -366,7 +366,7 @@ export const ModelSelector = forwardRef<ModelSelectorRef, ModelSelectorProps>(({
                         max={MAX_WEIGHT}
                         step={1}
                         disabled={disabled}
-                        className="flex-1"
+                        className="flex-1 cursor-pointer"
                       />
                       <p className="text-xs text-muted-foreground mt-1.5 text-center">
                         Influence: {weight < 25 ? 'Low' : weight > 45 ? 'High' : 'Medium'}

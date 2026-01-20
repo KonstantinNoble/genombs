@@ -298,7 +298,25 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         throw new Error(`Insufficient model responses. Errors: ${errors.join(', ')}`);
       }
 
-      // Step 2: Run meta-evaluation
+      // Step 2: Verify premium status directly from database (redundant check for reliability)
+      let verifiedPremiumStatus = isPremiumUser;
+      try {
+        const { data: creditsData } = await supabase
+          .from('user_credits')
+          .select('is_premium')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        verifiedPremiumStatus = creditsData?.is_premium ?? isPremiumUser;
+        console.log('Premium status verification:', { 
+          fromSSE: isPremiumUser, 
+          fromDB: creditsData?.is_premium,
+          verified: verifiedPremiumStatus 
+        });
+      } catch (e) {
+        console.warn('Could not verify premium status from DB:', e);
+      }
+
+      // Step 3: Run meta-evaluation
       setStatus('evaluating');
 
       const evalResponse = await fetch(
@@ -316,7 +334,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             userPreferences: { riskPreference },
             prompt,
             saveToHistory: true,
-            isPremium: isPremiumUser
+            isPremium: verifiedPremiumStatus
           }),
         }
       );
@@ -327,6 +345,15 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       }
 
       const evalData = await evalResponse.json();
+      
+      // Premium status priority: evalData (from backend) > verified DB > SSE events
+      const finalPremiumStatus = evalData.isPremium ?? verifiedPremiumStatus ?? isPremiumUser;
+      console.log('Final premium status:', { 
+        fromEvalData: evalData.isPremium, 
+        fromDB: verifiedPremiumStatus,
+        fromSSE: isPremiumUser,
+        final: finalPremiumStatus 
+      });
 
       const finalResult: ValidationResult = {
         modelResponses,
@@ -345,7 +372,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
         synthesisReasoning: evalData.synthesisReasoning || '',
         processingTimeMs: evalData.processingTimeMs || 0,
         validationId: evalData.validationId || undefined,
-        isPremium: isPremiumUser,
+        isPremium: finalPremiumStatus,
         citations: evalData.citations,
         // Premium-only fields
         strategicAlternatives: evalData.strategicAlternatives,

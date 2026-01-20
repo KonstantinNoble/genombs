@@ -368,8 +368,11 @@ export const ModelSelector = forwardRef<ModelSelectorRef, ModelSelectorProps>(({
                         disabled={disabled}
                         className="flex-1 cursor-pointer"
                       />
-                      <p className="text-xs text-muted-foreground mt-1.5 text-center">
-                        Influence: {weight < 25 ? 'Low' : weight > 45 ? 'High' : 'Medium'}
+                      <p className={cn(
+                        "text-sm sm:text-base font-medium mt-2 text-center",
+                        weight < 25 ? 'text-muted-foreground' : weight > 45 ? 'text-primary' : 'text-foreground'
+                      )}>
+                        Influence: <span className="font-bold">{weight < 25 ? 'Low' : weight > 45 ? 'High' : 'Medium'}</span>
                       </p>
                     </div>
                   )}

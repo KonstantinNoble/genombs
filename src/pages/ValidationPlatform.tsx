@@ -413,7 +413,7 @@ export default function ValidationPlatform() {
                 {isPremium && <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">Premium</Badge>}
               </div>
               <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
-              <p className="text-sm sm:text-lg text-muted-foreground px-2">Get consensus from GPT-5 Mini, Gemini 3 Pro & Gemini Flash</p>
+              <p className="text-sm sm:text-lg text-muted-foreground px-2">Get consensus from 3 AI models of your choice</p>
               <div className="flex items-center justify-center">
                 <span className="text-sm sm:text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
               </div>

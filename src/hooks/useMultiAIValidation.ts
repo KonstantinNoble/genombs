@@ -312,6 +312,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           body: JSON.stringify({
             modelResponses,
             selectedModels,
+            modelWeights,
             userPreferences: { riskPreference },
             prompt,
             saveToHistory: true,

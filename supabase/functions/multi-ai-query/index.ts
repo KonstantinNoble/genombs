@@ -676,9 +676,9 @@ serve(async (req) => {
       );
     }
 
-    if (selectedModels.includes('perplexity') && !perplexityApiKey) {
+    if ((selectedModels.includes('perplexity') || selectedModels.includes('sonarReasoning')) && !perplexityApiKey) {
       return new Response(
-        JSON.stringify({ error: "Perplexity API key not configured. Please contact support." }),
+        JSON.stringify({ error: "Perplexity API key not configured for Sonar models. Please contact support." }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -750,8 +750,8 @@ Context for your analysis:
                 case 'anthropic':
                   response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
                   break;
-                case 'perplexity':
-                  response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);
+              case 'perplexity':
+                  response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 90000);
                   break;
                 default:
                   throw new Error(`Unknown gateway: ${modelConfig.gateway}`);

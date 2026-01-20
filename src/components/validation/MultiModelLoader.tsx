@@ -7,6 +7,7 @@ interface MultiModelLoaderProps {
   status: ValidationStatus;
   modelStates?: ModelStates;
   selectedModels?: string[];
+  modelWeights?: Record<string, number>;
 }
 
 interface ModelStatusProps {
@@ -14,9 +15,10 @@ interface ModelStatusProps {
   name: string;
   state: 'queued' | 'running' | 'done' | 'failed';
   index: number;
+  weight?: number;
 }
 
-function ModelStatus({ modelKey, name, state, index }: ModelStatusProps) {
+function ModelStatus({ modelKey, name, state, index, weight }: ModelStatusProps) {
   const [progress, setProgress] = useState(0);
   
   useEffect(() => {
@@ -62,14 +64,21 @@ function ModelStatus({ modelKey, name, state, index }: ModelStatusProps) {
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center justify-between">
-        <span className={cn(
-          "font-semibold text-base sm:text-lg transition-colors",
-          state === 'done' ? colorClass.split(' ')[0] : 
-          state === 'failed' ? "text-destructive" :
-          state === 'running' ? "text-foreground" : "text-muted-foreground"
-        )}>
-          {name}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={cn(
+            "font-semibold text-base sm:text-lg transition-colors",
+            state === 'done' ? colorClass.split(' ')[0] : 
+            state === 'failed' ? "text-destructive" :
+            state === 'running' ? "text-foreground" : "text-muted-foreground"
+          )}>
+            {name}
+          </span>
+          {weight !== undefined && (
+            <span className="text-xs sm:text-sm font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              {weight}%
+            </span>
+          )}
+        </div>
         <span className={cn(
           "text-sm sm:text-base font-medium tabular-nums",
           state === 'done' ? "text-primary" : 
@@ -104,7 +113,7 @@ function ModelStatus({ modelKey, name, state, index }: ModelStatusProps) {
   );
 }
 
-export function MultiModelLoader({ status, modelStates, selectedModels }: MultiModelLoaderProps) {
+export function MultiModelLoader({ status, modelStates, selectedModels, modelWeights }: MultiModelLoaderProps) {
   const isEvaluating = status === 'evaluating';
 
   // Use selected models or default to legacy models
@@ -168,6 +177,7 @@ export function MultiModelLoader({ status, modelStates, selectedModels }: MultiM
           const model = AVAILABLE_MODELS[modelKey];
           const name = model?.name || modelKey;
           const state = getModelState(modelKey);
+          const weight = modelWeights?.[modelKey];
           
           return (
             <ModelStatus 
@@ -175,7 +185,8 @@ export function MultiModelLoader({ status, modelStates, selectedModels }: MultiM
               modelKey={modelKey}
               name={name} 
               state={state} 
-              index={index} 
+              index={index}
+              weight={weight}
             />
           );
         })}

@@ -414,18 +414,17 @@ Consider both opportunities and risks.`;
 
 // Query Perplexity API with web search
 async function queryPerplexityModel(
+  modelConfig: { id: string; name: string; gateway: 'lovable' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } },
   prompt: string,
   apiKey: string,
   isPremium: boolean,
-  timeoutMs: number = 60000
+  timeoutMs: number = 90000
 ): Promise<ModelResponse> {
   const startTime = Date.now();
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  console.log(`[Perplexity Sonar] Starting query with web search...`);
-  
-  const modelConfig = ALL_MODELS.perplexity;
+  console.log(`[Perplexity ${modelConfig.name}] Starting query with web search...`);
   
   try {
     const recommendationCount = isPremium ? "4-5" : "2-3";
@@ -466,7 +465,7 @@ IMPORTANT: Structure your response as valid JSON with these exact fields:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: isPremium ? "sonar-pro" : "sonar",
+        model: modelConfig.id,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
@@ -519,10 +518,10 @@ IMPORTANT: Structure your response as valid JSON with these exact fields:
     
     const processingTime = Date.now() - startTime;
     
-    console.log(`[Perplexity] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
+    console.log(`[Perplexity ${modelConfig.name}] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
     
     return {
-      modelId: isPremium ? "sonar-pro" : "sonar",
+      modelId: modelConfig.id,
       modelName: modelConfig.name,
       recommendations: parsed.recommendations || [],
       summary: parsed.summary || "",
@@ -751,7 +750,7 @@ Context for your analysis:
                   response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
                   break;
               case 'perplexity':
-                  response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 90000);
+                  response = await queryPerplexityModel(modelConfig, enhancedPrompt, perplexityApiKey!, isPremium, 90000);
                   break;
                 default:
                   throw new Error(`Unknown gateway: ${modelConfig.gateway}`);
@@ -818,7 +817,7 @@ Context for your analysis:
             response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
             break;
           case 'perplexity':
-            response = await queryPerplexityModel(enhancedPrompt, perplexityApiKey!, isPremium, 60000);
+            response = await queryPerplexityModel(modelConfig, enhancedPrompt, perplexityApiKey!, isPremium, 90000);
             break;
           default:
             throw new Error(`Unknown gateway: ${modelConfig.gateway}`);

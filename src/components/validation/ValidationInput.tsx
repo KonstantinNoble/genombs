@@ -50,7 +50,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Main Question Input */}
-      <div className="space-y-2 sm:space-y-3">
+      <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border border-primary/20">
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor="prompt" className="text-base sm:text-lg font-semibold text-foreground">
             Your Business Question
@@ -67,7 +67,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
           value={prompt}
           onChange={(e) => handlePromptChange(e.target.value)}
           placeholder="E.g., Should I expand my SaaS product to enterprise clients?"
-          className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed"
+          className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed border-primary/10 focus:border-primary/30"
           disabled={disabled}
           maxLength={MAX_CHARACTERS}
         />

@@ -8,9 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
 interface TopAction {
   action: string;
@@ -41,37 +38,12 @@ export function ExperimentSetupDialog({
   open,
   onOpenChange,
   onSubmit,
-  hypothesis,
   topActions,
-  isPremium,
   isLoading,
 }: ExperimentSetupDialogProps) {
-  const [decisionQuestion, setDecisionQuestion] = useState("");
-  const [editedHypothesis, setEditedHypothesis] = useState(hypothesis);
-  const [scoringCriteria, setScoringCriteria] = useState<string[]>([
-    "Revenue Impact",
-    "Customer Interest",
-    "Implementation Effort",
-  ]);
   const [selectedActionIndices, setSelectedActionIndices] = useState<number[]>(
     topActions.map((_, i) => i)
   );
-
-  const handleAddCriterion = () => {
-    if (scoringCriteria.length < 5) {
-      setScoringCriteria([...scoringCriteria, ""]);
-    }
-  };
-
-  const handleRemoveCriterion = (index: number) => {
-    setScoringCriteria(scoringCriteria.filter((_, i) => i !== index));
-  };
-
-  const handleCriterionChange = (index: number, value: string) => {
-    const updated = [...scoringCriteria];
-    updated[index] = value;
-    setScoringCriteria(updated);
-  };
 
   const toggleAction = (index: number) => {
     if (selectedActionIndices.includes(index)) {
@@ -82,123 +54,35 @@ export function ExperimentSetupDialog({
   };
 
   const handleSubmit = () => {
-    const validCriteria = scoringCriteria.filter((c) => c.trim() !== "");
     const selectedActions = selectedActionIndices.map((i) => topActions[i]);
 
     onSubmit({
-      title: decisionQuestion.trim() || "Business Decision",
-      hypothesis: editedHypothesis,
-      decisionQuestion: decisionQuestion.trim(),
-      durationDays: 7, // Simplified - no duration selection needed for decision-focused experiments
-      successMetrics: validCriteria,
+      title: "Validation Actions",
+      hypothesis: "",
+      decisionQuestion: "",
+      durationDays: 7,
+      successMetrics: [],
       selectedActions,
     });
   };
 
-  const canSubmit =
-    decisionQuestion.trim() !== "" &&
-    editedHypothesis.trim() !== "" &&
-    selectedActionIndices.length > 0 &&
-    scoringCriteria.some((c) => c.trim() !== "");
+  const canSubmit = selectedActionIndices.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            Setup Business Decision
-          </DialogTitle>
+          <DialogTitle>Select Validation Actions</DialogTitle>
           <DialogDescription>
-            Transform this recommendation into a structured Go/No-Go decision.
+            Choose the actions you want to track for this validation.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Decision Question */}
-          <div className="space-y-2">
-            <Label htmlFor="decisionQuestion">
-              Decision Question
-            </Label>
-            <Input
-              id="decisionQuestion"
-              value={decisionQuestion}
-              onChange={(e) => setDecisionQuestion(e.target.value)}
-              placeholder="E.g., Should I pivot to enterprise market?"
-              maxLength={300}
-            />
-            <p className="text-xs text-muted-foreground">
-              What business decision are you trying to make?
-            </p>
-          </div>
-
-          {/* Hypothesis */}
-          <div className="space-y-2">
-            <Label htmlFor="hypothesis">Hypothesis</Label>
-            <Textarea
-              id="hypothesis"
-              value={editedHypothesis}
-              onChange={(e) => setEditedHypothesis(e.target.value)}
-              placeholder="If I do X, then Y will happen..."
-              className="min-h-[80px] resize-none"
-              maxLength={300}
-            />
-            <p className="text-xs text-muted-foreground">
-              What outcome do you expect if you proceed?
-            </p>
-          </div>
-
-          {/* Scoring Criteria */}
-          <div className="space-y-2">
-            <Label>
-              Scoring Criteria
-            </Label>
-            <p className="text-xs text-muted-foreground mb-2">
-              Define the criteria you'll use to score this decision (1-10 scale).
-            </p>
-            <div className="space-y-2">
-              {scoringCriteria.map((criterion, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={criterion}
-                    onChange={(e) => handleCriterionChange(index, e.target.value)}
-                    placeholder={`E.g., ${
-                      index === 0
-                        ? "Revenue Impact"
-                        : index === 1
-                        ? "Customer Interest"
-                        : "Criterion name"
-                    }`}
-                    maxLength={50}
-                  />
-                  {scoringCriteria.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveCriterion(index)}
-                      className="shrink-0 px-2"
-                    >
-                      Remove
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {scoringCriteria.length < 5 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAddCriterion}
-              >
-                Add Criterion
-              </Button>
-            )}
-          </div>
-
           {/* Validation Actions */}
           <div className="space-y-2">
-            <Label>Validation Actions</Label>
-            <p className="text-xs text-muted-foreground mb-2">
-              Select the actions that will validate your hypothesis.
+            <p className="text-sm text-muted-foreground mb-2">
+              Select the actions you want to validate.
             </p>
             <div className="space-y-2">
               {topActions.map((action, index) => (
@@ -253,7 +137,7 @@ export function ExperimentSetupDialog({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={!canSubmit || isLoading}>
-            {isLoading ? "Creating..." : "Start Decision Analysis"}
+            {isLoading ? "Creating..." : "Start Tracking"}
           </Button>
         </DialogFooter>
       </DialogContent>

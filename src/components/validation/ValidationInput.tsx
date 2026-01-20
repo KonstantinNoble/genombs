@@ -50,7 +50,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Main Question Input */}
-      <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border border-primary/20">
+      <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border-2 border-primary/40">
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor="prompt" className="text-base sm:text-lg font-semibold text-foreground">
             Your Business Question

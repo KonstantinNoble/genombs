@@ -559,10 +559,13 @@ export type Database = {
           gpt_response: Json | null
           id: string
           majority_points: Json | null
+          model_responses: Json | null
+          model_weights: Json | null
           overall_confidence: number | null
           processing_time_ms: number | null
           prompt: string
           risk_preference: number | null
+          selected_models: string[] | null
           user_id: string
         }
         Insert: {
@@ -576,10 +579,13 @@ export type Database = {
           gpt_response?: Json | null
           id?: string
           majority_points?: Json | null
+          model_responses?: Json | null
+          model_weights?: Json | null
           overall_confidence?: number | null
           processing_time_ms?: number | null
           prompt: string
           risk_preference?: number | null
+          selected_models?: string[] | null
           user_id: string
         }
         Update: {
@@ -593,10 +599,13 @@ export type Database = {
           gpt_response?: Json | null
           id?: string
           majority_points?: Json | null
+          model_responses?: Json | null
+          model_weights?: Json | null
           overall_confidence?: number | null
           processing_time_ms?: number | null
           prompt?: string
           risk_preference?: number | null
+          selected_models?: string[] | null
           user_id?: string
         }
         Relationships: []

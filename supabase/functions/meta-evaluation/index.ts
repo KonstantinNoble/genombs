@@ -327,9 +327,9 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
     let validationId: string | null = null;
     if (saveToHistory && prompt) {
       try {
-        // For backward compatibility, we store the first 3 responses in the legacy columns
         const modelKeys = selectedModels || Object.keys(modelResponses);
         
+        // Use new dynamic columns for all model responses
         const { data: insertedData, error: insertError } = await supabase
           .from('validation_analyses')
           .insert({
@@ -337,6 +337,11 @@ Please analyze these and provide a ${isPremium ? 'comprehensive premium-tier' : 
             prompt: prompt,
             risk_preference: riskPref,
             creativity_preference: 3, // No longer used, default value
+            // New dynamic storage - stores all model responses regardless of count
+            model_responses: modelResponses,
+            selected_models: modelKeys,
+            model_weights: modelWeights || null,
+            // Legacy columns for backward compatibility (first 3 models only)
             gpt_response: modelResponses[modelKeys[0]] || null,
             gemini_pro_response: modelResponses[modelKeys[1]] || null,
             gemini_flash_response: modelResponses[modelKeys[2]] || null,

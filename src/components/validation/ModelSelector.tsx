@@ -324,10 +324,9 @@ export function ModelSelector({
                             Premium
                           </Badge>
                         )}
-                        {isSelected && (
+                        {isSelected && selectedModels.length === 3 && (
                           <Badge 
-                            variant="secondary" 
-                            className="text-[10px] sm:text-xs font-bold tabular-nums"
+                            className="text-xs sm:text-sm font-bold tabular-nums bg-primary text-primary-foreground"
                           >
                             {weight}%
                           </Badge>
@@ -345,20 +344,16 @@ export function ModelSelector({
                   {/* Weight slider - only shown for selected models when 3 are selected */}
                   {isSelected && selectedModels.length === 3 && (
                     <div className="pl-9 pr-2 pt-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground w-8 shrink-0">{MIN_WEIGHT}%</span>
-                        <Slider
-                          value={[weight]}
-                          onValueChange={([v]) => handleWeightChange(modelId, v)}
-                          min={MIN_WEIGHT}
-                          max={MAX_WEIGHT}
-                          step={1}
-                          disabled={disabled}
-                          className="flex-1"
-                        />
-                        <span className="text-xs text-muted-foreground w-8 shrink-0 text-right">{MAX_WEIGHT}%</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1 text-center">
+                      <Slider
+                        value={[weight]}
+                        onValueChange={([v]) => handleWeightChange(modelId, v)}
+                        min={MIN_WEIGHT}
+                        max={MAX_WEIGHT}
+                        step={1}
+                        disabled={disabled}
+                        className="flex-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1.5 text-center">
                         Influence: {weight < 25 ? 'Low' : weight > 45 ? 'High' : 'Medium'}
                       </p>
                     </div>

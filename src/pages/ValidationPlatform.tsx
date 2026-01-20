@@ -34,6 +34,10 @@ interface HistoryItem {
   dissent_points: any;
   final_recommendation: any;
   processing_time_ms: number;
+  // New dynamic columns
+  model_responses?: Record<string, any>;
+  selected_models?: string[];
+  model_weights?: Record<string, number>;
 }
 
 export default function ValidationPlatform() {
@@ -217,12 +221,37 @@ export default function ValidationPlatform() {
   };
 
   const handleHistoryClick = (item: HistoryItem) => {
-    // Reconstruct model responses from legacy storage
+    // Check for new dynamic storage format first
+    if (item.model_responses && item.selected_models && item.selected_models.length > 0) {
+      // New format: use dynamic columns
+      const reconstructedResult: ValidationResult = {
+        modelResponses: item.model_responses as Record<string, any>,
+        selectedModels: item.selected_models,
+        consensusPoints: item.consensus_points || [],
+        majorityPoints: item.majority_points || [],
+        dissentPoints: item.dissent_points || [],
+        finalRecommendation: item.final_recommendation || {
+          title: 'Analysis Complete',
+          description: '',
+          confidence: item.overall_confidence || 50,
+          reasoning: '',
+          topActions: []
+        },
+        overallConfidence: item.overall_confidence || 50,
+        synthesisReasoning: '',
+        processingTimeMs: item.processing_time_ms || 0
+      };
+      setDisplayedResult(reconstructedResult);
+      setCurrentValidationId(item.id);
+      return;
+    }
+    
+    // Fallback: Reconstruct model responses from legacy storage
     const modelResponses: Record<string, any> = {};
-    const legacyModels = ['gptMini', 'geminiPro', 'geminiFlash'];
-    if (item.gpt_response) modelResponses.gptMini = item.gpt_response;
-    if (item.gemini_pro_response) modelResponses.geminiPro = item.gemini_pro_response;
-    if (item.gemini_flash_response) modelResponses.geminiFlash = item.gemini_flash_response;
+    const legacyModels: string[] = [];
+    if (item.gpt_response) { modelResponses.gptMini = item.gpt_response; legacyModels.push('gptMini'); }
+    if (item.gemini_pro_response) { modelResponses.geminiPro = item.gemini_pro_response; legacyModels.push('geminiPro'); }
+    if (item.gemini_flash_response) { modelResponses.geminiFlash = item.gemini_flash_response; legacyModels.push('geminiFlash'); }
     
     const reconstructedResult: ValidationResult = {
       modelResponses,

@@ -643,6 +643,23 @@ serve(async (req) => {
       );
     }
 
+    // Check minimum 10% per model
+    for (const modelKey of selectedModels) {
+      const weight = modelWeights[modelKey] || 0;
+      if (weight < 10) {
+        return new Response(
+          JSON.stringify({ error: `Each model must have at least 10% weight (${modelKey} has ${weight}%)` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (weight > 80) {
+        return new Response(
+          JSON.stringify({ error: `Each model can have at most 80% weight (${modelKey} has ${weight}%)` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     const weightSum = selectedModels.reduce((sum: number, key: string) => sum + (modelWeights[key] || 0), 0);
     if (Math.abs(weightSum - 100) > 1) {
       return new Response(

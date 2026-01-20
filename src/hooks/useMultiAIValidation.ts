@@ -135,7 +135,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
   const validate = useCallback(async (
     prompt: string,
     riskPreference: number = 3,
-    selectedModels: string[]
+    selectedModels: string[],
+    modelWeights: Record<string, number>
   ) => {
     setIsValidating(true);
     resetState();
@@ -173,6 +174,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             prompt,
             riskPreference,
             selectedModels,
+            modelWeights,
             streaming: true
           }),
           signal: abortController.signal

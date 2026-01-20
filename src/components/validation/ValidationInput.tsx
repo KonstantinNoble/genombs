@@ -11,6 +11,8 @@ interface ValidationInputProps {
   onRiskChange: (value: number) => void;
   selectedModels: string[];
   onModelsChange: (models: string[]) => void;
+  modelWeights: Record<string, number>;
+  onWeightsChange: (weights: Record<string, number>) => void;
   disabled?: boolean;
   isPremium?: boolean;
 }
@@ -22,6 +24,8 @@ export function ValidationInput({
   onRiskChange,
   selectedModels,
   onModelsChange,
+  modelWeights,
+  onWeightsChange,
   disabled = false,
   isPremium = false
 }: ValidationInputProps) {
@@ -73,6 +77,8 @@ export function ValidationInput({
       <ModelSelector
         selectedModels={selectedModels}
         onModelsChange={onModelsChange}
+        modelWeights={modelWeights}
+        onWeightsChange={onWeightsChange}
         disabled={disabled}
         isPremium={isPremium}
       />

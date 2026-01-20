@@ -47,8 +47,8 @@ export default function ValidationPlatform() {
   
   const [prompt, setPrompt] = useState("");
   const [riskPreference, setRiskPreference] = useState(3);
-  const [selectedModels, setSelectedModels] = useState<string[]>(['gptMini', 'geminiFlash', 'claude']);
-  const [modelWeights, setModelWeights] = useState<Record<string, number>>({ gptMini: 34, geminiFlash: 33, claude: 33 });
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  const [modelWeights, setModelWeights] = useState<Record<string, number>>({});
   
   const [displayedResult, setDisplayedResult] = useState<ValidationResult | null>(null);
   const [currentValidationId, setCurrentValidationId] = useState<string | null>(null);
@@ -449,8 +449,8 @@ export default function ValidationPlatform() {
                   </div>
                 )}
                 
-                <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim()} className="w-full h-11 sm:h-12 text-sm sm:text-base" size="lg">
-                  {isValidating ? 'Validating...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : 'Validate with 3 AI Models'}
+                <Button onClick={handleValidate} disabled={isValidating || !canValidate || !prompt.trim() || selectedModels.length !== 3} className="w-full h-11 sm:h-12 text-sm sm:text-base" size="lg">
+                  {isValidating ? 'Validating...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : selectedModels.length !== 3 ? `Select ${3 - selectedModels.length} more model${selectedModels.length === 2 ? '' : 's'}` : 'Validate with 3 AI Models'}
                 </Button>
               </CardContent>
             </Card>

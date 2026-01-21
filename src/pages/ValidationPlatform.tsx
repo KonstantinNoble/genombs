@@ -38,6 +38,12 @@ interface HistoryItem {
   model_responses?: Record<string, any>;
   selected_models?: string[];
   model_weights?: Record<string, number>;
+  // Premium fields
+  is_premium?: boolean;
+  strategic_alternatives?: any[];
+  long_term_outlook?: any;
+  competitor_insights?: string;
+  citations?: string[];
 }
 
 export default function ValidationPlatform() {
@@ -239,7 +245,14 @@ export default function ValidationPlatform() {
         },
         overallConfidence: item.overall_confidence || 50,
         synthesisReasoning: '',
-        processingTimeMs: item.processing_time_ms || 0
+        processingTimeMs: item.processing_time_ms || 0,
+        // Use stored premium status or current user's status as fallback
+        isPremium: item.is_premium ?? isPremium,
+        // Reconstruct premium fields from DB
+        strategicAlternatives: item.strategic_alternatives,
+        longTermOutlook: item.long_term_outlook,
+        competitorInsights: item.competitor_insights,
+        citations: item.citations
       };
       setDisplayedResult(reconstructedResult);
       setCurrentValidationId(item.id);
@@ -268,7 +281,9 @@ export default function ValidationPlatform() {
       },
       overallConfidence: item.overall_confidence || 50,
       synthesisReasoning: '',
-      processingTimeMs: item.processing_time_ms || 0
+      processingTimeMs: item.processing_time_ms || 0,
+      // Use current user's premium status for legacy items
+      isPremium: isPremium
     };
     setDisplayedResult(reconstructedResult);
     setCurrentValidationId(item.id);

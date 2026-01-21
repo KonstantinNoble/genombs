@@ -549,6 +549,8 @@ export type Database = {
       }
       validation_analyses: {
         Row: {
+          citations: Json | null
+          competitor_insights: string | null
           consensus_points: Json | null
           created_at: string | null
           creativity_preference: number | null
@@ -558,6 +560,8 @@ export type Database = {
           gemini_pro_response: Json | null
           gpt_response: Json | null
           id: string
+          is_premium: boolean | null
+          long_term_outlook: Json | null
           majority_points: Json | null
           model_responses: Json | null
           model_weights: Json | null
@@ -566,9 +570,12 @@ export type Database = {
           prompt: string
           risk_preference: number | null
           selected_models: string[] | null
+          strategic_alternatives: Json | null
           user_id: string
         }
         Insert: {
+          citations?: Json | null
+          competitor_insights?: string | null
           consensus_points?: Json | null
           created_at?: string | null
           creativity_preference?: number | null
@@ -578,6 +585,8 @@ export type Database = {
           gemini_pro_response?: Json | null
           gpt_response?: Json | null
           id?: string
+          is_premium?: boolean | null
+          long_term_outlook?: Json | null
           majority_points?: Json | null
           model_responses?: Json | null
           model_weights?: Json | null
@@ -586,9 +595,12 @@ export type Database = {
           prompt: string
           risk_preference?: number | null
           selected_models?: string[] | null
+          strategic_alternatives?: Json | null
           user_id: string
         }
         Update: {
+          citations?: Json | null
+          competitor_insights?: string | null
           consensus_points?: Json | null
           created_at?: string | null
           creativity_preference?: number | null
@@ -598,6 +610,8 @@ export type Database = {
           gemini_pro_response?: Json | null
           gpt_response?: Json | null
           id?: string
+          is_premium?: boolean | null
+          long_term_outlook?: Json | null
           majority_points?: Json | null
           model_responses?: Json | null
           model_weights?: Json | null
@@ -606,6 +620,7 @@ export type Database = {
           prompt?: string
           risk_preference?: number | null
           selected_models?: string[] | null
+          strategic_alternatives?: Json | null
           user_id?: string
         }
         Relationships: []

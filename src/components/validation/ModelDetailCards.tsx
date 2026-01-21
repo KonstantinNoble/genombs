@@ -179,21 +179,39 @@ export function ModelDetailCards({
 
       <Tabs defaultValue={defaultModel} className="w-full">
         <TabsList 
-          className="w-full grid h-auto p-1.5" 
+          className="w-full grid h-auto p-1.5 bg-muted/50" 
           style={{ gridTemplateColumns: `repeat(${Math.min(selectedModels.length, 3)}, 1fr)` }}
         >
           {selectedModels.map(modelKey => {
             const response = modelResponses[modelKey];
             const hasError = !response || response.error;
             const modelConfig = AVAILABLE_MODELS[modelKey];
+            const colors = MODEL_COLORS[modelKey];
             
             return (
               <TabsTrigger 
                 key={modelKey} 
                 value={modelKey}
                 className={cn(
-                  "text-sm sm:text-base py-2.5 px-2",
-                  hasError && "opacity-60"
+                  "text-sm sm:text-base py-2.5 px-2 font-medium transition-all",
+                  "data-[state=active]:shadow-md",
+                  hasError && "opacity-60",
+                  // Farbige Tabs basierend auf Model
+                  modelKey === 'gptMini' && "data-[state=active]:bg-blue-500 data-[state=active]:text-white",
+                  modelKey === 'gpt5' && "data-[state=active]:bg-emerald-500 data-[state=active]:text-white",
+                  modelKey === 'sonarReasoning' && "data-[state=active]:bg-indigo-500 data-[state=active]:text-white",
+                  modelKey === 'geminiPro' && "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                  modelKey === 'geminiFlash' && "data-[state=active]:bg-green-500 data-[state=active]:text-white",
+                  modelKey === 'claude' && "data-[state=active]:bg-orange-500 data-[state=active]:text-white",
+                  modelKey === 'perplexity' && "data-[state=active]:bg-cyan-500 data-[state=active]:text-white",
+                  // Inactive state mit leichter Farbe
+                  modelKey === 'gptMini' && "data-[state=inactive]:bg-blue-500/10 data-[state=inactive]:text-blue-600",
+                  modelKey === 'gpt5' && "data-[state=inactive]:bg-emerald-500/10 data-[state=inactive]:text-emerald-600",
+                  modelKey === 'sonarReasoning' && "data-[state=inactive]:bg-indigo-500/10 data-[state=inactive]:text-indigo-600",
+                  modelKey === 'geminiPro' && "data-[state=inactive]:bg-purple-500/10 data-[state=inactive]:text-purple-600",
+                  modelKey === 'geminiFlash' && "data-[state=inactive]:bg-green-500/10 data-[state=inactive]:text-green-600",
+                  modelKey === 'claude' && "data-[state=inactive]:bg-orange-500/10 data-[state=inactive]:text-orange-600",
+                  modelKey === 'perplexity' && "data-[state=inactive]:bg-cyan-500/10 data-[state=inactive]:text-cyan-600"
                 )}
               >
                 <span className="truncate">{modelConfig?.name || modelKey}</span>

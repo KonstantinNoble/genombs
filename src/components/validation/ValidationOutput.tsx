@@ -7,7 +7,7 @@ import { StartExperimentButton } from "@/components/experiment/StartExperimentBu
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AVAILABLE_MODELS } from "./ModelSelector";
 
 interface ValidationOutputProps {
@@ -35,24 +35,25 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
   } = result;
 
   const hasTopActions = finalRecommendation.topActions && finalRecommendation.topActions.length > 0;
+  const hasPremiumInsights = isPremium && (strategicAlternatives || longTermOutlook || competitorInsights);
 
-  // Build model summary string (no weights anymore)
+  // Build model summary string
   const modelSummary = selectedModels
     .map(key => AVAILABLE_MODELS[key]?.name || key)
     .join(' · ');
 
   return (
-    <div className="space-y-5 sm:space-y-8 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       {/* Processing Time & Models Badge */}
-      <div className="flex flex-col items-center gap-2 sm:gap-3">
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full bg-muted/50 border text-sm sm:text-lg text-muted-foreground">
+      <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+        <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-muted/50 border text-xs sm:text-sm text-muted-foreground">
           <span>Completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
-        <div className="text-xs sm:text-sm text-muted-foreground text-center">
+        <div className="text-xs text-muted-foreground text-center">
           {modelSummary}
         </div>
         {isPremium && (
-          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-base px-3 sm:px-4 py-1.5 sm:py-2">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs px-2.5 py-1">
             Premium
           </Badge>
         )}
@@ -68,147 +69,151 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
 
       {/* Top Actions */}
       {hasTopActions && (
-        <div className="p-4 sm:p-8 rounded-lg sm:rounded-xl bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-lg sm:text-2xl text-foreground mb-4 sm:mb-6">
+        <div className="p-3 sm:p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <h3 className="font-bold text-sm sm:text-base text-foreground mb-2 sm:mb-3">
             Top Priority Actions
-            {isPremium && <span className="text-sm sm:text-base font-normal text-muted-foreground ml-2 sm:ml-3">(Premium: 7 actions)</span>}
+            {isPremium && <span className="text-xs font-normal text-muted-foreground ml-2">(Premium: 7 actions)</span>}
           </h3>
-          <ol className="space-y-3 sm:space-y-5">
+          <ol className="space-y-2">
             {finalRecommendation.topActions!.map((action, i) => (
-              <li key={i} className="flex items-start gap-3 sm:gap-5">
-                <span className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm sm:text-lg font-bold">
+              <li key={i} className="flex items-start gap-2 sm:gap-3">
+                <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                   {i + 1}
                 </span>
-                <span className="text-sm sm:text-lg text-foreground pt-1.5 sm:pt-2 leading-relaxed">{action}</span>
+                <span className="text-xs sm:text-sm text-foreground pt-0.5 leading-relaxed">{action}</span>
               </li>
             ))}
           </ol>
 
           {/* Start Experiment Button */}
           {validationId && onStartExperiment && (
-            <div className="mt-5 sm:mt-8 pt-4 sm:pt-5 border-t border-primary/20">
+            <div className="mt-3 sm:mt-4 pt-3 border-t border-primary/20">
               <StartExperimentButton onClick={onStartExperiment} />
             </div>
           )}
         </div>
       )}
 
-      {/* Premium-only: Strategic Alternatives */}
-      {isPremium && strategicAlternatives && strategicAlternatives.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">
-            <CardTitle className="flex flex-wrap items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-              <span>Strategic Alternatives</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">
-                Premium
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-5 px-3 sm:px-6 pb-4 sm:pb-6">
-            {strategicAlternatives.map((alt, i) => (
-              <div key={i} className="p-3 sm:p-5 rounded-lg bg-background border">
-                <h4 className="font-semibold text-base sm:text-lg mb-2 sm:mb-3">{alt.scenario}</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
-                  <div>
-                    <p className="font-medium text-primary mb-1.5 sm:mb-2 text-sm sm:text-base">Pros</p>
-                    <ul className="space-y-1.5 sm:space-y-2">
-                      {alt.pros.map((pro, j) => (
-                        <li key={j} className="flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base">
-                          <span className="text-primary">+</span>
-                          <span>{pro}</span>
-                        </li>
-                      ))}
-                    </ul>
+      {/* Premium Insights as Tabs */}
+      {hasPremiumInsights && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-bold text-sm sm:text-base text-foreground">Premium Insights</span>
+            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
+              Premium
+            </Badge>
+          </div>
+          
+          <Tabs 
+            defaultValue={strategicAlternatives ? "alternatives" : longTermOutlook ? "outlook" : "competitors"} 
+            className="w-full"
+          >
+            <TabsList className="w-full grid grid-cols-3 h-auto p-1">
+              {strategicAlternatives && strategicAlternatives.length > 0 && (
+                <TabsTrigger value="alternatives" className="text-xs py-1.5">
+                  Alternatives
+                </TabsTrigger>
+              )}
+              {longTermOutlook && (
+                <TabsTrigger value="outlook" className="text-xs py-1.5">
+                  Outlook
+                </TabsTrigger>
+              )}
+              {competitorInsights && (
+                <TabsTrigger value="competitors" className="text-xs py-1.5">
+                  Competitors
+                </TabsTrigger>
+              )}
+            </TabsList>
+            
+            {strategicAlternatives && strategicAlternatives.length > 0 && (
+              <TabsContent value="alternatives" className="mt-3 space-y-2">
+                {strategicAlternatives.map((alt, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-background border">
+                    <h4 className="font-semibold text-sm mb-2">{alt.scenario}</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="font-medium text-primary mb-1 text-xs">Pros</p>
+                        <ul className="space-y-1">
+                          {alt.pros.map((pro, j) => (
+                            <li key={j} className="flex items-start gap-1 text-xs">
+                              <span className="text-primary shrink-0">+</span>
+                              <span>{pro}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-medium text-destructive mb-1 text-xs">Cons</p>
+                        <ul className="space-y-1">
+                          {alt.cons.map((con, j) => (
+                            <li key={j} className="flex items-start gap-1 text-xs">
+                              <span className="text-destructive shrink-0">−</span>
+                              <span>{con}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      <span className="font-medium">Best for:</span> {alt.bestFor}
+                    </p>
                   </div>
-                  <div>
-                    <p className="font-medium text-destructive mb-1.5 sm:mb-2 text-sm sm:text-base">Cons</p>
-                    <ul className="space-y-1.5 sm:space-y-2">
-                      {alt.cons.map((con, j) => (
-                        <li key={j} className="flex items-start gap-1.5 sm:gap-2 text-sm sm:text-base">
-                          <span className="text-destructive">−</span>
-                          <span>{con}</span>
-                        </li>
-                      ))}
-                    </ul>
+                ))}
+              </TabsContent>
+            )}
+            
+            {longTermOutlook && (
+              <TabsContent value="outlook" className="mt-3 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2.5 rounded-lg bg-background border">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">6-Month</p>
+                    <p className="text-xs">{longTermOutlook.sixMonths}</p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-background border">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">12-Month</p>
+                    <p className="text-xs">{longTermOutlook.twelveMonths}</p>
                   </div>
                 </div>
-                <p className="text-sm sm:text-base text-muted-foreground mt-3 sm:mt-4">
-                  <span className="font-medium">Best for:</span> {alt.bestFor}
-                </p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Premium-only: Long-term Outlook */}
-      {isPremium && longTermOutlook && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">
-            <CardTitle className="flex flex-wrap items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-              <span>Long-term Outlook</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">
-                Premium
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-5 px-3 sm:px-6 pb-4 sm:pb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
-              <div className="p-3 sm:p-5 rounded-lg bg-background border">
-                <p className="text-sm sm:text-base font-medium text-muted-foreground mb-1.5 sm:mb-2">6-Month Projection</p>
-                <p className="text-base sm:text-lg">{longTermOutlook.sixMonths}</p>
-              </div>
-              <div className="p-3 sm:p-5 rounded-lg bg-background border">
-                <p className="text-sm sm:text-base font-medium text-muted-foreground mb-1.5 sm:mb-2">12-Month Projection</p>
-                <p className="text-base sm:text-lg">{longTermOutlook.twelveMonths}</p>
-              </div>
-            </div>
-            {longTermOutlook.keyMilestones.length > 0 && (
-              <div>
-                <p className="text-sm sm:text-base font-medium text-muted-foreground mb-2 sm:mb-3">Key Milestones</p>
-                <ul className="space-y-2 sm:space-y-3">
-                  {longTermOutlook.keyMilestones.map((milestone, i) => (
-                    <li key={i} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
-                      <span className="text-primary font-bold">{i + 1}.</span>
-                      <span>{milestone}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-1.5">Key Milestones</p>
+                    <ul className="space-y-1">
+                      {longTermOutlook.keyMilestones.map((milestone, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs">
+                          <span className="text-primary font-bold shrink-0">{i + 1}.</span>
+                          <span>{milestone}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </TabsContent>
             )}
-          </CardContent>
-        </Card>
+            
+            {competitorInsights && (
+              <TabsContent value="competitors" className="mt-3">
+                <p className="text-xs leading-relaxed">{competitorInsights}</p>
+              </TabsContent>
+            )}
+          </Tabs>
+        </div>
       )}
 
-      {/* Premium-only: Competitor Insights */}
-      {isPremium && competitorInsights && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">
-            <CardTitle className="flex flex-wrap items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-              <span>Competitor Insights</span>
-              <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs sm:text-sm">
-                Premium
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
-            <p className="text-sm sm:text-lg leading-relaxed">{competitorInsights}</p>
-          </CardContent>
-        </Card>
-      )}
+      <Separator className="my-2" />
 
-      <Separator />
+      {/* Analysis Points - 2 Column Grid on Desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <ConsensusSection points={consensusPoints} />
+          <MajoritySection points={majorityPoints} />
+        </div>
+        <div>
+          <DissentSection points={dissentPoints} />
+        </div>
+      </div>
 
-      {/* Consensus Points */}
-      <ConsensusSection points={consensusPoints} />
-
-      {/* Majority Points */}
-      <MajoritySection points={majorityPoints} />
-
-      {/* Dissent Points */}
-      <DissentSection points={dissentPoints} />
-
-      <Separator />
+      <Separator className="my-2" />
 
       {/* Individual Model Details */}
       <ModelDetailCards

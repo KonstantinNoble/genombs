@@ -4,9 +4,12 @@ import type { DissentPoint } from "@/hooks/useMultiAIValidation";
 const MODEL_COLORS: Record<string, string> = {
   'GPT-5 Mini': 'bg-blue-500/10 border-blue-500/30 text-blue-600',
   'GPT-5.2': 'bg-blue-500/10 border-blue-500/30 text-blue-600',
+  'GPT-5': 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600',
   'Gemini 3 Pro': 'bg-purple-500/10 border-purple-500/30 text-purple-600',
   'Gemini Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
   'Gemini 3 Flash': 'bg-green-500/10 border-green-500/30 text-green-600',
+  'Claude Sonnet 4': 'bg-orange-500/10 border-orange-500/30 text-orange-600',
+  'Sonar Pro': 'bg-indigo-500/10 border-indigo-500/30 text-indigo-600',
 };
 
 interface DissentSectionProps {
@@ -21,67 +24,72 @@ export function DissentSection({ points }: DissentSectionProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="h-4 w-4 rounded-full bg-red-500" />
-        <h3 className="text-xl font-bold text-foreground">
-          Points of Disagreement
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+        <h3 className="text-sm sm:text-base font-bold text-foreground">
+          Points of Dissent
         </h3>
-        <span className="text-base text-muted-foreground">
-          (Models have different views)
+        <span className="text-xs text-muted-foreground">
+          ({points.length} topics)
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-1.5">
         {points.map((point, index) => {
           const isExpanded = expandedIndex === index;
           
           return (
             <div
               key={index}
-              className="rounded-xl border border-red-500/30 bg-red-500/5 overflow-hidden"
+              className="rounded-lg border border-amber-500/30 bg-amber-500/5 overflow-hidden"
             >
               <button
                 onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-red-500/10 transition-colors"
+                className="w-full flex items-center justify-between p-2.5 sm:p-3 text-left hover:bg-amber-500/10 transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <div>
-                    <h4 className="font-bold text-lg text-foreground">{point.topic}</h4>
-                    <p className="text-base text-muted-foreground">
-                      {point.positions.length} different perspectives
+                <div className="flex-1 min-w-0 pr-2">
+                  <h4 className="font-semibold text-xs sm:text-sm text-foreground truncate">{point.topic}</h4>
+                  {!isExpanded && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {point.positions?.length || 0} different perspectives
                     </p>
-                  </div>
+                  )}
                 </div>
-                <span className="text-muted-foreground text-sm">
-                  {isExpanded ? "−" : "+"}
-                </span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs font-medium text-amber-600 bg-amber-500/20 px-1.5 py-0.5 rounded-full">
+                    {point.positions?.length || 0} views
+                  </span>
+                  <span className="text-muted-foreground text-xs w-4 text-center">
+                    {isExpanded ? "−" : "+"}
+                  </span>
+                </div>
               </button>
 
-              {isExpanded && (
-                <div className="px-5 pb-5 pt-0 border-t border-red-500/20 space-y-4">
-                  <p className="text-base text-muted-foreground pt-4">
+              {isExpanded && point.positions && (
+                <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3 border-t border-amber-500/20">
+                  <p className="text-xs text-muted-foreground mt-2 mb-2">
                     Review each perspective to make an informed decision:
                   </p>
                   
-                  <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
-                    {point.positions.map((pos, i) => {
-                      const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-foreground';
+                  <div className="space-y-2">
+                    {point.positions.map((pos, pIndex) => {
+                      const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-muted-foreground';
                       
                       return (
                         <div
-                          key={i}
-                          className={`p-5 rounded-xl border ${colorClass}`}
+                          key={pIndex}
+                          className={`p-2.5 rounded-lg border ${colorClass}`}
                         >
-                          <div className="flex items-center gap-2 mb-3">
-                            <span className="text-sm font-bold uppercase tracking-wide">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-xs font-bold uppercase tracking-wide">
                               {pos.modelName}
                             </span>
                           </div>
-                          <p className="text-base font-semibold text-foreground mb-2">
+                          <p className="text-xs sm:text-sm font-medium text-foreground">
                             {pos.position}
                           </p>
-                          <p className="text-base text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {pos.reasoning}
                           </p>
                         </div>

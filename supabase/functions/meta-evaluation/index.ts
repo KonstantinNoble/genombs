@@ -873,7 +873,13 @@ Output the formatted version using the format_evaluation function. Remember: imp
             dissent_points: finalEvaluation.dissentPoints,
             final_recommendation: finalEvaluation.finalRecommendation,
             overall_confidence: finalEvaluation.overallConfidence,
-            processing_time_ms: processingTime
+            processing_time_ms: processingTime,
+            // Store premium status and content for history reconstruction
+            is_premium: isPremium,
+            strategic_alternatives: finalEvaluation.strategicAlternatives || null,
+            long_term_outlook: finalEvaluation.longTermOutlook || null,
+            competitor_insights: finalEvaluation.competitorInsights || null,
+            citations: allCitations.length > 0 ? allCitations : null
           })
           .select('id')
           .single();

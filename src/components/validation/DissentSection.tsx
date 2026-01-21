@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 import type { DissentPoint } from "@/hooks/useMultiAIValidation";
 
 const MODEL_COLORS: Record<string, string> = {
@@ -13,63 +17,76 @@ const MODEL_COLORS: Record<string, string> = {
 
 interface DissentSectionProps {
   points: DissentPoint[];
+  defaultOpen?: boolean;
 }
 
-export function DissentSection({ points }: DissentSectionProps) {
+export function DissentSection({ points, defaultOpen = false }: DissentSectionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
   if (points.length === 0) {
     return null;
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full bg-amber-500" />
-        <h3 className="text-base sm:text-lg font-bold text-foreground">
-          Points of Dissent
-        </h3>
-        <span className="text-sm text-muted-foreground">({points.length})</span>
-      </div>
-
-      <div className="space-y-3">
-        {points.map((point, index) => (
-          <div
-            key={index}
-            className="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5"
-          >
-            <h4 className="font-semibold text-sm sm:text-base text-foreground mb-2">{point.topic}</h4>
-            <p className="text-sm text-muted-foreground mb-3">
-              Review each perspective to make an informed decision:
-            </p>
-            
-            {point.positions && (
-              <div className="space-y-3">
-                {point.positions.map((pos, pIndex) => {
-                  const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-muted-foreground';
-                  
-                  return (
-                    <div
-                      key={pIndex}
-                      className={`p-3 sm:p-4 rounded-lg border ${colorClass}`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-bold uppercase tracking-wide">
-                          {pos.modelName}
-                        </span>
-                      </div>
-                      <p className="text-sm sm:text-base font-medium text-foreground mb-1">
-                        {pos.position}
-                      </p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {pos.reasoning}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className="w-full">
+        <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/15 transition-colors cursor-pointer">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-amber-500" />
+            <h3 className="text-base sm:text-lg font-bold text-foreground">
+              Points of Dissent
+            </h3>
+            <span className="text-sm text-muted-foreground">({points.length})</span>
           </div>
-        ))}
-      </div>
-    </div>
+          <ChevronDown className={cn(
+            "h-5 w-5 text-amber-600 transition-transform duration-200",
+            isOpen && "rotate-180"
+          )} />
+        </div>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+        <div className="space-y-3 pt-3">
+          {points.map((point, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5"
+            >
+              <h4 className="font-semibold text-sm sm:text-base text-foreground mb-2">{point.topic}</h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Review each perspective to make an informed decision:
+              </p>
+              
+              {point.positions && (
+                <div className="space-y-3">
+                  {point.positions.map((pos, pIndex) => {
+                    const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-muted-foreground';
+                    
+                    return (
+                      <div
+                        key={pIndex}
+                        className={`p-3 sm:p-4 rounded-lg border ${colorClass}`}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-bold uppercase tracking-wide">
+                            {pos.modelName}
+                          </span>
+                        </div>
+                        <p className="text-sm sm:text-base font-medium text-foreground mb-1">
+                          {pos.position}
+                        </p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {pos.reasoning}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

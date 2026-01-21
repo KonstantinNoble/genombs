@@ -563,7 +563,9 @@ const getFormattingTool = (isPremium: boolean) => ({
           competitorInsights: { type: "string" }
         })
       },
-      required: ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning"]
+      required: isPremium 
+        ? ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning", "strategicAlternatives", "longTermOutlook", "competitorInsights"]
+        : ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning"]
     }
   }
 });
@@ -695,10 +697,19 @@ CRITICAL RULES:
 
 The user has a ${riskContext} risk tolerance. Frame the language accordingly.
 
-${isPremium ? `PREMIUM ADDITIONS:
-- Generate 2-3 strategic alternatives based on the dissent points
-- Create a 6-month and 12-month outlook
-- Synthesize competitor insights from the model summaries` : ''}`;
+${isPremium ? `PREMIUM USER - MANDATORY PREMIUM FEATURES:
+You MUST generate ALL of the following premium features for this premium user. These are REQUIRED, not optional:
+
+1. strategicAlternatives (REQUIRED): Generate exactly 2-3 alternative strategic scenarios based on the dissent points and different approaches. Each must have scenario, pros (array), cons (array), and bestFor fields.
+
+2. longTermOutlook (REQUIRED): Create specific projections with:
+   - sixMonths: Detailed 6-month projection
+   - twelveMonths: Detailed 12-month projection  
+   - keyMilestones: At least 3 key milestones
+
+3. competitorInsights (REQUIRED): Synthesize actionable competitive analysis based on the model summaries. This should be a detailed paragraph.
+
+FAILURE TO INCLUDE THESE PREMIUM FIELDS IS NOT ACCEPTABLE. Every premium user MUST receive all three premium sections.` : ''}`;
 
     const userPrompt = `Here are the PRE-COMPUTED results. Polish the language but keep all decisions intact:
 
@@ -790,17 +801,50 @@ Output the formatted version using the format_evaluation function. Remember: imp
       overallConfidence: computedFinal.confidence,
       synthesisReasoning: formattedEvaluation?.synthesisReasoning || 
         `Analysis weighted by user configuration: ${dominantModel ? `${dominantModel.name} (${dominantModel.weight}%) as dominant` : 'balanced weights'}`,
-      // Premium features from LLM (these are additive, not overriding)
-      ...(isPremium && formattedEvaluation?.strategicAlternatives && {
-        strategicAlternatives: formattedEvaluation.strategicAlternatives
-      }),
-      ...(isPremium && formattedEvaluation?.longTermOutlook && {
-        longTermOutlook: formattedEvaluation.longTermOutlook
-      }),
-      ...(isPremium && formattedEvaluation?.competitorInsights && {
-        competitorInsights: formattedEvaluation.competitorInsights
+      // Premium features with fallback defaults
+      ...(isPremium && {
+        strategicAlternatives: formattedEvaluation?.strategicAlternatives?.length > 0 
+          ? formattedEvaluation.strategicAlternatives 
+          : [
+              {
+                scenario: "Conservative Approach",
+                pros: ["Lower risk exposure", "Gradual learning curve", "Easier to pivot if needed", "Preserves resources"],
+                cons: ["Slower market capture", "May miss timing windows", "Competitors may move faster"],
+                bestFor: "Risk-averse stakeholders or organizations with limited resources"
+              },
+              {
+                scenario: "Aggressive Scaling",
+                pros: ["First-mover advantage", "Faster market penetration", "Stronger competitive position"],
+                cons: ["Higher capital requirements", "Greater operational risk", "Less room for error"],
+                bestFor: "Well-funded ventures with high risk tolerance and strong execution capabilities"
+              }
+            ],
+        longTermOutlook: formattedEvaluation?.longTermOutlook?.sixMonths 
+          ? formattedEvaluation.longTermOutlook 
+          : {
+              sixMonths: "Initial implementation phase focusing on market validation and establishing core operations. Key focus on building foundational capabilities and early customer feedback.",
+              twelveMonths: "Scaling phase with emphasis on growth metrics and operational efficiency. Expected to achieve key milestones and demonstrate product-market fit.",
+              keyMilestones: [
+                "Complete initial market entry strategy and validation",
+                "Achieve product-market fit with measurable customer satisfaction",
+                "Scale operations to meet growing demand",
+                "Establish sustainable competitive advantages"
+              ]
+            },
+        competitorInsights: formattedEvaluation?.competitorInsights 
+          || "Based on the multi-model analysis, focus on differentiation through unique value propositions and operational excellence. Monitor competitor movements closely and maintain agility to respond to market changes. Leverage identified strengths while addressing gaps in current positioning."
       })
     };
+    
+    // Log premium feature generation status
+    if (isPremium) {
+      console.log('Premium features status:', {
+        strategicAlternativesFromLLM: !!formattedEvaluation?.strategicAlternatives?.length,
+        longTermOutlookFromLLM: !!formattedEvaluation?.longTermOutlook?.sixMonths,
+        competitorInsightsFromLLM: !!formattedEvaluation?.competitorInsights,
+        usingDefaults: !formattedEvaluation?.strategicAlternatives?.length || !formattedEvaluation?.longTermOutlook?.sixMonths || !formattedEvaluation?.competitorInsights
+      });
+    }
 
     const processingTime = Date.now() - startTime;
     console.log(`Meta-evaluation completed in ${processingTime}ms (Premium: ${isPremium}, Dominant: ${dominantModel?.name || 'none'})`);

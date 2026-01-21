@@ -34,27 +34,27 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Type in your question",
-      description: "What are you trying to figure out? Pricing, hiring, expanding to a new market, whatever. Just ask it like you'd ask a smart friend.",
-      details: "Be specific if you can. 'Should I raise prices by 20%?' works better than 'How do I make more money?' But honestly, even vague questions get interesting answers.",
+      title: "Ask your question",
+      description: "Pricing decision? New hire? Market expansion? Just type it like you'd ask a colleague.",
+      details: "The more specific, the better. 'Should I raise prices 20%?' beats 'How do I grow?' But even broad questions get useful responses.",
       link: "/validate",
       linkText: "Try it now"
     },
     {
       number: "2",
-      title: "Three models think it over",
-      description: "GPT-5, Gemini Pro, and Gemini Flash each analyze your question separately. You watch them work in real-time.",
-      details: "They don't know what each other are saying. That's the point. You get three independent perspectives, not one model agreeing with itself.",
+      title: "Three models work on it",
+      description: "GPT-5, Gemini Pro, and Flash each analyze your question. Independently. You watch in real-time.",
+      details: "They don't see each other's answers. That's the whole point – three separate perspectives, not one model talking to itself.",
       link: "/validate",
       linkText: "See it in action"
     },
     {
       number: "3",
-      title: "See what they think",
-      description: "We show you where all three agree, where two out of three agree, and where they see things differently.",
-      details: "The disagreements are often the most interesting part. If all three say 'yes, do it' – great. If one says 'wait, have you considered...' – that's worth knowing.",
+      title: "See where they land",
+      description: "Full agreement? Strong signal. Two out of three? Worth considering. Disagreement? That's where things get interesting.",
+      details: "With Premium, you also get competitor insights and a 6-12 month outlook. The kind of context that changes how you see the decision.",
       link: "/pricing",
-      linkText: "What's included"
+      linkText: "Compare plans"
     }
   ];
 

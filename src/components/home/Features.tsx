@@ -5,31 +5,31 @@ import { Link } from "react-router-dom";
 
 const features = [
   {
-    title: "Three Models, Not One",
+    title: "One Click, Three Opinions",
     description:
-      "You type in a question. GPT-5, Gemini Pro, and Gemini Flash each give you their take. Independently. No copy-pasting between tools.",
-    details: "Each model thinks differently. GPT tends to be thorough, Gemini Pro gets creative, Flash is more practical. You see all three perspectives side by side before we synthesize them.",
+      "Type your question once. GPT-5, Gemini Pro, and Flash each respond separately. No switching between tabs or tools.",
+    details: "Different models think differently. GPT goes deep, Gemini Pro gets creative, Flash stays practical. You see all three side by side.",
     color: "primary",
     link: "/validate",
     linkText: "Try it out",
   },
   {
-    title: "See Where They Agree (and Don't)",
+    title: "Consensus Shows Confidence",
     description:
-      "When all three models say the same thing? That's probably solid advice. When they disagree? That's where you should dig deeper.",
-    details: "We don't just show you three answers. We analyze them and tell you: here's what they all agree on, here's where two out of three agree, and here's where they see things differently.",
+      "When three independent AIs reach the same conclusion, that's a strong signal. When they don't, you know where to look closer.",
+    details: "We break it down: full agreement, partial agreement, and disagreement. So you know which parts of the advice to trust most.",
     color: "accent-cool",
     link: "/validate",
     linkText: "See how it works",
   },
   {
-    title: "Adjust to Your Style",
+    title: "Premium: The Full Picture",
     description:
-      "Playing it safe or willing to take risks? Want creative ideas or practical ones? Move the sliders and the recommendations adjust.",
-    details: "Your business, your call. The sliders change how we weight the responses. Conservative mode prioritizes the safer bets. Aggressive mode surfaces the bolder moves.",
+      "Go beyond basic consensus. Get competitor insights, a 6-12 month outlook, and alternative strategies if Plan A doesn't work out.",
+    details: "Free shows you what the models agree on. Premium shows you context you'd miss otherwise – the kind that can change your decision.",
     color: "accent-info",
     link: "/pricing",
-    linkText: "See all features",
+    linkText: "Compare plans",
   },
 ];
 
@@ -105,10 +105,10 @@ const Features = () => {
           className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            What makes this different
+            Why this works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            One AI gives you one opinion. We give you three, then tell you what they mean.
+            One AI gives you one opinion. Three give you perspective.
           </p>
         </div>
 

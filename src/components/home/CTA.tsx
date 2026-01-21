@@ -57,13 +57,13 @@ const CTA = () => {
           className={`max-w-3xl mx-auto text-center space-y-8 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-primary">
-            {isPremium && isLoggedIn ? "Back to the validator" : "Want to try it?"}
+            {isPremium && isLoggedIn ? "Ready when you are" : "Give it a shot"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {isPremium && isLoggedIn 
-              ? "Your premium access is ready. 20 validations per day."
-              : "Two free checks per day. No credit card. See if it's useful for you."}
+              ? "Your 20 daily checks are waiting. Full insights, competitor context, long-term outlook."
+              : "Two free checks a day. No credit card. See if it helps you think through decisions."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

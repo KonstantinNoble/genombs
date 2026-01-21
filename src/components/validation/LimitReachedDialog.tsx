@@ -12,12 +12,12 @@ interface LimitReachedDialogProps {
 }
 
 const PREMIUM_BENEFITS = [
-  "20 validations per day instead of 2",
-  "4-5 detailed recommendations per model",
-  "5-7 concrete action items",
-  "Strategic Alternatives analysis",
-  "Long-term Outlook predictions",
-  "Competitor Intelligence insights"
+  "20 checks per day – enough for real work",
+  "Full detailed responses, not just summaries",
+  "5-7 concrete next steps you can act on",
+  "What if Plan A fails? (Backup strategies)",
+  "Where does this lead? (6-12 month outlook)",
+  "What are competitors doing? (Context you'd miss)"
 ];
 
 export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrade }: LimitReachedDialogProps) {
@@ -87,10 +87,10 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
           {/* Current status */}
           <div className="text-center">
             <p className="text-muted-foreground text-lg">
-              Your <span className="font-semibold text-foreground">2 free</span> daily validations are used up.
+              You've used your <span className="font-semibold text-foreground">2 free</span> checks for today.
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Don't let decision paralysis slow you down.
+              Got more questions? There's a way to keep going.
             </p>
           </div>
 
@@ -120,13 +120,13 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
               <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6">
                 <div className="text-center mb-5">
                   <p className="text-xl font-bold text-foreground">
-                    Go Premium Today
+                    Get the full picture
                   </p>
                   <p className="text-3xl font-bold text-primary mt-2">
                     $14.99<span className="text-base font-normal text-muted-foreground">/month</span>
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Cancel anytime. No questions asked.
+                    Cancel whenever. No hoops.
                   </p>
                 </div>
 

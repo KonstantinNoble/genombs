@@ -28,24 +28,24 @@ const PricingPage = () => {
 
   const faqs = [
     {
-      question: "How does multi-AI validation work?",
-      answer: "Synoptas queries 3 AI models (GPT-5 Mini, Gemini 3 Pro, Gemini 3 Flash) in parallel. Each model analyzes your question independently, then our meta-evaluation identifies consensus (all agree), majority (2/3 agree), and dissent (disagreement) points – giving you validated recommendations with confidence scores."
+      question: "How does this work?",
+      answer: "You type a question. Three AI models – GPT-5, Gemini Pro, and Flash – each analyze it independently. They don't see each other's answers. Then we show you where they agree (strong signal), where most agree (worth considering), and where they disagree (dig deeper here)."
     },
     {
-      question: "What's the difference between Free and Premium?",
-      answer: "Free users get 2 validations per day with 2-3 recommendations per model and 3 action items. Premium users get 20 daily validations, 4-5 recommendations per model, 5-7 action items, plus exclusive sections: Strategic Alternatives, Competitor Insights, and Long-term Outlook."
+      question: "What do I actually get with Premium?",
+      answer: "20 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months."
     },
     {
-      question: "How do the daily validation limits work?",
-      answer: "Your limit resets 24 hours after your first validation of the day. Free users get 2 validations, Premium users get 20. You can see your remaining count and reset time on the validation page."
+      question: "When does my limit reset?",
+      answer: "24 hours after your first check of the day. Free gets 2 per day, Premium gets 20. You'll see your remaining count and reset time on the validation page."
     },
     {
-      question: "What types of questions work best?",
-      answer: "Strategic business questions work best: pricing decisions, market expansion, product launches, competitive positioning, hiring decisions, etc. Be specific for better results – 'Should I expand to enterprise clients or focus on SMB?' works better than 'How do I grow?'"
+      question: "What kind of questions work best?",
+      answer: "Specific business decisions you're actually facing. 'Should I raise prices 20%?' beats 'How do I make more money?' 'Should I focus on enterprise or SMB?' beats 'How do I grow?' The more concrete, the more useful the answer."
     },
     {
-      question: "Can I try before subscribing?",
-      answer: "Yes! Free users get 2 validations per day with no credit card required. You can experience the multi-AI consensus analysis before deciding to upgrade for more validations and deeper insights."
+      question: "Can I try it before paying?",
+      answer: "Yes. 2 free checks per day, no credit card needed. Enough to see if the multi-model approach is useful for how you make decisions."
     }
   ];
 
@@ -100,13 +100,13 @@ const PricingPage = () => {
             )}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
-                ? "You're on the Premium Plan!" 
-                : "Multi-AI Validation for $14.99/mo"}
+                ? "You're all set" 
+                : "Three opinions for $14.99/mo"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "Enjoy full access to all premium features including 20 daily validations and detailed model responses."
-                : "Start free with no credit card. Get validated recommendations from 3 AI models analyzing your business questions in parallel."}
+                ? "20 checks a day, full insights, competitor context, long-term outlook. All yours."
+                : "Try it free first. When you need more depth – competitor insights, 6-month outlook, backup strategies – that's what Premium is for."}
             </p>
           </div>
         </section>
@@ -171,13 +171,13 @@ const PricingPage = () => {
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               {isPremium && isLoggedIn 
-                ? "Continue Your Validation" 
-                : "Ready to Start?"}
+                ? "Back to work" 
+                : "Ready to try it?"}
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn 
-                ? "Access your premium features and continue validating decisions with multi-AI analysis."
-                : "Get validated recommendations from 3 AI models. No credit card required."}
+                ? "Your 20 daily checks are waiting. Full depth, full context."
+                : "Three models, one question. See if it helps you think through decisions."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button 

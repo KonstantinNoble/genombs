@@ -30,11 +30,11 @@ const Hero = () => {
           {/* Problem-First Headline - SEO optimized H1 */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight animate-scale-in">
             <span className="text-primary">
-              Get a Second Opinion
+              Before You Decide,
             </span>
             <br />
             <span className="text-foreground">
-              From 3 AI Models at Once
+              Ask Three Times
             </span>
           </h1>
 
@@ -42,7 +42,7 @@ const Hero = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
-            Not sure if your business idea is solid? Run it through GPT and Gemini. See where they agree, where they don't, and what that actually means.
+            Got a business question? Let GPT and Gemini look at it. You'll see where they agree – and where they don't. The real insights come with Premium.
           </p>
 
           <div

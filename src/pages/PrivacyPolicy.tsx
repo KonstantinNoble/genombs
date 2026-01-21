@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 17, 2026 | Version 4.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.0</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -496,38 +496,133 @@ const PrivacyPolicy = () => {
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">AI Model Providers</h4>
+            <h4 className="text-lg font-semibold mb-2 mt-4">Base Models (Available to All Users)</h4>
             <div className="overflow-x-auto mb-4">
               <table className="w-full text-muted-foreground border-collapse border border-border">
                 <thead>
                   <tr className="bg-muted/50">
                     <th className="border border-border p-3 text-left font-semibold">Provider</th>
-                    <th className="border border-border p-3 text-left font-semibold">Models Used</th>
+                    <th className="border border-border p-3 text-left font-semibold">Model</th>
                     <th className="border border-border p-3 text-left font-semibold">Location</th>
                     <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (via OpenRouter)</td>
-                    <td className="border border-border p-3">GPT-5 Mini, GPT-5-nano (fallback)</td>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3">GPT-5 Mini</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
-                    <td className="border border-border p-3">Gemini 3 Pro, Gemini 3 Flash</td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3">Gemini 2.5 Flash</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenRouter</strong></td>
-                    <td className="border border-border p-3">API Gateway for OpenAI models</td>
+                    <td className="border border-border p-3"><strong>Anthropic PBC</strong></td>
+                    <td className="border border-border p-3">Claude Sonnet 4</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3">Sonar Pro (with web search)</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Premium Models (Available to Premium Subscribers Only)</h4>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
+                    <th className="border border-border p-3 text-left font-semibold">Model</th>
+                    <th className="border border-border p-3 text-left font-semibold">Location</th>
+                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3">Gemini 3 Pro Preview</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3">Sonar Reasoning Pro (with enhanced web search)</td>
+                    <td className="border border-border p-3">United States</td>
+                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">API Gateway Services</h4>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
+                    <th className="border border-border p-3 text-left font-semibold">Purpose</th>
+                    <th className="border border-border p-3 text-left font-semibold">Location</th>
+                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Lovable AI Gateway</strong></td>
+                    <td className="border border-border p-3">API routing for OpenAI and Google models</td>
+                    <td className="border border-border p-3">European Union</td>
+                    <td className="border border-border p-3">No third-country transfer (EU-based)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Web Search Functionality</h4>
+            <p className="text-muted-foreground mb-4">
+              Certain AI models (Perplexity Sonar Pro and Sonar Reasoning Pro) perform automated web searches 
+              to provide up-to-date market data and industry information in their analyses. When you use these models:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your validation prompt is used as the basis for web searches</li>
+              <li>Relevant web content is retrieved and incorporated into the AI analysis</li>
+              <li>Source URLs are provided as citations in the response</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              This web search functionality is integral to providing current and grounded business recommendations.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Party AI Provider Privacy Policies</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  OpenAI Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Google Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Anthropic Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.perplexity.ai/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Perplexity AI Privacy Policy
+                </a>
+              </li>
+            </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
@@ -960,11 +1055,13 @@ const PrivacyPolicy = () => {
 
             <h4 className="text-lg font-semibold mb-2 mt-4">How the AI Processing Works</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your prompt is sent to three AI models simultaneously (GPT-5 Mini, Gemini 3 Pro, Gemini 3 Flash)</li>
+              <li>You select exactly 3 AI models from the available options and assign influence weights (10-80% each)</li>
+              <li>Your prompt is sent to all three selected models simultaneously</li>
+              <li>Available models include: GPT-5 Mini, Gemini 2.5 Flash, Claude Sonnet 4, Perplexity Sonar Pro (base); Gemini 3 Pro Preview, Sonar Reasoning Pro (premium)</li>
               <li>Each model provides independent analysis based on the prompt and your preferences</li>
-              <li>A fourth AI process (meta-evaluation by Gemini 3 Flash) synthesizes the responses</li>
+              <li>A synthesis AI process (meta-evaluation by Gemini 2.5 Flash) combines the responses, respecting your assigned weights</li>
               <li>The system identifies consensus points, majority opinions, and dissenting views</li>
-              <li>A final recommendation is generated based on this multi-model analysis</li>
+              <li>A final recommendation is generated based on this weighted multi-model analysis</li>
             </ul>
 
             <p className="text-muted-foreground mb-4">
@@ -1148,6 +1245,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation. Replaced OpenRouter with Lovable AI Gateway.</li>
               <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Removed obsolete features (Business Tools Advisor, Market Research, Ads Advisor). Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>
               <li><strong>Version 3.4 (January 12, 2026):</strong> Updated credit limits and registration security.</li>
               <li><strong>Version 3.0 (December 19, 2025):</strong> Added Business Ideas Community documentation.</li>
@@ -1157,7 +1255,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: January 17, 2026
+              Last updated: January 21, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

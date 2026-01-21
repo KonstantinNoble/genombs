@@ -78,37 +78,37 @@ function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium =
       </div>
 
       {/* Summary */}
-      <p className="text-sm sm:text-base text-muted-foreground mb-4 leading-relaxed">{response.summary}</p>
+      <p className="text-base sm:text-lg text-muted-foreground mb-4 leading-relaxed">{response.summary}</p>
 
       {/* Recommendations */}
       <div className="space-y-3">
         {response.recommendations.slice(0, maxRecommendations).map((rec, i) => (
           <div key={i} className="p-4 rounded-lg bg-muted/30 space-y-3">
             <div className="flex items-start justify-between gap-2">
-              <h5 className="font-medium text-sm sm:text-base text-foreground">{rec.title}</h5>
+              <h5 className="font-medium text-base sm:text-lg text-foreground">{rec.title}</h5>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-sm bg-muted px-2 py-1 rounded">
+                <span className="text-base bg-muted px-2 py-1 rounded">
                   Risk: {rec.riskLevel}/5
                 </span>
-                <span className={cn("text-sm px-2 py-1 rounded-full", colorClass)}>
+                <span className={cn("text-base px-2 py-1 rounded-full", colorClass)}>
                   {rec.confidence}%
                 </span>
               </div>
             </div>
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{rec.description}</p>
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{rec.description}</p>
             
             {rec.actionItems && rec.actionItems.length > 0 && (
               <div className="pt-3 border-t border-border/50">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Actions</p>
+                <p className="text-base font-medium text-muted-foreground mb-2">Actions</p>
                 <ul className="space-y-1.5">
                   {rec.actionItems.slice(0, maxActionItems).map((action, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm sm:text-base">
+                    <li key={j} className="flex items-start gap-2 text-base sm:text-lg">
                       <span className="text-primary shrink-0">→</span>
                       <span className="text-foreground">{action}</span>
                     </li>
                   ))}
                   {!isPremium && rec.actionItems.length > maxActionItems && (
-                    <li className="text-sm text-amber-600 italic">
+                    <li className="text-base text-amber-600 italic">
                       +{rec.actionItems.length - maxActionItems} more (Premium)
                     </li>
                   )}
@@ -119,22 +119,22 @@ function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium =
             {/* Premium-only fields */}
             {isPremium && (rec as any).competitiveAdvantage && (
               <div className="pt-3 border-t border-border/50">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Competitive Advantage</p>
-                <p className="text-sm sm:text-base text-foreground">{(rec as any).competitiveAdvantage}</p>
+                <p className="text-base font-medium text-muted-foreground mb-1">Competitive Advantage</p>
+                <p className="text-base sm:text-lg text-foreground">{(rec as any).competitiveAdvantage}</p>
               </div>
             )}
 
             {isPremium && (rec as any).longTermImplications && (
               <div className="pt-3">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Long-term Implications</p>
-                <p className="text-sm sm:text-base text-foreground">{(rec as any).longTermImplications}</p>
+                <p className="text-base font-medium text-muted-foreground mb-1">Long-term Implications</p>
+                <p className="text-base sm:text-lg text-foreground">{(rec as any).longTermImplications}</p>
               </div>
             )}
 
             {isPremium && (rec as any).resourceRequirements && (
               <div className="pt-3">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Resource Requirements</p>
-                <p className="text-sm sm:text-base text-foreground">{(rec as any).resourceRequirements}</p>
+                <p className="text-base font-medium text-muted-foreground mb-1">Resource Requirements</p>
+                <p className="text-base sm:text-lg text-foreground">{(rec as any).resourceRequirements}</p>
               </div>
             )}
           </div>
@@ -145,7 +145,7 @@ function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium =
       {!isPremium && response.recommendations.length > maxRecommendations && (
         <button 
           onClick={() => navigate('/pricing')}
-          className="w-full mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 text-center text-sm sm:text-base text-amber-600 hover:text-amber-500 transition-colors"
+          className="w-full mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 text-center text-base sm:text-lg text-amber-600 hover:text-amber-500 transition-colors"
         >
           +{response.recommendations.length - maxRecommendations} more recommendations (Premium) →
         </button>
@@ -244,12 +244,12 @@ export function ModelDetailCards({
       {/* Citations */}
       {citations && citations.length > 0 && (
         <div className="mt-4 p-4 rounded-lg border border-cyan-500/30 bg-cyan-500/5">
-          <h4 className="font-semibold text-sm sm:text-base text-cyan-600 mb-3">
+          <h4 className="font-semibold text-base sm:text-lg text-cyan-600 mb-3">
             Web Sources
           </h4>
           <ul className="space-y-2">
             {citations.slice(0, 5).map((citation, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm sm:text-base">
+              <li key={i} className="flex items-start gap-2 text-base sm:text-lg">
                 <span className="text-cyan-600 shrink-0">[{i + 1}]</span>
                 <a 
                   href={citation} 

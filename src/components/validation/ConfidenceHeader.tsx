@@ -38,14 +38,14 @@ export function ConfidenceHeader({
     <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
         <div className="flex-1 order-2 sm:order-1">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{title}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{description}</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
         <div className="flex sm:flex-col items-center sm:items-end gap-2 order-1 sm:order-2 shrink-0">
-          <span className={cn("text-3xl sm:text-4xl font-bold", getConfidenceColor(confidence))}>
+          <span className={cn("text-4xl sm:text-5xl font-bold", getConfidenceColor(confidence))}>
             {confidence}%
           </span>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-base text-muted-foreground">
             {getConfidenceLabel(confidence)}
           </span>
         </div>
@@ -53,7 +53,7 @@ export function ConfidenceHeader({
 
       {/* Confidence Bar */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
+        <div className="flex justify-between text-base text-muted-foreground">
           <span>AI Consensus Level</span>
           <span>{confidence}%</span>
         </div>
@@ -69,7 +69,7 @@ export function ConfidenceHeader({
       </div>
 
       {reasoning && (
-        <p className="mt-4 text-sm sm:text-base text-muted-foreground italic border-t border-primary/10 pt-4">
+        <p className="mt-4 text-base sm:text-lg text-muted-foreground italic border-t border-primary/10 pt-4">
           {reasoning}
         </p>
       )}

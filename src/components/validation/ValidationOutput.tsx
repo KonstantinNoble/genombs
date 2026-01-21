@@ -45,10 +45,10 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
     <div className="space-y-6 animate-fade-in">
       {/* Processing Time & Models Badge */}
       <div className="flex flex-col items-center gap-2">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-sm text-muted-foreground">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-base text-muted-foreground">
           <span>Completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
         </div>
-        <div className="text-sm text-muted-foreground text-center">
+        <div className="text-base text-muted-foreground text-center">
           {modelSummary}
         </div>
         {isPremium && (
@@ -69,17 +69,17 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {/* Top Actions */}
       {hasTopActions && (
         <div className="p-4 sm:p-5 rounded-lg bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-base sm:text-lg text-foreground mb-3">
+          <h3 className="font-bold text-lg sm:text-xl text-foreground mb-3">
             Top Priority Actions
-            {isPremium && <span className="text-sm font-normal text-muted-foreground ml-2">(Premium: 7 actions)</span>}
+            {isPremium && <span className="text-base font-normal text-muted-foreground ml-2">(Premium: 7 actions)</span>}
           </h3>
           <ol className="space-y-3">
             {finalRecommendation.topActions!.map((action, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                <span className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold">
                   {i + 1}
                 </span>
-                <span className="text-sm sm:text-base text-foreground pt-1 leading-relaxed">{action}</span>
+                <span className="text-base sm:text-lg text-foreground pt-1 leading-relaxed">{action}</span>
               </li>
             ))}
           </ol>
@@ -97,8 +97,8 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
       {hasPremiumInsights && (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 space-y-5">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-base sm:text-lg text-foreground">Premium Insights</span>
-            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
+            <span className="font-bold text-lg sm:text-xl text-foreground">Premium Insights</span>
+            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-base">
               Premium
             </Badge>
           </div>
@@ -106,17 +106,17 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           {/* Strategic Alternatives */}
           {strategicAlternatives && strategicAlternatives.length > 0 && (
             <div>
-              <h4 className="font-semibold text-sm sm:text-base text-foreground mb-3">Strategic Alternatives</h4>
+              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-3">Strategic Alternatives</h4>
               <div className="space-y-3">
                 {strategicAlternatives.map((alt, i) => (
                   <div key={i} className="p-4 rounded-lg bg-background border">
-                    <h5 className="font-semibold text-sm sm:text-base mb-3">{alt.scenario}</h5>
+                    <h5 className="font-semibold text-base sm:text-lg mb-3">{alt.scenario}</h5>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <p className="font-medium text-primary mb-2 text-sm">Pros</p>
+                        <p className="font-medium text-primary mb-2 text-base">Pros</p>
                         <ul className="space-y-1.5">
                           {alt.pros.map((pro, j) => (
-                            <li key={j} className="flex items-start gap-2 text-sm">
+                            <li key={j} className="flex items-start gap-2 text-base">
                               <span className="text-primary shrink-0">+</span>
                               <span>{pro}</span>
                             </li>
@@ -124,10 +124,10 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
                         </ul>
                       </div>
                       <div>
-                        <p className="font-medium text-destructive mb-2 text-sm">Cons</p>
+                        <p className="font-medium text-destructive mb-2 text-base">Cons</p>
                         <ul className="space-y-1.5">
                           {alt.cons.map((con, j) => (
-                            <li key={j} className="flex items-start gap-2 text-sm">
+                            <li key={j} className="flex items-start gap-2 text-base">
                               <span className="text-destructive shrink-0">−</span>
                               <span>{con}</span>
                             </li>
@@ -135,7 +135,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
                         </ul>
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-3">
+                    <p className="text-base text-muted-foreground mt-3">
                       <span className="font-medium">Best for:</span> {alt.bestFor}
                     </p>
                   </div>
@@ -147,23 +147,23 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           {/* Long-term Outlook */}
           {longTermOutlook && (
             <div>
-              <h4 className="font-semibold text-sm sm:text-base text-foreground mb-3">Long-term Outlook</h4>
+              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-3">Long-term Outlook</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div className="p-3 sm:p-4 rounded-lg bg-background border">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">6-Month</p>
-                  <p className="text-sm sm:text-base">{longTermOutlook.sixMonths}</p>
+                  <p className="text-base font-medium text-muted-foreground mb-1">6-Month</p>
+                  <p className="text-base sm:text-lg">{longTermOutlook.sixMonths}</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-lg bg-background border">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">12-Month</p>
-                  <p className="text-sm sm:text-base">{longTermOutlook.twelveMonths}</p>
+                  <p className="text-base font-medium text-muted-foreground mb-1">12-Month</p>
+                  <p className="text-base sm:text-lg">{longTermOutlook.twelveMonths}</p>
                 </div>
               </div>
               {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Key Milestones</p>
+                  <p className="text-base font-medium text-muted-foreground mb-2">Key Milestones</p>
                   <ul className="space-y-2">
                     {longTermOutlook.keyMilestones.map((milestone, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm sm:text-base">
+                      <li key={i} className="flex items-start gap-2 text-base sm:text-lg">
                         <span className="text-primary font-bold shrink-0">{i + 1}.</span>
                         <span>{milestone}</span>
                       </li>
@@ -177,8 +177,8 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           {/* Competitor Insights */}
           {competitorInsights && (
             <div>
-              <h4 className="font-semibold text-sm sm:text-base text-foreground mb-2">Competitor Insights</h4>
-              <p className="text-sm sm:text-base leading-relaxed">{competitorInsights}</p>
+              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-2">Competitor Insights</h4>
+              <p className="text-base sm:text-lg leading-relaxed">{competitorInsights}</p>
             </div>
           )}
         </div>

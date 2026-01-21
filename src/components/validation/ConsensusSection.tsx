@@ -42,19 +42,19 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
               className="p-4 rounded-lg border border-green-500/30 bg-green-500/5"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
-                <h4 className="font-semibold text-sm sm:text-base text-foreground">{point.topic}</h4>
-                <span className="text-sm font-medium text-green-600 bg-green-500/20 px-2.5 py-1 rounded-full">
+                <h4 className="font-semibold text-base sm:text-lg text-foreground">{point.topic}</h4>
+                <span className="text-base font-medium text-green-600 bg-green-500/20 px-2.5 py-1 rounded-full">
                   {point.confidence}%
                 </span>
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{point.description}</p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{point.description}</p>
               
               {point.actionItems && point.actionItems.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-green-500/20">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Actions</p>
+                  <p className="text-base font-medium text-muted-foreground mb-2">Actions</p>
                   <ul className="space-y-2">
                     {point.actionItems.map((action, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm sm:text-base">
+                      <li key={i} className="flex items-start gap-2 text-base sm:text-lg">
                         <span className="text-green-500 shrink-0">→</span>
                         <span className="text-foreground">{action}</span>
                       </li>

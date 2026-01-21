@@ -52,8 +52,8 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
               key={index}
               className="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5"
             >
-              <h4 className="font-semibold text-sm sm:text-base text-foreground mb-2">{point.topic}</h4>
-              <p className="text-sm text-muted-foreground mb-3">
+              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-2">{point.topic}</h4>
+              <p className="text-base text-muted-foreground mb-3">
                 Review each perspective to make an informed decision:
               </p>
               
@@ -68,14 +68,14 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
                         className={`p-3 sm:p-4 rounded-lg border ${colorClass}`}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-bold uppercase tracking-wide">
+                          <span className="text-base font-bold uppercase tracking-wide">
                             {pos.modelName}
                           </span>
                         </div>
-                        <p className="text-sm sm:text-base font-medium text-foreground mb-1">
+                        <p className="text-base sm:text-lg font-medium text-foreground mb-1">
                           {pos.position}
                         </p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-base text-muted-foreground leading-relaxed">
                           {pos.reasoning}
                         </p>
                       </div>

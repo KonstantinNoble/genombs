@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.1</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.2</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -924,7 +924,7 @@ const PrivacyPolicy = () => {
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>AI Responses</strong></td>
-                    <td className="border border-border p-3">GPT, Gemini Pro, Gemini Flash responses, meta-evaluation</td>
+                    <td className="border border-border p-3">GPT-5 Mini, Gemini 2.5 Flash, Gemini 3 Pro, Claude Sonnet 4, Sonar Pro, Sonar Reasoning Pro responses, meta-evaluation</td>
                     <td className="border border-border p-3">Providing comprehensive analysis</td>
                   </tr>
                   <tr>
@@ -971,21 +971,33 @@ const PrivacyPolicy = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (via OpenRouter)</td>
+                    <td className="border border-border p-3"><strong>Lovable AI Gateway</strong></td>
+                    <td className="border border-border p-3">AI API routing</td>
+                    <td className="border border-border p-3">Validation prompts</td>
+                    <td className="border border-border p-3">EU (no transfer)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (via Lovable AI Gateway)</td>
                     <td className="border border-border p-3">AI validation analysis</td>
                     <td className="border border-border p-3">Validation prompts, preferences</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
                     <td className="border border-border p-3">AI validation, OAuth</td>
                     <td className="border border-border p-3">Validation prompts, OAuth data</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenRouter</strong></td>
-                    <td className="border border-border p-3">AI API gateway</td>
-                    <td className="border border-border p-3">Validation prompts</td>
+                    <td className="border border-border p-3"><strong>Anthropic</strong></td>
+                    <td className="border border-border p-3">AI validation analysis</td>
+                    <td className="border border-border p-3">Validation prompts, preferences</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Perplexity AI</strong></td>
+                    <td className="border border-border p-3">AI validation with web research</td>
+                    <td className="border border-border p-3">Validation prompts, preferences</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
@@ -1198,9 +1210,9 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               <strong>Berliner Beauftragte für Datenschutz und Informationsfreiheit</strong>
               <br />
-              Friedrichstr. 219
+              Alt-Moabit 59-61
               <br />
-              10969 Berlin, Germany
+              10555 Berlin, Germany
               <br />
               Email: mailbox@datenschutz-berlin.de
               <br />
@@ -1245,6 +1257,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.2 (January 21, 2026):</strong> Corrected Berlin Data Protection Authority address (Alt-Moabit 59-61). Updated Recipients table: removed OpenRouter, added Lovable AI Gateway, Anthropic, and Perplexity AI. Updated AI model names in data categories.</li>
               <li><strong>Version 5.1 (January 21, 2026):</strong> Removed obsolete database tables and edge functions (Business Tools Advisor, Ads Advisor, Firecrawl). Cleaned up version history to reflect current platform scope.</li>
               <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation.</li>
               <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>

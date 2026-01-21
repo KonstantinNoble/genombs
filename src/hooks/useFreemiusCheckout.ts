@@ -20,8 +20,8 @@ export const useFreemiusCheckout = () => {
     checkoutUrl.searchParams.set('user_email', userEmail);
     checkoutUrl.searchParams.set('readonly_user', 'true');
     
-    // In neuem Tab öffnen
-    window.open(checkoutUrl.toString(), '_blank');
+    // Im gleichen Tab öffnen (ersetzt Synoptas-Seite temporär)
+    window.location.href = checkoutUrl.toString();
   }, [user]);
 
   // Behalte isLoaded und isLoading für Rückwärtskompatibilität

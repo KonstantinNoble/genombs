@@ -14,96 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ads_advisor_history: {
-        Row: {
-          advertising_budget: string
-          advertising_goals: string
-          analysis_mode: string | null
-          competitor_ads: string | null
-          competitor_strategy: string | null
-          created_at: string
-          current_channels: string | null
-          geographic_target: string | null
-          id: string
-          industry: string | null
-          result: Json
-          specific_requirements: string | null
-          target_audience: string
-          user_id: string
-          website_url: string | null
-        }
-        Insert: {
-          advertising_budget: string
-          advertising_goals: string
-          analysis_mode?: string | null
-          competitor_ads?: string | null
-          competitor_strategy?: string | null
-          created_at?: string
-          current_channels?: string | null
-          geographic_target?: string | null
-          id?: string
-          industry?: string | null
-          result: Json
-          specific_requirements?: string | null
-          target_audience: string
-          user_id: string
-          website_url?: string | null
-        }
-        Update: {
-          advertising_budget?: string
-          advertising_goals?: string
-          analysis_mode?: string | null
-          competitor_ads?: string | null
-          competitor_strategy?: string | null
-          created_at?: string
-          current_channels?: string | null
-          geographic_target?: string | null
-          id?: string
-          industry?: string | null
-          result?: Json
-          specific_requirements?: string | null
-          target_audience?: string
-          user_id?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
-      business_tools_history: {
-        Row: {
-          analysis_mode: string | null
-          budget_range: string
-          business_goals: string
-          created_at: string
-          id: string
-          industry: string
-          result: Json
-          team_size: string
-          user_id: string
-        }
-        Insert: {
-          analysis_mode?: string | null
-          budget_range: string
-          business_goals: string
-          created_at?: string
-          id?: string
-          industry: string
-          result: Json
-          team_size: string
-          user_id: string
-        }
-        Update: {
-          analysis_mode?: string | null
-          budget_range?: string
-          business_goals?: string
-          created_at?: string
-          id?: string
-          industry?: string
-          result?: Json
-          team_size?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       deleted_accounts: {
         Row: {
           deleted_at: string | null
@@ -423,102 +333,51 @@ export type Database = {
       }
       user_credits: {
         Row: {
-          ads_deep_analysis_count: number | null
-          ads_deep_analysis_window_start: string | null
-          ads_standard_analysis_count: number | null
-          ads_standard_analysis_window_start: string | null
-          analysis_count: number | null
-          analysis_window_start: string | null
           auto_renew: boolean | null
-          autopilot_generation_reset_date: string | null
           created_at: string
-          daily_autopilot_generations: number | null
-          deep_analysis_count: number | null
-          deep_analysis_window_start: string | null
           freemius_customer_id: string | null
           freemius_subscription_id: string | null
           id: string
           is_premium: boolean
-          last_analysis_at: string | null
           last_password_reset_at: string | null
           last_reset_date: string
-          market_research_count: number | null
-          market_research_window_start: string | null
           next_payment_date: string | null
           premium_since: string | null
-          standard_analysis_count: number | null
-          standard_analysis_window_start: string | null
           subscription_end_date: string | null
-          tools_count: number | null
-          tools_window_start: string | null
           updated_at: string
           user_id: string
           validation_count: number | null
           validation_window_start: string | null
         }
         Insert: {
-          ads_deep_analysis_count?: number | null
-          ads_deep_analysis_window_start?: string | null
-          ads_standard_analysis_count?: number | null
-          ads_standard_analysis_window_start?: string | null
-          analysis_count?: number | null
-          analysis_window_start?: string | null
           auto_renew?: boolean | null
-          autopilot_generation_reset_date?: string | null
           created_at?: string
-          daily_autopilot_generations?: number | null
-          deep_analysis_count?: number | null
-          deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
           is_premium?: boolean
-          last_analysis_at?: string | null
           last_password_reset_at?: string | null
           last_reset_date?: string
-          market_research_count?: number | null
-          market_research_window_start?: string | null
           next_payment_date?: string | null
           premium_since?: string | null
-          standard_analysis_count?: number | null
-          standard_analysis_window_start?: string | null
           subscription_end_date?: string | null
-          tools_count?: number | null
-          tools_window_start?: string | null
           updated_at?: string
           user_id: string
           validation_count?: number | null
           validation_window_start?: string | null
         }
         Update: {
-          ads_deep_analysis_count?: number | null
-          ads_deep_analysis_window_start?: string | null
-          ads_standard_analysis_count?: number | null
-          ads_standard_analysis_window_start?: string | null
-          analysis_count?: number | null
-          analysis_window_start?: string | null
           auto_renew?: boolean | null
-          autopilot_generation_reset_date?: string | null
           created_at?: string
-          daily_autopilot_generations?: number | null
-          deep_analysis_count?: number | null
-          deep_analysis_window_start?: string | null
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
           is_premium?: boolean
-          last_analysis_at?: string | null
           last_password_reset_at?: string | null
           last_reset_date?: string
-          market_research_count?: number | null
-          market_research_window_start?: string | null
           next_payment_date?: string | null
           premium_since?: string | null
-          standard_analysis_count?: number | null
-          standard_analysis_window_start?: string | null
           subscription_end_date?: string | null
-          tools_count?: number | null
-          tools_window_start?: string | null
           updated_at?: string
           user_id?: string
           validation_count?: number | null

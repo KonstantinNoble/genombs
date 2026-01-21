@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { DissentPoint } from "@/hooks/useMultiAIValidation";
 
 const MODEL_COLORS: Record<string, string> = {
@@ -17,90 +16,59 @@ interface DissentSectionProps {
 }
 
 export function DissentSection({ points }: DissentSectionProps) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
-
   if (points.length === 0) {
     return null;
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 mb-2">
-        <div className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-        <h3 className="text-sm sm:text-base font-bold text-foreground">
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="h-3 w-3 rounded-full bg-amber-500" />
+        <h3 className="text-base sm:text-lg font-bold text-foreground">
           Points of Dissent
         </h3>
-        <span className="text-xs text-muted-foreground">
-          ({points.length} topics)
-        </span>
+        <span className="text-sm text-muted-foreground">({points.length})</span>
       </div>
 
-      <div className="space-y-1.5">
-        {points.map((point, index) => {
-          const isExpanded = expandedIndex === index;
-          
-          return (
-            <div
-              key={index}
-              className="rounded-lg border border-amber-500/30 bg-amber-500/5 overflow-hidden"
-            >
-              <button
-                onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                className="w-full flex items-center justify-between p-2.5 sm:p-3 text-left hover:bg-amber-500/10 transition-colors"
-              >
-                <div className="flex-1 min-w-0 pr-2">
-                  <h4 className="font-semibold text-xs sm:text-sm text-foreground truncate">{point.topic}</h4>
-                  {!isExpanded && (
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {point.positions?.length || 0} different perspectives
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-xs font-medium text-amber-600 bg-amber-500/20 px-1.5 py-0.5 rounded-full">
-                    {point.positions?.length || 0} views
-                  </span>
-                  <span className="text-muted-foreground text-xs w-4 text-center">
-                    {isExpanded ? "−" : "+"}
-                  </span>
-                </div>
-              </button>
-
-              {isExpanded && point.positions && (
-                <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3 border-t border-amber-500/20">
-                  <p className="text-xs text-muted-foreground mt-2 mb-2">
-                    Review each perspective to make an informed decision:
-                  </p>
+      <div className="space-y-3">
+        {points.map((point, index) => (
+          <div
+            key={index}
+            className="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5"
+          >
+            <h4 className="font-semibold text-sm sm:text-base text-foreground mb-2">{point.topic}</h4>
+            <p className="text-sm text-muted-foreground mb-3">
+              Review each perspective to make an informed decision:
+            </p>
+            
+            {point.positions && (
+              <div className="space-y-3">
+                {point.positions.map((pos, pIndex) => {
+                  const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-muted-foreground';
                   
-                  <div className="space-y-2">
-                    {point.positions.map((pos, pIndex) => {
-                      const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted border-border text-muted-foreground';
-                      
-                      return (
-                        <div
-                          key={pIndex}
-                          className={`p-2.5 rounded-lg border ${colorClass}`}
-                        >
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-xs font-bold uppercase tracking-wide">
-                              {pos.modelName}
-                            </span>
-                          </div>
-                          <p className="text-xs sm:text-sm font-medium text-foreground">
-                            {pos.position}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {pos.reasoning}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                  return (
+                    <div
+                      key={pIndex}
+                      className={`p-3 sm:p-4 rounded-lg border ${colorClass}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold uppercase tracking-wide">
+                          {pos.modelName}
+                        </span>
+                      </div>
+                      <p className="text-sm sm:text-base font-medium text-foreground mb-1">
+                        {pos.position}
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {pos.reasoning}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

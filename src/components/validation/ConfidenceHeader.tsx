@@ -39,24 +39,24 @@ export function ConfidenceHeader({
   };
 
   return (
-    <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+    <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
         <div className="flex-1 order-2 sm:order-1 min-w-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">{title}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed line-clamp-2">{description}</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
-        <div className="flex sm:flex-col items-center sm:items-end gap-1 order-1 sm:order-2 shrink-0 bg-background/50 rounded-lg px-3 py-2">
-          <span className={cn("text-3xl sm:text-4xl font-bold", getConfidenceColor(confidence))}>
+        <div className="flex sm:flex-col items-center sm:items-end gap-1 order-1 sm:order-2 shrink-0 bg-background/50 rounded-lg px-4 py-3">
+          <span className={cn("text-4xl sm:text-5xl font-bold", getConfidenceColor(confidence))}>
             {confidence}%
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             {getConfidenceLabel(confidence)}
           </span>
         </div>
       </div>
 
-      {/* Compact Confidence Bar */}
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
+      {/* Confidence Bar */}
+      <div className="h-3 bg-muted rounded-full overflow-hidden">
         <div
           className={cn(
             "h-full rounded-full transition-all duration-1000 ease-out",
@@ -68,18 +68,18 @@ export function ConfidenceHeader({
 
       {/* Collapsible Reasoning */}
       {reasoning && (
-        <div className="mt-3">
+        <div className="mt-4">
           <button
             onClick={() => setShowReasoning(!showReasoning)}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-muted/50"
           >
-            <ChevronDown className={cn("h-3 w-3 transition-transform", showReasoning && "rotate-180")} />
+            <ChevronDown className={cn("h-5 w-5 transition-transform", showReasoning && "rotate-180")} />
             {showReasoning ? "Hide reasoning" : "Show reasoning"}
           </button>
           
           {showReasoning && (
-            <div className="mt-2 bg-muted/30 rounded-lg p-3 border-l-2 border-primary/50 animate-fade-in">
-              <p className="text-xs sm:text-sm text-muted-foreground italic">{reasoning}</p>
+            <div className="mt-3 bg-muted/30 rounded-lg p-4 border-l-2 border-primary/50 animate-fade-in">
+              <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed">{reasoning}</p>
             </div>
           )}
         </div>

@@ -36,63 +36,67 @@ export function MajoritySection({ points, defaultOpen = true }: MajoritySectionP
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-blue-500/10 hover:bg-blue-500/15 rounded-lg transition-colors border border-blue-500/20">
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-blue-600" />
-          <span className="font-semibold text-blue-700 text-sm">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-3">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-blue-500/10 hover:bg-blue-500/15 rounded-xl transition-colors border border-blue-500/20">
+        <div className="flex items-center gap-3">
+          <Users className="h-6 w-6 text-blue-600" />
+          <span className="font-bold text-blue-700 text-lg">
             Majority Agreement
           </span>
-          <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-700 border-0">
+          <Badge variant="secondary" className="text-sm bg-blue-500/20 text-blue-700 border-0 px-3 py-1">
             {points.length}
           </Badge>
         </div>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-blue-600 transition-transform",
-            isOpen && "rotate-180",
-          )}
-        />
+        <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center hover:bg-blue-500/30 transition-colors">
+          <ChevronDown
+            className={cn(
+              "h-6 w-6 text-blue-600 transition-transform",
+              isOpen && "rotate-180",
+            )}
+          />
+        </div>
       </CollapsibleTrigger>
 
       <CollapsibleContent className="pt-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border border-blue-500/20 rounded-lg overflow-hidden"
+              className="bg-card border border-blue-500/20 rounded-xl overflow-hidden"
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-3 flex items-center justify-between hover:bg-blue-500/5 transition-colors text-left"
+                className="w-full p-4 flex items-center justify-between hover:bg-blue-500/5 transition-colors text-left"
               >
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="font-medium text-sm truncate">{point.topic}</span>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="font-semibold text-base truncate">{point.topic}</span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge className={cn("text-xs border", getConfidenceColor(point.confidence))}>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Badge className={cn("text-sm border px-3 py-1", getConfidenceColor(point.confidence))}>
                     {point.confidence}%
                   </Badge>
-                  <ChevronDown
-                    className={cn(
-                      "h-3 w-3 text-muted-foreground transition-transform",
-                      expandedCards.has(index) && "rotate-180",
-                    )}
-                  />
+                  <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-muted-foreground transition-transform",
+                        expandedCards.has(index) && "rotate-180",
+                      )}
+                    />
+                  </div>
                 </div>
               </button>
 
               {expandedCards.has(index) && (
-                <div className="px-3 pb-3 space-y-2 border-t border-blue-500/20 pt-2 animate-fade-in">
-                  <p className="text-xs text-muted-foreground leading-relaxed">{point.description}</p>
+                <div className="px-4 pb-4 space-y-3 border-t border-blue-500/20 pt-3 animate-fade-in">
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{point.description}</p>
                   {point.supportingModels && point.supportingModels.length > 0 && (
-                    <div className="flex flex-wrap gap-1 items-center">
-                      <span className="text-xs text-muted-foreground mr-1">Agreed by:</span>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <span className="text-sm text-muted-foreground">Agreed by:</span>
                       {point.supportingModels.map((model, modelIndex) => (
                         <Badge
                           key={modelIndex}
                           variant="outline"
-                          className="text-[10px] px-1.5 py-0 bg-blue-500/10 border-blue-500/30 text-blue-600"
+                          className="text-xs px-2 py-1 bg-blue-500/10 border-blue-500/30 text-blue-600"
                         >
                           {model}
                         </Badge>

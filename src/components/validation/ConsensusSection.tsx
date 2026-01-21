@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import type { ConsensusPoint } from "@/hooks/useMultiAIValidation";
 
 interface ConsensusSectionProps {
@@ -14,62 +13,64 @@ export function ConsensusSection({ points }: ConsensusSectionProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="h-4 w-4 rounded-full bg-green-500" />
-        <h3 className="text-xl font-bold text-foreground">
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+        <h3 className="text-sm sm:text-base font-bold text-foreground">
           Full Consensus
         </h3>
-        <span className="text-base text-muted-foreground">
-          (All 3 models agree)
+        <span className="text-xs text-muted-foreground">
+          ({points.length} points)
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-1.5">
         {points.map((point, index) => {
           const isExpanded = expandedIndex === index;
           
           return (
             <div
               key={index}
-              className="rounded-xl border border-green-500/30 bg-green-500/5 overflow-hidden"
+              className="rounded-lg border border-green-500/30 bg-green-500/5 overflow-hidden"
             >
               <button
                 onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-green-500/10 transition-colors"
+                className="w-full flex items-center justify-between p-2.5 sm:p-3 text-left hover:bg-green-500/10 transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <div>
-                    <h4 className="font-bold text-lg text-foreground">{point.topic}</h4>
-                    <p className="text-base text-muted-foreground line-clamp-1">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h4 className="font-semibold text-xs sm:text-sm text-foreground truncate">{point.topic}</h4>
+                  {!isExpanded && (
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
                       {point.description}
                     </p>
-                  </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-green-600 bg-green-500/20 px-3 py-1.5 rounded-full">
-                    {point.confidence}% confident
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs font-medium text-green-600 bg-green-500/20 px-1.5 py-0.5 rounded-full">
+                    {point.confidence}%
                   </span>
-                  <span className="text-muted-foreground text-sm">
+                  <span className="text-muted-foreground text-xs w-4 text-center">
                     {isExpanded ? "−" : "+"}
                   </span>
                 </div>
               </button>
 
               {isExpanded && (
-                <div className="px-5 pb-5 pt-0 border-t border-green-500/20">
-                  <p className="text-base text-foreground mb-4">{point.description}</p>
+                <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3 border-t border-green-500/20">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {point.description}
+                  </p>
                   
-                  {point.actionItems.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-bold text-muted-foreground uppercase tracking-wide">
-                        Recommended Actions
+                  {point.actionItems && point.actionItems.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Actions
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="space-y-1">
                         {point.actionItems.map((action, i) => (
-                          <li key={i} className="flex items-start gap-3 text-base">
-                            <span className="text-green-500 mt-1">→</span>
-                            <span>{action}</span>
+                          <li key={i} className="flex items-start gap-2 text-xs sm:text-sm">
+                            <span className="text-green-500 shrink-0">→</span>
+                            <span className="text-foreground">{action}</span>
                           </li>
                         ))}
                       </ul>

@@ -4,7 +4,7 @@ import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
 import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
-import { StartExperimentButton } from "@/components/experiment/StartExperimentButton";
+
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -111,12 +111,6 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             </button>
           )}
 
-          {/* Start Experiment Button */}
-          {validationId && onStartExperiment && (
-            <div className="mt-3 pt-3 border-t border-primary/20">
-              <StartExperimentButton onClick={onStartExperiment} />
-            </div>
-          )}
         </div>
       )}
 

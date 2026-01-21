@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 
 interface ConfidenceHeaderProps {
   title: string;
@@ -11,8 +13,10 @@ export function ConfidenceHeader({
   title,
   description,
   confidence,
-  reasoning
+  reasoning,
 }: ConfidenceHeaderProps) {
+  const [showReasoning, setShowReasoning] = useState(false);
+
   const getConfidenceColor = (value: number) => {
     if (value >= 80) return "text-green-500";
     if (value >= 60) return "text-yellow-500";
@@ -28,50 +32,57 @@ export function ConfidenceHeader({
   };
 
   const getConfidenceLabel = (value: number) => {
-    if (value >= 80) return "High Confidence";
-    if (value >= 60) return "Good Confidence";
+    if (value >= 80) return "High";
+    if (value >= 60) return "Good";
     if (value >= 40) return "Moderate";
-    return "Low Confidence";
+    return "Low";
   };
 
   return (
-    <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-        <div className="flex-1 order-2 sm:order-1">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
+    <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+        <div className="flex-1 order-2 sm:order-1 min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">{title}</h2>
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed line-clamp-2">{description}</p>
         </div>
-        <div className="flex sm:flex-col items-center sm:items-end gap-2 order-1 sm:order-2 shrink-0">
-          <span className={cn("text-4xl sm:text-5xl font-bold", getConfidenceColor(confidence))}>
+        <div className="flex sm:flex-col items-center sm:items-end gap-1 order-1 sm:order-2 shrink-0 bg-background/50 rounded-lg px-3 py-2">
+          <span className={cn("text-3xl sm:text-4xl font-bold", getConfidenceColor(confidence))}>
             {confidence}%
           </span>
-          <span className="text-base text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {getConfidenceLabel(confidence)}
           </span>
         </div>
       </div>
 
-      {/* Confidence Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-base text-muted-foreground">
-          <span>AI Consensus Level</span>
-          <span>{confidence}%</span>
-        </div>
-        <div className="h-3 bg-muted rounded-full overflow-hidden">
-          <div
-            className={cn(
-              "h-full rounded-full transition-all duration-1000 ease-out",
-              getConfidenceBarColor(confidence)
-            )}
-            style={{ width: `${confidence}%` }}
-          />
-        </div>
+      {/* Compact Confidence Bar */}
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-1000 ease-out",
+            getConfidenceBarColor(confidence)
+          )}
+          style={{ width: `${confidence}%` }}
+        />
       </div>
 
+      {/* Collapsible Reasoning */}
       {reasoning && (
-        <p className="mt-4 text-base sm:text-lg text-muted-foreground italic border-t border-primary/10 pt-4">
-          {reasoning}
-        </p>
+        <div className="mt-3">
+          <button
+            onClick={() => setShowReasoning(!showReasoning)}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronDown className={cn("h-3 w-3 transition-transform", showReasoning && "rotate-180")} />
+            {showReasoning ? "Hide reasoning" : "Show reasoning"}
+          </button>
+          
+          {showReasoning && (
+            <div className="mt-2 bg-muted/30 rounded-lg p-3 border-l-2 border-primary/50 animate-fade-in">
+              <p className="text-xs sm:text-sm text-muted-foreground italic">{reasoning}</p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

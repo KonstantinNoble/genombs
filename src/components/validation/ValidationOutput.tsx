@@ -54,16 +54,16 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
   const hasMoreActions = (finalRecommendation.topActions?.length || 0) > 3;
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {/* Compact Processing Info */}
-      <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-        <span className="px-2 py-1 rounded-full bg-muted/50">
+    <div className="space-y-5 animate-fade-in">
+      {/* Processing Info */}
+      <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+        <span className="px-3 py-1.5 rounded-full bg-muted/50">
           {(processingTimeMs / 1000).toFixed(1)}s
         </span>
         <span className="hidden sm:inline">·</span>
         <span className="text-center">{modelSummary}</span>
         {isPremium && (
-          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs px-2 py-0.5">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm px-3 py-1">
             Premium
           </Badge>
         )}
@@ -77,26 +77,26 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
         reasoning={synthesisReasoning}
       />
 
-      {/* Compact Top Actions */}
+      {/* Top Actions */}
       {hasTopActions && (
-        <div className="p-3 sm:p-4 rounded-lg bg-primary/5 border border-primary/20">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />
+        <div className="p-4 sm:p-5 rounded-xl bg-primary/5 border border-primary/20">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
               Top Priority Actions
             </h3>
             {isPremium && (
-              <span className="text-xs text-muted-foreground">7 actions</span>
+              <span className="text-sm text-muted-foreground">7 actions</span>
             )}
           </div>
           
-          <ol className="space-y-2">
+          <ol className="space-y-3">
             {visibleActions!.map((action, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+              <li key={i} className="flex items-start gap-3 text-base">
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
                   {i + 1}
                 </span>
-                <span className="text-foreground leading-relaxed">{action}</span>
+                <span className="text-foreground leading-relaxed pt-0.5">{action}</span>
               </li>
             ))}
           </ol>
@@ -104,43 +104,42 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           {hasMoreActions && !actionsExpanded && (
             <button
               onClick={() => setActionsExpanded(true)}
-              className="mt-2 text-xs text-primary hover:text-primary/80 flex items-center gap-1"
+              className="mt-3 text-sm text-primary hover:text-primary/80 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors"
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-5 w-5" />
               Show {(finalRecommendation.topActions?.length || 0) - 3} more actions
             </button>
           )}
-
         </div>
       )}
 
       {/* Premium Insights - Tabbed Interface */}
       {hasPremiumInsights && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 sm:p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="font-semibold text-sm text-foreground">Premium Insights</span>
-            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="font-bold text-lg text-foreground">Premium Insights</span>
+            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
               Premium
             </Badge>
           </div>
           
           <Tabs defaultValue="strategy" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 h-8 mb-3">
+            <TabsList className="w-full grid grid-cols-3 h-10 mb-4">
               {strategicAlternatives && strategicAlternatives.length > 0 && (
-                <TabsTrigger value="strategy" className="text-xs data-[state=active]:bg-amber-500/20">
-                  <Target className="h-3 w-3 mr-1 hidden sm:inline" />
+                <TabsTrigger value="strategy" className="text-sm data-[state=active]:bg-amber-500/20">
+                  <Target className="h-4 w-4 mr-2 hidden sm:inline" />
                   Strategy
                 </TabsTrigger>
               )}
               {longTermOutlook && (
-                <TabsTrigger value="outlook" className="text-xs data-[state=active]:bg-amber-500/20">
-                  <TrendingUp className="h-3 w-3 mr-1 hidden sm:inline" />
+                <TabsTrigger value="outlook" className="text-sm data-[state=active]:bg-amber-500/20">
+                  <TrendingUp className="h-4 w-4 mr-2 hidden sm:inline" />
                   Long-term
                 </TabsTrigger>
               )}
               {competitorInsights && (
-                <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-amber-500/20">
-                  <Users className="h-3 w-3 mr-1 hidden sm:inline" />
+                <TabsTrigger value="competitors" className="text-sm data-[state=active]:bg-amber-500/20">
+                  <Users className="h-4 w-4 mr-2 hidden sm:inline" />
                   Competition
                 </TabsTrigger>
               )}
@@ -149,36 +148,36 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             {/* Strategic Alternatives */}
             {strategicAlternatives && strategicAlternatives.length > 0 && (
               <TabsContent value="strategy" className="mt-0">
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {strategicAlternatives.map((alt, i) => (
-                    <div key={i} className="p-3 rounded-lg bg-background border">
-                      <h5 className="font-medium text-sm mb-2">{alt.scenario}</h5>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div key={i} className="p-4 rounded-xl bg-background border">
+                      <h5 className="font-semibold text-base mb-3">{alt.scenario}</h5>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                          <p className="font-medium text-primary mb-1">Pros</p>
-                          <ul className="space-y-0.5">
+                          <p className="font-semibold text-primary mb-2">Pros</p>
+                          <ul className="space-y-1">
                             {alt.pros.slice(0, 3).map((pro, j) => (
-                              <li key={j} className="flex items-start gap-1">
+                              <li key={j} className="flex items-start gap-2">
                                 <span className="text-primary shrink-0">+</span>
-                                <span className="text-muted-foreground line-clamp-2">{pro}</span>
+                                <span className="text-muted-foreground">{pro}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                         <div>
-                          <p className="font-medium text-destructive mb-1">Cons</p>
-                          <ul className="space-y-0.5">
+                          <p className="font-semibold text-destructive mb-2">Cons</p>
+                          <ul className="space-y-1">
                             {alt.cons.slice(0, 3).map((con, j) => (
-                              <li key={j} className="flex items-start gap-1">
+                              <li key={j} className="flex items-start gap-2">
                                 <span className="text-destructive shrink-0">−</span>
-                                <span className="text-muted-foreground line-clamp-2">{con}</span>
+                                <span className="text-muted-foreground">{con}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        <span className="font-medium">Best for:</span> {alt.bestFor}
+                      <p className="text-sm text-muted-foreground mt-3">
+                        <span className="font-semibold">Best for:</span> {alt.bestFor}
                       </p>
                     </div>
                   ))}
@@ -189,23 +188,23 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             {/* Long-term Outlook */}
             {longTermOutlook && (
               <TabsContent value="outlook" className="mt-0">
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <div className="p-2 rounded-lg bg-background border">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">6-Month</p>
-                    <p className="text-xs leading-relaxed">{longTermOutlook.sixMonths}</p>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="p-3 rounded-xl bg-background border">
+                    <p className="text-sm font-semibold text-muted-foreground mb-2">6-Month</p>
+                    <p className="text-sm leading-relaxed">{longTermOutlook.sixMonths}</p>
                   </div>
-                  <div className="p-2 rounded-lg bg-background border">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">12-Month</p>
-                    <p className="text-xs leading-relaxed">{longTermOutlook.twelveMonths}</p>
+                  <div className="p-3 rounded-xl bg-background border">
+                    <p className="text-sm font-semibold text-muted-foreground mb-2">12-Month</p>
+                    <p className="text-sm leading-relaxed">{longTermOutlook.twelveMonths}</p>
                   </div>
                 </div>
                 {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
-                  <div className="p-2 rounded-lg bg-background border">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Key Milestones</p>
-                    <ul className="space-y-1">
+                  <div className="p-3 rounded-xl bg-background border">
+                    <p className="text-sm font-semibold text-muted-foreground mb-2">Key Milestones</p>
+                    <ul className="space-y-2">
                       {longTermOutlook.keyMilestones.slice(0, 4).map((milestone, i) => (
-                        <li key={i} className="flex items-start gap-1 text-xs">
-                          <span className="text-primary font-medium shrink-0">{i + 1}.</span>
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          <span className="text-primary font-bold shrink-0">{i + 1}.</span>
                           <span className="text-muted-foreground">{milestone}</span>
                         </li>
                       ))}
@@ -218,8 +217,8 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             {/* Competitor Insights */}
             {competitorInsights && (
               <TabsContent value="competitors" className="mt-0">
-                <div className="p-3 rounded-lg bg-background border">
-                  <p className="text-xs leading-relaxed text-muted-foreground">{competitorInsights}</p>
+                <div className="p-4 rounded-xl bg-background border">
+                  <p className="text-sm leading-relaxed text-muted-foreground">{competitorInsights}</p>
                 </div>
               </TabsContent>
             )}
@@ -227,16 +226,16 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
         </div>
       )}
 
-      <Separator className="my-3" />
+      <Separator className="my-4" />
 
       {/* Analysis Points */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <ConsensusSection points={consensusPoints} />
         <MajoritySection points={majorityPoints} />
         <DissentSection points={dissentPoints} />
       </div>
 
-      <Separator className="my-3" />
+      <Separator className="my-4" />
 
       {/* Individual Model Details */}
       <ModelDetailCards

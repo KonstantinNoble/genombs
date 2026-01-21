@@ -51,46 +51,48 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-amber-500/10 hover:bg-amber-500/15 rounded-lg transition-colors border border-amber-500/20">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          <span className="font-semibold text-amber-700 text-sm">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-3">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-amber-500/10 hover:bg-amber-500/15 rounded-xl transition-colors border border-amber-500/20">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="h-6 w-6 text-amber-600" />
+          <span className="font-bold text-amber-700 text-lg">
             Points of Dissent
           </span>
-          <Badge variant="secondary" className="text-xs bg-amber-500/20 text-amber-700 border-0">
+          <Badge variant="secondary" className="text-sm bg-amber-500/20 text-amber-700 border-0 px-3 py-1">
             {points.length}
           </Badge>
         </div>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-amber-600 transition-transform",
-            isOpen && "rotate-180",
-          )}
-        />
+        <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center hover:bg-amber-500/30 transition-colors">
+          <ChevronDown
+            className={cn(
+              "h-6 w-6 text-amber-600 transition-transform",
+              isOpen && "rotate-180",
+            )}
+          />
+        </div>
       </CollapsibleTrigger>
 
       <CollapsibleContent className="pt-2">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border border-amber-500/20 rounded-lg overflow-hidden"
+              className="bg-card border border-amber-500/20 rounded-xl overflow-hidden"
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-3 flex items-center justify-between hover:bg-amber-500/5 transition-colors text-left"
+                className="w-full p-4 flex items-center justify-between hover:bg-amber-500/5 transition-colors text-left"
               >
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="font-medium text-sm">{point.topic}</span>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="font-semibold text-base">{point.topic}</span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
                   <div className="flex gap-1">
                     {point.positions?.slice(0, 3).map((pos, posIndex) => (
                       <Badge
                         key={posIndex}
                         className={cn(
-                          "text-[10px] px-1.5 py-0 border",
+                          "text-xs px-2 py-1 border",
                           MODEL_BADGE_COLORS[pos.modelName] || "bg-muted text-muted-foreground border-border"
                         )}
                       >
@@ -98,32 +100,34 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
                       </Badge>
                     ))}
                   </div>
-                  <ChevronDown
-                    className={cn(
-                      "h-3 w-3 text-muted-foreground transition-transform",
-                      expandedCards.has(index) && "rotate-180",
-                    )}
-                  />
+                  <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-muted-foreground transition-transform",
+                        expandedCards.has(index) && "rotate-180",
+                      )}
+                    />
+                  </div>
                 </div>
               </button>
 
               {expandedCards.has(index) && point.positions && (
-                <div className="px-3 pb-3 space-y-2 border-t border-amber-500/20 pt-2 animate-fade-in">
+                <div className="px-4 pb-4 space-y-3 border-t border-amber-500/20 pt-3 animate-fade-in">
                   {point.positions.map((pos, posIndex) => {
                     const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted/50 border-border text-muted-foreground';
                     
                     return (
                       <div
                         key={posIndex}
-                        className={cn("p-2 rounded-md border", colorClass)}
+                        className={cn("p-3 rounded-lg border", colorClass)}
                       >
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs px-2 py-1">
                             {pos.modelName}
                           </Badge>
-                          <span className="text-xs font-medium text-foreground">{pos.position}</span>
+                          <span className="text-sm font-semibold text-foreground">{pos.position}</span>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{pos.reasoning}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{pos.reasoning}</p>
                       </div>
                     );
                   })}

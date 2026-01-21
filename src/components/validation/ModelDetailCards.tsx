@@ -193,7 +193,7 @@ export function ModelDetailCards({
                 key={modelKey} 
                 value={modelKey}
                 className={cn(
-                  "text-sm sm:text-base py-2.5 px-2 font-medium transition-all",
+                  "text-base py-3 px-3 font-medium transition-all",
                   "data-[state=active]:shadow-md",
                   hasError && "opacity-60",
                   // Farbige Tabs basierend auf Model
@@ -215,7 +215,7 @@ export function ModelDetailCards({
                 )}
               >
                 <span className="truncate">{modelConfig?.name || modelKey}</span>
-                {hasError && " ⚠"}
+                {hasError && " (Error)"}
               </TabsTrigger>
             );
           })}
@@ -243,13 +243,13 @@ export function ModelDetailCards({
 
       {/* Citations */}
       {citations && citations.length > 0 && (
-        <div className="mt-4 p-4 rounded-lg border border-cyan-500/30 bg-cyan-500/5">
-          <h4 className="font-semibold text-base sm:text-lg text-cyan-600 mb-3">
+        <div className="mt-5 p-5 rounded-lg border border-cyan-500/30 bg-cyan-500/5">
+          <h4 className="font-semibold text-lg sm:text-xl text-cyan-600 mb-4">
             Web Sources
           </h4>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {citations.slice(0, 5).map((citation, i) => (
-              <li key={i} className="flex items-start gap-2 text-base sm:text-lg">
+              <li key={i} className="flex items-start gap-3 text-base sm:text-lg">
                 <span className="text-cyan-600 shrink-0">[{i + 1}]</span>
                 <a 
                   href={citation} 

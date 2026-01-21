@@ -9,19 +9,19 @@ const WhySynoptas = () => {
   const { ref: footerRef, isVisible: footerVisible } = useScrollReveal();
 
   const chatGptPoints = [
-    { title: "You get one answer", detail: "Sounds confident, but you have no way to know if it's missing something." },
-    { title: "Ask again, get a different response", detail: "The same prompt can give you contradicting advice." },
-    { title: "Generic suggestions", detail: "It doesn't know your specific situation or industry." },
-    { title: "No structure", detail: "Walls of text, not actionable steps." },
-    { title: "Starts fresh every time", detail: "No memory of your previous questions or context." },
+    { title: "One answer. Take it or leave it.", detail: "Sounds confident, but you can't verify if something's missing." },
+    { title: "Ask twice, get two different answers", detail: "Same question, different take. Which one's right?" },
+    { title: "Generic advice that could apply to anyone", detail: "Technically correct. Not really helpful for your situation." },
+    { title: "Walls of text, no clear actions", detail: "You wanted direction. You got an essay." },
+    { title: "No memory, no context", detail: "Every conversation starts from zero." },
   ];
 
   const synoptasPoints = [
-    { title: "Three models, not one", detail: "GPT-5, Gemini Pro, and Gemini Flash each weigh in." },
-    { title: "See where they agree", detail: "When all three say the same thing, that's a strong signal." },
-    { title: "See where they don't", detail: "Disagreement often reveals risks you hadn't considered." },
-    { title: "Adjust to your style", detail: "Risk tolerance and creativity sliders shape the output." },
-    { title: "Clear next steps", detail: "Actual recommendations you can act on, not just ideas." },
+    { title: "Three models thinking independently", detail: "GPT-5, Gemini Pro, and Flash – each gives their own take." },
+    { title: "Spot the consensus", detail: "When all three agree, that's worth paying attention to." },
+    { title: "Spot the disagreements", detail: "Where they differ often shows risks you'd miss otherwise." },
+    { title: "Tune it to how you think", detail: "Sliders for risk tolerance and creativity. Your call." },
+    { title: "Premium: the complete picture", detail: "Competitor analysis, 6-month outlook, backup strategies." },
   ];
 
   return (

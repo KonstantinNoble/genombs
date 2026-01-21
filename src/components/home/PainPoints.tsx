@@ -24,10 +24,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "ChatGPT said one thing, but is it actually right?", detail: "You got an answer, but you have no idea if it's missing something important." },
-    { title: "You tried asking again and got a different answer", detail: "Same question, different response. Which one should you trust?" },
-    { title: "The advice sounds good but feels generic", detail: "It's not wrong exactly, but it doesn't feel like it's really for your situation." },
-    { title: "You're about to make a big decision and want to be sure", detail: "This matters too much to rely on just one opinion." },
+    { title: "ChatGPT gave you an answer. But is it right?", detail: "Sounds confident. But how do you know nothing important is missing?" },
+    { title: "Asked again. Got something different.", detail: "Same question, new answer. Now you're even less sure." },
+    { title: "The advice feels... fine. Just fine.", detail: "Not wrong, exactly. But not really tailored to your situation either." },
+    { title: "This decision actually matters.", detail: "Too important to just go with one AI's take and hope for the best." },
   ];
 
   return (

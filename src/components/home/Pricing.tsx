@@ -72,12 +72,12 @@ const Pricing = ({ compact = false }: PricingProps) => {
             ref={headerRef}
             className={`text-center space-y-4 mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           >
-            <Badge variant="outline" className="mb-2 rounded-full">Simple Pricing</Badge>
+            <Badge variant="outline" className="mb-2 rounded-full">Straightforward Pricing</Badge>
             <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-              Choose Your Plan
+              Pick what works for you
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start free with no credit card. Upgrade when you need more validations and deeper insights.
+              Try it free. No credit card, no commitment. Upgrade when you want more depth.
             </p>
           </div>
 
@@ -94,11 +94,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li>• 2 validations per day</li>
-                <li>• 3 AI models (GPT-5 Mini, Gemini Pro, Flash)</li>
-                <li>• Consensus & dissent analysis</li>
-                <li>• 2-3 recommendations per model</li>
-                <li>• 3 action items</li>
+                <li>• 2 checks per day – enough to try it out</li>
+                <li>• All 3 models (GPT-5, Gemini Pro, Flash)</li>
+                <li>• See where they agree and disagree</li>
+                <li>• Quick summaries from each model</li>
+                <li>• 3 action items to get you started</li>
               </ul>
               
               <Button 
@@ -126,13 +126,13 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li className="text-foreground font-medium">• 20 validations per day</li>
-                <li className="text-foreground font-medium">• 4-5 recommendations per model</li>
-                <li className="text-foreground font-medium">• 5-7 action items</li>
-                <li>• Strategic alternatives section</li>
-                <li>• Competitor insights</li>
-                <li>• Long-term outlook (6-12 months)</li>
-                <li>• Full model responses</li>
+                <li className="text-foreground font-medium">• 20 checks per day – enough for real work</li>
+                <li className="text-foreground font-medium">• Detailed responses, not just summaries</li>
+                <li className="text-foreground font-medium">• 5-7 concrete action items</li>
+                <li>• What if Plan A fails? (Strategic alternatives)</li>
+                <li>• What are others doing? (Competitor insights)</li>
+                <li>• Where does this lead? (6-12 month outlook)</li>
+                <li>• Full reasoning from each model</li>
               </ul>
               
               <Button 

@@ -410,9 +410,9 @@ export default function ValidationPlatform() {
       />
       <Navbar />
       <div className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* History Sidebar - Collapsible on mobile */}
-          <aside className="w-full lg:w-72 xl:w-80 shrink-0 order-2 lg:order-1 space-y-3">
+          <aside className="w-full lg:w-80 xl:w-96 shrink-0 order-2 lg:order-1 space-y-4">
             <Card className="shadow-elegant border-primary/10">
               <CardHeader className="pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
                 <CardTitle className="text-lg sm:text-xl">Previous Analyses</CardTitle>

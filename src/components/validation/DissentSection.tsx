@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, AlertTriangle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -51,14 +51,13 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-3">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-amber-500/10 hover:bg-amber-500/15 rounded-xl transition-colors border border-amber-500/20">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="h-6 w-6 text-amber-600" />
-          <span className="font-bold text-amber-700 text-lg">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-amber-500/10 hover:bg-amber-500/15 rounded-xl transition-colors border border-amber-500/20">
+        <div className="flex items-center gap-4">
+          <span className="font-bold text-amber-700 text-lg sm:text-xl">
             Points of Dissent
           </span>
-          <Badge variant="secondary" className="text-sm bg-amber-500/20 text-amber-700 border-0 px-3 py-1">
+          <Badge variant="secondary" className="text-base bg-amber-500/20 text-amber-700 border-0 px-4 py-1.5">
             {points.length}
           </Badge>
         </div>
@@ -73,7 +72,7 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
       </CollapsibleTrigger>
 
       <CollapsibleContent className="pt-2">
-        <div className="space-y-3">
+        <div className="space-y-4">
           {points.map((point, index) => (
             <div
               key={index}
@@ -81,18 +80,18 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-4 flex items-center justify-between hover:bg-amber-500/5 transition-colors text-left"
+                className="w-full p-5 flex items-center justify-between hover:bg-amber-500/5 transition-colors text-left"
               >
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <span className="font-semibold text-base">{point.topic}</span>
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <span className="font-semibold text-lg sm:text-xl">{point.topic}</span>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex gap-1">
+                <div className="flex items-center gap-4 shrink-0">
+                  <div className="flex gap-2">
                     {point.positions?.slice(0, 3).map((pos, posIndex) => (
                       <Badge
                         key={posIndex}
                         className={cn(
-                          "text-xs px-2 py-1 border",
+                          "text-sm px-3 py-1.5 border",
                           MODEL_BADGE_COLORS[pos.modelName] || "bg-muted text-muted-foreground border-border"
                         )}
                       >
@@ -100,7 +99,7 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
                       </Badge>
                     ))}
                   </div>
-                  <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                  <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
                     <ChevronDown
                       className={cn(
                         "h-5 w-5 text-muted-foreground transition-transform",
@@ -112,22 +111,22 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
               </button>
 
               {expandedCards.has(index) && point.positions && (
-                <div className="px-4 pb-4 space-y-3 border-t border-amber-500/20 pt-3 animate-fade-in">
+                <div className="px-5 pb-5 space-y-4 border-t border-amber-500/20 pt-4 animate-fade-in">
                   {point.positions.map((pos, posIndex) => {
                     const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted/50 border-border text-muted-foreground';
                     
                     return (
                       <div
                         key={posIndex}
-                        className={cn("p-3 rounded-lg border", colorClass)}
+                        className={cn("p-4 rounded-lg border", colorClass)}
                       >
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-xs px-2 py-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Badge variant="outline" className="text-sm px-3 py-1.5">
                             {pos.modelName}
                           </Badge>
-                          <span className="text-sm font-semibold text-foreground">{pos.position}</span>
+                          <span className="text-base font-semibold text-foreground">{pos.position}</span>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{pos.reasoning}</p>
+                        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{pos.reasoning}</p>
                       </div>
                     );
                   })}

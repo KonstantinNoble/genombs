@@ -77,21 +77,7 @@ serve(async (req) => {
       .delete()
       .eq('user_id', userId);
 
-    // 3. Delete ads_advisor_history
-    console.log('Deleting ads_advisor_history for user:', userId);
-    await adminClient
-      .from('ads_advisor_history')
-      .delete()
-      .eq('user_id', userId);
-
-    // 4. Delete business_tools_history
-    console.log('Deleting business_tools_history for user:', userId);
-    await adminClient
-      .from('business_tools_history')
-      .delete()
-      .eq('user_id', userId);
-
-    // 5. Delete user_roles
+    // 3. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     await adminClient
       .from('user_roles')

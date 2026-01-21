@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.1</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -1245,11 +1245,9 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation. Replaced OpenRouter with Lovable AI Gateway.</li>
-              <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Removed obsolete features (Business Tools Advisor, Market Research, Ads Advisor). Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>
-              <li><strong>Version 3.4 (January 12, 2026):</strong> Updated credit limits and registration security.</li>
-              <li><strong>Version 3.0 (December 19, 2025):</strong> Added Business Ideas Community documentation.</li>
-              <li><strong>Version 2.9 (December 19, 2025):</strong> Added Firecrawl website analysis documentation.</li>
+              <li><strong>Version 5.1 (January 21, 2026):</strong> Removed obsolete database tables and edge functions (Business Tools Advisor, Ads Advisor, Firecrawl). Cleaned up version history to reflect current platform scope.</li>
+              <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation.</li>
+              <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>
             </ul>
           </section>
 

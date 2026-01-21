@@ -90,29 +90,7 @@ serve(async (req) => {
       console.error('Failed to delete validation_analyses:', validationError);
     }
 
-    // 3. Delete ads_advisor_history
-    console.log('Deleting ads_advisor_history for user:', userId);
-    const { error: adsError } = await adminClient
-      .from('ads_advisor_history')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (adsError) {
-      console.error('Failed to delete ads_advisor_history:', adsError);
-    }
-
-    // 4. Delete business_tools_history
-    console.log('Deleting business_tools_history for user:', userId);
-    const { error: toolsError } = await adminClient
-      .from('business_tools_history')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (toolsError) {
-      console.error('Failed to delete business_tools_history:', toolsError);
-    }
-
-    // 5. Delete user_roles
+    // 3. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     const { error: rolesError } = await adminClient
       .from('user_roles')

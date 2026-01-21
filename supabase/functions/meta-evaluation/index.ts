@@ -125,14 +125,120 @@ function getDominantModel(
   return dominant;
 }
 
-function normalizeTitle(title: string): string {
-  return title.toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .split(' ')
-    .slice(0, 4) // Use first 4 words for matching
-    .join(' ');
+// ========== SEMANTIC TITLE MATCHING ==========
+
+const STOP_WORDS = new Set([
+  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
+  'by', 'is', 'are', 'be', 'this', 'that', 'your', 'their', 'its', 'as', 'from',
+  'it', 'we', 'you', 'they', 'our', 'can', 'will', 'should', 'would', 'could',
+  'have', 'has', 'had', 'do', 'does', 'did', 'been', 'being', 'was', 'were'
+]);
+
+function extractKeywords(text: string): Set<string> {
+  return new Set(
+    text.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !STOP_WORDS.has(word))
+  );
+}
+
+function calculateTitleSimilarity(title1: string, title2: string): number {
+  const keywords1 = extractKeywords(title1);
+  const keywords2 = extractKeywords(title2);
+  
+  if (keywords1.size === 0 || keywords2.size === 0) return 0;
+  
+  // Jaccard-Index: |Intersection| / |Union|
+  const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
+  const union = new Set([...keywords1, ...keywords2]);
+  
+  return intersection.size / union.size;
+}
+
+function findSimilarGroup(
+  title: string, 
+  existingGroups: Map<string, WeightedRecommendation[]>,
+  threshold: number = 0.35 // 35% keyword overlap = same group
+): string | null {
+  for (const [groupTitle] of existingGroups) {
+    if (calculateTitleSimilarity(title, groupTitle) >= threshold) {
+      return groupTitle;
+    }
+  }
+  return null;
+}
+
+// ========== RISK SCORE AS MATHEMATICAL WEIGHT ==========
+
+const AGGRESSIVE_PATTERNS = [
+  { pattern: /scale\s*(rapidly|aggressively|fast|quickly)/i, score: 1.5 },
+  { pattern: /disrupt|disruptive|disruption/i, score: 1.5 },
+  { pattern: /bold\s*(move|strategy|investment|action)/i, score: 1.0 },
+  { pattern: /aggressive\s*(growth|expansion|marketing|approach)/i, score: 1.5 },
+  { pattern: /invest\s*heavily|significant\s*investment|major\s*investment/i, score: 1.0 },
+  { pattern: /first[\s-]mover|market\s*leader|dominate/i, score: 0.8 },
+  { pattern: /rapid\s*expansion|quick\s*scale|accelerate/i, score: 1.0 },
+  { pattern: /all[\s-]in|go\s*big|maximize/i, score: 1.2 },
+  { pattern: /immediately|now|urgent|asap/i, score: 0.6 }
+];
+
+const CONSERVATIVE_PATTERNS = [
+  { pattern: /test\s*(first|before|carefully|initially)/i, score: -1.5 },
+  { pattern: /pilot\s*(program|project|phase|test)/i, score: -1.0 },
+  { pattern: /validate|validation|verify/i, score: -0.8 },
+  { pattern: /gradual|incremental|step[\s-]by[\s-]step|phased/i, score: -1.0 },
+  { pattern: /minimize\s*risk|risk[\s-]averse|low[\s-]risk|reduce\s*risk/i, score: -1.5 },
+  { pattern: /cautious|careful|conservative|measured/i, score: -1.0 },
+  { pattern: /small[\s-]scale|limited\s*(test|rollout|trial)/i, score: -0.8 },
+  { pattern: /research\s*first|analyze\s*before|evaluate/i, score: -0.7 },
+  { pattern: /wait|hold|pause|consider/i, score: -0.5 }
+];
+
+function estimateRecommendationRiskLevel(rec: WeightedRecommendation): number {
+  const text = `${rec.title} ${rec.description} ${(rec.actionItems || []).join(' ')}`.toLowerCase();
+  
+  let riskScore = 3; // Neutral baseline
+  
+  for (const { pattern, score } of AGGRESSIVE_PATTERNS) {
+    if (pattern.test(text)) riskScore += score;
+  }
+  
+  for (const { pattern, score } of CONSERVATIVE_PATTERNS) {
+    if (pattern.test(text)) riskScore += score; // score is already negative
+  }
+  
+  return Math.max(1, Math.min(5, Math.round(riskScore)));
+}
+
+function calculateRiskAdjustedScore(
+  rec: WeightedRecommendation,
+  userRiskPreference: number // 1-5
+): number {
+  const recRiskLevel = estimateRecommendationRiskLevel(rec);
+  
+  // Alignment calculation (0 to 1): 1 = perfect match, 0 = max discrepancy
+  const alignment = 1 - (Math.abs(recRiskLevel - userRiskPreference) / 4);
+  
+  // Risk bonus: up to +25% for perfect alignment
+  const riskBonus = rec.weightedScore * alignment * 0.25;
+  
+  return rec.weightedScore + riskBonus;
+}
+
+function estimateActionRiskLevel(action: string): number {
+  const text = action.toLowerCase();
+  
+  // Aggressive action keywords
+  if (/immediately|now|asap|urgent|launch|scale|expand|invest|go\s*live/i.test(text)) return 4;
+  if (/bold|aggressive|rapid|accelerate|maximize/i.test(text)) return 5;
+  
+  // Conservative action keywords
+  if (/test|pilot|validate|research|analyze|review|assess|evaluate/i.test(text)) return 2;
+  if (/plan|prepare|consider|document|monitor/i.test(text)) return 2;
+  if (/careful|gradual|limited|small/i.test(text)) return 1;
+  
+  return 3; // Neutral
 }
 
 function computeConsensusFromRecommendations(
@@ -141,16 +247,22 @@ function computeConsensusFromRecommendations(
   totalWeight: number
 ): { consensus: ComputedConsensus[]; majority: ComputedConsensus[]; dissent: ComputedDissent[] } {
   
-  // Group by similar titles
+  // Group by semantically similar titles
   const topicGroups = new Map<string, WeightedRecommendation[]>();
   
   for (const rec of allRecs) {
-    const normalizedTitle = normalizeTitle(rec.title);
-    if (!topicGroups.has(normalizedTitle)) {
-      topicGroups.set(normalizedTitle, []);
+    // Find existing group with similar title
+    const existingGroup = findSimilarGroup(rec.title, topicGroups);
+    
+    if (existingGroup) {
+      topicGroups.get(existingGroup)!.push(rec);
+    } else {
+      // Create new group with this title as key
+      topicGroups.set(rec.title, [rec]);
     }
-    topicGroups.get(normalizedTitle)!.push(rec);
   }
+  
+  console.log(`Semantic grouping: ${allRecs.length} recommendations -> ${topicGroups.size} topic groups`);
   
   const consensus: ComputedConsensus[] = [];
   const majority: ComputedConsensus[] = [];
@@ -158,11 +270,6 @@ function computeConsensusFromRecommendations(
   
   for (const [_topic, recs] of topicGroups) {
     const uniqueModels = [...new Set(recs.map(r => r.sourceModel))];
-    const groupTotalWeight = recs.reduce((sum, r) => {
-      // Only count weight once per unique model
-      const modelWeight = recs.find(rec => rec.sourceModel === r.sourceModel)?.weight || 0;
-      return sum;
-    }, 0);
     
     // Calculate unique model weights
     const uniqueModelWeights = uniqueModels.reduce((sum, model) => {
@@ -219,11 +326,27 @@ function computeConsensusFromRecommendations(
 function computeFinalRecommendation(
   allRecs: WeightedRecommendation[],
   dominantModel: { key: string; name: string; weight: number } | null,
-  isPremium: boolean
+  isPremium: boolean,
+  userRiskPreference: number = 3 // NEW: Risk preference parameter (1-5)
 ): ComputedFinal {
   
-  // Sort by weightedScore (highest first)
-  const sortedRecs = [...allRecs].sort((a, b) => b.weightedScore - a.weightedScore);
+  // Sort by risk-adjusted weighted score (highest first)
+  const sortedRecs = [...allRecs].sort((a, b) => 
+    calculateRiskAdjustedScore(b, userRiskPreference) - 
+    calculateRiskAdjustedScore(a, userRiskPreference)
+  );
+  
+  // Log risk adjustment for debugging
+  if (sortedRecs.length > 0) {
+    const topRec = sortedRecs[0];
+    console.log('Risk-adjusted scoring:', {
+      userRiskPreference,
+      topRecTitle: topRec.title.substring(0, 50),
+      topRecOriginalScore: topRec.weightedScore,
+      topRecRiskLevel: estimateRecommendationRiskLevel(topRec),
+      topRecAdjustedScore: calculateRiskAdjustedScore(topRec, userRiskPreference)
+    });
+  }
   
   if (sortedRecs.length === 0) {
     return {
@@ -237,6 +360,17 @@ function computeFinalRecommendation(
   }
   
   const actionLimit = isPremium ? 7 : 5;
+  
+  // Sort action items by risk alignment
+  const sortActionsByRiskAlignment = (actions: string[]): string[] => {
+    return [...actions].sort((a, b) => {
+      const aRisk = estimateActionRiskLevel(a);
+      const bRisk = estimateActionRiskLevel(b);
+      const aAlign = 1 - Math.abs(aRisk - userRiskPreference) / 4;
+      const bAlign = 1 - Math.abs(bRisk - userRiskPreference) / 4;
+      return bAlign - aAlign; // Higher alignment first
+    });
+  };
   
   // If a model has >= 50% weight, use its top recommendation as primary
   if (dominantModel && dominantModel.weight >= 50) {
@@ -254,10 +388,13 @@ function computeFinalRecommendation(
       const dominantCount = Math.ceil(actionLimit * 0.7);
       const otherCount = actionLimit - dominantCount;
       
-      // Deduplicate action items
+      // Sort and deduplicate action items by risk alignment
+      const sortedDominantActions = sortActionsByRiskAlignment(dominantActions);
+      const sortedOtherActions = sortActionsByRiskAlignment(otherActions);
+      
       const allActions = [
-        ...dominantActions.slice(0, dominantCount),
-        ...otherActions.slice(0, otherCount)
+        ...sortedDominantActions.slice(0, dominantCount),
+        ...sortedOtherActions.slice(0, otherCount)
       ];
       const uniqueActions = [...new Set(allActions)].slice(0, actionLimit);
       
@@ -267,6 +404,9 @@ function computeFinalRecommendation(
           .map(r => r.sourceModel)
       )];
       
+      const riskContext = userRiskPreference <= 2 ? 'conservative' : 
+                          userRiskPreference >= 4 ? 'aggressive' : 'balanced';
+      
       return {
         title: topRec.title,
         description: topRec.description,
@@ -274,7 +414,7 @@ function computeFinalRecommendation(
         sourceModels: [dominantModel.name, ...otherModels],
         confidence: topRec.weightedScore,
         reasoning: `This recommendation is primarily driven by ${dominantModel.name} (${dominantModel.weight}% weight). ` +
-          `The dominant model's position takes precedence due to user-configured weighting. ` +
+          `Action items are prioritized for a ${riskContext} risk profile. ` +
           (otherModels.length > 0 
             ? `Supporting perspectives from ${otherModels.join(' and ')} have been incorporated.`
             : '')
@@ -282,7 +422,7 @@ function computeFinalRecommendation(
     }
   }
   
-  // No dominant model: Use highest weightedScore
+  // No dominant model: Use highest risk-adjusted weightedScore
   const topRec = sortedRecs[0];
   
   // Collect actions proportionally by weight
@@ -301,7 +441,9 @@ function computeFinalRecommendation(
     weightedActions.push(...modelActions.slice(0, actionsToTake));
   }
   
-  const uniqueActions = [...new Set(weightedActions)].slice(0, actionLimit);
+  // Sort by risk alignment and deduplicate
+  const sortedWeightedActions = sortActionsByRiskAlignment(weightedActions);
+  const uniqueActions = [...new Set(sortedWeightedActions)].slice(0, actionLimit);
   const sourceModels = [...new Set(sortedRecs.slice(0, 3).map(r => r.sourceModel))];
   
   // Calculate weighted average confidence
@@ -310,6 +452,9 @@ function computeFinalRecommendation(
     sortedRecs.reduce((sum, r) => sum + (r.confidence * r.weight), 0) / totalWeight
   );
   
+  const riskContext = userRiskPreference <= 2 ? 'conservative' : 
+                      userRiskPreference >= 4 ? 'aggressive' : 'balanced';
+  
   return {
     title: topRec.title,
     description: topRec.description,
@@ -317,8 +462,9 @@ function computeFinalRecommendation(
     sourceModels,
     confidence: weightedConfidence,
     reasoning: `This recommendation synthesizes insights from ${sourceModels.join(', ')} ` +
-      `based on weighted scoring. The highest-scoring recommendation (weighted score: ${topRec.weightedScore}) ` +
-      `forms the basis, with action items proportionally distributed by model weight.`
+      `based on weighted scoring with ${riskContext} risk alignment. ` +
+      `The highest-scoring recommendation (risk-adjusted score: ${calculateRiskAdjustedScore(topRec, userRiskPreference).toFixed(1)}) ` +
+      `forms the basis, with action items prioritized by risk preference.`
   };
 }
 
@@ -513,12 +659,16 @@ serve(async (req) => {
       (k: string) => modelResponses[k] && !modelResponses[k].error
     ).length;
     
+    // Get risk preference for deterministic computation
+    const riskPref = userPreferences?.riskPreference || 3;
+    console.log(`User risk preference: ${riskPref} (${riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced'})`);
+    
     // Compute consensus, majority, dissent mathematically
     const { consensus: computedConsensus, majority: computedMajority, dissent: computedDissent } = 
       computeConsensusFromRecommendations(allRecommendations, activeModelCount, totalWeight);
     
-    // Compute final recommendation deterministically
-    const computedFinal = computeFinalRecommendation(allRecommendations, dominantModel, isPremium);
+    // Compute final recommendation deterministically with risk adjustment
+    const computedFinal = computeFinalRecommendation(allRecommendations, dominantModel, isPremium, riskPref);
     
     console.log('Deterministic computation results:', {
       consensusCount: computedConsensus.length,
@@ -526,12 +676,12 @@ serve(async (req) => {
       dissentCount: computedDissent.length,
       finalTitle: computedFinal.title,
       finalConfidence: computedFinal.confidence,
-      dominantInfluence: dominantModel ? `${dominantModel.name} at ${dominantModel.weight}%` : 'balanced'
+      dominantInfluence: dominantModel ? `${dominantModel.name} at ${dominantModel.weight}%` : 'balanced',
+      riskPreference: riskPref
     });
 
     // ========== STEP 3: LLM FOR FORMATTING ONLY ==========
     
-    const riskPref = userPreferences?.riskPreference || 3;
     const riskContext = riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced';
     
     const systemPrompt = `You are a professional business writer. Your ONLY job is to POLISH and FORMAT the pre-computed analysis results below.

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ConfidenceHeader } from "./ConfidenceHeader";
 import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
@@ -8,6 +9,9 @@ import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AVAILABLE_MODELS } from "./ModelSelector";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, Target, TrendingUp, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ValidationOutputProps {
   result: ValidationResult;
@@ -16,6 +20,8 @@ interface ValidationOutputProps {
 }
 
 export function ValidationOutput({ result, validationId, onStartExperiment }: ValidationOutputProps) {
+  const [actionsExpanded, setActionsExpanded] = useState(false);
+  
   const {
     modelResponses,
     selectedModels,
@@ -41,18 +47,23 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
     .map(key => AVAILABLE_MODELS[key]?.name || key)
     .join(' · ');
 
+  // Show first 3 actions, rest behind expand
+  const visibleActions = actionsExpanded 
+    ? finalRecommendation.topActions 
+    : finalRecommendation.topActions?.slice(0, 3);
+  const hasMoreActions = (finalRecommendation.topActions?.length || 0) > 3;
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Processing Time & Models Badge */}
-      <div className="flex flex-col items-center gap-2">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border text-base text-muted-foreground">
-          <span>Completed in {(processingTimeMs / 1000).toFixed(1)}s</span>
-        </div>
-        <div className="text-base text-muted-foreground text-center">
-          {modelSummary}
-        </div>
+    <div className="space-y-4 animate-fade-in">
+      {/* Compact Processing Info */}
+      <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+        <span className="px-2 py-1 rounded-full bg-muted/50">
+          {(processingTimeMs / 1000).toFixed(1)}s
+        </span>
+        <span className="hidden sm:inline">·</span>
+        <span className="text-center">{modelSummary}</span>
         {isPremium && (
-          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm px-3 py-1">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs px-2 py-0.5">
             Premium
           </Badge>
         )}
@@ -66,134 +77,172 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
         reasoning={synthesisReasoning}
       />
 
-      {/* Top Actions */}
+      {/* Compact Top Actions */}
       {hasTopActions && (
-        <div className="p-4 sm:p-5 rounded-lg bg-primary/5 border border-primary/20">
-          <h3 className="font-bold text-lg sm:text-xl text-foreground mb-3">
-            Top Priority Actions
-            {isPremium && <span className="text-base font-normal text-muted-foreground ml-2">(Premium: 7 actions)</span>}
-          </h3>
-          <ol className="space-y-3">
-            {finalRecommendation.topActions!.map((action, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold">
+        <div className="p-3 sm:p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              Top Priority Actions
+            </h3>
+            {isPremium && (
+              <span className="text-xs text-muted-foreground">7 actions</span>
+            )}
+          </div>
+          
+          <ol className="space-y-2">
+            {visibleActions!.map((action, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
                   {i + 1}
                 </span>
-                <span className="text-base sm:text-lg text-foreground pt-1 leading-relaxed">{action}</span>
+                <span className="text-foreground leading-relaxed">{action}</span>
               </li>
             ))}
           </ol>
 
+          {hasMoreActions && !actionsExpanded && (
+            <button
+              onClick={() => setActionsExpanded(true)}
+              className="mt-2 text-xs text-primary hover:text-primary/80 flex items-center gap-1"
+            >
+              <ChevronDown className="h-3 w-3" />
+              Show {(finalRecommendation.topActions?.length || 0) - 3} more actions
+            </button>
+          )}
+
           {/* Start Experiment Button */}
           {validationId && onStartExperiment && (
-            <div className="mt-4 pt-4 border-t border-primary/20">
+            <div className="mt-3 pt-3 border-t border-primary/20">
               <StartExperimentButton onClick={onStartExperiment} />
             </div>
           )}
         </div>
       )}
 
-      {/* Premium Insights - Direct Display */}
+      {/* Premium Insights - Tabbed Interface */}
       {hasPremiumInsights && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 space-y-5">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-lg sm:text-xl text-foreground">Premium Insights</span>
-            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-base">
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-semibold text-sm text-foreground">Premium Insights</span>
+            <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-xs">
               Premium
             </Badge>
           </div>
           
-          {/* Strategic Alternatives */}
-          {strategicAlternatives && strategicAlternatives.length > 0 && (
-            <div>
-              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-3">Strategic Alternatives</h4>
-              <div className="space-y-3">
-                {strategicAlternatives.map((alt, i) => (
-                  <div key={i} className="p-4 rounded-lg bg-background border">
-                    <h5 className="font-semibold text-base sm:text-lg mb-3">{alt.scenario}</h5>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="font-medium text-primary mb-2 text-base">Pros</p>
-                        <ul className="space-y-1.5">
-                          {alt.pros.map((pro, j) => (
-                            <li key={j} className="flex items-start gap-2 text-base">
-                              <span className="text-primary shrink-0">+</span>
-                              <span>{pro}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="font-medium text-destructive mb-2 text-base">Cons</p>
-                        <ul className="space-y-1.5">
-                          {alt.cons.map((con, j) => (
-                            <li key={j} className="flex items-start gap-2 text-base">
-                              <span className="text-destructive shrink-0">−</span>
-                              <span>{con}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <p className="text-base text-muted-foreground mt-3">
-                      <span className="font-medium">Best for:</span> {alt.bestFor}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Long-term Outlook */}
-          {longTermOutlook && (
-            <div>
-              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-3">Long-term Outlook</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <div className="p-3 sm:p-4 rounded-lg bg-background border">
-                  <p className="text-base font-medium text-muted-foreground mb-1">6-Month</p>
-                  <p className="text-base sm:text-lg">{longTermOutlook.sixMonths}</p>
-                </div>
-                <div className="p-3 sm:p-4 rounded-lg bg-background border">
-                  <p className="text-base font-medium text-muted-foreground mb-1">12-Month</p>
-                  <p className="text-base sm:text-lg">{longTermOutlook.twelveMonths}</p>
-                </div>
-              </div>
-              {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
-                <div>
-                  <p className="text-base font-medium text-muted-foreground mb-2">Key Milestones</p>
-                  <ul className="space-y-2">
-                    {longTermOutlook.keyMilestones.map((milestone, i) => (
-                      <li key={i} className="flex items-start gap-2 text-base sm:text-lg">
-                        <span className="text-primary font-bold shrink-0">{i + 1}.</span>
-                        <span>{milestone}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          <Tabs defaultValue="strategy" className="w-full">
+            <TabsList className="w-full grid grid-cols-3 h-8 mb-3">
+              {strategicAlternatives && strategicAlternatives.length > 0 && (
+                <TabsTrigger value="strategy" className="text-xs data-[state=active]:bg-amber-500/20">
+                  <Target className="h-3 w-3 mr-1 hidden sm:inline" />
+                  Strategy
+                </TabsTrigger>
               )}
-            </div>
-          )}
-          
-          {/* Competitor Insights */}
-          {competitorInsights && (
-            <div>
-              <h4 className="font-semibold text-base sm:text-lg text-foreground mb-2">Competitor Insights</h4>
-              <p className="text-base sm:text-lg leading-relaxed">{competitorInsights}</p>
-            </div>
-          )}
+              {longTermOutlook && (
+                <TabsTrigger value="outlook" className="text-xs data-[state=active]:bg-amber-500/20">
+                  <TrendingUp className="h-3 w-3 mr-1 hidden sm:inline" />
+                  Long-term
+                </TabsTrigger>
+              )}
+              {competitorInsights && (
+                <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-amber-500/20">
+                  <Users className="h-3 w-3 mr-1 hidden sm:inline" />
+                  Competition
+                </TabsTrigger>
+              )}
+            </TabsList>
+
+            {/* Strategic Alternatives */}
+            {strategicAlternatives && strategicAlternatives.length > 0 && (
+              <TabsContent value="strategy" className="mt-0">
+                <div className="space-y-2">
+                  {strategicAlternatives.map((alt, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-background border">
+                      <h5 className="font-medium text-sm mb-2">{alt.scenario}</h5>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <p className="font-medium text-primary mb-1">Pros</p>
+                          <ul className="space-y-0.5">
+                            {alt.pros.slice(0, 3).map((pro, j) => (
+                              <li key={j} className="flex items-start gap-1">
+                                <span className="text-primary shrink-0">+</span>
+                                <span className="text-muted-foreground line-clamp-2">{pro}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="font-medium text-destructive mb-1">Cons</p>
+                          <ul className="space-y-0.5">
+                            {alt.cons.slice(0, 3).map((con, j) => (
+                              <li key={j} className="flex items-start gap-1">
+                                <span className="text-destructive shrink-0">−</span>
+                                <span className="text-muted-foreground line-clamp-2">{con}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        <span className="font-medium">Best for:</span> {alt.bestFor}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            )}
+            
+            {/* Long-term Outlook */}
+            {longTermOutlook && (
+              <TabsContent value="outlook" className="mt-0">
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="p-2 rounded-lg bg-background border">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">6-Month</p>
+                    <p className="text-xs leading-relaxed">{longTermOutlook.sixMonths}</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-background border">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">12-Month</p>
+                    <p className="text-xs leading-relaxed">{longTermOutlook.twelveMonths}</p>
+                  </div>
+                </div>
+                {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
+                  <div className="p-2 rounded-lg bg-background border">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Key Milestones</p>
+                    <ul className="space-y-1">
+                      {longTermOutlook.keyMilestones.slice(0, 4).map((milestone, i) => (
+                        <li key={i} className="flex items-start gap-1 text-xs">
+                          <span className="text-primary font-medium shrink-0">{i + 1}.</span>
+                          <span className="text-muted-foreground">{milestone}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </TabsContent>
+            )}
+            
+            {/* Competitor Insights */}
+            {competitorInsights && (
+              <TabsContent value="competitors" className="mt-0">
+                <div className="p-3 rounded-lg bg-background border">
+                  <p className="text-xs leading-relaxed text-muted-foreground">{competitorInsights}</p>
+                </div>
+              </TabsContent>
+            )}
+          </Tabs>
         </div>
       )}
 
-      <Separator className="my-4" />
+      <Separator className="my-3" />
 
-      {/* Analysis Points - Single Column */}
-      <div className="space-y-5">
+      {/* Analysis Points */}
+      <div className="space-y-3">
         <ConsensusSection points={consensusPoints} />
         <MajoritySection points={majorityPoints} />
         <DissentSection points={dissentPoints} />
       </div>
 
-      <Separator className="my-4" />
+      <Separator className="my-3" />
 
       {/* Individual Model Details */}
       <ModelDetailCards

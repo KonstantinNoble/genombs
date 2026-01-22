@@ -60,11 +60,6 @@ const CTA = () => {
           ref={ref}
           className={`premium-card max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
-          <span className="feature-badge mb-6 inline-flex">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Ready to Start?
-          </span>
-          
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
             {isPremium && isLoggedIn ? "Ready when you are" : "Give it a shot"}
           </h2>
@@ -88,18 +83,9 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              GPT + Gemini Pro + Flash
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent-warm animate-pulse" style={{ animationDelay: '0.3s' }} />
-              No signup required
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent-cool animate-pulse" style={{ animationDelay: '0.6s' }} />
-              About 20 seconds
-            </span>
+            <span>GPT + Gemini Pro + Flash</span>
+            <span>No signup required</span>
+            <span>About 20 seconds</span>
           </div>
         </div>
       </div>

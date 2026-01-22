@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 
 interface LimitReachedDialogProps {
   open: boolean;
@@ -10,15 +9,6 @@ interface LimitReachedDialogProps {
   resetAt: Date | null;
   onUpgrade: () => void;
 }
-
-const PREMIUM_BENEFITS = [
-  "20 checks per day – enough for real work",
-  "Full detailed responses, not just summaries",
-  "5-7 concrete next steps you can act on",
-  "What if Plan A fails? (Backup strategies)",
-  "Where does this lead? (6-12 month outlook)",
-  "What are competitors doing? (Context you'd miss)"
-];
 
 export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrade }: LimitReachedDialogProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -50,19 +40,17 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
   if (isPremium) {
     return (
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Daily Limit Reached</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Daily Limit Reached</DialogTitle>
           </DialogHeader>
           
-          <div className="py-6">
-            <p className="text-muted-foreground text-center mb-4">
-              You have used all 20 daily validations.
+          <div className="py-4 text-center">
+            <p className="text-muted-foreground text-sm mb-3">
+              You've used all 20 validations for today.
             </p>
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">Time until reset:</p>
-              <p className="text-3xl font-bold text-foreground font-mono">{timeRemaining}</p>
-            </div>
+            <p className="text-2xl font-bold text-foreground font-mono">{timeRemaining}</p>
+            <p className="text-xs text-muted-foreground mt-1">until reset</p>
           </div>
 
           <Button variant="outline" onClick={onClose} className="w-full">
@@ -73,91 +61,90 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
     );
   }
 
-  // Free user view - upgrade-focused dialog
+  // Free user view - compact, conversion-focused dialog
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
-            You've Hit Today's Limit
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6 py-4">
-          {/* Current status */}
-          <div className="text-center">
-            <p className="text-muted-foreground text-lg">
-              You've used your <span className="font-semibold text-foreground">2 free</span> checks for today.
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Got more questions? There's a way to keep going.
-            </p>
-          </div>
-
-          {/* Reset timer */}
-          <div className="bg-muted/50 rounded-xl p-4 text-center">
-            <p className="text-sm text-muted-foreground mb-1">Next free validation in:</p>
-            <p className={`text-2xl font-bold font-mono ${isReset ? 'text-primary' : 'text-foreground'}`}>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-center">
+              2 of 2 Free Checks Used
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Timer */}
+          <div className="mt-4 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Next free check in</p>
+            <p className={`text-xl font-bold font-mono mt-1 ${isReset ? 'text-primary' : 'text-foreground'}`}>
               {timeRemaining}
             </p>
             {isReset && (
-              <Button onClick={onClose} className="mt-3">
-                Continue Validating
+              <Button onClick={onClose} size="sm" className="mt-2">
+                Continue
               </Button>
             )}
           </div>
-
-          {!isReset && (
-            <>
-              {/* Divider */}
-              <div className="flex items-center gap-4">
-                <Separator className="flex-1" />
-                <span className="text-sm text-muted-foreground font-medium">or skip the wait</span>
-                <Separator className="flex-1" />
-              </div>
-
-              {/* Premium upgrade section */}
-              <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6">
-                <div className="text-center mb-5">
-                  <p className="text-xl font-bold text-foreground">
-                    Get the full picture
-                  </p>
-                  <p className="text-3xl font-bold text-primary mt-2">
-                    $14.99<span className="text-base font-normal text-muted-foreground">/month</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Cancel whenever. No hoops.
-                  </p>
-                </div>
-
-                <ul className="space-y-3 mb-6">
-                  {PREMIUM_BENEFITS.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3 text-sm">
-                      <span className="text-primary font-bold shrink-0">—</span>
-                      <span className="text-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  onClick={() => { onUpgrade(); onClose(); }}
-                  className="w-full text-base py-6 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
-                  size="lg"
-                >
-                  Unlock Premium Access
-                </Button>
-              </div>
-
-              {/* Maybe later */}
-              <button 
-                onClick={onClose}
-                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
-              >
-                I'll wait for the reset
-              </button>
-            </>
-          )}
         </div>
+
+        {!isReset && (
+          <>
+            {/* Premium Section */}
+            <div className="bg-primary/5 border-t border-primary/10 px-6 py-5">
+              <div className="flex items-baseline justify-between mb-4">
+                <span className="font-bold text-foreground">Premium</span>
+                <span className="text-primary font-bold">$14.99<span className="text-muted-foreground font-normal text-sm">/mo</span></span>
+              </div>
+              
+              {/* Compact benefits - 2 columns */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-5">
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">20×</span>
+                  <span className="text-muted-foreground">daily checks</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">7</span>
+                  <span className="text-muted-foreground">action steps</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">+</span>
+                  <span className="text-muted-foreground">backup strategies</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">+</span>
+                  <span className="text-muted-foreground">competitor context</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">+</span>
+                  <span className="text-muted-foreground">12-month outlook</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">+</span>
+                  <span className="text-muted-foreground">full analysis</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={() => { onUpgrade(); onClose(); }}
+                className="w-full font-semibold"
+              >
+                Upgrade to Premium
+              </Button>
+              
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                Cancel anytime · No commitment
+              </p>
+            </div>
+
+            {/* Close link */}
+            <button 
+              onClick={onClose}
+              className="w-full text-xs text-muted-foreground hover:text-foreground py-3 border-t"
+            >
+              Wait for reset
+            </button>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

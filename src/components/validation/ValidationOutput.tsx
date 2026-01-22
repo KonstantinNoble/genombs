@@ -4,6 +4,8 @@ import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
 import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
+import { ActionPriorityIcon } from "./icons/ActionPriorityIcons";
+import { StrategyIcon, OutlookIcon, CompetitorIcon } from "./icons/PremiumTabIcons";
 
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
@@ -77,7 +79,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
         reasoning={synthesisReasoning}
       />
 
-      {/* Top Actions */}
+      {/* Top Actions with Priority Icons */}
       {hasTopActions && (
         <div className="p-5 sm:p-6 rounded-xl bg-primary/5 border border-primary/20">
           <div className="flex items-center justify-between mb-4">
@@ -85,16 +87,20 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
               Top Priority Actions
             </h3>
             {isPremium && (
-              <span className="text-base text-muted-foreground">7 actions</span>
+              <span className="text-base text-muted-foreground">
+                {finalRecommendation.topActions?.length} actions
+              </span>
             )}
           </div>
           
           <ol className="space-y-4">
             {visibleActions!.map((action, i) => (
               <li key={i} className="flex items-start gap-4 text-base sm:text-lg">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold">
-                  {i + 1}
-                </span>
+                <ActionPriorityIcon 
+                  priority={i + 1} 
+                  size={32} 
+                  className="shrink-0 mt-0.5"
+                />
                 <span className="text-foreground leading-relaxed pt-1">{action}</span>
               </li>
             ))}
@@ -112,7 +118,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
         </div>
       )}
 
-      {/* Premium Insights - Tabbed Interface */}
+      {/* Premium Insights - Tabbed Interface with Custom Icons */}
       {hasPremiumInsights && (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-5 sm:p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -125,18 +131,21 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           <Tabs defaultValue="strategy" className="w-full">
             <TabsList className="w-full grid grid-cols-3 h-12 mb-5">
               {strategicAlternatives && strategicAlternatives.length > 0 && (
-                <TabsTrigger value="strategy" className="text-base data-[state=active]:bg-amber-500/20">
-                  Strategy
+                <TabsTrigger value="strategy" className="text-base data-[state=active]:bg-amber-500/20 gap-2">
+                  <StrategyIcon size={18} />
+                  <span className="hidden sm:inline">Strategy</span>
                 </TabsTrigger>
               )}
               {longTermOutlook && (
-                <TabsTrigger value="outlook" className="text-base data-[state=active]:bg-amber-500/20">
-                  Long-term
+                <TabsTrigger value="outlook" className="text-base data-[state=active]:bg-amber-500/20 gap-2">
+                  <OutlookIcon size={18} />
+                  <span className="hidden sm:inline">Long-term</span>
                 </TabsTrigger>
               )}
               {competitorInsights && (
-                <TabsTrigger value="competitors" className="text-base data-[state=active]:bg-amber-500/20">
-                  Competition
+                <TabsTrigger value="competitors" className="text-base data-[state=active]:bg-amber-500/20 gap-2">
+                  <CompetitorIcon size={18} />
+                  <span className="hidden sm:inline">Competition</span>
                 </TabsTrigger>
               )}
             </TabsList>

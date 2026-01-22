@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import type { ValidationStatus, ModelStates } from "@/hooks/useMultiAIValidation";
 import { AVAILABLE_MODELS } from "./ModelSelector";
 import { useEffect, useState } from "react";
+import { SynthesisIcon } from "./icons/SynthesisIcon";
+import { ModelTriangle } from "./icons/ModelTriangle";
 
 interface MultiModelLoaderProps {
   status: ValidationStatus;
@@ -142,17 +144,25 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="text-center space-y-1.5 sm:space-y-2">
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
-          {isEvaluating ? "Synthesizing Results" : "Querying AI Models"}
-        </h3>
-        <p className="text-sm sm:text-lg text-muted-foreground px-2">
-          {isEvaluating 
-            ? "Meta-analysis in progress"
-            : `Parallel analysis across ${modelsToShow.length} models`
-          }
-        </p>
+      {/* Header with Model Triangle */}
+      <div className="flex flex-col items-center gap-4">
+        <ModelTriangle 
+          models={modelsToShow} 
+          modelWeights={modelWeights} 
+          size={100}
+          className="text-foreground"
+        />
+        <div className="text-center space-y-1.5 sm:space-y-2">
+          <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+            {isEvaluating ? "Synthesizing Results" : "Querying AI Models"}
+          </h3>
+          <p className="text-sm sm:text-lg text-muted-foreground px-2">
+            {isEvaluating 
+              ? "Meta-analysis in progress"
+              : `Parallel analysis across ${modelsToShow.length} models`
+            }
+          </p>
+        </div>
       </div>
 
       {/* Overall progress */}
@@ -192,11 +202,14 @@ export function MultiModelLoader({ status, modelStates, selectedModels, modelWei
         })}
       </div>
 
-      {/* Meta-evaluation indicator */}
+      {/* Meta-evaluation indicator with Synthesis Icon */}
       {isEvaluating && (
         <div className="p-3 sm:p-5 rounded-lg sm:rounded-xl border border-primary/30 bg-primary/5 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-base sm:text-lg font-semibold text-foreground">Meta-Evaluation</span>
+            <div className="flex items-center gap-2">
+              <SynthesisIcon size={24} className="text-primary animate-pulse" />
+              <span className="text-base sm:text-lg font-semibold text-foreground">Synoptas Synthesis</span>
+            </div>
             <span className="text-sm sm:text-base text-primary font-medium">Processing...</span>
           </div>
           <div className="h-2 sm:h-2.5 bg-muted rounded-full overflow-hidden">

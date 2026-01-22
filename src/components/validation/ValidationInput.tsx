@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { ModelSelector, ModelSelectorRef } from "./ModelSelector";
+import { RiskShieldIcon, RiskBalanceIcon, RiskRocketIcon } from "./icons/RiskIcons";
 
 interface ValidationInputProps {
   prompt: string;
@@ -87,7 +88,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
         isPremium={isPremium}
       />
 
-      {/* Risk Preference Slider */}
+      {/* Risk Preference Slider with Custom Icons */}
       <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
         <div className="flex items-center justify-between gap-2">
           <Label className="text-base sm:text-lg font-semibold">Risk Tolerance</Label>
@@ -95,6 +96,52 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
             {getRiskLabel(riskPreference)}
           </span>
         </div>
+        
+        {/* Risk Icons Row */}
+        <div className="flex items-center justify-between px-2 py-3">
+          <div className="flex flex-col items-center gap-1">
+            <RiskShieldIcon 
+              size={32} 
+              active={riskPreference <= 2}
+              className="cursor-pointer"
+            />
+            <span className={cn(
+              "text-xs font-medium transition-colors",
+              riskPreference <= 2 ? "text-primary" : "text-muted-foreground"
+            )}>
+              Safe
+            </span>
+          </div>
+          
+          <div className="flex flex-col items-center gap-1">
+            <RiskBalanceIcon 
+              size={32} 
+              active={riskPreference === 3}
+              className="cursor-pointer"
+            />
+            <span className={cn(
+              "text-xs font-medium transition-colors",
+              riskPreference === 3 ? "text-primary" : "text-muted-foreground"
+            )}>
+              Balanced
+            </span>
+          </div>
+          
+          <div className="flex flex-col items-center gap-1">
+            <RiskRocketIcon 
+              size={32} 
+              active={riskPreference >= 4}
+              className="cursor-pointer"
+            />
+            <span className={cn(
+              "text-xs font-medium transition-colors",
+              riskPreference >= 4 ? "text-primary" : "text-muted-foreground"
+            )}>
+              Bold
+            </span>
+          </div>
+        </div>
+
         <Slider
           value={[riskPreference]}
           onValueChange={([value]) => onRiskChange(value)}
@@ -104,10 +151,6 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
           disabled={disabled}
           className="cursor-pointer"
         />
-        <div className="flex justify-between text-sm sm:text-base text-muted-foreground">
-          <span>Safe choices</span>
-          <span>Bold moves</span>
-        </div>
       </div>
     </div>
   );

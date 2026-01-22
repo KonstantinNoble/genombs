@@ -47,7 +47,7 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
           
           <div className="py-4 text-center">
             <p className="text-muted-foreground text-sm mb-3">
-              You've used all 15 validations for today.
+              You've used all 10 validations for today.
             </p>
             <p className="text-2xl font-bold text-foreground font-mono">{timeRemaining}</p>
             <p className="text-xs text-muted-foreground mt-1">until reset</p>
@@ -98,8 +98,8 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
               
               {/* Compact benefits - 2 columns */}
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-5">
-                <div className="flex items-center gap-2">
-                  <span className="text-primary font-bold">15×</span>
+              <div className="flex items-center gap-2">
+                  <span className="text-primary font-bold">10×</span>
                   <span className="text-muted-foreground">daily checks</span>
                 </div>
                 <div className="flex items-center gap-2">

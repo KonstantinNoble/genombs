@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import { SynthesisIcon } from "./icons/SynthesisIcon";
+import { ConfidenceGauge } from "./icons/ConfidenceGauge";
 
 interface ConfidenceHeaderProps {
   title: string;
@@ -17,53 +19,26 @@ export function ConfidenceHeader({
 }: ConfidenceHeaderProps) {
   const [showReasoning, setShowReasoning] = useState(false);
 
-  const getConfidenceColor = (value: number) => {
-    if (value >= 80) return "text-green-500";
-    if (value >= 60) return "text-yellow-500";
-    if (value >= 40) return "text-orange-500";
-    return "text-red-500";
-  };
-
-  const getConfidenceBarColor = (value: number) => {
-    if (value >= 80) return "bg-gradient-to-r from-green-500 to-emerald-400";
-    if (value >= 60) return "bg-gradient-to-r from-yellow-500 to-amber-400";
-    if (value >= 40) return "bg-gradient-to-r from-orange-500 to-amber-500";
-    return "bg-gradient-to-r from-red-500 to-rose-400";
-  };
-
-  const getConfidenceLabel = (value: number) => {
-    if (value >= 80) return "High";
-    if (value >= 60) return "Good";
-    if (value >= 40) return "Moderate";
-    return "Low";
-  };
-
   return (
     <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+      {/* Header with Synthesis Icon */}
+      <div className="flex items-center gap-3 mb-4">
+        <SynthesisIcon size={28} className="text-primary shrink-0" />
+        <span className="text-sm font-medium text-primary uppercase tracking-wider">
+          Synoptas Synthesis
+        </span>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-4">
         <div className="flex-1 order-2 sm:order-1 min-w-0">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
-        <div className="flex sm:flex-col items-center sm:items-end gap-1 order-1 sm:order-2 shrink-0 bg-background/50 rounded-lg px-4 py-3">
-          <span className={cn("text-4xl sm:text-5xl font-bold", getConfidenceColor(confidence))}>
-            {confidence}%
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {getConfidenceLabel(confidence)}
-          </span>
+        
+        {/* Confidence Gauge */}
+        <div className="order-1 sm:order-2 shrink-0 flex justify-center">
+          <ConfidenceGauge value={confidence} size={140} />
         </div>
-      </div>
-
-      {/* Confidence Bar */}
-      <div className="h-3 bg-muted rounded-full overflow-hidden">
-        <div
-          className={cn(
-            "h-full rounded-full transition-all duration-1000 ease-out",
-            getConfidenceBarColor(confidence)
-          )}
-          style={{ width: `${confidence}%` }}
-        />
       </div>
 
       {/* Collapsible Reasoning */}

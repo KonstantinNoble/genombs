@@ -264,6 +264,27 @@ export default {
         "glow-pulse": {
           "0%, 100%": { filter: "drop-shadow(0 0 2px hsl(var(--primary) / 0.3))" },
           "50%": { filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.5))" }
+        },
+        // Consensus/Majority/Dissent section animations
+        "consensus-pulse": {
+          "0%, 100%": { 
+            boxShadow: "0 0 0 0 hsl(142 76% 36% / 0.2)",
+            borderColor: "hsl(142 76% 36% / 0.3)"
+          },
+          "50%": { 
+            boxShadow: "0 0 12px 4px hsl(142 76% 36% / 0.15)",
+            borderColor: "hsl(142 76% 36% / 0.5)"
+          }
+        },
+        "majority-wiggle": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(1deg)" },
+          "75%": { transform: "rotate(-1deg)" }
+        },
+        "dissent-shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-1px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(1px)" }
         }
       },
       animation: {
@@ -297,7 +318,11 @@ export default {
         "border-glow": "border-glow 2s ease-in-out infinite",
         "text-shimmer": "text-shimmer 4s ease-in-out infinite",
         "slide-up-fade": "slide-up-fade 0.5s ease-out forwards",
-        "glow-pulse": "glow-pulse 2s ease-in-out infinite"
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        // Consensus/Majority/Dissent animations
+        "consensus-pulse": "consensus-pulse 3s ease-in-out infinite",
+        "majority-wiggle": "majority-wiggle 4s ease-in-out infinite",
+        "dissent-shake": "dissent-shake 0.5s ease-in-out"
       },
       backgroundImage: {
         "hero-gradient": "radial-gradient(ellipse at top, hsl(var(--primary) / 0.15), transparent 50%)",

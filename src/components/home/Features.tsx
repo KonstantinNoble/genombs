@@ -1,7 +1,4 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { ConsensusIcon } from "@/components/validation/icons/ConsensusIcon";
-import { MajorityIcon } from "@/components/validation/icons/MajorityIcon";
-import { DissentIcon } from "@/components/validation/icons/DissentIcon";
 
 interface FeatureCardProps {
   title: string;
@@ -49,29 +46,7 @@ const Features = () => {
     },
     { 
       title: "Consensus & Dissent", 
-      description: "Quickly scan what all models agree on (consensus) vs. unique perspectives only one model raised (dissent).",
-      customContent: (
-        <div className="flex items-center gap-6 mb-4">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-green-500/20 rounded-lg">
-              <ConsensusIcon size={20} className="text-green-600" />
-            </div>
-            <span className="text-sm font-medium text-green-600">Consensus</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-blue-500/20 rounded-lg">
-              <MajorityIcon size={20} className="text-blue-600" />
-            </div>
-            <span className="text-sm font-medium text-blue-600">Majority</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-amber-500/20 rounded-lg">
-              <DissentIcon size={20} className="text-amber-600" />
-            </div>
-            <span className="text-sm font-medium text-amber-600">Dissent</span>
-          </div>
-        </div>
-      )
+      description: "Quickly scan what all models agree on (consensus) vs. unique perspectives only one model raised (dissent)."
     },
     { 
       title: "Weighted Confidence", 
@@ -94,48 +69,16 @@ const Features = () => {
         </div>
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <FeatureCardWithCustomContent 
+            <FeatureCard 
               key={index} 
               title={feature.title} 
               description={feature.description} 
               index={index}
-              customContent={'customContent' in feature ? feature.customContent : undefined}
             />
           ))}
         </div>
       </div>
     </section>
-  );
-};
-
-interface FeatureCardWithCustomContentProps {
-  title: string;
-  description: string;
-  index: number;
-  customContent?: React.ReactNode;
-}
-
-const FeatureCardWithCustomContent = ({ title, description, index, customContent }: FeatureCardWithCustomContentProps) => {
-  const { ref, isVisible } = useScrollReveal();
-
-  return (
-    <div
-      ref={ref}
-      className={`glass-card group relative rounded-2xl p-6 md:p-8 scroll-reveal tilt-card ${isVisible ? 'revealed' : ''}`}
-      style={{ transitionDelay: `${index * 0.1}s` }}
-    >
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-accent-cool/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-        {index + 1}
-      </div>
-      <div className="relative z-10">
-        {customContent}
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-          {title}
-        </h3>
-        <p className="text-muted-foreground leading-relaxed">{description}</p>
-      </div>
-    </div>
   );
 };
 

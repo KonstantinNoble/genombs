@@ -2,7 +2,7 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
   { number: "01", title: "Enter your business question", description: "Type any decision you're wrestling with – from product launches to hiring to pricing strategy." },
-  { number: "02", title: "Get multi-AI analysis", description: "GPT, Gemini Pro, and Gemini Flash each analyze your question independently." },
+  { number: "02", title: "Get multi-AI analysis", description: "Three AI models of your choice analyze your question independently." },
   { number: "03", title: "Compare perspectives", description: "See where they agree (consensus), where most agree (majority), and unique insights (dissent)." },
   { number: "04", title: "Make your decision", description: "Armed with weighted confidence scores and multiple viewpoints, decide with clarity." },
 ];

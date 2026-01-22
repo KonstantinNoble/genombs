@@ -33,7 +33,7 @@ const Features = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
 
   const features = [
-    { title: "Three AIs, One Question", description: "Same question goes to GPT, Gemini Pro, and Gemini Flash. Each thinks differently – you see where they converge and where they diverge." },
+    { title: "One Question, Multiple Perspectives", description: "Your question goes to three AI models simultaneously. Each thinks differently – you see where they converge and where they diverge." },
     { title: "Consensus & Dissent", description: "Quickly scan what all models agree on (consensus) vs. unique perspectives only one model raised (dissent)." },
     { title: "Weighted Confidence", description: "Combine all responses into a single confidence score. Adjust how much each model's opinion matters." },
     { title: "Premium Deep Insights", description: "Competitor context, long-term outlook, and strategic alternatives. Plus PDF export and experiment tracking." }

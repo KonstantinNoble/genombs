@@ -49,7 +49,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               You're on the Premium Plan!
             </h2>
             <p className="text-lg text-muted-foreground">
-              Enjoy full access to all premium features including 15 daily validations and detailed model comparisons.
+              Enjoy full access to all premium features including 10 daily validations and detailed model comparisons.
             </p>
             <Button 
               size="lg" 

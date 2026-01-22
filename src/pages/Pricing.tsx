@@ -33,11 +33,11 @@ const PricingPage = () => {
     },
     {
       question: "What do I actually get with Premium?",
-      answer: "15 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months."
+      answer: "10 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months."
     },
     {
       question: "When does my limit reset?",
-      answer: "24 hours after your first check of the day. Free gets 2 per day, Premium gets 15. You'll see your remaining count and reset time on the validation page."
+      answer: "24 hours after your first check of the day. Free gets 2 per day, Premium gets 10. You'll see your remaining count and reset time on the validation page."
     },
     {
       question: "What kind of questions work best?",
@@ -55,7 +55,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
           title="Pricing – Start Free, Upgrade When Ready"
-          description="Try it free with 2 checks per day. Need more depth? Premium gives you 15 daily checks, competitor context, and 6-month outlook for $26.99/month."
+          description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, and 6-month outlook for $26.99/month."
           keywords="pricing, free trial, business tool cost, premium features"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
@@ -76,7 +76,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing – Start Free, Upgrade When Ready"
-        description="Try it free with 2 checks per day. Need more depth? Premium gives you 15 daily checks, competitor context, and 6-month outlook for $26.99/month."
+        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, and 6-month outlook for $26.99/month."
         keywords="pricing, free trial, business tool cost, premium features"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"
@@ -105,7 +105,7 @@ const PricingPage = () => {
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "15 checks a day, full insights, competitor context, long-term outlook. All yours."
+                ? "10 checks a day, full insights, competitor context, long-term outlook. All yours."
                 : "Try it free first. When you need more depth – competitor insights, 6-month outlook, backup strategies – that's what Premium is for."}
             </p>
           </div>
@@ -176,7 +176,7 @@ const PricingPage = () => {
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn 
-                ? "Your 15 daily checks are waiting. Full depth, full context."
+                ? "Your 10 daily checks are waiting. Full depth, full context."
                 : "Three models, one question. See if it helps you think through decisions."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

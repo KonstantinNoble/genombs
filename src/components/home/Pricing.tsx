@@ -126,7 +126,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li className="text-foreground font-medium">• 15 checks per day – enough for real work</li>
+                <li className="text-foreground font-medium">• 10 checks per day – enough for real work</li>
                 <li className="text-foreground font-medium">• Detailed responses, not just summaries</li>
                 <li className="text-foreground font-medium">• 5-7 concrete action items</li>
                 <li>• What if Plan A fails? (Strategic alternatives)</li>

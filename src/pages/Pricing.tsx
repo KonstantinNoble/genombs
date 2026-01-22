@@ -17,7 +17,7 @@ const PricingPage = () => {
   const isLoggedIn = !!user;
 
   const comparisonFeatures = [
-    { name: "Daily Validations", free: "2", premium: "15" },
+    { name: "Daily Validations", free: "2", premium: "10" },
     { name: "Recommendations per Model", free: "2-3", premium: "4-5" },
     { name: "Action Items", free: "3", premium: "5-7" },
     { name: "Strategic Alternatives", free: "—", premium: "✓" },

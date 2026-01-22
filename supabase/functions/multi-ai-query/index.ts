@@ -693,7 +693,7 @@ serve(async (req) => {
       .maybeSingle();
 
     const isPremium = creditsData?.is_premium ?? false;
-    const validationLimit = isPremium ? 15 : 2;
+    const validationLimit = isPremium ? 10 : 2;
     
     console.log(`User ${user.id} is ${isPremium ? 'PREMIUM' : 'FREE'} - using ${isPremium ? 'enhanced' : 'standard'} analysis`);
     

@@ -55,7 +55,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
           title="Pricing - Start Free, Upgrade When You Need More"
-          description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $14.99/month."
+          description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $26.99/month."
           keywords="AI tool pricing, business validation cost, GPT Gemini price"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
@@ -76,7 +76,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing - Start Free, Upgrade When You Need More"
-        description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $14.99/month."
+        description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $26.99/month."
         keywords="AI tool pricing, business validation cost, GPT Gemini price"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"
@@ -101,7 +101,7 @@ const PricingPage = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
                 ? "You're all set" 
-                : "Three opinions for $14.99/mo"}
+                : "Three opinions for $26.99/mo"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
@@ -192,7 +192,7 @@ const PricingPage = () => {
                   variant="outline"
                   onClick={() => isLoggedIn ? openCheckout() : navigate('/auth?intent=premium')}
                 >
-                  Get Premium – $14.99/mo
+                  Get Premium – $26.99/mo
                 </Button>
               )}
             </div>

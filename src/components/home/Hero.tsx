@@ -81,7 +81,7 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Got a business question? Let GPT and Gemini look at it. 
+            Got a business question? Let multiple AI models analyze it. 
             See where they agree – and where they don't.
           </p>
 

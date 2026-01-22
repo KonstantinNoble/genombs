@@ -83,7 +83,7 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span>GPT + Gemini Pro + Flash</span>
+            <span>6 AI models to choose from</span>
             <span>No signup required</span>
             <span>About 20 seconds</span>
           </div>

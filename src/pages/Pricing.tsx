@@ -54,9 +54,9 @@ const PricingPage = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
-          title="Pricing - Start Free, Upgrade When You Need More"
-          description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $26.99/month."
-          keywords="AI tool pricing, business validation cost, GPT Gemini price"
+          title="Pricing – Start Free, Upgrade When Ready"
+          description="Try it free with 2 checks per day. Need more depth? Premium gives you 15 daily checks, competitor context, and 6-month outlook for $26.99/month."
+          keywords="pricing, free trial, business tool cost, premium features"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
         />
@@ -75,9 +75,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing - Start Free, Upgrade When You Need More"
-        description="Try the multi-AI validator with 2 free checks per day. Need more? Premium gives you 15 daily validations for $26.99/month."
-        keywords="AI tool pricing, business validation cost, GPT Gemini price"
+        title="Pricing – Start Free, Upgrade When Ready"
+        description="Try it free with 2 checks per day. Need more depth? Premium gives you 15 daily checks, competitor context, and 6-month outlook for $26.99/month."
+        keywords="pricing, free trial, business tool cost, premium features"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />

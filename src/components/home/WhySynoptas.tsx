@@ -1,119 +1,38 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 const WhySynoptas = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
-  const { ref: chatGptRef, isVisible: chatGptVisible } = useScrollReveal();
-  const { ref: synoptasRef, isVisible: synoptasVisible } = useScrollReveal();
-  const { ref: footerRef, isVisible: footerVisible } = useScrollReveal();
-
-  const chatGptPoints = [
-    { title: "One answer. Take it or leave it.", detail: "Sounds confident, but you can't verify if something's missing." },
-    { title: "Ask twice, get two different answers", detail: "Same question, different take. Which one's right?" },
-    { title: "Generic advice that could apply to anyone", detail: "Technically correct. Not really helpful for your situation." },
-    { title: "Walls of text, no clear actions", detail: "You wanted direction. You got an essay." },
-    { title: "No memory, no context", detail: "Every conversation starts from zero." },
-  ];
-
-  const synoptasPoints = [
-    { title: "Three models thinking independently", detail: "GPT-5, Gemini Pro, and Flash – each gives their own take." },
-    { title: "Spot the consensus", detail: "When all three agree, that's worth paying attention to." },
-    { title: "Spot the disagreements", detail: "Where they differ often shows risks you'd miss otherwise." },
-    { title: "Tune it to how you think", detail: "Sliders for risk tolerance and creativity. Your call." },
-    { title: "Premium: the complete picture", detail: "Competitor analysis, 6-month outlook, backup strategies." },
-  ];
+  const { ref: leftRef, isVisible: leftVisible } = useScrollReveal();
+  const { ref: rightRef, isVisible: rightVisible } = useScrollReveal();
 
   return (
-    <section className="py-20 px-4 bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-primary/3 pointer-events-none" />
-      
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div 
-          ref={headerRef}
-          className={`text-center mb-12 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            The problem with asking ChatGPT
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            One model gives you one perspective. That's not enough for real decisions.
-          </p>
+    <section className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
+      <div className="absolute top-1/3 -left-20 w-60 h-60 bg-destructive/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/3 -right-20 w-60 h-60 bg-primary/5 rounded-full blur-3xl" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
+          <span className="feature-badge mb-6 inline-flex"><span className="w-2 h-2 rounded-full bg-primary animate-pulse" />The Difference</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">Why Multi-AI Analysis?</h2>
+          <p className="text-lg text-muted-foreground">See the difference between single-model and multi-model validation</p>
         </div>
-
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-          {/* ChatGPT Card */}
-          <div 
-            ref={chatGptRef}
-            className={`bg-card/50 border border-border rounded-xl p-6 md:p-8 relative overflow-hidden scroll-reveal-scale ${chatGptVisible ? 'revealed' : ''}`}
-          >
-            <div className="absolute inset-0 bg-destructive/5 pointer-events-none" />
-            
-            <div className="relative z-10">
-              <h3 className="text-xl font-semibold text-foreground mb-6">With ChatGPT</h3>
-              
-              <ul className="space-y-4">
-                {chatGptPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="text-destructive font-bold mt-0.5">•</span>
-                    <div>
-                      <span className="text-muted-foreground block">{point.title}</span>
-                      <span className="text-muted-foreground/70 text-sm">{point.detail}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div ref={leftRef} className={`relative rounded-2xl p-6 md:p-8 border-2 border-destructive/20 bg-destructive/5 scroll-reveal-scale ${leftVisible ? 'revealed' : ''}`}>
+            <div className="absolute -top-3 left-6"><span className="px-4 py-1.5 bg-destructive/10 border border-destructive/20 rounded-full text-sm font-semibold text-destructive">Without Synoptas</span></div>
+            <div className="mt-4 space-y-4">
+              {["One model, one perspective", "No way to validate accuracy", "Generic, cookie-cutter advice", "Blind spots you can't see"].map((item, i) => (
+                <div key={i} className="flex items-center gap-3"><span className="flex-shrink-0 w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center"><span className="w-2 h-2 rounded-full bg-destructive" /></span><span className="text-muted-foreground">{item}</span></div>
+              ))}
             </div>
           </div>
-
-          {/* Synoptas Card */}
-          <div 
-            ref={synoptasRef}
-            className={`bg-card/50 border border-primary/30 rounded-xl p-6 md:p-8 relative overflow-hidden shadow-[0_0_30px_-10px_hsl(var(--primary)/0.3)] scroll-reveal-scale ${synoptasVisible ? 'revealed' : ''}`}
-            style={{ transitionDelay: '0.15s' }}
-          >
-            <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-            
-            <div className="absolute top-4 right-4">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                3 AI Models
-              </span>
-            </div>
-            
-            <div className="relative z-10">
-              <h3 className="text-xl font-semibold text-foreground mb-6">With Synoptas</h3>
-              
-              <ul className="space-y-4">
-                {synoptasPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="text-primary font-bold mt-0.5">•</span>
-                    <div>
-                      <span className="text-foreground block">{point.title}</span>
-                      <span className="text-muted-foreground text-sm">{point.detail}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              
-              <Link 
-                to="/validate" 
-                className="inline-flex items-center gap-1.5 mt-6 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
-              >
-                Try the difference
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+          <div ref={rightRef} className={`premium-card relative rounded-2xl p-6 md:p-8 border-2 border-primary/30 scroll-reveal-scale ${rightVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.15s' }}>
+            <div className="absolute -top-3 left-6"><span className="px-4 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm font-semibold text-primary">With Synoptas</span></div>
+            <div className="mt-4 space-y-4">
+              {["Three models, triangulated insights", "See where AIs agree & disagree", "Context-aware recommendations", "Uncover hidden considerations"].map((item, i) => (
+                <div key={i} className="flex items-center gap-3"><span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center"><span className="w-2 h-2 rounded-full bg-primary" /></span><span className="text-foreground font-medium">{item}</span></div>
+              ))}
             </div>
           </div>
         </div>
-
-        <p 
-          ref={footerRef}
-          className={`text-center text-muted-foreground mt-10 text-sm scroll-reveal ${footerVisible ? 'revealed' : ''}`}
-          style={{ transitionDelay: '0.3s' }}
-        >
-          One opinion isn't enough. Get three.
-        </p>
       </div>
     </section>
   );

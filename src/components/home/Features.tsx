@@ -1,121 +1,56 @@
-import { Card } from "@/components/ui/card";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 
-const features = [
-  {
-    title: "One Click, Three Opinions",
-    description:
-      "Type your question once. GPT-5, Gemini Pro, and Flash each respond separately. No switching between tabs or tools.",
-    details: "Different models think differently. GPT goes deep, Gemini Pro gets creative, Flash stays practical. You see all three side by side.",
-    color: "primary",
-    link: "/validate",
-    linkText: "Try it out",
-  },
-  {
-    title: "Consensus Shows Confidence",
-    description:
-      "When three independent AIs reach the same conclusion, that's a strong signal. When they don't, you know where to look closer.",
-    details: "We break it down: full agreement, partial agreement, and disagreement. So you know which parts of the advice to trust most.",
-    color: "accent-cool",
-    link: "/validate",
-    linkText: "See how it works",
-  },
-  {
-    title: "Premium: The Full Picture",
-    description:
-      "Go beyond basic consensus. Get competitor insights, a 6-12 month outlook, and alternative strategies if Plan A doesn't work out.",
-    details: "Free shows you what the models agree on. Premium shows you context you'd miss otherwise – the kind that can change your decision.",
-    color: "accent-info",
-    link: "/pricing",
-    linkText: "Compare plans",
-  },
-];
+interface FeatureCardProps {
+  title: string;
+  description: string;
+  index: number;
+}
 
-const colorClasses = {
-  primary: {
-    text: "text-primary",
-    border: "group-hover:border-primary/50",
-    bg: "group-hover:bg-primary/5",
-  },
-  "accent-warm": {
-    text: "text-accent-warm",
-    border: "group-hover:border-accent-warm/50",
-    bg: "group-hover:bg-accent-warm/5",
-  },
-  "accent-cool": {
-    text: "text-accent-cool",
-    border: "group-hover:border-accent-cool/50",
-    bg: "group-hover:bg-accent-cool/5",
-  },
-  "accent-info": {
-    text: "text-accent-info",
-    border: "group-hover:border-accent-info/50",
-    bg: "group-hover:bg-accent-info/5",
-  },
-};
-
-const FeatureCard = ({ feature, index }: { feature: typeof features[0]; index: number }) => {
+const FeatureCard = ({ title, description, index }: FeatureCardProps) => {
   const { ref, isVisible } = useScrollReveal();
-  const colors = colorClasses[feature.color as keyof typeof colorClasses];
-  
+
   return (
-    <Card
+    <div
       ref={ref}
-      className={`p-6 transition-all duration-500 hover:shadow-lift hover:-translate-y-2 border-border/50 bg-card group relative overflow-hidden scroll-reveal rounded-2xl ${colors.border} ${colors.bg} ${isVisible ? 'revealed' : ''}`}
+      className={`glass-card group relative rounded-2xl p-6 md:p-8 scroll-reveal tilt-card ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <div className="relative z-10">
-        <h3 className="text-xl font-semibold mb-3 text-foreground transition-all duration-500 flex items-center gap-2">
-          {feature.title}
-        </h3>
-        <p className="text-muted-foreground leading-relaxed mb-2">{feature.description}</p>
-        <p className="text-muted-foreground/80 text-sm leading-relaxed mb-4">{feature.details}</p>
-        <Link 
-          to={feature.link} 
-          className={`inline-flex items-center gap-1.5 text-sm font-medium ${colors.text} hover:underline transition-all duration-300 group-hover:gap-2`}
-        >
-          {feature.linkText}
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-accent-cool/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+        {index + 1}
       </div>
-    </Card>
+      <div className="relative z-10">
+        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+          {title}
+        </h3>
+        <p className="text-muted-foreground leading-relaxed">{description}</p>
+      </div>
+    </div>
   );
 };
 
 const Features = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
 
-  return (
-    <section
-      className="py-20 sm:py-24 md:py-32 relative overflow-hidden"
-      aria-label="Features section"
-    >
-      {/* Subtle background accent */}
-      <div className="absolute inset-0 bg-muted/30" />
-      {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-24 bg-background/40 pointer-events-none" />
-      {/* Bottom fade transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-muted/30 pointer-events-none" />
-      
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div 
-          ref={headerRef}
-          className={`text-center mb-16 space-y-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
-        >
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-            Why this works
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            One AI gives you one opinion. Three give you perspective.
-          </p>
-        </div>
+  const features = [
+    { title: "Three AIs, One Question", description: "Same question goes to GPT, Gemini Pro, and Gemini Flash. Each thinks differently – you see where they converge and where they diverge." },
+    { title: "Consensus & Dissent", description: "Quickly scan what all models agree on (consensus) vs. unique perspectives only one model raised (dissent)." },
+    { title: "Weighted Confidence", description: "Combine all responses into a single confidence score. Adjust how much each model's opinion matters." },
+    { title: "Premium Deep Insights", description: "Competitor context, long-term outlook, and strategic alternatives. Plus PDF export and experiment tracking." }
+  ];
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <FeatureCard key={index} feature={feature} index={index} />
-          ))}
+  return (
+    <section id="features" className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
+      <div className="absolute top-1/4 -left-20 w-60 h-60 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent-cool/5 rounded-full blur-3xl" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
+          <span className="feature-badge mb-6 inline-flex"><span className="w-2 h-2 rounded-full bg-primary animate-pulse" />Core Features</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">How Synoptas Works</h2>
+          <p className="text-lg text-muted-foreground">Get multiple perspectives on every business decision</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {features.map((feature, index) => (<FeatureCard key={index} title={feature.title} description={feature.description} index={index} />))}
         </div>
       </div>
     </section>

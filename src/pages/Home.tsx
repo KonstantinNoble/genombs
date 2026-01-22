@@ -75,9 +75,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <SEOHead
-        title="Multi-AI Validator for Business Decisions"
-        description="Run your business question through 3 AI models and see where they agree. Helps you spot blind spots before making big moves."
-        keywords="business decision validation, AI comparison tool, strategic second opinion, GPT vs Gemini, risk assessment"
+        title="Three Opinions Before You Decide"
+        description="Before you commit to a big business decision, run it through three perspectives. See where they agree, where they differ, and what you might be missing."
+        keywords="business decisions, second opinion, decision validation, strategic planning, risk assessment"
         canonical="/"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -85,11 +85,11 @@ const Home = () => {
         name="Synoptas"
         url="https://synoptas.com"
         logo="https://synoptas.com/synoptas-favicon.png"
-        description="Multi-AI validation tool for business decisions"
+        description="Decision validation tool for founders and business owners"
       />
       <WebPageSchema
-        name="Synoptas - Validate Business Decisions with Multiple AI Models"
-        description="Get a second opinion from 3 AI models before making important business decisions."
+        name="Synoptas – Three Opinions on Your Business Decision"
+        description="Get three perspectives before making important business decisions. See where they agree and spot what you might be overlooking."
         url="https://synoptas.com/"
       />
       <Navbar />

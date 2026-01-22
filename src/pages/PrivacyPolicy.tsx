@@ -642,7 +642,7 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li><strong>Free users:</strong> 2 validations per 24-hour rolling window</li>
-              <li><strong>Premium users ($14.99/month):</strong> 20 validations per 24-hour rolling window</li>
+              <li><strong>Premium users ($14.99/month):</strong> 15 validations per 24-hour rolling window</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored for Usage Tracking</h4>

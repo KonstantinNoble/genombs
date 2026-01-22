@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 checks a day, shorter responses. Premium: 20 checks a day, detailed answers, plus sections you don't get otherwise – competitor context, 6-12 month outlook, and backup strategies if Plan A doesn't work."
+    answer: "Free: 2 checks a day, shorter responses. Premium: 15 checks a day, detailed answers, plus sections you don't get otherwise – competitor context, 6-12 month outlook, and backup strategies if Plan A doesn't work."
   },
   {
     question: "Can I try it without paying?",

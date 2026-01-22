@@ -11,7 +11,6 @@ const WhySynoptas = () => {
       <div className="absolute bottom-1/3 -right-20 w-60 h-60 bg-primary/5 rounded-full blur-3xl" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
-          <span className="feature-badge mb-6 inline-flex"><span className="w-2 h-2 rounded-full bg-primary animate-pulse" />The Difference</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">Why Multi-AI Analysis?</h2>
           <p className="text-lg text-muted-foreground">See the difference between single-model and multi-model validation</p>
         </div>

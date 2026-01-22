@@ -68,16 +68,12 @@ const PainPoints = () => {
           className={`flex flex-col items-center gap-5 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: "0.5s" }}
         >
-          <div className="feature-badge text-base px-6 py-3">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-semibold">That's why we built this.</span>
-          </div>
+          <p className="text-lg font-semibold text-foreground">That's why we built this.</p>
           <Link 
             to="/validate" 
-            className="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary transition-all duration-300 hover:gap-3"
+            className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:underline transition-all duration-300 hover:gap-3"
           >
-            Try it yourself 
-            <span className="transition-transform group-hover:translate-x-1">→</span>
+            Try it yourself →
           </Link>
         </div>
       </div>

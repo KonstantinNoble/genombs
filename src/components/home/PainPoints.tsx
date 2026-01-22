@@ -7,13 +7,19 @@ const PainPointItem = ({ point, index }: { point: { title: string; detail: strin
   return (
     <div
       ref={ref}
-      className={`flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-left scroll-reveal ${isVisible ? 'revealed' : ''}`}
-      style={{ transitionDelay: `${index * 0.1}s` }}
+      className={`glass-card flex items-start gap-4 rounded-xl p-5 text-left scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      style={{ 
+        transitionDelay: `${index * 0.1}s`,
+        background: 'hsl(var(--destructive) / 0.05)',
+        borderColor: 'hsl(var(--destructive) / 0.15)'
+      }}
     >
-      <span className="text-destructive font-bold mt-0.5">•</span>
+      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center">
+        <span className="w-2 h-2 rounded-full bg-destructive" />
+      </span>
       <div>
-        <span className="text-muted-foreground block font-medium">{point.title}</span>
-        <span className="text-muted-foreground/70 text-sm">{point.detail}</span>
+        <span className="text-foreground block font-semibold mb-1">{point.title}</span>
+        <span className="text-muted-foreground text-sm leading-relaxed">{point.detail}</span>
       </div>
     </div>
   );
@@ -31,20 +37,27 @@ const PainPoints = () => {
   ];
 
   return (
-    <section className="py-16 px-4 bg-muted/30 border-y border-border relative overflow-hidden">
-      {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-20 bg-background/30 pointer-events-none" />
-      {/* Bottom fade transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-muted/30 pointer-events-none" />
-      <div className="max-w-4xl mx-auto text-center relative z-10">
+    <section className="py-20 sm:py-24 md:py-32 px-4 bg-muted/20 relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-10 right-10 w-32 h-32 bg-destructive/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-10 left-10 w-40 h-40 bg-destructive/3 rounded-full blur-3xl" />
+      
+      <div className="max-w-5xl mx-auto text-center relative z-10">
         <h2 
           ref={headerRef}
-          className={`text-2xl md:text-3xl font-bold text-foreground mb-8 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          className={`text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           Does this sound familiar?
         </h2>
+        
+        <p 
+          className={`text-lg text-muted-foreground mb-12 max-w-2xl mx-auto scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          style={{ transitionDelay: '0.1s' }}
+        >
+          The problem with asking AI for advice
+        </p>
 
-        <div className="grid sm:grid-cols-2 gap-4 mb-10">
+        <div className="grid sm:grid-cols-2 gap-5 mb-12">
           {painPoints.map((point, index) => (
             <PainPointItem key={index} point={point} index={index} />
           ))}
@@ -52,18 +65,19 @@ const PainPoints = () => {
 
         <div 
           ref={badgeRef}
-          className={`flex flex-col items-center gap-4 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
+          className={`flex flex-col items-center gap-5 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: "0.5s" }}
         >
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full">
+          <div className="feature-badge text-base px-6 py-3">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-foreground font-medium">That's why we built this.</span>
+            <span className="font-semibold">That's why we built this.</span>
           </div>
           <Link 
             to="/validate" 
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-all duration-300 hover:gap-2"
+            className="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary transition-all duration-300 hover:gap-3"
           >
-            Try it yourself →
+            Try it yourself 
+            <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
       </div>

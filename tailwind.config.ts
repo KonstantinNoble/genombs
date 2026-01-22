@@ -183,6 +183,88 @@ export default {
           "0%, 100%": { borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
           "50%": { borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%" },
         },
+        // New professional animations
+        "gradient-shift": {
+          "0%, 100%": { 
+            backgroundPosition: "0% 50%",
+            transform: "scale(1) rotate(0deg)"
+          },
+          "25%": { 
+            backgroundPosition: "100% 50%",
+            transform: "scale(1.02) rotate(1deg)"
+          },
+          "50%": { 
+            backgroundPosition: "100% 100%",
+            transform: "scale(1.05) rotate(0deg)"
+          },
+          "75%": { 
+            backgroundPosition: "0% 100%",
+            transform: "scale(1.02) rotate(-1deg)"
+          }
+        },
+        "morph-blob": {
+          "0%, 100%": {
+            borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
+            transform: "translate(0, 0) rotate(0deg)"
+          },
+          "25%": {
+            borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%",
+            transform: "translate(5px, -5px) rotate(90deg)"
+          },
+          "50%": {
+            borderRadius: "50% 60% 30% 60% / 30% 40% 70% 60%",
+            transform: "translate(0, 5px) rotate(180deg)"
+          },
+          "75%": {
+            borderRadius: "60% 40% 60% 30% / 60% 50% 40% 50%",
+            transform: "translate(-5px, 0) rotate(270deg)"
+          }
+        },
+        "pulse-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 20px 0 hsl(var(--primary) / 0.2)",
+            transform: "scale(1)"
+          },
+          "50%": { 
+            boxShadow: "0 0 40px 10px hsl(var(--primary) / 0.3)",
+            transform: "scale(1.02)"
+          }
+        },
+        "reveal-up": {
+          "0%": { 
+            opacity: "0",
+            transform: "translateY(40px)"
+          },
+          "100%": { 
+            opacity: "1",
+            transform: "translateY(0)"
+          }
+        },
+        "tilt-card": {
+          "0%, 100%": { transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)" },
+          "25%": { transform: "perspective(1000px) rotateX(2deg) rotateY(2deg)" },
+          "75%": { transform: "perspective(1000px) rotateX(-2deg) rotateY(-2deg)" }
+        },
+        "border-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 5px hsl(var(--primary) / 0.3), inset 0 0 5px hsl(var(--primary) / 0.1)" 
+          },
+          "50%": { 
+            boxShadow: "0 0 20px hsl(var(--primary) / 0.4), inset 0 0 10px hsl(var(--primary) / 0.15)" 
+          }
+        },
+        "text-shimmer": {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" }
+        },
+        "slide-up-fade": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "glow-pulse": {
+          "0%, 100%": { filter: "drop-shadow(0 0 2px hsl(var(--primary) / 0.3))" },
+          "50%": { filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.5))" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -206,6 +288,21 @@ export default {
         "dot-pulse": "dot-pulse 2s ease-in-out infinite",
         "wave": "wave 4s ease-in-out infinite",
         "morph": "morph 8s ease-in-out infinite",
+        // New professional animations
+        "gradient-shift": "gradient-shift 15s ease-in-out infinite",
+        "morph-blob": "morph-blob 20s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "reveal-up": "reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "tilt-card": "tilt-card 10s ease-in-out infinite",
+        "border-glow": "border-glow 2s ease-in-out infinite",
+        "text-shimmer": "text-shimmer 4s ease-in-out infinite",
+        "slide-up-fade": "slide-up-fade 0.5s ease-out forwards",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite"
+      },
+      backgroundImage: {
+        "hero-gradient": "radial-gradient(ellipse at top, hsl(var(--primary) / 0.15), transparent 50%)",
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
   },

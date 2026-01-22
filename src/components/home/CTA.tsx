@@ -47,29 +47,38 @@ const CTA = () => {
   }, []);
 
   return (
-    <section className="py-20 sm:py-24 md:py-32 border-t border-border relative overflow-hidden bg-muted/30">
-      {/* Top fade transition from previous section */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-background/60 pointer-events-none z-[1]" />
+    <section className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-muted/50" />
+      
+      {/* Decorative orbs */}
+      <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-accent-cool/10 rounded-full blur-3xl" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 
           ref={ref}
-          className={`max-w-3xl mx-auto text-center space-y-8 scroll-reveal ${isVisible ? 'revealed' : ''}`}
+          className={`premium-card max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-primary">
+          <span className="feature-badge mb-6 inline-flex">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Ready to Start?
+          </span>
+          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
             {isPremium && isLoggedIn ? "Ready when you are" : "Give it a shot"}
           </h2>
 
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             {isPremium && isLoggedIn 
               ? "Your 20 daily checks are waiting. Full insights, competitor context, long-term outlook."
               : "Two free checks a day. No credit card. See if it helps you think through decisions."}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button
               size="lg"
-              className="text-base px-8"
+              className="btn-glow rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               asChild
             >
               <Link to="/validate">
@@ -78,17 +87,17 @@ const CTA = () => {
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               GPT + Gemini Pro + Flash
             </span>
             <span className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-warm" />
+              <span className="w-2 h-2 rounded-full bg-accent-warm animate-pulse" style={{ animationDelay: '0.3s' }} />
               No signup required
             </span>
             <span className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-cool" />
+              <span className="w-2 h-2 rounded-full bg-accent-cool animate-pulse" style={{ animationDelay: '0.6s' }} />
               About 20 seconds
             </span>
           </div>

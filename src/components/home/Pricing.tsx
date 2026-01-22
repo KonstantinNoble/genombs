@@ -49,7 +49,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               You're on the Premium Plan!
             </h2>
             <p className="text-lg text-muted-foreground">
-              Enjoy full access to all premium features including 20 daily validations and detailed model comparisons.
+              Enjoy full access to all premium features including 15 daily validations and detailed model comparisons.
             </p>
             <Button 
               size="lg" 
@@ -126,7 +126,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li className="text-foreground font-medium">• 20 checks per day – enough for real work</li>
+                <li className="text-foreground font-medium">• 15 checks per day – enough for real work</li>
                 <li className="text-foreground font-medium">• Detailed responses, not just summaries</li>
                 <li className="text-foreground font-medium">• 5-7 concrete action items</li>
                 <li>• What if Plan A fails? (Strategic alternatives)</li>

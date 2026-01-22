@@ -66,7 +66,7 @@ const CTA = () => {
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             {isPremium && isLoggedIn 
-              ? "Your 20 daily checks are waiting. Full insights, competitor context, long-term outlook."
+              ? "Your 15 daily checks are waiting. Full insights, competitor context, long-term outlook."
               : "Two free checks a day. No credit card. See if it helps you think through decisions."}
           </p>
 

@@ -169,7 +169,7 @@ export default function ValidationPlatform() {
       .eq('user_id', userId).single();
     if (data) {
       setIsPremium(data.is_premium);
-      const limit = data.is_premium ? 20 : 2;
+      const limit = data.is_premium ? 15 : 2;
       setValidationLimit(limit);
       
       const now = new Date();

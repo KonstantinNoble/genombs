@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { SynthesisIcon } from "./icons/SynthesisIcon";
 import { ConfidenceGauge } from "./icons/ConfidenceGauge";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ConfidenceHeaderProps {
   title: string;
@@ -18,6 +19,7 @@ export function ConfidenceHeader({
   reasoning,
 }: ConfidenceHeaderProps) {
   const [showReasoning, setShowReasoning] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
@@ -36,8 +38,8 @@ export function ConfidenceHeader({
         </div>
         
         {/* Confidence Gauge */}
-        <div className="order-1 sm:order-2 shrink-0 flex justify-center">
-          <ConfidenceGauge value={confidence} size={140} />
+        <div className="order-1 sm:order-2 shrink-0 flex justify-center w-full sm:w-auto">
+          <ConfidenceGauge value={confidence} size={isMobile ? 100 : 140} />
         </div>
       </div>
 

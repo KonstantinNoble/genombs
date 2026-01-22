@@ -38,27 +38,27 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-950/50 rounded-xl transition-all border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 group animate-consensus-pulse">
-        <div className="flex items-center gap-4">
-          <div className="p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform">
-            <ConsensusIcon size={24} className="text-green-600" />
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 sm:p-5 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-950/50 rounded-xl transition-all border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 group animate-consensus-pulse">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <div className="p-1.5 sm:p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform shrink-0">
+            <ConsensusIcon size={20} className="text-green-600 sm:w-6 sm:h-6" />
           </div>
-          <div className="flex flex-col items-start gap-1">
-            <span className="font-bold text-green-700 dark:text-green-400 text-lg sm:text-xl">
+          <div className="flex flex-col items-start gap-0.5 sm:gap-1 min-w-0">
+            <span className="font-bold text-green-700 dark:text-green-400 text-base sm:text-xl truncate">
               Full Consensus
             </span>
             <span className="text-xs text-green-600/70 dark:text-green-500/70 hidden sm:block">
               All models agree
             </span>
           </div>
-          <Badge variant="secondary" className="text-base bg-green-500/20 text-green-700 dark:text-green-300 border-0 px-4 py-1.5">
+          <Badge variant="secondary" className="text-sm sm:text-base bg-green-500/20 text-green-700 dark:text-green-300 border-0 px-2 sm:px-4 py-1 sm:py-1.5 shrink-0">
             {points.length}
           </Badge>
         </div>
-        <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center hover:bg-green-500/30 transition-colors">
+        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-500/20 flex items-center justify-center hover:bg-green-500/30 transition-colors shrink-0">
           <ChevronDown
             className={cn(
-              "h-6 w-6 text-green-600 transition-transform",
+              "h-5 w-5 sm:h-6 sm:w-6 text-green-600 transition-transform",
               isOpen && "rotate-180",
             )}
           />
@@ -74,19 +74,17 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-5 flex items-center justify-between hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors text-left"
+                className="w-full p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:justify-between hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors text-left"
               >
-                <div className="flex items-center gap-4 min-w-0 flex-1">
-                  <span className="font-semibold text-lg sm:text-xl">{point.topic}</span>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <Badge className={cn("text-base border px-4 py-1.5", getConfidenceColor(point.confidence))}>
+                <span className="font-semibold text-base sm:text-xl leading-tight">{point.topic}</span>
+                <div className="flex items-center gap-2 sm:gap-4 shrink-0 self-end sm:self-auto">
+                  <Badge className={cn("text-sm sm:text-base border px-2 sm:px-4 py-1 sm:py-1.5", getConfidenceColor(point.confidence))}>
                     {point.confidence}%
                   </Badge>
-                  <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
                     <ChevronDown
                       className={cn(
-                        "h-5 w-5 text-muted-foreground transition-transform",
+                        "h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-transform",
                         expandedCards.has(index) && "rotate-180",
                       )}
                     />

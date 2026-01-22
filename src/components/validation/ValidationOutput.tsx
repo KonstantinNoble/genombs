@@ -125,7 +125,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
           </div>
           
           <Tabs defaultValue="strategy" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 h-12 mb-5">
+            <TabsList className="w-full flex flex-col sm:grid sm:grid-cols-3 gap-1 sm:gap-0 h-auto sm:h-12 mb-5">
               {strategicAlternatives && strategicAlternatives.length > 0 && (
                 <TabsTrigger value="strategy" className="text-base data-[state=active]:bg-amber-500/20">
                   Strategy
@@ -150,7 +150,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
                   {strategicAlternatives.map((alt, i) => (
                     <div key={i} className="p-5 rounded-xl bg-background border">
                       <h5 className="font-semibold text-lg sm:text-xl mb-4">{alt.scenario}</h5>
-                      <div className="grid grid-cols-2 gap-4 text-base">
+                      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 text-base">
                         <div>
                           <p className="font-semibold text-primary mb-3">Pros</p>
                           <ul className="space-y-2">
@@ -186,7 +186,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             {/* Long-term Outlook */}
             {longTermOutlook && (
               <TabsContent value="outlook" className="mt-0">
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div className="p-4 rounded-xl bg-background border">
                     <p className="text-base font-semibold text-muted-foreground mb-3">6-Month</p>
                     <p className="text-base sm:text-lg leading-relaxed">{longTermOutlook.sixMonths}</p>

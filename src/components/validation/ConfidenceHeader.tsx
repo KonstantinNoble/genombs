@@ -31,14 +31,16 @@ export function ConfidenceHeader({
         </span>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-4">
-        <div className="flex-1 order-2 sm:order-1 min-w-0">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
+      {/* Mobile: Stacked layout, Desktop: Side by side */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-4">
+        {/* Text Content */}
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl sm:text-3xl font-bold text-foreground mb-2">{title}</h2>
+          <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
         </div>
         
-        {/* Confidence Gauge */}
-        <div className="order-1 sm:order-2 shrink-0 flex justify-center w-full sm:w-auto">
+        {/* Confidence Gauge - Centered on mobile, right-aligned on desktop */}
+        <div className="shrink-0 flex justify-center sm:justify-end pt-2 sm:pt-0">
           <ConfidenceGauge value={confidence} size={isMobile ? 100 : 140} />
         </div>
       </div>

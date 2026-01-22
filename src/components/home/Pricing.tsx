@@ -121,7 +121,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               
               <div>
                 <h3 className="text-2xl font-semibold text-foreground mb-2">Premium</h3>
-                <div className="text-5xl font-bold text-primary">$14.99</div>
+                <div className="text-5xl font-bold text-primary">$26.99</div>
                 <p className="text-muted-foreground mt-1">per month</p>
               </div>
               

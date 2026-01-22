@@ -93,7 +93,7 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
             <div className="bg-primary/5 border-t border-primary/10 px-6 py-5">
               <div className="flex items-baseline justify-between mb-4">
                 <span className="font-bold text-foreground">Premium</span>
-                <span className="text-primary font-bold">$14.99<span className="text-muted-foreground font-normal text-sm">/mo</span></span>
+                <span className="text-primary font-bold">$26.99<span className="text-muted-foreground font-normal text-sm">/mo</span></span>
               </div>
               
               {/* Compact benefits - 2 columns */}

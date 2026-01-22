@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { MajorityIcon } from "./icons/MajorityIcon";
 import type { MajorityPoint } from "@/hooks/useMultiAIValidation";
 
 interface MajoritySectionProps {
@@ -37,12 +38,20 @@ export function MajoritySection({ points, defaultOpen = true }: MajoritySectionP
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-blue-500/10 hover:bg-blue-500/15 rounded-xl transition-colors border border-blue-500/20">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50 rounded-xl transition-all border-l-4 border-l-blue-500 border border-blue-200 dark:border-blue-800 group hover:animate-majority-wiggle">
         <div className="flex items-center gap-4">
-          <span className="font-bold text-blue-700 text-lg sm:text-xl">
-            Majority Agreement
-          </span>
-          <Badge variant="secondary" className="text-base bg-blue-500/20 text-blue-700 border-0 px-4 py-1.5">
+          <div className="p-2 bg-blue-500/20 rounded-lg group-hover:scale-110 transition-transform">
+            <MajorityIcon size={24} className="text-blue-600" />
+          </div>
+          <div className="flex flex-col items-start gap-1">
+            <span className="font-bold text-blue-700 dark:text-blue-400 text-lg sm:text-xl">
+              Majority Agreement
+            </span>
+            <span className="text-xs text-blue-600/70 dark:text-blue-500/70 hidden sm:block">
+              Most models agree (≥60% weight)
+            </span>
+          </div>
+          <Badge variant="secondary" className="text-base bg-blue-500/20 text-blue-700 dark:text-blue-300 border-0 px-4 py-1.5">
             {points.length}
           </Badge>
         </div>
@@ -61,11 +70,11 @@ export function MajoritySection({ points, defaultOpen = true }: MajoritySectionP
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border border-blue-500/20 rounded-xl overflow-hidden"
+              className="bg-card border-l-4 border-l-blue-500 border border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-5 flex items-center justify-between hover:bg-blue-500/5 transition-colors text-left"
+                className="w-full p-5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors text-left"
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <span className="font-semibold text-lg sm:text-xl">{point.topic}</span>
@@ -86,7 +95,7 @@ export function MajoritySection({ points, defaultOpen = true }: MajoritySectionP
               </button>
 
               {expandedCards.has(index) && (
-                <div className="px-5 pb-5 space-y-4 border-t border-blue-500/20 pt-4 animate-fade-in">
+                <div className="px-5 pb-5 space-y-4 border-t border-blue-200 dark:border-blue-800 pt-4 animate-fade-in">
                   <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{point.description}</p>
                   {point.supportingModels && point.supportingModels.length > 0 && (
                     <div className="flex flex-wrap gap-3 items-center">

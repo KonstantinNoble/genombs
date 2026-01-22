@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { ConsensusIcon } from "./icons/ConsensusIcon";
 import type { ConsensusPoint } from "@/hooks/useMultiAIValidation";
 
 interface ConsensusSectionProps {
@@ -37,12 +38,20 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-green-500/10 hover:bg-green-500/15 rounded-xl transition-colors border border-green-500/20">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-950/50 rounded-xl transition-all border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 group animate-consensus-pulse">
         <div className="flex items-center gap-4">
-          <span className="font-bold text-green-700 text-lg sm:text-xl">
-            Full Consensus
-          </span>
-          <Badge variant="secondary" className="text-base bg-green-500/20 text-green-700 border-0 px-4 py-1.5">
+          <div className="p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform">
+            <ConsensusIcon size={24} className="text-green-600" />
+          </div>
+          <div className="flex flex-col items-start gap-1">
+            <span className="font-bold text-green-700 dark:text-green-400 text-lg sm:text-xl">
+              Full Consensus
+            </span>
+            <span className="text-xs text-green-600/70 dark:text-green-500/70 hidden sm:block">
+              All models agree
+            </span>
+          </div>
+          <Badge variant="secondary" className="text-base bg-green-500/20 text-green-700 dark:text-green-300 border-0 px-4 py-1.5">
             {points.length}
           </Badge>
         </div>
@@ -61,11 +70,11 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border border-green-500/20 rounded-xl overflow-hidden"
+              className="bg-card border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 rounded-xl overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-5 flex items-center justify-between hover:bg-green-500/5 transition-colors text-left"
+                className="w-full p-5 flex items-center justify-between hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors text-left"
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <span className="font-semibold text-lg sm:text-xl">{point.topic}</span>
@@ -86,7 +95,7 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
               </button>
 
               {expandedCards.has(index) && (
-                <div className="px-5 pb-5 space-y-4 border-t border-green-500/20 pt-4 animate-fade-in">
+                <div className="px-5 pb-5 space-y-4 border-t border-green-200 dark:border-green-800 pt-4 animate-fade-in">
                   <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{point.description}</p>
                   {point.actionItems && point.actionItems.length > 0 && (
                     <div className="space-y-3">

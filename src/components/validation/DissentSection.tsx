@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { DissentIcon } from "./icons/DissentIcon";
 import type { DissentPoint } from "@/hooks/useMultiAIValidation";
 
 const MODEL_COLORS: Record<string, string> = {
@@ -52,12 +53,20 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-amber-500/10 hover:bg-amber-500/15 rounded-xl transition-colors border border-amber-500/20">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 rounded-xl transition-all border-l-4 border-l-amber-500 border border-amber-200 dark:border-amber-800 group hover:animate-dissent-shake">
         <div className="flex items-center gap-4">
-          <span className="font-bold text-amber-700 text-lg sm:text-xl">
-            Points of Dissent
-          </span>
-          <Badge variant="secondary" className="text-base bg-amber-500/20 text-amber-700 border-0 px-4 py-1.5">
+          <div className="p-2 bg-amber-500/20 rounded-lg group-hover:scale-110 transition-transform">
+            <DissentIcon size={24} className="text-amber-600" />
+          </div>
+          <div className="flex flex-col items-start gap-1">
+            <span className="font-bold text-amber-700 dark:text-amber-400 text-lg sm:text-xl">
+              Points of Dissent
+            </span>
+            <span className="text-xs text-amber-600/70 dark:text-amber-500/70 hidden sm:block">
+              Models have different views
+            </span>
+          </div>
+          <Badge variant="secondary" className="text-base bg-amber-500/20 text-amber-700 dark:text-amber-300 border-0 px-4 py-1.5">
             {points.length}
           </Badge>
         </div>
@@ -76,11 +85,11 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border border-amber-500/20 rounded-xl overflow-hidden"
+              className="bg-card border-l-4 border-l-amber-500 border border-amber-200 dark:border-amber-800 rounded-xl overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-5 flex items-center justify-between hover:bg-amber-500/5 transition-colors text-left"
+                className="w-full p-5 flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors text-left"
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <span className="font-semibold text-lg sm:text-xl">{point.topic}</span>
@@ -111,7 +120,7 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
               </button>
 
               {expandedCards.has(index) && point.positions && (
-                <div className="px-5 pb-5 space-y-4 border-t border-amber-500/20 pt-4 animate-fade-in">
+                <div className="px-5 pb-5 space-y-4 border-t border-amber-200 dark:border-amber-800 pt-4 animate-fade-in">
                   {point.positions.map((pos, posIndex) => {
                     const colorClass = MODEL_COLORS[pos.modelName] || 'bg-muted/50 border-border text-muted-foreground';
                     

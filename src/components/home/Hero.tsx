@@ -60,32 +60,9 @@ const Hero = () => {
         />
       </div>
 
-      {/* Floating Decorative Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
-        <div className="absolute top-20 left-[15%] w-2 h-2 rounded-full bg-primary/20 float-slow" />
-        <div className="absolute top-40 right-[20%] w-3 h-3 rounded-full bg-primary/15 float-medium" style={{ animationDelay: '-2s' }} />
-        <div className="absolute bottom-32 left-[25%] w-2 h-2 rounded-full bg-accent-cool/20 float-fast" style={{ animationDelay: '-1s' }} />
-        <div className="absolute bottom-48 right-[30%] w-1.5 h-1.5 rounded-full bg-primary/25 float-slow" style={{ animationDelay: '-3s' }} />
-        
-        {/* Geometric accents */}
-        <div className="absolute top-1/4 right-[10%] w-16 h-16 border border-primary/10 rounded-lg rotate-12 animate-float opacity-40" />
-        <div className="absolute bottom-1/4 left-[8%] w-12 h-12 border border-accent-cool/10 rounded-full animate-float-delayed opacity-30" />
-      </div>
-
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div 
-            className={`inline-flex items-center gap-2 mb-8 transition-all duration-700 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <span className="feature-badge">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              AI-Powered Decision Intelligence
-            </span>
-          </div>
 
           {/* Main Headline */}
           <h1 
@@ -142,16 +119,13 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <span className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-sm sm:text-base text-muted-foreground">
               Takes about 20 seconds
             </span>
-            <span className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
-              <span className="w-2 h-2 rounded-full bg-accent-warm animate-pulse" style={{ animationDelay: '0.3s' }} />
+            <span className="text-sm sm:text-base text-muted-foreground">
               {isPremium && user ? "Premium access" : "No credit card needed"}
             </span>
-            <span className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
-              <span className="w-2 h-2 rounded-full bg-accent-cool animate-pulse" style={{ animationDelay: '0.6s' }} />
+            <span className="text-sm sm:text-base text-muted-foreground">
               2 free checks per day
             </span>
           </div>

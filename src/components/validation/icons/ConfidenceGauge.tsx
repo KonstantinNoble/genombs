@@ -31,12 +31,12 @@ export function ConfidenceGauge({ value, size = 140, className = "" }: Confidenc
   };
 
   return (
-    <div className={cn("relative flex flex-col items-center", className)} style={{ width: size, height: size * 0.65 }}>
+    <div className={cn("relative flex flex-col items-center", className)} style={{ width: size }}>
       <svg
         viewBox="0 0 100 65"
         width={size}
         height={size * 0.65}
-        className="overflow-visible"
+        className="overflow-visible shrink-0"
       >
         {/* Arc gradient definition */}
         <defs>
@@ -98,18 +98,18 @@ export function ConfidenceGauge({ value, size = 140, className = "" }: Confidenc
       </svg>
       
       {/* Value display - positioned below the gauge */}
-      <div className="text-center mt-1">
-        <span className="block text-xs font-medium text-muted-foreground uppercase tracking-wide mb-0.5">
-          Confidence Level
+      <div className="text-center mt-2 shrink-0">
+        <span className="block text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide mb-0.5">
+          Confidence
         </span>
         <span 
-          className="text-2xl sm:text-3xl font-bold tabular-nums"
+          className="text-xl sm:text-2xl font-bold tabular-nums leading-none"
           style={{ color }}
         >
           {clampedValue}%
         </span>
         <span 
-          className="block text-sm font-medium"
+          className="block text-xs sm:text-sm font-medium mt-0.5"
           style={{ color }}
         >
           {getLabel(clampedValue)}

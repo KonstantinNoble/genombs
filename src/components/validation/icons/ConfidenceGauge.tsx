@@ -24,10 +24,10 @@ export function ConfidenceGauge({ value, size = 140, className = "" }: Confidenc
   const color = getColor(clampedValue);
 
   const getLabel = (val: number) => {
-    if (val >= 80) return "High";
+    if (val >= 80) return "Thorough";
     if (val >= 60) return "Good";
-    if (val >= 40) return "Moderate";
-    return "Low";
+    if (val >= 40) return "Partial";
+    return "Incomplete";
   };
 
   return (
@@ -100,7 +100,7 @@ export function ConfidenceGauge({ value, size = 140, className = "" }: Confidenc
       {/* Value display - positioned below the gauge */}
       <div className="text-center mt-2 shrink-0">
         <span className="block text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide mb-0.5">
-          Confidence
+          Coverage
         </span>
         <span 
           className="text-xl sm:text-2xl font-bold tabular-nums leading-none"

@@ -85,11 +85,11 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
         <div className="p-5 sm:p-6 rounded-xl bg-primary/5 border border-primary/20">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg sm:text-xl text-foreground">
-              Top Priority Actions
+              Documented Perspectives
             </h3>
             {isPremium && (
               <span className="text-base text-muted-foreground">
-                {finalRecommendation.topActions?.length} actions
+                {finalRecommendation.topActions?.length} perspectives
               </span>
             )}
           </div>
@@ -111,7 +111,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
               className="mt-4 text-base text-primary hover:text-primary/80 flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors"
             >
               <ChevronDown className="h-5 w-5" />
-              Show {(finalRecommendation.topActions?.length || 0) - 3} more actions
+              Show {(finalRecommendation.topActions?.length || 0) - 3} more perspectives
             </button>
           )}
         </div>
@@ -131,17 +131,17 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
             <TabsList className="w-full flex flex-col sm:grid sm:grid-cols-3 gap-1 sm:gap-0 h-auto sm:h-12 mb-5">
               {strategicAlternatives && strategicAlternatives.length > 0 && (
                 <TabsTrigger value="strategy" className="text-base data-[state=active]:bg-amber-500/20">
-                  Strategy
+                  Documented Scenarios
                 </TabsTrigger>
               )}
               {longTermOutlook && (
                 <TabsTrigger value="outlook" className="text-base data-[state=active]:bg-amber-500/20">
-                  Long-term
+                  Projected Implications
                 </TabsTrigger>
               )}
               {competitorInsights && (
                 <TabsTrigger value="competitors" className="text-base data-[state=active]:bg-amber-500/20">
-                  Competition
+                  Market Context
                 </TabsTrigger>
               )}
             </TabsList>

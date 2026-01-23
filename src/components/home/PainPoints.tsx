@@ -30,10 +30,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "ChatGPT gave you an answer. But is it right?", detail: "Sounds confident. But how do you know nothing important is missing?" },
-    { title: "Asked again. Got something different.", detail: "Same question, new answer. Now you're even less sure." },
-    { title: "The advice feels... fine. Just fine.", detail: "Not wrong, exactly. But not really tailored to your situation either." },
-    { title: "This decision actually matters.", detail: "Too important to just go with one AI's take and hope for the best." },
+    { title: "You made a decision using AI. But can you explain it later?", detail: "No audit trail. No documentation. Just a chat history that proves nothing." },
+    { title: "No documentation. No trail.", detail: "When stakeholders ask why, you have nothing to show." },
+    { title: "Regulators and investors want proof.", detail: "AI-assisted decisions need to be traceable and defensible." },
+    { title: "This decision actually matters.", detail: "Too important to make without a documented decision record." },
   ];
 
   return (
@@ -54,7 +54,7 @@ const PainPoints = () => {
           className={`text-lg text-muted-foreground mb-12 max-w-2xl mx-auto scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: '0.1s' }}
         >
-          The problem with asking AI for advice
+          The problem with undocumented AI-assisted decisions
         </p>
 
         <div className="grid sm:grid-cols-2 gap-5 mb-12">

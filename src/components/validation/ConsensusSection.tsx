@@ -97,7 +97,7 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
                   <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{point.description}</p>
                   {point.actionItems && point.actionItems.length > 0 && (
                     <div className="space-y-3">
-                      <span className="text-base font-semibold text-foreground">Actions:</span>
+                      <span className="text-base font-semibold text-foreground">Observations:</span>
                       <ul className="space-y-3">
                         {point.actionItems.map((action, actionIndex) => (
                           <li

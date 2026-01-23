@@ -27,7 +27,7 @@ export function ConfidenceHeader({
       <div className="flex items-center gap-3 mb-4">
         <SynthesisIcon size={28} className="text-primary shrink-0" />
         <span className="text-sm font-medium text-primary uppercase tracking-wider">
-          Synoptas Synthesis
+          Decision Documentation Summary
         </span>
       </div>
 
@@ -44,6 +44,11 @@ export function ConfidenceHeader({
           <ConfidenceGauge value={confidence} size={isMobile ? 100 : 140} />
         </div>
       </div>
+
+      {/* Disclaimer */}
+      <p className="text-xs sm:text-sm text-muted-foreground mt-4 italic border-t border-primary/10 pt-4">
+        This analysis documents perspectives. The final decision remains with you.
+      </p>
 
       {/* Collapsible Reasoning */}
       {reasoning && (

@@ -12,16 +12,16 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
   },
   header: {
-    marginBottom: 18,
+    marginBottom: 16,
     borderBottomWidth: 2,
     borderBottomColor: '#4FD183',
-    paddingBottom: 12,
+    paddingBottom: 10,
   },
   logo: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#4FD183',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   subtitle: {
     fontSize: 9,
@@ -30,106 +30,106 @@ const styles = StyleSheet.create({
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 6,
     fontSize: 8,
     color: '#888',
   },
   section: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 6,
     color: '#1a1a1a',
-    paddingBottom: 4,
+    paddingBottom: 3,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
   sectionTitlePremium: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 6,
     color: '#7c3aed',
   },
   categoryLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
     color: '#374151',
-    marginBottom: 6,
-    marginTop: 6,
+    marginBottom: 5,
+    marginTop: 4,
   },
   queryBox: {
     backgroundColor: '#f9fafb',
-    padding: 10,
+    padding: 8,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#e5e7eb',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   queryLabel: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#6b7280',
-    marginBottom: 4,
+    marginBottom: 3,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   queryText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#374151',
     lineHeight: 1.4,
   },
   modelInfo: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#666',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   mainRecommendation: {
     backgroundColor: '#ecfdf5',
-    padding: 12,
+    padding: 10,
     borderRadius: 4,
     borderLeftWidth: 4,
     borderLeftColor: '#10b981',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   recommendationTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
-    marginBottom: 6,
+    marginBottom: 4,
     color: '#065f46',
   },
   recommendationDesc: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#047857',
-    lineHeight: 1.5,
+    lineHeight: 1.4,
   },
   confidenceBadge: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#10b981',
     fontWeight: 'bold',
-    marginTop: 6,
+    marginTop: 5,
   },
   actionItem: {
     flexDirection: 'row',
-    marginBottom: 5,
-    paddingLeft: 4,
+    marginBottom: 4,
+    paddingLeft: 3,
   },
   actionNumber: {
-    width: 16,
+    width: 14,
     fontWeight: 'bold',
     color: '#10b981',
-    fontSize: 9,
+    fontSize: 8,
   },
   actionText: {
     flex: 1,
     color: '#374151',
-    fontSize: 9,
-    lineHeight: 1.4,
+    fontSize: 8,
+    lineHeight: 1.3,
   },
   // Point cards with colored borders
   pointCard: {
-    padding: 8,
-    marginBottom: 6,
+    padding: 7,
+    marginBottom: 5,
     borderRadius: 4,
     borderLeftWidth: 3,
   },
@@ -146,67 +146,67 @@ const styles = StyleSheet.create({
     borderLeftColor: '#f59e0b',
   },
   pointTopic: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
-    marginBottom: 3,
+    marginBottom: 2,
     color: '#1f2937',
   },
   pointDesc: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#4b5563',
-    lineHeight: 1.4,
+    lineHeight: 1.3,
   },
   pointModels: {
-    fontSize: 7,
+    fontSize: 6,
     color: '#9ca3af',
-    marginTop: 3,
+    marginTop: 2,
     fontStyle: 'italic',
   },
   // Premium section styles
   premiumSection: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
   premiumBadge: {
     fontSize: 7,
     color: '#7c3aed',
     fontWeight: 'bold',
-    marginBottom: 6,
+    marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   alternativeCard: {
     backgroundColor: '#f5f3ff',
-    padding: 10,
-    marginBottom: 8,
+    padding: 8,
+    marginBottom: 6,
     borderRadius: 4,
   },
   alternativeTitle: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
-    marginBottom: 6,
+    marginBottom: 5,
     color: '#5b21b6',
   },
   prosConsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
   },
   prosConsCol: {
     flex: 1,
   },
   prosBox: {
     backgroundColor: '#dcfce7',
-    padding: 6,
+    padding: 5,
     borderRadius: 3,
   },
   consBox: {
     backgroundColor: '#fee2e2',
-    padding: 6,
+    padding: 5,
     borderRadius: 3,
   },
   prosConsTitle: {
-    fontSize: 8,
+    fontSize: 7,
     fontWeight: 'bold',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   prosTitle: {
     color: '#166534',
@@ -215,66 +215,61 @@ const styles = StyleSheet.create({
     color: '#991b1b',
   },
   prosConsItem: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#4b5563',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   bestFor: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#6b7280',
-    marginTop: 6,
+    marginTop: 4,
     fontStyle: 'italic',
   },
-  outlookRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
-  },
-  outlookCol: {
-    flex: 1,
+  outlookCard: {
     backgroundColor: '#fef3c7',
     padding: 8,
     borderRadius: 4,
+    marginBottom: 6,
   },
   outlookTitle: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 3,
     color: '#92400e',
   },
   outlookText: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#b45309',
-    lineHeight: 1.4,
+    lineHeight: 1.3,
   },
   milestoneItem: {
     flexDirection: 'row',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   milestoneNumber: {
-    width: 14,
-    fontSize: 8,
+    width: 12,
+    fontSize: 7,
     fontWeight: 'bold',
     color: '#10b981',
   },
   milestoneText: {
     flex: 1,
-    fontSize: 8,
+    fontSize: 7,
     color: '#4b5563',
   },
   competitorBox: {
     backgroundColor: '#fdf2f8',
-    padding: 10,
+    padding: 8,
     borderRadius: 4,
   },
   competitorText: {
-    fontSize: 9,
+    fontSize: 7,
     color: '#be185d',
-    lineHeight: 1.5,
+    lineHeight: 1.3,
   },
   footer: {
     position: 'absolute',
-    bottom: 25,
+    bottom: 20,
     left: 35,
     right: 35,
     flexDirection: 'row',
@@ -283,7 +278,7 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
-    paddingTop: 8,
+    paddingTop: 6,
   },
 });
 
@@ -322,19 +317,25 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
   });
 
-  // Limit items to fit properly on pages
+  // STRICT limits to fit properly on pages - reduced from previous
   const limitedActions = (finalRecommendation?.topActions || []).slice(0, 5);
-  const limitedConsensus = (consensusPoints || []).slice(0, 3);
-  const limitedMajority = (majorityPoints || []).slice(0, 3);
-  const limitedDissent = (dissentPoints || []).slice(0, 3);
+  const limitedConsensus = (consensusPoints || []).slice(0, 2);
+  const limitedMajority = (majorityPoints || []).slice(0, 2);
+  const limitedDissent = (dissentPoints || []).slice(0, 2);
   const limitedAlternatives = (strategicAlternatives || []).slice(0, 2);
+  const limitedMilestones = (longTermOutlook?.keyMilestones || []).slice(0, 3);
 
   const hasAnalysisPoints = limitedConsensus.length > 0 || limitedMajority.length > 0 || limitedDissent.length > 0;
-  const hasPremiumContent = isPremium && (limitedAlternatives.length > 0 || longTermOutlook || competitorInsights);
+  const hasStrategicAlternatives = isPremium && limitedAlternatives.length > 0;
+  const hasOutlookOrCompetitor = isPremium && (longTermOutlook || competitorInsights);
+
+  // Calculate page numbers dynamically
+  let currentPageCount = 1; // Page 1 always exists
+  if (hasAnalysisPoints) currentPageCount++;
+  if (hasStrategicAlternatives) currentPageCount++;
+  if (hasOutlookOrCompetitor) currentPageCount++;
 
   return (
     <Document>
@@ -352,31 +353,31 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
         </View>
 
         {/* Query Section */}
-        <View style={styles.queryBox}>
+        <View style={styles.queryBox} wrap={false}>
           <Text style={styles.queryLabel}>Your Question</Text>
           <Text style={styles.modelInfo}>Models: {modelNames}</Text>
-          <Text style={styles.queryText}>{truncateText(prompt, 400)}</Text>
+          <Text style={styles.queryText}>{truncateText(prompt, 300)}</Text>
         </View>
 
         {/* Main Recommendation */}
         <View style={styles.mainRecommendation} wrap={false}>
           <Text style={styles.recommendationTitle}>
-            {truncateText(finalRecommendation?.title, 100) || 'AI Recommendation'}
+            {truncateText(finalRecommendation?.title, 80) || 'AI Recommendation'}
           </Text>
           <Text style={styles.recommendationDesc}>
-            {truncateText(finalRecommendation?.description, 500)}
+            {truncateText(finalRecommendation?.description, 400)}
           </Text>
           <Text style={styles.confidenceBadge}>Confidence: {overallConfidence}%</Text>
         </View>
 
-        {/* Priority Actions */}
+        {/* Priority Actions - strictly limited to 5 */}
         {limitedActions.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Priority Actions</Text>
             {limitedActions.map((action, i) => (
               <View key={i} style={styles.actionItem} wrap={false}>
                 <Text style={styles.actionNumber}>{i + 1}.</Text>
-                <Text style={styles.actionText}>{truncateText(action, 150)}</Text>
+                <Text style={styles.actionText}>{truncateText(action, 100)}</Text>
               </View>
             ))}
           </View>
@@ -385,7 +386,7 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text>Generated by Synoptas | Multi-AI Validation Platform</Text>
-          <Text>Page 1</Text>
+          <Text>Page 1 of {currentPageCount}</Text>
         </View>
       </Page>
 
@@ -397,14 +398,14 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
             <Text style={styles.subtitle}>Detailed Model Analysis</Text>
           </View>
 
-          {/* Consensus Points */}
+          {/* Consensus Points - ALWAYS render if available */}
           {limitedConsensus.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.categoryLabel}>✓ Consensus (All Models Agree)</Text>
               {limitedConsensus.map((point, i) => (
                 <View key={i} style={[styles.pointCard, styles.consensusCard]} wrap={false}>
-                  <Text style={styles.pointTopic}>{truncateText(point.topic, 80)}</Text>
-                  <Text style={styles.pointDesc}>{truncateText(point.description, 250)}</Text>
+                  <Text style={styles.pointTopic}>{truncateText(point.topic, 60)}</Text>
+                  <Text style={styles.pointDesc}>{truncateText(point.description, 200)}</Text>
                 </View>
               ))}
             </View>
@@ -416,8 +417,8 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
               <Text style={styles.categoryLabel}>◐ Majority View</Text>
               {limitedMajority.map((point, i) => (
                 <View key={i} style={[styles.pointCard, styles.majorityCard]} wrap={false}>
-                  <Text style={styles.pointTopic}>{truncateText(point.topic, 80)}</Text>
-                  <Text style={styles.pointDesc}>{truncateText(point.description, 250)}</Text>
+                  <Text style={styles.pointTopic}>{truncateText(point.topic, 60)}</Text>
+                  <Text style={styles.pointDesc}>{truncateText(point.description, 200)}</Text>
                 </View>
               ))}
             </View>
@@ -429,10 +430,10 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
               <Text style={styles.categoryLabel}>⚡ Different Perspectives</Text>
               {limitedDissent.map((point, i) => (
                 <View key={i} style={[styles.pointCard, styles.dissentCard]} wrap={false}>
-                  <Text style={styles.pointTopic}>{truncateText(point.topic, 80)}</Text>
+                  <Text style={styles.pointTopic}>{truncateText(point.topic, 60)}</Text>
                   {point.positions?.slice(0, 2).map((pos, j) => (
                     <Text key={j} style={styles.pointDesc}>
-                      {pos.modelName}: {truncateText(pos.position, 150)}
+                      {pos.modelName}: {truncateText(pos.position, 120)}
                     </Text>
                   ))}
                 </View>
@@ -443,71 +444,85 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           {/* Footer */}
           <View style={styles.footer} fixed>
             <Text>Generated by Synoptas | Multi-AI Validation Platform</Text>
-            <Text>Page 2</Text>
+            <Text>Page 2 of {currentPageCount}</Text>
           </View>
         </Page>
       )}
 
-      {/* Page 3: Premium Insights */}
-      {hasPremiumContent && (
+      {/* Page 3: Premium - Strategic Alternatives (separate page) */}
+      {hasStrategicAlternatives && (
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
             <Text style={styles.logo}>Synoptas</Text>
             <Text style={styles.subtitle}>Premium Insights</Text>
           </View>
 
-          {/* Strategic Alternatives */}
-          {limitedAlternatives.length > 0 && (
-            <View style={styles.premiumSection}>
-              <Text style={styles.premiumBadge}>★ Premium</Text>
-              <Text style={styles.sectionTitlePremium}>Strategic Alternatives</Text>
-              {limitedAlternatives.map((alt, i) => (
-                <View key={i} style={styles.alternativeCard} wrap={false}>
-                  <Text style={styles.alternativeTitle}>{truncateText(alt.scenario, 80)}</Text>
-                  <View style={styles.prosConsRow}>
-                    <View style={[styles.prosConsCol, styles.prosBox]}>
-                      <Text style={[styles.prosConsTitle, styles.prosTitle]}>Pros</Text>
-                      {alt.pros?.slice(0, 3).map((pro, j) => (
-                        <Text key={j} style={styles.prosConsItem}>+ {truncateText(pro, 50)}</Text>
-                      ))}
-                    </View>
-                    <View style={[styles.prosConsCol, styles.consBox]}>
-                      <Text style={[styles.prosConsTitle, styles.consTitle]}>Cons</Text>
-                      {alt.cons?.slice(0, 3).map((con, j) => (
-                        <Text key={j} style={styles.prosConsItem}>− {truncateText(con, 50)}</Text>
-                      ))}
-                    </View>
+          <View style={styles.premiumSection}>
+            <Text style={styles.premiumBadge}>★ Premium</Text>
+            <Text style={styles.sectionTitlePremium}>Strategic Alternatives</Text>
+            {limitedAlternatives.map((alt, i) => (
+              <View key={i} style={styles.alternativeCard} wrap={false}>
+                <Text style={styles.alternativeTitle}>{truncateText(alt.scenario, 70)}</Text>
+                <View style={styles.prosConsRow}>
+                  <View style={[styles.prosConsCol, styles.prosBox]}>
+                    <Text style={[styles.prosConsTitle, styles.prosTitle]}>Pros</Text>
+                    {alt.pros?.slice(0, 2).map((pro, j) => (
+                      <Text key={j} style={styles.prosConsItem}>+ {truncateText(pro, 45)}</Text>
+                    ))}
                   </View>
-                  {alt.bestFor && (
-                    <Text style={styles.bestFor}>Best for: {truncateText(alt.bestFor, 80)}</Text>
-                  )}
+                  <View style={[styles.prosConsCol, styles.consBox]}>
+                    <Text style={[styles.prosConsTitle, styles.consTitle]}>Cons</Text>
+                    {alt.cons?.slice(0, 2).map((con, j) => (
+                      <Text key={j} style={styles.prosConsItem}>− {truncateText(con, 45)}</Text>
+                    ))}
+                  </View>
                 </View>
-              ))}
-            </View>
-          )}
+                {alt.bestFor && (
+                  <Text style={styles.bestFor}>Best for: {truncateText(alt.bestFor, 60)}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer} fixed>
+            <Text>Generated by Synoptas | Multi-AI Validation Platform</Text>
+            <Text>Page {hasAnalysisPoints ? 3 : 2} of {currentPageCount}</Text>
+          </View>
+        </Page>
+      )}
+
+      {/* Page 4: Premium - Long-term Outlook & Competitor Insights (separate page) */}
+      {hasOutlookOrCompetitor && (
+        <Page size="A4" style={styles.page}>
+          <View style={styles.header}>
+            <Text style={styles.logo}>Synoptas</Text>
+            <Text style={styles.subtitle}>Premium Insights</Text>
+          </View>
 
           {/* Long-term Outlook */}
           {longTermOutlook && (
             <View style={styles.premiumSection}>
               <Text style={styles.premiumBadge}>★ Premium</Text>
               <Text style={styles.sectionTitlePremium}>Long-term Outlook</Text>
-              <View style={styles.outlookRow}>
-                <View style={styles.outlookCol}>
-                  <Text style={styles.outlookTitle}>6-Month Outlook</Text>
-                  <Text style={styles.outlookText}>{truncateText(longTermOutlook.sixMonths, 180)}</Text>
-                </View>
-                <View style={styles.outlookCol}>
-                  <Text style={styles.outlookTitle}>12-Month Outlook</Text>
-                  <Text style={styles.outlookText}>{truncateText(longTermOutlook.twelveMonths, 180)}</Text>
-                </View>
+              
+              <View style={styles.outlookCard} wrap={false}>
+                <Text style={styles.outlookTitle}>6-Month Outlook</Text>
+                <Text style={styles.outlookText}>{truncateText(longTermOutlook.sixMonths, 150)}</Text>
               </View>
-              {longTermOutlook.keyMilestones && longTermOutlook.keyMilestones.length > 0 && (
-                <View>
+
+              <View style={styles.outlookCard} wrap={false}>
+                <Text style={styles.outlookTitle}>12-Month Outlook</Text>
+                <Text style={styles.outlookText}>{truncateText(longTermOutlook.twelveMonths, 150)}</Text>
+              </View>
+
+              {limitedMilestones.length > 0 && (
+                <View wrap={false}>
                   <Text style={styles.outlookTitle}>Key Milestones</Text>
-                  {longTermOutlook.keyMilestones.slice(0, 4).map((milestone, i) => (
+                  {limitedMilestones.map((milestone, i) => (
                     <View key={i} style={styles.milestoneItem}>
                       <Text style={styles.milestoneNumber}>{i + 1}.</Text>
-                      <Text style={styles.milestoneText}>{truncateText(milestone, 80)}</Text>
+                      <Text style={styles.milestoneText}>{truncateText(milestone, 70)}</Text>
                     </View>
                   ))}
                 </View>
@@ -520,16 +535,16 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
             <View style={styles.premiumSection}>
               <Text style={styles.premiumBadge}>★ Premium</Text>
               <Text style={styles.sectionTitlePremium}>Competitor Insights</Text>
-              <View style={styles.competitorBox}>
-                <Text style={styles.competitorText}>{truncateText(competitorInsights, 400)}</Text>
+              <View style={styles.competitorBox} wrap={false}>
+                <Text style={styles.competitorText}>{truncateText(competitorInsights, 300)}</Text>
               </View>
             </View>
           )}
 
-          {/* Footer */}
+          {/* Footer with dynamic page number */}
           <View style={styles.footer} fixed>
             <Text>Generated by Synoptas | Multi-AI Validation Platform</Text>
-            <Text>Page 3</Text>
+            <Text>Page {currentPageCount} of {currentPageCount}</Text>
           </View>
         </Page>
       )}

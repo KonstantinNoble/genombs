@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
-
+import { useIsMobile } from '@/hooks/use-mobile';
 interface PDFExportButtonProps {
   result: ValidationResult;
   prompt: string;
@@ -22,7 +22,12 @@ interface PDFExportButtonProps {
 export function PDFExportButton({ result, prompt, isPremium }: PDFExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
+  // Hide PDF export on mobile devices
+  if (isMobile) {
+    return null;
+  }
   const handleExport = async () => {
     if (!isPremium) {
       toast({

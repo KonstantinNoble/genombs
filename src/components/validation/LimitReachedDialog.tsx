@@ -120,7 +120,7 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-primary font-bold">+</span>
-                  <span className="text-muted-foreground">full analysis</span>
+                  <span className="text-muted-foreground">PDF reports (desktop)</span>
                 </div>
               </div>
 

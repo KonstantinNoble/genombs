@@ -133,6 +133,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 <li>• What are others doing? (Competitor insights)</li>
                 <li>• Where does this lead? (6-12 month outlook)</li>
                 <li>• Full reasoning from each model</li>
+                <li>• PDF export for your records (desktop)</li>
               </ul>
               
               <Button 

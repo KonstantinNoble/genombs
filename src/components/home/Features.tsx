@@ -54,7 +54,7 @@ const Features = () => {
     },
     { 
       title: "Premium Deep Insights", 
-      description: "Competitor context, long-term outlook, and strategic alternatives. Plus PDF export and experiment tracking." 
+      description: "Competitor context, long-term outlook, and strategic alternatives. Plus PDF export (desktop) and experiment tracking." 
     }
   ];
 

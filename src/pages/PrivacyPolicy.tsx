@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 21, 2026 | Version 5.2</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 23, 2026 | Version 5.3</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -722,6 +722,52 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               Premium status is determined by your subscription status stored in the user_credits table.
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.6 Decision Audit Records (Premium)</h3>
+            <p className="text-muted-foreground mb-4">
+              Premium subscribers can create auditable decision records that document their acknowledgment 
+              of decision ownership. This feature provides legal documentation for compliance and 
+              accountability purposes.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Decision title:</strong> First 100 characters of your validation prompt</li>
+              <li><strong>Decision context:</strong> Full validation prompt text</li>
+              <li><strong>Ownership confirmation status:</strong> Whether you confirmed decision ownership</li>
+              <li><strong>Confirmation timestamp:</strong> When confirmation was submitted</li>
+              <li><strong>Export metadata:</strong> PDF export count and timestamps</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Audit Log</h4>
+            <p className="text-muted-foreground mb-4">
+              Each confirmation creates an audit log entry containing:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Action performed ("confirmed")</li>
+              <li>Actor ID (your user identifier)</li>
+              <li>Timestamp of the action</li>
+              <li>Metadata (which acknowledgment statements were confirmed)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">PDF Generation</h4>
+            <p className="text-muted-foreground mb-4">
+              Decision audit reports are generated locally in your browser using client-side PDF rendering. 
+              The PDF file is never transmitted to our servers – it is created and downloaded directly to 
+              your device.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
+                (providing the decision documentation feature as part of Premium service)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing legally defensible 
+                documentation for business decisions
+              </li>
+            </ul>
           </section>
 
           {/* Section 6: Premium Subscription */}
@@ -947,6 +993,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Freemius IDs, subscription status, billing cycle</td>
                     <td className="border border-border p-3">Payment and subscription management</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Decision Records</strong> (Premium)</td>
+                    <td className="border border-border p-3">Ownership confirmations, decision context, export metadata, audit logs</td>
+                    <td className="border border-border p-3">Legal documentation and decision accountability</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1139,12 +1190,23 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Indefinitely (deduplication)</td>
                     <td className="border border-border p-3">Fraud prevention and duplicate payment detection</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3">Decision records (Premium)</td>
+                    <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">User-initiated or CASCADE on account deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Decision audit logs (Premium)</td>
+                    <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">CASCADE when parent decision record is deleted</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
 
             <p className="text-muted-foreground mb-4">
-              When you delete your account, all associated data is permanently deleted, except for the 
+              When you delete your account, all associated data is permanently deleted, including 
+              decision records and their associated audit logs (database CASCADE), except for the 
               temporary email hash used to prevent immediate re-registration (deleted after 24 hours).
             </p>
           </section>
@@ -1257,6 +1319,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.3 (January 23, 2026):</strong> Added Decision Audit Records section (5.6) documenting Premium decision ownership confirmation feature, audit logging, and client-side PDF generation. Updated data categories and retention tables.</li>
               <li><strong>Version 5.2 (January 21, 2026):</strong> Corrected Berlin Data Protection Authority address (Alt-Moabit 59-61). Updated Recipients table: removed OpenRouter, added Lovable AI Gateway, Anthropic, and Perplexity AI. Updated AI model names in data categories.</li>
               <li><strong>Version 5.1 (January 21, 2026):</strong> Removed obsolete database tables and edge functions (Business Tools Advisor, Ads Advisor, Firecrawl). Cleaned up version history to reflect current platform scope.</li>
               <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation.</li>
@@ -1266,7 +1329,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: January 21, 2026
+              Last updated: January 23, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

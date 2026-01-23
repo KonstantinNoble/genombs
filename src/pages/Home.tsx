@@ -75,9 +75,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <SEOHead
-        title="Three Opinions Before You Decide"
-        description="Before you commit to a big business decision, run it through three perspectives. See where they agree, where they differ, and what you might be missing."
-        keywords="business decisions, second opinion, decision validation, strategic planning, risk assessment"
+        title="Document Decisions Before You Commit"
+        description="Document your decision process with multiple AI perspectives. Auditable, exportable, stakeholder-ready. For founders, investors, and regulated teams."
+        keywords="decision documentation, audit trail, due diligence, compliance, decision records, liability protection"
         canonical="/"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -85,11 +85,11 @@ const Home = () => {
         name="Synoptas"
         url="https://synoptas.com"
         logo="https://synoptas.com/synoptas-favicon.png"
-        description="Decision validation tool for founders and business owners"
+        description="Decision documentation platform for founders, investors, and regulated teams"
       />
       <WebPageSchema
-        name="Synoptas – Three Opinions on Your Business Decision"
-        description="Get three perspectives before making important business decisions. See where they agree and spot what you might be overlooking."
+        name="Synoptas – Document Your Decision Process"
+        description="Create auditable decision records with multiple AI perspectives. Stakeholder-ready documentation for important decisions."
         url="https://synoptas.com/"
       />
       <Navbar />

@@ -54,7 +54,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
       <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border-2 border-primary/40">
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor="prompt" className="text-base sm:text-lg font-semibold text-foreground">
-            Your Business Question
+            Decision Context
           </Label>
           <span className={cn(
             "text-sm sm:text-base tabular-nums font-medium shrink-0",
@@ -67,13 +67,13 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
           id="prompt"
           value={prompt}
           onChange={(e) => handlePromptChange(e.target.value)}
-          placeholder="E.g., Should I expand my SaaS product to enterprise clients?"
+          placeholder="E.g., Investment evaluation: Should we proceed with Series A funding for [Company]?"
           className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed border-primary/10 focus:border-primary/30"
           disabled={disabled}
           maxLength={MAX_CHARACTERS}
         />
         <p className="text-sm sm:text-base text-muted-foreground">
-          Ask any strategic business question. Your selected AI models will analyze and provide validated recommendations.
+          Describe the decision you need to document. Multiple perspectives will be recorded for your audit trail.
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
       {/* Risk Preference Slider with Custom Icons */}
       <div className="space-y-3 sm:space-y-4 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border">
         <div className="flex items-center justify-between gap-2">
-          <Label className="text-base sm:text-lg font-semibold">Risk Tolerance</Label>
+          <Label className="text-base sm:text-lg font-semibold">Perspective Weighting</Label>
           <span className="text-sm sm:text-base font-bold text-primary px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-primary/10 shrink-0">
             {getRiskLabel(riskPreference)}
           </span>

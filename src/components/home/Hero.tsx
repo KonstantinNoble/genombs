@@ -70,9 +70,9 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <span className="text-primary">Before You Decide,</span>
+            <span className="text-primary">Document Decisions,</span>
             <br />
-            <span className="text-foreground">Ask Three Times</span>
+            <span className="text-foreground">Reduce Liability</span>
           </h1>
 
           {/* Subheadline */}
@@ -81,8 +81,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Got a business question? Let multiple AI models analyze it. 
-            See where they agree – and where they don't.
+            See how thoroughly your decision was prepared – not what's "right". 
+            Multiple perspectives, documented and traceable.
           </p>
 
           {/* CTA Buttons */}
@@ -97,7 +97,7 @@ const Hero = () => {
               className="btn-glow rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               <Link to="/validate">
-                {isPremium && user ? "Back to Validator" : "Try It Free"}
+                {isPremium && user ? "Back to Decision Records" : "Start Decision Record"}
               </Link>
             </Button>
             
@@ -126,7 +126,7 @@ const Hero = () => {
               {isPremium && user ? "Premium access" : "No credit card needed"}
             </span>
             <span className="text-sm sm:text-base text-muted-foreground">
-              2 free checks per day
+              2 free records per day
             </span>
           </div>
         </div>

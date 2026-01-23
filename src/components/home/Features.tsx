@@ -41,20 +41,20 @@ const Features = () => {
 
   const features = [
     { 
-      title: "One Question, Multiple Perspectives", 
-      description: "Your question goes to three AI models simultaneously. Each thinks differently – you see where they converge and where they diverge." 
+      title: "One Decision, Multiple Documented Perspectives", 
+      description: "Your decision context is analyzed from multiple angles. All perspectives are documented and traceable." 
     },
     { 
-      title: "Consensus & Dissent", 
-      description: "Quickly scan what all models agree on (consensus) vs. unique perspectives only one model raised (dissent)."
+      title: "Documented Consensus & Dissent", 
+      description: "See what all perspectives agree on vs. documented points of disagreement – essential for due diligence."
     },
     { 
-      title: "Weighted Confidence", 
-      description: "Combine all responses into a single confidence score. Adjust how much each model's opinion matters." 
+      title: "Coverage Score", 
+      description: "See how thoroughly your decision was analyzed. The Coverage Score measures completeness, not correctness." 
     },
     { 
-      title: "Premium Deep Insights", 
-      description: "Competitor context, long-term outlook, and strategic alternatives. Plus PDF export (desktop) and experiment tracking." 
+      title: "Decision Audit Report", 
+      description: "Full documentation: alternative scenarios, risk considerations, and exportable PDF audit reports. Your decision record for stakeholders." 
     }
   ];
 
@@ -64,8 +64,8 @@ const Features = () => {
       <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent-cool/5 rounded-full blur-3xl" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">How Synoptas Works</h2>
-          <p className="text-lg text-muted-foreground">Get multiple perspectives on every business decision</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">How Decision Documentation Works</h2>
+          <p className="text-lg text-muted-foreground">Create auditable records for important decisions</p>
         </div>
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {features.map((feature, index) => (

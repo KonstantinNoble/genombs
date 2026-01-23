@@ -10,38 +10,38 @@ import {
 const faqs = [
   {
     question: "So what is this, exactly?",
-    answer: "You type a business question. Three AI models – GPT-5, Gemini Pro, and Flash – each think about it separately. Then we show you where they agree and where they don't. Takes about 20 seconds."
+    answer: "You describe a decision. Three AI models document different perspectives. We show where they agree, where they disagree, and give you an exportable record. Takes about 20 seconds."
   },
   {
     question: "Why would I want three AIs instead of one?",
-    answer: "One model gives you one answer. Sounds confident, but how do you know it's right? When three models independently say the same thing, that's a stronger signal. When they disagree, that's useful too – it shows where you should think harder."
+    answer: "One model gives you one perspective – undocumented. With three, you get documented consensus, documented dissent, and a complete picture you can show to stakeholders."
   },
   {
     question: "What do 'consensus' and 'dissent' mean here?",
-    answer: "Consensus = all three models basically agree. Dissent = they don't. We break it down so you can see exactly which parts of the advice are solid and which parts are up for debate."
+    answer: "Consensus = all three models document the same perspective. Dissent = they document different viewpoints. This shows which aspects have broad agreement and which require deeper consideration."
   },
   {
     question: "What's the point of the sliders?",
-    answer: "They shape the analysis. Risk slider: conservative vs. bold recommendations. Creativity slider: practical ideas vs. more innovative ones. Adjust them to match how you think."
+    answer: "They shape the perspective weighting. Adjust how much each model's documented view influences the summary. Match it to your decision context."
   },
   {
-    question: "What kind of questions should I ask?",
-    answer: "Real decisions you're actually facing. 'Should I raise prices 20%?' 'Is now the right time to hire?' 'Should I expand to enterprise clients?' Specific questions get the most useful answers."
+    question: "What kind of decisions should I document?",
+    answer: "Important decisions you need to justify later. Investment decisions, strategic pivots, hiring choices, pricing changes. The more consequential, the more valuable the documentation."
   },
   {
     question: "How much should I trust this?",
-    answer: "When all three models agree, that's usually a solid take. But it's not a crystal ball. Use it as input for your thinking, not as a replacement for it."
+    answer: "Synoptas documents perspectives – it doesn't make decisions. You decide. We help you prove you considered multiple viewpoints before deciding."
   },
   {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 checks a day, shorter responses. Premium: 10 checks a day, detailed answers, plus sections you don't get otherwise – competitor context, 6-12 month outlook, backup strategies if Plan A doesn't work, and PDF export to save your analyses (desktop only)."
+    answer: "Free: 2 decision records per day, basic documentation. Premium: 10 records per day, full audit trail, competitor context, 6-12 month outlook, and PDF export for stakeholder-ready reports."
   },
   {
     question: "Can I try it without paying?",
-    answer: "Yes. 2 free checks per day, no credit card needed. Enough to see if it's useful for you."
+    answer: "Yes. 2 free decision records per day, no credit card needed. Enough to see if documented decisions help you."
   },
   {
-    question: "What happens to my questions?",
+    question: "What happens to my decision records?",
     answer: "They're private. We don't share them with anyone. Everything's encrypted. Delete your account and we delete your data. Full details in the privacy policy."
   },
   {

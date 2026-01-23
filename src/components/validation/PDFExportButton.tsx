@@ -17,9 +17,11 @@ interface PDFExportButtonProps {
   result: ValidationResult;
   prompt: string;
   isPremium: boolean;
+  isConfirmed?: boolean;
+  onRequireConfirmation?: () => void;
 }
 
-export function PDFExportButton({ result, prompt, isPremium }: PDFExportButtonProps) {
+export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false, onRequireConfirmation }: PDFExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -28,6 +30,7 @@ export function PDFExportButton({ result, prompt, isPremium }: PDFExportButtonPr
   if (isMobile) {
     return null;
   }
+
   const handleExport = async () => {
     if (!isPremium) {
       toast({
@@ -36,6 +39,17 @@ export function PDFExportButton({ result, prompt, isPremium }: PDFExportButtonPr
         variant: "default",
       });
       navigate('/pricing');
+      return;
+    }
+
+    // Check for confirmation before allowing export
+    if (!isConfirmed) {
+      toast({
+        title: "Confirmation Required",
+        description: "Please confirm decision ownership before exporting the audit report.",
+        variant: "default",
+      });
+      onRequireConfirmation?.();
       return;
     }
 

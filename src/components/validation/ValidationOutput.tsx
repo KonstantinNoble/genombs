@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ConfidenceHeader } from "./ConfidenceHeader";
 import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
 import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
 import { PDFExportButton } from "./PDFExportButton";
+import { DecisionConfirmation } from "./DecisionConfirmation";
 
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
@@ -23,7 +24,9 @@ interface ValidationOutputProps {
 
 export function ValidationOutput({ result, validationId, prompt = '', onStartExperiment }: ValidationOutputProps) {
   const [actionsExpanded, setActionsExpanded] = useState(false);
-  
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [decisionRecordId, setDecisionRecordId] = useState<string | undefined>();
+  const confirmationRef = useRef<HTMLDivElement>(null);
   const {
     modelResponses,
     selectedModels,
@@ -55,6 +58,24 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
     : finalRecommendation.topActions?.slice(0, 3);
   const hasMoreActions = (finalRecommendation.topActions?.length || 0) > 3;
 
+  const handleConfirmed = (recordId: string) => {
+    setIsConfirmed(true);
+    setDecisionRecordId(recordId);
+  };
+
+  const scrollToConfirmation = () => {
+    if (confirmationRef.current) {
+      const top = confirmationRef.current.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
+  // Reset confirmation state when validation changes
+  useEffect(() => {
+    setIsConfirmed(false);
+    setDecisionRecordId(undefined);
+  }, [validationId]);
+
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Processing Info */}
@@ -69,7 +90,13 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
             Premium
           </Badge>
         )}
-        <PDFExportButton result={result} prompt={prompt} isPremium={isPremium || false} />
+        <PDFExportButton 
+          result={result} 
+          prompt={prompt} 
+          isPremium={isPremium || false}
+          isConfirmed={isConfirmed}
+          onRequireConfirmation={scrollToConfirmation}
+        />
       </div>
 
       {/* Main Recommendation */}
@@ -245,6 +272,20 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
         isPremium={isPremium}
         citations={citations}
       />
+
+      {/* Decision Confirmation - Required for PDF Export */}
+      {isPremium && validationId && (
+        <div ref={confirmationRef}>
+          <Separator className="my-6" />
+          <DecisionConfirmation
+            validationId={validationId}
+            prompt={prompt}
+            onConfirmed={handleConfirmed}
+            isConfirmed={isConfirmed}
+            decisionRecordId={decisionRecordId}
+          />
+        </div>
+      )}
     </div>
   );
 }

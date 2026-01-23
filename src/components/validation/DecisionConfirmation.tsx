@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Shield, FileCheck, AlertTriangle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { pdf } from '@react-pdf/renderer';
+import { ValidationReportPDF } from './ValidationReportPDF';
+import type { ValidationResult } from '@/hooks/useMultiAIValidation';
 
 interface DecisionConfirmationProps {
   validationId: string;
@@ -14,6 +17,7 @@ interface DecisionConfirmationProps {
   isConfirmed: boolean;
   decisionRecordId?: string;
   className?: string;
+  result: ValidationResult;
 }
 
 export function DecisionConfirmation({
@@ -22,13 +26,50 @@ export function DecisionConfirmation({
   onConfirmed,
   isConfirmed,
   decisionRecordId,
-  className
+  className,
+  result
 }: DecisionConfirmationProps) {
   const [ownershipChecked, setOwnershipChecked] = useState(false);
   const [reviewedChecked, setReviewedChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canConfirm = ownershipChecked && reviewedChecked;
+
+  const downloadPDF = async (confirmedAt: string) => {
+    try {
+      const blob = await pdf(
+        <ValidationReportPDF 
+          result={result} 
+          prompt={prompt}
+          confirmedAt={confirmedAt}
+        />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `decision-audit-report-${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 5000);
+
+      toast({
+        title: "Decision Audit Report Generated",
+        description: "Your audit report has been downloaded.",
+      });
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Could not generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleConfirm = async () => {
     if (!canConfirm) return;
@@ -77,12 +118,12 @@ export function DecisionConfirmation({
         }
       });
 
-      toast({
-        title: "Decision Confirmed",
-        description: "Your decision record has been created. You can now export the audit report."
-      });
-
+      const confirmedAt = new Date().toISOString();
+      
       onConfirmed(decisionRecord.id);
+      
+      // Auto-download PDF immediately after confirmation
+      await downloadPDF(confirmedAt);
 
     } catch (error) {
       console.error('Error confirming decision:', error);
@@ -103,15 +144,12 @@ export function DecisionConfirmation({
         className
       )}>
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-full bg-green-500/20">
-            <FileCheck className="h-5 w-5 text-green-600" />
-          </div>
           <div className="flex-1">
             <p className="font-semibold text-green-700 dark:text-green-400">
               Decision Record Confirmed
             </p>
             <p className="text-sm text-muted-foreground">
-              You confirmed ownership on {new Date().toLocaleDateString()}. PDF export is now available.
+              You confirmed ownership on {new Date().toLocaleDateString()}. Your audit report has been downloaded.
             </p>
           </div>
         </div>
@@ -125,18 +163,13 @@ export function DecisionConfirmation({
       className
     )}>
       {/* Header */}
-      <div className="flex items-start gap-3 mb-5">
-        <div className="p-2 rounded-full bg-amber-500/20 shrink-0">
-          <Shield className="h-5 w-5 text-amber-600" />
-        </div>
-        <div>
-          <h3 className="font-bold text-lg text-foreground">
-            Confirm Decision Ownership
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            To create an auditable decision record and enable PDF export, please confirm the following:
-          </p>
-        </div>
+      <div className="mb-5">
+        <h3 className="font-bold text-lg text-foreground">
+          Confirm Decision Ownership
+        </h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          To create an auditable decision record and download your PDF, please confirm the following:
+        </p>
       </div>
 
       {/* Checkboxes */}
@@ -180,13 +213,10 @@ export function DecisionConfirmation({
         </div>
       </div>
 
-      {/* Warning */}
-      <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 mb-5">
-        <AlertTriangle className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          PDF export requires confirmation. This creates a timestamped audit record that can be shared with stakeholders.
-        </p>
-      </div>
+      {/* Info text */}
+      <p className="text-xs sm:text-sm text-muted-foreground p-3 rounded-lg bg-muted/50 mb-5">
+        This creates a timestamped audit record and automatically downloads your PDF.
+      </p>
 
       {/* Confirm Button */}
       <Button
@@ -200,12 +230,12 @@ export function DecisionConfirmation({
         )}
       >
         {isSubmitting ? (
-          "Creating Decision Record..."
-        ) : canConfirm ? (
           <>
-            <FileCheck className="h-4 w-4 mr-2" />
-            Confirm & Create Decision Record
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Creating & Downloading...
           </>
+        ) : canConfirm ? (
+          "Confirm & Download PDF"
         ) : (
           "Check both boxes to confirm"
         )}

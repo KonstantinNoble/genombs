@@ -22,18 +22,18 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#4FD183',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   reportTitle: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#1a1a1a',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: 10,
     color: '#666',
-    marginTop: 2,
+    marginTop: 4,
   },
   metaRow: {
     flexDirection: 'row',

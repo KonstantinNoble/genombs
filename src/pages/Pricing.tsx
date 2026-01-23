@@ -24,6 +24,7 @@ const PricingPage = () => {
     { name: "Competitor Insights", free: "—", premium: "✓" },
     { name: "Long-term Outlook", free: "—", premium: "✓" },
     { name: "Full Model Responses", free: "—", premium: "✓" },
+    { name: "PDF Export (Desktop)", free: "—", premium: "✓" },
   ];
 
   const faqs = [
@@ -33,7 +34,7 @@ const PricingPage = () => {
     },
     {
       question: "What do I actually get with Premium?",
-      answer: "10 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months."
+      answer: "10 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months. You also get PDF export to save your analyses (desktop only)."
     },
     {
       question: "When does my limit reset?",
@@ -55,7 +56,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
           title="Pricing – Start Free, Upgrade When Ready"
-          description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, and 6-month outlook for $26.99/month."
+        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, 6-month outlook, and PDF export for $26.99/month."
           keywords="pricing, free trial, business tool cost, premium features"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
@@ -76,7 +77,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing – Start Free, Upgrade When Ready"
-        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, and 6-month outlook for $26.99/month."
+        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, 6-month outlook, and PDF export for $26.99/month."
         keywords="pricing, free trial, business tool cost, premium features"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"

@@ -2,11 +2,11 @@ import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import type { ValidationResult } from '@/hooks/useMultiAIValidation';
 import { AVAILABLE_MODELS } from './ModelSelector';
 
-// Styles optimized for flowing multi-page layout
+// Styles optimized for Decision Audit Report
 const styles = StyleSheet.create({
   page: {
     padding: 35,
-    paddingBottom: 60, // Extra space for footer
+    paddingBottom: 60,
     fontFamily: 'Helvetica',
     fontSize: 11,
     lineHeight: 1.4,
@@ -22,7 +22,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#4FD183',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  reportTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 2,
   },
   subtitle: {
     fontSize: 10,
@@ -35,6 +41,70 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 9,
     color: '#888',
+  },
+  // Confirmation Statement Box
+  confirmationBox: {
+    backgroundColor: '#ecfdf5',
+    padding: 12,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    marginBottom: 14,
+  },
+  confirmationHeader: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  confirmationIcon: {
+    fontSize: 12,
+    color: '#10b981',
+    marginRight: 6,
+  },
+  confirmationTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#065f46',
+  },
+  confirmationText: {
+    fontSize: 9,
+    color: '#047857',
+    marginBottom: 4,
+    lineHeight: 1.4,
+  },
+  confirmationTimestamp: {
+    fontSize: 8,
+    color: '#6b7280',
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
+  // Audit Trail Section
+  auditTrailBox: {
+    backgroundColor: '#f8fafc',
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 14,
+  },
+  auditTrailTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#475569',
+    marginBottom: 6,
+  },
+  auditRow: {
+    flexDirection: 'row',
+    marginBottom: 3,
+  },
+  auditLabel: {
+    fontSize: 8,
+    color: '#64748b',
+    width: 100,
+  },
+  auditValue: {
+    fontSize: 8,
+    color: '#1e293b',
+    flex: 1,
   },
   section: {
     marginBottom: 14,
@@ -89,43 +159,50 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 6,
   },
-  mainRecommendation: {
-    backgroundColor: '#ecfdf5',
+  // Summary Box (replaces recommendation)
+  summaryBox: {
+    backgroundColor: '#f0f9ff',
     padding: 12,
     borderRadius: 4,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: '#0ea5e9',
     marginBottom: 14,
   },
-  recommendationTitle: {
+  summaryTitle: {
     fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 6,
-    color: '#065f46',
+    color: '#0c4a6e',
   },
-  recommendationDesc: {
+  summaryDesc: {
     fontSize: 10,
-    color: '#047857',
+    color: '#0369a1',
     lineHeight: 1.5,
   },
-  confidenceBadge: {
+  coverageScore: {
     fontSize: 10,
-    color: '#10b981',
     fontWeight: 'bold',
     marginTop: 8,
+    color: '#0ea5e9',
   },
-  actionItem: {
+  coverageLabel: {
+    fontSize: 8,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  // Perspectives (replaces actions)
+  perspectiveItem: {
     flexDirection: 'row',
     marginBottom: 5,
     paddingLeft: 4,
   },
-  actionNumber: {
+  perspectiveNumber: {
     width: 18,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#0ea5e9',
     fontSize: 10,
   },
-  actionText: {
+  perspectiveText: {
     flex: 1,
     color: '#374151',
     fontSize: 10,
@@ -205,13 +282,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#dcfce7',
     padding: 6,
     borderRadius: 3,
-    marginRight: 4, // Replace gap with marginRight
+    marginRight: 4,
   },
   consBox: {
     backgroundColor: '#fee2e2',
     padding: 6,
     borderRadius: 3,
-    marginLeft: 4, // Add marginLeft for spacing
+    marginLeft: 4,
   },
   prosConsTitle: {
     fontSize: 8,
@@ -290,6 +367,27 @@ const styles = StyleSheet.create({
     color: '#be185d',
     lineHeight: 1.4,
   },
+  // Disclaimer
+  disclaimer: {
+    backgroundColor: '#fef3c7',
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#fcd34d',
+    marginTop: 14,
+    marginBottom: 14,
+  },
+  disclaimerTitle: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  disclaimerText: {
+    fontSize: 8,
+    color: '#a16207',
+    lineHeight: 1.4,
+  },
   footer: {
     position: 'absolute',
     bottom: 20,
@@ -310,19 +408,29 @@ const styles = StyleSheet.create({
   },
 });
 
-// Helper to truncate long text - higher limits for more content
+// Helper to truncate long text
 const truncateText = (text: string | undefined, maxLength: number): string => {
   if (!text) return '';
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength - 3) + '...';
 };
 
+// Get coverage level label
+const getCoverageLabel = (score: number): string => {
+  if (score >= 80) return 'Thorough';
+  if (score >= 60) return 'Good';
+  if (score >= 40) return 'Partial';
+  return 'Incomplete';
+};
+
 interface ValidationReportPDFProps {
   result: ValidationResult;
   prompt: string;
+  confirmedAt?: string;
+  confirmedBy?: string;
 }
 
-export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps) {
+export function ValidationReportPDF({ result, prompt, confirmedAt, confirmedBy }: ValidationReportPDFProps) {
   const {
     finalRecommendation,
     overallConfidence,
@@ -347,8 +455,28 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
     day: 'numeric',
   });
 
-  // NO LIMITS - show ALL content, let @react-pdf/renderer handle pagination
-  const allActions = finalRecommendation?.topActions || [];
+  const generatedTime = new Date().toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  });
+
+  const confirmationDate = confirmedAt 
+    ? new Date(confirmedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : generatedDate;
+
+  // Use confidence as coverage score
+  const coverageScore = overallConfidence;
+  const coverageLabel = getCoverageLabel(coverageScore);
+
+  // All content - no limits
+  const allPerspectives = finalRecommendation?.topActions || [];
   const allConsensus = consensusPoints || [];
   const allMajority = majorityPoints || [];
   const allDissent = dissentPoints || [];
@@ -362,45 +490,94 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
 
   return (
     <Document>
-      {/* Single flowing page - @react-pdf/renderer will auto-paginate */}
       <Page size="A4" style={styles.page} wrap>
         {/* Header */}
         <View style={styles.header} fixed>
           <Text style={styles.logo}>Synoptas</Text>
-          <Text style={styles.subtitle}>Multi-AI Validation Report</Text>
+          <Text style={styles.reportTitle}>Decision Audit Report</Text>
+          <Text style={styles.subtitle}>AI-Documented Decision Evidence</Text>
           <View style={styles.metaRow}>
-            <Text>Generated: {generatedDate}</Text>
-            <Text>Confidence: {overallConfidence}%</Text>
+            <Text>Generated: {generatedDate} at {generatedTime}</Text>
+            <Text>Coverage: {coverageScore}% ({coverageLabel})</Text>
             <Text>Processing: {(processingTimeMs / 1000).toFixed(1)}s</Text>
           </View>
         </View>
 
-        {/* Query Section */}
+        {/* Decision Ownership Confirmation */}
+        <View style={styles.confirmationBox} wrap={false}>
+          <View style={styles.confirmationHeader}>
+            <Text style={styles.confirmationIcon}>✓</Text>
+            <Text style={styles.confirmationTitle}>Decision Ownership Confirmed</Text>
+          </View>
+          <Text style={styles.confirmationText}>
+            • The decision-maker confirmed that the final decision remains with them.
+          </Text>
+          <Text style={styles.confirmationText}>
+            • All documented perspectives were reviewed before confirmation.
+          </Text>
+          <Text style={styles.confirmationText}>
+            • This analysis provides documentation only – it does not make decisions.
+          </Text>
+          <Text style={styles.confirmationTimestamp}>
+            Confirmed on: {confirmationDate}
+          </Text>
+        </View>
+
+        {/* Audit Trail Summary */}
+        <View style={styles.auditTrailBox} wrap={false}>
+          <Text style={styles.auditTrailTitle}>Audit Trail Summary</Text>
+          <View style={styles.auditRow}>
+            <Text style={styles.auditLabel}>Report ID:</Text>
+            <Text style={styles.auditValue}>{Date.now().toString(36).toUpperCase()}</Text>
+          </View>
+          <View style={styles.auditRow}>
+            <Text style={styles.auditLabel}>Analysis Timestamp:</Text>
+            <Text style={styles.auditValue}>{generatedDate} at {generatedTime}</Text>
+          </View>
+          <View style={styles.auditRow}>
+            <Text style={styles.auditLabel}>AI Models Used:</Text>
+            <Text style={styles.auditValue}>{modelNames}</Text>
+          </View>
+          <View style={styles.auditRow}>
+            <Text style={styles.auditLabel}>Coverage Score:</Text>
+            <Text style={styles.auditValue}>{coverageScore}% – {coverageLabel}</Text>
+          </View>
+          <View style={styles.auditRow}>
+            <Text style={styles.auditLabel}>Perspectives Documented:</Text>
+            <Text style={styles.auditValue}>
+              {allConsensus.length} consensus, {allMajority.length} majority, {allDissent.length} dissent
+            </Text>
+          </View>
+        </View>
+
+        {/* Decision Context */}
         <View style={styles.queryBox} wrap={false}>
-          <Text style={styles.queryLabel}>Your Question</Text>
-          <Text style={styles.modelInfo}>Models: {modelNames}</Text>
+          <Text style={styles.queryLabel}>Decision Context</Text>
           <Text style={styles.queryText}>{truncateText(prompt, 800)}</Text>
         </View>
 
-        {/* Main Recommendation */}
-        <View style={styles.mainRecommendation} wrap={false}>
-          <Text style={styles.recommendationTitle}>
-            {truncateText(finalRecommendation?.title, 150) || 'AI Recommendation'}
+        {/* Documentation Summary */}
+        <View style={styles.summaryBox} wrap={false}>
+          <Text style={styles.summaryTitle}>
+            {truncateText(finalRecommendation?.title, 150) || 'Documentation Summary'}
           </Text>
-          <Text style={styles.recommendationDesc}>
+          <Text style={styles.summaryDesc}>
             {truncateText(finalRecommendation?.description, 800)}
           </Text>
-          <Text style={styles.confidenceBadge}>Overall Confidence: {overallConfidence}%</Text>
+          <Text style={styles.coverageScore}>Coverage Score: {coverageScore}%</Text>
+          <Text style={styles.coverageLabel}>
+            This score measures how thoroughly the decision context was analyzed, not the "correctness" of any perspective.
+          </Text>
         </View>
 
-        {/* Priority Actions - ALL */}
-        {allActions.length > 0 && (
+        {/* Documented Perspectives */}
+        {allPerspectives.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Priority Actions ({allActions.length})</Text>
-            {allActions.map((action, i) => (
-              <View key={i} style={styles.actionItem} wrap={false}>
-                <Text style={styles.actionNumber}>{i + 1}.</Text>
-                <Text style={styles.actionText}>{truncateText(action, 300)}</Text>
+            <Text style={styles.sectionTitle}>Documented Perspectives ({allPerspectives.length})</Text>
+            {allPerspectives.map((perspective, i) => (
+              <View key={i} style={styles.perspectiveItem} wrap={false}>
+                <Text style={styles.perspectiveNumber}>{i + 1}.</Text>
+                <Text style={styles.perspectiveText}>{truncateText(perspective, 300)}</Text>
               </View>
             ))}
           </View>
@@ -409,17 +586,17 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
         {/* Divider before Analysis */}
         {hasAnalysisPoints && <View style={styles.divider} />}
 
-        {/* Consensus Points - ALL */}
+        {/* Consensus Points */}
         {allConsensus.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.categoryLabel}>✓ Consensus Points ({allConsensus.length}) - All Models Agree</Text>
+            <Text style={styles.categoryLabel}>✓ Full Consensus ({allConsensus.length}) – All Models Documented Same View</Text>
             {allConsensus.map((point, i) => (
               <View key={i} style={[styles.pointCard, styles.consensusCard]} wrap={false}>
                 <Text style={styles.pointTopic}>{truncateText(point.topic, 120)}</Text>
                 <Text style={styles.pointDesc}>{truncateText(point.description, 500)}</Text>
                 {point.actionItems && point.actionItems.length > 0 && (
                   <Text style={styles.pointModels}>
-                    Actions: {point.actionItems.slice(0, 2).join(', ')}
+                    Observations: {point.actionItems.slice(0, 2).join(', ')}
                   </Text>
                 )}
               </View>
@@ -427,17 +604,17 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           </View>
         )}
 
-        {/* Majority Points - ALL */}
+        {/* Majority Points */}
         {allMajority.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.categoryLabel}>◐ Majority View ({allMajority.length})</Text>
+            <Text style={styles.categoryLabel}>◐ Majority View ({allMajority.length}) – Most Models Agree</Text>
             {allMajority.map((point, i) => (
               <View key={i} style={[styles.pointCard, styles.majorityCard]} wrap={false}>
                 <Text style={styles.pointTopic}>{truncateText(point.topic, 120)}</Text>
                 <Text style={styles.pointDesc}>{truncateText(point.description, 500)}</Text>
                 {point.supportingModels && point.supportingModels.length > 0 && (
                   <Text style={styles.pointModels}>
-                    Supported by: {point.supportingModels.map(m => AVAILABLE_MODELS[m]?.name || m).join(', ')}
+                    Documented by: {point.supportingModels.map(m => AVAILABLE_MODELS[m]?.name || m).join(', ')}
                   </Text>
                 )}
               </View>
@@ -445,10 +622,10 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           </View>
         )}
 
-        {/* Dissent Points - ALL */}
+        {/* Dissent Points */}
         {allDissent.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.categoryLabel}>⚡ Different Perspectives ({allDissent.length})</Text>
+            <Text style={styles.categoryLabel}>⚡ Documented Dissent ({allDissent.length}) – Different Perspectives</Text>
             {allDissent.map((point, i) => (
               <View key={i} style={[styles.pointCard, styles.dissentCard]} wrap={false}>
                 <Text style={styles.pointTopic}>{truncateText(point.topic, 120)}</Text>
@@ -462,47 +639,47 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           </View>
         )}
 
-        {/* Premium Section: Strategic Alternatives - ALL */}
+        {/* Premium Section: Strategic Alternatives (now "Documented Scenarios") */}
         {hasStrategicAlternatives && (
           <View style={styles.premiumSection}>
-            <Text style={styles.premiumBadge}>★ Premium Insight</Text>
-            <Text style={styles.sectionTitlePremium}>Strategic Alternatives ({allAlternatives.length})</Text>
+            <Text style={styles.premiumBadge}>★ Extended Documentation</Text>
+            <Text style={styles.sectionTitlePremium}>Documented Scenarios ({allAlternatives.length})</Text>
             {allAlternatives.map((alt, i) => (
               <View key={i} style={styles.alternativeCard} wrap={false}>
                 <Text style={styles.alternativeTitle}>{truncateText(alt.scenario, 150)}</Text>
                 <View style={styles.prosConsRow}>
                   <View style={styles.prosBox}>
-                    <Text style={[styles.prosConsTitle, styles.prosTitle]}>Pros</Text>
+                    <Text style={[styles.prosConsTitle, styles.prosTitle]}>Considerations For</Text>
                     {alt.pros?.map((pro, j) => (
                       <Text key={j} style={styles.prosConsItem}>+ {truncateText(pro, 120)}</Text>
                     ))}
                   </View>
                   <View style={styles.consBox}>
-                    <Text style={[styles.prosConsTitle, styles.consTitle]}>Cons</Text>
+                    <Text style={[styles.prosConsTitle, styles.consTitle]}>Considerations Against</Text>
                     {alt.cons?.map((con, j) => (
                       <Text key={j} style={styles.prosConsItem}>− {truncateText(con, 120)}</Text>
                     ))}
                   </View>
                 </View>
                 {alt.bestFor && (
-                  <Text style={styles.bestFor}>Best for: {truncateText(alt.bestFor, 200)}</Text>
+                  <Text style={styles.bestFor}>Best suited for: {truncateText(alt.bestFor, 200)}</Text>
                 )}
               </View>
             ))}
           </View>
         )}
 
-        {/* Premium Section: Long-term Outlook */}
+        {/* Premium Section: Long-term Outlook (now "Projected Implications") */}
         {hasOutlook && (
           <View style={styles.premiumSection}>
-            <Text style={styles.premiumBadge}>★ Premium Insight</Text>
-            <Text style={styles.sectionTitlePremium}>Long-term Outlook</Text>
+            <Text style={styles.premiumBadge}>★ Extended Documentation</Text>
+            <Text style={styles.sectionTitlePremium}>Projected Implications</Text>
             <View style={styles.outlookCard} wrap={false}>
-              <Text style={styles.outlookTitle}>6 Month Outlook</Text>
+              <Text style={styles.outlookTitle}>6 Month Projection</Text>
               <Text style={styles.outlookText}>
                 {truncateText(longTermOutlook?.sixMonths, 400)}
               </Text>
-              <Text style={styles.outlookTitle}>12 Month Outlook</Text>
+              <Text style={styles.outlookTitle}>12 Month Projection</Text>
               <Text style={styles.outlookText}>
                 {truncateText(longTermOutlook?.twelveMonths, 400)}
               </Text>
@@ -522,13 +699,13 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           </View>
         )}
 
-        {/* Premium Section: Competitor Insights */}
+        {/* Premium Section: Competitor Insights (now "Market Context") */}
         {hasCompetitor && (
           <View style={styles.premiumSection}>
-            <Text style={styles.premiumBadge}>★ Premium Insight</Text>
-            <Text style={styles.sectionTitlePremium}>Competitor Insights</Text>
+            <Text style={styles.premiumBadge}>★ Extended Documentation</Text>
+            <Text style={styles.sectionTitlePremium}>Market Context</Text>
             <View style={styles.competitorBox} wrap={false}>
-              <Text style={styles.competitorTitle}>Market Analysis</Text>
+              <Text style={styles.competitorTitle}>Documented Market Analysis</Text>
               <Text style={styles.competitorText}>
                 {truncateText(competitorInsights, 1000)}
               </Text>
@@ -536,9 +713,22 @@ export function ValidationReportPDF({ result, prompt }: ValidationReportPDFProps
           </View>
         )}
 
-        {/* Footer - fixed on every page */}
+        {/* Legal Disclaimer */}
+        <View style={styles.disclaimer} wrap={false}>
+          <Text style={styles.disclaimerTitle}>Important Notice</Text>
+          <Text style={styles.disclaimerText}>
+            This Decision Audit Report documents perspectives gathered from multiple AI models. 
+            It is provided for informational purposes only and does not constitute professional, 
+            legal, financial, or investment advice. The final decision and responsibility for 
+            any actions taken remain solely with the decision-maker. Synoptas and its AI models 
+            make no warranties regarding the accuracy, completeness, or fitness for any particular 
+            purpose of the documented perspectives.
+          </Text>
+        </View>
+
+        {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text>Generated by Synoptas | Multi-AI Validation Platform</Text>
+          <Text>Decision Audit Report | Synoptas Decision Documentation Platform</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>

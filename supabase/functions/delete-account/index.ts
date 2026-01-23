@@ -68,7 +68,18 @@ serve(async (req) => {
     const userId = userData.user.id;
     console.log('Starting GDPR-compliant account deletion for user:', userId);
 
-    // 1. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
+    // 1. Delete decision_records (decision_audit_log deleted via CASCADE)
+    console.log('Deleting decision_records for user:', userId);
+    const { error: decisionsError } = await adminClient
+      .from('decision_records')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (decisionsError) {
+      console.error('Failed to delete decision_records:', decisionsError);
+    }
+
+    // 2. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
     console.log('Deleting experiments for user:', userId);
     const { error: experimentsError } = await adminClient
       .from('experiments')
@@ -79,7 +90,7 @@ serve(async (req) => {
       console.error('Failed to delete experiments:', experimentsError);
     }
 
-    // 2. Delete validation_analyses
+    // 3. Delete validation_analyses
     console.log('Deleting validation_analyses for user:', userId);
     const { error: validationError } = await adminClient
       .from('validation_analyses')

@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      decision_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          decision_id: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          decision_id: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          decision_id?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_audit_log_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decision_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_records: {
+        Row: {
+          budget_range: string | null
+          confirmed_at: string | null
+          created_at: string
+          deadline: string | null
+          decision_context: string
+          decision_title: string
+          export_count: number | null
+          exported_at: string | null
+          id: string
+          stakeholders: string[] | null
+          status: string
+          user_confirmed_ownership: boolean | null
+          user_id: string
+          validation_id: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          decision_context: string
+          decision_title: string
+          export_count?: number | null
+          exported_at?: string | null
+          id?: string
+          stakeholders?: string[] | null
+          status?: string
+          user_confirmed_ownership?: boolean | null
+          user_id: string
+          validation_id?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          decision_context?: string
+          decision_title?: string
+          export_count?: number | null
+          exported_at?: string | null
+          id?: string
+          stakeholders?: string[] | null
+          status?: string
+          user_confirmed_ownership?: boolean | null
+          user_id?: string
+          validation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_records_validation_id_fkey"
+            columns: ["validation_id"]
+            isOneToOne: false
+            referencedRelation: "validation_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deleted_accounts: {
         Row: {
           deleted_at: string | null
@@ -510,6 +604,10 @@ export type Database = {
       increment_validation_count: {
         Args: { reset_window?: boolean; user_uuid: string }
         Returns: undefined
+      }
+      log_decision_action: {
+        Args: { p_action: string; p_decision_id: string; p_metadata?: Json }
+        Returns: string
       }
     }
     Enums: {

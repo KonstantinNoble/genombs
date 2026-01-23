@@ -6,6 +6,9 @@ import { AVAILABLE_MODELS } from './ModelSelector';
 const styles = StyleSheet.create({
   page: {
     padding: 35,
+    // Reserve space for the fixed header on every page to prevent overlap.
+    // Header is absolutely positioned at top=35, so content needs to start below it.
+    paddingTop: 140,
     paddingBottom: 60,
     fontFamily: 'Helvetica',
     fontSize: 11,
@@ -13,7 +16,12 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
   },
   header: {
-    marginBottom: 16,
+    // Absolute + fixed header: does not take layout space, so the Page paddingTop
+    // reserves room for it.
+    position: 'absolute',
+    top: 35,
+    left: 35,
+    right: 35,
     borderBottomWidth: 2,
     borderBottomColor: '#4FD183',
     paddingBottom: 10,

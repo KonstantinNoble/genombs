@@ -72,12 +72,12 @@ const Pricing = ({ compact = false }: PricingProps) => {
             ref={headerRef}
             className={`text-center space-y-4 mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           >
-            <Badge variant="outline" className="mb-2 rounded-full">Straightforward Pricing</Badge>
+            <Badge variant="outline" className="mb-2 rounded-full">Simple, Transparent Pricing</Badge>
             <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
-              Pick what works for you
+              Choose Your Plan
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Try it free. No credit card, no commitment. Upgrade when you want more depth.
+              Start free. Upgrade when you need deeper insights and stakeholder-ready exports.
             </p>
           </div>
 
@@ -94,11 +94,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li>• 2 checks per day – enough to try it out</li>
-                <li>• All 3 models (GPT-5, Gemini Pro, Flash)</li>
-                <li>• See where they agree and disagree</li>
-                <li>• Quick summaries from each model</li>
-                <li>• 3 action items to get you started</li>
+                <li>• 2 decision records per day</li>
+                <li>• Three AI perspectives per decision</li>
+                <li>• Consensus and dissent analysis</li>
+                <li>• Core documentation features</li>
+                <li>• 3 priority action items</li>
               </ul>
               
               <Button 
@@ -107,7 +107,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 className="w-full"
                 onClick={() => handlePlanClick('free')}
               >
-                {isLoggedIn ? 'Start Free Validation' : 'Get Started Free'}
+                {isLoggedIn ? 'Create Decision Record' : 'Start Free'}
               </Button>
             </div>
 
@@ -126,14 +126,14 @@ const Pricing = ({ compact = false }: PricingProps) => {
               </div>
               
               <ul className="space-y-3 text-left text-muted-foreground">
-                <li className="text-foreground font-medium">• 10 checks per day – enough for real work</li>
-                <li className="text-foreground font-medium">• Detailed responses, not just summaries</li>
-                <li className="text-foreground font-medium">• 5-7 concrete action items</li>
-                <li>• What if Plan A fails? (Strategic alternatives)</li>
-                <li>• What are others doing? (Competitor insights)</li>
-                <li>• Where does this lead? (6-12 month outlook)</li>
-                <li>• Full reasoning from each model</li>
-                <li>• PDF export for your records (desktop)</li>
+                <li className="text-foreground font-medium">• 10 decision records per day</li>
+                <li className="text-foreground font-medium">• Full perspective documentation</li>
+                <li className="text-foreground font-medium">• 5-7 prioritized action items</li>
+                <li>• Strategic alternatives (Plan B, C)</li>
+                <li>• Competitive context analysis</li>
+                <li>• 6-12 month outlook</li>
+                <li>• Complete model reasoning</li>
+                <li>• Stakeholder-ready PDF exports</li>
               </ul>
               
               <Button 

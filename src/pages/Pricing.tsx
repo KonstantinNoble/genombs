@@ -17,36 +17,36 @@ const PricingPage = () => {
   const isLoggedIn = !!user;
 
   const comparisonFeatures = [
-    { name: "Daily Validations", free: "2", premium: "10" },
-    { name: "Recommendations per Model", free: "2-3", premium: "4-5" },
-    { name: "Action Items", free: "3", premium: "5-7" },
+    { name: "Decision Records per Day", free: "2", premium: "10" },
+    { name: "Documented Perspectives", free: "3", premium: "3" },
+    { name: "Priority Action Items", free: "3", premium: "5-7" },
     { name: "Strategic Alternatives", free: "—", premium: "✓" },
-    { name: "Competitor Insights", free: "—", premium: "✓" },
-    { name: "Long-term Outlook", free: "—", premium: "✓" },
-    { name: "Full Model Responses", free: "—", premium: "✓" },
-    { name: "PDF Export (Desktop)", free: "—", premium: "✓" },
+    { name: "Competitive Context", free: "—", premium: "✓" },
+    { name: "6-12 Month Outlook", free: "—", premium: "✓" },
+    { name: "Full Model Reasoning", free: "—", premium: "✓" },
+    { name: "PDF Audit Reports", free: "—", premium: "✓" },
   ];
 
   const faqs = [
     {
-      question: "How does this work?",
-      answer: "You type a question. Three AI models – GPT-5, Gemini Pro, and Flash – each analyze it independently. They don't see each other's answers. Then we show you where they agree (strong signal), where most agree (worth considering), and where they disagree (dig deeper here)."
+      question: "How does decision documentation work?",
+      answer: "Describe your decision context. Three AI models – GPT-5, Gemini Pro, and Flash – analyze it independently without seeing each other's responses. We show you consensus, majority, and dissent. Everything is documented with timestamps."
     },
     {
-      question: "What do I actually get with Premium?",
-      answer: "10 checks per day instead of 2. Detailed responses instead of summaries. Plus three sections free users don't see: backup strategies if Plan A fails, what competitors are doing, and where this decision might lead in 6-12 months. You also get PDF export to save your analyses (desktop only)."
+      question: "What does Premium include?",
+      answer: "10 decision records per day instead of 2. Full perspective documentation with complete reasoning. Plus strategic alternatives, competitive context analysis, and 6-12 month outlook. Stakeholder-ready PDF exports included."
     },
     {
-      question: "When does my limit reset?",
-      answer: "24 hours after your first check of the day. Free gets 2 per day, Premium gets 10. You'll see your remaining count and reset time on the validation page."
+      question: "When does my daily limit reset?",
+      answer: "24 hours after your first record of the day. Free accounts get 2 records per day, Premium gets 10."
     },
     {
-      question: "What kind of questions work best?",
-      answer: "Specific business decisions you're actually facing. 'Should I raise prices 20%?' beats 'How do I make more money?' 'Should I focus on enterprise or SMB?' beats 'How do I grow?' The more concrete, the more useful the answer."
+      question: "What types of decisions work best?",
+      answer: "Decisions you might need to justify later: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The more consequential, the more valuable the documentation."
     },
     {
       question: "Can I try it before paying?",
-      answer: "Yes. 2 free checks per day, no credit card needed. Enough to see if the multi-model approach is useful for how you make decisions."
+      answer: "Yes. 2 free decision records per day, no credit card required. Enough to evaluate whether documented decisions fit your workflow."
     }
   ];
 
@@ -55,9 +55,9 @@ const PricingPage = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
-          title="Pricing – Start Free, Upgrade When Ready"
-        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, 6-month outlook, and PDF export for $26.99/month."
-          keywords="pricing, free trial, business tool cost, premium features"
+          title="Pricing – Professional Decision Documentation"
+          description="Start free with 2 decision records per day. Premium ($26.99/mo) unlocks 10 daily records, stakeholder-ready PDF exports, competitive context, and 6-12 month outlook."
+          keywords="decision documentation pricing, audit trail cost, business decision tool, premium features"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
         />
@@ -76,9 +76,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing – Start Free, Upgrade When Ready"
-        description="Try it free with 2 checks per day. Need more depth? Premium gives you 10 daily checks, competitor context, 6-month outlook, and PDF export for $26.99/month."
-        keywords="pricing, free trial, business tool cost, premium features"
+        title="Pricing – Professional Decision Documentation"
+        description="Start free with 2 decision records per day. Premium ($26.99/mo) unlocks 10 daily records, stakeholder-ready PDF exports, competitive context, and 6-12 month outlook."
+        keywords="decision documentation pricing, audit trail cost, business decision tool, premium features"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -102,12 +102,12 @@ const PricingPage = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
                 ? "You're all set" 
-                : "Three opinions for $26.99/mo"}
+                : "Professional Decision Documentation"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "10 checks a day, full insights, competitor context, long-term outlook. All yours."
-                : "Try it free first. When you need more depth – competitor insights, 6-month outlook, backup strategies – that's what Premium is for."}
+                ? "10 records a day, full audit trails, competitive context, long-term outlook. All yours."
+                : "Document decisions with audit-grade precision. Upgrade when you need deeper insights and stakeholder-ready exports."}
             </p>
           </div>
         </section>
@@ -172,20 +172,20 @@ const PricingPage = () => {
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               {isPremium && isLoggedIn 
-                ? "Back to work" 
-                : "Ready to try it?"}
+                ? "Back to documenting" 
+                : "Ready to document your decisions?"}
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn 
-                ? "Your 10 daily checks are waiting. Full depth, full context."
-                : "Three models, one question. See if it helps you think through decisions."}
+                ? "Your 10 daily records are ready. Full documentation, full context."
+                : "Three perspectives, one documented decision. See how it protects your process."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button 
                 size="lg"
                 onClick={() => navigate(isPremium && isLoggedIn ? '/validate' : (isLoggedIn ? '/validate' : '/auth?intent=free'))}
               >
-                {isPremium && isLoggedIn ? "Go to Validator" : "Start Free Validation"}
+                {isPremium && isLoggedIn ? "Open Decision Records" : "Create Your First Record"}
               </Button>
               {!isPremium && (
                 <Button 

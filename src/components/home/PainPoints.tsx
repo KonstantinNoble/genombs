@@ -30,10 +30,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "You made a decision using AI. But can you explain it later?", detail: "No audit trail. No documentation. Just a chat history that proves nothing." },
-    { title: "No documentation. No trail.", detail: "When stakeholders ask why, you have nothing to show." },
-    { title: "Regulators and investors want proof.", detail: "AI-assisted decisions need to be traceable and defensible." },
-    { title: "This decision actually matters.", detail: "Too important to make without a documented decision record." },
+    { title: "AI-assisted decisions without documentation are indefensible", detail: "You used AI to help decide. But can you prove you considered the risks? No audit trail means no defense." },
+    { title: "When stakeholders ask 'why', you have nothing to show", detail: "The chat history is gone. The reasoning is scattered. You're left reconstructing decisions after the fact." },
+    { title: "Compliance and due diligence require traceable reasoning", detail: "Regulators and investors want to see your process – not just your conclusion." },
+    { title: "High-stakes decisions deserve more than a gut feeling", detail: "The bigger the decision, the more important the documentation. Protect yourself before you commit." },
   ];
 
   return (
@@ -47,14 +47,14 @@ const PainPoints = () => {
           ref={headerRef}
           className={`text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
-          Does this sound familiar?
+          The Problem with Undocumented Decisions
         </h2>
         
         <p 
           className={`text-lg text-muted-foreground mb-12 max-w-2xl mx-auto scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: '0.1s' }}
         >
-          The problem with undocumented AI-assisted decisions
+          Sound familiar? You're not alone.
         </p>
 
         <div className="grid sm:grid-cols-2 gap-5 mb-12">
@@ -68,12 +68,12 @@ const PainPoints = () => {
           className={`flex flex-col items-center gap-5 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: "0.5s" }}
         >
-          <p className="text-lg font-semibold text-foreground">That's why we built this.</p>
+          <p className="text-lg font-semibold text-foreground">That's why we built Synoptas.</p>
           <Link 
             to="/validate" 
             className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:underline transition-all duration-300 hover:gap-3"
           >
-            Try it yourself →
+            Create your first decision record →
           </Link>
         </div>
       </div>

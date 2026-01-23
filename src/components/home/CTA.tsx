@@ -61,13 +61,13 @@ const CTA = () => {
           className={`premium-card max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {isPremium && isLoggedIn ? "Ready when you are" : "Start documenting your decisions"}
+            {isPremium && isLoggedIn ? "Your records are ready" : "Start Your First Decision Record"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             {isPremium && isLoggedIn 
-              ? "Your 10 daily decision records are waiting. Full audit trails, stakeholder-ready exports."
-              : "Two free decision records a day. No credit card. See how documented decisions protect you."}
+              ? "10 daily records. Full audit trails. Stakeholder-ready exports. All waiting for you."
+              : "Two free records daily. No credit card required. Create your first audit trail in 20 seconds."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -77,15 +77,15 @@ const CTA = () => {
               asChild
             >
               <Link to="/validate">
-                {isPremium && isLoggedIn ? "Open Decision Records" : "Start Decision Record"}
+                {isPremium && isLoggedIn ? "Open Decision Records" : "Document Your First Decision"}
               </Link>
             </Button>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span>Audit trail included</span>
-            <span>No signup required</span>
-            <span>Export-ready in 20 seconds</span>
+            <span>Full audit trail</span>
+            <span>No credit card needed</span>
+            <span>Stakeholder-ready in 20 seconds</span>
           </div>
         </div>
       </div>

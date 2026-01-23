@@ -41,20 +41,20 @@ const Features = () => {
 
   const features = [
     { 
-      title: "One Decision, Multiple Documented Perspectives", 
-      description: "Your decision context is analyzed from multiple angles. All perspectives are documented and traceable." 
+      title: "Multi-Perspective Documentation", 
+      description: "Three AI models analyze your decision independently. Every perspective is documented with timestamps and traceable reasoning." 
     },
     { 
-      title: "Documented Consensus & Dissent", 
-      description: "See what all perspectives agree on vs. documented points of disagreement – essential for due diligence."
+      title: "Consensus & Dissent Analysis", 
+      description: "Instantly see where all models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
     },
     { 
-      title: "Coverage Score", 
-      description: "See how thoroughly your decision was analyzed. The Coverage Score measures completeness, not correctness." 
+      title: "Decision Coverage Score", 
+      description: "Measure how thoroughly your decision was examined. The Coverage Score reflects completeness of analysis, not correctness of choice." 
     },
     { 
-      title: "Decision Audit Report", 
-      description: "Full documentation: alternative scenarios, risk considerations, and exportable PDF audit reports. Your decision record for stakeholders." 
+      title: "Stakeholder-Ready Audit Reports", 
+      description: "Export comprehensive PDF documentation including alternatives considered, risks identified, and your confirmation of decision ownership." 
     }
   ];
 
@@ -64,8 +64,8 @@ const Features = () => {
       <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent-cool/5 rounded-full blur-3xl" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">How Decision Documentation Works</h2>
-          <p className="text-lg text-muted-foreground">Create auditable records for important decisions</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">What You Get</h2>
+          <p className="text-lg text-muted-foreground">Professional decision documentation for high-stakes choices</p>
         </div>
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {features.map((feature, index) => (

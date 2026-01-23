@@ -287,6 +287,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
             onConfirmed={handleConfirmed}
             isConfirmed={isConfirmed}
             decisionRecordId={decisionRecordId}
+            result={result}
           />
         </div>
       )}

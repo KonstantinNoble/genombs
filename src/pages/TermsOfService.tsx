@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 13, 2026 | Version 2.9</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 23, 2026 | Version 3.0</p>
 
           <div className="space-y-8">
             <section>
@@ -190,6 +190,31 @@ const TermsOfService = () => {
               <p className="mb-4">
                 Material changes to Premium features or significant reductions in usage limits will be announced 
                 <strong> 30 days in advance</strong> via email to affected users.
+              </p>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">III.C Decision Documentation (Premium Feature)</h3>
+              <p className="mb-4">
+                Premium users can document their business decisions using our Decision Audit feature:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>Document your decision context and the perspectives gathered from multiple AI models</li>
+                <li>Confirm your ownership of the final decision</li>
+                <li>Export a Decision Audit Report as PDF documentation</li>
+              </ul>
+
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
+                <p className="font-bold mb-2">⚠️ IMPORTANT: Decision Records are DOCUMENTATION ONLY</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Decision Records document perspectives – they do <strong>NOT</strong> make decisions for you</li>
+                  <li>The Decision Audit Report is <strong>NOT</strong> a legal document, certificate, or binding agreement</li>
+                  <li>Decision Records have <strong>NO legal force</strong> or evidentiary value in legal proceedings</li>
+                  <li>Your confirmation ("I confirm that the final decision remains with me") is a personal acknowledgment, not a legally binding declaration</li>
+                  <li>We make no guarantees that documented perspectives are complete, accurate, or suitable for your situation</li>
+                  <li>You remain <strong>solely responsible</strong> for all decisions and their consequences</li>
+                </ul>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Decision Records and their associated audit logs are permanently deleted upon account termination (see Section VII).
               </p>
             </section>
             {/* Section IV - Pricing */}
@@ -372,6 +397,9 @@ const TermsOfService = () => {
 
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Business decisions or investments based on AI recommendations</li>
+                <li>Decisions documented through Decision Records or Decision Audit Reports</li>
+                <li>Reliance on documented AI perspectives as legal or professional advice</li>
+                <li>Use of Decision Audit Reports as evidence in legal, regulatory, or contractual disputes</li>
                 <li>Lost profits, revenue, or business opportunities (subject to the general limitation above)</li>
                 <li>Data loss if backups were not maintained before account deletion</li>
                 <li>Third-party services, external links, force majeure events</li>
@@ -717,9 +745,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: December 28, 2025
+                Last updated: January 23, 2026
                 <br />
-                Version 2.8
+                Version 3.0
               </p>
             </div>
           </div>

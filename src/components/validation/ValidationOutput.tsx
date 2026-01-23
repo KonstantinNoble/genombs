@@ -26,6 +26,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
   const [actionsExpanded, setActionsExpanded] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [decisionRecordId, setDecisionRecordId] = useState<string | undefined>();
+  const [confirmedAt, setConfirmedAt] = useState<string | undefined>();
   const confirmationRef = useRef<HTMLDivElement>(null);
   const {
     modelResponses,
@@ -61,6 +62,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
   const handleConfirmed = (recordId: string) => {
     setIsConfirmed(true);
     setDecisionRecordId(recordId);
+    setConfirmedAt(new Date().toISOString());
   };
 
   const scrollToConfirmation = () => {
@@ -74,6 +76,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
   useEffect(() => {
     setIsConfirmed(false);
     setDecisionRecordId(undefined);
+    setConfirmedAt(undefined);
   }, [validationId]);
 
   return (
@@ -95,6 +98,7 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
           prompt={prompt} 
           isPremium={isPremium || false}
           isConfirmed={isConfirmed}
+          confirmedAt={confirmedAt}
           onRequireConfirmation={scrollToConfirmation}
         />
       </div>

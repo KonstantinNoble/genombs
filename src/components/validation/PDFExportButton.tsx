@@ -18,10 +18,11 @@ interface PDFExportButtonProps {
   prompt: string;
   isPremium: boolean;
   isConfirmed?: boolean;
+  confirmedAt?: string;
   onRequireConfirmation?: () => void;
 }
 
-export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false, onRequireConfirmation }: PDFExportButtonProps) {
+export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false, confirmedAt, onRequireConfirmation }: PDFExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -56,9 +57,13 @@ export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false
     setIsGenerating(true);
 
     try {
-      // Generate PDF blob
+      // Generate PDF blob with confirmation timestamp
       const blob = await pdf(
-        <ValidationReportPDF result={result} prompt={prompt} />
+        <ValidationReportPDF 
+          result={result} 
+          prompt={prompt}
+          confirmedAt={confirmedAt || new Date().toISOString()}
+        />
       ).toBlob();
 
       // Create download URL
@@ -67,7 +72,7 @@ export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false
       // Create temporary link for download (mobile-compatible approach)
       const link = document.createElement('a');
       link.href = url;
-      link.download = `synoptas-analysis-${Date.now()}.pdf`;
+      link.download = `decision-audit-report-${Date.now()}.pdf`;
       
       // Append to DOM (required for iOS Safari)
       document.body.appendChild(link);
@@ -84,8 +89,8 @@ export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false
       }, 5000);
 
       toast({
-        title: "PDF Generated",
-        description: "Your analysis report has been downloaded.",
+        title: "Decision Audit Report Generated",
+        description: "Your audit report has been downloaded.",
       });
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -138,7 +143,7 @@ export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false
       ) : (
         <>
           <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Export PDF</span>
+          <span className="hidden sm:inline">Export Audit Report</span>
         </>
       )}
     </Button>

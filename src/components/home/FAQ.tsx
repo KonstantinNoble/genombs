@@ -9,44 +9,44 @@ import {
 
 const faqs = [
   {
-    question: "So what is this, exactly?",
-    answer: "You describe a decision. Three AI models document different perspectives. We show where they agree, where they disagree, and give you an exportable record. Takes about 20 seconds."
+    question: "What exactly does Synoptas do?",
+    answer: "You describe a decision. Three AI models analyze it independently and document their perspectives. We show you where they agree, where they disagree, and what alternatives exist. You get an exportable audit record in under 60 seconds."
   },
   {
-    question: "Why would I want three AIs instead of one?",
-    answer: "One model gives you one perspective – undocumented. With three, you get documented consensus, documented dissent, and a complete picture you can show to stakeholders."
+    question: "Why three AI models instead of one?",
+    answer: "One model gives you one perspective with no way to verify it. Three models give you documented consensus (strong signal), documented dissent (needs attention), and a complete picture you can defend to stakeholders."
   },
   {
-    question: "What do 'consensus' and 'dissent' mean here?",
-    answer: "Consensus = all three models document the same perspective. Dissent = they document different viewpoints. This shows which aspects have broad agreement and which require deeper consideration."
+    question: "What do 'consensus' and 'dissent' mean?",
+    answer: "Consensus means all three models reached the same conclusion – a strong signal you're on the right track. Dissent means they disagree – these are the areas where you should dig deeper before deciding."
   },
   {
-    question: "What's the point of the sliders?",
-    answer: "They shape the perspective weighting. Adjust how much each model's documented view influences the summary. Match it to your decision context."
+    question: "How do the model weighting sliders work?",
+    answer: "Each model can be weighted from 10% to 80% influence on the final synthesis. Adjust weights based on which perspective matters most for your specific decision context."
   },
   {
-    question: "What kind of decisions should I document?",
-    answer: "Important decisions you need to justify later. Investment decisions, strategic pivots, hiring choices, pricing changes. The more consequential, the more valuable the documentation."
+    question: "What kinds of decisions should I document?",
+    answer: "Any decision you might need to justify later: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The higher the stakes, the more valuable the documentation."
   },
   {
-    question: "How much should I trust this?",
-    answer: "Synoptas documents perspectives – it doesn't make decisions. You decide. We help you prove you considered multiple viewpoints before deciding."
+    question: "How reliable is the analysis?",
+    answer: "Synoptas documents perspectives – it doesn't make decisions for you. The value is in having a traceable record that shows you considered multiple viewpoints before committing. The final decision is always yours."
   },
   {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 decision records per day, basic documentation. Premium: 10 records per day, full audit trail, competitor context, 6-12 month outlook, and PDF export for stakeholder-ready reports."
+    answer: "Free: 2 decision records per day with core documentation. Premium ($26.99/mo): 10 records per day, full audit trail, competitor context, 6-12 month outlook, strategic alternatives, and stakeholder-ready PDF exports."
   },
   {
-    question: "Can I try it without paying?",
-    answer: "Yes. 2 free decision records per day, no credit card needed. Enough to see if documented decisions help you."
+    question: "Can I try it before paying?",
+    answer: "Yes. 2 free decision records per day, no credit card required. Enough to see whether documented decisions work for your process."
   },
   {
     question: "What happens to my decision records?",
-    answer: "They're private. We don't share them with anyone. Everything's encrypted. Delete your account and we delete your data. Full details in the privacy policy."
+    answer: "Your records are private and encrypted. We never share them. Delete your account and we delete all your data. See our privacy policy for details."
   },
   {
     question: "Can I cancel anytime?",
-    answer: "Yep. Cancel whenever, keep access until your billing period ends. No hoops, no guilt trips."
+    answer: "Yes. Cancel whenever you want and keep access until your billing period ends. No cancellation fees, no questions asked."
   }
 ];
 
@@ -58,10 +58,10 @@ const FAQ = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Common Questions
+            Frequently Asked Questions
           </h2>
           <p className="text-muted-foreground">
-            What people ask before they try it
+            Everything you need to know before getting started
           </p>
         </div>
         

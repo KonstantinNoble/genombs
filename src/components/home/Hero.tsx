@@ -70,9 +70,9 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <span className="text-primary">Document Decisions,</span>
+            <span className="text-primary">Document Your Decisions</span>
             <br />
-            <span className="text-foreground">Reduce Liability</span>
+            <span className="text-foreground">Before You Commit</span>
           </h1>
 
           {/* Subheadline */}
@@ -81,8 +81,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            See how thoroughly your decision was prepared – not what's "right". 
-            Multiple perspectives, documented and traceable.
+            Create an audit trail before stakeholders ask. 
+            Three AI perspectives, documented and traceable.
           </p>
 
           {/* CTA Buttons */}
@@ -97,7 +97,7 @@ const Hero = () => {
               className="btn-glow rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               <Link to="/validate">
-                {isPremium && user ? "Back to Decision Records" : "Start Decision Record"}
+                {isPremium && user ? "Back to Decision Records" : "Document Your First Decision"}
               </Link>
             </Button>
             
@@ -120,13 +120,13 @@ const Hero = () => {
             }`}
           >
             <span className="text-sm sm:text-base text-muted-foreground">
-              Takes about 20 seconds
+              Audit-ready in 20 seconds
             </span>
             <span className="text-sm sm:text-base text-muted-foreground">
-              {isPremium && user ? "Premium access" : "No credit card needed"}
+              {isPremium && user ? "Premium access" : "No credit card required"}
             </span>
             <span className="text-sm sm:text-base text-muted-foreground">
-              2 free records per day
+              2 free records daily
             </span>
           </div>
         </div>

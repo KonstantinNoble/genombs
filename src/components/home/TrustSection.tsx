@@ -1,13 +1,21 @@
 import { Card } from "@/components/ui/card";
+import { Shield, FileCheck, Clock } from "lucide-react";
 
 const trustPoints = [
   {
-    title: "Privacy & Security",
-    description: "Your data stays private. We never share your information with third parties."
+    title: "Privacy First",
+    description: "Your decision context stays private. Encrypted in transit and at rest. Never shared with third parties. Delete anytime.",
+    icon: Shield
   },
   {
-    title: "Personalized AI Analysis",
-    description: "Our AI analyzes your exact website, goals, and budget to deliver truly tailored recommendations."
+    title: "Audit-Grade Documentation",
+    description: "Every perspective timestamped and traceable. Exportable PDFs ready for boards, investors, and regulators.",
+    icon: FileCheck
+  },
+  {
+    title: "Ready in Seconds",
+    description: "From question to documented decision record in under 60 seconds. No lengthy onboarding. No complex setup.",
+    icon: Clock
   }
 ];
 
@@ -28,34 +36,39 @@ const TrustSection = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
             <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
-              Why Choose Synoptas?
+              Built for Trust
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Trusted by website owners and businesses worldwide for reliable, actionable AI insights
+              Designed for professionals who need defensible decision documentation
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {trustPoints.map((point, index) => (
-              <Card
-                key={index}
-                className="p-8 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm group animate-fade-in relative overflow-hidden"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                {/* Animated Border Gradient on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-transparent transition-all duration-500 rounded-lg" />
-                
-                <div className="relative z-10">
-                  <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-all duration-500 flex items-center gap-2">
-                    {point.title}
-                    <span className="inline-block w-0 group-hover:w-2 h-2 bg-primary rounded-full transition-all duration-500" />
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {point.description}
-                  </p>
-                </div>
-              </Card>
-            ))}
+          <div className="grid md:grid-cols-3 gap-8">
+            {trustPoints.map((point, index) => {
+              const IconComponent = point.icon;
+              return (
+                <Card
+                  key={index}
+                  className="p-8 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm group animate-fade-in relative overflow-hidden"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
+                  {/* Animated Border Gradient on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-primary/5 group-hover:to-transparent transition-all duration-500 rounded-lg" />
+                  
+                  <div className="relative z-10">
+                    <div className="mb-4 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                      <IconComponent className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-all duration-500">
+                      {point.title}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {point.description}
+                    </p>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>

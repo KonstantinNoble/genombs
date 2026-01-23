@@ -1,10 +1,10 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
-  { number: "01", title: "Define your decision context", description: "Describe the decision you need to document – from investments to strategic choices." },
-  { number: "02", title: "Capture multiple perspectives", description: "Multiple AI models document different perspectives on your decision." },
-  { number: "03", title: "Review documented viewpoints", description: "See consensus, dissent, and alternative considerations – all documented with timestamps." },
-  { number: "04", title: "Confirm and export your record", description: "Confirm that the final decision is yours. Export your Decision Audit Report." },
+  { number: "01", title: "Describe your decision and context", description: "What are you deciding? What's at stake? Provide the context that matters." },
+  { number: "02", title: "Collect perspectives from three AI models", description: "Three independent AI models analyze your decision from different angles – simultaneously." },
+  { number: "03", title: "Review consensus, dissent, and alternatives", description: "See where perspectives align, where they conflict, and what alternatives exist – all timestamped." },
+  { number: "04", title: "Confirm ownership and export your audit report", description: "Acknowledge that the final decision is yours. Export a stakeholder-ready PDF." },
 ];
 
 const StepCard = ({ step, index }: { step: typeof steps[0]; index: number }) => {
@@ -31,8 +31,8 @@ const HowItWorks = () => {
       <div className="absolute bottom-20 left-[10%] w-60 h-60 bg-accent-cool/5 rounded-full blur-3xl" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">Four Steps to a Documented Decision</h2>
-          <p className="text-lg text-muted-foreground">From question to auditable decision record in under a minute</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">How It Works</h2>
+          <p className="text-lg text-muted-foreground">From question to audit-ready decision record in under 60 seconds</p>
         </div>
         <div className="max-w-2xl mx-auto space-y-8">{steps.map((step, index) => <StepCard key={index} step={step} index={index} />)}</div>
       </div>

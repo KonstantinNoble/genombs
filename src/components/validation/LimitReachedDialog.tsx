@@ -69,13 +69,13 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
         <div className="px-6 pt-6 pb-4">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center">
-              2 of 2 Free Checks Used
+              Daily Limit Reached
             </DialogTitle>
           </DialogHeader>
           
           {/* Timer */}
           <div className="mt-4 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Next free check in</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Next record available in</p>
             <p className={`text-xl font-bold font-mono mt-1 ${isReset ? 'text-primary' : 'text-foreground'}`}>
               {timeRemaining}
             </p>
@@ -98,9 +98,9 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
               
               {/* Compact benefits - 2 columns */}
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-5">
-              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <span className="text-primary font-bold">10×</span>
-                  <span className="text-muted-foreground">daily checks</span>
+                  <span className="text-muted-foreground">daily records</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-primary font-bold">7</span>
@@ -120,7 +120,7 @@ export function LimitReachedDialog({ open, onClose, isPremium, resetAt, onUpgrad
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-primary font-bold">+</span>
-                  <span className="text-muted-foreground">PDF reports (desktop)</span>
+                  <span className="text-muted-foreground">PDF audit reports</span>
                 </div>
               </div>
 

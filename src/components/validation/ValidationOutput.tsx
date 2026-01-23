@@ -4,6 +4,7 @@ import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
 import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
+import { PDFExportButton } from "./PDFExportButton";
 
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
@@ -16,10 +17,11 @@ import { cn } from "@/lib/utils";
 interface ValidationOutputProps {
   result: ValidationResult;
   validationId?: string;
+  prompt?: string;
   onStartExperiment?: () => void;
 }
 
-export function ValidationOutput({ result, validationId, onStartExperiment }: ValidationOutputProps) {
+export function ValidationOutput({ result, validationId, prompt = '', onStartExperiment }: ValidationOutputProps) {
   const [actionsExpanded, setActionsExpanded] = useState(false);
   
   const {
@@ -67,6 +69,7 @@ export function ValidationOutput({ result, validationId, onStartExperiment }: Va
             Premium
           </Badge>
         )}
+        <PDFExportButton result={result} prompt={prompt} isPremium={isPremium || false} />
       </div>
 
       {/* Main Recommendation */}

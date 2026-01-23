@@ -256,6 +256,7 @@ export default function ValidationPlatform() {
       };
       setDisplayedResult(reconstructedResult);
       setCurrentValidationId(item.id);
+      setPrompt(item.prompt || '');
       return;
     }
     
@@ -287,6 +288,7 @@ export default function ValidationPlatform() {
     };
     setDisplayedResult(reconstructedResult);
     setCurrentValidationId(item.id);
+    setPrompt(item.prompt || '');
   };
 
   const handleDeleteHistory = async (id: string) => {
@@ -527,6 +529,7 @@ export default function ValidationPlatform() {
                     <ValidationOutput 
                       result={displayedResult} 
                       validationId={currentValidationId || undefined}
+                      prompt={prompt}
                       onStartExperiment={handleStartExperiment}
                     />
                   </CardContent>

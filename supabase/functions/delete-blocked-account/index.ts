@@ -63,14 +63,21 @@ serve(async (req) => {
     // GDPR-compliant: Delete ALL user data in correct order
     // Order matters: child tables first, then parent tables, finally auth user
 
-    // 1. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
+    // 1. Delete decision_records (decision_audit_log deleted via CASCADE)
+    console.log('Deleting decision_records for user:', userId);
+    await adminClient
+      .from('decision_records')
+      .delete()
+      .eq('user_id', userId);
+
+    // 2. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
     console.log('Deleting experiments for user:', userId);
     await adminClient
       .from('experiments')
       .delete()
       .eq('user_id', userId);
 
-    // 2. Delete validation_analyses
+    // 3. Delete validation_analyses
     console.log('Deleting validation_analyses for user:', userId);
     await adminClient
       .from('validation_analyses')

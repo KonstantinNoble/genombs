@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ConfidenceHeader } from "./ConfidenceHeader";
 import { ConsensusSection } from "./ConsensusSection";
 import { MajoritySection } from "./MajoritySection";
@@ -12,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AVAILABLE_MODELS } from "./ModelSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ValidationOutputProps {
@@ -291,6 +292,18 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
           />
         </div>
       )}
+
+      {/* Dashboard Link */}
+      <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground border-t border-border/50 mt-6">
+        <span>Track your decision patterns</span>
+        <Link 
+          to="/dashboard" 
+          className="text-primary hover:text-primary/80 hover:underline flex items-center gap-1 font-medium transition-colors"
+        >
+          View Dashboard
+          <ArrowRight className="w-3 h-3" />
+        </Link>
+      </div>
     </div>
   );
 }

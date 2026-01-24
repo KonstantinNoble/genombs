@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import ValidationPlatform from "./pages/ValidationPlatform";
+import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import PricingPage from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/validate" element={<ValidationPlatform />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/contact" element={<Contact />} />

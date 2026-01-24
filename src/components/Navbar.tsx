@@ -106,12 +106,24 @@ const Navbar = () => {
           </Link>
           
           {user ? (
-            <Button
-              size="sm"
-              asChild
-            >
-              <Link to="/profile">Profile</Link>
-            </Button>
+            <div className="flex items-center gap-4">
+              <Link 
+                to="/dashboard" 
+                className={`text-sm font-semibold transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 ${
+                  isActive("/dashboard") 
+                    ? "text-primary after:w-full" 
+                    : "text-muted-foreground after:w-0 hover:after:w-full hover:text-foreground"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Button
+                size="sm"
+                asChild
+              >
+                <Link to="/profile">Profile</Link>
+              </Button>
+            </div>
           ) : (
             <Button
               size="sm"
@@ -175,14 +187,23 @@ const Navbar = () => {
             </Link>
 
             {user ? (
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={() => setIsOpen(false)}
-                asChild
-              >
-                <Link to="/profile">Profile</Link>
-              </Button>
+              <>
+                <Link
+                  to="/dashboard"
+                  className="block text-foreground font-semibold hover:text-primary hover:bg-primary/5 transition-all duration-300 py-2 px-3 rounded-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Button
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setIsOpen(false)}
+                  asChild
+                >
+                  <Link to="/profile">Profile</Link>
+                </Button>
+              </>
             ) : (
               <Button
                 size="sm"

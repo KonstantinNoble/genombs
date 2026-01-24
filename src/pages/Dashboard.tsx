@@ -12,7 +12,7 @@ import { InsightsPanel } from "@/components/dashboard/InsightsPanel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { BarChart3, ArrowRight, AlertCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function Dashboard() {
@@ -51,25 +51,24 @@ export default function Dashboard() {
       <main className="min-h-screen py-8 px-4">
         <div className="container mx-auto max-w-6xl">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <BarChart3 className="h-6 w-6 text-primary" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                Decision Intelligence
-              </h1>
+          <div className="mb-10">
+            <div className="inline-block mb-3">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full">
+                Analytics
+              </span>
             </div>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
+              Decision Intelligence
+            </h1>
+            <p className="text-muted-foreground mt-2 max-w-xl">
               Track your decision patterns and discover insights to improve your process.
             </p>
           </div>
 
           {/* Error State */}
           {error && (
-            <Card className="mb-6 border-destructive/50">
-              <CardContent className="p-4 flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-destructive" />
+            <Card className="mb-6 border-destructive/50 bg-destructive/5">
+              <CardContent className="p-4">
                 <p className="text-sm text-destructive">
                   Failed to load dashboard data. Please try again later.
                 </p>
@@ -115,14 +114,16 @@ export default function Dashboard() {
 
               {/* Empty State CTA */}
               {stats.validation_stats.total_validations === 0 && (
-                <Card className="glass-card">
-                  <CardContent className="py-12 text-center">
-                    <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Start Building Your Decision Trail</h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                <Card className="glass-card mt-8">
+                  <CardContent className="py-16 text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 via-accent-cool/10 to-accent-warm/20" />
+                    <h3 className="text-xl font-semibold mb-2 text-foreground">
+                      Start Building Your Decision Trail
+                    </h3>
+                    <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                       Create your first validation to see insights about your decision patterns and AI model performance.
                     </p>
-                    <Button asChild>
+                    <Button asChild size="lg">
                       <Link to="/validate">
                         Create First Validation
                         <ArrowRight className="ml-2 h-4 w-4" />

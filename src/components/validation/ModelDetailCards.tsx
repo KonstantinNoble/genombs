@@ -165,42 +165,58 @@ export function ModelDetailCards({
   ) || selectedModels[0];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-base sm:text-lg font-semibold text-foreground">
-          Individual Model Responses
+        <h3 className="text-base sm:text-lg font-bold text-foreground">
+          Model Responses
         </h3>
         {isPremium && (
-          <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0 text-sm">
             Full Details
-          </span>
+          </Badge>
         )}
       </div>
 
       <Tabs defaultValue={defaultModel} className="w-full">
         <div className="overflow-x-auto -mx-1 px-1 pb-1">
           <TabsList 
-            className="w-full flex sm:grid h-auto p-1 bg-muted/30 rounded-lg gap-1 sm:gap-1 min-w-max sm:min-w-0" 
+            className="w-full flex sm:grid h-auto p-1.5 bg-muted/50 gap-1 sm:gap-0 min-w-max sm:min-w-0" 
             style={{ gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth >= 640 ? `repeat(${Math.min(selectedModels.length, 3)}, 1fr)` : undefined }}
           >
             {selectedModels.map(modelKey => {
               const response = modelResponses[modelKey];
               const hasError = !response || response.error;
               const modelConfig = AVAILABLE_MODELS[modelKey];
+              const colors = MODEL_COLORS[modelKey];
               
               return (
                 <TabsTrigger 
                   key={modelKey} 
                   value={modelKey}
                   className={cn(
-                    "text-sm py-2.5 px-3 font-medium transition-all shrink-0 min-w-[80px] sm:min-w-0 rounded-md",
-                    "data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-foreground",
-                    "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground",
-                    hasError && "opacity-50"
+                    "text-sm sm:text-base py-2 sm:py-3 px-2 sm:px-3 font-medium transition-all shrink-0 min-w-[80px] sm:min-w-0",
+                    "data-[state=active]:shadow-md",
+                    hasError && "opacity-60",
+                    // Farbige Tabs basierend auf Model
+                    modelKey === 'gptMini' && "data-[state=active]:bg-blue-500 data-[state=active]:text-white",
+                    modelKey === 'gpt5' && "data-[state=active]:bg-emerald-500 data-[state=active]:text-white",
+                    modelKey === 'sonarReasoning' && "data-[state=active]:bg-indigo-500 data-[state=active]:text-white",
+                    modelKey === 'geminiPro' && "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                    modelKey === 'geminiFlash' && "data-[state=active]:bg-green-500 data-[state=active]:text-white",
+                    modelKey === 'claude' && "data-[state=active]:bg-orange-500 data-[state=active]:text-white",
+                    modelKey === 'perplexity' && "data-[state=active]:bg-cyan-500 data-[state=active]:text-white",
+                    // Inactive state mit leichter Farbe
+                    modelKey === 'gptMini' && "data-[state=inactive]:bg-blue-500/10 data-[state=inactive]:text-blue-600",
+                    modelKey === 'gpt5' && "data-[state=inactive]:bg-emerald-500/10 data-[state=inactive]:text-emerald-600",
+                    modelKey === 'sonarReasoning' && "data-[state=inactive]:bg-indigo-500/10 data-[state=inactive]:text-indigo-600",
+                    modelKey === 'geminiPro' && "data-[state=inactive]:bg-purple-500/10 data-[state=inactive]:text-purple-600",
+                    modelKey === 'geminiFlash' && "data-[state=inactive]:bg-green-500/10 data-[state=inactive]:text-green-600",
+                    modelKey === 'claude' && "data-[state=inactive]:bg-orange-500/10 data-[state=inactive]:text-orange-600",
+                    modelKey === 'perplexity' && "data-[state=inactive]:bg-cyan-500/10 data-[state=inactive]:text-cyan-600"
                   )}
                 >
                   <span className="truncate">{modelConfig?.name || modelKey}</span>
-                  {hasError && " ⚠"}
+                  {hasError && " (Error)"}
                 </TabsTrigger>
               );
             })}
@@ -229,19 +245,19 @@ export function ModelDetailCards({
 
       {/* Citations */}
       {citations && citations.length > 0 && (
-        <div className="mt-5 p-5 rounded-xl bg-muted/20 border border-border/40">
-          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-4">
+        <div className="mt-5 p-5 rounded-lg border border-cyan-500/30 bg-cyan-500/5">
+          <h4 className="font-semibold text-lg sm:text-xl text-cyan-600 mb-4">
             Web Sources
           </h4>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {citations.slice(0, 5).map((citation, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm">
-                <span className="text-muted-foreground shrink-0 font-mono">[{i + 1}]</span>
+              <li key={i} className="flex items-start gap-3 text-base sm:text-lg">
+                <span className="text-cyan-600 shrink-0">[{i + 1}]</span>
                 <a 
                   href={citation} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-primary/80 underline underline-offset-2 break-all transition-colors"
+                  className="text-cyan-600 hover:text-cyan-500 underline underline-offset-2 break-all"
                 >
                   {citation}
                 </a>

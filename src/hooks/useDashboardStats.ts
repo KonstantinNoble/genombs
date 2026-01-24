@@ -22,11 +22,12 @@ export interface DecisionStats {
 }
 
 export interface ModelUsage {
-  gpt5: number;
+  gptMini: number;
   geminiPro: number;
   geminiFlash: number;
   perplexity: number;
   claude: number;
+  sonarReasoning: number;
 }
 
 export interface ConfidenceTrendPoint {
@@ -92,13 +93,14 @@ export function generateInsights(stats: DashboardStats | undefined): string[] {
   const totalModelUsage = Object.values(model_usage).reduce((a, b) => a + b, 0);
   if (totalModelUsage > 0) {
     const topModel = Object.entries(model_usage).sort(([, a], [, b]) => b - a)[0];
-    const modelNames: Record<string, string> = {
-      gpt5: "GPT-5",
-      geminiPro: "Gemini Pro",
-      geminiFlash: "Gemini Flash",
-      perplexity: "Perplexity",
-      claude: "Claude",
-    };
+  const modelNames: Record<string, string> = {
+    gptMini: "GPT-5 Mini",
+    geminiPro: "Gemini 3 Pro",
+    geminiFlash: "Gemini Flash",
+    perplexity: "Perplexity Sonar",
+    claude: "Claude Sonnet 4",
+    sonarReasoning: "Sonar Reasoning Pro",
+  };
     const percentage = Math.round((topModel[1] / totalModelUsage) * 100);
     if (percentage > 60) {
       insights.push(

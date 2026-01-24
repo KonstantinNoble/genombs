@@ -6,11 +6,12 @@ interface ModelPerformanceProps {
 }
 
 const MODEL_CONFIG: Record<string, { name: string; color: string }> = {
-  gpt5: { name: "GPT-5", color: "hsl(142, 76%, 36%)" },
-  geminiPro: { name: "Gemini Pro", color: "hsl(220, 76%, 55%)" },
+  gptMini: { name: "GPT-5 Mini", color: "hsl(142, 76%, 36%)" },
+  geminiPro: { name: "Gemini 3 Pro", color: "hsl(220, 76%, 55%)" },
   geminiFlash: { name: "Gemini Flash", color: "hsl(199, 89%, 48%)" },
-  perplexity: { name: "Perplexity", color: "hsl(280, 60%, 55%)" },
-  claude: { name: "Claude", color: "hsl(38, 92%, 50%)" },
+  perplexity: { name: "Perplexity Sonar", color: "hsl(280, 60%, 55%)" },
+  claude: { name: "Claude Sonnet 4", color: "hsl(38, 92%, 50%)" },
+  sonarReasoning: { name: "Sonar Reasoning Pro", color: "hsl(320, 70%, 50%)" },
 };
 
 export function ModelPerformance({ usage }: ModelPerformanceProps) {

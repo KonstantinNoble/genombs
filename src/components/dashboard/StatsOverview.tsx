@@ -23,11 +23,13 @@ export function StatsOverview({ validationStats, decisionStats }: StatsOverviewP
       valueColor: "text-[hsl(199,89%,48%)]",
     },
     {
-      label: "Confirmed Decisions",
-      value: decisionStats.confirmed_decisions,
-      accent: "from-primary/20 to-primary/5",
-      border: "border-l-primary",
-      valueColor: "text-primary",
+      label: "AI Consensus Rate",
+      value: validationStats.total_validations > 0 
+        ? `${validationStats.consensus_rate}%`
+        : "—",
+      accent: "from-accent-success/20 to-accent-success/5",
+      border: "border-l-[hsl(142,71%,45%)]",
+      valueColor: "text-[hsl(142,71%,45%)]",
     },
     {
       label: "Active Days",

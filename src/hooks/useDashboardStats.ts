@@ -10,6 +10,7 @@ export interface ValidationStats {
   first_validation: string | null;
   last_validation: string | null;
   active_days: number;
+  consensus_rate: number;
 }
 
 export interface DecisionStats {

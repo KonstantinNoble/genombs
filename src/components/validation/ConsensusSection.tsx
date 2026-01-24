@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { ConsensusIcon } from "./icons/ConsensusIcon";
 import type { ConsensusPoint } from "@/hooks/useMultiAIValidation";
 
@@ -29,82 +28,85 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
     });
   };
 
-  const getConfidenceColor = (value: number) => {
-    if (value >= 80) return "bg-green-500/10 text-green-600 border-green-500/30";
-    if (value >= 60) return "bg-emerald-500/10 text-emerald-600 border-emerald-500/30";
-    if (value >= 40) return "bg-yellow-500/10 text-yellow-600 border-yellow-500/30";
-    return "bg-red-500/10 text-red-600 border-red-500/30";
-  };
-
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 sm:p-5 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-950/50 rounded-xl transition-all border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 group animate-consensus-pulse">
-        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-          <div className="p-1.5 sm:p-2 bg-green-500/20 rounded-lg group-hover:scale-110 transition-transform shrink-0">
-            <ConsensusIcon size={20} className="text-green-600 sm:w-6 sm:h-6" />
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-3">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-5 sm:p-6 bg-card hover:bg-muted/30 rounded-xl transition-all duration-300 border border-border/60 border-l-[3px] border-l-green-500 group">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="p-2 bg-green-500/10 rounded-lg group-hover:bg-green-500/15 transition-colors shrink-0">
+            <ConsensusIcon size={20} className="text-green-600" />
           </div>
-          <div className="flex flex-col items-start gap-0.5 sm:gap-1 min-w-0">
-            <span className="font-bold text-green-700 dark:text-green-400 text-base sm:text-xl truncate">
+          <div className="flex flex-col items-start gap-0.5 min-w-0">
+            <span className="font-semibold text-foreground text-base sm:text-lg">
               Full Consensus
             </span>
-            <span className="text-xs text-green-600/70 dark:text-green-500/70 hidden sm:block">
+            <span className="text-xs text-muted-foreground hidden sm:block">
               All models agree
             </span>
           </div>
-          <Badge variant="secondary" className="text-sm sm:text-base bg-green-500/20 text-green-700 dark:text-green-300 border-0 px-2 sm:px-4 py-1 sm:py-1.5 shrink-0">
-            {points.length}
-          </Badge>
         </div>
-        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-500/20 flex items-center justify-center hover:bg-green-500/30 transition-colors shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-sm font-medium text-green-600 bg-green-500/10 px-3 py-1 rounded-full">
+            {points.length}
+          </span>
           <ChevronDown
             className={cn(
-              "h-5 w-5 sm:h-6 sm:w-6 text-green-600 transition-transform",
+              "h-5 w-5 text-muted-foreground transition-transform duration-200",
               isOpen && "rotate-180",
             )}
           />
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="pt-2">
-        <div className="grid grid-cols-1 gap-4">
+      <CollapsibleContent className="pt-1">
+        <div className="space-y-3">
           {points.map((point, index) => (
             <div
               key={index}
-              className="bg-card border-l-4 border-l-green-500 border border-green-200 dark:border-green-800 rounded-xl overflow-hidden shadow-sm"
+              className={cn(
+                "bg-card rounded-xl border border-border/50 overflow-hidden transition-all duration-300",
+                "border-l-[3px] border-l-green-500",
+                "hover:border-border hover:shadow-sm hover:-translate-y-0.5"
+              )}
             >
               <button
                 onClick={() => toggleCard(index)}
-                className="w-full p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:justify-between hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors text-left"
+                className="w-full p-5 flex items-start sm:items-center justify-between gap-4 text-left transition-colors"
               >
-                <span className="font-semibold text-base sm:text-xl leading-tight">{point.topic}</span>
-                <div className="flex items-center gap-2 sm:gap-4 shrink-0 self-end sm:self-auto">
-                  <Badge className={cn("text-sm sm:text-base border px-2 sm:px-4 py-1 sm:py-1.5", getConfidenceColor(point.confidence))}>
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium text-base sm:text-lg text-foreground leading-snug block">
+                    {point.topic}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-sm text-muted-foreground">
                     {point.confidence}%
-                  </Badge>
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-transform",
-                        expandedCards.has(index) && "rotate-180",
-                      )}
-                    />
-                  </div>
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                      expandedCards.has(index) && "rotate-180",
+                    )}
+                  />
                 </div>
               </button>
 
               {expandedCards.has(index) && (
-                <div className="px-5 pb-5 space-y-4 border-t border-green-200 dark:border-green-800 pt-4 animate-fade-in">
-                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{point.description}</p>
+                <div className="px-5 pb-5 space-y-4 border-t border-border/30 pt-4 animate-fade-in">
+                  <p className="text-base text-muted-foreground leading-relaxed">
+                    {point.description}
+                  </p>
                   {point.actionItems && point.actionItems.length > 0 && (
-                    <div className="space-y-3">
-                      <span className="text-base font-semibold text-foreground">Observations:</span>
-                      <ul className="space-y-3">
+                    <div className="space-y-3 pt-2">
+                      <span className="text-sm font-medium text-foreground uppercase tracking-wide">
+                        Observations
+                      </span>
+                      <ul className="space-y-2.5">
                         {point.actionItems.map((action, actionIndex) => (
                           <li
                             key={actionIndex}
-                            className="text-base sm:text-lg text-muted-foreground flex items-start gap-3"
+                            className="text-base text-muted-foreground flex items-start gap-3 pl-1"
                           >
-                            <span className="text-green-500 shrink-0">→</span>
+                            <span className="text-green-500 shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-green-500" />
                             <span className="leading-relaxed">{action}</span>
                           </li>
                         ))}

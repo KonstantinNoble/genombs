@@ -81,8 +81,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Create an audit trail before stakeholders ask. 
-            Three AI perspectives, documented and traceable.
+            Create audit-ready documentation before stakeholders ask. 
+            Multiple AI perspectives. Personal analytics. Full traceability.
           </p>
 
           {/* CTA Buttons */}

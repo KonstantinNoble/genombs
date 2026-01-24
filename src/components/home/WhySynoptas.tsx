@@ -26,7 +26,7 @@ const WhySynoptas = () => {
           <div ref={rightRef} className={`premium-card relative rounded-2xl p-6 md:p-8 border-2 border-primary/30 scroll-reveal-scale ${rightVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.15s' }}>
             <div className="absolute -top-3 left-6"><span className="px-4 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm font-semibold text-primary">With Synoptas</span></div>
             <div className="mt-4 space-y-4">
-              {["Every perspective documented with timestamps", "Consensus and dissent clearly identified", "Stakeholder-ready PDF exports", "Board-ready documentation on demand"].map((item, i) => (
+              {["Every perspective documented with timestamps", "Consensus and dissent clearly identified", "Personal dashboard tracks decision patterns", "Stakeholder-ready PDF exports", "Board-ready documentation on demand"].map((item, i) => (
                 <div key={i} className="flex items-center gap-3"><span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center"><span className="w-2 h-2 rounded-full bg-primary" /></span><span className="text-foreground font-medium">{item}</span></div>
               ))}
             </div>

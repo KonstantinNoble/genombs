@@ -1,52 +1,49 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Cpu } from "lucide-react";
 import type { ModelUsage } from "@/hooks/useDashboardStats";
 
 interface ModelPerformanceProps {
   usage: ModelUsage;
 }
 
-const MODEL_NAMES: Record<string, string> = {
-  gpt5: "GPT-5",
-  geminiPro: "Gemini Pro",
-  geminiFlash: "Gemini Flash",
-  perplexity: "Perplexity",
-  claude: "Claude",
-};
-
-const MODEL_COLORS: Record<string, string> = {
-  gpt5: "hsl(142, 76%, 36%)",
-  geminiPro: "hsl(220, 76%, 55%)",
-  geminiFlash: "hsl(199, 89%, 48%)",
-  perplexity: "hsl(280, 60%, 55%)",
-  claude: "hsl(38, 92%, 50%)",
+const MODEL_CONFIG: Record<string, { name: string; color: string }> = {
+  gpt5: { name: "GPT-5", color: "hsl(142, 76%, 36%)" },
+  geminiPro: { name: "Gemini Pro", color: "hsl(220, 76%, 55%)" },
+  geminiFlash: { name: "Gemini Flash", color: "hsl(199, 89%, 48%)" },
+  perplexity: { name: "Perplexity", color: "hsl(280, 60%, 55%)" },
+  claude: { name: "Claude", color: "hsl(38, 92%, 50%)" },
 };
 
 export function ModelPerformance({ usage }: ModelPerformanceProps) {
   const data = Object.entries(usage)
     .map(([key, value]) => ({
-      name: MODEL_NAMES[key] || key,
-      value,
       key,
-      color: MODEL_COLORS[key] || "hsl(var(--primary))",
+      name: MODEL_CONFIG[key]?.name || key,
+      value,
+      color: MODEL_CONFIG[key]?.color || "hsl(var(--primary))",
     }))
     .filter((item) => item.value > 0)
     .sort((a, b) => b.value - a.value);
 
   const totalUsage = Object.values(usage).reduce((a, b) => a + b, 0);
+  const maxValue = Math.max(...data.map((d) => d.value), 1);
 
   if (totalUsage === 0) {
     return (
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-primary" />
+          <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Model Usage
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[200px] flex items-center justify-center">
-          <p className="text-muted-foreground text-sm">No model usage data yet</p>
+        <CardContent className="h-[220px] flex items-center justify-center">
+          <div className="text-center">
+            <div className="flex gap-1 justify-center mb-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-2 bg-muted rounded-full" style={{ height: `${20 + i * 8}px` }} />
+              ))}
+            </div>
+            <p className="text-muted-foreground text-sm">No model usage data yet</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -55,42 +52,46 @@ export function ModelPerformance({ usage }: ModelPerformanceProps) {
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <Cpu className="h-4 w-4 text-primary" />
-          Model Usage
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Model Usage
+          </CardTitle>
+          <span className="text-xs text-muted-foreground">
+            {totalUsage} queries
+          </span>
+        </div>
       </CardHeader>
-      <CardContent className="h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-            <XAxis type="number" hide />
-            <YAxis 
-              type="category" 
-              dataKey="name" 
-              width={85}
-              tick={{ fontSize: 11, fill: "hsl(var(--foreground))" }}
-              tickLine={false}
-              axisLine={false}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "8px",
-                fontSize: "12px",
-              }}
-              formatter={(value: number) => [
-                `${value} uses (${Math.round((value / totalUsage) * 100)}%)`,
-                "Usage",
-              ]}
-            />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      <CardContent className="h-[220px] flex flex-col justify-center">
+        <div className="space-y-4">
+          {data.map((model, index) => {
+            const percentage = Math.round((model.value / totalUsage) * 100);
+            const barWidth = (model.value / maxValue) * 100;
+            
+            return (
+              <div 
+                key={model.key} 
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm font-medium text-foreground">{model.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {model.value} <span className="text-muted-foreground/60">({percentage}%)</span>
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{ 
+                      width: `${barWidth}%`,
+                      backgroundColor: model.color,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );

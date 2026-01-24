@@ -594,6 +594,7 @@ export type Database = {
       deactivate_expired_subscriptions: { Args: never; Returns: undefined }
       get_next_comment_time: { Args: { p_user_id: string }; Returns: string }
       get_remaining_comments: { Args: { p_user_id: string }; Returns: number }
+      get_user_dashboard_stats: { Args: { p_user_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

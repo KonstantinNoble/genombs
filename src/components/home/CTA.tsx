@@ -66,7 +66,7 @@ const CTA = () => {
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             {isPremium && isLoggedIn 
-              ? "10 daily records. Full audit trails. Stakeholder-ready exports. All waiting for you."
+              ? "10 daily records. Full audit trails. Personal analytics dashboard. Stakeholder-ready exports."
               : "Two free records daily. No credit card required. Create your first audit trail in 20 seconds."}
           </p>
 

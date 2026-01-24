@@ -49,8 +49,8 @@ const Features = () => {
       description: "Instantly see where all models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
     },
     { 
-      title: "Decision Coverage Score", 
-      description: "Measure how thoroughly your decision was examined. The Coverage Score reflects completeness of analysis, not correctness of choice." 
+      title: "Personal Analytics Dashboard", 
+      description: "Track your validation history with confidence trends, AI consensus rates, and model usage statistics. Your decision patterns, visualized." 
     },
     { 
       title: "Stakeholder-Ready Audit Reports", 

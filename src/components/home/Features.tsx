@@ -8,47 +8,38 @@ interface FeatureCardProps {
   title: string;
   description: string;
   index: number;
-  icon?: React.ReactNode;
-  accentColor?: string;
   hasDashboardLink?: boolean;
   showDashboardLink?: boolean;
 }
 
-const FeatureCard = ({ title, description, index, icon, accentColor, hasDashboardLink, showDashboardLink }: FeatureCardProps) => {
+const FeatureCard = ({ title, description, index, hasDashboardLink, showDashboardLink }: FeatureCardProps) => {
   const { ref, isVisible } = useScrollReveal();
 
   return (
     <div
       ref={ref}
-      className={`glass-card group relative rounded-2xl p-6 md:p-8 scroll-reveal tilt-card ${isVisible ? 'revealed' : ''} ${accentColor ? `border-l-4 ${accentColor}` : ''}`}
-      style={{ transitionDelay: `${index * 0.1}s` }}
+      className={`group relative rounded-2xl p-6 md:p-8 bg-card/50 border border-border/60 card-hover-subtle scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      style={{ transitionDelay: `${index * 0.08}s` }}
     >
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-accent-cool/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-        {index + 1}
-      </div>
-      <div className="relative z-10">
-        {icon && (
-          <div className="mb-4">
-            {icon}
-          </div>
-        )}
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-          {title}
-        </h3>
-        <p className="text-muted-foreground leading-relaxed">{description}</p>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      
+      <div className="relative">
+        <div className="flex items-start gap-4 mb-4">
+          <span className="step-number flex-shrink-0">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <h3 className="text-xl font-bold text-foreground pt-1.5">{title}</h3>
+        </div>
+        <p className="text-muted-foreground leading-relaxed ml-14">{description}</p>
+        
         {hasDashboardLink && showDashboardLink && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-4 px-0 text-primary hover:text-primary/80 hover:bg-transparent"
-            asChild
-          >
-            <Link to="/dashboard" className="flex items-center gap-1.5">
-              View Analytics
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </Button>
+          <div className="mt-5 ml-14">
+            <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80 hover:bg-primary/5 -ml-2">
+              <Link to="/dashboard" className="flex items-center gap-1.5">
+                View Analytics <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+          </div>
         )}
       </div>
     </div>
@@ -80,15 +71,15 @@ const Features = () => {
   ];
 
   return (
-    <section id="features" className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
-      <div className="absolute top-1/4 -left-20 w-60 h-60 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent-cool/5 rounded-full blur-3xl" />
+    <section id="features" className="py-24 sm:py-28 md:py-36 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">What You Get</h2>
-          <p className="text-lg text-muted-foreground">Professional decision documentation for high-stakes choices</p>
+        <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
+          <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Features</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">What You Get</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Professional decision documentation for high-stakes choices</p>
+          <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-5 lg:gap-6 max-w-5xl mx-auto">
           {features.map((feature, index) => (
             <FeatureCard 
               key={index} 

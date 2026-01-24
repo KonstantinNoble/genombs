@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 23, 2026 | Version 5.3</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 24, 2026 | Version 5.4</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -493,6 +493,7 @@ const PrivacyPolicy = () => {
               <li>Overall confidence score</li>
               <li>Processing time</li>
               <li>Timestamp of the analysis</li>
+              <li>Model weights (optional user-defined influence percentages for each selected AI model)</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">AI Model Providers</h4>
@@ -516,7 +517,7 @@ const PrivacyPolicy = () => {
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
-                    <td className="border border-border p-3">Gemini 2.5 Flash</td>
+                    <td className="border border-border p-3">Gemini 3 Flash</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
                   </tr>
@@ -768,6 +769,20 @@ const PrivacyPolicy = () => {
                 documentation for business decisions
               </li>
             </ul>
+          </section>
+
+          {/* Section 5.7: Dashboard Statistics */}
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.7 Dashboard Statistics</h3>
+            <p className="text-muted-foreground mb-4">
+              Your personal Dashboard displays aggregated statistics derived from your stored validation 
+              analyses, including model usage frequency, confidence score trends, and AI agreement rates. 
+              This data is calculated from already stored validation data (as described in Section 5.1) 
+              and is not shared with third parties.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (contract performance).
+            </p>
           </section>
 
           {/* Section 6: Premium Subscription */}
@@ -1319,6 +1334,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.4 (January 24, 2026):</strong> Added model weights to data stored list. Added Dashboard Statistics section (5.7). Corrected Gemini model name to "Gemini 3 Flash".</li>
               <li><strong>Version 5.3 (January 23, 2026):</strong> Added Decision Audit Records section (5.6) documenting Premium decision ownership confirmation feature, audit logging, and client-side PDF generation. Updated data categories and retention tables.</li>
               <li><strong>Version 5.2 (January 21, 2026):</strong> Corrected Berlin Data Protection Authority address (Alt-Moabit 59-61). Updated Recipients table: removed OpenRouter, added Lovable AI Gateway, Anthropic, and Perplexity AI. Updated AI model names in data categories.</li>
               <li><strong>Version 5.1 (January 21, 2026):</strong> Removed obsolete database tables and edge functions (Business Tools Advisor, Ads Advisor, Firecrawl). Cleaned up version history to reflect current platform scope.</li>
@@ -1329,7 +1345,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: January 23, 2026
+              Last updated: January 24, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

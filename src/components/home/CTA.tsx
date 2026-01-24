@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
   const [isPremium, setIsPremium] = useState(false);
@@ -80,6 +81,20 @@ const CTA = () => {
                 {isPremium && isLoggedIn ? "Open Decision Records" : "Document Your First Decision"}
               </Link>
             </Button>
+            
+            {isLoggedIn && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-2xl px-8 py-6 text-lg font-medium border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:scale-105 transition-all duration-300"
+                asChild
+              >
+                <Link to="/dashboard" className="flex items-center gap-2">
+                  View Your Analytics
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">

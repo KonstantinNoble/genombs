@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -417,7 +418,20 @@ export default function ValidationPlatform() {
           <aside className="w-full lg:w-80 xl:w-96 shrink-0 order-2 lg:order-1 space-y-4">
             <Card className="shadow-elegant border-primary/10">
               <CardHeader className="pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-                <CardTitle className="text-lg sm:text-xl">Previous Analyses</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg sm:text-xl">Previous Analyses</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-primary px-2"
+                    asChild
+                  >
+                    <Link to="/dashboard" className="flex items-center gap-1">
+                      Analytics
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </Link>
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-2 max-h-64 sm:max-h-96 overflow-y-auto px-3 sm:px-6 pb-3 sm:pb-6">
                 {history.length === 0 ? (

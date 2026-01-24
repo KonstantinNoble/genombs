@@ -1,4 +1,8 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface FeatureCardProps {
   title: string;
@@ -6,9 +10,11 @@ interface FeatureCardProps {
   index: number;
   icon?: React.ReactNode;
   accentColor?: string;
+  hasDashboardLink?: boolean;
+  showDashboardLink?: boolean;
 }
 
-const FeatureCard = ({ title, description, index, icon, accentColor }: FeatureCardProps) => {
+const FeatureCard = ({ title, description, index, icon, accentColor, hasDashboardLink, showDashboardLink }: FeatureCardProps) => {
   const { ref, isVisible } = useScrollReveal();
 
   return (
@@ -31,6 +37,19 @@ const FeatureCard = ({ title, description, index, icon, accentColor }: FeatureCa
           {title}
         </h3>
         <p className="text-muted-foreground leading-relaxed">{description}</p>
+        {hasDashboardLink && showDashboardLink && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-4 px-0 text-primary hover:text-primary/80 hover:bg-transparent"
+            asChild
+          >
+            <Link to="/dashboard" className="flex items-center gap-1.5">
+              View Analytics
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -38,6 +57,7 @@ const FeatureCard = ({ title, description, index, icon, accentColor }: FeatureCa
 
 const Features = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { user } = useAuth();
 
   const features = [
     { 
@@ -50,7 +70,8 @@ const Features = () => {
     },
     { 
       title: "Personal Analytics Dashboard", 
-      description: "Track your validation history with confidence trends, AI consensus rates, and model usage statistics. Your decision patterns, visualized." 
+      description: "Track your validation history with confidence trends, AI consensus rates, and model usage statistics. Your decision patterns, visualized.",
+      hasDashboardLink: true
     },
     { 
       title: "Stakeholder-Ready Audit Reports", 
@@ -74,6 +95,8 @@ const Features = () => {
               title={feature.title} 
               description={feature.description} 
               index={index}
+              hasDashboardLink={feature.hasDashboardLink}
+              showDashboardLink={!!user}
             />
           ))}
         </div>

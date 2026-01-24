@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 const logo = "/synoptas-favicon.png";
 
@@ -127,8 +127,8 @@ const Navbar = () => {
                 asChild
               >
                 <Link to="/auth" className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
                   <span>Get Started</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </Button>
             )}
@@ -181,8 +181,8 @@ const Navbar = () => {
                   asChild
                 >
                   <Link to="/auth">
-                    <Sparkles className="w-3.5 h-3.5" />
                     Get Started
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </Button>
               </div>

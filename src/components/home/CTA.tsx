@@ -48,33 +48,45 @@ const CTA = () => {
   }, []);
 
   return (
-    <section className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-muted/50" />
+    <section className="py-24 sm:py-28 md:py-36 relative overflow-hidden">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-muted/40 pointer-events-none" />
       
-      {/* Decorative orbs */}
-      <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-accent-cool/10 rounded-full blur-3xl" />
+      {/* Elegant background orbs */}
+      <div 
+        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 pointer-events-none"
+        style={{ 
+          background: 'radial-gradient(circle at center, hsl(142 76% 36% / 0.3), transparent 60%)',
+          filter: 'blur(80px)'
+        }}
+      />
+      <div 
+        className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full opacity-15 pointer-events-none"
+        style={{ 
+          background: 'radial-gradient(circle at center, hsl(220 76% 55% / 0.25), transparent 60%)',
+          filter: 'blur(80px)'
+        }}
+      />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 
           ref={ref}
-          className={`premium-card max-w-3xl mx-auto text-center rounded-3xl p-8 md:p-12 scroll-reveal ${isVisible ? 'revealed' : ''}`}
+          className={`premium-card premium-glow max-w-3xl mx-auto text-center rounded-3xl p-10 md:p-14 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-5">
             {isPremium && isLoggedIn ? "Your records are ready" : "Start Your First Decision Record"}
           </h2>
 
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
               ? "10 daily records. Full audit trails. Personal analytics dashboard. Stakeholder-ready exports."
               : "Two free records daily. No credit card required. Create your first audit trail in 20 seconds."}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <Button
               size="lg"
-              className="btn-glow rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              className="btn-glow rounded-2xl px-10 py-7 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
               asChild
             >
               <Link to="/validate">
@@ -86,7 +98,7 @@ const CTA = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-2xl px-8 py-6 text-lg font-medium border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:scale-105 transition-all duration-300"
+                className="rounded-2xl px-10 py-7 text-lg font-medium border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-500 hover:-translate-y-1"
                 asChild
               >
                 <Link to="/dashboard" className="flex items-center gap-2">
@@ -97,9 +109,11 @@ const CTA = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground/80">
             <span>Full audit trail</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>No credit card needed</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Stakeholder-ready in 20 seconds</span>
           </div>
         </div>

@@ -36,7 +36,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
   // Premium user view
   if (isLoggedIn && isPremium) {
     return (
-      <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-card/30 border-y border-border"}>
+      <section className={compact ? "" : "py-24 sm:py-28 md:py-36"}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div 
             ref={headerRef}
@@ -54,7 +54,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
             <Button 
               size="lg" 
               onClick={() => navigate('/validate')}
-              className="mt-6"
+              className="mt-6 rounded-2xl px-8 py-6"
             >
               Go to Validator
             </Button>
@@ -65,46 +65,52 @@ const Pricing = ({ compact = false }: PricingProps) => {
   }
 
   return (
-    <section className={compact ? "" : "py-20 sm:py-24 md:py-32 bg-card/30 border-y border-border"}>
+    <section className={compact ? "" : "py-24 sm:py-28 md:py-36"}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div 
             ref={headerRef}
-            className={`text-center space-y-4 mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+            className={`text-center mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
           >
-            <Badge variant="outline" className="mb-2 rounded-full">Simple, Transparent Pricing</Badge>
-            <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
+            <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Pricing</span>
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
               Choose Your Plan
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Start free. Upgrade when you need deeper insights and stakeholder-ready exports.
             </p>
+            <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           </div>
 
           <div 
             ref={contentRef}
-            className={`grid md:grid-cols-2 gap-12 max-w-3xl mx-auto scroll-reveal ${contentVisible ? 'revealed' : ''}`}
+            className={`grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto scroll-reveal ${contentVisible ? 'revealed' : ''}`}
           >
             {/* Free Plan */}
-            <div className="text-center space-y-6">
-              <div>
-                <h3 className="text-2xl font-semibold text-foreground mb-2">Free</h3>
+            <div className="rounded-2xl p-7 md:p-9 bg-card/50 border border-border/60 card-hover-subtle">
+              <div className="text-center mb-8">
+                <h3 className="text-lg font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Free</h3>
                 <div className="text-5xl font-bold text-foreground">$0</div>
-                <p className="text-muted-foreground mt-1">No credit card required</p>
+                <p className="text-sm text-muted-foreground mt-3">No credit card required</p>
               </div>
               
-              <ul className="space-y-3 text-left text-muted-foreground">
-                <li>• 2 decision records per day</li>
-                <li>• Three AI perspectives per decision</li>
-                <li>• Consensus and dissent analysis</li>
-                <li>• Core documentation features</li>
-                <li>• 3 priority action items</li>
+              <div className="divider-gradient mb-8" />
+              
+              <ul className="space-y-4 mb-10">
+                {["2 decision records per day", "Three AI perspectives per decision", "Consensus and dissent analysis", "Core documentation features", "3 priority action items"].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+                    </span>
+                    <span className="text-muted-foreground">{feature}</span>
+                  </li>
+                ))}
               </ul>
               
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full"
+                className="w-full rounded-xl py-6 font-semibold hover:bg-muted transition-all duration-500"
                 onClick={() => handlePlanClick('free')}
               >
                 {isLoggedIn ? 'Create Decision Record' : 'Start Free'}
@@ -112,33 +118,42 @@ const Pricing = ({ compact = false }: PricingProps) => {
             </div>
 
             {/* Premium Plan */}
-            <div className="text-center space-y-6 relative">
+            <div className="relative premium-card premium-glow rounded-2xl p-7 md:p-9 border-2 border-primary/25">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-3 rounded-full text-xs">
+                <span className="inline-block px-4 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-full shadow-md">
                   Best Value
-                </Badge>
+                </span>
               </div>
               
-              <div>
-                <h3 className="text-2xl font-semibold text-foreground mb-2">Premium</h3>
+              <div className="text-center mb-8">
+                <h3 className="text-lg font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Premium</h3>
                 <div className="text-5xl font-bold text-primary">$26.99</div>
-                <p className="text-muted-foreground mt-1">per month</p>
+                <p className="text-sm text-muted-foreground mt-3">per month</p>
               </div>
               
-              <ul className="space-y-3 text-left text-muted-foreground">
-                <li className="text-foreground font-medium">• 10 decision records per day</li>
-                <li className="text-foreground font-medium">• Full perspective documentation</li>
-                <li className="text-foreground font-medium">• 5-7 prioritized action items</li>
-                <li>• Strategic alternatives (Plan B, C)</li>
-                <li>• Competitive context analysis</li>
-                <li>• 6-12 month outlook</li>
-                <li>• Complete model reasoning</li>
-                <li>• Stakeholder-ready PDF exports</li>
+              <div className="divider-gradient mb-8" />
+              
+              <ul className="space-y-4 mb-10">
+                {[
+                  { text: "10 decision records per day", highlight: true },
+                  { text: "Full perspective documentation", highlight: true },
+                  { text: "5-7 prioritized action items", highlight: true },
+                  { text: "Strategic alternatives (Plan B, C)", highlight: false },
+                  { text: "Competitive context analysis", highlight: false },
+                  { text: "Stakeholder-ready PDF exports", highlight: false }
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    </span>
+                    <span className={feature.highlight ? "text-foreground font-medium" : "text-muted-foreground"}>{feature.text}</span>
+                  </li>
+                ))}
               </ul>
               
               <Button 
                 size="lg" 
-                className="w-full"
+                className="w-full rounded-xl py-6 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-500"
                 onClick={() => handlePlanClick('premium')}
               >
                 {isLoggedIn ? 'Upgrade to Premium' : 'Get Premium Now'}
@@ -147,11 +162,11 @@ const Pricing = ({ compact = false }: PricingProps) => {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-6 mt-12 text-sm text-muted-foreground">
+          <div className="flex flex-wrap justify-center items-center gap-6 mt-12 text-sm text-muted-foreground/70">
             <span>Cancel anytime</span>
-            <span>•</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Instant access</span>
-            <span>•</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Secure payment</span>
           </div>
         </div>

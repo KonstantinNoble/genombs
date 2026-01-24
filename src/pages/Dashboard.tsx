@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { ConfidenceTrend } from "@/components/dashboard/ConfidenceTrend";
-import { DecisionRatio } from "@/components/dashboard/DecisionRatio";
+import { ConsensusDissentRatio } from "@/components/dashboard/ConsensusDissentRatio";
 import { ModelPerformance } from "@/components/dashboard/ModelPerformance";
 import { InsightsPanel } from "@/components/dashboard/InsightsPanel";
 import { Button } from "@/components/ui/button";
@@ -103,7 +103,7 @@ export default function Dashboard() {
               {/* Charts Row */}
               <div className="grid md:grid-cols-2 gap-6">
                 <ConfidenceTrend data={stats.confidence_trend} />
-                <DecisionRatio stats={stats.decision_stats} />
+                <ConsensusDissentRatio stats={stats.validation_stats} />
               </div>
 
               {/* Bottom Row */}

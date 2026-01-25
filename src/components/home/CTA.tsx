@@ -74,13 +74,13 @@ const CTA = () => {
           className={`premium-card premium-glow max-w-3xl mx-auto text-center rounded-3xl p-10 md:p-14 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-5">
-            {isPremium && isLoggedIn ? "Your records are ready" : "Start Your First Decision Record"}
+            {isPremium && isLoggedIn ? "Your analyses are ready" : "Get Your First Analysis"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
-              ? "10 daily records. Full audit trails. Personal analytics dashboard. Stakeholder-ready exports."
-              : "Two free records daily. No credit card required. Create your first audit trail in 20 seconds."}
+              ? "10 daily analyses. Consensus & dissent scores. Personal analytics. PDF exports on demand."
+              : "Two free analyses daily. No credit card required. Results in 60 seconds."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -90,7 +90,7 @@ const CTA = () => {
               asChild
             >
               <Link to="/validate">
-                {isPremium && isLoggedIn ? "Open Decision Records" : "Document Your First Decision"}
+                {isPremium && isLoggedIn ? "Open Your Analyses" : "Start Free Analysis"}
               </Link>
             </Button>
             
@@ -110,11 +110,11 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground/80">
-            <span>Full audit trail</span>
+            <span>Consensus & Dissent Scores</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>No credit card needed</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Stakeholder-ready in 20 seconds</span>
+            <span>Results in 60 seconds</span>
           </div>
         </div>
       </div>

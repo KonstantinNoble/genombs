@@ -62,7 +62,7 @@ const Hero = () => {
             }`}
           >
             <span className="text-subtitle tracking-widest text-primary/80">
-              Decision Documentation Platform
+              Multi-AI Analysis Platform
             </span>
           </div>
 
@@ -72,9 +72,9 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Document Your Decisions{" "}
+            One Question.{" "}
             <span className="relative inline-block">
-              <span className="text-primary">Before You Commit</span>
+              <span className="text-primary">Six AI Perspectives.</span>
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </span>
           </h1>
@@ -85,8 +85,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Choose 3 of 6 AI models. Assign custom weights. Get consensus, dissent, 
-            and actionable recommendations in 60 seconds – all documented for your audit trail.
+            Select 3 AI models. Weight them by what matters to you. 
+            See where they agree, where they disagree, and what to do next.
           </p>
 
           {/* CTA Buttons */}
@@ -101,7 +101,7 @@ const Hero = () => {
               className="btn-glow rounded-2xl px-10 py-7 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
             >
               <Link to="/validate" className="flex items-center gap-2">
-                {isPremium && user ? "Back to Decision Records" : "Create Your First Record"}
+                {isPremium && user ? "Back to Your Analyses" : "Try It Free"}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>

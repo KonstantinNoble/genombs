@@ -29,10 +29,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "AI-assisted decisions without documentation are indefensible", detail: "You used AI to help decide. But can you prove you considered the risks? No audit trail means no defense." },
-    { title: "When stakeholders ask 'why', you have nothing to show", detail: "The chat history is gone. The reasoning is scattered. You're left reconstructing decisions after the fact." },
-    { title: "Compliance and due diligence require traceable reasoning", detail: "Regulators and investors want to see your process – not just your conclusion." },
-    { title: "High-stakes decisions deserve more than a gut feeling", detail: "The bigger the decision, the more important the documentation. Protect yourself before you commit." },
+    { title: "One AI model = one perspective", detail: "ChatGPT has blind spots. So does Claude. So does Gemini. You just don't know which ones until it's too late." },
+    { title: "You can't tell if the answer is reliable", detail: "Was that a confident recommendation or a guess? Without a second opinion, you're flying blind." },
+    { title: "Comparing AI outputs manually is tedious", detail: "Copy-paste between three chat windows. Read walls of text. Try to remember what each one said. There's a better way." },
+    { title: "Your priorities aren't factored in", detail: "Generic AI doesn't know if you care more about risk, growth, or speed. It just gives you a one-size-fits-all answer." },
   ];
 
   return (
@@ -47,7 +47,7 @@ const PainPoints = () => {
         >
           <span className="text-subtitle tracking-widest text-destructive/70 mb-4 block">The Problem</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            The Problem with Undocumented Decisions
+            The Problem with Single-AI Answers
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Sound familiar? You're not alone.
@@ -71,7 +71,7 @@ const PainPoints = () => {
             to="/validate" 
             className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:gap-3 transition-all duration-300"
           >
-            Create your first decision record
+            Get your first multi-AI analysis
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

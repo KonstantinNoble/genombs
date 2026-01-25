@@ -10,8 +10,8 @@ const WhySynoptas = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
           <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Comparison</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">The Difference Documentation Makes</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Compare decisions made in isolation vs. decisions with a documented process</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">The Difference Multiple Perspectives Make</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Single-AI guesswork vs. weighted multi-AI analysis</p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
@@ -22,7 +22,7 @@ const WhySynoptas = () => {
               </span>
             </div>
             <div className="mt-6 space-y-5">
-              {["Decisions made in chat windows disappear", "No evidence you considered alternatives", "Rationale scattered across emails and notes", "Nothing to show when stakeholders ask"].map((item, i) => (
+              {["One AI model, one perspective, unknown blind spots", "No way to know if the answer is confident or a guess", "Manual copy-paste between ChatGPT, Claude, Gemini", "Generic advice that ignores your specific priorities"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-destructive/60" />

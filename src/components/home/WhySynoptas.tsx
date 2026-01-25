@@ -39,7 +39,7 @@ const WhySynoptas = () => {
               </span>
             </div>
             <div className="mt-6 space-y-5">
-              {["Every perspective documented with timestamps", "Consensus and dissent clearly identified", "Personal dashboard tracks decision patterns", "Stakeholder-ready PDF exports", "Board-ready documentation on demand"].map((item, i) => (
+              {["6 AI models available (GPT, Gemini, Claude, Perplexity)", "Custom weighting: you control which perspective matters most", "Consensus and dissent clearly identified with confidence scores", "Personal dashboard tracks your decision patterns over time", "Stakeholder-ready PDF exports on demand"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />

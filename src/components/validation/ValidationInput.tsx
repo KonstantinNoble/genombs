@@ -67,7 +67,7 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
           id="prompt"
           value={prompt}
           onChange={(e) => handlePromptChange(e.target.value)}
-          placeholder="E.g., Investment evaluation: Should we proceed with Series A funding for [Company]?"
+          placeholder="E.g., Should we expand into the European market this quarter? / Is hiring a dedicated CTO the right move now? / Should we pivot from B2C to B2B?"
           className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed border-primary/10 focus:border-primary/30"
           disabled={disabled}
           maxLength={MAX_CHARACTERS}

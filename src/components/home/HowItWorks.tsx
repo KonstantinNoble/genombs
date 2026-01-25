@@ -1,10 +1,10 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
-  { number: "01", title: "Describe your decision and context", description: "What are you deciding? What's at stake? Provide the context that matters." },
-  { number: "02", title: "Collect perspectives from three AI models", description: "Three independent AI models analyze your decision from different angles – simultaneously." },
-  { number: "03", title: "Review consensus, dissent, and alternatives", description: "See where perspectives align, where they conflict, and what alternatives exist – all timestamped." },
-  { number: "04", title: "Confirm ownership and export your audit report", description: "Acknowledge that the final decision is yours. Export a stakeholder-ready PDF." },
+  { number: "01", title: "Describe your decision", description: "Expansion, hiring, partnerships, technology, pricing – any business decision you need to document." },
+  { number: "02", title: "Choose 3 models and assign weights", description: "Select from 6 AI models (GPT-5, Gemini, Claude, Perplexity). Assign 10-80% weight to control each model's influence." },
+  { number: "03", title: "Review consensus, dissent, and alternatives", description: "See where models agree (strong signal), where they disagree (needs attention), and what alternatives exist." },
+  { number: "04", title: "Confirm ownership and export your audit report", description: "Acknowledge the decision is yours. Export a stakeholder-ready PDF with timestamped reasoning." },
 ];
 
 const StepCard = ({ step, index }: { step: typeof steps[0]; index: number }) => {

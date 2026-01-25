@@ -85,8 +85,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Multi-AI validation creates audit trails for high-stakes decisions. 
-            Protect yourself with documented reasoning before you act.
+            Choose 3 of 6 AI models. Assign custom weights. Get consensus, dissent, 
+            and actionable recommendations in 60 seconds – all documented for your audit trail.
           </p>
 
           {/* CTA Buttons */}
@@ -122,11 +122,11 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <span>Full audit trail</span>
+            <span>6 AI Models</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>No credit card needed</span>
+            <span>Custom Weighting</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Ready in 20 seconds</span>
+            <span>Ready in 60 seconds</span>
           </div>
         </div>
       </div>

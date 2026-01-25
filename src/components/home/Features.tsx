@@ -52,12 +52,16 @@ const Features = () => {
 
   const features = [
     { 
-      title: "Multi-Perspective Documentation", 
-      description: "Three AI models analyze your decision independently. Every perspective is documented with timestamps and traceable reasoning." 
+      title: "6 AI Models, Your Choice", 
+      description: "Choose from GPT-5 Mini, Gemini 3 Pro, Gemini Flash, Claude Sonnet 4, Perplexity Sonar, and Sonar Reasoning Pro. Pick 3 for every analysis." 
+    },
+    { 
+      title: "Custom Model Weighting", 
+      description: "Assign 10-80% influence to each model. Prioritize technical depth, market insight, or risk assessment based on your decision context."
     },
     { 
       title: "Consensus & Dissent Analysis", 
-      description: "Instantly see where all models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
+      description: "Instantly see where models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
     },
     { 
       title: "Personal Analytics Dashboard", 

@@ -10,11 +10,11 @@ import {
 const faqs = [
   {
     question: "What exactly does Synoptas do?",
-    answer: "You describe a decision. Three AI models analyze it independently and document their perspectives. We show you where they agree, where they disagree, and what alternatives exist. You get an exportable audit record in under 60 seconds."
+    answer: "You describe any business decision – hiring, expansion, partnerships, technology choices, pricing. You choose 3 of 6 AI models (GPT-5, Gemini, Claude, Perplexity) and assign custom weights (10-80% each). In under 60 seconds, you get a documented analysis showing where models agree (consensus), where they disagree (dissent), and what alternatives exist. Export it as a stakeholder-ready PDF."
   },
   {
     question: "Why three AI models instead of one?",
-    answer: "One model gives you one perspective with no way to verify it. Three models give you documented consensus (strong signal), documented dissent (needs attention), and a complete picture you can defend to stakeholders."
+    answer: "One model gives you one perspective with no way to verify it. Three models – each weighted by you – give you documented consensus (strong signal), documented dissent (needs attention), and a complete picture you can defend to stakeholders."
   },
   {
     question: "What do 'consensus' and 'dissent' mean?",

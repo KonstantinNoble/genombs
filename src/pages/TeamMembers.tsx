@@ -398,19 +398,12 @@ export default function TeamMembers() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div className="flex items-start gap-2">
                 <Crown className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Owner</p>
                   <p className="text-muted-foreground">Full control, manage & delete team</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">Admin</p>
-                  <p className="text-muted-foreground">Invite members, manage roles</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">

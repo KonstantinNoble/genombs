@@ -5,7 +5,8 @@ import {
   Trash2, 
   Loader2,
   ChevronLeft,
-  AlertTriangle
+  AlertTriangle,
+  LogOut
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +47,7 @@ interface TeamMember {
 export default function TeamSettings() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { currentTeam, refreshTeams, deleteTeam } = useTeam();
+  const { currentTeam, refreshTeams, deleteTeam, leaveTeam } = useTeam();
   const { toast } = useToast();
   const [session, setSession] = useState<Session | null>(null);
 
@@ -60,6 +61,10 @@ export default function TeamSettings() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Leave team
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const isOwner = userRole === "owner";
   const isAdmin = userRole === "owner" || userRole === "admin";
@@ -166,6 +171,29 @@ export default function TeamSettings() {
     } finally {
       setIsDeleting(false);
       setShowDeleteDialog(false);
+    }
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!currentTeam) return;
+
+    setIsLeaving(true);
+    try {
+      await leaveTeam(currentTeam.id);
+      toast({ 
+        title: "Left team",
+        description: `You are no longer a member of ${currentTeam.name}.` 
+      });
+      navigate("/validate");
+    } catch (error: any) {
+      toast({
+        title: "Failed to leave team",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLeaving(false);
+      setShowLeaveDialog(false);
     }
   };
 
@@ -298,14 +326,26 @@ export default function TeamSettings() {
               </Card>
             )}
 
-            {/* Non-owner info */}
+            {/* Leave Team - Non-owners only */}
             {!isOwner && (
-              <Card className="bg-muted/50">
-                <CardContent className="pt-6">
-                  <p className="text-sm text-muted-foreground text-center">
-                    You are a <span className="font-medium">{userRole}</span> of this team. 
-                    Only the team owner can delete the team.
-                  </p>
+              <Card className="border-destructive/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive">
+                    <LogOut className="h-5 w-5" />
+                    Leave Team
+                  </CardTitle>
+                  <CardDescription>
+                    Remove yourself from this team. You will lose access to all shared analyses and decisions.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowLeaveDialog(true)}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Leave Team
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -357,6 +397,36 @@ export default function TeamSettings() {
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
               Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Leave Team Confirmation */}
+      <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Leave Team?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will lose access to all shared analyses, experiments, and decisions in <strong>{currentTeam.name}</strong>. 
+              You can rejoin if the team owner invites you again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel disabled={isLeaving} className="w-full sm:w-auto min-h-[44px] sm:min-h-0">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLeaveTeam}
+              disabled={isLeaving}
+              className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
+            >
+              {isLeaving ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <LogOut className="h-4 w-4 mr-2" />
+              )}
+              Leave Team
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

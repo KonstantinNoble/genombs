@@ -51,8 +51,8 @@ export default function TeamInvite() {
         headers.Authorization = `Bearer ${session.access_token}`;
       }
 
-      const response = await supabase.functions.invoke("team-management/accept-invite", {
-        body: { token },
+      const response = await supabase.functions.invoke("team-management", {
+        body: { action: "accept-invite", token },
         headers,
       });
 

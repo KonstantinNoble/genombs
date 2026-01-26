@@ -21,6 +21,10 @@ export function TeamSwitcher() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [open, setOpen] = useState(false);
 
+  // Count owned teams for limit check
+  const ownedTeamsCount = teams.filter(t => t.role === "owner").length;
+  const canCreateMoreTeams = ownedTeamsCount < 5;
+
   if (isLoading) {
     return (
       <Button variant="ghost" size="sm" disabled className="gap-2">
@@ -123,13 +127,19 @@ export function TeamSwitcher() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  setShowCreateDialog(true);
-                  setOpen(false);
+                  if (canCreateMoreTeams) {
+                    setShowCreateDialog(true);
+                    setOpen(false);
+                  }
                 }}
-                className="gap-2 text-primary"
+                disabled={!canCreateMoreTeams}
+                className={cn("gap-2", canCreateMoreTeams ? "text-primary" : "opacity-50 cursor-not-allowed")}
               >
                 <Plus className="h-4 w-4" />
                 <span>Create Team</span>
+                {!canCreateMoreTeams && (
+                  <span className="ml-auto text-xs text-muted-foreground">(5/5)</span>
+                )}
               </DropdownMenuItem>
             </>
           )}

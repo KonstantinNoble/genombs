@@ -151,6 +151,12 @@ serve(async (req: Request) => {
     console.log(`Team management action: ${action}, user: ${userId}`);
 
     // Route handlers based on action
+    // Team limits
+    const LIMITS = {
+      MAX_TEAMS_PER_USER: 5,
+      MAX_MEMBERS_PER_TEAM: 5,
+    };
+
     switch (action) {
       case "create": {
         const name = body.name;
@@ -171,6 +177,20 @@ serve(async (req: Request) => {
 
         if (!credits?.is_premium) {
           return new Response(JSON.stringify({ error: "PREMIUM_REQUIRED" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Check team limit (max 5 teams as owner)
+        const { count: ownedTeamsCount } = await supabase
+          .from("teams")
+          .select("*", { count: "exact", head: true })
+          .eq("owner_id", userId);
+
+        if (ownedTeamsCount !== null && ownedTeamsCount >= LIMITS.MAX_TEAMS_PER_USER) {
+          console.log(`User ${userId} reached team limit: ${ownedTeamsCount}/${LIMITS.MAX_TEAMS_PER_USER}`);
+          return new Response(JSON.stringify({ error: "TEAM_LIMIT_REACHED" }), {
             status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -282,6 +302,28 @@ serve(async (req: Request) => {
         if (pendingForEmail && pendingForEmail >= 3) {
           return new Response(JSON.stringify({ error: "EMAIL_INVITE_LIMIT_EXCEEDED" }), {
             status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Check member limit (max 5 members including pending invites)
+        const { count: currentMemberCount } = await supabase
+          .from("team_members")
+          .select("*", { count: "exact", head: true })
+          .eq("team_id", teamId);
+
+        const { count: pendingInviteCount } = await supabase
+          .from("team_invitations")
+          .select("*", { count: "exact", head: true })
+          .eq("team_id", teamId)
+          .gt("expires_at", new Date().toISOString());
+
+        const totalCount = (currentMemberCount || 0) + (pendingInviteCount || 0);
+
+        if (totalCount >= LIMITS.MAX_MEMBERS_PER_TEAM) {
+          console.log(`Team ${teamId} reached member limit: ${totalCount}/${LIMITS.MAX_MEMBERS_PER_TEAM}`);
+          return new Response(JSON.stringify({ error: "MEMBER_LIMIT_REACHED" }), {
+            status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -410,6 +452,22 @@ serve(async (req: Request) => {
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
           return new Response(JSON.stringify({ success: true, alreadyMember: true }), {
             status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Double-check member limit before accepting
+        const { count: memberCount } = await supabase
+          .from("team_members")
+          .select("*", { count: "exact", head: true })
+          .eq("team_id", invitation.team_id);
+
+        if (memberCount !== null && memberCount >= LIMITS.MAX_MEMBERS_PER_TEAM) {
+          // Delete invitation and inform user
+          await supabase.from("team_invitations").delete().eq("id", invitation.id);
+          console.log(`Team ${invitation.team_id} is full, cannot accept invite`);
+          return new Response(JSON.stringify({ error: "TEAM_FULL" }), {
+            status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }

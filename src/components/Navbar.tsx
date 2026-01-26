@@ -15,7 +15,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   
   // Show team switcher on relevant pages
-  const showTeamSwitcher = user && ["/validate", "/dashboard", "/team/members"].some(p => location.pathname.startsWith(p));
+  const showTeamSwitcher = user && ["/validate", "/dashboard", "/team", "/profile", "/teams"].some(p => location.pathname.startsWith(p));
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -111,6 +111,7 @@ const Navbar = () => {
           <NavLink to="/pricing">Pricing</NavLink>
           <NavLink to="/contact">Contact</NavLink>
           
+          {user && <NavLink to="/teams">Workspaces</NavLink>}
           {user && <NavLink to="/dashboard">Dashboard</NavLink>}
           
           {/* Team Switcher */}
@@ -171,6 +172,7 @@ const Navbar = () => {
 
             {user ? (
               <>
+                <MobileNavLink to="/teams" onClick={() => setIsOpen(false)}>Workspaces</MobileNavLink>
                 <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</MobileNavLink>
                 
                 {/* Mobile Team Switcher */}

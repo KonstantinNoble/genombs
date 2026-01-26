@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Users, 
   UserPlus, 
@@ -16,6 +16,7 @@ import {
   Info,
   AlertTriangle
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TEAM_LIMITS } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -85,6 +86,7 @@ const roleColors: Record<TeamRole, string> = {
 
 export default function TeamMembers() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { currentTeam, teamRole, refreshTeams } = useTeam();
   const { toast } = useToast();
@@ -336,14 +338,17 @@ export default function TeamMembers() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       <main className="flex-1 container max-w-4xl py-8 px-4">
-        {/* Back button */}
+        {/* Back button with smart navigation */}
         <Button
           variant="ghost"
-          onClick={() => navigate("/validate")}
+          onClick={() => {
+            const from = (location.state as { from?: string })?.from;
+            navigate(from || "/teams");
+          }}
           className="mb-6 gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          Back to Validation
+          Back
         </Button>
 
         {/* Header */}
@@ -481,8 +486,22 @@ export default function TeamMembers() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="space-y-3">

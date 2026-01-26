@@ -24,6 +24,7 @@ import UpdatePassword from "./pages/UpdatePassword";
 import TeamMembers from "./pages/TeamMembers";
 import TeamInvite from "./pages/TeamInvite";
 import TeamSettings from "./pages/TeamSettings";
+import Teams from "./pages/Teams";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/teams" element={<Teams />} />
                 <Route path="/team/members" element={<TeamMembers />} />
                 <Route path="/team/settings" element={<TeamSettings />} />
                 <Route path="/team/invite/:token" element={<TeamInvite />} />

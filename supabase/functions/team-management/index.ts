@@ -613,8 +613,9 @@ serve(async (req: Request) => {
           .eq("user_id", targetUserId)
           .single();
 
+        // Owner role cannot be changed via update-role
         if (targetMember?.role === "owner") {
-          return new Response(JSON.stringify({ error: "Use transfer-ownership to change owner" }), {
+          return new Response(JSON.stringify({ error: "Cannot change owner's role" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -636,65 +637,6 @@ serve(async (req: Request) => {
         }
 
         console.log(`Role updated for ${targetUserId} in team ${teamId} to ${newRole}`);
-
-        return new Response(JSON.stringify({ success: true }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      case "transfer-ownership": {
-        const { teamId, newOwnerId } = body;
-
-        // Only current owner can transfer
-        const { data: membership } = await supabase
-          .from("team_members")
-          .select("role")
-          .eq("team_id", teamId)
-          .eq("user_id", userId)
-          .single();
-
-        if (membership?.role !== "owner") {
-          return new Response(JSON.stringify({ error: "Only owner can transfer ownership" }), {
-            status: 403,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        // Check new owner is a member
-        const { data: newOwnerMember } = await supabase
-          .from("team_members")
-          .select("role")
-          .eq("team_id", teamId)
-          .eq("user_id", newOwnerId)
-          .single();
-
-        if (!newOwnerMember) {
-          return new Response(JSON.stringify({ error: "New owner must be a team member" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        // Transfer ownership
-        await supabase
-          .from("teams")
-          .update({ owner_id: newOwnerId })
-          .eq("id", teamId);
-
-        await supabase
-          .from("team_members")
-          .update({ role: "owner" })
-          .eq("team_id", teamId)
-          .eq("user_id", newOwnerId);
-
-        await supabase
-          .from("team_members")
-          .update({ role: "admin" })
-          .eq("team_id", teamId)
-          .eq("user_id", userId);
-
-        console.log(`Ownership transferred from ${userId} to ${newOwnerId} for team ${teamId}`);
 
         return new Response(JSON.stringify({ success: true }), {
           status: 200,

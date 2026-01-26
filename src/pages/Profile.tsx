@@ -12,7 +12,7 @@ import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useTeam } from "@/contexts/TeamContext";
-import { Building2, AlertTriangle, Users, ArrowRight, Crown, Shield, Eye, Settings } from "lucide-react";
+import { Building2, AlertTriangle, ArrowRight, Settings } from "lucide-react";
 
 interface OwnedTeam {
   id: string;
@@ -90,8 +90,8 @@ const Profile = () => {
     if (userOwnedTeams.length > 0) {
       setOwnedTeams(userOwnedTeams.map(t => ({ id: t.id, name: t.name })));
       toast({
-        title: "Transfer ownership first",
-        description: "You must transfer ownership of your teams before deleting your account.",
+        title: "Delete workspaces first",
+        description: "You must delete your workspaces before deleting your account.",
         variant: "destructive",
       });
       return;
@@ -109,8 +109,8 @@ const Profile = () => {
       if (data?.error === "TRANSFER_OWNERSHIP_REQUIRED") {
         setOwnedTeams(data.teams || []);
         toast({
-          title: "Transfer ownership first",
-          description: "You must transfer ownership of your teams before deleting your account.",
+          title: "Delete workspaces first",
+          description: "You must delete your workspaces before deleting your account.",
           variant: "destructive",
         });
         setDeleting(false);
@@ -314,28 +314,19 @@ const Profile = () => {
                           Workspace action required
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          You own the following workspaces. Before deleting your account, transfer ownership to a member OR delete the workspace:
+                          You own the following workspaces. Before deleting your account, you must delete them first:
                         </p>
                         <ul className="space-y-2">
                           {ownedTeams.map(team => (
                             <li key={team.id} className="flex items-center gap-2 text-sm">
                               <Building2 className="h-4 w-4 text-primary" />
                               <span className="font-medium">{team.name}</span>
-                              <div className="ml-auto flex items-center gap-2">
-                                <Link 
-                                  to="/team/members" 
-                                  className="text-primary text-xs hover:underline"
-                                >
-                                  Transfer
-                                </Link>
-                                <span className="text-muted-foreground">|</span>
-                                <Link 
-                                  to="/team/settings" 
-                                  className="text-destructive text-xs hover:underline"
-                                >
-                                  Delete
-                                </Link>
-                              </div>
+                              <Link 
+                                to="/team/settings" 
+                                className="ml-auto text-destructive text-xs hover:underline"
+                              >
+                                Delete Workspace
+                              </Link>
                             </li>
                           ))}
                         </ul>

@@ -290,6 +290,37 @@ serve(async (req: Request) => {
           });
         }
 
+        // Check if team owner is still premium and get team info
+        const { data: teamData } = await supabase
+          .from("teams")
+          .select("owner_id, name")
+          .eq("id", teamId)
+          .single();
+
+        if (!teamData) {
+          return new Response(JSON.stringify({ error: "Team not found" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: ownerCredits } = await supabase
+          .from("user_credits")
+          .select("is_premium")
+          .eq("user_id", teamData.owner_id)
+          .single();
+
+        if (!ownerCredits?.is_premium) {
+          console.log(`Team ${teamId} owner is no longer premium, blocking invite`);
+          return new Response(JSON.stringify({ 
+            error: "OWNER_NOT_PREMIUM",
+            message: "Team invitations require the team owner to have an active Premium subscription"
+          }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         // Rate limit: Max 10 invitations per team per 24h
         const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { count: recentInvites } = await supabase
@@ -341,20 +372,6 @@ serve(async (req: Request) => {
           });
         }
 
-        // Get team name for email
-        const { data: team } = await supabase
-          .from("teams")
-          .select("name")
-          .eq("id", teamId)
-          .single();
-
-        if (!team) {
-          return new Response(JSON.stringify({ error: "Team not found" }), {
-            status: 404,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
         // Generate secure token
         const token = crypto.randomUUID();
 
@@ -384,7 +401,7 @@ serve(async (req: Request) => {
 
         // Send invitation email
         try {
-          await sendInviteEmail(email.toLowerCase(), team.name, userEmail || "A team admin", invitation.token);
+          await sendInviteEmail(email.toLowerCase(), teamData.name, userEmail || "A team admin", invitation.token);
         } catch (emailError) {
           console.error("Failed to send email:", emailError);
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
@@ -706,7 +723,29 @@ serve(async (req: Request) => {
           invitations = invites || [];
         }
 
-        return new Response(JSON.stringify({ members: membersWithEmail, invitations, userRole: membership.role }), {
+        // Get owner's premium status for frontend UI
+        const { data: teamInfo } = await supabase
+          .from("teams")
+          .select("owner_id")
+          .eq("id", teamId)
+          .single();
+
+        let ownerIsPremium = true;
+        if (teamInfo) {
+          const { data: ownerCredits } = await supabase
+            .from("user_credits")
+            .select("is_premium")
+            .eq("user_id", teamInfo.owner_id)
+            .single();
+          ownerIsPremium = ownerCredits?.is_premium ?? false;
+        }
+
+        return new Response(JSON.stringify({ 
+          members: membersWithEmail, 
+          invitations, 
+          userRole: membership.role,
+          ownerIsPremium
+        }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });

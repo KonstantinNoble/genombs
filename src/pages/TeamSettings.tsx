@@ -308,21 +308,25 @@ export default function TeamSettings() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-3">
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-1">
                       <Label htmlFor="teamName" className="sr-only">
                         Team Name
                       </Label>
                       <Input
                         id="teamName"
                         value={teamName}
-                        onChange={(e) => setTeamName(e.target.value)}
+                        onChange={(e) => setTeamName(e.target.value.slice(0, 200))}
                         placeholder="Team name"
                         disabled={isRenaming}
+                        maxLength={200}
                       />
+                      <p className="text-xs text-muted-foreground text-right">
+                        {teamName.length}/200
+                      </p>
                     </div>
                     <Button
                       onClick={handleRenameTeam}
-                      disabled={isRenaming || teamName === currentTeam.name || !teamName.trim()}
+                      disabled={isRenaming || teamName === currentTeam.name || !teamName.trim() || teamName.length > 200}
                     >
                       {isRenaming ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

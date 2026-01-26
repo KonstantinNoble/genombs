@@ -118,7 +118,7 @@ export default function TeamInvite() {
 
   const handleLogin = () => {
     // Store the invite token to process after login
-    sessionStorage.setItem("pending_team_invite", token || "");
+    localStorage.setItem("pending_team_invite", token || "");
     navigate(`/auth?email=${encodeURIComponent(invitedEmail)}`);
   };
 

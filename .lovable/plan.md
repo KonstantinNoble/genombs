@@ -1,213 +1,206 @@
 
+# Email-Template Redesign: Team-Einladung
 
-# Workspace-Verwaltung: Bessere Auffindbarkeit & Ladezeiten
+## Problem
+Das aktuelle Team-Einladungs-Email verwendet ein dunkles Farbschema (dunkelblau/lila), das nicht zum hellen, professionellen Design deiner Website passt. Die Schrift ist auf dem dunklen Hintergrund schwer lesbar.
 
-## Identifizierte Probleme
+## Loesung
+Das Email-Template in der `team-management` Edge Function wird an das Synoptas Design-System angepasst:
 
-| Problem | Auswirkung |
-|---------|------------|
-| **TeamMembers lädt langsam** | Nur Spinner sichtbar, keine Skeleton-Vorschau |
-| **Workspace schwer zu finden** | Nur über TeamSwitcher im Dashboard erreichbar |
-| **TeamSwitcher nur auf 3 Seiten** | `/validate`, `/dashboard`, `/team/members` |
-| **Keine Workspace-Links im Profil** | User wissen nicht wo sie Teams verwalten |
-| **Inkonsistente Navigation** | "Back to Validation" macht nicht immer Sinn |
+### Designaenderungen
+
+| Aktuell | Neu |
+|---------|-----|
+| Dunkler Hintergrund (#0a0a0f) | Heller Hintergrund (#f8f8f8) |
+| Lila Header-Gradient | Gruener Header (Primary: #22c55e) |
+| Graue Texte (#a1a1aa) | Dunkle, lesbare Texte (#1a1a1a) |
+| Lila Button | Gruener Button mit Hover-Effekt |
+| Dunkle Footer-Box | Helle Footer-Box mit Rahmen |
+
+### Vorschau des neuen Designs
+
+Das neue Email-Template wird folgende Elemente haben:
+- **Header**: Weisser Hintergrund mit gruenem Synoptas-Logo-Text
+- **Body**: Heller Hintergrund mit schwarzem, gut lesbarem Text
+- **Button**: Gruener CTA-Button (Primary-Farbe) mit weissem Text
+- **Footer**: Dezente graue Hinweisbox fuer Ablaufdatum
+- **Branding**: Professionell und konsistent mit der Website
 
 ---
 
-## Lösungsübersicht
+## Technische Umsetzung
 
-### Phase 1: Skeleton-Loading für TeamMembers
+### Datei: `supabase/functions/team-management/index.ts`
 
-Statt nur Spinner zeigen wir sofort die Seitenstruktur mit Skeleton-Elementen:
+Die `sendInviteEmail`-Funktion (Zeilen 26-99) wird aktualisiert:
 
 ```text
-┌────────────────────────────────────────┐
-│  [████████] Team Name                  │
-│  ─────────────────────────────────────│
-│  Role Permissions                      │
-│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐      │
-│  │█████│ │█████│ │█████│ │█████│      │
-│  └─────┘ └─────┘ └─────┘ └─────┘      │
-│  ─────────────────────────────────────│
-│  Invite Member (2/5)                   │
-│  ┌────────────────────────────────┐   │
-│  │ ████████████████               │   │
-│  └────────────────────────────────┘   │
-│  ─────────────────────────────────────│
-│  Members (2)                           │
-│  ┌────────────────────────────────┐   │
-│  │ █████  email@████████  [Admin] │   │
-│  │ █████  email@████████  [Owner] │   │
-│  └────────────────────────────────┘   │
-└────────────────────────────────────────┘
+Aenderungen am HTML-Template:
+
+1. Body-Hintergrund:
+   - Alt: background-color: #0a0a0f
+   - Neu: background-color: #f4f4f5
+
+2. Container-Styling:
+   - Alt: background: linear-gradient(#18181b, #0a0a0f), border: #27272a
+   - Neu: background: #ffffff, border: #e4e4e7
+
+3. Header-Bereich:
+   - Alt: Lila Gradient (#6366f1 -> #8b5cf6)
+   - Neu: Weisser Hintergrund mit gruenem "Synoptas" Text
+
+4. Text-Farben:
+   - Ueberschrift: #1a1a1a (fast schwarz)
+   - Haupttext: #3f3f46 (dunkelgrau, gut lesbar)
+   - Sekundaertext: #52525b (mittelgrau)
+
+5. CTA-Button:
+   - Alt: Lila Gradient
+   - Neu: Gruen (#22c55e) mit border-radius: 16px
+
+6. Hinweis-Box (Ablaufdatum):
+   - Alt: Dunkler Hintergrund (#27272a)
+   - Neu: Heller Hintergrund (#f4f4f5) mit Rahmen
+
+7. Footer:
+   - Hellgraue Trennlinie (#e4e4e7)
+   - Dunkelgrauer Copyright-Text (#71717a)
 ```
 
-**Datei**: `src/pages/TeamMembers.tsx`
+### Vollstaendiges neues Template-Design:
 
----
-
-### Phase 2: Workspace-Link im Profil
-
-Neue "My Teams" Section in der Profil-Seite:
-
-```text
-┌────────────────────────────────────────┐
-│  My Teams                         [→]  │
-│  ─────────────────────────────────────│
-│  🏢 Acme Corp          Owner  Manage → │
-│  🏢 Startup Team       Member Manage → │
-│  ─────────────────────────────────────│
-│  [+ Create Team] (Premium only)        │
-└────────────────────────────────────────┘
-```
-
-**Datei**: `src/pages/Profile.tsx`
-
----
-
-### Phase 3: TeamSwitcher auf mehr Seiten anzeigen
-
-Den TeamSwitcher auch auf der Profil-Seite und im Team-Settings anzeigen:
-
-**Datei**: `src/components/Navbar.tsx`
-
-Zeile 18 anpassen:
-```typescript
-// Von:
-const showTeamSwitcher = user && ["/validate", "/dashboard", "/team/members"].some(...)
-
-// Zu:
-const showTeamSwitcher = user && ["/validate", "/dashboard", "/team", "/profile"].some(...)
-```
-
-Dies zeigt den Switcher auf:
-- `/validate`
-- `/dashboard`
-- `/team/members`
-- `/team/settings`
-- `/profile`
-
----
-
-### Phase 4: Dedizierte "My Teams" Seite (Optional)
-
-Eine neue `/teams` Seite die alle Teams auf einen Blick zeigt:
-
-**Neue Datei**: `src/pages/Teams.tsx`
-
-Features:
-- Liste aller Teams mit Rolle und Mitgliederzahl
-- Schnellzugriff auf Team Settings
-- Schnellzugriff auf Team Members
-- "Create Team" Button (Premium)
-- Link zu dieser Seite in Navbar für eingeloggte User
-
-```text
-┌──────────────────────────────────────────────────┐
-│  My Workspaces                                   │
-│  ────────────────────────────────────────────────│
-│  ┌──────────────────────────────────────────┐   │
-│  │  Personal Workspace                       │   │
-│  │  Your private analyses and experiments    │   │
-│  │  [Open →]                                 │   │
-│  └──────────────────────────────────────────┘   │
-│                                                  │
-│  ┌──────────────────────────────────────────┐   │
-│  │  🏢 Acme Corp                  Owner      │   │
-│  │  3/5 Members                              │   │
-│  │  [Members] [Settings] [Open →]            │   │
-│  └──────────────────────────────────────────┘   │
-│                                                  │
-│  ┌──────────────────────────────────────────┐   │
-│  │  🏢 Startup Team               Member     │   │
-│  │  2/5 Members                              │   │
-│  │  [View Members] [Open →]                  │   │
-│  └──────────────────────────────────────────┘   │
-│                                                  │
-│  [+ Create New Team]                             │
-└──────────────────────────────────────────────────┘
-```
-
----
-
-### Phase 5: Navbar-Link zu Workspaces
-
-Für eingeloggte User einen "Teams" Link in der Navbar hinzufügen:
-
-**Datei**: `src/components/Navbar.tsx`
-
-```typescript
-{user && <NavLink to="/teams">Teams</NavLink>}
-{user && <NavLink to="/dashboard">Dashboard</NavLink>}
-```
-
----
-
-### Phase 6: TeamMembers - Intelligentere "Back" Navigation
-
-Statt immer "Back to Validation":
-- Prüfen woher der User kam
-- Dynamischen Back-Link anzeigen
-
-**Datei**: `src/pages/TeamMembers.tsx`
-
-```typescript
-// Nutze useLocation um previous page zu ermitteln
-const from = location.state?.from || "/teams";
-
-<Button onClick={() => navigate(from)}>
-  <ChevronLeft /> Back
-</Button>
-```
-
----
-
-## Zusammenfassung der Dateien
-
-| Datei | Änderungen |
-|-------|------------|
-| `src/pages/TeamMembers.tsx` | Skeleton-Loading, dynamische Back-Navigation |
-| `src/pages/Profile.tsx` | "My Teams" Section mit Quick-Links |
-| `src/pages/Teams.tsx` | **NEU** - Dedizierte Workspace-Übersichtsseite |
-| `src/components/Navbar.tsx` | TeamSwitcher auf mehr Seiten, "Teams" NavLink |
-| `src/App.tsx` | Neue Route `/teams` |
-
----
-
-## Technische Details
-
-### Skeleton-Loading Pattern
-
-```typescript
-{isLoading ? (
-  <div className="space-y-4">
-    {/* Header Skeleton */}
-    <div className="flex items-center gap-4">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-6 w-24" />
+```html
+<body style="
+  font-family: 'Segoe UI', Arial, sans-serif; 
+  background-color: #f4f4f5; 
+  color: #1a1a1a; 
+  margin: 0; 
+  padding: 40px 20px;
+">
+  <div style="
+    max-width: 520px; 
+    margin: 0 auto; 
+    background: #ffffff; 
+    border: 1px solid #e4e4e7; 
+    border-radius: 16px; 
+    overflow: hidden;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.08);
+  ">
+    <!-- Header mit Branding -->
+    <div style="
+      background: #ffffff; 
+      padding: 32px; 
+      text-align: center; 
+      border-bottom: 1px solid #e4e4e7;
+    ">
+      <h1 style="
+        color: #22c55e; 
+        margin: 0; 
+        font-size: 24px; 
+        font-weight: 700; 
+        letter-spacing: -0.025em;
+      ">Synoptas</h1>
+      <p style="
+        color: #71717a; 
+        font-size: 14px; 
+        margin: 8px 0 0;
+      ">Team Invitation</p>
     </div>
     
-    {/* Members List Skeleton */}
-    {[...Array(3)].map((_, i) => (
-      <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-48" />
-          <Skeleton className="h-3 w-24" />
-        </div>
-        <Skeleton className="h-6 w-16" />
+    <!-- Inhalt -->
+    <div style="padding: 32px;">
+      <p style="
+        color: #1a1a1a; 
+        font-size: 16px; 
+        line-height: 1.6; 
+        margin: 0 0 24px;
+      ">
+        You've been invited to join 
+        <strong>${teamName}</strong> 
+        by ${inviterEmail}.
+      </p>
+      
+      <p style="
+        color: #3f3f46; 
+        font-size: 14px; 
+        line-height: 1.6; 
+        margin: 0 0 32px;
+      ">
+        As a team member, you'll be able to collaborate 
+        on strategic decision validations.
+      </p>
+      
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${inviteUrl}" style="
+          display: inline-block; 
+          background-color: #22c55e; 
+          color: white; 
+          text-decoration: none; 
+          padding: 16px 40px; 
+          border-radius: 16px; 
+          font-weight: 600; 
+          font-size: 16px;
+        ">
+          Accept Invitation
+        </a>
       </div>
-    ))}
+      
+      <!-- Link Fallback -->
+      <p style="
+        color: #71717a; 
+        font-size: 12px; 
+        text-align: center; 
+        margin: 24px 0 0;
+      ">
+        Or copy this link:<br>
+        <a href="${inviteUrl}" style="
+          color: #22c55e; 
+          word-break: break-all;
+        ">${inviteUrl}</a>
+      </p>
+      
+      <!-- Ablauf-Hinweis -->
+      <div style="
+        background: #f4f4f5; 
+        border: 1px solid #e4e4e7; 
+        border-radius: 8px; 
+        padding: 16px; 
+        margin-top: 24px;
+      ">
+        <p style="
+          color: #52525b; 
+          font-size: 13px; 
+          margin: 0; 
+          text-align: center;
+        ">
+          This invitation expires in 7 days
+        </p>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="
+      border-top: 1px solid #e4e4e7; 
+      padding: 24px; 
+      text-align: center;
+    ">
+      <p style="
+        color: #71717a; 
+        font-size: 12px; 
+        margin: 0;
+      ">
+        (c) 2026 Synoptas. All rights reserved.
+      </p>
+    </div>
   </div>
-) : (
-  // Actual content
-)}
+</body>
 ```
 
-### Vorteile der neuen Struktur
+## Vorteile
 
-1. **Schnellere gefühlte Ladezeit**: Skeleton zeigt sofort Struktur
-2. **Bessere Auffindbarkeit**: Teams über Navbar, Profil und eigene Seite erreichbar
-3. **Konsistente UX**: TeamSwitcher auf allen relevanten Seiten
-4. **Klare Hierarchie**: Dedizierte Teams-Seite als zentraler Einstiegspunkt
-
+- **Bessere Lesbarkeit**: Schwarzer Text auf weissem Hintergrund
+- **Konsistentes Branding**: Gruene Primary-Farbe wie auf der Website
+- **Professioneller Look**: Clean, minimalistisches Design
+- **Moderne Optik**: Abgerundete Buttons (border-radius: 16px)
+- **Vertrauen**: Einheitliches Erscheinungsbild staerkt die Marke

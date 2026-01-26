@@ -68,6 +68,39 @@ serve(async (req) => {
     const userId = userData.user.id;
     console.log('Starting GDPR-compliant account deletion for user:', userId);
 
+    // 0. Check if user is a team owner - MUST transfer ownership first
+    console.log('Checking team ownership for user:', userId);
+    const { data: ownedTeams, error: teamsError } = await adminClient
+      .from('team_members')
+      .select('team_id, teams(id, name)')
+      .eq('user_id', userId)
+      .eq('role', 'owner');
+
+    if (!teamsError && ownedTeams && ownedTeams.length > 0) {
+      console.log('User owns teams, cannot delete:', ownedTeams);
+      return new Response(JSON.stringify({ 
+        error: "TRANSFER_OWNERSHIP_REQUIRED",
+        teams: ownedTeams.map(t => ({ 
+          id: (t.teams as any)?.id, 
+          name: (t.teams as any)?.name 
+        }))
+      }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // 0.5 Remove user from all teams they're a member of (not owner)
+    console.log('Removing user from teams:', userId);
+    const { error: teamMemberError } = await adminClient
+      .from('team_members')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (teamMemberError) {
+      console.error('Failed to remove from teams:', teamMemberError);
+    }
+
     // 1. Delete decision_records (decision_audit_log deleted via CASCADE)
     console.log('Deleting decision_records for user:', userId);
     const { error: decisionsError } = await adminClient

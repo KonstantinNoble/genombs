@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,18 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useTeam } from "@/contexts/TeamContext";
+import { Building2, AlertTriangle } from "lucide-react";
+
+interface OwnedTeam {
+  id: string;
+  name: string;
+}
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [ownedTeams, setOwnedTeams] = useState<OwnedTeam[]>([]);
   const [credits, setCredits] = useState<{
     is_premium: boolean;
     premium_since: string | null;
@@ -25,6 +33,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
+  const { teams } = useTeam();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -76,6 +85,18 @@ const Profile = () => {
   const handleDeleteAccount = async () => {
     if (!user) return;
 
+    // Check for owned teams first (client-side check, server also validates)
+    const userOwnedTeams = teams.filter(t => t.role === "owner");
+    if (userOwnedTeams.length > 0) {
+      setOwnedTeams(userOwnedTeams.map(t => ({ id: t.id, name: t.name })));
+      toast({
+        title: "Transfer ownership first",
+        description: "You must transfer ownership of your teams before deleting your account.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setDeleting(true);
 
     try {
@@ -83,6 +104,19 @@ const Profile = () => {
         method: "POST",
         body: {},
       });
+      
+      // Handle team ownership error from server
+      if (data?.error === "TRANSFER_OWNERSHIP_REQUIRED") {
+        setOwnedTeams(data.teams || []);
+        toast({
+          title: "Transfer ownership first",
+          description: "You must transfer ownership of your teams before deleting your account.",
+          variant: "destructive",
+        });
+        setDeleting(false);
+        return;
+      }
+      
       if (error) throw error;
 
       await supabase.auth.signOut();
@@ -220,11 +254,43 @@ const Profile = () => {
                   Sign Out
                 </Button>
 
+                {/* Team ownership warning */}
+                {ownedTeams.length > 0 && (
+                  <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-destructive">
+                          Transfer ownership before deleting
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          You own the following teams. Transfer ownership to another admin before deleting your account:
+                        </p>
+                        <ul className="space-y-1">
+                          {ownedTeams.map(team => (
+                            <li key={team.id} className="flex items-center gap-2 text-sm">
+                              <Building2 className="h-4 w-4 text-primary" />
+                              <span>{team.name}</span>
+                              <Link 
+                                to="/team/members" 
+                                className="text-primary text-xs hover:underline ml-auto"
+                              >
+                                Manage →
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
                       className="w-full"
+                      disabled={ownedTeams.length > 0}
                     >
                       Delete Account
                     </Button>

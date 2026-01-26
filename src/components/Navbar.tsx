@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { TeamSwitcher } from "@/components/team/TeamSwitcher";
 
 const logo = "/synoptas-favicon.png";
 
@@ -12,6 +13,9 @@ const Navbar = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  
+  // Show team switcher on relevant pages
+  const showTeamSwitcher = user && ["/validate", "/dashboard", "/team/members"].some(p => location.pathname.startsWith(p));
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -109,6 +113,13 @@ const Navbar = () => {
           
           {user && <NavLink to="/dashboard">Dashboard</NavLink>}
           
+          {/* Team Switcher */}
+          {showTeamSwitcher && (
+            <div className="ml-2">
+              <TeamSwitcher />
+            </div>
+          )}
+          
           <div className="ml-4 pl-4 border-l border-border/50 flex items-center gap-2">
             {user ? (
               <Button
@@ -161,6 +172,14 @@ const Navbar = () => {
             {user ? (
               <>
                 <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</MobileNavLink>
+                
+                {/* Mobile Team Switcher */}
+                {showTeamSwitcher && (
+                  <div className="py-2 px-4">
+                    <TeamSwitcher />
+                  </div>
+                )}
+                
                 <div className="pt-3 mt-3 border-t border-border/50">
                   <Button
                     size="sm"

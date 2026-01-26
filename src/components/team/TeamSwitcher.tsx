@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ChevronDown, Building2, User, Plus, Loader2, Settings } from "lucide-react";
+import { Check, ChevronDown, Building2, User, Plus, Loader2, Settings, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +13,14 @@ import {
 import { useTeam } from "@/contexts/TeamContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { CreateTeamDialog } from "./CreateTeamDialog";
+import { PremiumUpgradeDialog } from "./PremiumUpgradeDialog";
 
 export function TeamSwitcher() {
   const navigate = useNavigate();
   const { currentTeam, teams, switchTeam, isLoading } = useTeam();
   const { isPremium } = useAuth();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [open, setOpen] = useState(false);
 
   // Count owned teams for limit check
@@ -39,6 +41,17 @@ export function TeamSwitcher() {
     switchTeam(teamId);
     setOpen(false);
     navigate("/teams");
+  };
+
+  const handleCreateTeamClick = () => {
+    setOpen(false);
+    if (isPremium) {
+      if (canCreateMoreTeams) {
+        setShowCreateDialog(true);
+      }
+    } else {
+      setShowUpgradeDialog(true);
+    }
   };
 
   return (
@@ -121,44 +134,36 @@ export function TeamSwitcher() {
             </>
           )}
 
-          {/* Create Team */}
-          {isPremium && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  if (canCreateMoreTeams) {
-                    setShowCreateDialog(true);
-                    setOpen(false);
-                  }
-                }}
-                disabled={!canCreateMoreTeams}
-                className={cn("gap-2", canCreateMoreTeams ? "text-primary" : "opacity-50 cursor-not-allowed")}
-              >
-                <Plus className="h-4 w-4" />
-                <span>Create Team</span>
-                {!canCreateMoreTeams && (
-                  <span className="ml-auto text-xs text-muted-foreground">(5/5)</span>
-                )}
-              </DropdownMenuItem>
-            </>
-          )}
-
-          {/* Upgrade prompt for non-premium */}
-          {!isPremium && teams.length === 0 && (
-            <>
-              <DropdownMenuSeparator />
-              <div className="px-2 py-2 text-xs text-muted-foreground">
-                <span className="text-primary font-medium">Upgrade to Premium</span> to create and manage teams.
-              </div>
-            </>
-          )}
+          {/* Create Team - Always visible */}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={handleCreateTeamClick}
+            disabled={isPremium && !canCreateMoreTeams}
+            className={cn(
+              "gap-2",
+              isPremium && canCreateMoreTeams && "text-primary",
+              isPremium && !canCreateMoreTeams && "opacity-50 cursor-not-allowed"
+            )}
+          >
+            <Plus className="h-4 w-4" />
+            <span className="flex-1">Create Team</span>
+            {!isPremium ? (
+              <Crown className="h-4 w-4 text-amber-500" />
+            ) : !canCreateMoreTeams ? (
+              <span className="text-xs text-muted-foreground">(5/5)</span>
+            ) : null}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <CreateTeamDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
+      />
+      
+      <PremiumUpgradeDialog
+        open={showUpgradeDialog}
+        onOpenChange={setShowUpgradeDialog}
       />
     </>
   );

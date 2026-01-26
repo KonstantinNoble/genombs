@@ -22,7 +22,8 @@ import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hook
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { useTeam } from "@/contexts/TeamContext";
-import { Building2 } from "lucide-react";
+import { Building2, Eye } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface HistoryItem {
   id: string;
@@ -55,7 +56,7 @@ export default function ValidationPlatform() {
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
   const { createExperiment, getActiveExperiment, isLoading: isCreatingExperiment } = useExperiment();
-  const { currentTeam, isInTeamMode } = useTeam();
+  const { currentTeam, isInTeamMode, teamRole } = useTeam();
   
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -575,6 +576,18 @@ export default function ValidationPlatform() {
                   </div>
                 )}
                 
+                {/* Viewer restriction notice */}
+                {isInTeamMode && teamRole === 'viewer' && (
+                  <Alert className="border-blue-500/30 bg-blue-500/10">
+                    <Eye className="h-4 w-4 text-blue-500" />
+                    <AlertTitle className="text-blue-600">View Only Mode</AlertTitle>
+                    <AlertDescription className="text-muted-foreground">
+                      As a team viewer, you can view shared analyses but cannot create new ones. 
+                      Contact your team owner for Member access.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
                 <Button 
                   onClick={() => {
                     if (selectedModels.length !== 3) {
@@ -583,11 +596,19 @@ export default function ValidationPlatform() {
                       handleValidate();
                     }
                   }} 
-                  disabled={isValidating || !canValidate || !prompt.trim()} 
+                  disabled={isValidating || !canValidate || !prompt.trim() || (isInTeamMode && teamRole === 'viewer')} 
                   className="w-full h-11 sm:h-12 text-sm sm:text-base" 
                   size="lg"
                 >
-                  {isValidating ? 'Validating...' : !canValidate ? `Next in ${getTimeUntilNextValidation()}` : selectedModels.length !== 3 ? `Select ${3 - selectedModels.length} more model${selectedModels.length === 2 ? '' : 's'}` : 'Validate with 3 AI Models'}
+                  {isInTeamMode && teamRole === 'viewer' 
+                    ? 'Viewers cannot create analyses' 
+                    : isValidating 
+                      ? 'Validating...' 
+                      : !canValidate 
+                        ? `Next in ${getTimeUntilNextValidation()}` 
+                        : selectedModels.length !== 3 
+                          ? `Select ${3 - selectedModels.length} more model${selectedModels.length === 2 ? '' : 's'}` 
+                          : 'Validate with 3 AI Models'}
                 </Button>
               </CardContent>
             </Card>

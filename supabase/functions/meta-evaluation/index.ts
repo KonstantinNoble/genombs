@@ -610,6 +610,31 @@ serve(async (req) => {
       teamId = null
     } = await req.json();
 
+    // ========== VIEWER ROLE CHECK ==========
+    // Viewers can only read, not create analyses in team context
+    if (teamId) {
+      const { data: memberData, error: memberError } = await supabase
+        .from('team_members')
+        .select('role')
+        .eq('team_id', teamId)
+        .eq('user_id', user.id)
+        .single();
+      
+      if (memberError || !memberData) {
+        return new Response(
+          JSON.stringify({ error: 'Not a member of this team' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      if (memberData.role === 'viewer') {
+        return new Response(
+          JSON.stringify({ error: 'Viewers cannot create team analyses. Ask your team admin for Member access.' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     console.log(`Meta-evaluation started for user ${user.id} (Premium: ${isPremium})`);
     console.log(`Selected models: ${selectedModels?.join(', ')}, Weights: ${JSON.stringify(modelWeights)}`);
     const startTime = Date.now();

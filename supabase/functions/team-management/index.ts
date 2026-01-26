@@ -11,36 +11,6 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const SITE_URL = "https://wealthconomy.lovable.app";
 
-interface CreateTeamRequest {
-  name: string;
-}
-
-interface InviteMemberRequest {
-  teamId: string;
-  email: string;
-  role: "admin" | "member" | "viewer";
-}
-
-interface AcceptInviteRequest {
-  token: string;
-}
-
-interface RemoveMemberRequest {
-  teamId: string;
-  userId: string;
-}
-
-interface UpdateMemberRoleRequest {
-  teamId: string;
-  userId: string;
-  role: "admin" | "member" | "viewer";
-}
-
-interface TransferOwnershipRequest {
-  teamId: string;
-  newOwnerId: string;
-}
-
 // Generate URL-safe slug from team name
 function generateSlug(name: string): string {
   const baseSlug = name
@@ -82,44 +52,31 @@ async function sendInviteEmail(
 </head>
 <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #0a0a0f; color: #e4e4e7; margin: 0; padding: 40px 20px;">
   <div style="max-width: 520px; margin: 0 auto; background: linear-gradient(180deg, #18181b 0%, #0a0a0f 100%); border: 1px solid #27272a; border-radius: 16px; overflow: hidden;">
-    
-    <!-- Header -->
     <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px; text-align: center;">
       <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Team Invitation</h1>
     </div>
-    
-    <!-- Content -->
     <div style="padding: 32px;">
       <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
         You've been invited to join <strong style="color: #e4e4e7;">${teamName}</strong> on Synoptas by ${inviterEmail}.
       </p>
-      
       <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin: 0 0 32px;">
-        As a team member, you'll be able to collaborate on strategic decision validations and share insights with your colleagues.
+        As a team member, you'll be able to collaborate on strategic decision validations.
       </p>
-      
-      <!-- CTA Button -->
       <div style="text-align: center; margin: 32px 0;">
         <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px;">
           Accept Invitation
         </a>
       </div>
-      
-      <!-- Link fallback -->
       <p style="color: #71717a; font-size: 12px; text-align: center; margin: 24px 0 0;">
         Or copy this link: <br>
         <span style="color: #a1a1aa; word-break: break-all;">${inviteUrl}</span>
       </p>
-      
-      <!-- Expiry notice -->
       <div style="background: #27272a; border-radius: 8px; padding: 16px; margin-top: 24px;">
         <p style="color: #a1a1aa; font-size: 13px; margin: 0; text-align: center;">
           ⏰ This invitation expires in 7 days
         </p>
       </div>
     </div>
-    
-    <!-- Footer -->
     <div style="border-top: 1px solid #27272a; padding: 24px; text-align: center;">
       <p style="color: #52525b; font-size: 12px; margin: 0;">
         © ${new Date().getFullYear()} Synoptas. All rights reserved.
@@ -148,12 +105,22 @@ serve(async (req: Request) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const path = url.pathname.split("/").pop();
+    // Parse body to get action and data
+    let body: any = {};
+    try {
+      const text = await req.text();
+      if (text) {
+        body = JSON.parse(text);
+      }
+    } catch (e) {
+      // No body or invalid JSON
+    }
+    
+    const action = body.action || "list";
     
     // Get auth header
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader && path !== "accept-invite") {
+    if (!authHeader && action !== "accept-invite") {
       return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -163,7 +130,7 @@ serve(async (req: Request) => {
     // Create authenticated client
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     
-    // Get user from JWT (except for public endpoints)
+    // Get user from JWT
     let userId: string | null = null;
     let userEmail: string | null = null;
     
@@ -181,17 +148,12 @@ serve(async (req: Request) => {
       userEmail = user.email || null;
     }
 
-    // Route handlers
-    switch (path) {
-      case "create": {
-        if (req.method !== "POST") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
+    console.log(`Team management action: ${action}, user: ${userId}`);
 
-        const { name } = await req.json() as CreateTeamRequest;
+    // Route handlers based on action
+    switch (action) {
+      case "create": {
+        const name = body.name;
         
         if (!name || name.trim().length < 2) {
           return new Response(JSON.stringify({ error: "Team name must be at least 2 characters" }), {
@@ -246,7 +208,6 @@ serve(async (req: Request) => {
 
         if (memberError) {
           console.error("Failed to add owner as member:", memberError);
-          // Rollback team creation
           await supabase.from("teams").delete().eq("id", team.id);
           return new Response(JSON.stringify({ error: "Failed to setup team" }), {
             status: 500,
@@ -263,14 +224,7 @@ serve(async (req: Request) => {
       }
 
       case "invite": {
-        if (req.method !== "POST") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { teamId, email, role } = await req.json() as InviteMemberRequest;
+        const { teamId, email, role } = body;
 
         if (!teamId || !email || !role) {
           return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -303,7 +257,7 @@ serve(async (req: Request) => {
           });
         }
 
-        // Rate limit check: Max 10 invitations per team per 24h
+        // Rate limit: Max 10 invitations per team per 24h
         const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { count: recentInvites } = await supabase
           .from("team_invitations")
@@ -318,7 +272,7 @@ serve(async (req: Request) => {
           });
         }
 
-        // Rate limit check: Max 3 pending invitations per email globally
+        // Rate limit: Max 3 pending invitations per email globally
         const { count: pendingForEmail } = await supabase
           .from("team_invitations")
           .select("*", { count: "exact", head: true })
@@ -330,29 +284,6 @@ serve(async (req: Request) => {
             status: 429,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
-        }
-
-        // Check if user is already a member
-        const { data: existingUser } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("id", (await supabase.auth.admin.listUsers()).data.users.find(u => u.email === email.toLowerCase())?.id || "00000000-0000-0000-0000-000000000000")
-          .single();
-
-        if (existingUser) {
-          const { data: existingMember } = await supabase
-            .from("team_members")
-            .select("id")
-            .eq("team_id", teamId)
-            .eq("user_id", existingUser.id)
-            .single();
-
-          if (existingMember) {
-            return new Response(JSON.stringify({ error: "User is already a team member" }), {
-              status: 400,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
-          }
         }
 
         // Get team name for email
@@ -400,7 +331,7 @@ serve(async (req: Request) => {
         try {
           await sendInviteEmail(email.toLowerCase(), team.name, userEmail || "A team admin", invitation.token);
         } catch (emailError) {
-          console.error("Failed to send email, removing invitation:", emailError);
+          console.error("Failed to send email:", emailError);
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
           return new Response(JSON.stringify({ error: "Failed to send invitation email" }), {
             status: 500,
@@ -417,14 +348,7 @@ serve(async (req: Request) => {
       }
 
       case "accept-invite": {
-        if (req.method !== "POST") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { token } = await req.json() as AcceptInviteRequest;
+        const { token } = body;
 
         if (!token) {
           return new Response(JSON.stringify({ error: "Missing token" }), {
@@ -448,7 +372,7 @@ serve(async (req: Request) => {
           });
         }
 
-        // If user is not authenticated, return info for frontend to handle
+        // If user is not authenticated, return info for frontend
         if (!userId) {
           return new Response(JSON.stringify({ 
             requiresAuth: true,
@@ -483,7 +407,6 @@ serve(async (req: Request) => {
           .single();
 
         if (existingMember) {
-          // Already a member, just delete the invitation
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
           return new Response(JSON.stringify({ success: true, alreadyMember: true }), {
             status: 200,
@@ -524,14 +447,7 @@ serve(async (req: Request) => {
       }
 
       case "remove-member": {
-        if (req.method !== "DELETE") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { teamId, userId: targetUserId } = await req.json() as RemoveMemberRequest;
+        const { teamId, userId: targetUserId } = body;
 
         // Check permissions
         const { data: membership } = await supabase
@@ -590,14 +506,7 @@ serve(async (req: Request) => {
       }
 
       case "update-role": {
-        if (req.method !== "PATCH") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { teamId, userId: targetUserId, role: newRole } = await req.json() as UpdateMemberRoleRequest;
+        const { teamId, userId: targetUserId, role: newRole } = body;
 
         // Only owner can change roles
         const { data: membership } = await supabase
@@ -653,14 +562,7 @@ serve(async (req: Request) => {
       }
 
       case "transfer-ownership": {
-        if (req.method !== "PATCH") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { teamId, newOwnerId } = await req.json() as TransferOwnershipRequest;
+        const { teamId, newOwnerId } = body;
 
         // Only current owner can transfer
         const { data: membership } = await supabase
@@ -692,29 +594,18 @@ serve(async (req: Request) => {
           });
         }
 
-        // Transfer ownership in a transaction-like manner
-        // 1. Update team owner_id
-        const { error: teamError } = await supabase
+        // Transfer ownership
+        await supabase
           .from("teams")
           .update({ owner_id: newOwnerId })
           .eq("id", teamId);
 
-        if (teamError) {
-          console.error("Failed to update team owner:", teamError);
-          return new Response(JSON.stringify({ error: "Failed to transfer ownership" }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        // 2. Update new owner's role to owner
         await supabase
           .from("team_members")
           .update({ role: "owner" })
           .eq("team_id", teamId)
           .eq("user_id", newOwnerId);
 
-        // 3. Demote old owner to admin
         await supabase
           .from("team_members")
           .update({ role: "admin" })
@@ -730,14 +621,7 @@ serve(async (req: Request) => {
       }
 
       case "members": {
-        if (req.method !== "GET") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const teamId = url.searchParams.get("teamId");
+        const teamId = body.teamId;
 
         if (!teamId) {
           return new Response(JSON.stringify({ error: "Missing teamId" }), {
@@ -761,7 +645,7 @@ serve(async (req: Request) => {
           });
         }
 
-        // Get all members with user info
+        // Get all members
         const { data: members, error: membersError } = await supabase
           .from("team_members")
           .select("id, user_id, role, joined_at")
@@ -776,7 +660,6 @@ serve(async (req: Request) => {
         }
 
         // Get user emails
-        const userIds = members.map(m => m.user_id);
         const { data: { users } } = await supabase.auth.admin.listUsers();
         
         const membersWithEmail = members.map(m => {
@@ -806,13 +689,6 @@ serve(async (req: Request) => {
       }
 
       case "list": {
-        if (req.method !== "GET") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
         // Get all teams the user is a member of
         const { data: memberships, error } = await supabase
           .from("team_members")
@@ -840,14 +716,7 @@ serve(async (req: Request) => {
       }
 
       case "delete": {
-        if (req.method !== "DELETE") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { teamId } = await req.json();
+        const { teamId } = body;
 
         // Only owner can delete team
         const { data: membership } = await supabase
@@ -864,7 +733,7 @@ serve(async (req: Request) => {
           });
         }
 
-        // Delete team (cascade will handle members and invitations)
+        // Delete team (cascade handles members and invitations)
         const { error: deleteError } = await supabase
           .from("teams")
           .delete()
@@ -887,14 +756,7 @@ serve(async (req: Request) => {
       }
 
       case "cancel-invite": {
-        if (req.method !== "DELETE") {
-          return new Response(JSON.stringify({ error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const { invitationId } = await req.json();
+        const { invitationId } = body;
 
         // Get invitation to check team
         const { data: invitation } = await supabase
@@ -935,8 +797,8 @@ serve(async (req: Request) => {
       }
 
       default:
-        return new Response(JSON.stringify({ error: "Not found" }), {
-          status: 404,
+        return new Response(JSON.stringify({ error: "Unknown action" }), {
+          status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }

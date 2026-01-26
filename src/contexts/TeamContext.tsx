@@ -51,7 +51,15 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchTeams = useCallback(async () => {
-    if (!user || !session) {
+    if (!user) {
+      setTeams([]);
+      setCurrentTeam(null);
+      return;
+    }
+
+    // Get fresh session to ensure valid token
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    if (!freshSession) {
       setTeams([]);
       setCurrentTeam(null);
       return;
@@ -59,14 +67,22 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setIsLoading(true);
     try {
-      const response = await supabase.functions.invoke("team-management/list", {
+      const response = await supabase.functions.invoke("team-management", {
+        body: { action: "list" },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${freshSession.access_token}`,
         },
       });
 
+      console.log("Team fetch response:", response);
+
       if (response.error) {
         console.error("Failed to fetch teams:", response.error);
+        return;
+      }
+
+      if (response.data?.error) {
+        console.error("Team API error:", response.data.error);
         return;
       }
 
@@ -88,7 +104,7 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [user, session]);
+  }, [user]);
 
   useEffect(() => {
     fetchTeams();
@@ -108,14 +124,15 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [teams]);
 
   const createTeam = useCallback(async (name: string): Promise<Team> => {
-    if (!session) {
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    if (!freshSession) {
       throw new Error("Not authenticated");
     }
 
-    const response = await supabase.functions.invoke("team-management/create", {
-      body: { name },
+    const response = await supabase.functions.invoke("team-management", {
+      body: { action: "create", name },
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${freshSession.access_token}`,
       },
     });
 
@@ -138,14 +155,15 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [session]);
 
   const deleteTeam = useCallback(async (teamId: string) => {
-    if (!session) {
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    if (!freshSession) {
       throw new Error("Not authenticated");
     }
 
-    const response = await supabase.functions.invoke("team-management/delete", {
-      body: { teamId },
+    const response = await supabase.functions.invoke("team-management", {
+      body: { action: "delete", teamId },
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${freshSession.access_token}`,
       },
     });
 
@@ -161,14 +179,15 @@ export const TeamProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [session, currentTeam]);
 
   const leaveTeam = useCallback(async (teamId: string) => {
-    if (!session || !user) {
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    if (!freshSession || !user) {
       throw new Error("Not authenticated");
     }
 
-    const response = await supabase.functions.invoke("team-management/remove-member", {
-      body: { teamId, userId: user.id },
+    const response = await supabase.functions.invoke("team-management", {
+      body: { action: "remove-member", teamId, userId: user.id },
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${freshSession.access_token}`,
       },
     });
 

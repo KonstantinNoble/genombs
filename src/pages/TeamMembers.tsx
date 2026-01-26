@@ -120,14 +120,12 @@ export default function TeamMembers() {
 
     setIsLoading(true);
     try {
-      const response = await supabase.functions.invoke(
-        `team-management/members?teamId=${currentTeam.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
+      const response = await supabase.functions.invoke("team-management", {
+        body: { action: "members", teamId: currentTeam.id },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
       if (response.error) {
         throw new Error(response.error.message);
@@ -164,8 +162,9 @@ export default function TeamMembers() {
 
     setIsInviting(true);
     try {
-      const response = await supabase.functions.invoke("team-management/invite", {
+      const response = await supabase.functions.invoke("team-management", {
         body: {
+          action: "invite",
           teamId: currentTeam.id,
           email: inviteEmail,
           role: inviteRole,
@@ -217,8 +216,9 @@ export default function TeamMembers() {
     if (!memberToRemove || !currentTeam || !session) return;
 
     try {
-      const response = await supabase.functions.invoke("team-management/remove-member", {
+      const response = await supabase.functions.invoke("team-management", {
         body: {
+          action: "remove-member",
           teamId: currentTeam.id,
           userId: memberToRemove.user_id,
         },
@@ -258,8 +258,8 @@ export default function TeamMembers() {
     if (!inviteToCancel || !session) return;
 
     try {
-      const response = await supabase.functions.invoke("team-management/cancel-invite", {
-        body: { invitationId: inviteToCancel.id },
+      const response = await supabase.functions.invoke("team-management", {
+        body: { action: "cancel-invite", invitationId: inviteToCancel.id },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -288,8 +288,9 @@ export default function TeamMembers() {
     if (!currentTeam || !session) return;
 
     try {
-      const response = await supabase.functions.invoke("team-management/update-role", {
+      const response = await supabase.functions.invoke("team-management", {
         body: {
+          action: "update-role",
           teamId: currentTeam.id,
           userId,
           role: newRole,

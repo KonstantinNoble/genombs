@@ -52,9 +52,21 @@ export default function TeamInvite() {
 
       const data = response.data;
 
+      // Handle HTTP errors (4xx/5xx) - these come as response.error
       if (response.error) {
+        // Check if this is an auth-related error for unauthenticated users
+        const errorMsg = response.error.message?.toLowerCase() || "";
+        if (!user && (errorMsg.includes("authorization") || errorMsg.includes("token") || errorMsg.includes("401") || errorMsg.includes("unauthorized"))) {
+          // Likely the user needs to log in - show requiresAuth state
+          setState("requiresAuth");
+          setTeamName("the team");
+          setInvitedEmail("");
+          // Store token for after login
+          localStorage.setItem("pending_team_invite", token);
+          return;
+        }
+        
         setState("error");
-        // Keep message user-friendly but include actual error for easier debugging.
         setErrorMessage(response.error.message || "Failed to process invitation");
         return;
       }
@@ -71,18 +83,24 @@ export default function TeamInvite() {
         return;
       }
 
+      if (data.error === "Invalid or expired invitation") {
+        setState("error");
+        setErrorMessage("This invitation has expired or is invalid. Please ask the team admin to send a new invitation.");
+        return;
+      }
+
       if (data.error) {
         setState("error");
-        setErrorMessage(data.error === "Invalid or expired invitation" 
-          ? "This invitation has expired or is invalid."
-          : data.error);
+        setErrorMessage(data.message || data.error);
         return;
       }
 
       if (data.requiresAuth) {
         setState("requiresAuth");
         setTeamName(data.teamName || "the team");
-        setInvitedEmail(data.email);
+        setInvitedEmail(data.email || "");
+        // Store token for after login
+        localStorage.setItem("pending_team_invite", token);
         return;
       }
 
@@ -97,12 +115,14 @@ export default function TeamInvite() {
         setState("success");
         setTeamId(data.teamId);
         setTeamName(data.teamName);
+        // Clear pending invite on success
+        localStorage.removeItem("pending_team_invite");
         await refreshTeams();
       }
     } catch (error) {
       console.error("Error accepting invitation:", error);
       setState("error");
-      setErrorMessage("An unexpected error occurred");
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
 

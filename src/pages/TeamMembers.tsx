@@ -189,6 +189,7 @@ export default function TeamMembers() {
           teamId: currentTeam.id,
           email: inviteEmail,
           role: inviteRole,
+          siteUrl: window.location.origin,
         },
         headers: {
           Authorization: `Bearer ${session.access_token}`,

@@ -9,7 +9,75 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
-const SITE_URL = "https://wealthconomy.lovable.app";
+const DEFAULT_SITE_URL = "https://wealthconomy.lovable.app";
+
+// Allowed hosts for dynamic siteUrl (security validation)
+const ALLOWED_HOSTS = [
+  "wealthconomy.lovable.app",
+  ".lovable.app",
+  ".lovableproject.com",
+];
+
+// Validate and sanitize siteUrl
+function validateSiteUrl(siteUrl: string | undefined, req: Request): string {
+  let url = siteUrl;
+  
+  // Fallback 1: Check Origin header
+  if (!url) {
+    const origin = req.headers.get("Origin");
+    if (origin) {
+      url = origin;
+    }
+  }
+  
+  // Fallback 2: Check Referer header and extract origin
+  if (!url) {
+    const referer = req.headers.get("Referer");
+    if (referer) {
+      try {
+        const refUrl = new URL(referer);
+        url = refUrl.origin;
+      } catch {
+        // Invalid referer URL
+      }
+    }
+  }
+  
+  // Final fallback: default site URL
+  if (!url) {
+    return DEFAULT_SITE_URL;
+  }
+  
+  // Validate URL format and allowed hosts
+  try {
+    const parsedUrl = new URL(url);
+    
+    // Must be HTTPS
+    if (parsedUrl.protocol !== "https:") {
+      console.log(`Invalid siteUrl protocol: ${parsedUrl.protocol}, using default`);
+      return DEFAULT_SITE_URL;
+    }
+    
+    // Check against allowed hosts
+    const isAllowed = ALLOWED_HOSTS.some(host => {
+      if (host.startsWith(".")) {
+        // Wildcard match (e.g., ".lovable.app" matches "id-preview--xxx.lovable.app")
+        return parsedUrl.hostname.endsWith(host) || parsedUrl.hostname === host.slice(1);
+      }
+      return parsedUrl.hostname === host;
+    });
+    
+    if (!isAllowed) {
+      console.log(`siteUrl host not allowed: ${parsedUrl.hostname}, using default`);
+      return DEFAULT_SITE_URL;
+    }
+    
+    return parsedUrl.origin;
+  } catch {
+    console.log(`Invalid siteUrl format: ${url}, using default`);
+    return DEFAULT_SITE_URL;
+  }
+}
 
 // Generate URL-safe slug from team name
 function generateSlug(name: string): string {
@@ -27,9 +95,10 @@ async function sendInviteEmail(
   email: string,
   teamName: string,
   inviterEmail: string,
-  token: string
+  token: string,
+  siteUrl: string
 ): Promise<void> {
-  const inviteUrl = `${SITE_URL}/team/invite/${token}`;
+  const inviteUrl = `${siteUrl}/team/invite/${token}`;
   
   console.log(`Sending team invite email to ${email} for team ${teamName}`);
   
@@ -245,7 +314,11 @@ serve(async (req: Request) => {
       }
 
       case "invite": {
-        const { teamId, email, role } = body;
+        const { teamId, email, role, siteUrl: clientSiteUrl } = body;
+        
+        // Validate and get the correct siteUrl for the invitation link
+        const inviteSiteUrl = validateSiteUrl(clientSiteUrl, req);
+        console.log(`Invite request - siteUrl: ${inviteSiteUrl}, teamId: ${teamId}, email: ${email}`);
 
         if (!teamId || !email || !role) {
           return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -401,7 +474,8 @@ serve(async (req: Request) => {
 
         // Send invitation email
         try {
-          await sendInviteEmail(email.toLowerCase(), teamData.name, userEmail || "A team admin", invitation.token);
+          await sendInviteEmail(email.toLowerCase(), teamData.name, userEmail || "A team admin", invitation.token, inviteSiteUrl);
+          console.log(`Invitation sent to ${email} for team ${teamId} with link: ${inviteSiteUrl}/team/invite/${invitation.token.substring(0, 8)}...`);
         } catch (emailError) {
           console.error("Failed to send email:", emailError);
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
@@ -410,8 +484,6 @@ serve(async (req: Request) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-
-        console.log(`Invitation sent to ${email} for team ${teamId}`);
 
         return new Response(JSON.stringify({ success: true, invitation }), {
           status: 200,

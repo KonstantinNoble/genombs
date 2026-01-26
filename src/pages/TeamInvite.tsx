@@ -61,8 +61,6 @@ export default function TeamInvite() {
           setState("requiresAuth");
           setTeamName("the team");
           setInvitedEmail("");
-          // Store token for after login
-          localStorage.setItem("pending_team_invite", token);
           return;
         }
         
@@ -99,8 +97,6 @@ export default function TeamInvite() {
         setState("requiresAuth");
         setTeamName(data.teamName || "the team");
         setInvitedEmail(data.email || "");
-        // Store token for after login
-        localStorage.setItem("pending_team_invite", token);
         return;
       }
 
@@ -115,8 +111,6 @@ export default function TeamInvite() {
         setState("success");
         setTeamId(data.teamId);
         setTeamName(data.teamName);
-        // Clear pending invite on success
-        localStorage.removeItem("pending_team_invite");
         await refreshTeams();
       }
     } catch (error) {
@@ -132,8 +126,6 @@ export default function TeamInvite() {
   };
 
   const handleLogin = () => {
-    // Store the invite token to process after login
-    localStorage.setItem("pending_team_invite", token || "");
     navigate(`/auth?email=${encodeURIComponent(invitedEmail)}`);
   };
 

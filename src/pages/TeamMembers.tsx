@@ -530,7 +530,8 @@ export default function TeamMembers() {
                   const RoleIcon = roleIcons[member.role];
                   const isSelf = member.user_id === user?.id;
                   const canModify = isOwner && !isSelf && member.role !== "owner";
-                  const canRemove = (isAdmin && member.role !== "owner" && !isSelf) || isSelf;
+                  // Owner cannot be removed (not even by themselves)
+                  const canRemove = member.role !== "owner" && ((isAdmin && !isSelf) || isSelf);
 
                   return (
                     <div

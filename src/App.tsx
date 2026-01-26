@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
+import { TeamProvider } from "./contexts/TeamContext";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
@@ -20,6 +21,8 @@ import Imprint from "./pages/Imprint";
 import TermsOfService from "./pages/TermsOfService";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
+import TeamMembers from "./pages/TeamMembers";
+import TeamInvite from "./pages/TeamInvite";
 
 const queryClient = new QueryClient();
 
@@ -40,28 +43,32 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <ScrollToTop />
-          <BackgroundWrapper>
-            <ErrorBoundary>
-              <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/validate" element={<ValidationPlatform />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/imprint" element={<Imprint />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/update-password" element={<UpdatePassword />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ErrorBoundary>
-          </BackgroundWrapper>
+          <TeamProvider>
+            <ScrollToTop />
+            <BackgroundWrapper>
+              <ErrorBoundary>
+                <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/validate" element={<ValidationPlatform />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/imprint" element={<Imprint />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/team/members" element={<TeamMembers />} />
+                <Route path="/team/invite/:token" element={<TeamInvite />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
+            </BackgroundWrapper>
+          </TeamProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

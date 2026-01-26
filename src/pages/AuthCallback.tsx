@@ -90,7 +90,7 @@ const AuthCallback = () => {
           }
         }
 
-        // Check for pending team invitation stored in sessionStorage
+        // Check for pending team invitation stored in localStorage
         const pendingInviteToken = localStorage.getItem('pending_team_invite');
         if (pendingInviteToken) {
           localStorage.removeItem('pending_team_invite');

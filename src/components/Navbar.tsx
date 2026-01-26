@@ -15,7 +15,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   
   // Show team switcher on relevant pages
-  const showTeamSwitcher = user && ["/validate", "/dashboard", "/team", "/profile", "/teams"].some(p => location.pathname.startsWith(p));
+  const showTeamSwitcher = !!user;
   
   const isActive = (path: string) => location.pathname === path;
 

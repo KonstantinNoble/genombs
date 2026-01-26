@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import type { Session } from "@supabase/supabase-js";
 
 type InviteState = "loading" | "requiresAuth" | "emailMismatch" | "success" | "error" | "alreadyMember";
 
@@ -16,17 +15,8 @@ export default function TeamInvite() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { switchTeam, refreshTeams } = useTeam();
-  const [session, setSession] = useState<Session | null>(null);
-  const [sessionLoaded, setSessionLoaded] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setSessionLoaded(true);
-    });
-  }, []);
 
   const [state, setState] = useState<InviteState>("loading");
   const [teamName, setTeamName] = useState<string>("");
@@ -35,8 +25,8 @@ export default function TeamInvite() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
-    // Wait for session to be loaded before processing
-    if (!sessionLoaded) return;
+    // Wait for auth provider to finish initializing (prevents race conditions)
+    if (authLoading) return;
 
     if (!token) {
       setState("error");
@@ -45,7 +35,7 @@ export default function TeamInvite() {
     }
 
     acceptInvitation();
-  }, [token, sessionLoaded, session]);
+  }, [token, authLoading, user?.id]);
 
   const acceptInvitation = async () => {
     if (!token) return;
@@ -53,21 +43,19 @@ export default function TeamInvite() {
     setState("loading");
 
     try {
-      const headers: Record<string, string> = {};
-      if (session) {
-        headers.Authorization = `Bearer ${session.access_token}`;
-      }
-
+      // IMPORTANT: don't pass an empty `headers` object.
+      // Passing custom headers can override the default headers that are required
+      // to call backend functions (apikey + automatically attached auth when logged in).
       const response = await supabase.functions.invoke("team-management", {
         body: { action: "accept-invite", token },
-        headers,
       });
 
       const data = response.data;
 
       if (response.error) {
         setState("error");
-        setErrorMessage("Failed to process invitation");
+        // Keep message user-friendly but include actual error for easier debugging.
+        setErrorMessage(response.error.message || "Failed to process invitation");
         return;
       }
 

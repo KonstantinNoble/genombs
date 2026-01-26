@@ -4,11 +4,12 @@ import {
   Settings, 
   Crown, 
   Trash2, 
-  Loader2, 
+  Loader2,
   ChevronLeft,
   AlertTriangle,
   UserCog
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeam, TeamRole } from "@/contexts/TeamContext";
@@ -78,27 +79,33 @@ export default function TeamSettings() {
   const isAdmin = userRole === "owner" || userRole === "admin";
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-  }, []);
-
-  useEffect(() => {
-    if (!currentTeam) {
-      navigate("/validate");
-      return;
-    }
-    setTeamName(currentTeam.name);
-    fetchMembers();
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      
+      if (!currentTeam) {
+        navigate("/teams");
+        return;
+      }
+      
+      setTeamName(currentTeam.name);
+      
+      if (data.session && currentTeam) {
+        fetchMembersWithSession(data.session);
+      }
+    };
+    init();
   }, [currentTeam]);
 
-  const fetchMembers = async () => {
-    if (!currentTeam || !session) return;
+  const fetchMembersWithSession = async (sess: Session) => {
+    if (!currentTeam) return;
 
     setIsLoading(true);
     try {
       const response = await supabase.functions.invoke("team-management", {
         body: { action: "members", teamId: currentTeam.id },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${sess.access_token}`,
         },
       });
 
@@ -117,6 +124,11 @@ export default function TeamSettings() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchMembers = async () => {
+    if (!session) return;
+    fetchMembersWithSession(session);
   };
 
   const handleRenameTeam = async () => {
@@ -243,8 +255,45 @@ export default function TeamSettings() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="space-y-6">
+            {/* Team Name Card Skeleton */}
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-56 mt-1" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-3">
+                  <Skeleton className="h-10 flex-1" />
+                  <Skeleton className="h-10 w-16" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Transfer Ownership Card Skeleton */}
+            <Card className="border-amber-500/30">
+              <CardHeader>
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-72 mt-1" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-3">
+                  <Skeleton className="h-10 flex-1" />
+                  <Skeleton className="h-10 w-28" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Danger Zone Card Skeleton */}
+            <Card className="border-destructive/30">
+              <CardHeader>
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-64 mt-1" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-10 w-32" />
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="space-y-6">

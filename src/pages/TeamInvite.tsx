@@ -300,12 +300,24 @@ export default function TeamInvite() {
                 </div>
                 <CardTitle>Wrong Account</CardTitle>
                 <CardDescription>
-                  This invitation was sent to <strong>{invitedEmail}</strong>, but you're signed in with a different email.
+                  This invitation was sent to <strong>{invitedEmail}</strong>, but you're signed in with a different email. Please sign out and sign in with the correct account.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
-                <Button onClick={() => navigate("/auth")} variant="outline" className="w-full">
-                  Sign In with {invitedEmail}
+                <Button 
+                  onClick={async () => {
+                    // Sign out current user and redirect to auth with correct email
+                    await supabase.auth.signOut();
+                    const returnTo = `/team/invite/${token}`;
+                    const params = new URLSearchParams();
+                    params.set("email", invitedEmail);
+                    params.set("returnTo", returnTo);
+                    navigate(`/auth?${params.toString()}`);
+                  }} 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  Sign Out & Sign In with {invitedEmail}
                 </Button>
                 <Button onClick={() => navigate("/validate")} variant="ghost" className="w-full">
                   Go to Dashboard

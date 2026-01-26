@@ -50,35 +50,36 @@ async function sendInviteEmail(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #0a0a0f; color: #e4e4e7; margin: 0; padding: 40px 20px;">
-  <div style="max-width: 520px; margin: 0 auto; background: linear-gradient(180deg, #18181b 0%, #0a0a0f 100%); border: 1px solid #27272a; border-radius: 16px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Team Invitation</h1>
+<body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f5; color: #1a1a1a; margin: 0; padding: 40px 20px;">
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border: 1px solid #e4e4e7; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px -4px rgba(0,0,0,0.08);">
+    <div style="background: #ffffff; padding: 32px; text-align: center; border-bottom: 1px solid #e4e4e7;">
+      <h1 style="color: #22c55e; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.025em;">Synoptas</h1>
+      <p style="color: #71717a; font-size: 14px; margin: 8px 0 0;">Team Invitation</p>
     </div>
     <div style="padding: 32px;">
-      <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
-        You've been invited to join <strong style="color: #e4e4e7;">${teamName}</strong> on Synoptas by ${inviterEmail}.
+      <p style="color: #1a1a1a; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+        You've been invited to join <strong>${teamName}</strong> by ${inviterEmail}.
       </p>
-      <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin: 0 0 32px;">
+      <p style="color: #3f3f46; font-size: 14px; line-height: 1.6; margin: 0 0 32px;">
         As a team member, you'll be able to collaborate on strategic decision validations.
       </p>
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px;">
+        <a href="${inviteUrl}" style="display: inline-block; background-color: #22c55e; color: white; text-decoration: none; padding: 16px 40px; border-radius: 16px; font-weight: 600; font-size: 16px;">
           Accept Invitation
         </a>
       </div>
       <p style="color: #71717a; font-size: 12px; text-align: center; margin: 24px 0 0;">
-        Or copy this link: <br>
-        <span style="color: #a1a1aa; word-break: break-all;">${inviteUrl}</span>
+        Or copy this link:<br>
+        <a href="${inviteUrl}" style="color: #22c55e; word-break: break-all;">${inviteUrl}</a>
       </p>
-      <div style="background: #27272a; border-radius: 8px; padding: 16px; margin-top: 24px;">
-        <p style="color: #a1a1aa; font-size: 13px; margin: 0; text-align: center;">
-          ⏰ This invitation expires in 7 days
+      <div style="background: #f4f4f5; border: 1px solid #e4e4e7; border-radius: 8px; padding: 16px; margin-top: 24px;">
+        <p style="color: #52525b; font-size: 13px; margin: 0; text-align: center;">
+          This invitation expires in 7 days
         </p>
       </div>
     </div>
-    <div style="border-top: 1px solid #27272a; padding: 24px; text-align: center;">
-      <p style="color: #52525b; font-size: 12px; margin: 0;">
+    <div style="border-top: 1px solid #e4e4e7; padding: 24px; text-align: center;">
+      <p style="color: #71717a; font-size: 12px; margin: 0;">
         © ${new Date().getFullYear()} Synoptas. All rights reserved.
       </p>
     </div>

@@ -21,6 +21,8 @@ import { ExperimentWorkflow } from "@/components/experiment/ExperimentWorkflow";
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
+import { useTeam } from "@/contexts/TeamContext";
+import { Building2 } from "lucide-react";
 
 interface HistoryItem {
   id: string;
@@ -35,6 +37,8 @@ interface HistoryItem {
   dissent_points: any;
   final_recommendation: any;
   processing_time_ms: number;
+  user_id: string;
+  team_id?: string | null;
   // New dynamic columns
   model_responses?: Record<string, any>;
   selected_models?: string[];
@@ -51,6 +55,7 @@ export default function ValidationPlatform() {
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
   const { createExperiment, getActiveExperiment, isLoading: isCreatingExperiment } = useExperiment();
+  const { currentTeam, isInTeamMode } = useTeam();
   
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -189,28 +194,50 @@ export default function ValidationPlatform() {
   const HISTORY_LIMIT = 10;
 
   const loadHistory = async (userId: string) => {
-    // Prune DB to last 10 entries (delete oldest beyond limit)
-    const { data: allIds, error: idsError } = await supabase
-      .from("validation_analyses")
-      .select("id")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+    if (isInTeamMode && currentTeam) {
+      // Team mode: Load all team analyses (no pruning - each user keeps their own limit)
+      // RLS policy handles visibility (user can see own + team analyses)
+      const { data } = await supabase
+        .from("validation_analyses")
+        .select("*")
+        .eq("team_id", currentTeam.id)
+        .order("created_at", { ascending: false })
+        .limit(50); // Show more for team view
 
-    if (!idsError && allIds && allIds.length > HISTORY_LIMIT) {
-      const idsToDelete = allIds.slice(HISTORY_LIMIT).map((r) => r.id);
-      await supabase.from("validation_analyses").delete().in("id", idsToDelete);
+      if (data) setHistory(data as HistoryItem[]);
+    } else {
+      // Personal mode: Prune DB to last 10 entries (delete oldest beyond limit)
+      const { data: allIds, error: idsError } = await supabase
+        .from("validation_analyses")
+        .select("id")
+        .eq("user_id", userId)
+        .is("team_id", null) // Only personal analyses
+        .order("created_at", { ascending: false });
+
+      if (!idsError && allIds && allIds.length > HISTORY_LIMIT) {
+        const idsToDelete = allIds.slice(HISTORY_LIMIT).map((r) => r.id);
+        await supabase.from("validation_analyses").delete().in("id", idsToDelete);
+      }
+
+      // Load UI list (personal only)
+      const { data } = await supabase
+        .from("validation_analyses")
+        .select("*")
+        .eq("user_id", userId)
+        .is("team_id", null)
+        .order("created_at", { ascending: false })
+        .limit(HISTORY_LIMIT);
+
+      if (data) setHistory(data as HistoryItem[]);
     }
-
-    // Load UI list
-    const { data } = await supabase
-      .from("validation_analyses")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(HISTORY_LIMIT);
-
-    if (data) setHistory(data as HistoryItem[]);
   };
+
+  // Reload history when team changes
+  useEffect(() => {
+    if (user) {
+      loadHistory(user.id);
+    }
+  }, [currentTeam?.id, user]);
 
   const handleValidate = async () => {
     if (!prompt.trim()) { 

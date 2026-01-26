@@ -10,6 +10,8 @@ interface ModelDetailCardsProps {
   selectedModels: string[];
   isPremium?: boolean;
   citations?: string[];
+  viewerIsPremium?: boolean;
+  isTeamAnalysis?: boolean;
 }
 
 interface ModelCardContentProps {
@@ -18,6 +20,8 @@ interface ModelCardContentProps {
   colorClass: string;
   bgClass: string;
   isPremium?: boolean;
+  viewerIsPremium?: boolean;
+  isTeamAnalysis?: boolean;
 }
 
 // Model color mappings
@@ -31,7 +35,7 @@ const MODEL_COLORS: Record<string, { colorClass: string; bgClass: string }> = {
   perplexity: { colorClass: "bg-cyan-500/20 text-cyan-600", bgClass: "border-cyan-500/30 bg-cyan-500/5" },
 };
 
-function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium = false }: ModelCardContentProps) {
+function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium = false, viewerIsPremium = false, isTeamAnalysis = false }: ModelCardContentProps) {
   const navigate = useNavigate();
   const modelConfig = AVAILABLE_MODELS[modelKey];
 
@@ -141,8 +145,8 @@ function ModelCardContent({ response, modelKey, colorClass, bgClass, isPremium =
         ))}
       </div>
 
-      {/* Upgrade Prompt */}
-      {!isPremium && response.recommendations.length > maxRecommendations && (
+      {/* Upgrade Prompt - only show for free users, not for premium viewers of team analyses */}
+      {!isPremium && response.recommendations.length > maxRecommendations && !(viewerIsPremium && isTeamAnalysis) && (
         <button 
           onClick={() => navigate('/pricing')}
           className="w-full mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 text-center text-base sm:text-lg text-amber-600 hover:text-amber-500 transition-colors"
@@ -158,7 +162,9 @@ export function ModelDetailCards({
   modelResponses,
   selectedModels,
   isPremium = false,
-  citations
+  citations,
+  viewerIsPremium = false,
+  isTeamAnalysis = false
 }: ModelDetailCardsProps) {
   const defaultModel = selectedModels.find(key => 
     modelResponses[key] && !modelResponses[key].error
@@ -237,6 +243,8 @@ export function ModelDetailCards({
                 colorClass={colors.colorClass}
                 bgClass={colors.bgClass}
                 isPremium={isPremium}
+                viewerIsPremium={viewerIsPremium}
+                isTeamAnalysis={isTeamAnalysis}
               />
             </TabsContent>
           );

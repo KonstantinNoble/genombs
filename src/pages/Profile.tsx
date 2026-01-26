@@ -311,22 +311,31 @@ const Profile = () => {
                       <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-destructive">
-                          Transfer ownership before deleting
+                          Workspace action required
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          You own the following teams. Transfer ownership to another admin before deleting your account:
+                          You own the following workspaces. Before deleting your account, transfer ownership to a member OR delete the workspace:
                         </p>
-                        <ul className="space-y-1">
+                        <ul className="space-y-2">
                           {ownedTeams.map(team => (
                             <li key={team.id} className="flex items-center gap-2 text-sm">
                               <Building2 className="h-4 w-4 text-primary" />
-                              <span>{team.name}</span>
-                              <Link 
-                                to="/team/members" 
-                                className="text-primary text-xs hover:underline ml-auto"
-                              >
-                                Manage →
-                              </Link>
+                              <span className="font-medium">{team.name}</span>
+                              <div className="ml-auto flex items-center gap-2">
+                                <Link 
+                                  to="/team/members" 
+                                  className="text-primary text-xs hover:underline"
+                                >
+                                  Transfer
+                                </Link>
+                                <span className="text-muted-foreground">|</span>
+                                <Link 
+                                  to="/team/settings" 
+                                  className="text-destructive text-xs hover:underline"
+                                >
+                                  Delete
+                                </Link>
+                              </div>
                             </li>
                           ))}
                         </ul>

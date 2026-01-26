@@ -9,16 +9,29 @@ import {
   Plus,
   Crown,
   Shield,
-  Eye
+  Eye,
+  LogOut,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeam, TeamRole } from "@/contexts/TeamContext";
+import { useToast } from "@/hooks/use-toast";
 import { TEAM_LIMITS } from "@/lib/constants";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -43,10 +56,15 @@ const roleColors: Record<TeamRole, string> = {
 export default function Teams() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { teams, isLoading, switchTeam } = useTeam();
+  const { teams, isLoading, switchTeam, leaveTeam } = useTeam();
+  const { toast } = useToast();
   const [isPremium, setIsPremium] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  
+  // Leave team state
+  const [teamToLeave, setTeamToLeave] = useState<{ id: string; name: string } | null>(null);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
     const checkPremium = async () => {
@@ -76,6 +94,28 @@ export default function Teams() {
 
   const handleSetTeamForLink = (teamId: string) => {
     switchTeam(teamId);
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!teamToLeave) return;
+
+    setIsLeaving(true);
+    try {
+      await leaveTeam(teamToLeave.id);
+      toast({ 
+        title: "Left team",
+        description: `You are no longer a member of ${teamToLeave.name}.` 
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to leave team",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLeaving(false);
+      setTeamToLeave(null);
+    }
   };
 
   if (!user) {
@@ -183,6 +223,7 @@ export default function Teams() {
                     {teams.map((team) => {
                       const RoleIcon = roleIcons[team.role];
                       const isOwnerOrAdmin = team.role === "owner" || team.role === "admin";
+                      const isOwner = team.role === "owner";
 
                       return (
                         <Card key={team.id} className="hover:border-primary/30 transition-colors">
@@ -234,6 +275,19 @@ export default function Teams() {
                                       </Link>
                                     </Button>
                                   </>
+                                )}
+
+                                {/* Leave button - only for non-owners */}
+                                {!isOwner && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setTeamToLeave({ id: team.id, name: team.name })}
+                                    className="gap-1.5 flex-1 sm:flex-none min-h-[44px] sm:min-h-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  >
+                                    <LogOut className="h-4 w-4" />
+                                    <span className="hidden xs:inline">Leave</span>
+                                  </Button>
                                 )}
                                 
                                 <Button
@@ -295,6 +349,36 @@ export default function Teams() {
           open={showUpgradeDialog}
           onOpenChange={setShowUpgradeDialog}
         />
+
+        {/* Leave Team Confirmation Dialog */}
+        <AlertDialog open={!!teamToLeave} onOpenChange={(open) => !open && setTeamToLeave(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Leave Team?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You will lose access to all shared analyses, experiments, and decisions in <strong>{teamToLeave?.name}</strong>. 
+                You can rejoin if the team owner invites you again.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel disabled={isLeaving} className="w-full sm:w-auto min-h-[44px] sm:min-h-0">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleLeaveTeam}
+                disabled={isLeaving}
+                className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
+              >
+                {isLeaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <LogOut className="h-4 w-4 mr-2" />
+                )}
+                Leave Team
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );

@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.meta-evaluation]
 verify_jwt = true
+
+[functions.team-management]
+verify_jwt = false

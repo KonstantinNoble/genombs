@@ -62,6 +62,7 @@ export type Database = {
           id: string
           stakeholders: string[] | null
           status: string
+          team_id: string | null
           user_confirmed_ownership: boolean | null
           user_id: string
           validation_id: string | null
@@ -78,6 +79,7 @@ export type Database = {
           id?: string
           stakeholders?: string[] | null
           status?: string
+          team_id?: string | null
           user_confirmed_ownership?: boolean | null
           user_id: string
           validation_id?: string | null
@@ -94,11 +96,19 @@ export type Database = {
           id?: string
           stakeholders?: string[] | null
           status?: string
+          team_id?: string | null
           user_confirmed_ownership?: boolean | null
           user_id?: string
           validation_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_records_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_records_validation_id_fkey"
             columns: ["validation_id"]
@@ -281,6 +291,7 @@ export type Database = {
           start_date: string
           status: string
           success_metrics: Json
+          team_id: string | null
           title: string
           updated_at: string
           user_id: string
@@ -299,6 +310,7 @@ export type Database = {
           start_date?: string
           status?: string
           success_metrics?: Json
+          team_id?: string | null
           title: string
           updated_at?: string
           user_id: string
@@ -317,12 +329,20 @@ export type Database = {
           start_date?: string
           status?: string
           success_metrics?: Json
+          team_id?: string | null
           title?: string
           updated_at?: string
           user_id?: string
           validation_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "experiments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "experiments_validation_id_fkey"
             columns: ["validation_id"]
@@ -425,6 +445,106 @@ export type Database = {
         }
         Relationships: []
       }
+      team_invitations: {
+        Row: {
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invitations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          id: string
+          joined_at: string | null
+          role: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          owner_id: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           auto_renew: boolean | null
@@ -524,6 +644,7 @@ export type Database = {
           risk_preference: number | null
           selected_models: string[] | null
           strategic_alternatives: Json | null
+          team_id: string | null
           user_id: string
         }
         Insert: {
@@ -549,6 +670,7 @@ export type Database = {
           risk_preference?: number | null
           selected_models?: string[] | null
           strategic_alternatives?: Json | null
+          team_id?: string | null
           user_id: string
         }
         Update: {
@@ -574,9 +696,18 @@ export type Database = {
           risk_preference?: number | null
           selected_models?: string[] | null
           strategic_alternatives?: Json | null
+          team_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "validation_analyses_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -588,11 +719,19 @@ export type Database = {
         Returns: boolean
       }
       check_comment_limit: { Args: { p_user_id: string }; Returns: boolean }
+      cleanup_expired_invitations: { Args: never; Returns: undefined }
       cleanup_old_deleted_accounts: { Args: never; Returns: undefined }
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
       deactivate_expired_subscriptions: { Args: never; Returns: undefined }
       get_next_comment_time: { Args: { p_user_id: string }; Returns: string }
+      get_owned_teams: {
+        Args: { _user_id: string }
+        Returns: {
+          id: string
+          name: string
+        }[]
+      }
       get_remaining_comments: { Args: { p_user_id: string }; Returns: number }
       get_user_dashboard_stats: { Args: { p_user_id: string }; Returns: Json }
       has_role: {
@@ -606,6 +745,19 @@ export type Database = {
         Args: { reset_window?: boolean; user_uuid: string }
         Returns: undefined
       }
+      is_premium_user: { Args: { _user_id: string }; Returns: boolean }
+      is_team_admin: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_team_member: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_team_owner: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
       log_decision_action: {
         Args: { p_action: string; p_decision_id: string; p_metadata?: Json }
         Returns: string
@@ -613,6 +765,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      team_role: "owner" | "admin" | "member" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -741,6 +894,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      team_role: ["owner", "admin", "member", "viewer"],
     },
   },
 } as const

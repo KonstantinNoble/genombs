@@ -38,7 +38,7 @@ export function TeamSwitcher() {
     e.stopPropagation();
     switchTeam(teamId);
     setOpen(false);
-    navigate("/team/members");
+    navigate("/teams");
   };
 
   return (

@@ -23,6 +23,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { CreateTeamDialog } from "@/components/team/CreateTeamDialog";
+import { PremiumUpgradeDialog } from "@/components/team/PremiumUpgradeDialog";
 
 const roleIcons: Record<TeamRole, typeof Crown> = {
   owner: Crown,
@@ -44,6 +45,7 @@ export default function Teams() {
   const { teams, isLoading, switchTeam } = useTeam();
   const [isPremium, setIsPremium] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   useEffect(() => {
     const checkPremium = async () => {
@@ -248,44 +250,33 @@ export default function Teams() {
                 </div>
               )}
 
-              {/* Create Team Button */}
-              {isPremium && (
-                <div className="pt-6">
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2 h-12 border-dashed"
-                    onClick={() => setShowCreateDialog(true)}
-                    disabled={!canCreateMoreTeams}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Create New Team
-                    {!canCreateMoreTeams && (
-                      <span className="text-muted-foreground text-xs">
-                        ({ownedTeamsCount}/{TEAM_LIMITS.MAX_TEAMS_PER_USER} teams)
-                      </span>
-                    )}
-                  </Button>
-                </div>
-              )}
-
-              {/* Premium Upsell for Free Users */}
-              {!isPremium && (
-                <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/20">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                      <div>
-                        <h3 className="font-semibold mb-1">Team Collaboration</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Upgrade to Premium to create teams and collaborate with your colleagues
-                        </p>
-                      </div>
-                      <Button asChild>
-                        <Link to="/pricing">Upgrade</Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              {/* Create Team Button - Always visible */}
+              <div className="pt-6">
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 h-12 border-dashed"
+                  onClick={() => {
+                    if (isPremium) {
+                      if (canCreateMoreTeams) {
+                        setShowCreateDialog(true);
+                      }
+                    } else {
+                      setShowUpgradeDialog(true);
+                    }
+                  }}
+                  disabled={isPremium && !canCreateMoreTeams}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Team
+                  {!isPremium ? (
+                    <Crown className="h-4 w-4 text-amber-500 ml-1" />
+                  ) : !canCreateMoreTeams ? (
+                    <span className="text-muted-foreground text-xs">
+                      ({ownedTeamsCount}/{TEAM_LIMITS.MAX_TEAMS_PER_USER} teams)
+                    </span>
+                  ) : null}
+                </Button>
+              </div>
             </div>
           )}
         </main>
@@ -294,6 +285,11 @@ export default function Teams() {
         <CreateTeamDialog 
           open={showCreateDialog} 
           onOpenChange={setShowCreateDialog} 
+        />
+        
+        <PremiumUpgradeDialog
+          open={showUpgradeDialog}
+          onOpenChange={setShowUpgradeDialog}
         />
       </div>
     </>

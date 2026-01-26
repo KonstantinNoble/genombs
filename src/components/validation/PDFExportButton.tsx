@@ -20,12 +20,17 @@ interface PDFExportButtonProps {
   isConfirmed?: boolean;
   confirmedAt?: string;
   onRequireConfirmation?: () => void;
+  viewerIsPremium?: boolean;
+  isTeamAnalysis?: boolean;
 }
 
-export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false, confirmedAt, onRequireConfirmation }: PDFExportButtonProps) {
+export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false, confirmedAt, onRequireConfirmation, viewerIsPremium = false, isTeamAnalysis = false }: PDFExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Check if this is a premium viewer looking at a free user's team analysis
+  const isTeammateFreemiumAnalysis = viewerIsPremium && !isPremium && isTeamAnalysis;
 
   // Hide PDF export on mobile devices
   if (isMobile) {
@@ -103,6 +108,30 @@ export function PDFExportButton({ result, prompt, isPremium, isConfirmed = false
       setIsGenerating(false);
     }
   };
+
+  // Premium viewer looking at free teammate's analysis - show info tooltip, no upgrade link
+  if (isTeammateFreemiumAnalysis) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 opacity-50 cursor-not-allowed"
+              disabled
+            >
+              <Lock className="h-4 w-4" />
+              <span className="hidden sm:inline">Export PDF</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>PDF not available – created by Free user</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
   if (!isPremium) {
     return (

@@ -564,7 +564,7 @@ serve(async (req: Request) => {
           .single();
 
         if (targetMember?.role === "owner") {
-          return new Response(JSON.stringify({ error: "Cannot remove team owner. Transfer ownership first." }), {
+          return new Response(JSON.stringify({ error: "Cannot remove team owner. Delete the workspace instead." }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });

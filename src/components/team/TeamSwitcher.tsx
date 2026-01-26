@@ -80,18 +80,18 @@ export function TeamSwitcher() {
             <ChevronDown className="h-3 w-3 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-[260px]">
+        <DropdownMenuContent align="start" className="w-[calc(100vw-2rem)] sm:w-[280px] max-w-[320px]">
           {/* Personal Workspace */}
           <DropdownMenuItem
             onClick={() => {
               switchTeam(null);
               setOpen(false);
             }}
-            className="gap-2"
+            className="gap-2 min-h-[44px] sm:min-h-0"
           >
-            <User className="h-4 w-4" />
-            <span className="flex-1">Personal Workspace</span>
-            {!currentTeam && <Check className="h-4 w-4 text-primary" />}
+            <User className="h-4 w-4 shrink-0" />
+            <span className="flex-1 truncate">Personal Workspace</span>
+            {!currentTeam && <Check className="h-4 w-4 text-primary shrink-0" />}
           </DropdownMenuItem>
 
           {/* Teams */}
@@ -108,11 +108,11 @@ export function TeamSwitcher() {
                       switchTeam(team.id);
                       setOpen(false);
                     }}
-                    className="gap-2 pr-20"
+                    className="gap-2 pr-20 min-h-[48px] sm:min-h-0"
                   >
                     <Building2 className="h-4 w-4 text-primary shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <span className="truncate block">{team.name}</span>
+                      <span className="truncate block text-sm">{team.name}</span>
                       <span className="text-[10px] text-muted-foreground capitalize">
                         {team.role}
                       </span>
@@ -124,10 +124,10 @@ export function TeamSwitcher() {
                   {/* Manage button overlay */}
                   <button
                     onClick={(e) => handleManageTeam(e, team.id)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors min-h-[36px]"
                   >
-                    <Settings className="h-3 w-3" />
-                    <span>Manage</span>
+                    <Settings className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Manage</span>
                   </button>
                 </div>
               ))}
@@ -140,17 +140,17 @@ export function TeamSwitcher() {
             onClick={handleCreateTeamClick}
             disabled={isPremium && !canCreateMoreTeams}
             className={cn(
-              "gap-2",
+              "gap-2 min-h-[44px] sm:min-h-0",
               isPremium && canCreateMoreTeams && "text-primary",
               isPremium && !canCreateMoreTeams && "opacity-50 cursor-not-allowed"
             )}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 shrink-0" />
             <span className="flex-1">Create Team</span>
             {!isPremium ? (
-              <Crown className="h-4 w-4 text-amber-500" />
+              <Crown className="h-4 w-4 text-amber-500 shrink-0" />
             ) : !canCreateMoreTeams ? (
-              <span className="text-xs text-muted-foreground">(5/5)</span>
+              <span className="text-xs text-muted-foreground shrink-0">(5/5)</span>
             ) : null}
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -268,16 +268,16 @@ const Profile = () => {
                   ) : (
                     <div className="space-y-2">
                       {teams.slice(0, 3).map(team => (
-                        <div key={team.id} className="flex items-center justify-between p-2 rounded-lg bg-background border">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{team.name}</span>
-                            <span className="text-xs text-muted-foreground capitalize">({team.role})</span>
+                        <div key={team.id} className="flex flex-col xs:flex-row xs:items-center justify-between p-3 rounded-lg bg-background border gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <span className="text-sm font-medium truncate">{team.name}</span>
+                            <span className="text-xs text-muted-foreground capitalize shrink-0">({team.role})</span>
                           </div>
                           {(team.role === "owner" || team.role === "admin") && (
                             <Link 
                               to="/team/members" 
-                              className="text-xs text-primary hover:underline flex items-center gap-1"
+                              className="text-xs text-primary hover:underline flex items-center gap-1 py-2 px-3 -mx-1 rounded-md hover:bg-primary/5 transition-colors min-h-[44px] xs:min-h-0 justify-center xs:justify-start"
                             >
                               <Settings className="h-3 w-3" />
                               Manage
@@ -353,12 +353,12 @@ const Profile = () => {
                         account and remove all your data from our servers.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                      <AlertDialogCancel className="w-full sm:w-auto min-h-[44px] sm:min-h-0">Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteAccount}
                         disabled={deleting}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
                       >
                         {deleting ? "Deleting..." : "Delete Account"}
                       </AlertDialogAction>

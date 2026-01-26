@@ -239,7 +239,7 @@ export default function TeamSettings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 space-y-1">
                       <Label htmlFor="teamName" className="sr-only">
                         Team Name
@@ -251,6 +251,7 @@ export default function TeamSettings() {
                         placeholder="Team name"
                         disabled={isRenaming}
                         maxLength={200}
+                        className="min-h-[44px] sm:min-h-0"
                       />
                       <p className="text-xs text-muted-foreground text-right">
                         {teamName.length}/200
@@ -259,6 +260,7 @@ export default function TeamSettings() {
                     <Button
                       onClick={handleRenameTeam}
                       disabled={isRenaming || teamName === currentTeam.name || !teamName.trim() || teamName.length > 200}
+                      className="w-full sm:w-auto min-h-[44px] sm:min-h-0"
                     >
                       {isRenaming ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -342,12 +344,12 @@ export default function TeamSettings() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel disabled={isDeleting} className="w-full sm:w-auto min-h-[44px] sm:min-h-0">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteTeam}
               disabled={isDeleting || deleteConfirmation !== currentTeam.name}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
             >
               {isDeleting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />

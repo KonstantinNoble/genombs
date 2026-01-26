@@ -402,7 +402,7 @@ export default function TeamMembers() {
                 <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Admin</p>
-                  <p className="text-muted-foreground">Invite members, change roles, manage settings</p>
+                  <p className="text-muted-foreground">Invite members, change roles (after ownership transfer)</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -468,7 +468,6 @@ export default function TeamMembers() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="member">Member</SelectItem>
                     <SelectItem value="viewer">Viewer</SelectItem>
                   </SelectContent>
@@ -555,7 +554,6 @@ export default function TeamMembers() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="admin">Admin</SelectItem>
                               <SelectItem value="member">Member</SelectItem>
                               <SelectItem value="viewer">Viewer</SelectItem>
                             </SelectContent>

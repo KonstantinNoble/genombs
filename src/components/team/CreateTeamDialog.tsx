@@ -39,6 +39,15 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
       return;
     }
 
+    if (name.trim().length > 100) {
+      toast({
+        title: "Name too long",
+        description: "Team name must be 100 characters or less.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const team = await createTeam(name.trim());
@@ -98,12 +107,14 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
                 id="team-name"
                 placeholder="e.g., Marketing Team, Acme Corp"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value.slice(0, 100))}
                 disabled={isLoading}
+                maxLength={100}
                 autoFocus
               />
-              <p className="text-xs text-muted-foreground">
-                You can change this later in team settings.
+              <p className="text-xs text-muted-foreground flex justify-between">
+                <span>You can change this later in team settings.</span>
+                <span>{name.length}/100</span>
               </p>
             </div>
           </div>

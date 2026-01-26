@@ -247,19 +247,19 @@ export default function TeamSettings() {
                       <Input
                         id="teamName"
                         value={teamName}
-                        onChange={(e) => setTeamName(e.target.value.slice(0, 200))}
+                        onChange={(e) => setTeamName(e.target.value.slice(0, 100))}
                         placeholder="Team name"
                         disabled={isRenaming}
-                        maxLength={200}
+                        maxLength={100}
                         className="min-h-[44px] sm:min-h-0"
                       />
                       <p className="text-xs text-muted-foreground text-right">
-                        {teamName.length}/200
+                        {teamName.length}/100
                       </p>
                     </div>
                     <Button
                       onClick={handleRenameTeam}
-                      disabled={isRenaming || teamName === currentTeam.name || !teamName.trim() || teamName.length > 200}
+                      disabled={isRenaming || teamName === currentTeam.name || !teamName.trim() || teamName.length > 100}
                       className="w-full sm:w-auto min-h-[44px] sm:min-h-0"
                     >
                       {isRenaming ? (

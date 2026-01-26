@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Settings, 
-  Crown, 
   Trash2, 
   Loader2,
   ChevronLeft,
-  AlertTriangle,
-  UserCog
+  AlertTriangle
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,13 +14,6 @@ import { useTeam, TeamRole } from "@/contexts/TeamContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -64,11 +55,6 @@ export default function TeamSettings() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [userRole, setUserRole] = useState<TeamRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Transfer ownership
-  const [newOwnerId, setNewOwnerId] = useState("");
-  const [isTransferring, setIsTransferring] = useState(false);
-  const [showTransferDialog, setShowTransferDialog] = useState(false);
 
   // Delete team
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -160,44 +146,6 @@ export default function TeamSettings() {
     }
   };
 
-  const handleTransferOwnership = async () => {
-    if (!currentTeam || !session || !newOwnerId) return;
-
-    setIsTransferring(true);
-    try {
-      const response = await supabase.functions.invoke("team-management", {
-        body: { 
-          action: "transfer-ownership", 
-          teamId: currentTeam.id, 
-          newOwnerId 
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (response.data?.error) {
-        throw new Error(response.data.error);
-      }
-
-      toast({ 
-        title: "Ownership transferred",
-        description: "You are now an admin of this team." 
-      });
-      setShowTransferDialog(false);
-      await refreshTeams();
-      fetchMembers();
-    } catch (error: any) {
-      toast({
-        title: "Failed to transfer ownership",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsTransferring(false);
-    }
-  };
-
   const handleDeleteTeam = async () => {
     if (!currentTeam || deleteConfirmation !== currentTeam.name) return;
 
@@ -221,9 +169,6 @@ export default function TeamSettings() {
     }
   };
 
-  const eligibleOwners = members.filter(
-    m => m.user_id !== user?.id && (m.role === "admin" || m.role === "member")
-  );
 
   if (!currentTeam) {
     return null;
@@ -270,19 +215,6 @@ export default function TeamSettings() {
               </CardContent>
             </Card>
 
-            {/* Transfer Ownership Card Skeleton */}
-            <Card className="border-amber-500/30">
-              <CardHeader>
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="h-4 w-72 mt-1" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-3">
-                  <Skeleton className="h-10 flex-1" />
-                  <Skeleton className="h-10 w-28" />
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Danger Zone Card Skeleton */}
             <Card className="border-destructive/30">
@@ -339,54 +271,6 @@ export default function TeamSettings() {
               </Card>
             )}
 
-            {/* Transfer Ownership - Owner only */}
-            {isOwner && (
-              <Card className="border-amber-500/30">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-amber-600">
-                    <Crown className="h-5 w-5" />
-                    Transfer Ownership
-                  </CardTitle>
-                  <CardDescription>
-                    Transfer team ownership to another admin or member. You will become an admin after transfer.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {eligibleOwners.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No eligible members to transfer ownership to. Invite an admin or member first.
-                    </p>
-                  ) : (
-                    <div className="flex gap-3">
-                      <Select
-                        value={newOwnerId}
-                        onValueChange={setNewOwnerId}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Select new owner" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {eligibleOwners.map((member) => (
-                            <SelectItem key={member.user_id} value={member.user_id}>
-                              {member.email} ({member.role})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowTransferDialog(true)}
-                        disabled={!newOwnerId}
-                        className="border-amber-500/30 text-amber-600 hover:bg-amber-500/10"
-                      >
-                        <UserCog className="h-4 w-4 mr-2" />
-                        Transfer
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
             {/* Delete Team - Owner only */}
             {isOwner && (
@@ -418,7 +302,7 @@ export default function TeamSettings() {
                 <CardContent className="pt-6">
                   <p className="text-sm text-muted-foreground text-center">
                     You are a <span className="font-medium">{userRole}</span> of this team. 
-                    Only the team owner can transfer ownership or delete the team.
+                    Only the team owner can delete the team.
                   </p>
                 </CardContent>
               </Card>
@@ -428,34 +312,6 @@ export default function TeamSettings() {
       </main>
       <Footer />
 
-      {/* Transfer Ownership Confirmation */}
-      <AlertDialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Transfer Team Ownership?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You are about to transfer ownership of <strong>{currentTeam.name}</strong>. 
-              After this action, you will become an admin and the new owner will have full control, 
-              including the ability to remove you from the team.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isTransferring}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleTransferOwnership}
-              disabled={isTransferring}
-              className="bg-amber-600 hover:bg-amber-700"
-            >
-              {isTransferring ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Crown className="h-4 w-4 mr-2" />
-              )}
-              Transfer Ownership
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Team Confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

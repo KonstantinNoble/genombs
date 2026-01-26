@@ -19,9 +19,13 @@ export default function TeamInvite() {
   const { user } = useAuth();
   const { switchTeam, refreshTeams } = useTeam();
   const [session, setSession] = useState<Session | null>(null);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setSessionLoaded(true);
+    });
   }, []);
 
   const [state, setState] = useState<InviteState>("loading");
@@ -31,6 +35,9 @@ export default function TeamInvite() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
+    // Wait for session to be loaded before processing
+    if (!sessionLoaded) return;
+
     if (!token) {
       setState("error");
       setErrorMessage("Invalid invitation link");
@@ -38,7 +45,7 @@ export default function TeamInvite() {
     }
 
     acceptInvitation();
-  }, [token, session]);
+  }, [token, sessionLoaded, session]);
 
   const acceptInvitation = async () => {
     if (!token) return;

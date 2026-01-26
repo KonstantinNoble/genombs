@@ -12,7 +12,7 @@ import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useTeam } from "@/contexts/TeamContext";
-import { Building2, AlertTriangle } from "lucide-react";
+import { Building2, AlertTriangle, Users, ArrowRight, Crown, Shield, Eye, Settings } from "lucide-react";
 
 interface OwnedTeam {
   id: string;
@@ -240,6 +240,56 @@ const Profile = () => {
                       >
                         Upgrade to Premium
                       </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* My Teams Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>My Teams</Label>
+                  <Link 
+                    to="/teams" 
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    View all
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+                <div className="p-3 bg-muted rounded-md border border-border space-y-2">
+                  {teams.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      {credits?.is_premium 
+                        ? "You're not part of any teams yet."
+                        : "Upgrade to Premium to create and join teams."
+                      }
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {teams.slice(0, 3).map(team => (
+                        <div key={team.id} className="flex items-center justify-between p-2 rounded-lg bg-background border">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">{team.name}</span>
+                            <span className="text-xs text-muted-foreground capitalize">({team.role})</span>
+                          </div>
+                          {(team.role === "owner" || team.role === "admin") && (
+                            <Link 
+                              to="/team/members" 
+                              className="text-xs text-primary hover:underline flex items-center gap-1"
+                            >
+                              <Settings className="h-3 w-3" />
+                              Manage
+                            </Link>
+                          )}
+                        </div>
+                      ))}
+                      {teams.length > 3 && (
+                        <p className="text-xs text-muted-foreground text-center pt-1">
+                          +{teams.length - 3} more teams
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

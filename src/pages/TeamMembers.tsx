@@ -92,10 +92,6 @@ export default function TeamMembers() {
   const { toast } = useToast();
   const [session, setSession] = useState<Session | null>(null);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-  }, []);
-
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
   const [userRole, setUserRole] = useState<TeamRole | null>(null);
@@ -117,22 +113,31 @@ export default function TeamMembers() {
   const isMemberLimitReached = members.length + invitations.length >= TEAM_LIMITS.MAX_MEMBERS_PER_TEAM;
 
   useEffect(() => {
-    if (!currentTeam) {
-      navigate("/validate");
-      return;
-    }
-    fetchMembers();
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      
+      if (!currentTeam) {
+        navigate("/teams");
+        return;
+      }
+      
+      if (data.session && currentTeam) {
+        fetchMembersWithSession(data.session);
+      }
+    };
+    init();
   }, [currentTeam]);
 
-  const fetchMembers = async () => {
-    if (!currentTeam || !session) return;
+  const fetchMembersWithSession = async (sess: Session) => {
+    if (!currentTeam) return;
 
     setIsLoading(true);
     try {
       const response = await supabase.functions.invoke("team-management", {
         body: { action: "members", teamId: currentTeam.id },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${sess.access_token}`,
         },
       });
 
@@ -152,6 +157,11 @@ export default function TeamMembers() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchMembers = async () => {
+    if (!session) return;
+    fetchMembersWithSession(session);
   };
 
   const handleInvite = async (e: React.FormEvent) => {

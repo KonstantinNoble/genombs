@@ -57,22 +57,13 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
         
         {/* Header Row */}
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 border border-primary/20 group-hover:bg-primary/15 group-hover:border-primary/30 transition-all duration-300">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <path d="M12 17h.01" />
-              </svg>
-            </div>
-            <div>
-              <Label htmlFor="prompt" className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
-                Your Decision
-              </Label>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                What strategic question needs validation?
-              </p>
-            </div>
+          <div>
+            <Label htmlFor="prompt" className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
+              Your Decision
+            </Label>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              What strategic question needs validation?
+            </p>
           </div>
           <div className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold tabular-nums transition-all duration-300",

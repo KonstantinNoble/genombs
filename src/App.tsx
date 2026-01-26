@@ -23,6 +23,7 @@ import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import TeamMembers from "./pages/TeamMembers";
 import TeamInvite from "./pages/TeamInvite";
+import TeamSettings from "./pages/TeamSettings";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/update-password" element={<UpdatePassword />} />
                 <Route path="/team/members" element={<TeamMembers />} />
+                <Route path="/team/settings" element={<TeamSettings />} />
                 <Route path="/team/invite/:token" element={<TeamInvite />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

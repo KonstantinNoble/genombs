@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Check, ChevronDown, Building2, User, Plus, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Check, ChevronDown, Building2, User, Plus, Loader2, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CreateTeamDialog } from "./CreateTeamDialog";
 
 export function TeamSwitcher() {
+  const navigate = useNavigate();
   const { currentTeam, teams, switchTeam, isLoading } = useTeam();
   const { isPremium } = useAuth();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -27,6 +29,13 @@ export function TeamSwitcher() {
       </Button>
     );
   }
+
+  const handleManageTeam = (e: React.MouseEvent, teamId: string) => {
+    e.stopPropagation();
+    switchTeam(teamId);
+    setOpen(false);
+    navigate("/team/members");
+  };
 
   return (
     <>
@@ -54,7 +63,7 @@ export function TeamSwitcher() {
             <ChevronDown className="h-3 w-3 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-[220px]">
+        <DropdownMenuContent align="start" className="w-[260px]">
           {/* Personal Workspace */}
           <DropdownMenuItem
             onClick={() => {
@@ -76,25 +85,34 @@ export function TeamSwitcher() {
                 Teams
               </div>
               {teams.map((team) => (
-                <DropdownMenuItem
-                  key={team.id}
-                  onClick={() => {
-                    switchTeam(team.id);
-                    setOpen(false);
-                  }}
-                  className="gap-2"
-                >
-                  <Building2 className="h-4 w-4 text-primary" />
-                  <div className="flex-1 min-w-0">
-                    <span className="truncate block">{team.name}</span>
-                    <span className="text-[10px] text-muted-foreground capitalize">
-                      {team.role}
-                    </span>
-                  </div>
-                  {currentTeam?.id === team.id && (
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                  )}
-                </DropdownMenuItem>
+                <div key={team.id} className="relative">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      switchTeam(team.id);
+                      setOpen(false);
+                    }}
+                    className="gap-2 pr-20"
+                  >
+                    <Building2 className="h-4 w-4 text-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <span className="truncate block">{team.name}</span>
+                      <span className="text-[10px] text-muted-foreground capitalize">
+                        {team.role}
+                      </span>
+                    </div>
+                    {currentTeam?.id === team.id && (
+                      <Check className="h-4 w-4 text-primary shrink-0" />
+                    )}
+                  </DropdownMenuItem>
+                  {/* Manage button overlay */}
+                  <button
+                    onClick={(e) => handleManageTeam(e, team.id)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <Settings className="h-3 w-3" />
+                    <span>Manage</span>
+                  </button>
+                </div>
               ))}
             </>
           )}

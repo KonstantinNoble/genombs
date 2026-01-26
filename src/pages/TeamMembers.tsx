@@ -11,7 +11,9 @@ import {
   Loader2,
   Clock,
   X,
-  ChevronLeft
+  ChevronLeft,
+  Settings,
+  Info
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -334,12 +336,66 @@ export default function TeamMembers() {
         </Button>
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold">{currentTeam.name}</h1>
-          <p className="text-muted-foreground">
-            Manage team members and invitations
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{currentTeam.name}</h1>
+            <p className="text-muted-foreground">
+              Manage team members and invitations
+            </p>
+          </div>
+          {(userRole === "owner" || userRole === "admin") && (
+            <Button
+              variant="outline"
+              onClick={() => navigate("/team/settings")}
+              className="gap-2 shrink-0"
+            >
+              <Settings className="h-4 w-4" />
+              Team Settings
+            </Button>
+          )}
         </div>
+
+        {/* Role Descriptions */}
+        <Card className="mb-6 bg-muted/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              Role Permissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div className="flex items-start gap-2">
+                <Crown className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Owner</p>
+                  <p className="text-muted-foreground">Full control, delete team, transfer ownership</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Admin</p>
+                  <p className="text-muted-foreground">Invite members, change roles, manage settings</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Users className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Member</p>
+                  <p className="text-muted-foreground">Create & view team analyses and experiments</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Eye className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Viewer</p>
+                  <p className="text-muted-foreground">View-only access to team analyses</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Invite Form (Admin/Owner only) */}
         {isAdmin && (

@@ -248,7 +248,9 @@ export default function ValidationPlatform() {
     setDisplayedResult(null);
     
     try {
-      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights);
+      // Pass team_id if in team mode
+      const teamId = isInTeamMode && currentTeam ? currentTeam.id : undefined;
+      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights, teamId);
     } catch (error) {
       // Error already handled in onError callback
     }
@@ -493,6 +495,35 @@ export default function ValidationPlatform() {
           </aside>
 
           <main className="flex-1 space-y-4 sm:space-y-6 order-1 lg:order-2">
+            {/* Team Mode Banner */}
+            {isInTeamMode && currentTeam && (
+              <div className="flex items-center justify-between gap-3 p-3 sm:p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Building2 className="h-5 w-5 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm sm:text-base truncate">
+                      Team: {currentTeam.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Analyses saved here are visible to all team members
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const teamContext = require("@/contexts/TeamContext");
+                    // switchTeam is from useTeam, but we need to access it properly
+                  }}
+                  className="shrink-0 text-xs"
+                  asChild
+                >
+                  <Link to="/team/members">Manage Team</Link>
+                </Button>
+              </div>
+            )}
+
             {/* Header Section - Optimized for mobile */}
             <div className="text-center space-y-3 sm:space-y-4">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary/10 border border-primary/20">
@@ -501,8 +532,14 @@ export default function ValidationPlatform() {
               </div>
               <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Multi-AI Validator</h1>
               <p className="text-sm sm:text-lg text-muted-foreground px-2">Get consensus from 3 AI models of your choice</p>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-3">
                 <span className="text-sm sm:text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
+                {isInTeamMode && (
+                  <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                    <Building2 className="h-3 w-3 mr-1" />
+                    Team Mode
+                  </Badge>
+                )}
               </div>
             </div>
 

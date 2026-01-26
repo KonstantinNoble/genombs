@@ -403,7 +403,7 @@ export default function TeamMembers() {
                 <Crown className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Owner</p>
-                  <p className="text-muted-foreground">Full control, manage & delete workspace</p>
+                  <p className="text-muted-foreground">Full control, manage & delete team</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -417,14 +417,14 @@ export default function TeamMembers() {
                 <Users className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Member</p>
-                  <p className="text-muted-foreground">Create & view team analyses and experiments</p>
+                  <p className="text-muted-foreground">Create & view Decision Records and experiments</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <Eye className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Viewer</p>
-                  <p className="text-muted-foreground">View-only access to team analyses</p>
+                  <p className="text-muted-foreground">View-only access to Decision Records</p>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 24, 2026 | Version 5.4</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 26, 2026 | Version 5.5</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -785,6 +785,91 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
+          {/* Section 5.8: Team Workspaces */}
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.8 Team Workspaces (Premium)</h3>
+            <p className="text-muted-foreground mb-4">
+              Premium subscribers can create and manage team workspaces to collaborate with other users. 
+              This feature allows sharing validation analyses, experiments, and decision records within a team context.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Team metadata:</strong> Team name, unique slug (URL identifier), creation timestamp</li>
+              <li><strong>Team membership:</strong> User IDs, assigned roles (Owner, Member, Viewer), join timestamps</li>
+              <li><strong>Team invitations:</strong> Invited email address, invitation token (UUID), expiry date (7 days), inviting user ID</li>
+              <li><strong>Shared resources:</strong> Validation analyses, experiments, and decision records associated with the team</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Visibility Within Teams</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important:</strong> When you join a team or invite others, the following data becomes visible to all team members:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Email addresses:</strong> All team members can see each other's email addresses</li>
+              <li><strong>Shared content:</strong> All validation analyses, experiments, and decision records created within the team context are visible to all team members</li>
+              <li><strong>Role information:</strong> Your role within the team (Owner, Member, or Viewer) is visible to other members</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Team Invitation Emails</h4>
+            <p className="text-muted-foreground mb-4">
+              When you are invited to a team, you receive an invitation email via Resend containing:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Team name and inviting user's email</li>
+              <li>Secure invitation link (valid for 7 days)</li>
+              <li>Your assigned role in the team</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Invitation emails are sent from <strong>noreply@wealthconomy.com</strong>.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Rate Limiting and Security</h4>
+            <p className="text-muted-foreground mb-4">
+              To prevent abuse of the invitation system, the following rate limits apply:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>10 invitations per team per day</strong></li>
+              <li><strong>3 pending invitations per email address</strong> across all teams</li>
+              <li>Invitation tokens expire after 7 days and are automatically cleaned up</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Rate limit tracking data (invitation timestamps, email hashes) is retained for 24 hours for security purposes.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Team Limits</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Maximum <strong>5 teams</strong> per user (as owner)</li>
+              <li>Maximum <strong>5 members</strong> per team</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Team Deletion and Data Handling</h4>
+            <p className="text-muted-foreground mb-4">
+              When a team is deleted by its owner:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>All team memberships are permanently deleted (CASCADE)</li>
+              <li>All pending invitations are permanently deleted (CASCADE)</li>
+              <li>Shared validation analyses, experiments, and decision records remain but lose their team association</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Note:</strong> Team owners must delete all their owned teams before deleting their personal account 
+              (see Section 4.5). This ensures proper data handling and prevents orphaned teams.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
+                (providing the team collaboration feature as part of Premium service)
+              </li>
+              <li>
+                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in rate limiting to prevent 
+                invitation system abuse and ensure platform security
+              </li>
+            </ul>
+          </section>
+
           {/* Section 6: Premium Subscription */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Premium Subscription and Payment Processing</h2>
@@ -859,6 +944,7 @@ const PrivacyPolicy = () => {
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Account confirmation emails</li>
               <li>Password reset emails</li>
+              <li>Team invitation emails (Premium)</li>
               <li>Important account notifications</li>
             </ul>
             <p className="text-muted-foreground mb-4">
@@ -1012,6 +1098,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>Decision Records</strong> (Premium)</td>
                     <td className="border border-border p-3">Ownership confirmations, decision context, export metadata, audit logs</td>
                     <td className="border border-border p-3">Legal documentation and decision accountability</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Team Data</strong> (Premium)</td>
+                    <td className="border border-border p-3">Team names, slugs, memberships, roles, invitation tokens, invited emails</td>
+                    <td className="border border-border p-3">Team collaboration and workspace management</td>
                   </tr>
                 </tbody>
               </table>
@@ -1215,6 +1306,21 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Until account deletion</td>
                     <td className="border border-border p-3">CASCADE when parent decision record is deleted</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3">Team membership (Premium)</td>
+                    <td className="border border-border p-3">Until team exit or team deletion</td>
+                    <td className="border border-border p-3">User leaves team, team deleted, or account deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Team invitation tokens (Premium)</td>
+                    <td className="border border-border p-3">7 days</td>
+                    <td className="border border-border p-3">Automatic expiry and cleanup</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Invitation rate-limit tracking</td>
+                    <td className="border border-border p-3">24 hours</td>
+                    <td className="border border-border p-3">Automatic cleanup</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1334,6 +1440,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.5 (January 26, 2026):</strong> Added Team Workspaces section (5.8) documenting Premium team collaboration features including: team creation, membership roles, invitation system, email visibility between members, rate limiting, and data retention. Updated Section 7.1 to include team invitation emails. Expanded data categories and retention tables with team-related data.</li>
               <li><strong>Version 5.4 (January 24, 2026):</strong> Added model weights to data stored list. Added Dashboard Statistics section (5.7). Corrected Gemini model name to "Gemini 3 Flash".</li>
               <li><strong>Version 5.3 (January 23, 2026):</strong> Added Decision Audit Records section (5.6) documenting Premium decision ownership confirmation feature, audit logging, and client-side PDF generation. Updated data categories and retention tables.</li>
               <li><strong>Version 5.2 (January 21, 2026):</strong> Corrected Berlin Data Protection Authority address (Alt-Moabit 59-61). Updated Recipients table: removed OpenRouter, added Lovable AI Gateway, Anthropic, and Perplexity AI. Updated AI model names in data categories.</li>
@@ -1345,7 +1452,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: January 24, 2026
+              Last updated: January 26, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

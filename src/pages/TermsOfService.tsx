@@ -14,7 +14,7 @@ const TermsOfService = () => {
 
         <div className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 23, 2026 | Version 3.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 26, 2026 | Version 3.1</p>
 
           <div className="space-y-8">
             <section>
@@ -215,6 +215,58 @@ const TermsOfService = () => {
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
                 Decision Records and their associated audit logs are permanently deleted upon account termination (see Section VII).
+              </p>
+
+              <h3 className="text-xl font-semibold mt-6 mb-3">III.D Team Workspaces (Premium Feature)</h3>
+              <p className="mb-4">
+                Premium subscribers can create team workspaces to collaborate with other users:
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>Create up to <strong>5 teams</strong> per Premium account</li>
+                <li>Invite up to <strong>5 members</strong> per team</li>
+                <li>Share validation analyses, experiments, and decision records within the team</li>
+                <li>Assign roles: <strong>Owner</strong> (full control), <strong>Member</strong> (create and view), <strong>Viewer</strong> (view only)</li>
+              </ul>
+
+              <p className="mb-4">
+                <strong>Team Roles and Permissions:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li><strong>Owner:</strong> Full control including team deletion, member management, and role assignment</li>
+                <li><strong>Member:</strong> Can create validation analyses, experiments, and decision records</li>
+                <li><strong>Viewer:</strong> View-only access to shared team resources (cannot create content)</li>
+              </ul>
+
+              <p className="mb-4">
+                <strong>Owner Responsibilities:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>The team owner is responsible for managing team membership and content</li>
+                <li>Owners must delete all owned teams before deleting their personal account</li>
+                <li>Only Premium users can create teams; if Premium expires, existing teams remain but no new teams can be created</li>
+              </ul>
+
+              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
+                <p className="font-bold mb-2">⚠️ IMPORTANT: Data Visibility in Teams</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>All team members can see each other's <strong>email addresses</strong></li>
+                  <li>All shared validation analyses, experiments, and decision records are visible to <strong>all team members</strong></li>
+                  <li>By joining a team, you consent to this data visibility</li>
+                </ul>
+              </div>
+
+              <p className="mb-4">
+                <strong>Prohibited Activities:</strong>
+              </p>
+              <ul className="list-disc pl-6 mb-4 space-y-1">
+                <li>Spamming invitations or abusing the invitation system</li>
+                <li>Circumventing rate limits (10 invitations/team/day, 3 pending invitations/email)</li>
+                <li>Creating teams for purposes that violate these Terms</li>
+              </ul>
+
+              <p className="mb-4 text-sm text-muted-foreground">
+                Team invitations expire after 7 days. For details on data processing, see our{" "}
+                <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link> Section 5.8.
               </p>
             </section>
             {/* Section IV - Pricing */}
@@ -745,9 +797,9 @@ const TermsOfService = () => {
             </section>
             <div className="text-center mt-12 pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground">
-                Last updated: January 23, 2026
+                Last updated: January 26, 2026
                 <br />
-                Version 3.0
+                Version 3.1
               </p>
             </div>
           </div>

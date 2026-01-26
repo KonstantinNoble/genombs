@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        // Get returnTo from URL query params (passed from Auth.tsx)
+        const returnTo = searchParams.get("returnTo");
+
         // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -90,12 +94,11 @@ const AuthCallback = () => {
           }
         }
 
-        // Check for pending team invitation stored in localStorage
-        const pendingInviteToken = localStorage.getItem('pending_team_invite');
-        if (pendingInviteToken) {
-          localStorage.removeItem('pending_team_invite');
-          toast.success("Successfully signed in! Processing your team invitation...");
-          navigate(`/team/invite/${pendingInviteToken}`);
+        // Priority 1: Check for returnTo URL parameter (team invitations, etc.)
+        if (returnTo) {
+          console.log("[AuthCallback] Redirecting to returnTo:", returnTo);
+          toast.success("Successfully signed in!");
+          navigate(returnTo);
           return;
         }
 
@@ -132,7 +135,7 @@ const AuthCallback = () => {
     };
 
     handleCallback();
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">

@@ -51,9 +51,9 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Main Question Input - Enhanced Aesthetic */}
-      <div className="group relative space-y-3 sm:space-y-4 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-card via-background to-muted/30 border border-border/60 shadow-lg transition-all duration-500 hover:shadow-xl hover:border-primary/30">
-        {/* Decorative Glow Effect */}
-        <div className="absolute -inset-[1px] rounded-2xl sm:rounded-3xl bg-gradient-to-r from-primary/20 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-sm" />
+      <div className="group relative space-y-3 sm:space-y-4 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-card via-background to-muted/30 border border-primary/30 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.25)] transition-all duration-500 hover:shadow-[0_0_40px_-5px_hsl(var(--primary)/0.35)] hover:border-primary/50">
+        {/* Permanent Decorative Glow Effect */}
+        <div className="absolute -inset-[1px] rounded-2xl sm:rounded-3xl bg-gradient-to-r from-primary/15 via-primary/5 to-primary/15 -z-10 blur-sm animate-pulse" />
         
         {/* Header Row */}
         <div className="flex items-center justify-between gap-3">

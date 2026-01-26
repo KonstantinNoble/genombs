@@ -7,6 +7,7 @@ import { DissentSection } from "./DissentSection";
 import { ModelDetailCards } from "./ModelDetailCards";
 import { PDFExportButton } from "./PDFExportButton";
 import { DecisionConfirmation } from "./DecisionConfirmation";
+import { TeammatePremiumNotice } from "./TeammatePremiumNotice";
 
 import type { ValidationResult } from "@/hooks/useMultiAIValidation";
 import { Separator } from "@/components/ui/separator";
@@ -21,9 +22,11 @@ interface ValidationOutputProps {
   validationId?: string;
   prompt?: string;
   onStartExperiment?: () => void;
+  viewerIsPremium?: boolean;
+  isTeamAnalysis?: boolean;
 }
 
-export function ValidationOutput({ result, validationId, prompt = '', onStartExperiment }: ValidationOutputProps) {
+export function ValidationOutput({ result, validationId, prompt = '', onStartExperiment, viewerIsPremium = false, isTeamAnalysis = false }: ValidationOutputProps) {
   const [actionsExpanded, setActionsExpanded] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [decisionRecordId, setDecisionRecordId] = useState<string | undefined>();
@@ -48,6 +51,9 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
 
   const hasTopActions = finalRecommendation.topActions && finalRecommendation.topActions.length > 0;
   const hasPremiumInsights = isPremium && (strategicAlternatives || longTermOutlook || competitorInsights);
+  
+  // Show notice when premium viewer looks at free user's team analysis
+  const showTeammatePremiumNotice = viewerIsPremium && !isPremium && isTeamAnalysis;
 
   // Build model summary string
   const modelSummary = selectedModels
@@ -101,8 +107,15 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
           isConfirmed={isConfirmed}
           confirmedAt={confirmedAt}
           onRequireConfirmation={scrollToConfirmation}
+          viewerIsPremium={viewerIsPremium}
+          isTeamAnalysis={isTeamAnalysis}
         />
       </div>
+
+      {/* Team Premium Notice - shown when premium viewer looks at free user's analysis */}
+      {showTeammatePremiumNotice && (
+        <TeammatePremiumNotice />
+      )}
 
       {/* Main Recommendation */}
       <ConfidenceHeader
@@ -279,7 +292,8 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
       />
 
       {/* Decision Confirmation - Required for PDF Export */}
-      {isPremium && validationId && (
+      {/* Only show if analysis is premium AND not a team analysis from a free user */}
+      {isPremium && validationId && !showTeammatePremiumNotice && (
         <div ref={confirmationRef}>
           <Separator className="my-6" />
           <DecisionConfirmation

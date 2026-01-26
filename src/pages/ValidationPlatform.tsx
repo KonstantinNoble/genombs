@@ -68,6 +68,7 @@ export default function ValidationPlatform() {
   
   const [displayedResult, setDisplayedResult] = useState<ValidationResult | null>(null);
   const [currentValidationId, setCurrentValidationId] = useState<string | null>(null);
+  const [isCurrentAnalysisFromTeam, setIsCurrentAnalysisFromTeam] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   
   const [validationCount, setValidationCount] = useState(0);
@@ -257,6 +258,9 @@ export default function ValidationPlatform() {
   };
 
   const handleHistoryClick = (item: HistoryItem) => {
+    // Track if this analysis is from a team (for premium notice logic)
+    setIsCurrentAnalysisFromTeam(!!item.team_id);
+    
     // Check for new dynamic storage format first
     if (item.model_responses && item.selected_models && item.selected_models.length > 0) {
       // New format: use dynamic columns
@@ -276,8 +280,8 @@ export default function ValidationPlatform() {
         overallConfidence: item.overall_confidence || 50,
         synthesisReasoning: '',
         processingTimeMs: item.processing_time_ms || 0,
-        // Use stored premium status or current user's status as fallback
-        isPremium: item.is_premium ?? isPremium,
+        // Use stored premium status (what the creator had when creating)
+        isPremium: item.is_premium ?? false,
         // Reconstruct premium fields from DB
         strategicAlternatives: item.strategic_alternatives,
         longTermOutlook: item.long_term_outlook,
@@ -605,6 +609,8 @@ export default function ValidationPlatform() {
                       validationId={currentValidationId || undefined}
                       prompt={prompt}
                       onStartExperiment={handleStartExperiment}
+                      viewerIsPremium={isPremium}
+                      isTeamAnalysis={isCurrentAnalysisFromTeam}
                     />
                   </CardContent>
                 </Card>

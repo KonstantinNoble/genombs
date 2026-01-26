@@ -1,227 +1,261 @@
 
-# Team-Feature Überarbeitung: Vollständige Implementierung
+# Team-Feature: Limits & Credit-Verifizierung
 
-## Status-Analyse: Was ist bereits vorhanden?
+## Zusammenfassung der Änderungen
 
-### ✅ Bereits implementiert:
+### 1. Neue Limits einführen:
+| Limit | Wert | Beschreibung |
+|-------|------|--------------|
+| **Max Mitglieder pro Team** | **5** | Inklusive Owner (statt 10) |
+| **Max Teams pro User** | 5 | Als Owner |
+| **Max Einladungen pro Team/Tag** | 10 | Bereits vorhanden |
+| **Max ausstehende Einladungen pro E-Mail** | 3 | Bereits vorhanden |
 
-| Komponente | Status | Beschreibung |
-|------------|--------|--------------|
-| Datenbank-Tabellen | ✅ | `teams`, `team_members`, `team_invitations` mit RLS-Policies |
-| Edge Function | ✅ | `team-management` mit allen Aktionen (create, invite, accept, remove, update-role, transfer-ownership, delete, list) |
-| TeamContext | ✅ | Kontextprovider für Team-State |
-| TeamSwitcher | ✅ | Dropdown in Navbar zum Wechseln zwischen Personal/Team |
-| CreateTeamDialog | ✅ | Dialog zur Team-Erstellung (nur Premium) |
-| TeamMembers-Seite | ✅ | `/team/members` mit Einladungs-Formular und Mitgliederliste |
-| TeamInvite-Seite | ✅ | `/team/invite/:token` zum Annehmen von Einladungen |
-| E-Mail-Einladungen | ✅ | Via Resend mit Rate-Limiting (10/Team/Tag, 3/E-Mail global) |
-| Account-Löschung-Check | ✅ | Ownership-Transfer erforderlich vor Löschung |
-| ValidationPlatform Integration | ✅ | Team-History laden wenn im Team-Modus |
-
----
-
-## 🚨 Identifizierte Probleme & Lücken
-
-### 1. **Zugang zur Team-Mitgliederverwaltung nicht sichtbar**
-- Der Link zu `/team/members` ist nur im TeamSwitcher sichtbar, wenn man bereits ein Team ausgewählt hat
-- **Problem:** Neue Premium-User wissen nicht, wo sie ihr Team verwalten können
-- **Lösung:** Direkten Link im TeamSwitcher-Dropdown hinzufügen für jedes Team
-
-### 2. **Fehlende Team-Settings-Seite**
-- Es gibt keine dedizierte Seite für Team-Einstellungen
-- **Fehlende Features:**
-  - Ownership-Transfer UI
-  - Team löschen
-  - Team umbenennen
-- **Lösung:** Neue `/team/settings` Seite erstellen
-
-### 3. **Rollen nicht klar erklärt für User**
-- In `TeamMembers.tsx` werden Rollen als Badges angezeigt, aber es gibt keine Erklärung was jede Rolle bedeutet
-- **Lösung:** Tooltip oder Info-Section mit Rollen-Beschreibungen hinzufügen
-
-### 4. **Team-Modus nicht klar kommuniziert in der UI**
-- Wenn man im Team-Modus ist, sieht man die Team-History, aber es gibt keinen klaren visuellen Hinweis
-- **Lösung:** Banner/Indicator in ValidationPlatform zeigen wenn Team-Modus aktiv
-
-### 5. **Analysen werden nicht mit team_id gespeichert**
-- Die `multi-ai-query` Edge Function speichert keine `team_id` 
-- **Problem:** Neue Analysen im Team-Modus werden nicht dem Team zugeordnet
-- **Lösung:** `team_id` Parameter zur Validation-Funktion hinzufügen
-
-### 6. **Einladungs-Workflow nach Login unvollständig**
-- Token wird in `sessionStorage` gespeichert, aber nach Login nicht automatisch verarbeitet
-- **Lösung:** Auth-Callback prüft und verarbeitet pending invites
+### 2. Credits sind GLOBAL - Verifizierung:
+**Bestätigt korrekt implementiert:**
+- Credits werden in der `user_credits` Tabelle pro `user_id` gespeichert
+- Die `increment_validation_count` Funktion verwendet nur `user_id`, keine `team_id`
+- Egal ob Personal oder Team-Modus: Credits werden vom individuellen User abgezogen
+- Free User: 2 Validierungen/Tag, Premium: 10 Validierungen/Tag - unabhängig vom Workspace
 
 ---
 
-## Implementierungsplan
+## Phase 1: Backend-Limits im Edge Function
 
-### Phase 1: UI-Verbesserungen für TeamSwitcher
+**Datei: `supabase/functions/team-management/index.ts`**
 
-**Änderungen in `src/components/team/TeamSwitcher.tsx`:**
+### 1.1 Team-Limit (max. 5 Teams als Owner)
 
-1. Für jedes Team einen "Manage"-Link hinzufügen
-2. Klare visuelle Unterscheidung zwischen Personal und Team
+Im `case "create"` Block nach dem Premium-Check hinzufügen:
 
-```text
-┌──────────────────────────────┐
-│  👤 Personal Workspace    ✓  │
-├──────────────────────────────┤
-│  Teams                       │
-│  ┌────────────────────────┐  │
-│  │ 🏢 Acme Corp           │  │
-│  │    Member · Manage →   │  │
-│  └────────────────────────┘  │
-│  ┌────────────────────────┐  │
-│  │ 🏢 Startup Team     ✓  │  │
-│  │    Owner · Manage →    │  │
-│  └────────────────────────┘  │
-├──────────────────────────────┤
-│  ➕ Create Team              │
-└──────────────────────────────┘
-```
-
----
-
-### Phase 2: Neue Team-Settings-Seite
-
-**Neue Datei: `src/pages/TeamSettings.tsx`**
-
-Features:
-- Team umbenennen (nur Owner/Admin)
-- Ownership übertragen (nur Owner)
-- Team löschen (nur Owner, mit Bestätigung)
-- Link zurück zu Team-Members
-
-**Neue Route in App.tsx:**
 ```typescript
-<Route path="/team/settings" element={<TeamSettings />} />
+// Check team limit (max 5 teams as owner)
+const { count: ownedTeamsCount } = await supabase
+  .from("teams")
+  .select("*", { count: "exact", head: true })
+  .eq("owner_id", userId);
+
+if (ownedTeamsCount && ownedTeamsCount >= 5) {
+  return new Response(JSON.stringify({ error: "TEAM_LIMIT_REACHED" }), {
+    status: 403,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 ```
 
----
+### 1.2 Mitglieder-Limit (max. 5 Mitglieder pro Team)
 
-### Phase 3: Rollen-Dokumentation
+Im `case "invite"` Block nach den bestehenden Rate-Limit-Checks hinzufügen:
 
-**Erweiterung von `TeamMembers.tsx`:**
-
-Neue Info-Card mit Rollen-Übersicht:
-
-| Rolle | Beschreibung |
-|-------|--------------|
-| **Owner** | Vollzugriff, kann Team löschen und Ownership übertragen |
-| **Admin** | Kann Mitglieder einladen/entfernen, Rollen ändern |
-| **Member** | Kann Analysen im Team-Kontext speichern und sehen |
-| **Viewer** | Kann nur Team-Analysen ansehen, keine eigenen erstellen |
-
----
-
-### Phase 4: Team-Modus-Indicator in ValidationPlatform
-
-**Änderung in `src/pages/ValidationPlatform.tsx`:**
-
-Wenn `isInTeamMode === true`, zeige Banner:
-
-```text
-┌──────────────────────────────────────────────────┐
-│  🏢 Team: Acme Corp                              │
-│  Analyses saved here are visible to all members  │
-│  [Switch to Personal]                            │
-└──────────────────────────────────────────────────┘
-```
-
----
-
-### Phase 5: Analysen mit team_id speichern
-
-**Änderungen in `src/hooks/useMultiAIValidation.ts`:**
-
-1. `team_id` als optionalen Parameter akzeptieren
-2. An `multi-ai-query` Edge Function weiterleiten
-
-**Änderungen in `supabase/functions/multi-ai-query/index.ts`:**
-
-1. `team_id` aus Body lesen
-2. Beim INSERT in `validation_analyses` setzen:
 ```typescript
-await supabase.from('validation_analyses').insert({
-  // ... bestehende Felder
-  team_id: teamId || null,
-});
+// Check member limit (max 5 members including pending invites)
+const { count: currentMemberCount } = await supabase
+  .from("team_members")
+  .select("*", { count: "exact", head: true })
+  .eq("team_id", teamId);
+
+const { count: pendingInviteCount } = await supabase
+  .from("team_invitations")
+  .select("*", { count: "exact", head: true })
+  .eq("team_id", teamId)
+  .gt("expires_at", new Date().toISOString());
+
+const totalCount = (currentMemberCount || 0) + (pendingInviteCount || 0);
+
+if (totalCount >= 5) {
+  return new Response(JSON.stringify({ error: "MEMBER_LIMIT_REACHED" }), {
+    status: 403,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+```
+
+### 1.3 Member-Limit beim Annehmen prüfen
+
+Im `case "accept-invite"` Block vor dem INSERT hinzufügen:
+
+```typescript
+// Double-check member limit before accepting
+const { count: memberCount } = await supabase
+  .from("team_members")
+  .select("*", { count: "exact", head: true })
+  .eq("team_id", invitation.team_id);
+
+if (memberCount && memberCount >= 5) {
+  // Delete expired invitation and inform user
+  await supabase.from("team_invitations").delete().eq("id", invitation.id);
+  return new Response(JSON.stringify({ error: "TEAM_FULL" }), {
+    status: 403,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 ```
 
 ---
 
-### Phase 6: Einladungs-Workflow vervollständigen
+## Phase 2: Frontend-Feedback für Team-Limit
 
-**Änderung in `src/pages/AuthCallback.tsx`:**
+**Datei: `src/components/team/CreateTeamDialog.tsx`**
 
-Nach erfolgreichem Login prüfen:
+Im `catch` Block Fehlerbehandlung erweitern:
+
 ```typescript
-const pendingInvite = sessionStorage.getItem("pending_team_invite");
-if (pendingInvite) {
-  sessionStorage.removeItem("pending_team_invite");
-  navigate(`/team/invite/${pendingInvite}`);
+if (error.message === "TEAM_LIMIT_REACHED") {
+  toast({
+    title: "Team limit reached",
+    description: "You can create a maximum of 5 teams. Delete an existing team to create a new one.",
+    variant: "destructive",
+  });
+}
+```
+
+---
+
+## Phase 3: Frontend-Feedback für Team-Switcher
+
+**Datei: `src/components/team/TeamSwitcher.tsx`**
+
+1. Owned Teams zählen und "Create Team" Button bedingt deaktivieren:
+
+```typescript
+const ownedTeamsCount = teams.filter(t => t.role === "owner").length;
+const canCreateMoreTeams = ownedTeamsCount < 5;
+```
+
+2. Im JSX beim "Create Team" Button:
+
+```tsx
+{isPremium && (
+  <>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem
+      onClick={() => {
+        if (canCreateMoreTeams) {
+          setShowCreateDialog(true);
+          setOpen(false);
+        }
+      }}
+      disabled={!canCreateMoreTeams}
+      className={cn("gap-2", canCreateMoreTeams ? "text-primary" : "opacity-50")}
+    >
+      <Plus className="h-4 w-4" />
+      <span>Create Team</span>
+      {!canCreateMoreTeams && (
+        <span className="ml-auto text-xs text-muted-foreground">(5/5)</span>
+      )}
+    </DropdownMenuItem>
+  </>
+)}
+```
+
+---
+
+## Phase 4: Frontend-Feedback für Mitglieder-Limit
+
+**Datei: `src/pages/TeamMembers.tsx`**
+
+### 4.1 Limit-Status berechnen und anzeigen:
+
+```typescript
+const isMemberLimitReached = members.length + invitations.length >= 5;
+```
+
+### 4.2 Im Header des Invite-Formulars:
+
+```tsx
+<CardTitle className="flex items-center gap-2">
+  <UserPlus className="h-5 w-5" />
+  Invite Member
+  <span className="text-sm font-normal text-muted-foreground">
+    ({members.length}/5)
+  </span>
+</CardTitle>
+```
+
+### 4.3 Warnung wenn Limit erreicht:
+
+```tsx
+{isMemberLimitReached && (
+  <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm mb-4">
+    <AlertTriangle className="h-4 w-4 shrink-0" />
+    <span>Member limit reached (5 max). Remove a member or cancel an invitation to add more.</span>
+  </div>
+)}
+```
+
+### 4.4 Invite-Button deaktivieren:
+
+```tsx
+<Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached}>
+  ...
+</Button>
+```
+
+### 4.5 Fehlerbehandlung erweitern:
+
+```typescript
+if (response.data?.error === "MEMBER_LIMIT_REACHED") {
+  toast({
+    title: "Member limit reached",
+    description: "This team has reached the maximum of 5 members.",
+    variant: "destructive",
+  });
   return;
 }
 ```
 
 ---
 
-## Technische Details
+## Phase 5: TeamInvite-Seite - TEAM_FULL Fehler
 
-### Neue Dateien:
-- `src/pages/TeamSettings.tsx` - Team-Einstellungen (umbenennen, löschen, Transfer)
+**Datei: `src/pages/TeamInvite.tsx`**
 
-### Zu bearbeitende Dateien:
-- `src/components/team/TeamSwitcher.tsx` - "Manage"-Links hinzufügen
-- `src/pages/TeamMembers.tsx` - Rollen-Info-Section hinzufügen
-- `src/pages/ValidationPlatform.tsx` - Team-Modus-Banner + team_id beim Validieren senden
-- `src/hooks/useMultiAIValidation.ts` - team_id Parameter hinzufügen
-- `supabase/functions/multi-ai-query/index.ts` - team_id speichern
-- `src/pages/AuthCallback.tsx` - Pending invite nach Login verarbeiten
-- `src/App.tsx` - Neue Route `/team/settings`
+In der `acceptInvitation` Funktion:
 
-### Sicherheits-Aspekte (bereits vorhanden):
-- ✅ Rate-Limiting für Einladungen (10/Team/Tag, 3/E-Mail global)
-- ✅ Nur Premium-User können Teams erstellen
-- ✅ RLS-Policies für alle Team-Tabellen
-- ✅ Ownership-Transfer erforderlich vor Account-Löschung
-- ✅ E-Mail-Mismatch-Prüfung bei Einladungsannahme
-
-### E-Mail-Versand (Resend):
-- ✅ Bereits konfiguriert und funktional
-- Domain: `noreply@wealthconomy.com`
-- Template: Professionelles HTML-Design mit Einladungslink
+```typescript
+if (data.error === "TEAM_FULL") {
+  setState("error");
+  setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
+  return;
+}
+```
 
 ---
 
-## Zeitaufwand: ~3-4 Arbeitstage
+## Zusammenfassung der Dateien
 
-| Phase | Aufwand | Beschreibung |
-|-------|---------|--------------|
-| 1 | 0.5 Tage | TeamSwitcher UI-Verbesserungen |
-| 2 | 1 Tag | Team-Settings-Seite erstellen |
-| 3 | 0.5 Tage | Rollen-Dokumentation in UI |
-| 4 | 0.5 Tage | Team-Modus-Indicator |
-| 5 | 1 Tag | team_id in Analysen speichern |
-| 6 | 0.5 Tage | Einladungs-Workflow vervollständigen |
+| Datei | Änderungen |
+|-------|------------|
+| `supabase/functions/team-management/index.ts` | Team-Limit (5 Teams) + Member-Limit (5 Mitglieder) Checks |
+| `src/components/team/CreateTeamDialog.tsx` | TEAM_LIMIT_REACHED Fehlerbehandlung |
+| `src/components/team/TeamSwitcher.tsx` | Create Team Button deaktivieren bei 5/5 |
+| `src/pages/TeamMembers.tsx` | Member-Counter (x/5) + Limit-Warnung + Fehlerbehandlung |
+| `src/pages/TeamInvite.tsx` | TEAM_FULL Fehlerbehandlung |
 
 ---
 
-## Zusammenfassung
+## Technische Verifizierung: Credits sind GLOBAL
 
-Die Grundfunktionalität ist bereits **vollständig implementiert**:
-- Teams erstellen ✅
-- Mitglieder einladen (mit E-Mail) ✅
-- Einladungen annehmen ✅
-- Rollen verwalten ✅
-- Team wechseln ✅
-- Rate-Limiting ✅
+### Bestätigt korrekt:
 
-Was fehlt sind **UX-Verbesserungen und Vervollständigungen**:
-1. Bessere Navigation zu Team-Management
-2. Team-Settings-Seite (umbenennen, löschen, Transfer)
-3. Rollen-Erklärungen in der UI
-4. Visueller Hinweis wenn im Team-Modus
-5. Analysen werden dem Team zugeordnet
-6. Einladungen nach Login automatisch verarbeiten
+| Aspekt | Status | Nachweis |
+|--------|--------|----------|
+| Credits pro User, nicht pro Team | ✅ | `user_credits.user_id` ist der einzige Key |
+| Keine team_id in Credit-Logik | ✅ | `multi-ai-query` prüft nur `user_credits.user_id` |
+| `increment_validation_count` ohne Team | ✅ | Funktion verwendet nur `user_uuid` Parameter |
+| Team-Modus beeinflusst Credits nicht | ✅ | Validation zählt immer gegen den aufrufenden User |
+
+### Erklärung für User:
+> Deine Credits werden immer von deinem persönlichen Account abgezogen, egal ob du im Personal Workspace oder in einem Team arbeitest. Das Team beeinflusst nur, wo die Analyse gespeichert und wer sie sehen kann - nicht wie viele Validierungen du durchführen kannst.
+
+---
+
+## Limitübersicht (Final)
+
+| Limit | Free User | Premium User |
+|-------|-----------|--------------|
+| Validierungen/Tag | 2 | 10 |
+| Teams erstellen | ❌ | 5 Teams |
+| Mitglieder pro Team | - | 5 Mitglieder |
+| Einladungen pro Team/Tag | - | 10 |
+| Ausstehende Einladungen pro E-Mail | - | 3 |

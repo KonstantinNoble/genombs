@@ -403,7 +403,7 @@ export default function TeamMembers() {
                 <Crown className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Owner</p>
-                  <p className="text-muted-foreground">Full control, delete team, transfer ownership</p>
+                  <p className="text-muted-foreground">Full control, manage & delete workspace</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">

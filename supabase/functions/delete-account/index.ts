@@ -79,7 +79,7 @@ serve(async (req) => {
     if (!teamsError && ownedTeams && ownedTeams.length > 0) {
       console.log('User owns teams, cannot delete:', ownedTeams);
       return new Response(JSON.stringify({ 
-        error: "TRANSFER_OWNERSHIP_REQUIRED",
+        error: "DELETE_WORKSPACE_REQUIRED",
         teams: ownedTeams.map(t => ({ 
           id: (t.teams as any)?.id, 
           name: (t.teams as any)?.name 

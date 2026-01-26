@@ -289,6 +289,8 @@ export function ValidationOutput({ result, validationId, prompt = '', onStartExp
         selectedModels={selectedModels || []}
         isPremium={isPremium}
         citations={citations}
+        viewerIsPremium={viewerIsPremium}
+        isTeamAnalysis={isTeamAnalysis}
       />
 
       {/* Decision Confirmation - Required for PDF Export */}

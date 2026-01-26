@@ -59,6 +59,12 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
           description: "Only Premium subscribers can create teams.",
           variant: "destructive",
         });
+      } else if (error.message === "TEAM_LIMIT_REACHED") {
+        toast({
+          title: "Team limit reached",
+          description: "You can create a maximum of 5 teams. Delete an existing team to create a new one.",
+          variant: "destructive",
+        });
       } else {
         toast({
           title: "Failed to create team",

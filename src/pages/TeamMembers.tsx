@@ -13,8 +13,10 @@ import {
   X,
   ChevronLeft,
   Settings,
-  Info
+  Info,
+  AlertTriangle
 } from "lucide-react";
+import { TEAM_LIMITS } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeam, TeamRole } from "@/contexts/TeamContext";
@@ -108,6 +110,9 @@ export default function TeamMembers() {
 
   const isAdmin = userRole === "owner" || userRole === "admin";
   const isOwner = userRole === "owner";
+  
+  // Calculate member limit status
+  const isMemberLimitReached = members.length + invitations.length >= TEAM_LIMITS.MAX_MEMBERS_PER_TEAM;
 
   useEffect(() => {
     if (!currentTeam) {
@@ -187,6 +192,12 @@ export default function TeamMembers() {
           toast({
             title: "Email limit exceeded",
             description: "This email already has too many pending invitations.",
+            variant: "destructive",
+          });
+        } else if (response.data.error === "MEMBER_LIMIT_REACHED") {
+          toast({
+            title: "Member limit reached",
+            description: `This team has reached the maximum of ${TEAM_LIMITS.MAX_MEMBERS_PER_TEAM} members.`,
             variant: "destructive",
           });
         } else {
@@ -404,12 +415,21 @@ export default function TeamMembers() {
               <CardTitle className="flex items-center gap-2">
                 <UserPlus className="h-5 w-5" />
                 Invite Member
+                <span className="text-sm font-normal text-muted-foreground">
+                  ({members.length}/{TEAM_LIMITS.MAX_MEMBERS_PER_TEAM})
+                </span>
               </CardTitle>
               <CardDescription>
                 Send an invitation email to add a new team member. They'll need to create an account or log in to accept.
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {isMemberLimitReached && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm mb-4">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span>Member limit reached ({TEAM_LIMITS.MAX_MEMBERS_PER_TEAM} max). Remove a member or cancel an invitation to add more.</span>
+                </div>
+              )}
               <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
                 <div className="flex-1">
                   <Label htmlFor="email" className="sr-only">
@@ -438,7 +458,7 @@ export default function TeamMembers() {
                     <SelectItem value="viewer">Viewer</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button type="submit" disabled={isInviting || !inviteEmail}>
+                <Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached}>
                   {isInviting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (

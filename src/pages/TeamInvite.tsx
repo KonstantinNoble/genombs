@@ -70,6 +70,12 @@ export default function TeamInvite() {
         return;
       }
 
+      if (data.error === "TEAM_FULL") {
+        setState("error");
+        setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
+        return;
+      }
+
       if (data.error) {
         setState("error");
         setErrorMessage(data.error === "Invalid or expired invitation" 

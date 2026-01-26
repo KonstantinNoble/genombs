@@ -496,8 +496,9 @@ serve(async (req: Request) => {
         const { token } = body;
 
         if (!token) {
-          return new Response(JSON.stringify({ error: "Missing token" }), {
-            status: 400,
+          // Return 200 with structured error for consistent frontend handling
+          return new Response(JSON.stringify({ ok: false, error: "MISSING_TOKEN", message: "Missing invitation token" }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -505,24 +506,36 @@ serve(async (req: Request) => {
         // Find invitation
         const { data: invitation, error: inviteError } = await supabase
           .from("team_invitations")
-          .select("*, teams(name)")
+          .select("*, teams(name, id)")
           .eq("token", token)
           .gt("expires_at", new Date().toISOString())
           .single();
 
         if (inviteError || !invitation) {
-          return new Response(JSON.stringify({ error: "Invalid or expired invitation" }), {
-            status: 404,
+          console.log(`Invalid or expired invitation token: ${token.substring(0, 8)}...`);
+          // Return 200 with structured error
+          return new Response(JSON.stringify({ 
+            ok: false, 
+            error: "INVITE_INVALID", 
+            message: "This invitation has expired or is invalid. Please ask the team admin to send a new invitation." 
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
 
+        const teamName = invitation.teams?.name || "the team";
+        const teamId = invitation.team_id;
+
         // If user is not authenticated, return info for frontend
         if (!userId) {
+          console.log(`Accept-invite requires auth for token: ${token.substring(0, 8)}...`);
           return new Response(JSON.stringify({ 
+            ok: false,
             requiresAuth: true,
             email: invitation.email,
-            teamName: invitation.teams?.name,
+            teamName: teamName,
+            teamId: teamId,
           }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -534,11 +547,15 @@ serve(async (req: Request) => {
         
         // Verify email matches invitation
         if (user?.email?.toLowerCase() !== invitation.email.toLowerCase()) {
+          console.log(`Email mismatch: invited=${invitation.email}, user=${user?.email}`);
           return new Response(JSON.stringify({ 
+            ok: false,
             error: "EMAIL_MISMATCH",
             invitedEmail: invitation.email,
+            teamName: teamName,
+            teamId: teamId,
           }), {
-            status: 403,
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -553,7 +570,13 @@ serve(async (req: Request) => {
 
         if (existingMember) {
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
-          return new Response(JSON.stringify({ success: true, alreadyMember: true }), {
+          return new Response(JSON.stringify({ 
+            ok: true,
+            success: true, 
+            alreadyMember: true,
+            teamId: teamId,
+            teamName: teamName,
+          }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -569,8 +592,14 @@ serve(async (req: Request) => {
           // Delete invitation and inform user
           await supabase.from("team_invitations").delete().eq("id", invitation.id);
           console.log(`Team ${invitation.team_id} is full, cannot accept invite`);
-          return new Response(JSON.stringify({ error: "TEAM_FULL" }), {
-            status: 403,
+          return new Response(JSON.stringify({ 
+            ok: false, 
+            error: "TEAM_FULL",
+            message: "This team has reached its member limit of 5. Contact the team admin for more information.",
+            teamName: teamName,
+            teamId: teamId,
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -586,8 +615,12 @@ serve(async (req: Request) => {
 
         if (memberError) {
           console.error("Failed to add team member:", memberError);
-          return new Response(JSON.stringify({ error: "Failed to join team" }), {
-            status: 500,
+          return new Response(JSON.stringify({ 
+            ok: false, 
+            error: "JOIN_FAILED", 
+            message: "Failed to join team. Please try again." 
+          }), {
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -598,9 +631,10 @@ serve(async (req: Request) => {
         console.log(`User ${userId} joined team ${invitation.team_id}`);
 
         return new Response(JSON.stringify({ 
+          ok: true,
           success: true, 
-          teamId: invitation.team_id,
-          teamName: invitation.teams?.name,
+          teamId: teamId,
+          teamName: teamName,
         }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },

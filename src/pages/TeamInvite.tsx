@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, CheckCircle2, XCircle, Building2, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,7 +14,6 @@ type InviteState = "loading" | "requiresAuth" | "emailMismatch" | "success" | "e
 export default function TeamInvite() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
   const { switchTeam, refreshTeams } = useTeam();
 
@@ -43,21 +42,97 @@ export default function TeamInvite() {
     setState("loading");
 
     try {
-      // IMPORTANT: don't pass an empty `headers` object.
-      // Passing custom headers can override the default headers that are required
-      // to call backend functions (apikey + automatically attached auth when logged in).
+      // Get current session to explicitly pass auth token
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
+      // Build headers - explicitly include auth token if available
+      const headers: Record<string, string> = {};
+      if (accessToken) {
+        headers["Authorization"] = `Bearer ${accessToken}`;
+      }
+
+      console.log("[TeamInvite] Calling accept-invite, authenticated:", !!accessToken);
+
       const response = await supabase.functions.invoke("team-management", {
         body: { action: "accept-invite", token },
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
       });
 
       const data = response.data;
 
-      // Handle HTTP errors (4xx/5xx) - these come as response.error
+      console.log("[TeamInvite] Response:", { data, error: response.error?.message });
+
+      // Handle HTTP errors (4xx/5xx) - parse the error body for structured errors
       if (response.error) {
-        // Check if this is an auth-related error for unauthenticated users
+        // Try to extract structured error from the response
+        let errorBody: any = null;
+        
+        // Supabase FunctionsHttpError includes the response body in context
+        if (response.error.context && typeof response.error.context === "object") {
+          try {
+            // The context might be the Response object or already parsed
+            const ctx = response.error.context as any;
+            if (ctx.json) {
+              errorBody = await ctx.json();
+            } else if (ctx.error) {
+              errorBody = ctx;
+            }
+          } catch {
+            // Failed to parse context
+          }
+        }
+
+        // Also check if the error message itself contains JSON
+        if (!errorBody && response.error.message) {
+          try {
+            errorBody = JSON.parse(response.error.message);
+          } catch {
+            // Not JSON
+          }
+        }
+
+        console.log("[TeamInvite] Parsed error body:", errorBody);
+
+        // Handle structured errors
+        if (errorBody) {
+          if (errorBody.requiresAuth) {
+            setState("requiresAuth");
+            setTeamName(errorBody.teamName || "the team");
+            setInvitedEmail(errorBody.email || "");
+            return;
+          }
+
+          if (errorBody.error === "EMAIL_MISMATCH") {
+            setState("emailMismatch");
+            setInvitedEmail(errorBody.invitedEmail || "");
+            return;
+          }
+
+          if (errorBody.error === "TEAM_FULL") {
+            setState("error");
+            setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
+            return;
+          }
+
+          if (errorBody.error === "INVITE_INVALID" || errorBody.error === "Invalid or expired invitation") {
+            setState("error");
+            setErrorMessage("This invitation has expired or is invalid. Please ask the team admin to send a new invitation.");
+            return;
+          }
+
+          if (errorBody.error === "Missing authorization" || errorBody.error === "Invalid token") {
+            // User needs to log in
+            setState("requiresAuth");
+            setTeamName(errorBody.teamName || "the team");
+            setInvitedEmail(errorBody.email || "");
+            return;
+          }
+        }
+
+        // Fallback: Check error message for auth-related keywords
         const errorMsg = response.error.message?.toLowerCase() || "";
         if (!user && (errorMsg.includes("authorization") || errorMsg.includes("token") || errorMsg.includes("401") || errorMsg.includes("unauthorized"))) {
-          // Likely the user needs to log in - show requiresAuth state
           setState("requiresAuth");
           setTeamName("the team");
           setInvitedEmail("");
@@ -65,68 +140,110 @@ export default function TeamInvite() {
         }
         
         setState("error");
-        setErrorMessage(response.error.message || "Failed to process invitation");
+        setErrorMessage(errorBody?.message || response.error.message || "Failed to process invitation");
         return;
       }
 
-      if (data.error === "EMAIL_MISMATCH") {
+      // Handle success responses with ok: false (structured business errors)
+      if (data && data.ok === false) {
+        if (data.requiresAuth) {
+          setState("requiresAuth");
+          setTeamName(data.teamName || "the team");
+          setInvitedEmail(data.email || "");
+          return;
+        }
+
+        if (data.error === "EMAIL_MISMATCH") {
+          setState("emailMismatch");
+          setInvitedEmail(data.invitedEmail || "");
+          return;
+        }
+
+        if (data.error === "TEAM_FULL") {
+          setState("error");
+          setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
+          return;
+        }
+
+        if (data.error === "INVITE_INVALID") {
+          setState("error");
+          setErrorMessage("This invitation has expired or is invalid. Please ask the team admin to send a new invitation.");
+          return;
+        }
+
+        setState("error");
+        setErrorMessage(data.message || data.error || "Failed to process invitation");
+        return;
+      }
+
+      // Handle legacy error format (for backward compatibility during transition)
+      if (data?.error === "EMAIL_MISMATCH") {
         setState("emailMismatch");
         setInvitedEmail(data.invitedEmail);
         return;
       }
 
-      if (data.error === "TEAM_FULL") {
+      if (data?.error === "TEAM_FULL") {
         setState("error");
         setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
         return;
       }
 
-      if (data.error === "Invalid or expired invitation") {
+      if (data?.error === "Invalid or expired invitation") {
         setState("error");
         setErrorMessage("This invitation has expired or is invalid. Please ask the team admin to send a new invitation.");
         return;
       }
 
-      if (data.error) {
+      if (data?.error) {
         setState("error");
         setErrorMessage(data.message || data.error);
         return;
       }
 
-      if (data.requiresAuth) {
+      if (data?.requiresAuth) {
         setState("requiresAuth");
         setTeamName(data.teamName || "the team");
         setInvitedEmail(data.email || "");
         return;
       }
 
-      if (data.alreadyMember) {
+      if (data?.alreadyMember) {
         setState("alreadyMember");
-        setTeamId(data.teamId);
-        setTeamName(data.teamName);
+        setTeamId(data.teamId || "");
+        setTeamName(data.teamName || "this team");
         return;
       }
 
-      if (data.success) {
+      if (data?.success) {
         setState("success");
         setTeamId(data.teamId);
         setTeamName(data.teamName);
         await refreshTeams();
       }
     } catch (error) {
-      console.error("Error accepting invitation:", error);
+      console.error("[TeamInvite] Error accepting invitation:", error);
       setState("error");
       setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
 
   const handleGoToTeam = () => {
-    switchTeam(teamId);
+    if (teamId) {
+      switchTeam(teamId);
+    }
     navigate("/validate");
   };
 
   const handleLogin = () => {
-    navigate(`/auth?email=${encodeURIComponent(invitedEmail)}`);
+    // Navigate to auth with returnTo parameter so user comes back after login
+    const returnTo = `/team/invite/${token}`;
+    const params = new URLSearchParams();
+    if (invitedEmail) {
+      params.set("email", invitedEmail);
+    }
+    params.set("returnTo", returnTo);
+    navigate(`/auth?${params.toString()}`);
   };
 
   return (
@@ -154,7 +271,11 @@ export default function TeamInvite() {
                 </div>
                 <CardTitle>Join {teamName}</CardTitle>
                 <CardDescription>
-                  You've been invited to join this team. Sign in or create an account with <strong>{invitedEmail}</strong> to accept.
+                  {invitedEmail ? (
+                    <>You've been invited to join this team. Sign in or create an account with <strong>{invitedEmail}</strong> to accept.</>
+                  ) : (
+                    <>You've been invited to join this team. Sign in or create an account to accept.</>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
@@ -162,9 +283,11 @@ export default function TeamInvite() {
                   <LogIn className="h-4 w-4" />
                   Sign In to Accept
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  Make sure to use the email address: {invitedEmail}
-                </p>
+                {invitedEmail && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    Make sure to use the email address: {invitedEmail}
+                  </p>
+                )}
               </CardContent>
             </>
           )}

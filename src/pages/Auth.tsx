@@ -27,20 +27,34 @@ const Auth = () => {
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [searchParams] = useSearchParams();
   const intent = searchParams.get('intent');
+  const returnTo = searchParams.get('returnTo');
+  const prefillEmail = searchParams.get('email');
   const navigate = useNavigate();
+
+  // Prefill email from URL parameter
+  useEffect(() => {
+    if (prefillEmail && !email) {
+      setEmail(prefillEmail);
+    }
+  }, [prefillEmail]);
 
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (data?.user) {
-        navigate("/");
+        // User is logged in - redirect to returnTo if provided, otherwise home
+        if (returnTo) {
+          navigate(returnTo);
+        } else {
+          navigate("/");
+        }
       } else if (error) {
         await supabase.auth.signOut();
       }
     };
     checkUser();
-  }, [navigate]);
+  }, [navigate, returnTo]);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,6 +63,15 @@ const Auth = () => {
 
   const validatePassword = (password: string): boolean => {
     return password.length >= 8;
+  };
+
+  // Build the callback URL with returnTo parameter
+  const getCallbackUrl = () => {
+    const base = `${window.location.origin}/auth/callback`;
+    if (returnTo) {
+      return `${base}?returnTo=${encodeURIComponent(returnTo)}`;
+    }
+    return base;
   };
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
@@ -108,7 +131,7 @@ const Auth = () => {
         }
       }
 
-      // Store intent in localStorage to handle after email confirmation
+      // Store intent in localStorage to handle after email confirmation (but not returnTo - that goes via URL)
       if (intent) {
         localStorage.setItem('auth_intent', intent);
       }
@@ -118,7 +141,7 @@ const Auth = () => {
         body: {
           email: email.trim(),
           password,
-          redirectUrl: `${window.location.origin}/auth/callback`,
+          redirectUrl: getCallbackUrl(),
         },
       });
 
@@ -154,7 +177,7 @@ const Auth = () => {
 
     setLoading(true);
     try {
-      // Store intent in localStorage
+      // Store intent in localStorage (but not returnTo - that goes via URL)
       if (intent) {
         localStorage.setItem('auth_intent', intent);
       }
@@ -168,7 +191,12 @@ const Auth = () => {
 
       // Successful login - redirect to callback for consistent handling
       if (data.user) {
-        navigate("/auth/callback");
+        // Navigate to callback with returnTo if provided
+        if (returnTo) {
+          navigate(`/auth/callback?returnTo=${encodeURIComponent(returnTo)}`);
+        } else {
+          navigate("/auth/callback");
+        }
       }
     } catch (error: any) {
       console.error("Sign in error:", error);
@@ -187,7 +215,7 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      // Store intent in localStorage to handle after OAuth redirect
+      // Store intent in localStorage to handle after OAuth redirect (but not returnTo - that goes via URL)
       if (intent) {
         localStorage.setItem('auth_intent', intent);
       }
@@ -195,7 +223,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: getCallbackUrl(),
         },
       });
 
@@ -212,6 +240,9 @@ const Auth = () => {
       return 'Sign in to purchase Premium Plan and unlock Deep Analysis';
     } else if (intent === 'free') {
       return 'Sign in to start your free AI analysis';
+    }
+    if (returnTo?.includes('/team/invite/')) {
+      return 'Sign in to accept your team invitation';
     }
     return 'Access your AI-powered business insights';
   };
@@ -247,7 +278,7 @@ const Auth = () => {
             </CardTitle>
             <CardDescription className="text-center text-base space-y-2">
               <span className="block">{getIntentMessage()}</span>
-              {!intent && !isSignUp && (
+              {!intent && !isSignUp && !returnTo && (
                 <span className="block text-sm text-red-500 dark:text-red-400 font-medium mt-3">
                   Premium users: Please use the same email as your purchase
                 </span>

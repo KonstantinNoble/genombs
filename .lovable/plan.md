@@ -1,125 +1,69 @@
 
-# Mobile-Optimierung für Team- und Workspace-Seiten
+Ziel
+- Team-Einladungen sollen für nicht registrierte Nutzer zuverlässig funktionieren: Link öffnen → „Sign in to accept“ sehen → nach Registrierung/Login automatisch wieder zum Invite zurück → Einladung wird angenommen.
 
-## Überblick
-Die Team- und Workspace-Seiten (Teams, TeamMembers, TeamSettings, TeamInvite, Profile, Dashboard) werden für mobile Nutzer optimiert. Der Fokus liegt auf Touch-freundlichen Elementen, besseren Layouts für kleine Bildschirme und verbesserter Lesbarkeit.
+Was ich aktuell als Hauptursache vermute
+- Die Einladungs-E-Mail baut den Link immer mit einer fest verdrahteten URL (`SITE_URL = https://wealthconomy.lovable.app`).
+- Wenn eine Einladung aus der Vorschau/Test-Umgebung erstellt wurde, landet der Empfänger trotzdem auf der veröffentlichten Seite. Dort existiert der Token in der anderen Datenbank/Umgebung nicht → die Einladung wirkt „invalid“, besonders auffällig bei nicht registrierten Nutzern (die den Link aus der E-Mail nutzen).
+- Zusätzlich ist die Fehleranzeige in `TeamInvite.tsx` derzeit zu wenig aussagekräftig, wenn die Backend-Funktion einen Nicht‑2xx Status zurückgibt.
 
----
+Umsetzung (konkret)
+1) Backend-Funktion: Invite-Link dynamisch korrekt setzen
+   - Datei: `supabase/functions/team-management/index.ts`
+   - Änderung:
+     - `SITE_URL` nicht mehr hardcoden, sondern pro Request ermitteln.
+     - Quelle für die URL:
+       1) `body.siteUrl` (wird vom Frontend mit `window.location.origin` mitgeschickt) – bevorzugt
+       2) Fallback: `Origin`/`Referer` Header (Origin daraus extrahieren)
+       3) Letzter Fallback: `https://wealthconomy.lovable.app`
+     - `sendInviteEmail(...)` um einen Parameter `siteUrl` erweitern und `inviteUrl = \`\${siteUrl}/team/invite/\${token}\`` erzeugen.
+   - Sicherheits-/Stabilitäts-Details:
+     - `siteUrl` validieren (nur `https://…` und nur erlaubte Hosts wie `*.lovable.app`, `*.lovableproject.com` sowie ggf. eigene Domain). Bei Ungültigkeit → Fallback verwenden.
+   - Logging ergänzen:
+     - Beim `invite`-Case: logge `siteUrl`, `teamId`, `email`, `token` (Token ggf. gekürzt loggen) – damit wir künftig sofort sehen, wohin der Link zeigt.
 
-## Detaillierte Änderungen
+2) Frontend: Beim Einladen `siteUrl` mitsenden
+   - Datei: `src/pages/TeamMembers.tsx`
+   - Änderung:
+     - In `handleInvite` beim Aufruf `supabase.functions.invoke("team-management", …)` den Body um `siteUrl: window.location.origin` erweitern.
+   - Ergebnis:
+     - Einladungen, die in Preview erstellt werden, bekommen Preview-Links.
+     - Einladungen, die in Published erstellt werden, bekommen Published-Links.
 
-### 1. Teams-Seite (`/teams`)
+3) Frontend: TeamInvite robuster machen (bessere Anzeige + weniger “stille” Fehler)
+   - Datei: `src/pages/TeamInvite.tsx`
+   - Änderungen:
+     A) Fehler aus der Backend-Funktion besser auslesen
+        - Wenn `response.error` gesetzt ist (typisch bei HTTP 4xx/5xx), zusätzlich versuchen, die Response-Body-Message zu extrahieren (z.B. `{ error: "...", message: "..." }`) und diese als `errorMessage` anzeigen.
+        - Damit ist für Nutzer sichtbar, ob es wirklich “Invalid/expired invitation” ist oder etwas anderes.
+     B) Klare States für nicht eingeloggte Nutzer
+        - Wenn `authLoading` fertig ist und `user == null`:
+          - Wir lassen weiterhin den Backend-Check laufen (um Teamname/E-Mail zu bekommen), aber:
+            - Wenn dabei ein 401/403 oder „Missing authorization/Invalid token“ kommt, wechseln wir nicht stumpf auf „error“, sondern zeigen „requiresAuth“ (mit generischem Teamname falls nötig) und leiten sauber zum Login.
+          - Vorteil: selbst wenn ein Auth-Header/Session merkwürdig ist, bekommt der Nutzer nicht sofort “Invitation Error”, sondern den korrekten „Sign in to accept“-Flow.
+     C) Optional: Token bereits beim Anzeigen des Login-Screens speichern
+        - Wenn wir im „requiresAuth“-State sind: `localStorage.setItem("pending_team_invite", token)` (falls noch nicht gesetzt)
+        - Dann reicht ein normales Login/Signup und `AuthCallback.tsx` leitet automatisch zurück.
 
-**Aktuelle Probleme:**
-- Button-Gruppen (Members, Settings, Open) können auf kleinen Bildschirmen überlaufen
-- Team-Cards haben zu wenig vertikalen Abstand auf Mobile
+4) Testplan (kurz, aber eindeutig)
+   - Test 1 (Published → non-registered):
+     1) In Published einladen (an eine E-Mail ohne Account)
+     2) Link in Incognito öffnen
+     3) Erwartung: „Join {team}“ / „Sign in to accept“ erscheint (kein Fehler)
+     4) Signup/Login durchführen
+     5) Erwartung: nach Callback automatisch wieder `/team/invite/:token` und danach „Welcome to {team}“
+   - Test 2 (Preview → non-registered):
+     1) In Preview einladen
+     2) Prüfen, dass der Link in der E-Mail auf die Preview-Domain zeigt
+     3) Flow wie oben
+   - Test 3 (alte/überschriebene Links):
+     1) Gleiche E-Mail zweimal einladen (beachte: DB hat UNIQUE(team_id,email), Token wird überschrieben)
+     2) Alter Link muss „Invalid/expired invitation“ anzeigen (jetzt mit guter Fehlermeldung), neuer Link muss funktionieren
 
-**Optimierungen:**
-- Team-Cards: Vollständig gestapeltes Layout auf Mobile (Buttons unter den Team-Infos)
-- Buttons in voller Breite auf Mobile für bessere Touch-Ziele
-- Größere Touch-Bereiche (min-height 44px für alle interaktiven Elemente)
-- Team-Icon und Name links, Aktionen darunter in einer Reihe
+Hinweis zu einem möglichen weiteren “stolperstein” (wenn du willst, lösen wir das als Nächstes)
+- Weil `team_invitations` `UNIQUE(team_id,email)` hat, wird bei “nochmal einladen” der Token überschrieben. Ein alter Link ist dann tatsächlich ungültig. Das ist technisch korrekt, kann aber verwirrend sein. Wenn du möchtest, können wir das Datenmodell so ändern, dass mehrere Einladungen historisch gültig bleiben (mit sauberem Cleanup). Das wäre ein separater Schritt (DB-Migration + Anpassung Invite-Logik).
 
-### 2. TeamMembers-Seite (`/team/members`)
-
-**Aktuelle Probleme:**
-- Invite-Formular: Email-Input und Role-Select können auf kleinen Bildschirmen eng werden
-- Mitglieder-Liste: Email kann abgeschnitten werden, Aktionen können überlaufen
-- Role-Permissions-Grid braucht besseres Mobile-Layout
-
-**Optimierungen:**
-- Invite-Formular: Bereits `flex-col sm:flex-row` vorhanden - gut
-- Mitglieder-Karten: Gestapeltes Layout auf Mobile
-  - Avatar + Email oben
-  - Role-Badge + Aktionen darunter
-- Pending Invitations: Gleiches gestapeltes Muster
-- Header mit Team-Name und Settings-Button besser stacken
-
-### 3. TeamSettings-Seite (`/team/settings`)
-
-**Aktuelle Probleme:**
-- "Save"-Button neben Input kann eng werden
-- AlertDialog für Team-Löschung braucht mobile-freundliche Buttons
-
-**Optimierungen:**
-- Team-Name Eingabe: Button unter dem Input auf Mobile statt daneben
-- Delete-Dialog: Buttons gestapelt auf Mobile
-- Zeichenzähler besser positioniert
-
-### 4. TeamInvite-Seite (`/team/invite/:token`)
-
-**Status:** Bereits gut optimiert - Card-basiertes zentriertes Layout funktioniert auf allen Bildschirmgrößen.
-
-### 5. Profile-Seite (`/profile`)
-
-**Aktuelle Probleme:**
-- Team-Liste kann bei vielen Teams unübersichtlich werden
-- Premium-Status-Box könnte besser strukturiert sein
-
-**Optimierungen:**
-- Team-Einträge: Kompakteres Layout auf Mobile
-- "Manage"-Link größerer Touch-Bereich
-- Premium-Status: Bessere vertikale Struktur auf Mobile
-
-### 6. Dashboard-Seite (`/dashboard`)
-
-**Status:** Bereits responsive mit `grid-cols-2 lg:grid-cols-4` und `md:grid-cols-2` - gut optimiert.
-
-### 7. TeamSwitcher-Komponente
-
-**Aktuelle Probleme:**
-- Dropdown-Menü kann auf kleinen Bildschirmen eng werden
-- "Manage"-Button-Overlay könnte schwer zu treffen sein
-
-**Optimierungen:**
-- Dropdown-Breite auf Mobile anpassen
-- Manage-Button größerer Touch-Bereich
-- Team-Namen mit besserer Truncation
-
-### 8. Navbar Mobile-Menü
-
-**Status:** Bereits gut implementiert mit funktionalem Mobile-Menü.
-
----
-
-## Technische Implementierung
-
-### Utility-Klassen-Muster
-```text
-- Stack auf Mobile: flex flex-col sm:flex-row
-- Volle Breite auf Mobile: w-full sm:w-auto
-- Touch-Ziele: min-h-[44px] für alle Buttons
-- Padding für Touch: py-3 px-4 auf Mobile
-```
-
-### Betroffene Dateien
-1. `src/pages/Teams.tsx` - Team-Card-Layout
-2. `src/pages/TeamMembers.tsx` - Member-List und Invite-Form
-3. `src/pages/TeamSettings.tsx` - Form-Layout
-4. `src/pages/Profile.tsx` - Team-Liste und Premium-Box
-5. `src/components/team/TeamSwitcher.tsx` - Dropdown-Optimierung
-
-### Nicht betroffen (bereits optimiert)
-- `src/pages/TeamInvite.tsx`
-- `src/pages/Dashboard.tsx`
-- `src/components/Navbar.tsx`
-
----
-
-## Zusammenfassung der Änderungen
-
-| Seite | Hauptänderung |
-|-------|---------------|
-| Teams | Cards: Gestapeltes Layout, Buttons in voller Breite auf Mobile |
-| TeamMembers | Mitglieder-Karten gestapelt, größere Touch-Ziele |
-| TeamSettings | Form-Buttons gestapelt auf Mobile |
-| Profile | Team-Liste kompakter, bessere Touch-Bereiche |
-| TeamSwitcher | Größere Touch-Ziele, angepasste Dropdown-Breite |
-
----
-
-## Erwartetes Ergebnis
-- Alle Team-/Workspace-Seiten sind auf Smartphones (320px+) vollständig nutzbar
-- Touch-Ziele mindestens 44x44px für bessere Bedienbarkeit
-- Keine horizontalen Scrollbars oder abgeschnittenen Inhalte
-- Konsistentes, professionelles Erscheinungsbild auf allen Gerätegrößen
+Ergebnis
+- Nicht registrierte Nutzer bekommen konsistent den richtigen Login-/Signup-Flow.
+- Einladungslinks zeigen immer auf die passende Umgebung (Preview vs Published), dadurch verschwinden die “immer noch nicht”-Fälle, die durch Umgebungs-Mismatch entstehen.
+- Fehlertexte werden nachvollziehbar, falls wirklich ein ungültiger/alter Token genutzt wird.

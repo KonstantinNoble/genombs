@@ -50,30 +50,78 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Main Question Input */}
-      <div className="space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/30 border-2 border-primary/40">
-        <div className="flex items-center justify-between gap-2">
-          <Label htmlFor="prompt" className="text-base sm:text-lg font-semibold text-foreground">
-            Decision Context
-          </Label>
-          <span className={cn(
-            "text-sm sm:text-base tabular-nums font-medium shrink-0",
-            charactersRemaining <= 50 ? 'text-destructive' : 'text-muted-foreground'
+      {/* Main Question Input - Enhanced Aesthetic */}
+      <div className="group relative space-y-3 sm:space-y-4 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-card via-background to-muted/30 border border-border/60 shadow-lg transition-all duration-500 hover:shadow-xl hover:border-primary/30">
+        {/* Decorative Glow Effect */}
+        <div className="absolute -inset-[1px] rounded-2xl sm:rounded-3xl bg-gradient-to-r from-primary/20 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-sm" />
+        
+        {/* Header Row */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 border border-primary/20 group-hover:bg-primary/15 group-hover:border-primary/30 transition-all duration-300">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <path d="M12 17h.01" />
+              </svg>
+            </div>
+            <div>
+              <Label htmlFor="prompt" className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
+                Your Decision
+              </Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                What strategic question needs validation?
+              </p>
+            </div>
+          </div>
+          <div className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold tabular-nums transition-all duration-300",
+            charactersRemaining <= 50 
+              ? 'bg-destructive/10 text-destructive border border-destructive/20' 
+              : prompt.length > 0 
+                ? 'bg-primary/10 text-primary border border-primary/20'
+                : 'bg-muted text-muted-foreground border border-border'
           )}>
-            {prompt.length}/{MAX_CHARACTERS}
-          </span>
+            <span>{prompt.length}</span>
+            <span className="text-muted-foreground/60">/</span>
+            <span>{MAX_CHARACTERS}</span>
+          </div>
         </div>
-        <Textarea
-          id="prompt"
-          value={prompt}
-          onChange={(e) => handlePromptChange(e.target.value)}
-          placeholder="E.g., Should we expand into the European market this quarter? / Is hiring a dedicated CTO the right move now? / Should we pivot from B2C to B2B?"
-          className="min-h-[120px] sm:min-h-[160px] text-base sm:text-lg resize-none leading-relaxed border-primary/10 focus:border-primary/30"
-          disabled={disabled}
-          maxLength={MAX_CHARACTERS}
-        />
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Describe the decision you need to document. Multiple perspectives will be recorded for your audit trail.
+        
+        {/* Enhanced Textarea */}
+        <div className="relative">
+          <Textarea
+            id="prompt"
+            value={prompt}
+            onChange={(e) => handlePromptChange(e.target.value)}
+            placeholder="Should we expand into the European market this quarter?
+
+Is hiring a dedicated CTO the right move for our stage?
+
+Should we pivot our business model from B2C to B2B?"
+            className={cn(
+              "min-h-[140px] sm:min-h-[180px] text-base sm:text-lg resize-none leading-relaxed",
+              "bg-background/80 border-2 border-border/50 rounded-xl",
+              "placeholder:text-muted-foreground/40 placeholder:leading-relaxed",
+              "focus:border-primary/40 focus:bg-background focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.1)]",
+              "transition-all duration-300",
+              prompt.length > 0 && "border-primary/20 bg-background"
+            )}
+            disabled={disabled}
+            maxLength={MAX_CHARACTERS}
+          />
+          {/* Active Indicator */}
+          {prompt.length > 0 && (
+            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-xs text-primary/70">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span>Ready to validate</span>
+            </div>
+          )}
+        </div>
+        
+        {/* Helper Text */}
+        <p className="text-sm text-muted-foreground leading-relaxed pl-1">
+          Describe your business decision in detail. Our AI models will analyze it from multiple perspectives.
         </p>
       </div>
 

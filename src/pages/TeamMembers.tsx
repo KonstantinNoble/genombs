@@ -96,6 +96,7 @@ export default function TeamMembers() {
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
   const [userRole, setUserRole] = useState<TeamRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [ownerIsPremium, setOwnerIsPremium] = useState<boolean | null>(null);
 
   // Invite form
   const [inviteEmail, setInviteEmail] = useState("");
@@ -148,6 +149,7 @@ export default function TeamMembers() {
       setMembers(response.data.members || []);
       setInvitations(response.data.invitations || []);
       setUserRole(response.data.userRole);
+      setOwnerIsPremium(response.data.ownerIsPremium ?? true);
     } catch (error) {
       console.error("Failed to fetch members:", error);
       toast({
@@ -210,6 +212,12 @@ export default function TeamMembers() {
           toast({
             title: "Member limit reached",
             description: `This team has reached the maximum of ${TEAM_LIMITS.MAX_MEMBERS_PER_TEAM} members.`,
+            variant: "destructive",
+          });
+        } else if (response.data.error === "OWNER_NOT_PREMIUM") {
+          toast({
+            title: "Premium subscription required",
+            description: "The workspace owner needs an active Premium subscription to invite new members.",
             variant: "destructive",
           });
         } else {
@@ -402,7 +410,7 @@ export default function TeamMembers() {
                 <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Admin</p>
-                  <p className="text-muted-foreground">Invite members, change roles (after ownership transfer)</p>
+                  <p className="text-muted-foreground">Invite members, manage roles</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -439,7 +447,18 @@ export default function TeamMembers() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isMemberLimitReached && (
+              {ownerIsPremium === false && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm mb-4">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <div>
+                    <p className="font-medium">Invitations disabled</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      The workspace owner's Premium subscription has expired. New member invitations are blocked until the subscription is renewed.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {isMemberLimitReached && ownerIsPremium !== false && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm mb-4">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
                   <span>Member limit reached ({TEAM_LIMITS.MAX_MEMBERS_PER_TEAM} max). Remove a member or cancel an invitation to add more.</span>
@@ -472,7 +491,7 @@ export default function TeamMembers() {
                     <SelectItem value="viewer">Viewer</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached}>
+                <Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached || ownerIsPremium === false}>
                   {isInviting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (

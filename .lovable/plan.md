@@ -1,151 +1,165 @@
 
-# Team-Loeschung: Alle Team-Daten mit CASCADE loeschen
+
+# Transfer-Ownership komplett entfernen
 
 ## Uebersicht
 
-Wenn ein Team/Workspace geloescht wird, sollen alle damit verbundenen Daten (Analysen, Experimente, Decision Records) ebenfalls geloescht werden. Zusaetzlich soll der Text im Delete-Account-Dialog fuer Premium-User (mit eigenen Teams) angepasst werden.
+Die Transfer-Ownership Funktion wird vollstaendig aus dem System entfernt. Ein Owner kann sein Team nur noch loeschen, nicht mehr uebertragen. Dies vereinfacht das Rollensystem und macht den Owner-Status wirklich statisch.
 
-## Aktuelle Situation
+## Betroffene Bereiche
 
-| Tabelle | team_id FK | ON DELETE |
-|---------|-----------|-----------|
-| team_members | teams(id) | CASCADE |
-| team_invitations | teams(id) | CASCADE |
-| validation_analyses | teams(id) | **SET NULL** (Problem!) |
-| experiments | teams(id) | **SET NULL** (Problem!) |
-| decision_records | teams(id) | **SET NULL** (Problem!) |
-
-**Problem**: Wenn ein Team geloescht wird, bleiben Analysen/Experimente erhalten, aber ohne Team-Zuordnung ("floating data").
-
-## Loesung
-
-### 1. Datenbank-Migration: Foreign Keys auf CASCADE aendern
-
-Aendere die ON DELETE Regel fuer `validation_analyses`, `experiments` und `decision_records` von SET NULL auf CASCADE.
-
-```text
-SQL-Migration:
-
-1. Loesche existierende Foreign Key Constraints
-2. Erstelle neue Constraints mit ON DELETE CASCADE
-
--- validation_analyses
-ALTER TABLE validation_analyses 
-  DROP CONSTRAINT IF EXISTS validation_analyses_team_id_fkey;
-ALTER TABLE validation_analyses 
-  ADD CONSTRAINT validation_analyses_team_id_fkey 
-  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
-
--- experiments
-ALTER TABLE experiments 
-  DROP CONSTRAINT IF EXISTS experiments_team_id_fkey;
-ALTER TABLE experiments 
-  ADD CONSTRAINT experiments_team_id_fkey 
-  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
-
--- decision_records
-ALTER TABLE decision_records 
-  DROP CONSTRAINT IF EXISTS decision_records_team_id_fkey;
-ALTER TABLE decision_records 
-  ADD CONSTRAINT decision_records_team_id_fkey 
-  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
-```
+| Bereich | Datei | Aenderung |
+|---------|-------|-----------|
+| Profil-Seite | `src/pages/Profile.tsx` | Nur "Delete workspace" zeigen |
+| Team-Settings | `src/pages/TeamSettings.tsx` | Transfer-UI komplett entfernen |
+| Backend | `supabase/functions/team-management/index.ts` | transfer-ownership Handler entfernen |
 
 ---
 
-### 2. Frontend: Profilseite anpassen
+## 1. Profile.tsx - Nur "Delete workspace" Option
 
-**Datei: `src/pages/Profile.tsx`**
+**Zeilen 307-345**
 
-Die Warnung fuer Team-Owner soll klar kommunizieren, dass sie entweder:
-- Ownership uebertragen ODER
-- Das Team loeschen muessen
-
-#### Text-Aenderungen (Zeilen 308-336):
+Die Warnung fuer Team-Owner wird vereinfacht:
+- Entferne "Transfer" Link
+- Aendere Text zu "delete the workspace"
+- Nur noch "Delete" Button pro Team
 
 ```text
 Vorher:
-- "Transfer ownership before deleting"
-- "Transfer ownership to another admin before deleting your account"
-- Link: "Manage"
+- "transfer ownership to a member OR delete the workspace"
+- [Transfer] | [Delete]
 
 Nachher:
-- "Workspace action required"
-- "You own the following workspaces. Before deleting your account, you must either transfer ownership to another member OR delete the workspace:"
-- Links: "Transfer" und "Delete"
+- "You must delete the workspace first"
+- [Delete Workspace]
 ```
 
-#### Konkrete Aenderungen:
+**Konkrete Aenderung:**
 
 ```typescript
-// Zeile 313-314: Ueberschrift aendern
-<p className="text-sm font-medium text-destructive">
-  Workspace action required
-</p>
-
-// Zeile 316-318: Beschreibung aendern
 <p className="text-xs text-muted-foreground">
   You own the following workspaces. Before deleting your account, 
-  transfer ownership to a member OR delete the workspace:
+  you must delete them first:
 </p>
-
-// Zeile 319-331: Links pro Team erweitern
-{ownedTeams.map(team => (
-  <li key={team.id} className="flex items-center gap-2 text-sm">
-    <Building2 className="h-4 w-4 text-primary" />
-    <span>{team.name}</span>
-    <div className="ml-auto flex gap-2">
-      <Link 
-        to="/team/members" 
-        className="text-primary text-xs hover:underline"
-      >
-        Transfer
-      </Link>
-      <span className="text-muted-foreground">|</span>
+<ul className="space-y-2">
+  {ownedTeams.map(team => (
+    <li key={team.id} className="flex items-center gap-2 text-sm">
+      <Building2 className="h-4 w-4 text-primary" />
+      <span className="font-medium">{team.name}</span>
       <Link 
         to="/team/settings" 
-        className="text-destructive text-xs hover:underline"
+        className="ml-auto text-destructive text-xs hover:underline"
       >
-        Delete
+        Delete Workspace
       </Link>
-    </div>
-  </li>
-))}
+    </li>
+  ))}
+</ul>
 ```
 
 ---
 
-## Betroffene Dateien
+## 2. TeamSettings.tsx - Transfer-UI entfernen
 
-| Datei | Aenderung |
-|-------|-----------|
-| Datenbank-Migration | FK Constraints von SET NULL auf CASCADE aendern |
-| `src/pages/Profile.tsx` | Text und Links fuer Team-Owner-Warnung anpassen |
+### State-Variablen entfernen (Zeilen 68-71):
+
+```text
+Entfernen:
+- const [newOwnerId, setNewOwnerId] = useState("");
+- const [isTransferring, setIsTransferring] = useState(false);
+- const [showTransferDialog, setShowTransferDialog] = useState(false);
+```
+
+### Transfer-Funktion entfernen (Zeilen 163-199):
+
+```text
+Entfernen:
+- const handleTransferOwnership = async () => { ... }
+```
+
+### eligibleOwners entfernen (Zeilen 224-226):
+
+```text
+Entfernen:
+- const eligibleOwners = members.filter(...)
+```
+
+### Skeleton fuer Transfer-Card entfernen (Zeilen 273-286):
+
+```text
+Entfernen:
+- {/* Transfer Ownership Card Skeleton */}
+- <Card className="border-amber-500/30">...
+```
+
+### Transfer-Ownership Card entfernen (Zeilen 342-389):
+
+```text
+Entfernen:
+- {/* Transfer Ownership - Owner only */}
+- {isOwner && ( <Card className="border-amber-500/30">... )}
+```
+
+### Transfer-Dialog entfernen (Zeilen 431-458):
+
+```text
+Entfernen:
+- {/* Transfer Ownership Confirmation */}
+- <AlertDialog open={showTransferDialog}...
+```
+
+### Imports aufraeumen:
+
+```text
+Entfernen:
+- Crown (nicht mehr benoetigt)
+- UserCog (nicht mehr benoetigt)
+- Select, SelectContent, SelectItem, SelectTrigger, SelectValue (nicht mehr benoetigt)
+```
+
+### Non-Owner Card Text anpassen (Zeile 420-421):
+
+```text
+Vorher:
+"Only the team owner can transfer ownership or delete the team."
+
+Nachher:
+"Only the team owner can delete the team."
+```
 
 ---
 
-## Auswirkungen
+## 3. Backend: transfer-ownership Handler entfernen
 
-### Bei Team-Loeschung werden automatisch geloescht:
+**Datei: `supabase/functions/team-management/index.ts`**
 
-1. **team_members** - Alle Mitgliedschaften (bereits CASCADE)
-2. **team_invitations** - Alle Einladungen (bereits CASCADE)
-3. **validation_analyses** - Alle Team-Analysen (NEU: CASCADE)
-4. **experiments** - Alle Team-Experimente (NEU: CASCADE)
-5. **decision_records** - Alle Team-Entscheidungen (NEU: CASCADE)
+**Zeilen 646-703 entfernen:**
 
-### Wichtige Hinweise:
+```text
+case "transfer-ownership": {
+  ... (gesamter Handler)
+}
+```
 
-- **Persoenliche Daten bleiben**: Analysen/Experimente ohne team_id (= persoenlich) sind nicht betroffen
-- **Keine Rueckgaengig**: Sobald ein Team geloescht wird, sind alle Daten unwiderruflich weg
-- **Transparenz**: Die Profilseite erklaert klar die Optionen (Transfer oder Delete)
+Nach Entfernung: Ein API-Aufruf mit `action: "transfer-ownership"` wird als "Unknown action" mit 400-Fehler zurueckgegeben.
+
+---
+
+## Zusammenfassung der Aenderungen
+
+| Datei | Entfernte Elemente |
+|-------|-------------------|
+| `Profile.tsx` | "Transfer" Link, doppelte Option |
+| `TeamSettings.tsx` | 3 State-Variablen, 1 Funktion, 1 Variable, 1 Skeleton, 1 Card, 1 Dialog, mehrere Imports |
+| `team-management/index.ts` | `transfer-ownership` case (57 Zeilen) |
 
 ---
 
 ## Benutzer-Flow nach Aenderung
 
 ```text
-Premium-User moechte Account loeschen
+Owner moechte Account loeschen
          |
          v
   Hat eigene Teams? ----Nein----> Account loeschen
@@ -153,17 +167,21 @@ Premium-User moechte Account loeschen
         Ja
          |
          v
-  Zeige Warnung mit Optionen:
+  Zeige Warnung:
   +----------------------------------+
   | Workspace action required        |
   |                                  |
-  | "My Team"                        |
-  |     [Transfer] | [Delete]        |
+  | "You must delete them first:"   |
+  | "My Team"  [Delete Workspace]    |
   +----------------------------------+
          |
          v
-  User waehlt: Transfer ODER Delete
+  User klickt "Delete Workspace"
          |
          v
-  Keine Teams mehr? --> Account loeschen moeglich
+  Wird zu /team/settings geleitet
+         |
+         v
+  Loescht Team -> Kann Account loeschen
 ```
+

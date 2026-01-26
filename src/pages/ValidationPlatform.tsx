@@ -512,14 +512,10 @@ export default function ValidationPlatform() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    const teamContext = require("@/contexts/TeamContext");
-                    // switchTeam is from useTeam, but we need to access it properly
-                  }}
                   className="shrink-0 text-xs"
                   asChild
                 >
-                  <Link to="/team/members">Manage Team</Link>
+                  <Link to="/teams">Manage Team</Link>
                 </Button>
               </div>
             )}

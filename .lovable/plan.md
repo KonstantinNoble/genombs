@@ -1,131 +1,116 @@
 
-# Rollen-Vereinfachung: Nur Member und Viewer als zuweisbare Rollen
+# Team-Loeschung: Alle Team-Daten mit CASCADE loeschen
 
 ## Uebersicht
 
-Das aktuelle Rollensystem erlaubt es, Benutzer als "admin" einzuladen oder zu befoerdern. Dies widerspricht dem Konzept, dass nur "Owner" automatisch und unveraenderlich vergeben wird. Die Loesung beschraenkt die zuweisbaren Rollen auf **Member** und **Viewer**.
+Wenn ein Team/Workspace geloescht wird, sollen alle damit verbundenen Daten (Analysen, Experimente, Decision Records) ebenfalls geloescht werden. Zusaetzlich soll der Text im Delete-Account-Dialog fuer Premium-User (mit eigenen Teams) angepasst werden.
 
-## Aktuelle Rollenstruktur
+## Aktuelle Situation
 
-| Rolle | Vergabe | Zuweisbar via UI? |
-|-------|---------|-------------------|
-| Owner | Automatisch bei Team-Erstellung | Nein (nur Transfer) |
-| Admin | Manuell | Aktuell: Ja (Problem!) |
-| Member | Manuell | Ja |
-| Viewer | Manuell | Ja |
+| Tabelle | team_id FK | ON DELETE |
+|---------|-----------|-----------|
+| team_members | teams(id) | CASCADE |
+| team_invitations | teams(id) | CASCADE |
+| validation_analyses | teams(id) | **SET NULL** (Problem!) |
+| experiments | teams(id) | **SET NULL** (Problem!) |
+| decision_records | teams(id) | **SET NULL** (Problem!) |
 
-## Ziel-Rollenstruktur
+**Problem**: Wenn ein Team geloescht wird, bleiben Analysen/Experimente erhalten, aber ohne Team-Zuordnung ("floating data").
 
-| Rolle | Vergabe | Zuweisbar via UI? |
-|-------|---------|-------------------|
-| Owner | Automatisch bei Team-Erstellung | Nein (nur Transfer) |
-| Admin | Nach Owner-Transfer (ehemaliger Owner) | Nein |
-| Member | Manuell durch Owner/Admin | Ja |
-| Viewer | Manuell durch Owner/Admin | Ja |
+## Loesung
+
+### 1. Datenbank-Migration: Foreign Keys auf CASCADE aendern
+
+Aendere die ON DELETE Regel fuer `validation_analyses`, `experiments` und `decision_records` von SET NULL auf CASCADE.
+
+```text
+SQL-Migration:
+
+1. Loesche existierende Foreign Key Constraints
+2. Erstelle neue Constraints mit ON DELETE CASCADE
+
+-- validation_analyses
+ALTER TABLE validation_analyses 
+  DROP CONSTRAINT IF EXISTS validation_analyses_team_id_fkey;
+ALTER TABLE validation_analyses 
+  ADD CONSTRAINT validation_analyses_team_id_fkey 
+  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
+
+-- experiments
+ALTER TABLE experiments 
+  DROP CONSTRAINT IF EXISTS experiments_team_id_fkey;
+ALTER TABLE experiments 
+  ADD CONSTRAINT experiments_team_id_fkey 
+  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
+
+-- decision_records
+ALTER TABLE decision_records 
+  DROP CONSTRAINT IF EXISTS decision_records_team_id_fkey;
+ALTER TABLE decision_records 
+  ADD CONSTRAINT decision_records_team_id_fkey 
+  FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE;
+```
 
 ---
 
-## Aenderungen
+### 2. Frontend: Profilseite anpassen
 
-### 1. Frontend: Role-Dropdowns einschraenken
+**Datei: `src/pages/Profile.tsx`**
 
-**Datei: `src/pages/TeamMembers.tsx`**
+Die Warnung fuer Team-Owner soll klar kommunizieren, dass sie entweder:
+- Ownership uebertragen ODER
+- Das Team loeschen muessen
 
-Entferne "Admin" aus beiden Select-Dropdowns:
+#### Text-Aenderungen (Zeilen 308-336):
 
-**Invite-Formular (Zeile 470-474):**
 ```text
 Vorher:
-<SelectItem value="admin">Admin</SelectItem>
-<SelectItem value="member">Member</SelectItem>
-<SelectItem value="viewer">Viewer</SelectItem>
+- "Transfer ownership before deleting"
+- "Transfer ownership to another admin before deleting your account"
+- Link: "Manage"
 
 Nachher:
-<SelectItem value="member">Member</SelectItem>
-<SelectItem value="viewer">Viewer</SelectItem>
+- "Workspace action required"
+- "You own the following workspaces. Before deleting your account, you must either transfer ownership to another member OR delete the workspace:"
+- Links: "Transfer" und "Delete"
 ```
 
-**Role-Change Dropdown (Zeile 557-561):**
-```text
-Vorher:
-<SelectItem value="admin">Admin</SelectItem>
-<SelectItem value="member">Member</SelectItem>
-<SelectItem value="viewer">Viewer</SelectItem>
-
-Nachher:
-<SelectItem value="member">Member</SelectItem>
-<SelectItem value="viewer">Viewer</SelectItem>
-```
-
-**Standard-Rolle aendern (Zeile 102):**
-```text
-Vorher:
-const [inviteRole, setInviteRole] = useState<TeamRole>("member");
-
-Keine Aenderung noetig - "member" ist bereits Standard
-```
-
----
-
-### 2. Backend: Rollen-Validierung hinzufuegen
-
-**Datei: `supabase/functions/team-management/index.ts`**
-
-#### Invite-Handler (Zeile 247-390):
-
-Nach der Email-Validierung (Zeile 258-264), Rollen-Validierung hinzufuegen:
+#### Konkrete Aenderungen:
 
 ```typescript
-// === NACH Zeile 264 einfuegen ===
+// Zeile 313-314: Ueberschrift aendern
+<p className="text-sm font-medium text-destructive">
+  Workspace action required
+</p>
 
-// Validate role - only member and viewer can be assigned
-const ASSIGNABLE_ROLES = ['member', 'viewer'];
-if (!ASSIGNABLE_ROLES.includes(role)) {
-  return new Response(JSON.stringify({ 
-    error: "INVALID_ROLE",
-    message: "Only 'member' and 'viewer' roles can be assigned" 
-  }), {
-    status: 400,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
+// Zeile 316-318: Beschreibung aendern
+<p className="text-xs text-muted-foreground">
+  You own the following workspaces. Before deleting your account, 
+  transfer ownership to a member OR delete the workspace:
+</p>
 
-#### Update-Role Handler (Zeile 567-621):
-
-Nach der Owner-Berechtigung-Pruefung (Zeile 578-583), Rollen-Validierung hinzufuegen:
-
-```typescript
-// === NACH Zeile 583 einfuegen ===
-
-// Validate new role - only member and viewer can be assigned
-const ASSIGNABLE_ROLES = ['member', 'viewer'];
-if (!ASSIGNABLE_ROLES.includes(newRole)) {
-  return new Response(JSON.stringify({ 
-    error: "Only 'member' and 'viewer' roles can be assigned" 
-  }), {
-    status: 400,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
-
----
-
-### 3. Role Descriptions aktualisieren (optional)
-
-**Datei: `src/pages/TeamMembers.tsx`**
-
-Die Admin-Beschreibung bleibt fuer bestehende Admins (nach Transfer), aber kann um einen Hinweis ergaenzt werden:
-
-```text
-Zeile 401-406:
-<div>
-  <p className="font-medium">Admin</p>
-  <p className="text-muted-foreground">
-    Invite members, change roles (assigned after ownership transfer)
-  </p>
-</div>
+// Zeile 319-331: Links pro Team erweitern
+{ownedTeams.map(team => (
+  <li key={team.id} className="flex items-center gap-2 text-sm">
+    <Building2 className="h-4 w-4 text-primary" />
+    <span>{team.name}</span>
+    <div className="ml-auto flex gap-2">
+      <Link 
+        to="/team/members" 
+        className="text-primary text-xs hover:underline"
+      >
+        Transfer
+      </Link>
+      <span className="text-muted-foreground">|</span>
+      <Link 
+        to="/team/settings" 
+        className="text-destructive text-xs hover:underline"
+      >
+        Delete
+      </Link>
+    </div>
+  </li>
+))}
 ```
 
 ---
@@ -134,22 +119,51 @@ Zeile 401-406:
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/pages/TeamMembers.tsx` | "Admin" aus beiden Dropdowns entfernen |
-| `supabase/functions/team-management/index.ts` | Rollen-Validierung bei invite und update-role |
+| Datenbank-Migration | FK Constraints von SET NULL auf CASCADE aendern |
+| `src/pages/Profile.tsx` | Text und Links fuer Team-Owner-Warnung anpassen |
 
 ---
 
-## Sicherheitsaspekte
+## Auswirkungen
 
-- **Backend-First**: Selbst wenn jemand die Frontend-Validierung umgeht, lehnt das Backend ungueltige Rollen ab
-- **Bestehende Admins bleiben**: Bereits existierende Admins (z.B. nach ownership-transfer) behalten ihre Rolle
-- **Klare Fehlermeldungen**: Bei API-Missbrauch wird eine verstaendliche Fehlermeldung zurueckgegeben
+### Bei Team-Loeschung werden automatisch geloescht:
+
+1. **team_members** - Alle Mitgliedschaften (bereits CASCADE)
+2. **team_invitations** - Alle Einladungen (bereits CASCADE)
+3. **validation_analyses** - Alle Team-Analysen (NEU: CASCADE)
+4. **experiments** - Alle Team-Experimente (NEU: CASCADE)
+5. **decision_records** - Alle Team-Entscheidungen (NEU: CASCADE)
+
+### Wichtige Hinweise:
+
+- **Persoenliche Daten bleiben**: Analysen/Experimente ohne team_id (= persoenlich) sind nicht betroffen
+- **Keine Rueckgaengig**: Sobald ein Team geloescht wird, sind alle Daten unwiderruflich weg
+- **Transparenz**: Die Profilseite erklaert klar die Optionen (Transfer oder Delete)
 
 ---
 
-## Edge Cases
+## Benutzer-Flow nach Aenderung
 
-1. **Bestehender Admin**: Bleibt Admin, kann aber nicht zu Admin befoerdert werden
-2. **Owner-Transfer**: Ehemaliger Owner wird weiterhin zum Admin (Zeile 668-672 unveraendert)
-3. **API-Aufruf mit "admin"**: Wird mit 400-Fehler abgelehnt
-
+```text
+Premium-User moechte Account loeschen
+         |
+         v
+  Hat eigene Teams? ----Nein----> Account loeschen
+         |
+        Ja
+         |
+         v
+  Zeige Warnung mit Optionen:
+  +----------------------------------+
+  | Workspace action required        |
+  |                                  |
+  | "My Team"                        |
+  |     [Transfer] | [Delete]        |
+  +----------------------------------+
+         |
+         v
+  User waehlt: Transfer ODER Delete
+         |
+         v
+  Keine Teams mehr? --> Account loeschen moeglich
+```

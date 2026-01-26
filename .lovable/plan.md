@@ -1,69 +1,88 @@
 
+Problemverständnis (aus Code + Logs)
+- Der Einladungslink zeigt auf synoptas.com und beim Öffnen siehst du „Invitation Error“ (bei eingeloggten und nicht eingeloggten Nutzern).
+- Die Backend-Funktion `team-management` wird tatsächlich mit `action: accept-invite` aufgerufen (Logs zeigen `accept-invite, user: null` und auch `accept-invite, user: <uuid>`). Das heißt: Route wird geladen, und das Problem liegt in der Fehlerbehandlung/Flow-Logik.
+- Aktuell gibt die Backend-Funktion bei Fehlerfällen (z.B. Email-Mismatch, Invite ungültig/abgelaufen, Team voll) HTTP-Status 403/404 zurück.
+- In `src/pages/TeamInvite.tsx` wird bei `response.error` sofort auf den generischen Error-State gewechselt – ohne den JSON-Body der Fehlantwort auszulesen. Dadurch wird z.B. ein sauberer `EMAIL_MISMATCH`-Fall (eigener UI-State vorhanden!) als „Invitation Error“ angezeigt. Das ist sehr wahrscheinlich der Grund, warum “alles kaputt” wirkt.
+
 Ziel
-- Team-Einladungen sollen für nicht registrierte Nutzer zuverlässig funktionieren: Link öffnen → „Sign in to accept“ sehen → nach Registrierung/Login automatisch wieder zum Invite zurück → Einladung wird angenommen.
+- Einladungen funktionieren wieder für:
+  - Nicht eingeloggte Nutzer: „Sign in to accept“ → Login/Signup → Einladung kann angenommen werden
+  - Eingeloggte Nutzer: Link öffnen → Einladung wird direkt angenommen (oder sauberer „Wrong account“-Hinweis)
 
-Was ich aktuell als Hauptursache vermute
-- Die Einladungs-E-Mail baut den Link immer mit einer fest verdrahteten URL (`SITE_URL = https://wealthconomy.lovable.app`).
-- Wenn eine Einladung aus der Vorschau/Test-Umgebung erstellt wurde, landet der Empfänger trotzdem auf der veröffentlichten Seite. Dort existiert der Token in der anderen Datenbank/Umgebung nicht → die Einladung wirkt „invalid“, besonders auffällig bei nicht registrierten Nutzern (die den Link aus der E-Mail nutzen).
-- Zusätzlich ist die Fehleranzeige in `TeamInvite.tsx` derzeit zu wenig aussagekräftig, wenn die Backend-Funktion einen Nicht‑2xx Status zurückgibt.
+Umsetzungsschritte (konkret)
 
-Umsetzung (konkret)
-1) Backend-Funktion: Invite-Link dynamisch korrekt setzen
-   - Datei: `supabase/functions/team-management/index.ts`
-   - Änderung:
-     - `SITE_URL` nicht mehr hardcoden, sondern pro Request ermitteln.
-     - Quelle für die URL:
-       1) `body.siteUrl` (wird vom Frontend mit `window.location.origin` mitgeschickt) – bevorzugt
-       2) Fallback: `Origin`/`Referer` Header (Origin daraus extrahieren)
-       3) Letzter Fallback: `https://wealthconomy.lovable.app`
-     - `sendInviteEmail(...)` um einen Parameter `siteUrl` erweitern und `inviteUrl = \`\${siteUrl}/team/invite/\${token}\`` erzeugen.
-   - Sicherheits-/Stabilitäts-Details:
-     - `siteUrl` validieren (nur `https://…` und nur erlaubte Hosts wie `*.lovable.app`, `*.lovableproject.com` sowie ggf. eigene Domain). Bei Ungültigkeit → Fallback verwenden.
-   - Logging ergänzen:
-     - Beim `invite`-Case: logge `siteUrl`, `teamId`, `email`, `token` (Token ggf. gekürzt loggen) – damit wir künftig sofort sehen, wohin der Link zeigt.
+1) TeamInvite: Fehler-Body auch bei non-2xx auslesen und korrekt mappen
+Datei: `src/pages/TeamInvite.tsx`
+- Wenn `response.error` gesetzt ist:
+  - Versuchen, den Response-Body aus `response.error.context` (Supabase FunctionsHttpError Response) als JSON zu parsen.
+  - Danach State korrekt setzen, z.B.:
+    - `EMAIL_MISMATCH` → `setState("emailMismatch")` + `invitedEmail`
+    - `TEAM_FULL` → `setState("error")` + passende Message
+    - `Invalid or expired invitation` → `setState("error")` + klare Message („Invite ungültig/abgelaufen“)
+    - `Missing authorization`/`Invalid token` → `setState("requiresAuth")` (wenn user fehlt)
+- Ergebnis: Statt generischem „Invitation Error“ sehen Nutzer die richtige Ursache und den richtigen nächsten Schritt.
 
-2) Frontend: Beim Einladen `siteUrl` mitsenden
-   - Datei: `src/pages/TeamMembers.tsx`
-   - Änderung:
-     - In `handleInvite` beim Aufruf `supabase.functions.invoke("team-management", …)` den Body um `siteUrl: window.location.origin` erweitern.
-   - Ergebnis:
-     - Einladungen, die in Preview erstellt werden, bekommen Preview-Links.
-     - Einladungen, die in Published erstellt werden, bekommen Published-Links.
+2) TeamInvite: Auth-Token explizit mitsenden (stabiler, konsistent zum Rest der App)
+Datei: `src/pages/TeamInvite.tsx`
+- Vor `supabase.functions.invoke` einmal `supabase.auth.getSession()` holen.
+- Wenn Session vorhanden:
+  - `headers: { Authorization: \`Bearer ${session.access_token}\` }` mitsenden.
+- Wenn keine Session:
+  - ohne Header callen (damit `requiresAuth` sauber zurückkommt).
+- Hintergrund: In anderen Teilen (TeamContext/TeamMembers) wird Authorization immer explizit gesetzt; TeamInvite war hiervon abweichend. Das macht den Flow robuster über Domains/Browser hinweg.
 
-3) Frontend: TeamInvite robuster machen (bessere Anzeige + weniger “stille” Fehler)
-   - Datei: `src/pages/TeamInvite.tsx`
-   - Änderungen:
-     A) Fehler aus der Backend-Funktion besser auslesen
-        - Wenn `response.error` gesetzt ist (typisch bei HTTP 4xx/5xx), zusätzlich versuchen, die Response-Body-Message zu extrahieren (z.B. `{ error: "...", message: "..." }`) und diese als `errorMessage` anzeigen.
-        - Damit ist für Nutzer sichtbar, ob es wirklich “Invalid/expired invitation” ist oder etwas anderes.
-     B) Klare States für nicht eingeloggte Nutzer
-        - Wenn `authLoading` fertig ist und `user == null`:
-          - Wir lassen weiterhin den Backend-Check laufen (um Teamname/E-Mail zu bekommen), aber:
-            - Wenn dabei ein 401/403 oder „Missing authorization/Invalid token“ kommt, wechseln wir nicht stumpf auf „error“, sondern zeigen „requiresAuth“ (mit generischem Teamname falls nötig) und leiten sauber zum Login.
-          - Vorteil: selbst wenn ein Auth-Header/Session merkwürdig ist, bekommt der Nutzer nicht sofort “Invitation Error”, sondern den korrekten „Sign in to accept“-Flow.
-     C) Optional: Token bereits beim Anzeigen des Login-Screens speichern
-        - Wenn wir im „requiresAuth“-State sind: `localStorage.setItem("pending_team_invite", token)` (falls noch nicht gesetzt)
-        - Dann reicht ein normales Login/Signup und `AuthCallback.tsx` leitet automatisch zurück.
+3) Backend: accept-invite Fehlerfälle als 200 + structured payload zurückgeben (optional, aber empfohlen)
+Datei: `supabase/functions/team-management/index.ts` (Case `"accept-invite"`)
+- Um das `response.error`-Problem dauerhaft zu eliminieren, stellen wir auf ein einheitliches Response-Schema um:
+  - Immer `status: 200` bei erwartbaren Business-Fehlern (Invite invalid, mismatch, team full), z.B.:
+    - `{ ok: false, error: "INVITE_INVALID" }`
+    - `{ ok: false, error: "EMAIL_MISMATCH", invitedEmail }`
+    - `{ ok: false, error: "TEAM_FULL" }`
+    - `{ ok: false, requiresAuth: true, email, teamName }`
+  - Nur echte Systemfehler bleiben 500.
+- Parallel dazu passt TeamInvite die Mapping-Logik auf diese Codes an (auch einfacher zu warten).
+- Bonus-Fix: Beim `alreadyMember`-Return zusätzlich `teamId` und `teamName` mitsenden (damit der UI-State keine leeren Werte hat).
 
-4) Testplan (kurz, aber eindeutig)
-   - Test 1 (Published → non-registered):
-     1) In Published einladen (an eine E-Mail ohne Account)
-     2) Link in Incognito öffnen
-     3) Erwartung: „Join {team}“ / „Sign in to accept“ erscheint (kein Fehler)
-     4) Signup/Login durchführen
-     5) Erwartung: nach Callback automatisch wieder `/team/invite/:token` und danach „Welcome to {team}“
-   - Test 2 (Preview → non-registered):
-     1) In Preview einladen
-     2) Prüfen, dass der Link in der E-Mail auf die Preview-Domain zeigt
-     3) Flow wie oben
-   - Test 3 (alte/überschriebene Links):
-     1) Gleiche E-Mail zweimal einladen (beachte: DB hat UNIQUE(team_id,email), Token wird überschrieben)
-     2) Alter Link muss „Invalid/expired invitation“ anzeigen (jetzt mit guter Fehlermeldung), neuer Link muss funktionieren
+4) Login-Flow ohne Storage: returnTo per URL statt localStorage (damit es auch ohne pending_team_invite “smooth” ist)
+Dateien: `src/pages/TeamInvite.tsx`, `src/pages/Auth.tsx`, `src/pages/AuthCallback.tsx`
+- Du wolltest Storage komplett entfernen; aktuell bedeutet das aber, dass nach Login der Invite nicht automatisch weiterläuft.
+- Lösung ohne Storage:
+  - In TeamInvite bei „Sign In to Accept“: navigiere zu `/auth?intent=invite&email=...&returnTo=/team/invite/<token>`
+  - In Auth.tsx:
+    - `email` QueryParam auslesen und ins Formular vorbefüllen
+    - `returnTo` QueryParam beim Login/Signup/OAuth weiterreichen:
+      - Email/Pass Login: `navigate("/auth/callback?returnTo=...")`
+      - Google OAuth: `redirectTo: ".../auth/callback?returnTo=..."`
+      - register-user redirectUrl: `".../auth/callback?returnTo=..."`
+    - Bei bereits eingeloggtem User nicht stumpf auf `/` redirecten, sondern wenn `returnTo` existiert → direkt dahin.
+  - In AuthCallback.tsx:
+    - `returnTo` aus QueryParam lesen und nach erfolgreichem Login dorthin navigieren
+    - Den alten `pending_team_invite` localStorage-Block entfernen (weil du Storage dafür nicht willst)
+- Ergebnis: Nahtloser Invite-Flow ohne sessionStorage/localStorage.
 
-Hinweis zu einem möglichen weiteren “stolperstein” (wenn du willst, lösen wir das als Nächstes)
-- Weil `team_invitations` `UNIQUE(team_id,email)` hat, wird bei “nochmal einladen” der Token überschrieben. Ein alter Link ist dann tatsächlich ungültig. Das ist technisch korrekt, kann aber verwirrend sein. Wenn du möchtest, können wir das Datenmodell so ändern, dass mehrere Einladungen historisch gültig bleiben (mit sauberem Cleanup). Das wäre ein separater Schritt (DB-Migration + Anpassung Invite-Logik).
+5) Testplan (konkret, damit wir sofort sehen ob es wirklich gefixt ist)
+A) Nicht eingeloggter Nutzer (Inkognito)
+- Invite an E-Mail X senden
+- Link öffnen → muss „Join … / Sign in to accept“ zeigen (nicht Invitation Error)
+- Login/Signup mit E-Mail X → nach Callback automatisch zurück zur Einladung → „Welcome to …“
 
-Ergebnis
-- Nicht registrierte Nutzer bekommen konsistent den richtigen Login-/Signup-Flow.
-- Einladungslinks zeigen immer auf die passende Umgebung (Preview vs Published), dadurch verschwinden die “immer noch nicht”-Fälle, die durch Umgebungs-Mismatch entstehen.
-- Fehlertexte werden nachvollziehbar, falls wirklich ein ungültiger/alter Token genutzt wird.
+B) Eingeloggter Nutzer mit gleicher E-Mail wie Einladung
+- Link öffnen → sollte direkt „Welcome to …“ zeigen
+
+C) Eingeloggter Nutzer mit anderer E-Mail als Einladung
+- Link öffnen → sollte „Wrong account“ (emailMismatch) zeigen (nicht Invitation Error)
+
+Risiken / Edge Cases
+- Alte Einladungslinks können legitimerweise ungültig werden, wenn dieselbe E-Mail erneut eingeladen wurde (Token wird überschrieben). Mit dem neuen Error-Handling ist das klar und verständlich sichtbar.
+- Wenn synoptas.com tatsächlich nicht auf dieselbe App zeigt oder umleitet, müssen wir zusätzlich auf ein Link-Format wechseln, das immer `/` lädt (z.B. `https://synoptas.com/?invite=<token>` + App-internes Redirect). Aktuell sieht es aber nach App-Ladepfad aus, weil accept-invite Calls in Logs auftauchen.
+
+Umfang: Dateien die wir anfassen werden
+- `src/pages/TeamInvite.tsx` (Hauptfix)
+- `supabase/functions/team-management/index.ts` (accept-invite Response vereinheitlichen + alreadyMember payload)
+- `src/pages/Auth.tsx` (email/returnTo aus URL, weiterreichen)
+- `src/pages/AuthCallback.tsx` (returnTo handling, pending_team_invite entfernen)
+
+Erwartetes Ergebnis
+- Keine generischen „Invitation Error“-Screens mehr für normale Fälle.
+- Einladungen funktionieren wieder vollständig, ohne Token in Browser-Storage zu speichern.

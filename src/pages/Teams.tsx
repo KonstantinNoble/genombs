@@ -286,7 +286,7 @@ export default function Teams() {
                                     className="gap-1.5 flex-1 sm:flex-none min-h-[44px] sm:min-h-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                                   >
                                     <LogOut className="h-4 w-4" />
-                                    <span className="hidden xs:inline">Leave</span>
+                                    Leave
                                   </Button>
                                 )}
                                 
@@ -309,7 +309,23 @@ export default function Teams() {
               )}
 
               {/* Create Team Button - Always visible */}
-              <div className="pt-6">
+              <div className="pt-6 space-y-3">
+                {isPremium && !canCreateMoreTeams && (
+                  <Card className="border-amber-500/30 bg-amber-500/5">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Crown className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-sm">Team limit reached</p>
+                          <p className="text-sm text-muted-foreground">
+                            You've created {ownedTeamsCount} of {TEAM_LIMITS.MAX_TEAMS_PER_USER} teams. 
+                            To create a new team, please delete an existing one first.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
                 <Button
                   variant="outline"
                   className="w-full gap-2 h-12 border-dashed"
@@ -326,13 +342,9 @@ export default function Teams() {
                 >
                   <Plus className="h-4 w-4" />
                   Create New Team
-                  {!isPremium ? (
+                  {!isPremium && (
                     <Crown className="h-4 w-4 text-amber-500 ml-1" />
-                  ) : !canCreateMoreTeams ? (
-                    <span className="text-muted-foreground text-xs">
-                      ({ownedTeamsCount}/{TEAM_LIMITS.MAX_TEAMS_PER_USER} teams)
-                    </span>
-                  ) : null}
+                  )}
                 </Button>
               </div>
             </div>

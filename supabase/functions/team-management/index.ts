@@ -263,6 +263,18 @@ serve(async (req: Request) => {
           });
         }
 
+        // Validate role - only member and viewer can be assigned
+        const ASSIGNABLE_ROLES = ['member', 'viewer'];
+        if (!ASSIGNABLE_ROLES.includes(role)) {
+          return new Response(JSON.stringify({ 
+            error: "INVALID_ROLE",
+            message: "Only 'member' and 'viewer' roles can be assigned" 
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         // Check if user is admin/owner of the team
         const { data: membership } = await supabase
           .from("team_members")
@@ -578,6 +590,17 @@ serve(async (req: Request) => {
         if (membership?.role !== "owner") {
           return new Response(JSON.stringify({ error: "Only team owner can change roles" }), {
             status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Validate new role - only member and viewer can be assigned
+        const ASSIGNABLE_ROLES = ['member', 'viewer'];
+        if (!ASSIGNABLE_ROLES.includes(newRole)) {
+          return new Response(JSON.stringify({ 
+            error: "Only 'member' and 'viewer' roles can be assigned" 
+          }), {
+            status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }

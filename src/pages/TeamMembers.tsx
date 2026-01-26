@@ -381,7 +381,7 @@ export default function TeamMembers() {
             <Button
               variant="outline"
               onClick={() => navigate("/team/settings")}
-              className="gap-2 shrink-0"
+              className="gap-2 shrink-0 w-full sm:w-auto min-h-[44px] sm:min-h-0"
             >
               <Settings className="h-4 w-4" />
               Team Settings
@@ -484,7 +484,11 @@ export default function TeamMembers() {
                     <SelectItem value="viewer">Viewer</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached || ownerIsPremium === false}>
+                <Button 
+                  type="submit" 
+                  disabled={isInviting || !inviteEmail || isMemberLimitReached || ownerIsPremium === false}
+                  className="w-full sm:w-auto min-h-[44px] sm:min-h-0"
+                >
                   {isInviting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -536,14 +540,15 @@ export default function TeamMembers() {
                   return (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border bg-card gap-3"
                     >
+                      {/* Member Info */}
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
                           <RoleIcon className="h-5 w-5 text-muted-foreground" />
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-medium truncate">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium truncate text-sm sm:text-base">
                             {member.email}
                             {isSelf && (
                               <span className="text-muted-foreground ml-2">(you)</span>
@@ -555,7 +560,8 @@ export default function TeamMembers() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 justify-end sm:justify-start">
                         {canModify ? (
                           <Select
                             value={member.role}
@@ -563,7 +569,7 @@ export default function TeamMembers() {
                               handleRoleChange(member.id, member.user_id, v as TeamRole)
                             }
                           >
-                            <SelectTrigger className="w-[110px]">
+                            <SelectTrigger className="w-[110px] min-h-[44px] sm:min-h-0">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -584,7 +590,7 @@ export default function TeamMembers() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                             onClick={() => setMemberToRemove(member)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -613,22 +619,25 @@ export default function TeamMembers() {
                 {invitations.map((invite) => (
                   <div
                     key={invite.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-dashed bg-muted/30"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-dashed bg-muted/30 gap-3"
                   >
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{invite.email}</p>
+                    {/* Invite Info */}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate text-sm sm:text-base">{invite.email}</p>
                       <p className="text-xs text-muted-foreground">
                         Expires {new Date(invite.expires_at).toLocaleDateString()}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 justify-end sm:justify-start">
                       <Badge variant="outline" className={roleColors[invite.role]}>
                         {invite.role}
                       </Badge>
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                         onClick={() => setInviteToCancel(invite)}
                       >
                         <X className="h-4 w-4" />

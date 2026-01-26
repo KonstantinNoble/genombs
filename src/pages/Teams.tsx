@@ -11,6 +11,7 @@ import {
   Shield,
   Eye
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -144,20 +145,20 @@ export default function Teams() {
             <div className="space-y-4">
               {/* Personal Workspace */}
               <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <User className="h-6 w-6 text-primary" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">Personal Workspace</h3>
+                        <h3 className="font-semibold text-base sm:text-lg">Personal Workspace</h3>
                         <p className="text-sm text-muted-foreground">
                           Your private analyses and experiments
                         </p>
                       </div>
                     </div>
-                    <Button onClick={handleSwitchToPersonal} className="gap-2">
+                    <Button onClick={handleSwitchToPersonal} className="gap-2 w-full sm:w-auto min-h-[44px] sm:min-h-0">
                       Open
                       <ArrowRight className="h-4 w-4" />
                     </Button>
@@ -185,14 +186,20 @@ export default function Teams() {
 
                       return (
                         <Card key={team.id} className="hover:border-primary/30 transition-colors">
-                          <CardContent className="p-6">
-                            <div className="flex items-center justify-between flex-wrap gap-4">
-                              <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center">
-                                  <Building2 className="h-6 w-6 text-muted-foreground" />
+                          <CardContent className="p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                              {/* Team Info */}
+                              <div className="flex items-center gap-3 sm:gap-4">
+                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                  <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                                 </div>
-                                <div>
-                                  <h3 className="font-semibold text-lg">{team.name}</h3>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h3 className="font-semibold text-base sm:text-lg truncate">{team.name}</h3>
+                                    <Badge variant="outline" className={cn("text-xs shrink-0", roleColors[team.role])}>
+                                      {team.role}
+                                    </Badge>
+                                  </div>
                                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <RoleIcon className="h-3.5 w-3.5" />
                                     <span className="capitalize">{team.role}</span>
@@ -200,33 +207,30 @@ export default function Teams() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Badge variant="outline" className={roleColors[team.role]}>
-                                  {team.role}
-                                </Badge>
-                                
+                              {/* Actions - Full width on mobile */}
+                              <div className="flex items-center gap-2 w-full sm:w-auto">
                                 {isOwnerOrAdmin && (
                                   <>
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="gap-1.5"
+                                      className="gap-1.5 flex-1 sm:flex-none min-h-[44px] sm:min-h-0"
                                       asChild
                                     >
                                       <Link to="/team/members" onClick={() => handleSetTeamForLink(team.id)}>
                                         <Users className="h-4 w-4" />
-                                        Members
+                                        <span className="hidden xs:inline">Members</span>
                                       </Link>
                                     </Button>
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="gap-1.5"
+                                      className="gap-1.5 flex-1 sm:flex-none min-h-[44px] sm:min-h-0"
                                       asChild
                                     >
                                       <Link to="/team/settings" onClick={() => handleSetTeamForLink(team.id)}>
                                         <Settings className="h-4 w-4" />
-                                        Settings
+                                        <span className="hidden xs:inline">Settings</span>
                                       </Link>
                                     </Button>
                                   </>
@@ -235,7 +239,7 @@ export default function Teams() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleSwitchToTeam(team.id)}
-                                  className="gap-1.5"
+                                  className="gap-1.5 flex-1 sm:flex-none min-h-[44px] sm:min-h-0"
                                 >
                                   Open
                                   <ArrowRight className="h-4 w-4" />

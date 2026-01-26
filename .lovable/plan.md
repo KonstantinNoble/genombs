@@ -1,82 +1,132 @@
 
-# Loesung: Team-Analyse Premium-Status Handling
+# Rollen-Vereinfachung: Nur Member und Viewer als zuweisbare Rollen
 
-## Problem
+## Uebersicht
 
-Wenn ein Premium-User eine Analyse eines Free-Users im Team-Workspace anklickt:
-- Wird "Upgrade to Premium" angezeigt (obwohl der User bereits Premium ist)
-- Klick auf "Upgrade" fuehrt zur Pricing-Seite (verwirrend)
+Das aktuelle Rollensystem erlaubt es, Benutzer als "admin" einzuladen oder zu befoerdern. Dies widerspricht dem Konzept, dass nur "Owner" automatisch und unveraenderlich vergeben wird. Die Loesung beschraenkt die zuweisbaren Rollen auf **Member** und **Viewer**.
 
-**Ursache:** Die Analyse speichert `is_premium: false` (Status des Erstellers). Beim Anzeigen wird dieser Wert verwendet, nicht der Status des Betrachters.
+## Aktuelle Rollenstruktur
+
+| Rolle | Vergabe | Zuweisbar via UI? |
+|-------|---------|-------------------|
+| Owner | Automatisch bei Team-Erstellung | Nein (nur Transfer) |
+| Admin | Manuell | Aktuell: Ja (Problem!) |
+| Member | Manuell | Ja |
+| Viewer | Manuell | Ja |
+
+## Ziel-Rollenstruktur
+
+| Rolle | Vergabe | Zuweisbar via UI? |
+|-------|---------|-------------------|
+| Owner | Automatisch bei Team-Erstellung | Nein (nur Transfer) |
+| Admin | Nach Owner-Transfer (ehemaliger Owner) | Nein |
+| Member | Manuell durch Owner/Admin | Ja |
+| Viewer | Manuell durch Owner/Admin | Ja |
 
 ---
 
-## Loesung
+## Aenderungen
 
-Unterscheidung zwischen zwei Szenarien:
+### 1. Frontend: Role-Dropdowns einschraenken
 
-| Betrachter | Analyse-Ersteller | Ergebnis |
-|------------|-------------------|----------|
-| Free | Free | "Upgrade to Premium" Button (aktuelles Verhalten) |
-| Free | Premium | Premium-Inhalte sichtbar (funktioniert bereits) |
-| Premium | Premium | Premium-Inhalte sichtbar (funktioniert bereits) |
-| Premium | Free | **NEU:** Info-Meldung "Dein Teammitglied ist kein Premium-User" |
+**Datei: `src/pages/TeamMembers.tsx`**
+
+Entferne "Admin" aus beiden Select-Dropdowns:
+
+**Invite-Formular (Zeile 470-474):**
+```text
+Vorher:
+<SelectItem value="admin">Admin</SelectItem>
+<SelectItem value="member">Member</SelectItem>
+<SelectItem value="viewer">Viewer</SelectItem>
+
+Nachher:
+<SelectItem value="member">Member</SelectItem>
+<SelectItem value="viewer">Viewer</SelectItem>
+```
+
+**Role-Change Dropdown (Zeile 557-561):**
+```text
+Vorher:
+<SelectItem value="admin">Admin</SelectItem>
+<SelectItem value="member">Member</SelectItem>
+<SelectItem value="viewer">Viewer</SelectItem>
+
+Nachher:
+<SelectItem value="member">Member</SelectItem>
+<SelectItem value="viewer">Viewer</SelectItem>
+```
+
+**Standard-Rolle aendern (Zeile 102):**
+```text
+Vorher:
+const [inviteRole, setInviteRole] = useState<TeamRole>("member");
+
+Keine Aenderung noetig - "member" ist bereits Standard
+```
 
 ---
 
-## Technische Umsetzung
+### 2. Backend: Rollen-Validierung hinzufuegen
 
-### 1. Neue Komponente: `TeammatePremiumNotice.tsx`
+**Datei: `supabase/functions/team-management/index.ts`**
 
-Erstellt eine Info-Box die erklaert, warum Premium-Funktionen fehlen:
+#### Invite-Handler (Zeile 247-390):
 
-```text
-Datei: src/components/validation/TeammatePremiumNotice.tsx
+Nach der Email-Validierung (Zeile 258-264), Rollen-Validierung hinzufuegen:
 
-Inhalt:
-- Alert-Box mit Info-Icon
-- Titel: "Created by Free User"
-- Text erklaert, dass der Ersteller kein Premium hat
-- Keine Upgrade-Buttons (da der Betrachter bereits Premium ist)
+```typescript
+// === NACH Zeile 264 einfuegen ===
+
+// Validate role - only member and viewer can be assigned
+const ASSIGNABLE_ROLES = ['member', 'viewer'];
+if (!ASSIGNABLE_ROLES.includes(role)) {
+  return new Response(JSON.stringify({ 
+    error: "INVALID_ROLE",
+    message: "Only 'member' and 'viewer' roles can be assigned" 
+  }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 ```
 
-### 2. Aenderungen in `ValidationOutput.tsx`
+#### Update-Role Handler (Zeile 567-621):
 
-Neue Props hinzufuegen:
-- `viewerIsPremium` - Premium-Status des Betrachters
-- `isTeamAnalysis` - Ob die Analyse aus einem Team stammt
+Nach der Owner-Berechtigung-Pruefung (Zeile 578-583), Rollen-Validierung hinzufuegen:
 
-Logik aendern:
-- Wenn `viewerIsPremium` UND `!isPremium` (Analyse) UND `isTeamAnalysis`:
-  - Zeige `TeammatePremiumNotice` statt Premium-Inhalte
-  - PDFExportButton und DecisionConfirmation sind nicht verfuegbar (aber keine Upgrade-Meldung)
+```typescript
+// === NACH Zeile 583 einfuegen ===
 
-### 3. Aenderungen in `PDFExportButton.tsx`
-
-Neue Props:
-- `viewerIsPremium`
-- `isTeamAnalysis`
-
-Angepasste Logik:
-```text
-Wenn isPremium = false (Analyse ist von Free User):
-  Wenn viewerIsPremium UND isTeamAnalysis:
-    -> Tooltip: "PDF nicht verfuegbar - Ersteller ist kein Premium-User"
-    -> KEIN Link zur Pricing-Seite
-  Sonst (normaler Free-User):
-    -> Bestehendes Verhalten (Upgrade-Link)
+// Validate new role - only member and viewer can be assigned
+const ASSIGNABLE_ROLES = ['member', 'viewer'];
+if (!ASSIGNABLE_ROLES.includes(newRole)) {
+  return new Response(JSON.stringify({ 
+    error: "Only 'member' and 'viewer' roles can be assigned" 
+  }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 ```
 
-### 4. Aenderungen in `ValidationPlatform.tsx`
+---
 
-`handleHistoryClick` anpassen:
-- Speichern ob Analyse aus Team stammt: `setIsTeamAnalysis(!!item.team_id)`
-- Props an `ValidationOutput` weitergeben:
-  - `viewerIsPremium={isPremium}` (Status des eingeloggten Users)
-  - `isTeamAnalysis={isTeamAnalysis}`
+### 3. Role Descriptions aktualisieren (optional)
 
-Upgrade-Banner in Zeilen 562-572:
-- Keine Aenderung noetig (zeigt nur fuer den aktuellen User-Status)
+**Datei: `src/pages/TeamMembers.tsx`**
+
+Die Admin-Beschreibung bleibt fuer bestehende Admins (nach Transfer), aber kann um einen Hinweis ergaenzt werden:
+
+```text
+Zeile 401-406:
+<div>
+  <p className="font-medium">Admin</p>
+  <p className="text-muted-foreground">
+    Invite members, change roles (assigned after ownership transfer)
+  </p>
+</div>
+```
 
 ---
 
@@ -84,16 +134,22 @@ Upgrade-Banner in Zeilen 562-572:
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/components/validation/TeammatePremiumNotice.tsx` | Neu erstellt |
-| `src/components/validation/ValidationOutput.tsx` | Neue Props, Logik fuer Team-Analyse |
-| `src/components/validation/PDFExportButton.tsx` | Neue Props, angepasste Meldung |
-| `src/pages/ValidationPlatform.tsx` | State fuer Team-Analyse, Props weitergeben |
+| `src/pages/TeamMembers.tsx` | "Admin" aus beiden Dropdowns entfernen |
+| `supabase/functions/team-management/index.ts` | Rollen-Validierung bei invite und update-role |
 
 ---
 
-## Vorteile
+## Sicherheitsaspekte
 
-- Premium-User sehen keine verwirrenden "Upgrade"-Meldungen
-- Klare Kommunikation warum Premium-Features fehlen
-- Free-User behalten den Upgrade-Pfad
-- Konsistentes Erlebnis im Team-Kontext
+- **Backend-First**: Selbst wenn jemand die Frontend-Validierung umgeht, lehnt das Backend ungueltige Rollen ab
+- **Bestehende Admins bleiben**: Bereits existierende Admins (z.B. nach ownership-transfer) behalten ihre Rolle
+- **Klare Fehlermeldungen**: Bei API-Missbrauch wird eine verstaendliche Fehlermeldung zurueckgegeben
+
+---
+
+## Edge Cases
+
+1. **Bestehender Admin**: Bleibt Admin, kann aber nicht zu Admin befoerdert werden
+2. **Owner-Transfer**: Ehemaliger Owner wird weiterhin zum Admin (Zeile 668-672 unveraendert)
+3. **API-Aufruf mit "admin"**: Wird mit 400-Fehler abgelehnt
+

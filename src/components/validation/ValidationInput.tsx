@@ -88,8 +88,12 @@ export const ValidationInput = forwardRef<ValidationInputRef, ValidationInputPro
           </div>
         </div>
         
-        {/* Enhanced Textarea */}
+        {/* Enhanced Textarea with Permanent Green Glow */}
         <div className="relative">
+          {/* Permanent Green Glow Effect */}
+          <div className="absolute -inset-[2px] rounded-xl bg-gradient-to-r from-emerald-500/40 via-green-400/30 to-emerald-500/40 blur-sm" />
+          <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-emerald-500/60 via-green-500/50 to-emerald-600/60" />
+          
           <Textarea
             id="prompt"
             value={prompt}
@@ -100,12 +104,12 @@ Is hiring a dedicated CTO the right move for our stage?
 
 Should we pivot our business model from B2C to B2B?"
             className={cn(
-              "min-h-[140px] sm:min-h-[180px] text-base sm:text-lg resize-none leading-relaxed",
-              "bg-background/80 border-2 border-border/50 rounded-xl",
+              "relative min-h-[140px] sm:min-h-[180px] text-base sm:text-lg resize-none leading-relaxed",
+              "bg-background border-2 border-emerald-500/50 rounded-xl",
               "placeholder:text-muted-foreground/40 placeholder:leading-relaxed",
-              "focus:border-primary/40 focus:bg-background focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.1)]",
+              "focus:border-emerald-400 focus:shadow-[0_0_20px_hsl(142,70%,45%,0.3)]",
               "transition-all duration-300",
-              prompt.length > 0 && "border-primary/20 bg-background"
+              "shadow-[0_0_15px_hsl(142,70%,45%,0.15)]"
             )}
             disabled={disabled}
             maxLength={MAX_CHARACTERS}

@@ -1,223 +1,163 @@
 
-# Team-Feature: Limits & Credit-Verifizierung
 
-## Zusammenfassung der Änderungen
+# Workspace-Verwaltung: Bessere Auffindbarkeit & Ladezeiten
 
-### 1. Neue Limits einführen:
-| Limit | Wert | Beschreibung |
-|-------|------|--------------|
-| **Max Mitglieder pro Team** | **5** | Inklusive Owner (statt 10) |
-| **Max Teams pro User** | 5 | Als Owner |
-| **Max Einladungen pro Team/Tag** | 10 | Bereits vorhanden |
-| **Max ausstehende Einladungen pro E-Mail** | 3 | Bereits vorhanden |
+## Identifizierte Probleme
 
-### 2. Credits sind GLOBAL - Verifizierung:
-**Bestätigt korrekt implementiert:**
-- Credits werden in der `user_credits` Tabelle pro `user_id` gespeichert
-- Die `increment_validation_count` Funktion verwendet nur `user_id`, keine `team_id`
-- Egal ob Personal oder Team-Modus: Credits werden vom individuellen User abgezogen
-- Free User: 2 Validierungen/Tag, Premium: 10 Validierungen/Tag - unabhängig vom Workspace
+| Problem | Auswirkung |
+|---------|------------|
+| **TeamMembers lädt langsam** | Nur Spinner sichtbar, keine Skeleton-Vorschau |
+| **Workspace schwer zu finden** | Nur über TeamSwitcher im Dashboard erreichbar |
+| **TeamSwitcher nur auf 3 Seiten** | `/validate`, `/dashboard`, `/team/members` |
+| **Keine Workspace-Links im Profil** | User wissen nicht wo sie Teams verwalten |
+| **Inkonsistente Navigation** | "Back to Validation" macht nicht immer Sinn |
 
 ---
 
-## Phase 1: Backend-Limits im Edge Function
+## Lösungsübersicht
 
-**Datei: `supabase/functions/team-management/index.ts`**
+### Phase 1: Skeleton-Loading für TeamMembers
 
-### 1.1 Team-Limit (max. 5 Teams als Owner)
+Statt nur Spinner zeigen wir sofort die Seitenstruktur mit Skeleton-Elementen:
 
-Im `case "create"` Block nach dem Premium-Check hinzufügen:
-
-```typescript
-// Check team limit (max 5 teams as owner)
-const { count: ownedTeamsCount } = await supabase
-  .from("teams")
-  .select("*", { count: "exact", head: true })
-  .eq("owner_id", userId);
-
-if (ownedTeamsCount && ownedTeamsCount >= 5) {
-  return new Response(JSON.stringify({ error: "TEAM_LIMIT_REACHED" }), {
-    status: 403,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+```text
+┌────────────────────────────────────────┐
+│  [████████] Team Name                  │
+│  ─────────────────────────────────────│
+│  Role Permissions                      │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐      │
+│  │█████│ │█████│ │█████│ │█████│      │
+│  └─────┘ └─────┘ └─────┘ └─────┘      │
+│  ─────────────────────────────────────│
+│  Invite Member (2/5)                   │
+│  ┌────────────────────────────────┐   │
+│  │ ████████████████               │   │
+│  └────────────────────────────────┘   │
+│  ─────────────────────────────────────│
+│  Members (2)                           │
+│  ┌────────────────────────────────┐   │
+│  │ █████  email@████████  [Admin] │   │
+│  │ █████  email@████████  [Owner] │   │
+│  └────────────────────────────────┘   │
+└────────────────────────────────────────┘
 ```
 
-### 1.2 Mitglieder-Limit (max. 5 Mitglieder pro Team)
-
-Im `case "invite"` Block nach den bestehenden Rate-Limit-Checks hinzufügen:
-
-```typescript
-// Check member limit (max 5 members including pending invites)
-const { count: currentMemberCount } = await supabase
-  .from("team_members")
-  .select("*", { count: "exact", head: true })
-  .eq("team_id", teamId);
-
-const { count: pendingInviteCount } = await supabase
-  .from("team_invitations")
-  .select("*", { count: "exact", head: true })
-  .eq("team_id", teamId)
-  .gt("expires_at", new Date().toISOString());
-
-const totalCount = (currentMemberCount || 0) + (pendingInviteCount || 0);
-
-if (totalCount >= 5) {
-  return new Response(JSON.stringify({ error: "MEMBER_LIMIT_REACHED" }), {
-    status: 403,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
-
-### 1.3 Member-Limit beim Annehmen prüfen
-
-Im `case "accept-invite"` Block vor dem INSERT hinzufügen:
-
-```typescript
-// Double-check member limit before accepting
-const { count: memberCount } = await supabase
-  .from("team_members")
-  .select("*", { count: "exact", head: true })
-  .eq("team_id", invitation.team_id);
-
-if (memberCount && memberCount >= 5) {
-  // Delete expired invitation and inform user
-  await supabase.from("team_invitations").delete().eq("id", invitation.id);
-  return new Response(JSON.stringify({ error: "TEAM_FULL" }), {
-    status: 403,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
+**Datei**: `src/pages/TeamMembers.tsx`
 
 ---
 
-## Phase 2: Frontend-Feedback für Team-Limit
+### Phase 2: Workspace-Link im Profil
 
-**Datei: `src/components/team/CreateTeamDialog.tsx`**
+Neue "My Teams" Section in der Profil-Seite:
 
-Im `catch` Block Fehlerbehandlung erweitern:
-
-```typescript
-if (error.message === "TEAM_LIMIT_REACHED") {
-  toast({
-    title: "Team limit reached",
-    description: "You can create a maximum of 5 teams. Delete an existing team to create a new one.",
-    variant: "destructive",
-  });
-}
+```text
+┌────────────────────────────────────────┐
+│  My Teams                         [→]  │
+│  ─────────────────────────────────────│
+│  🏢 Acme Corp          Owner  Manage → │
+│  🏢 Startup Team       Member Manage → │
+│  ─────────────────────────────────────│
+│  [+ Create Team] (Premium only)        │
+└────────────────────────────────────────┘
 ```
+
+**Datei**: `src/pages/Profile.tsx`
 
 ---
 
-## Phase 3: Frontend-Feedback für Team-Switcher
+### Phase 3: TeamSwitcher auf mehr Seiten anzeigen
 
-**Datei: `src/components/team/TeamSwitcher.tsx`**
+Den TeamSwitcher auch auf der Profil-Seite und im Team-Settings anzeigen:
 
-1. Owned Teams zählen und "Create Team" Button bedingt deaktivieren:
+**Datei**: `src/components/Navbar.tsx`
 
+Zeile 18 anpassen:
 ```typescript
-const ownedTeamsCount = teams.filter(t => t.role === "owner").length;
-const canCreateMoreTeams = ownedTeamsCount < 5;
+// Von:
+const showTeamSwitcher = user && ["/validate", "/dashboard", "/team/members"].some(...)
+
+// Zu:
+const showTeamSwitcher = user && ["/validate", "/dashboard", "/team", "/profile"].some(...)
 ```
 
-2. Im JSX beim "Create Team" Button:
+Dies zeigt den Switcher auf:
+- `/validate`
+- `/dashboard`
+- `/team/members`
+- `/team/settings`
+- `/profile`
 
-```tsx
-{isPremium && (
-  <>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem
-      onClick={() => {
-        if (canCreateMoreTeams) {
-          setShowCreateDialog(true);
-          setOpen(false);
-        }
-      }}
-      disabled={!canCreateMoreTeams}
-      className={cn("gap-2", canCreateMoreTeams ? "text-primary" : "opacity-50")}
-    >
-      <Plus className="h-4 w-4" />
-      <span>Create Team</span>
-      {!canCreateMoreTeams && (
-        <span className="ml-auto text-xs text-muted-foreground">(5/5)</span>
-      )}
-    </DropdownMenuItem>
-  </>
-)}
+---
+
+### Phase 4: Dedizierte "My Teams" Seite (Optional)
+
+Eine neue `/teams` Seite die alle Teams auf einen Blick zeigt:
+
+**Neue Datei**: `src/pages/Teams.tsx`
+
+Features:
+- Liste aller Teams mit Rolle und Mitgliederzahl
+- Schnellzugriff auf Team Settings
+- Schnellzugriff auf Team Members
+- "Create Team" Button (Premium)
+- Link zu dieser Seite in Navbar für eingeloggte User
+
+```text
+┌──────────────────────────────────────────────────┐
+│  My Workspaces                                   │
+│  ────────────────────────────────────────────────│
+│  ┌──────────────────────────────────────────┐   │
+│  │  Personal Workspace                       │   │
+│  │  Your private analyses and experiments    │   │
+│  │  [Open →]                                 │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  🏢 Acme Corp                  Owner      │   │
+│  │  3/5 Members                              │   │
+│  │  [Members] [Settings] [Open →]            │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  ┌──────────────────────────────────────────┐   │
+│  │  🏢 Startup Team               Member     │   │
+│  │  2/5 Members                              │   │
+│  │  [View Members] [Open →]                  │   │
+│  └──────────────────────────────────────────┘   │
+│                                                  │
+│  [+ Create New Team]                             │
+└──────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Phase 4: Frontend-Feedback für Mitglieder-Limit
+### Phase 5: Navbar-Link zu Workspaces
 
-**Datei: `src/pages/TeamMembers.tsx`**
+Für eingeloggte User einen "Teams" Link in der Navbar hinzufügen:
 
-### 4.1 Limit-Status berechnen und anzeigen:
+**Datei**: `src/components/Navbar.tsx`
 
 ```typescript
-const isMemberLimitReached = members.length + invitations.length >= 5;
+{user && <NavLink to="/teams">Teams</NavLink>}
+{user && <NavLink to="/dashboard">Dashboard</NavLink>}
 ```
 
-### 4.2 Im Header des Invite-Formulars:
+---
 
-```tsx
-<CardTitle className="flex items-center gap-2">
-  <UserPlus className="h-5 w-5" />
-  Invite Member
-  <span className="text-sm font-normal text-muted-foreground">
-    ({members.length}/5)
-  </span>
-</CardTitle>
-```
+### Phase 6: TeamMembers - Intelligentere "Back" Navigation
 
-### 4.3 Warnung wenn Limit erreicht:
+Statt immer "Back to Validation":
+- Prüfen woher der User kam
+- Dynamischen Back-Link anzeigen
 
-```tsx
-{isMemberLimitReached && (
-  <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-sm mb-4">
-    <AlertTriangle className="h-4 w-4 shrink-0" />
-    <span>Member limit reached (5 max). Remove a member or cancel an invitation to add more.</span>
-  </div>
-)}
-```
+**Datei**: `src/pages/TeamMembers.tsx`
 
-### 4.4 Invite-Button deaktivieren:
+```typescript
+// Nutze useLocation um previous page zu ermitteln
+const from = location.state?.from || "/teams";
 
-```tsx
-<Button type="submit" disabled={isInviting || !inviteEmail || isMemberLimitReached}>
-  ...
+<Button onClick={() => navigate(from)}>
+  <ChevronLeft /> Back
 </Button>
-```
-
-### 4.5 Fehlerbehandlung erweitern:
-
-```typescript
-if (response.data?.error === "MEMBER_LIMIT_REACHED") {
-  toast({
-    title: "Member limit reached",
-    description: "This team has reached the maximum of 5 members.",
-    variant: "destructive",
-  });
-  return;
-}
-```
-
----
-
-## Phase 5: TeamInvite-Seite - TEAM_FULL Fehler
-
-**Datei: `src/pages/TeamInvite.tsx`**
-
-In der `acceptInvitation` Funktion:
-
-```typescript
-if (data.error === "TEAM_FULL") {
-  setState("error");
-  setErrorMessage("This team has reached its member limit of 5. Contact the team admin for more information.");
-  return;
-}
 ```
 
 ---
@@ -226,36 +166,48 @@ if (data.error === "TEAM_FULL") {
 
 | Datei | Änderungen |
 |-------|------------|
-| `supabase/functions/team-management/index.ts` | Team-Limit (5 Teams) + Member-Limit (5 Mitglieder) Checks |
-| `src/components/team/CreateTeamDialog.tsx` | TEAM_LIMIT_REACHED Fehlerbehandlung |
-| `src/components/team/TeamSwitcher.tsx` | Create Team Button deaktivieren bei 5/5 |
-| `src/pages/TeamMembers.tsx` | Member-Counter (x/5) + Limit-Warnung + Fehlerbehandlung |
-| `src/pages/TeamInvite.tsx` | TEAM_FULL Fehlerbehandlung |
+| `src/pages/TeamMembers.tsx` | Skeleton-Loading, dynamische Back-Navigation |
+| `src/pages/Profile.tsx` | "My Teams" Section mit Quick-Links |
+| `src/pages/Teams.tsx` | **NEU** - Dedizierte Workspace-Übersichtsseite |
+| `src/components/Navbar.tsx` | TeamSwitcher auf mehr Seiten, "Teams" NavLink |
+| `src/App.tsx` | Neue Route `/teams` |
 
 ---
 
-## Technische Verifizierung: Credits sind GLOBAL
+## Technische Details
 
-### Bestätigt korrekt:
+### Skeleton-Loading Pattern
 
-| Aspekt | Status | Nachweis |
-|--------|--------|----------|
-| Credits pro User, nicht pro Team | ✅ | `user_credits.user_id` ist der einzige Key |
-| Keine team_id in Credit-Logik | ✅ | `multi-ai-query` prüft nur `user_credits.user_id` |
-| `increment_validation_count` ohne Team | ✅ | Funktion verwendet nur `user_uuid` Parameter |
-| Team-Modus beeinflusst Credits nicht | ✅ | Validation zählt immer gegen den aufrufenden User |
+```typescript
+{isLoading ? (
+  <div className="space-y-4">
+    {/* Header Skeleton */}
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-6 w-24" />
+    </div>
+    
+    {/* Members List Skeleton */}
+    {[...Array(3)].map((_, i) => (
+      <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+        <Skeleton className="h-6 w-16" />
+      </div>
+    ))}
+  </div>
+) : (
+  // Actual content
+)}
+```
 
-### Erklärung für User:
-> Deine Credits werden immer von deinem persönlichen Account abgezogen, egal ob du im Personal Workspace oder in einem Team arbeitest. Das Team beeinflusst nur, wo die Analyse gespeichert und wer sie sehen kann - nicht wie viele Validierungen du durchführen kannst.
+### Vorteile der neuen Struktur
 
----
+1. **Schnellere gefühlte Ladezeit**: Skeleton zeigt sofort Struktur
+2. **Bessere Auffindbarkeit**: Teams über Navbar, Profil und eigene Seite erreichbar
+3. **Konsistente UX**: TeamSwitcher auf allen relevanten Seiten
+4. **Klare Hierarchie**: Dedizierte Teams-Seite als zentraler Einstiegspunkt
 
-## Limitübersicht (Final)
-
-| Limit | Free User | Premium User |
-|-------|-----------|--------------|
-| Validierungen/Tag | 2 | 10 |
-| Teams erstellen | ❌ | 5 Teams |
-| Mitglieder pro Team | - | 5 Mitglieder |
-| Einladungen pro Team/Tag | - | 10 |
-| Ausstehende Einladungen pro E-Mail | - | 3 |

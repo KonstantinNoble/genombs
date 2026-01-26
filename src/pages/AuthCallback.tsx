@@ -90,6 +90,15 @@ const AuthCallback = () => {
           }
         }
 
+        // Check for pending team invitation stored in sessionStorage
+        const pendingInviteToken = sessionStorage.getItem('pending_team_invite');
+        if (pendingInviteToken) {
+          sessionStorage.removeItem('pending_team_invite');
+          toast.success("Successfully signed in! Processing your team invitation...");
+          navigate(`/team/invite/${pendingInviteToken}`);
+          return;
+        }
+
         // Check for stored intent
         const storedIntent = localStorage.getItem('auth_intent');
         localStorage.removeItem('auth_intent');

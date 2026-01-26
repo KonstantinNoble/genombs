@@ -136,7 +136,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     prompt: string,
     riskPreference: number = 3,
     selectedModels: string[],
-    modelWeights: Record<string, number>
+    modelWeights: Record<string, number>,
+    teamId?: string
   ) => {
     setIsValidating(true);
     resetState();
@@ -334,7 +335,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             userPreferences: { riskPreference },
             prompt,
             saveToHistory: true,
-            isPremium: verifiedPremiumStatus
+            isPremium: verifiedPremiumStatus,
+            teamId: teamId || null
           }),
         }
       );

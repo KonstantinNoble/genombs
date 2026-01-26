@@ -606,7 +606,8 @@ serve(async (req) => {
       userPreferences,
       prompt,
       saveToHistory = true,
-      isPremium = false
+      isPremium = false,
+      teamId = null
     } = await req.json();
 
     console.log(`Meta-evaluation started for user ${user.id} (Premium: ${isPremium})`);
@@ -859,6 +860,7 @@ Output the formatted version using the format_evaluation function. Remember: imp
           .from('validation_analyses')
           .insert({
             user_id: user.id,
+            team_id: teamId || null,
             prompt: prompt,
             risk_preference: riskPref,
             creativity_preference: 3,

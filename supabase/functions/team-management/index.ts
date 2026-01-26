@@ -796,6 +796,53 @@ serve(async (req: Request) => {
         });
       }
 
+      case "rename": {
+        const { teamId, name } = body;
+
+        if (!teamId || !name || name.trim().length < 2) {
+          return new Response(JSON.stringify({ error: "Team name must be at least 2 characters" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Only admin or owner can rename
+        const { data: membership } = await supabase
+          .from("team_members")
+          .select("role")
+          .eq("team_id", teamId)
+          .eq("user_id", userId)
+          .single();
+
+        if (!membership || !["owner", "admin"].includes(membership.role)) {
+          return new Response(JSON.stringify({ error: "Only owner or admin can rename team" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Update team name
+        const { error: updateError } = await supabase
+          .from("teams")
+          .update({ name: name.trim() })
+          .eq("id", teamId);
+
+        if (updateError) {
+          console.error("Failed to rename team:", updateError);
+          return new Response(JSON.stringify({ error: "Failed to rename team" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        console.log(`Team ${teamId} renamed to "${name.trim()}" by ${userId}`);
+
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,

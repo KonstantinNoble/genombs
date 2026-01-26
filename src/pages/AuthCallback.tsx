@@ -91,9 +91,9 @@ const AuthCallback = () => {
         }
 
         // Check for pending team invitation stored in sessionStorage
-        const pendingInviteToken = sessionStorage.getItem('pending_team_invite');
+        const pendingInviteToken = localStorage.getItem('pending_team_invite');
         if (pendingInviteToken) {
-          sessionStorage.removeItem('pending_team_invite');
+          localStorage.removeItem('pending_team_invite');
           toast.success("Successfully signed in! Processing your team invitation...");
           navigate(`/team/invite/${pendingInviteToken}`);
           return;

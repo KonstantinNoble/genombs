@@ -1,132 +1,107 @@
 
+## Diagnose (warum der 401 trotz `apikey` weiterhin passiert)
 
-# Fix: 401-Fehler bei multi-ai-query Edge Function
+- Dein Request enthält inzwischen **beide** Header:
+  - `apikey` (Anon Key) ✅
+  - `Authorization: Bearer <user_jwt>` ✅
+- Trotzdem kommt **401**, und in den Logs steht `execution_id: null` → die Anfrage wird **vor Ausführung des Codes** geblockt (Gateway/Plattform-Ebene), nicht von deinem Function-Code.
+- In `supabase/config.toml` ist aktuell für beide Functions gesetzt:
+  - `[functions.multi-ai-query] verify_jwt = true`
+  - `[functions.meta-evaluation] verify_jwt = true`
+- Deine User-JWTs sind **ES256** (Signing Keys). Genau hier ist das Problem: `verify_jwt = true` ist in der Praxis unzuverlässig/inkompatibel mit Signing-Keys-Setups und führt zu 401, bevor die Function überhaupt läuft.
 
-## Ursache des Problems
-
-Das Frontend ruft die Edge Function mit:
-- `Authorization: Bearer {user_jwt}` ✅
-- `apikey: {anon_key}` ❌ **FEHLT**
-
-Supabase Edge Functions mit `verify_jwt = true` benoetigen **beide** Header. Das Fehlen des `apikey` Headers fuehrt zum 401.
-
-## Loesung
-
-Der Frontend-Code in `useMultiAIValidation.ts` muss den `apikey` Header hinzufuegen.
+**Konsequenz:** Wir müssen die “JWT-Verifizierung am Gateway” abschalten und stattdessen **JWT im Code verifizieren**.
 
 ---
 
-## Technische Aenderungen
+## Zielzustand
 
-### Datei: `src/hooks/useMultiAIValidation.ts`
-
-**Zeilen 166-183** - multi-ai-query Aufruf:
-
-```typescript
-// VORHER (Zeile 166-183):
-const queryResponse = await fetch(
-  `${SUPABASE_URL}/functions/v1/multi-ai-query`,
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({...}),
-    signal: abortController.signal
-  }
-);
-
-// NACHHER:
-const queryResponse = await fetch(
-  `${SUPABASE_URL}/functions/v1/multi-ai-query`,
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-      'apikey': SUPABASE_ANON_KEY,  // NEU: Anon Key hinzufuegen
-    },
-    body: JSON.stringify({...}),
-    signal: abortController.signal
-  }
-);
-```
-
-**Zeilen 322-342** - meta-evaluation Aufruf:
-
-```typescript
-// VORHER:
-const evalResponse = await fetch(
-  `${SUPABASE_URL}/functions/v1/meta-evaluation`,
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({...}),
-  }
-);
-
-// NACHHER:
-const evalResponse = await fetch(
-  `${SUPABASE_URL}/functions/v1/meta-evaluation`,
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-      'apikey': SUPABASE_ANON_KEY,  // NEU: Anon Key hinzufuegen
-    },
-    body: JSON.stringify({...}),
-  }
-);
-```
-
-### Datei: `src/lib/supabase/external-client.ts`
-
-Export des Anon Keys hinzufuegen (Zeile 19):
-
-```typescript
-// VORHER:
-export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
-export const SUPABASE_PROJECT_ID = "fhzqngbbvwpfdmhjfnvk";
-
-// NACHHER:
-export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
-export const SUPABASE_ANON_KEY = EXTERNAL_SUPABASE_ANON_KEY;  // NEU
-export const SUPABASE_PROJECT_ID = "fhzqngbbvwpfdmhjfnvk";
-```
-
-### Datei: `src/hooks/useMultiAIValidation.ts`
-
-Import aktualisieren (Zeile 2):
-
-```typescript
-// VORHER:
-import { supabase, SUPABASE_URL } from '@/lib/supabase/external-client';
-
-// NACHHER:
-import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase/external-client';
-```
+- Gateway lässt Requests durch (`verify_jwt = false`)
+- Die Function prüft selbst:
+  - Authorization Header vorhanden + `Bearer …`
+  - JWT gültig (Claims verifiziert)
+  - `userId` aus Claims (`sub`)
+- Danach läuft die eigentliche AI-Logik wie bisher (Modelle/Keys bleiben identisch).
 
 ---
 
-## Zusammenfassung der Aenderungen
+## Umsetzungsplan
 
-| Datei | Aenderung |
-|-------|-----------|
-| `external-client.ts` | Export `SUPABASE_ANON_KEY` hinzufuegen |
-| `useMultiAIValidation.ts` | Import erweitern + `apikey` Header bei beiden fetch-Aufrufen |
+### 1) Backend-Function-Konfiguration anpassen (entscheidend für den 401)
+**Datei:** `supabase/config.toml`
+
+- Ändern auf:
+
+```toml
+[functions.multi-ai-query]
+verify_jwt = false
+
+[functions.meta-evaluation]
+verify_jwt = false
+```
+
+Warum: Dann blockt das Gateway nicht mehr mit 401, und dein Code kann die Auth sauber selbst validieren.
 
 ---
 
-## Warum das funktioniert
+### 2) JWT-Validierung in den Functions korrekt im Code implementieren (Sicherheit bleibt erhalten)
 
-Supabase Edge Functions mit `verify_jwt = true` validieren:
-1. **apikey Header**: Muss ein gueltiger Anon oder Service Role Key sein
-2. **Authorization Header**: Muss ein gueltiger User JWT sein
+#### 2.1 `supabase/functions/multi-ai-query/index.ts`
+Aktuell:
+- liest `Authorization`
+- nutzt Service-Role Client und `supabase.auth.getUser(token)`
 
-Ohne den `apikey` Header lehnt Supabase den Request ab, bevor der Code ueberhaupt laeuft - daher der 401 ohne Logs in der Function selbst.
+Geplant (robuster + sauberer):
+- **Früh** 401 zurückgeben, wenn Header fehlt/ungültig
+- JWT **im Code verifizieren** via Claims (Signing Keys kompatibel)
+- `userId` aus Claims nutzen
 
+Konkrete Code-Änderungen (Konzept):
+- `const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!`
+- `const authHeader = req.headers.get('Authorization')`
+- `if (!authHeader?.startsWith('Bearer ')) return 401`
+- `const token = authHeader.slice('Bearer '.length)`
+- `const authClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } })`
+- `const { data, error } = await authClient.auth.getClaims(token)`
+  - wenn Fehler → `return 401`
+  - `const userId = data.claims.sub`
+- Für DB/RPC weiter wie bisher Service Role verwenden (aber ausschließlich mit `userId` aus Claims, nicht aus Request-Body), z.B. `increment_validation_count(userId, …)`.
+
+Zusätzlich:
+- Unauthorized darf **nicht** als 500 enden → explizit `return new Response(..., { status: 401 })`.
+
+#### 2.2 `supabase/functions/meta-evaluation/index.ts`
+Analog:
+- `verify_jwt=false`
+- `Authorization` prüfen
+- Claims verifizieren → `userId`
+- Team-Rollencheck/DB-Write weiter mit Service Role, aber UserId aus Claims.
+
+---
+
+### 3) Frontend bleibt wie es ist (dein letzter Fix ist korrekt)
+In `src/hooks/useMultiAIValidation.ts` ist `apikey: SUPABASE_ANON_KEY` bereits drin.
+Das behalten wir so bei (auch wenn `verify_jwt=false`), weil es der Standard-Invoke-Mechanismus ist und für das Gateway weiterhin sauber ist.
+
+---
+
+### 4) Test-Checkliste (nach Deployment)
+1. Im Browser erneut “KI Analyse erstellen”
+2. Erwartung:
+   - Kein 401 mehr
+   - Request erreicht die Function (du solltest serverseitige Logs wie `Multi-AI query started...` sehen)
+3. Falls doch Fehler:
+   - Response-Body der Function ansehen (dann wäre es ein “echter” Function-Fehler, kein Gateway-401 mehr)
+
+---
+
+## Risiken / Hinweise
+- `verify_jwt=false` macht die Function nicht “offen”, solange wir **im Code** strikt die JWT-Claims prüfen und nur mit der `sub` (User-ID) aus dem Token arbeiten.
+- Zusätzlich verbessern wir die Fehlercodes: Unauthorized → 401 statt 500.
+
+---
+
+## Deliverables (was ich nach Freigabe umsetze)
+- `supabase/config.toml`: `verify_jwt` für `multi-ai-query` und `meta-evaluation` auf `false`
+- `supabase/functions/multi-ai-query/index.ts`: Code-Auth per Claims, saubere 401 Responses
+- `supabase/functions/meta-evaluation/index.ts`: Code-Auth per Claims, saubere 401 Responses

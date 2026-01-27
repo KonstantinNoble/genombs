@@ -1,101 +1,147 @@
 
-# Fix: Gemini API 404 Not Found - Korrekte Modell-IDs
+# Plan: Gemini API 404 und "Invalid JSON" Fehler beheben
 
-## Problem-Analyse
+## Zusammenfassung
 
-Die Edge Function `multi-ai-query` im **externen Supabase-Projekt** (`fhzqngbbvwpfdmhjfnvk`) verwendet veraltete oder falsche Gemini Modell-IDs. Die letzten Änderungen wurden im **Lovable Cloud Backend** deployed, nicht im externen Backend wo die App tatsächlich läuft.
+Die Gemini-Modelle schlagen mit 404 und "Invalid JSON from request" Fehlern fehl. Die Ursachen liegen in:
+1. Fehlerhafter `responseMimeType` Konfiguration ohne Schema
+2. Unzureichender Fehlerdiagnose (Google-Fehlermeldungen werden nicht propagiert)
+3. Möglicherweise falschen Model-IDs für deine spezifische API-Key-Konfiguration
+4. Externes Backend erfordert manuelles Deployment
 
-### Aktueller Zustand im Code:
-```typescript
-const MODEL_ID_MAPPING: Record<string, string> = {
-  'google/gemini-3-pro-preview': 'gemini-2.5-pro-preview-05-06',  // FALSCH
-  'google/gemini-2.5-flash': 'gemini-2.5-flash-preview-05-20',    // FALSCH
-  'google/gemini-2.5-pro': 'gemini-2.5-pro-preview-05-06',        // FALSCH
-  'google/gemini-2.5-flash-lite': 'gemini-2.0-flash-lite',        // OK
-  'google/gemini-3-flash-preview': 'gemini-2.5-flash-preview-05-20', // FALSCH
-};
+---
+
+## Geplante Änderungen
+
+### 1. Gemini API-Aufruf stabilisieren (multi-ai-query)
+
+**Problem:** `responseMimeType: "application/json"` kann bei manchen Modellen/Konfigurationen zu Fehlern führen, wenn kein `responseSchema` angegeben ist.
+
+**Lösung:**
+- `responseMimeType` entfernen und stattdessen im Prompt auf JSON-Ausgabe bestehen
+- JSON-Parsing robust gestalten (Markdown Code-Blocks, Plain JSON, etc.)
+- Fallback auf Text-Parsing wenn JSON fehlschlägt
+
+### 2. Bessere Fehlerdiagnose implementieren
+
+**Problem:** Bei Fehlern wird nur `API error: 404` angezeigt, nicht die genaue Google-Fehlermeldung.
+
+**Lösung:**
+- Google API Error-Body parsen und `message`-Feld extrahieren
+- Vollständige Fehlermeldung im Response zurückgeben
+- Logging verbessern für Debugging
+
+### 3. Model-ID Kandidaten mit Fallback
+
+**Problem:** Manche Modell-IDs sind für bestimmte API-Keys/Regionen nicht verfügbar.
+
+**Lösung:**
+- Kandidaten-Liste pro Modell definieren
+- Bei 404/Fehler automatisch nächsten Kandidaten versuchen
+- Erfolgreiche Model-ID im Response melden
+
+### 4. API-Key Header hinzufügen
+
+**Problem:** Query-Parameter `?key=` kann bei manchen Setups Probleme machen.
+
+**Lösung:**
+- Zusätzlich `x-goog-api-key` Header setzen (wie in offizieller Google REST-Doku empfohlen)
+
+---
+
+## Technische Details
+
+### multi-ai-query/index.ts Änderungen
+
+```text
+1. GEMINI_MODEL_CANDIDATES definieren:
+   - geminiPro: ["gemini-2.5-pro", "gemini-2.0-flash"]
+   - geminiFlash: ["gemini-2.5-flash", "gemini-2.0-flash"]
+
+2. queryGoogleModel() überarbeiten:
+   - x-goog-api-key Header hinzufügen
+   - responseMimeType entfernen
+   - Kandidaten-Schleife: bei 404 nächsten Kandidaten versuchen
+   - Google Error-Body parsen und message extrahieren
+   - Robustes JSON-Parsing (Code-Blocks, Plain JSON)
+
+3. Fehlerformat verbessern:
+   - Statt "API error: 404" → "Gemini 404: Model not found. Tried: [gemini-2.5-pro]. Message: [Google Error]"
 ```
 
-### Korrekte Modell-IDs (Stand Januar 2026):
-
-Laut Google AI Studio Dokumentation (August 2025+):
-
-| Modell | Korrekte API-ID | Status |
-|--------|-----------------|--------|
-| Gemini 2.5 Pro | `gemini-2.5-pro` | Stable |
-| Gemini 2.5 Flash | `gemini-2.5-flash` | Stable |
-| Gemini 2.5 Flash-Lite | `gemini-2.5-flash-lite` | Stable (GA) |
-| Gemini 2.0 Flash | `gemini-2.0-flash` | Stable |
-| Gemini 2.0 Flash-Lite | `gemini-2.0-flash-lite` | Stable |
-
-**Wichtig**: Die Preview-Versionen mit Datumssuffixen (`-preview-05-06`, `-preview-05-20`) sind veraltet und wurden durch stabile Versionen ersetzt.
-
----
-
-## Lösung
-
-### Datei: `supabase/functions/multi-ai-query/index.ts`
-
-**Zeilen 9-22** - MODEL_ID_MAPPING aktualisieren:
+### Beispiel verbesserter API-Aufruf
 
 ```typescript
-const MODEL_ID_MAPPING: Record<string, string> = {
-  // OpenAI models via direct API
-  'openai/gpt-5-mini': 'gpt-4o-mini',
-  'openai/gpt-5': 'gpt-4o',
-  'openai/gpt-5-nano': 'gpt-4o-mini',
-  'openai/gpt-5.2': 'gpt-4o',
-  // Google models via direct API (STABLE versions - no preview suffixes)
-  'google/gemini-3-pro-preview': 'gemini-2.5-pro',      // Stabil
-  'google/gemini-2.5-flash': 'gemini-2.5-flash',        // Stabil
-  'google/gemini-2.5-pro': 'gemini-2.5-pro',            // Stabil
-  'google/gemini-2.5-flash-lite': 'gemini-2.5-flash-lite', // Stabil (GA)
-  'google/gemini-3-flash-preview': 'gemini-2.5-flash',  // Stabil
-};
-```
+// Kandidaten für Fallback
+const candidates = GEMINI_MODEL_CANDIDATES[modelKey] || ['gemini-2.5-flash'];
 
-### Zusätzlich: Fallback-Modell aktualisieren
-
-**Zeile 340** im `queryGoogleModel` - Default-Fallback ändern:
-
-```typescript
-// Vorher:
-const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-1.5-flash';
-
-// Nachher:
-const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-2.5-flash';
+for (const candidateId of candidates) {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${candidateId}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey  // Zusätzlicher Header
+      },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 4096
+          // KEIN responseMimeType - im Prompt stattdessen
+        }
+      })
+    }
+  );
+  
+  if (response.ok) {
+    // Erfolg - diesen Kandidaten verwenden
+    break;
+  }
+  
+  if (response.status === 404) {
+    // Nächsten Kandidaten versuchen
+    continue;
+  }
+  
+  // Andere Fehler: Error-Body parsen
+  const errorBody = await response.text();
+  let errorMessage = `API error: ${response.status}`;
+  try {
+    const parsed = JSON.parse(errorBody);
+    errorMessage = parsed.error?.message || errorMessage;
+  } catch {}
+  throw new Error(errorMessage);
+}
 ```
 
 ---
 
-## Übersicht der korrigierten Mappings
+## Deployment-Hinweis (Kritisch!)
 
-| Interner Name | Vorher (404) | Nachher (korrekt) |
-|---------------|--------------|-------------------|
-| `google/gemini-3-pro-preview` | `gemini-2.5-pro-preview-05-06` | `gemini-2.5-pro` |
-| `google/gemini-2.5-flash` | `gemini-2.5-flash-preview-05-20` | `gemini-2.5-flash` |
-| `google/gemini-2.5-pro` | `gemini-2.5-pro-preview-05-06` | `gemini-2.5-pro` |
-| `google/gemini-2.5-flash-lite` | `gemini-2.0-flash-lite` | `gemini-2.5-flash-lite` |
-| `google/gemini-3-flash-preview` | `gemini-2.5-flash-preview-05-20` | `gemini-2.5-flash` |
-| Fallback | `gemini-1.5-flash` | `gemini-2.5-flash` |
+Da deine App das **externe Supabase-Projekt** (fhzqngbbvwpfdmhjfnvk) verwendet:
 
----
+1. Ich werde den Code in Lovable aktualisieren
+2. Du musst den aktualisierten Code in dein externes Supabase-Projekt kopieren
+3. Die Funktion dort manuell deployen (via Supabase CLI oder Dashboard)
 
-## Wichtiger Hinweis zum Deployment
-
-Da du ein **externes Supabase-Projekt** verwendest:
-
-1. Nach der Code-Änderung hier wird Lovable die Edge Function deployen
-2. Diese Änderung geht an Lovable Cloud (`fdlyaasqywmdinyaivmw`)
-3. **Du musst die Edge Function manuell zum externen Projekt deployen** oder die gleiche Änderung dort vornehmen
-
-Falls du die Edge Functions über das externe Supabase-Dashboard verwaltest, musst du dort den gleichen Fix anwenden.
+Ohne manuelles Deployment bleiben die 404-Fehler bestehen!
 
 ---
 
-## Technischer Hintergrund
+## Dateien die geändert werden
 
-- Die Modell-IDs mit Datumssuffixen (`-preview-05-06`, `-preview-05-20`) waren temporäre Preview-Versionen
-- Google hat diese durch stabile Versionen ohne Suffix ersetzt
-- Die API-Endpoint-URL bleibt identisch: `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`
-- `gemini-1.5-*` Modelle wurden am 29. April 2025 deprecated
+| Datei | Änderung |
+|-------|----------|
+| `supabase/functions/multi-ai-query/index.ts` | Gemini API-Aufruf stabilisieren, Fallback-Kandidaten, bessere Fehlerdiagnose |
+
+---
+
+## Erwartetes Ergebnis
+
+Nach der Implementierung:
+- Gemini-Modelle funktionieren zuverlässig (mit Fallback auf alternative IDs)
+- Bei Fehlern siehst du die genaue Google-Fehlermeldung
+- Du weißt genau welche Model-ID erfolgreich war
+- Keine "Invalid JSON" Fehler mehr durch `responseMimeType` Problem

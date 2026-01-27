@@ -21,6 +21,12 @@ const MODEL_ID_MAPPING: Record<string, string> = {
   'google/gemini-3-flash-preview': 'gemini-2.5-flash',
 };
 
+// Gemini model fallback candidates - if first fails with 404, try next
+const GEMINI_MODEL_CANDIDATES: Record<string, string[]> = {
+  'geminiPro': ['gemini-2.5-pro', 'gemini-2.0-pro', 'gemini-1.5-pro', 'gemini-2.0-flash'],
+  'geminiFlash': ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'],
+};
+
 // All available model configurations
 const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'openai' | 'google' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } }> = {
   gptMini: {
@@ -323,7 +329,7 @@ PREMIUM ANALYSIS REQUIREMENTS:
   }
 }
 
-// Query Google Gemini models directly
+// Query Google Gemini models directly with fallback candidates
 async function queryGoogleModel(
   modelKey: string,
   modelConfig: typeof ALL_MODELS.geminiPro,
@@ -333,21 +339,21 @@ async function queryGoogleModel(
   timeoutMs: number = 60000
 ): Promise<ModelResponse> {
   const startTime = Date.now();
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  // Map internal model ID to Google API model ID
-  const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-2.5-flash';
+  // Get fallback candidates for this model type
+  const candidates = GEMINI_MODEL_CANDIDATES[modelKey] || [MODEL_ID_MAPPING[modelConfig.id] || 'gemini-2.0-flash'];
+  const triedModels: string[] = [];
+  let lastError: string = '';
   
-  console.log(`[${modelConfig.name}] Starting query via Google AI API (model: ${directModelId})...`);
+  console.log(`[${modelConfig.name}] Starting query with candidates: ${candidates.join(', ')}`);
   
-  try {
-    const recommendationCount = isPremium ? "4-5" : "2-3";
-    const detailLevel = isPremium 
-      ? "Provide comprehensive, detailed analysis with market context, competitive considerations, and long-term strategic implications."
-      : "Provide clear, actionable analysis.";
-    
-    const systemInstruction = `You are a senior business strategist providing actionable recommendations.
+  const recommendationCount = isPremium ? "4-5" : "2-3";
+  const detailLevel = isPremium 
+    ? "Provide comprehensive, detailed analysis with market context, competitive considerations, and long-term strategic implications."
+    : "Provide clear, actionable analysis.";
+  
+  // System instruction with explicit JSON format request (no responseMimeType)
+  const systemInstruction = `You are a senior business strategist providing actionable recommendations.
     
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
@@ -365,7 +371,7 @@ PREMIUM ANALYSIS REQUIREMENTS:
 - Include market context in your summary
 - Provide a 12-month strategic outlook` : ''}
 
-IMPORTANT: You MUST respond with a JSON object in this exact format:
+CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explanation, just pure JSON) in this exact format:
 {
   "recommendations": [
     {
@@ -384,107 +390,165 @@ IMPORTANT: You MUST respond with a JSON object in this exact format:
   "overallConfidence": number (0-100)
 }`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            { 
-              role: "user", 
-              parts: [{ text: `${systemInstruction}\n\nUser Query: ${prompt}` }] 
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096,
-            responseMimeType: "application/json"
-          }
-        }),
-        signal: controller.signal
-      }
-    );
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[${modelConfig.name}] Error ${response.status}:`, errorText);
-      
-      if (response.status === 429) throw new Error("Rate limit exceeded");
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+  // Try each candidate model
+  for (const candidateId of candidates) {
+    triedModels.push(candidateId);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     
-    // Google AI returns content in a different format
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log(`[${modelConfig.name}] Trying model: ${candidateId}...`);
     
-    if (!content) {
-      console.error(`[${modelConfig.name}] No content in response`);
-      throw new Error("No response from model");
-    }
-
-    // Parse JSON response
-    let parsed;
     try {
-      // Try to extract JSON from content (might be wrapped in markdown code blocks)
-      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
-      const jsonStr = jsonMatch ? jsonMatch[1] : content;
-      parsed = JSON.parse(jsonStr);
-    } catch (parseError) {
-      console.error(`[${modelConfig.name}] Failed to parse JSON:`, parseError);
-      throw new Error("Invalid JSON response from model");
-    }
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${candidateId}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey  // Header-based auth (more reliable)
+          },
+          body: JSON.stringify({
+            contents: [
+              { 
+                role: "user", 
+                parts: [{ text: `${systemInstruction}\n\nUser Query: ${prompt}` }] 
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 4096
+              // NO responseMimeType - using prompt-based JSON extraction instead
+            }
+          }),
+          signal: controller.signal
+        }
+      );
 
-    const processingTime = Date.now() - startTime;
-    
-    console.log(`[${modelConfig.name}] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
-    
-    return {
-      modelId: modelConfig.id,
-      modelName: modelConfig.name,
-      recommendations: parsed.recommendations || [],
-      summary: parsed.summary || "",
-      overallConfidence: parsed.overallConfidence || 50,
-      processingTimeMs: processingTime,
-      ...(isPremium && {
-        marketContext: parsed.marketContext,
-        strategicOutlook: parsed.strategicOutlook
-      })
-    };
+      clearTimeout(timeoutId);
 
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    const processingTime = Date.now() - startTime;
-    
-    if (error.name === 'AbortError') {
-      console.error(`[${modelConfig.name}] Timed out after ${processingTime}ms`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[${modelConfig.name}] Model ${candidateId} error ${response.status}:`, errorText);
+        
+        // Try to extract Google's error message
+        let googleErrorMsg = '';
+        try {
+          const errorJson = JSON.parse(errorText);
+          googleErrorMsg = errorJson.error?.message || '';
+        } catch {}
+        
+        if (response.status === 429) {
+          throw new Error("Rate limit exceeded");
+        }
+        
+        // 404 = model not found, try next candidate
+        if (response.status === 404) {
+          lastError = `Model ${candidateId} not found${googleErrorMsg ? `: ${googleErrorMsg}` : ''}`;
+          console.log(`[${modelConfig.name}] 404 for ${candidateId}, trying next candidate...`);
+          continue;
+        }
+        
+        // Other errors: save message and try next
+        lastError = googleErrorMsg || `API error: ${response.status}`;
+        continue;
+      }
+
+      const data = await response.json();
+      
+      // Google AI returns content in a different format
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      if (!content) {
+        console.error(`[${modelConfig.name}] No content in response from ${candidateId}`);
+        lastError = "No response content from model";
+        continue;
+      }
+
+      // Robust JSON parsing (handles markdown code blocks, plain JSON, etc.)
+      let parsed;
+      try {
+        // Try multiple extraction patterns
+        let jsonStr = content.trim();
+        
+        // Pattern 1: ```json ... ```
+        const jsonCodeBlock = content.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonCodeBlock) {
+          jsonStr = jsonCodeBlock[1].trim();
+        } else {
+          // Pattern 2: ``` ... ```
+          const codeBlock = content.match(/```\s*([\s\S]*?)\s*```/);
+          if (codeBlock) {
+            jsonStr = codeBlock[1].trim();
+          }
+        }
+        
+        // Pattern 3: Find JSON object boundaries
+        if (!jsonStr.startsWith('{')) {
+          const jsonStart = jsonStr.indexOf('{');
+          const jsonEnd = jsonStr.lastIndexOf('}');
+          if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+            jsonStr = jsonStr.substring(jsonStart, jsonEnd + 1);
+          }
+        }
+        
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId}:`, parseError);
+        console.log(`[${modelConfig.name}] Raw content (first 500 chars):`, content.substring(0, 500));
+        lastError = "Invalid JSON response from model";
+        continue;
+      }
+
+      const processingTime = Date.now() - startTime;
+      
+      console.log(`[${modelConfig.name}] SUCCESS with ${candidateId} in ${processingTime}ms (${parsed.recommendations?.length || 0} recommendations)`);
+      
       return {
         modelId: modelConfig.id,
-        modelName: modelConfig.name,
-        recommendations: [],
-        summary: "",
-        overallConfidence: 0,
+        modelName: `${modelConfig.name} (${candidateId})`,  // Show which model actually worked
+        recommendations: parsed.recommendations || [],
+        summary: parsed.summary || "",
+        overallConfidence: parsed.overallConfidence || 50,
         processingTimeMs: processingTime,
-        error: "Request timed out"
+        ...(isPremium && {
+          marketContext: parsed.marketContext,
+          strategicOutlook: parsed.strategicOutlook
+        })
       };
+
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        console.error(`[${modelConfig.name}] Timed out with ${candidateId}`);
+        lastError = "Request timed out";
+        continue;
+      }
+      
+      if (error.message === 'Rate limit exceeded') {
+        throw error;  // Don't retry rate limits
+      }
+      
+      console.error(`[${modelConfig.name}] Error with ${candidateId}:`, error.message);
+      lastError = error.message;
+      continue;
     }
-    
-    console.error(`[${modelConfig.name}] Failed after ${processingTime}ms:`, error.message);
-    return {
-      modelId: modelConfig.id,
-      modelName: modelConfig.name,
-      recommendations: [],
-      summary: "",
-      overallConfidence: 0,
-      processingTimeMs: processingTime,
-      error: error.message
-    };
   }
+  
+  // All candidates failed
+  const processingTime = Date.now() - startTime;
+  const errorMessage = `All Gemini models failed. Tried: ${triedModels.join(', ')}. Last error: ${lastError}`;
+  console.error(`[${modelConfig.name}] ${errorMessage}`);
+  
+  return {
+    modelId: modelConfig.id,
+    modelName: modelConfig.name,
+    recommendations: [],
+    summary: "",
+    overallConfidence: 0,
+    processingTimeMs: processingTime,
+    error: errorMessage
+  };
 }
 
 // Query Claude via Anthropic API

@@ -1,115 +1,49 @@
 
 
-# Migrationsplan: Edge Functions und Datenbank auf Supabase deployen
+# Vollständige Migration: Lovable Cloud → Eigenes Supabase-Projekt
 
-## Übersicht
+## Aktuelle Situation
 
-Du hast dein neues Supabase-Projekt (`fhzqngbbvwpfdmhjfnvk`) mit Lovable verbunden. Ich werde die Konfiguration aktualisieren, sodass alle Edge Functions und Datenbank-Migrationen automatisch auf dein neues Projekt deployed werden.
+| Komponente | Zeigt auf | Soll zeigen auf |
+|------------|-----------|-----------------|
+| `.env` | `fdlyaasqywmdinyaivmw` (Lovable Cloud) | `fhzqngbbvwpfdmhjfnvk` (Dein Supabase) |
+| `config.toml` | `fhzqngbbvwpfdmhjfnvk` (Dein Supabase) | `fhzqngbbvwpfdmhjfnvk` (bereits korrekt) |
 
-## Deine neuen Supabase-Credentials
-
-| Feld | Wert |
-|------|------|
-| **Project URL** | `https://fhzqngbbvwpfdmhjfnvk.supabase.co` |
-| **Project ID** | `fhzqngbbvwpfdmhjfnvk` |
-| **Anon Key** | `eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9...` (aus Screenshot) |
-
-## Was automatisch passiert
-
-Wenn Lovable korrekt mit deinem Supabase-Projekt verbunden ist:
-1. Die `.env` Datei wird automatisch aktualisiert
-2. Die `supabase/config.toml` wird aktualisiert
-3. Edge Functions werden automatisch deployed
-4. Migrations werden automatisch ausgeführt
-
-## Phase 1: Konfiguration aktualisieren
-
-### 1.1 `.env` Datei aktualisieren
-
-```text
-VITE_SUPABASE_PROJECT_ID="fhzqngbbvwpfdmhjfnvk"
-VITE_SUPABASE_PUBLISHABLE_KEY="[NEUER_ANON_KEY]"
-VITE_SUPABASE_URL="https://fhzqngbbvwpfdmhjfnvk.supabase.co"
-```
-
-### 1.2 `supabase/config.toml` aktualisieren
-
-```toml
-project_id = "fhzqngbbvwpfdmhjfnvk"
-```
+**Problem:** Die `.env` Datei ist schreibgeschützt und wird von Lovable automatisch verwaltet. Das Frontend verbindet sich noch mit Lovable Cloud.
 
 ---
 
-## Phase 2: Edge Functions (12 Stück)
+## Was ich tun werde
 
-Diese Edge Functions werden automatisch deployed:
+### Phase 1: Projekt-Konfiguration
 
-| Function | Beschreibung | JWT |
-|----------|--------------|-----|
-| `multi-ai-query` | Multi-AI Validierung | true |
-| `meta-evaluation` | Meta-Evaluation | true |
-| `team-management` | Team-Verwaltung | false |
-| `freemius-webhook` | Zahlungs-Webhooks | false |
-| `send-auth-email` | Auth-E-Mails | false |
-| `register-user` | Benutzer-Registrierung | false |
-| `sync-freemius-subscription` | Subscription-Sync | true |
-| `delete-account` | Account löschen | true |
-| `delete-blocked-account` | Blockierten Account löschen | true |
-| `check-deleted-account-block` | Block-Prüfung | false |
-| `check-email-availability` | E-Mail-Verfügbarkeit | false |
-| `check-reset-eligibility` | Reset-Berechtigung | false |
+Da du das externe Supabase-Projekt bereits mit Lovable verbunden hast, sollte Lovable die `.env` automatisch aktualisieren. Falls nicht, muss ich prüfen ob die Connector-Konfiguration korrekt ist.
+
+**Hinweis:** Die `.env` Datei wird von Lovable automatisch generiert. Wenn du dein externes Supabase-Projekt korrekt verbunden hast, sollte die `.env` automatisch aktualisiert werden.
 
 ---
 
-## Phase 3: Datenbank-Schema (104 Migrations)
+## Was du manuell tun musst
 
-Die folgenden Tabellen werden erstellt:
+### 1. Im Supabase Dashboard - Secrets setzen
 
-| Tabelle | Beschreibung |
-|---------|--------------|
-| `profiles` | Benutzerprofile |
-| `user_credits` | Premium-Status, Validierungslimits |
-| `user_roles` | Admin/Moderator-Rollen |
-| `validation_analyses` | Validierungshistorie |
-| `decision_records` | Entscheidungsprotokolle |
-| `decision_audit_log` | Audit-Trail |
-| `experiments` | Experimente |
-| `experiment_tasks` | Experiment-Aufgaben |
-| `experiment_checkpoints` | Checkpoints |
-| `experiment_evidence` | Evidenz |
-| `teams` | Team-Workspaces |
-| `team_members` | Team-Mitgliedschaften |
-| `team_invitations` | Einladungen |
-| `deleted_accounts` | 24h Account-Block |
-| `pending_premium` | Pending Premium-Status |
-| `processed_webhook_events` | Webhook-Deduplizierung |
-| `registration_attempts` | Rate-Limiting |
+Gehe zu: **Edge Functions → Secrets** und setze folgende 9 Secrets:
 
----
+| Secret | Quelle |
+|--------|--------|
+| `LOVABLE_API_KEY` | Lovable Workspace Settings (für AI Gateway) |
+| `CLAUDE_API_KEY` | Anthropic Console |
+| `PERPLEXITY_API_KEY` | Perplexity Dashboard |
+| `RESEND_API_KEY` | Resend Dashboard |
+| `FREEMIUS_API_KEY` | Freemius Dashboard |
+| `FREEMIUS_PRODUCT_ID` | Freemius Dashboard (21730) |
+| `FREEMIUS_PUBLIC_KEY` | Freemius Dashboard |
+| `FREEMIUS_SECRET_KEY` | Freemius Dashboard |
+| `FIRECRAWL_API_KEY` | Firecrawl Dashboard |
 
-## Phase 4: Secrets übertragen (manuell erforderlich)
+### 2. Im Supabase Dashboard - Authentication konfigurieren
 
-Die folgenden Secrets müssen in deinem **neuen Supabase-Projekt** unter **Edge Functions → Secrets** gesetzt werden:
-
-| Secret | Beschreibung |
-|--------|--------------|
-| `LOVABLE_API_KEY` | Für Lovable AI Gateway |
-| `CLAUDE_API_KEY` | Für Claude Sonnet 4 |
-| `PERPLEXITY_API_KEY` | Für Perplexity Modelle |
-| `RESEND_API_KEY` | Für E-Mail-Versand |
-| `FREEMIUS_API_KEY` | Für Subscription-Sync |
-| `FREEMIUS_PRODUCT_ID` | Produkt-ID |
-| `FREEMIUS_PUBLIC_KEY` | Öffentlicher Schlüssel |
-| `FREEMIUS_SECRET_KEY` | Webhook-Signatur |
-| `FIRECRAWL_API_KEY` | Für Web-Scraping |
-
-**Wichtig:** Diese Secrets müssen manuell im Supabase Dashboard gesetzt werden, da Lovable keinen direkten Zugriff auf die Supabase Secrets hat.
-
----
-
-## Phase 5: Auth-Konfiguration (manuell erforderlich)
-
-Im Supabase Dashboard unter **Authentication → URL Configuration**:
+Gehe zu: **Authentication → URL Configuration**
 
 **Site URL:**
 ```text
@@ -123,82 +57,131 @@ https://wealthconomy.lovable.app/*
 http://localhost:5173/*
 ```
 
----
+### 3. Google OAuth konfigurieren
 
-## Phase 6: Google OAuth (manuell erforderlich)
-
-### Im Google Cloud Console:
-1. Gehe zu https://console.cloud.google.com/apis/credentials
-2. Füge neue Redirect URI hinzu:
+**Im Google Cloud Console:**
+1. https://console.cloud.google.com/apis/credentials
+2. Neue Redirect URI hinzufügen:
    ```text
    https://fhzqngbbvwpfdmhjfnvk.supabase.co/auth/v1/callback
    ```
 
-### Im Supabase Dashboard:
+**Im Supabase Dashboard:**
 1. Authentication → Providers → Google
 2. Client ID und Client Secret eingeben
 3. Aktivieren
 
----
+### 4. Freemius Webhook URL aktualisieren
 
-## Phase 7: Freemius Webhook (manuell erforderlich)
-
-Im Freemius Dashboard die Webhook-URL aktualisieren:
-
-**Neue URL:**
+Im Freemius Dashboard:
 ```text
 https://fhzqngbbvwpfdmhjfnvk.supabase.co/functions/v1/freemius-webhook
 ```
 
----
-
-## Phase 8: Storage Bucket (manuell erforderlich)
+### 5. Storage Bucket erstellen
 
 Im Supabase Dashboard → Storage:
-1. Neuen Bucket erstellen: `website-screenshots`
-2. Public: Nein (private)
+- Bucket: `website-screenshots`
+- Public: Nein (private)
 
 ---
 
-## Technische Details
+## Automatisches Deployment
 
-### Zu aktualisierende Dateien
+Sobald die Konfiguration korrekt ist, werden automatisch deployed:
 
-1. **`.env`** - Neue Supabase-Credentials
-2. **`supabase/config.toml`** - Neue Project-ID
+### Edge Functions (12 Stück)
+- `multi-ai-query` - Multi-AI Validierung (Lovable AI Gateway + Claude + Perplexity)
+- `meta-evaluation` - Meta-Evaluation (Lovable AI Gateway)
+- `team-management` - Team-Verwaltung (Resend E-Mails)
+- `freemius-webhook` - Zahlungs-Webhooks
+- `send-auth-email` - Auth-E-Mails (Resend)
+- `register-user` - Benutzer-Registrierung
+- `sync-freemius-subscription` - Subscription-Sync
+- `delete-account` - Account löschen
+- `delete-blocked-account` - Blockierten Account löschen
+- `check-deleted-account-block` - Block-Prüfung
+- `check-email-availability` - E-Mail-Verfügbarkeit
+- `check-reset-eligibility` - Reset-Berechtigung
 
-### Automatisches Deployment
+### Datenbank-Schema (104 Migrations)
+- 17 Tabellen (profiles, user_credits, teams, etc.)
+- 50+ RLS Policies
+- 17+ Database Functions
+- Custom Types (app_role, team_role)
 
-Nach der Konfigurationsänderung werden automatisch:
-- 12 Edge Functions deployed
-- 104 Migrations ausgeführt
-- 17 Tabellen erstellt
-- 50+ RLS Policies angewendet
-- 17+ Database Functions erstellt
+---
+
+## Cron Jobs
+
+Für Cron Jobs (z.B. `cleanup_old_deleted_accounts`, `deactivate_expired_subscriptions`) musst du pg_cron im Supabase Dashboard aktivieren:
+
+1. **Extensions aktivieren:** Database → Extensions → `pg_cron` und `pg_net` aktivieren
+
+2. **Cron Jobs einrichten:**
+```sql
+-- Beispiel: Gelöschte Accounts nach 24h bereinigen
+SELECT cron.schedule(
+  'cleanup-deleted-accounts',
+  '0 * * * *', -- Stündlich
+  $$SELECT public.cleanup_old_deleted_accounts()$$
+);
+
+-- Abgelaufene Subscriptions deaktivieren
+SELECT cron.schedule(
+  'deactivate-expired-subscriptions',
+  '0 0 * * *', -- Täglich um Mitternacht
+  $$SELECT public.deactivate_expired_subscriptions()$$
+);
+
+-- Unbestätigte User nach 7 Tagen löschen
+SELECT cron.schedule(
+  'cleanup-unconfirmed-users',
+  '0 2 * * *', -- Täglich um 2 Uhr
+  $$SELECT public.cleanup_unconfirmed_users()$$
+);
+
+-- Abgelaufene Einladungen löschen
+SELECT cron.schedule(
+  'cleanup-expired-invitations',
+  '0 3 * * *', -- Täglich um 3 Uhr
+  $$SELECT public.cleanup_expired_invitations()$$
+);
+
+-- Alte Webhook-Events bereinigen
+SELECT cron.schedule(
+  'cleanup-old-webhook-events',
+  '0 4 * * 0', -- Wöchentlich (Sonntag um 4 Uhr)
+  $$SELECT public.cleanup_old_processed_events()$$
+);
+```
+
+---
+
+## Wichtiger Hinweis: Lovable AI Gateway
+
+Der **Lovable AI Gateway** (`ai.gateway.lovable.dev`) wird weiterhin funktionieren, solange du einen gültigen `LOVABLE_API_KEY` im neuen Supabase-Projekt setzt. Dieser ist **nicht** an Lovable Cloud gebunden, sondern an deinen Lovable Account.
 
 ---
 
 ## Zusammenfassung
 
-| Aufgabe | Wer | Status |
-|---------|-----|--------|
-| `.env` aktualisieren | Lovable | Wird implementiert |
-| `config.toml` aktualisieren | Lovable | Wird implementiert |
-| Edge Functions deployen | Automatisch | Nach Konfiguration |
-| Migrations ausführen | Automatisch | Nach Konfiguration |
-| Secrets im Supabase Dashboard setzen | Du | Manuell erforderlich |
-| Google OAuth konfigurieren | Du | Manuell erforderlich |
-| Freemius Webhook URL ändern | Du | Manuell erforderlich |
-| Storage Bucket erstellen | Du | Manuell erforderlich |
+| Aufgabe | Verantwortlich | Status |
+|---------|---------------|--------|
+| `config.toml` aktualisieren | Lovable | Bereits erledigt |
+| Edge Functions deployen | Automatisch | Nach Build |
+| Migrations ausführen | Automatisch | Nach Build |
+| Secrets setzen | Du | Manuell im Dashboard |
+| Google OAuth konfigurieren | Du | Manuell |
+| Freemius Webhook URL ändern | Du | Manuell |
+| Storage Bucket erstellen | Du | Manuell |
+| Cron Jobs einrichten | Du | Manuell im SQL Editor |
 
 ---
 
-## Nächste Schritte nach Genehmigung
+## Nächster Schritt
 
-1. Ich aktualisiere `.env` und `config.toml` mit der neuen Project-ID
-2. Die Edge Functions werden automatisch deployed
-3. Die Migrations werden automatisch ausgeführt
-4. Du setzt die Secrets im Supabase Dashboard
-5. Du konfigurierst Google OAuth und Freemius Webhook
-6. Gemeinsames Testing
+Ich werde jetzt prüfen, ob die Connector-Verbindung korrekt ist und die `.env` automatisch aktualisiert wird. Falls die `.env` noch auf Lovable Cloud zeigt, muss die Connector-Konfiguration überprüft werden.
+
+**Wichtig:** Da die `.env` von Lovable automatisch verwaltet wird, sollte sie sich automatisch aktualisieren, wenn das externe Supabase-Projekt korrekt verbunden ist. Falls nicht, teile mir bitte mit, welche Fehlermeldung du siehst.
 

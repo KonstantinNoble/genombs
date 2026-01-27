@@ -1,187 +1,186 @@
 
+# Vollständige Unabhängigkeit von Lovable - Migrations-Plan
 
-# Vollständige Migration: Lovable Cloud → Eigenes Supabase-Projekt
+## Status-Übersicht
 
-## Aktuelle Situation
-
-| Komponente | Zeigt auf | Soll zeigen auf |
-|------------|-----------|-----------------|
-| `.env` | `fdlyaasqywmdinyaivmw` (Lovable Cloud) | `fhzqngbbvwpfdmhjfnvk` (Dein Supabase) |
-| `config.toml` | `fhzqngbbvwpfdmhjfnvk` (Dein Supabase) | `fhzqngbbvwpfdmhjfnvk` (bereits korrekt) |
-
-**Problem:** Die `.env` Datei ist schreibgeschützt und wird von Lovable automatisch verwaltet. Das Frontend verbindet sich noch mit Lovable Cloud.
-
----
-
-## Was ich tun werde
-
-### Phase 1: Projekt-Konfiguration
-
-Da du das externe Supabase-Projekt bereits mit Lovable verbunden hast, sollte Lovable die `.env` automatisch aktualisieren. Falls nicht, muss ich prüfen ob die Connector-Konfiguration korrekt ist.
-
-**Hinweis:** Die `.env` Datei wird von Lovable automatisch generiert. Wenn du dein externes Supabase-Projekt korrekt verbunden hast, sollte die `.env` automatisch aktualisiert werden.
+| Komponente | Aktuell | Für Unabhängigkeit nötig |
+|------------|---------|--------------------------|
+| Frontend Client | ✅ Zeigt auf fhzqngbbvwpfdmhjfnvk | Erledigt |
+| Datenbank | ✅ Externes Supabase | Erledigt |
+| Auth | ⚠️ "Invalid API Key" Fehler | Konfiguration prüfen |
+| Edge Functions | ❌ Lovable Cloud | Code-Änderung + manuelles Deployment |
+| AI Gateway | ❌ ai.gateway.lovable.dev | Direkte APIs nutzen |
 
 ---
 
-## Was du manuell tun musst
+## Phase 1: Auth-Fehler beheben
 
-### 1. Im Supabase Dashboard - Secrets setzen
+Der "Invalid API Key" Fehler entsteht durch fehlende Auth-Konfiguration im externen Supabase.
 
-Gehe zu: **Edge Functions → Secrets** und setze folgende 9 Secrets:
+**Im Supabase Dashboard (fhzqngbbvwpfdmhjfnvk):**
 
-| Secret | Quelle |
-|--------|--------|
-| `LOVABLE_API_KEY` | Lovable Workspace Settings (für AI Gateway) |
-| `CLAUDE_API_KEY` | Anthropic Console |
-| `PERPLEXITY_API_KEY` | Perplexity Dashboard |
-| `RESEND_API_KEY` | Resend Dashboard |
-| `FREEMIUS_API_KEY` | Freemius Dashboard |
-| `FREEMIUS_PRODUCT_ID` | Freemius Dashboard (21730) |
-| `FREEMIUS_PUBLIC_KEY` | Freemius Dashboard |
-| `FREEMIUS_SECRET_KEY` | Freemius Dashboard |
-| `FIRECRAWL_API_KEY` | Firecrawl Dashboard |
+1. **Authentication → URL Configuration:**
+   - Site URL: `https://synoptas.com`
+   - Redirect URLs:
+     - `https://synoptas.com/*`
+     - `https://wealthconomy.lovable.app/*`
+     - `http://localhost:5173/*`
 
-### 2. Im Supabase Dashboard - Authentication konfigurieren
+2. **Anon Key prüfen:**
+   - Vergleiche den Key in `src/lib/supabase/external-client.ts` mit dem im Supabase Dashboard (Settings → API)
 
-Gehe zu: **Authentication → URL Configuration**
+---
 
-**Site URL:**
-```text
-https://synoptas.com
+## Phase 2: Edge Functions manuell auf externes Supabase deployen
+
+Da Lovable automatisch auf Lovable Cloud deployed, musst du die Edge Functions manuell auf dein externes Supabase deployen.
+
+**Schritte:**
+1. Supabase CLI installieren: `npm install -g supabase`
+2. Mit deinem externen Projekt verbinden: `supabase link --project-ref fhzqngbbvwpfdmhjfnvk`
+3. Secrets setzen:
+```bash
+supabase secrets set RESEND_API_KEY=xxx
+supabase secrets set CLAUDE_API_KEY=xxx
+supabase secrets set PERPLEXITY_API_KEY=xxx
+supabase secrets set FREEMIUS_API_KEY=xxx
+# ... etc
+```
+4. Functions deployen: `supabase functions deploy`
+
+---
+
+## Phase 3: Lovable AI Gateway ersetzen (Kritisch!)
+
+Die Edge Functions nutzen `ai.gateway.lovable.dev` für GPT und Gemini. Für vollständige Unabhängigkeit müssen wir direkte API-Aufrufe implementieren.
+
+### Änderungen in `multi-ai-query/index.ts`:
+
+**Vorher (Zeile 223):**
+```typescript
+const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  headers: { "Authorization": `Bearer ${lovableApiKey}` }
+});
 ```
 
-**Redirect URLs:**
-```text
-https://synoptas.com/*
-https://wealthconomy.lovable.app/*
-http://localhost:5173/*
+**Nachher:**
+```typescript
+// Für GPT-Modelle → OpenAI API direkt
+const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  headers: { "Authorization": `Bearer ${Deno.env.get('OPENAI_API_KEY')}` }
+});
+
+// Für Gemini-Modelle → Google AI API direkt
+const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent", {
+  headers: { "x-goog-api-key": `${Deno.env.get('GOOGLE_AI_API_KEY')}` }
+});
 ```
 
-### 3. Google OAuth konfigurieren
+### Neue Secrets benötigt:
+- `OPENAI_API_KEY` - Von OpenAI Platform
+- `GOOGLE_AI_API_KEY` - Von Google AI Studio
 
-**Im Google Cloud Console:**
-1. https://console.cloud.google.com/apis/credentials
-2. Neue Redirect URI hinzufügen:
-   ```text
-   https://fhzqngbbvwpfdmhjfnvk.supabase.co/auth/v1/callback
-   ```
+### Betroffene Dateien:
+1. `supabase/functions/multi-ai-query/index.ts`
+   - Zeile 223: GPT-Modelle über Lovable Gateway
+   - Zeile 584-590: LOVABLE_API_KEY Check
 
-**Im Supabase Dashboard:**
-1. Authentication → Providers → Google
-2. Client ID und Client Secret eingeben
-3. Aktivieren
-
-### 4. Freemius Webhook URL aktualisieren
-
-Im Freemius Dashboard:
-```text
-https://fhzqngbbvwpfdmhjfnvk.supabase.co/functions/v1/freemius-webhook
-```
-
-### 5. Storage Bucket erstellen
-
-Im Supabase Dashboard → Storage:
-- Bucket: `website-screenshots`
-- Public: Nein (private)
+2. `supabase/functions/meta-evaluation/index.ts`
+   - Zeile 759: Gemini über Lovable Gateway
+   - Zeile 586-590: LOVABLE_API_KEY Check
 
 ---
 
-## Automatisches Deployment
+## Phase 4: Model-Konfiguration anpassen
 
-Sobald die Konfiguration korrekt ist, werden automatisch deployed:
+Die Modell-IDs müssen an die jeweiligen APIs angepasst werden:
 
-### Edge Functions (12 Stück)
-- `multi-ai-query` - Multi-AI Validierung (Lovable AI Gateway + Claude + Perplexity)
-- `meta-evaluation` - Meta-Evaluation (Lovable AI Gateway)
-- `team-management` - Team-Verwaltung (Resend E-Mails)
-- `freemius-webhook` - Zahlungs-Webhooks
-- `send-auth-email` - Auth-E-Mails (Resend)
-- `register-user` - Benutzer-Registrierung
-- `sync-freemius-subscription` - Subscription-Sync
-- `delete-account` - Account löschen
-- `delete-blocked-account` - Blockierten Account löschen
-- `check-deleted-account-block` - Block-Prüfung
-- `check-email-availability` - E-Mail-Verfügbarkeit
-- `check-reset-eligibility` - Reset-Berechtigung
+**Lovable Gateway Format:**
+- `openai/gpt-5-mini`
+- `google/gemini-3-pro-preview`
 
-### Datenbank-Schema (104 Migrations)
-- 17 Tabellen (profiles, user_credits, teams, etc.)
-- 50+ RLS Policies
-- 17+ Database Functions
-- Custom Types (app_role, team_role)
+**Direkte API Formate:**
+- OpenAI: `gpt-4o-mini`, `gpt-4o`
+- Google: `gemini-1.5-pro`, `gemini-1.5-flash`
 
 ---
 
-## Cron Jobs
+## Technische Implementierung
 
-Für Cron Jobs (z.B. `cleanup_old_deleted_accounts`, `deactivate_expired_subscriptions`) musst du pg_cron im Supabase Dashboard aktivieren:
+### Schritt 1: OpenAI API Integration
 
-1. **Extensions aktivieren:** Database → Extensions → `pg_cron` und `pg_net` aktivieren
+```typescript
+async function queryOpenAIModel(
+  modelId: string,
+  prompt: string,
+  apiKey: string
+): Promise<ModelResponse> {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: modelId, // z.B. "gpt-4o-mini"
+      messages: [...],
+      tools: [getRecommendationTool(isPremium)],
+      tool_choice: { type: "function", function: { name: "provide_recommendations" } }
+    }),
+  });
+  // ...
+}
+```
 
-2. **Cron Jobs einrichten:**
-```sql
--- Beispiel: Gelöschte Accounts nach 24h bereinigen
-SELECT cron.schedule(
-  'cleanup-deleted-accounts',
-  '0 * * * *', -- Stündlich
-  $$SELECT public.cleanup_old_deleted_accounts()$$
-);
+### Schritt 2: Google AI API Integration
 
--- Abgelaufene Subscriptions deaktivieren
-SELECT cron.schedule(
-  'deactivate-expired-subscriptions',
-  '0 0 * * *', -- Täglich um Mitternacht
-  $$SELECT public.deactivate_expired_subscriptions()$$
-);
-
--- Unbestätigte User nach 7 Tagen löschen
-SELECT cron.schedule(
-  'cleanup-unconfirmed-users',
-  '0 2 * * *', -- Täglich um 2 Uhr
-  $$SELECT public.cleanup_unconfirmed_users()$$
-);
-
--- Abgelaufene Einladungen löschen
-SELECT cron.schedule(
-  'cleanup-expired-invitations',
-  '0 3 * * *', -- Täglich um 3 Uhr
-  $$SELECT public.cleanup_expired_invitations()$$
-);
-
--- Alte Webhook-Events bereinigen
-SELECT cron.schedule(
-  'cleanup-old-webhook-events',
-  '0 4 * * 0', -- Wöchentlich (Sonntag um 4 Uhr)
-  $$SELECT public.cleanup_old_processed_events()$$
-);
+```typescript
+async function queryGeminiModel(
+  modelId: string,
+  prompt: string,
+  apiKey: string
+): Promise<ModelResponse> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { ... }
+      }),
+    }
+  );
+  // Response-Format ist anders als OpenAI!
+}
 ```
 
 ---
 
-## Wichtiger Hinweis: Lovable AI Gateway
+## Zusammenfassung: Was muss geändert werden
 
-Der **Lovable AI Gateway** (`ai.gateway.lovable.dev`) wird weiterhin funktionieren, solange du einen gültigen `LOVABLE_API_KEY` im neuen Supabase-Projekt setzt. Dieser ist **nicht** an Lovable Cloud gebunden, sondern an deinen Lovable Account.
+### Code-Änderungen (durch mich):
+1. `multi-ai-query/index.ts` - Lovable Gateway → OpenAI + Google AI direkt
+2. `meta-evaluation/index.ts` - Lovable Gateway → Google AI direkt
+3. Model-ID Mapping anpassen
 
----
-
-## Zusammenfassung
-
-| Aufgabe | Verantwortlich | Status |
-|---------|---------------|--------|
-| `config.toml` aktualisieren | Lovable | Bereits erledigt |
-| Edge Functions deployen | Automatisch | Nach Build |
-| Migrations ausführen | Automatisch | Nach Build |
-| Secrets setzen | Du | Manuell im Dashboard |
-| Google OAuth konfigurieren | Du | Manuell |
-| Freemius Webhook URL ändern | Du | Manuell |
-| Storage Bucket erstellen | Du | Manuell |
-| Cron Jobs einrichten | Du | Manuell im SQL Editor |
+### Manuelle Schritte (durch dich):
+1. **OpenAI API Key** besorgen (https://platform.openai.com)
+2. **Google AI API Key** besorgen (https://aistudio.google.com)
+3. **Im Supabase Dashboard** die neuen Secrets setzen:
+   - `OPENAI_API_KEY`
+   - `GOOGLE_AI_API_KEY`
+4. **Auth-URLs** im externen Supabase konfigurieren
+5. **Edge Functions** manuell deployen via Supabase CLI
 
 ---
 
-## Nächster Schritt
+## Kosten-Hinweis
 
-Ich werde jetzt prüfen, ob die Connector-Verbindung korrekt ist und die `.env` automatisch aktualisiert wird. Falls die `.env` noch auf Lovable Cloud zeigt, muss die Connector-Konfiguration überprüft werden.
+Aktuell nutzt Lovable AI Gateway einen Pool-basierten Zugang zu GPT und Gemini. Bei direkter Nutzung zahlst du:
+- **OpenAI GPT-4o**: ~$2.50 / 1M Input-Tokens
+- **OpenAI GPT-4o-mini**: ~$0.15 / 1M Input-Tokens
+- **Google Gemini 1.5 Pro**: ~$1.25 / 1M Input-Tokens
+- **Google Gemini 1.5 Flash**: ~$0.075 / 1M Input-Tokens
 
-**Wichtig:** Da die `.env` von Lovable automatisch verwaltet wird, sollte sie sich automatisch aktualisieren, wenn das externe Supabase-Projekt korrekt verbunden ist. Falls nicht, teile mir bitte mit, welche Fehlermeldung du siehst.
-
+Bei Genehmigung werde ich die Edge Functions umschreiben, um die direkten APIs zu nutzen.

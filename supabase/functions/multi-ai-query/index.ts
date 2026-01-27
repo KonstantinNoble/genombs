@@ -6,12 +6,27 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Model ID mapping: Internal ID -> Direct API ID
+const MODEL_ID_MAPPING: Record<string, string> = {
+  // OpenAI models via direct API
+  'openai/gpt-5-mini': 'gpt-4o-mini',
+  'openai/gpt-5': 'gpt-4o',
+  'openai/gpt-5-nano': 'gpt-4o-mini',
+  'openai/gpt-5.2': 'gpt-4o',
+  // Google models via direct API  
+  'google/gemini-3-pro-preview': 'gemini-1.5-pro',
+  'google/gemini-2.5-flash': 'gemini-1.5-flash',
+  'google/gemini-2.5-pro': 'gemini-1.5-pro',
+  'google/gemini-2.5-flash-lite': 'gemini-1.5-flash',
+  'google/gemini-3-flash-preview': 'gemini-1.5-flash',
+};
+
 // All available model configurations
-const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } }> = {
+const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'openai' | 'google' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } }> = {
   gptMini: {
     id: 'openai/gpt-5-mini',
     name: 'GPT-5 Mini',
-    gateway: 'lovable',
+    gateway: 'openai',
     characteristics: {
       reasoning: 'good',
       tendency: 'balanced',
@@ -31,7 +46,7 @@ const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' 
   geminiPro: {
     id: 'google/gemini-3-pro-preview',
     name: 'Gemini 3 Pro',
-    gateway: 'lovable',
+    gateway: 'google',
     characteristics: {
       reasoning: 'strong',
       tendency: 'creative',
@@ -41,7 +56,7 @@ const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'lovable' 
   geminiFlash: {
     id: 'google/gemini-2.5-flash',
     name: 'Gemini Flash',
-    gateway: 'lovable',
+    gateway: 'google',
     characteristics: {
       reasoning: 'good',
       tendency: 'pragmatic',
@@ -181,8 +196,8 @@ interface ModelResponse {
   citations?: string[];
 }
 
-// Query Lovable Gateway models (GPT, Gemini)
-async function queryLovableModel(
+// Query OpenAI models directly
+async function queryOpenAIModel(
   modelKey: string,
   modelConfig: typeof ALL_MODELS.gptMini,
   prompt: string,
@@ -194,7 +209,10 @@ async function queryLovableModel(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  console.log(`[${modelConfig.name}] Starting query via Lovable Gateway...`);
+  // Map internal model ID to OpenAI API model ID
+  const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gpt-4o-mini';
+  
+  console.log(`[${modelConfig.name}] Starting query via OpenAI API (model: ${directModelId})...`);
   
   try {
     const recommendationCount = isPremium ? "4-5" : "2-3";
@@ -220,14 +238,14 @@ PREMIUM ANALYSIS REQUIREMENTS:
 - Include market context in your summary
 - Provide a 12-month strategic outlook` : ''}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: modelConfig.id,
+        model: directModelId,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
@@ -258,6 +276,170 @@ PREMIUM ANALYSIS REQUIREMENTS:
     }
 
     const parsed = JSON.parse(toolCall.function.arguments);
+    const processingTime = Date.now() - startTime;
+    
+    console.log(`[${modelConfig.name}] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
+    
+    return {
+      modelId: modelConfig.id,
+      modelName: modelConfig.name,
+      recommendations: parsed.recommendations || [],
+      summary: parsed.summary || "",
+      overallConfidence: parsed.overallConfidence || 50,
+      processingTimeMs: processingTime,
+      ...(isPremium && {
+        marketContext: parsed.marketContext,
+        strategicOutlook: parsed.strategicOutlook
+      })
+    };
+
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    const processingTime = Date.now() - startTime;
+    
+    if (error.name === 'AbortError') {
+      console.error(`[${modelConfig.name}] Timed out after ${processingTime}ms`);
+      return {
+        modelId: modelConfig.id,
+        modelName: modelConfig.name,
+        recommendations: [],
+        summary: "",
+        overallConfidence: 0,
+        processingTimeMs: processingTime,
+        error: "Request timed out"
+      };
+    }
+    
+    console.error(`[${modelConfig.name}] Failed after ${processingTime}ms:`, error.message);
+    return {
+      modelId: modelConfig.id,
+      modelName: modelConfig.name,
+      recommendations: [],
+      summary: "",
+      overallConfidence: 0,
+      processingTimeMs: processingTime,
+      error: error.message
+    };
+  }
+}
+
+// Query Google Gemini models directly
+async function queryGoogleModel(
+  modelKey: string,
+  modelConfig: typeof ALL_MODELS.geminiPro,
+  prompt: string,
+  apiKey: string,
+  isPremium: boolean,
+  timeoutMs: number = 60000
+): Promise<ModelResponse> {
+  const startTime = Date.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  // Map internal model ID to Google API model ID
+  const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-1.5-flash';
+  
+  console.log(`[${modelConfig.name}] Starting query via Google AI API (model: ${directModelId})...`);
+  
+  try {
+    const recommendationCount = isPremium ? "4-5" : "2-3";
+    const detailLevel = isPremium 
+      ? "Provide comprehensive, detailed analysis with market context, competitive considerations, and long-term strategic implications."
+      : "Provide clear, actionable analysis.";
+    
+    const systemInstruction = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
+${detailLevel}
+Each recommendation should be practical and implementable.
+Be specific with numbers, timeframes, and concrete steps.
+Consider both opportunities and risks.${isPremium ? `
+
+PREMIUM ANALYSIS REQUIREMENTS:
+- Include competitive advantage analysis for each recommendation
+- Provide long-term implications (12+ month outlook)
+- Add resource requirements (budget estimates, team needs, tools)
+- Include market context in your summary
+- Provide a 12-month strategic outlook` : ''}
+
+IMPORTANT: You MUST respond with a JSON object in this exact format:
+{
+  "recommendations": [
+    {
+      "title": "string",
+      "description": "string",
+      "confidence": number (0-100),
+      "riskLevel": number (1-5),
+      "creativityLevel": number (1-5),
+      "reasoning": "string",
+      "actionItems": ["string", "string", ...],
+      "potentialRisks": ["string", "string", ...],
+      "timeframe": "string"
+    }
+  ],
+  "summary": "string",
+  "overallConfidence": number (0-100)
+}`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            { 
+              role: "user", 
+              parts: [{ text: `${systemInstruction}\n\nUser Query: ${prompt}` }] 
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json"
+          }
+        }),
+        signal: controller.signal
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[${modelConfig.name}] Error ${response.status}:`, errorText);
+      
+      if (response.status === 429) throw new Error("Rate limit exceeded");
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Google AI returns content in a different format
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!content) {
+      console.error(`[${modelConfig.name}] No content in response`);
+      throw new Error("No response from model");
+    }
+
+    // Parse JSON response
+    let parsed;
+    try {
+      // Try to extract JSON from content (might be wrapped in markdown code blocks)
+      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : content;
+      parsed = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.error(`[${modelConfig.name}] Failed to parse JSON:`, parseError);
+      throw new Error("Invalid JSON response from model");
+    }
+
     const processingTime = Date.now() - startTime;
     
     console.log(`[${modelConfig.name}] Completed in ${processingTime}ms with ${parsed.recommendations?.length || 0} recommendations`);
@@ -414,7 +596,7 @@ Consider both opportunities and risks.`;
 
 // Query Perplexity API with web search
 async function queryPerplexityModel(
-  modelConfig: { id: string; name: string; gateway: 'lovable' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } },
+  modelConfig: { id: string; name: string; gateway: 'openai' | 'google' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } },
   prompt: string,
   apiKey: string,
   isPremium: boolean,
@@ -581,12 +763,19 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    
+    // Direct API keys (no more Lovable Gateway)
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
     const claudeApiKey = Deno.env.get('CLAUDE_API_KEY');
     const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
     
-    if (!lovableApiKey) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    // Validate required API keys
+    if (!openaiApiKey) {
+      throw new Error('OPENAI_API_KEY not configured');
+    }
+    if (!googleApiKey) {
+      throw new Error('GOOGLE_AI_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -734,8 +923,6 @@ Context for your analysis:
             console.log('Starting parallel model queries...');
 
             // Query all selected models in parallel
-            // All models use 90s timeout (Perplexity reasoning models are fast)
-
             const modelPromises = selectedModels.map(async (modelKey: string) => {
               const modelConfig = ALL_MODELS[modelKey];
               sendSSE(controller, 'model_started', { model: modelKey, name: modelConfig.name });
@@ -743,13 +930,16 @@ Context for your analysis:
               let response: ModelResponse;
               
               switch (modelConfig.gateway) {
-                case 'lovable':
-                  response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
+                case 'openai':
+                  response = await queryOpenAIModel(modelKey, modelConfig, enhancedPrompt, openaiApiKey!, isPremium, 90000);
+                  break;
+                case 'google':
+                  response = await queryGoogleModel(modelKey, modelConfig, enhancedPrompt, googleApiKey!, isPremium, 90000);
                   break;
                 case 'anthropic':
                   response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);
                   break;
-              case 'perplexity':
+                case 'perplexity':
                   response = await queryPerplexityModel(modelConfig, enhancedPrompt, perplexityApiKey!, isPremium, 90000);
                   break;
                 default:
@@ -810,8 +1000,11 @@ Context for your analysis:
         let response: ModelResponse;
         
         switch (modelConfig.gateway) {
-          case 'lovable':
-            response = await queryLovableModel(modelKey, modelConfig, enhancedPrompt, lovableApiKey!, isPremium, 90000);
+          case 'openai':
+            response = await queryOpenAIModel(modelKey, modelConfig, enhancedPrompt, openaiApiKey!, isPremium, 90000);
+            break;
+          case 'google':
+            response = await queryGoogleModel(modelKey, modelConfig, enhancedPrompt, googleApiKey!, isPremium, 90000);
             break;
           case 'anthropic':
             response = await queryClaudeModel(enhancedPrompt, claudeApiKey!, isPremium, 90000);

@@ -37,10 +37,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.multi-ai-query]
-verify_jwt = true
+verify_jwt = false
 
 [functions.meta-evaluation]
-verify_jwt = true
+verify_jwt = false
 
 [functions.team-management]
 verify_jwt = false

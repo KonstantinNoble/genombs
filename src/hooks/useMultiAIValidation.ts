@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL } from '@/lib/supabase/external-client';
 
 export interface ModelRecommendation {
   title: string;
@@ -164,7 +164,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
 
       // Step 1: Query all selected AI models in parallel
       const queryResponse = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/multi-ai-query`,
+        `${SUPABASE_URL}/functions/v1/multi-ai-query`,
         {
           method: 'POST',
           headers: {
@@ -321,7 +321,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
       setStatus('evaluating');
 
       const evalResponse = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/meta-evaluation`,
+        `${SUPABASE_URL}/functions/v1/meta-evaluation`,
         {
           method: 'POST',
           headers: {

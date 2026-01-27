@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/external-client";
 import { useToast } from "@/hooks/use-toast";
 import { ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import type { Json } from "@/integrations/supabase/types";

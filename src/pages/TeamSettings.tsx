@@ -9,7 +9,7 @@ import {
   LogOut
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeam, TeamRole } from "@/contexts/TeamContext";
 import { Button } from "@/components/ui/button";

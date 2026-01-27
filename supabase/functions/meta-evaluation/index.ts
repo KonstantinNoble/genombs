@@ -6,6 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Model ID mapping for direct Google AI API
+const GOOGLE_MODEL_MAPPING: Record<string, string> = {
+  'google/gemini-3-flash-preview': 'gemini-1.5-flash',
+  'google/gemini-2.5-flash': 'gemini-1.5-flash',
+  'google/gemini-3-pro-preview': 'gemini-1.5-pro',
+  'google/gemini-2.5-pro': 'gemini-1.5-pro',
+};
+
 interface ModelRecommendation {
   title: string;
   description: string;
@@ -583,10 +591,12 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     
-    if (!lovableApiKey) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    // Direct Google AI API key (no more Lovable Gateway)
+    const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+    
+    if (!googleApiKey) {
+      throw new Error('GOOGLE_AI_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -708,7 +718,7 @@ serve(async (req) => {
       riskPreference: riskPref
     });
 
-    // ========== STEP 3: LLM FOR FORMATTING ONLY ==========
+    // ========== STEP 3: LLM FOR FORMATTING ONLY (via direct Google AI API) ==========
     
     const riskContext = riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced';
     
@@ -735,7 +745,9 @@ You MUST generate ALL of the following premium features for this premium user. T
 
 3. competitorInsights (REQUIRED): Synthesize actionable competitive analysis based on the model summaries. This should be a detailed paragraph.
 
-FAILURE TO INCLUDE THESE PREMIUM FIELDS IS NOT ACCEPTABLE. Every premium user MUST receive all three premium sections.` : ''}`;
+FAILURE TO INCLUDE THESE PREMIUM FIELDS IS NOT ACCEPTABLE. Every premium user MUST receive all three premium sections.` : ''}
+
+IMPORTANT: Respond with a valid JSON object matching the format_evaluation schema. Include all required fields.`;
 
     const userPrompt = `Here are the PRE-COMPUTED results. Polish the language but keep all decisions intact:
 
@@ -754,24 +766,33 @@ ${JSON.stringify(computedFinal, null, 2)}
 ORIGINAL MODEL SUMMARIES (for context and premium features only):
 ${modelSummaries.join('\n\n')}
 
-Output the formatted version using the format_evaluation function. Remember: improve language only, do not change decisions.`;
+Output the formatted version as JSON. Remember: improve language only, do not change decisions.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        tools: [getFormattingTool(isPremium)],
-        tool_choice: { type: "function", function: { name: "format_evaluation" } }
-      }),
-    });
+    // Use direct Google AI API instead of Lovable Gateway
+    const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-1.5-flash';
+    
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent?key=${googleApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            { 
+              role: "user", 
+              parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] 
+            }
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 8192,
+            responseMimeType: "application/json"
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -784,11 +805,14 @@ Output the formatted version using the format_evaluation function. Remember: imp
     
     if (response.ok) {
       const data = await response.json();
-      const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
-      if (toolCall?.function?.arguments) {
+      if (content) {
         try {
-          formattedEvaluation = JSON.parse(toolCall.function.arguments);
+          // Try to extract JSON from content (might be wrapped in markdown code blocks)
+          const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
+          const jsonStr = jsonMatch ? jsonMatch[1] : content;
+          formattedEvaluation = JSON.parse(jsonStr);
         } catch (e) {
           console.error('Failed to parse formatted evaluation:', e);
         }

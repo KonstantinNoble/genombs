@@ -13,12 +13,12 @@ const MODEL_ID_MAPPING: Record<string, string> = {
   'openai/gpt-5': 'gpt-4o',
   'openai/gpt-5-nano': 'gpt-4o-mini',
   'openai/gpt-5.2': 'gpt-4o',
-  // Google models via direct API  
-  'google/gemini-3-pro-preview': 'gemini-1.5-pro',
-  'google/gemini-2.5-flash': 'gemini-1.5-flash',
-  'google/gemini-2.5-pro': 'gemini-1.5-pro',
-  'google/gemini-2.5-flash-lite': 'gemini-1.5-flash',
-  'google/gemini-3-flash-preview': 'gemini-1.5-flash',
+  // Google models via direct API (updated to current model names)
+  'google/gemini-3-pro-preview': 'gemini-2.5-pro-preview-05-06',
+  'google/gemini-2.5-flash': 'gemini-2.5-flash-preview-05-20',
+  'google/gemini-2.5-pro': 'gemini-2.5-pro-preview-05-06',
+  'google/gemini-2.5-flash-lite': 'gemini-2.0-flash-lite',
+  'google/gemini-3-flash-preview': 'gemini-2.5-flash-preview-05-20',
 };
 
 // All available model configurations

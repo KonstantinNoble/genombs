@@ -1,128 +1,132 @@
 
 
-# Code-Anpassung: Lovable AI Gateway durch direkte OpenAI/Gemini APIs ersetzen
+# Fix: 401-Fehler bei multi-ai-query Edge Function
 
-## Zusammenfassung
+## Ursache des Problems
 
-Du hast eigene API Keys (`OPENAI_API_KEY` und `GEMINI_API_KEY`) in deinem externen Supabase-Projekt konfiguriert. Der bestehende Code ist bereits fuer direkte API-Aufrufe vorbereitet, aber es gibt einen **Naming-Mismatch**:
+Das Frontend ruft die Edge Function mit:
+- `Authorization: Bearer {user_jwt}` ✅
+- `apikey: {anon_key}` ❌ **FEHLT**
 
-| Was der Code erwartet | Was du konfiguriert hast |
-|----------------------|--------------------------|
-| `OPENAI_API_KEY` | `OPENAI_API_KEY` ✅ |
-| `GOOGLE_AI_API_KEY` | `GEMINI_API_KEY` ❌ |
+Supabase Edge Functions mit `verify_jwt = true` benoetigen **beide** Header. Das Fehlen des `apikey` Headers fuehrt zum 401.
 
 ## Loesung
 
-Es gibt zwei Optionen:
-
-### Option A: Secret-Namen in Supabase aendern (Empfohlen)
-
-Im Supabase Dashboard (`fhzqngbbvwpfdmhjfnvk` > Settings > Edge Functions > Secrets):
-1. Loesche `GEMINI_API_KEY`
-2. Erstelle `GOOGLE_AI_API_KEY` mit demselben Wert
-
-**Vorteil**: Kein Code-Aenderung noetig.
-
-### Option B: Code anpassen (Alternative)
-
-Den Code in beiden Edge Functions aendern, um `GEMINI_API_KEY` zu verwenden:
+Der Frontend-Code in `useMultiAIValidation.ts` muss den `apikey` Header hinzufuegen.
 
 ---
 
-## Technische Aenderungen (Option B)
+## Technische Aenderungen
 
-### Datei 1: `supabase/functions/multi-ai-query/index.ts`
+### Datei: `src/hooks/useMultiAIValidation.ts`
 
-**Zeile 769 aendern:**
+**Zeilen 166-183** - multi-ai-query Aufruf:
+
 ```typescript
-// Vorher:
-const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+// VORHER (Zeile 166-183):
+const queryResponse = await fetch(
+  `${SUPABASE_URL}/functions/v1/multi-ai-query`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({...}),
+    signal: abortController.signal
+  }
+);
 
-// Nachher:
-const googleApiKey = Deno.env.get('GEMINI_API_KEY');
+// NACHHER:
+const queryResponse = await fetch(
+  `${SUPABASE_URL}/functions/v1/multi-ai-query`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': SUPABASE_ANON_KEY,  // NEU: Anon Key hinzufuegen
+    },
+    body: JSON.stringify({...}),
+    signal: abortController.signal
+  }
+);
 ```
 
-**Zeile 778 aendern:**
+**Zeilen 322-342** - meta-evaluation Aufruf:
+
 ```typescript
-// Vorher:
-if (!googleApiKey) {
-  throw new Error('GOOGLE_AI_API_KEY not configured');
-}
+// VORHER:
+const evalResponse = await fetch(
+  `${SUPABASE_URL}/functions/v1/meta-evaluation`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({...}),
+  }
+);
 
-// Nachher:
-if (!googleApiKey) {
-  throw new Error('GEMINI_API_KEY not configured');
-}
+// NACHHER:
+const evalResponse = await fetch(
+  `${SUPABASE_URL}/functions/v1/meta-evaluation`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': SUPABASE_ANON_KEY,  // NEU: Anon Key hinzufuegen
+    },
+    body: JSON.stringify({...}),
+  }
+);
 ```
 
-### Datei 2: `supabase/functions/meta-evaluation/index.ts`
+### Datei: `src/lib/supabase/external-client.ts`
 
-**Zeile 596 aendern:**
+Export des Anon Keys hinzufuegen (Zeile 19):
+
 ```typescript
-// Vorher:
-const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+// VORHER:
+export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
+export const SUPABASE_PROJECT_ID = "fhzqngbbvwpfdmhjfnvk";
 
-// Nachher:
-const googleApiKey = Deno.env.get('GEMINI_API_KEY');
+// NACHHER:
+export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
+export const SUPABASE_ANON_KEY = EXTERNAL_SUPABASE_ANON_KEY;  // NEU
+export const SUPABASE_PROJECT_ID = "fhzqngbbvwpfdmhjfnvk";
 ```
 
-**Zeile 598-599 aendern:**
+### Datei: `src/hooks/useMultiAIValidation.ts`
+
+Import aktualisieren (Zeile 2):
+
 ```typescript
-// Vorher:
-if (!googleApiKey) {
-  throw new Error('GOOGLE_AI_API_KEY not configured');
-}
+// VORHER:
+import { supabase, SUPABASE_URL } from '@/lib/supabase/external-client';
 
-// Nachher:
-if (!googleApiKey) {
-  throw new Error('GEMINI_API_KEY not configured');
-}
+// NACHHER:
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase/external-client';
 ```
 
 ---
 
-## Betroffene Edge Functions
+## Zusammenfassung der Aenderungen
 
-| Function | Aenderung | Status |
-|----------|-----------|--------|
-| `multi-ai-query` | Environment Variable Name | Code-Aenderung noetig |
-| `meta-evaluation` | Environment Variable Name | Code-Aenderung noetig |
-
----
-
-## API Endpoints - Keine Aenderung noetig
-
-Der Code verwendet bereits die korrekten direkten API-Endpoints:
-
-- **OpenAI**: `https://api.openai.com/v1/chat/completions`
-- **Google AI**: `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`
-- **Anthropic**: `https://api.anthropic.com/v1/messages`
-- **Perplexity**: `https://api.perplexity.ai/chat/completions`
+| Datei | Aenderung |
+|-------|-----------|
+| `external-client.ts` | Export `SUPABASE_ANON_KEY` hinzufuegen |
+| `useMultiAIValidation.ts` | Import erweitern + `apikey` Header bei beiden fetch-Aufrufen |
 
 ---
 
-## Model Mapping - Bereits korrekt konfiguriert
+## Warum das funktioniert
 
-Der Code mappt die internen Model-IDs bereits zu den echten API-Model-IDs:
+Supabase Edge Functions mit `verify_jwt = true` validieren:
+1. **apikey Header**: Muss ein gueltiger Anon oder Service Role Key sein
+2. **Authorization Header**: Muss ein gueltiger User JWT sein
 
-```text
-openai/gpt-5-mini  -->  gpt-4o-mini
-openai/gpt-5       -->  gpt-4o
-google/gemini-3-pro-preview  -->  gemini-1.5-pro
-google/gemini-2.5-flash      -->  gemini-1.5-flash
-```
-
----
-
-## Nach der Aenderung
-
-1. Edge Functions werden automatisch deployed
-2. Teste die Validierung auf synoptas.com
-3. Die Models sollten jetzt mit deinen eigenen API Keys funktionieren
-
-## Empfehlung
-
-**Ich empfehle Option A** (Secret umbenennen in Supabase), da dies keine Code-Aenderung erfordert und du bereits im Supabase Dashboard bist.
-
-Wenn du Option B bevorzugst, kann ich die Code-Aenderungen umsetzen.
+Ohne den `apikey` Header lehnt Supabase den Request ab, bevor der Code ueberhaupt laeuft - daher der 401 ohne Logs in der Function selbst.
 

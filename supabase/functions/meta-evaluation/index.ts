@@ -593,10 +593,10 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
     // Direct Google AI API key (no more Lovable Gateway)
-    const googleApiKey = Deno.env.get('GOOGLE_AI_API_KEY');
+    const googleApiKey = Deno.env.get('GEMINI_API_KEY');
     
     if (!googleApiKey) {
-      throw new Error('GOOGLE_AI_API_KEY not configured');
+      throw new Error('GEMINI_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);

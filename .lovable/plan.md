@@ -1,88 +1,204 @@
 
-Problemverständnis (aus Code + Logs)
-- Der Einladungslink zeigt auf synoptas.com und beim Öffnen siehst du „Invitation Error“ (bei eingeloggten und nicht eingeloggten Nutzern).
-- Die Backend-Funktion `team-management` wird tatsächlich mit `action: accept-invite` aufgerufen (Logs zeigen `accept-invite, user: null` und auch `accept-invite, user: <uuid>`). Das heißt: Route wird geladen, und das Problem liegt in der Fehlerbehandlung/Flow-Logik.
-- Aktuell gibt die Backend-Funktion bei Fehlerfällen (z.B. Email-Mismatch, Invite ungültig/abgelaufen, Team voll) HTTP-Status 403/404 zurück.
-- In `src/pages/TeamInvite.tsx` wird bei `response.error` sofort auf den generischen Error-State gewechselt – ohne den JSON-Body der Fehlantwort auszulesen. Dadurch wird z.B. ein sauberer `EMAIL_MISMATCH`-Fall (eigener UI-State vorhanden!) als „Invitation Error“ angezeigt. Das ist sehr wahrscheinlich der Grund, warum “alles kaputt” wirkt.
 
-Ziel
-- Einladungen funktionieren wieder für:
-  - Nicht eingeloggte Nutzer: „Sign in to accept“ → Login/Signup → Einladung kann angenommen werden
-  - Eingeloggte Nutzer: Link öffnen → Einladung wird direkt angenommen (oder sauberer „Wrong account“-Hinweis)
+# Migrationsplan: Edge Functions und Datenbank auf Supabase deployen
 
-Umsetzungsschritte (konkret)
+## Übersicht
 
-1) TeamInvite: Fehler-Body auch bei non-2xx auslesen und korrekt mappen
-Datei: `src/pages/TeamInvite.tsx`
-- Wenn `response.error` gesetzt ist:
-  - Versuchen, den Response-Body aus `response.error.context` (Supabase FunctionsHttpError Response) als JSON zu parsen.
-  - Danach State korrekt setzen, z.B.:
-    - `EMAIL_MISMATCH` → `setState("emailMismatch")` + `invitedEmail`
-    - `TEAM_FULL` → `setState("error")` + passende Message
-    - `Invalid or expired invitation` → `setState("error")` + klare Message („Invite ungültig/abgelaufen“)
-    - `Missing authorization`/`Invalid token` → `setState("requiresAuth")` (wenn user fehlt)
-- Ergebnis: Statt generischem „Invitation Error“ sehen Nutzer die richtige Ursache und den richtigen nächsten Schritt.
+Du hast dein neues Supabase-Projekt (`fhzqngbbvwpfdmhjfnvk`) mit Lovable verbunden. Ich werde die Konfiguration aktualisieren, sodass alle Edge Functions und Datenbank-Migrationen automatisch auf dein neues Projekt deployed werden.
 
-2) TeamInvite: Auth-Token explizit mitsenden (stabiler, konsistent zum Rest der App)
-Datei: `src/pages/TeamInvite.tsx`
-- Vor `supabase.functions.invoke` einmal `supabase.auth.getSession()` holen.
-- Wenn Session vorhanden:
-  - `headers: { Authorization: \`Bearer ${session.access_token}\` }` mitsenden.
-- Wenn keine Session:
-  - ohne Header callen (damit `requiresAuth` sauber zurückkommt).
-- Hintergrund: In anderen Teilen (TeamContext/TeamMembers) wird Authorization immer explizit gesetzt; TeamInvite war hiervon abweichend. Das macht den Flow robuster über Domains/Browser hinweg.
+## Deine neuen Supabase-Credentials
 
-3) Backend: accept-invite Fehlerfälle als 200 + structured payload zurückgeben (optional, aber empfohlen)
-Datei: `supabase/functions/team-management/index.ts` (Case `"accept-invite"`)
-- Um das `response.error`-Problem dauerhaft zu eliminieren, stellen wir auf ein einheitliches Response-Schema um:
-  - Immer `status: 200` bei erwartbaren Business-Fehlern (Invite invalid, mismatch, team full), z.B.:
-    - `{ ok: false, error: "INVITE_INVALID" }`
-    - `{ ok: false, error: "EMAIL_MISMATCH", invitedEmail }`
-    - `{ ok: false, error: "TEAM_FULL" }`
-    - `{ ok: false, requiresAuth: true, email, teamName }`
-  - Nur echte Systemfehler bleiben 500.
-- Parallel dazu passt TeamInvite die Mapping-Logik auf diese Codes an (auch einfacher zu warten).
-- Bonus-Fix: Beim `alreadyMember`-Return zusätzlich `teamId` und `teamName` mitsenden (damit der UI-State keine leeren Werte hat).
+| Feld | Wert |
+|------|------|
+| **Project URL** | `https://fhzqngbbvwpfdmhjfnvk.supabase.co` |
+| **Project ID** | `fhzqngbbvwpfdmhjfnvk` |
+| **Anon Key** | `eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9...` (aus Screenshot) |
 
-4) Login-Flow ohne Storage: returnTo per URL statt localStorage (damit es auch ohne pending_team_invite “smooth” ist)
-Dateien: `src/pages/TeamInvite.tsx`, `src/pages/Auth.tsx`, `src/pages/AuthCallback.tsx`
-- Du wolltest Storage komplett entfernen; aktuell bedeutet das aber, dass nach Login der Invite nicht automatisch weiterläuft.
-- Lösung ohne Storage:
-  - In TeamInvite bei „Sign In to Accept“: navigiere zu `/auth?intent=invite&email=...&returnTo=/team/invite/<token>`
-  - In Auth.tsx:
-    - `email` QueryParam auslesen und ins Formular vorbefüllen
-    - `returnTo` QueryParam beim Login/Signup/OAuth weiterreichen:
-      - Email/Pass Login: `navigate("/auth/callback?returnTo=...")`
-      - Google OAuth: `redirectTo: ".../auth/callback?returnTo=..."`
-      - register-user redirectUrl: `".../auth/callback?returnTo=..."`
-    - Bei bereits eingeloggtem User nicht stumpf auf `/` redirecten, sondern wenn `returnTo` existiert → direkt dahin.
-  - In AuthCallback.tsx:
-    - `returnTo` aus QueryParam lesen und nach erfolgreichem Login dorthin navigieren
-    - Den alten `pending_team_invite` localStorage-Block entfernen (weil du Storage dafür nicht willst)
-- Ergebnis: Nahtloser Invite-Flow ohne sessionStorage/localStorage.
+## Was automatisch passiert
 
-5) Testplan (konkret, damit wir sofort sehen ob es wirklich gefixt ist)
-A) Nicht eingeloggter Nutzer (Inkognito)
-- Invite an E-Mail X senden
-- Link öffnen → muss „Join … / Sign in to accept“ zeigen (nicht Invitation Error)
-- Login/Signup mit E-Mail X → nach Callback automatisch zurück zur Einladung → „Welcome to …“
+Wenn Lovable korrekt mit deinem Supabase-Projekt verbunden ist:
+1. Die `.env` Datei wird automatisch aktualisiert
+2. Die `supabase/config.toml` wird aktualisiert
+3. Edge Functions werden automatisch deployed
+4. Migrations werden automatisch ausgeführt
 
-B) Eingeloggter Nutzer mit gleicher E-Mail wie Einladung
-- Link öffnen → sollte direkt „Welcome to …“ zeigen
+## Phase 1: Konfiguration aktualisieren
 
-C) Eingeloggter Nutzer mit anderer E-Mail als Einladung
-- Link öffnen → sollte „Wrong account“ (emailMismatch) zeigen (nicht Invitation Error)
+### 1.1 `.env` Datei aktualisieren
 
-Risiken / Edge Cases
-- Alte Einladungslinks können legitimerweise ungültig werden, wenn dieselbe E-Mail erneut eingeladen wurde (Token wird überschrieben). Mit dem neuen Error-Handling ist das klar und verständlich sichtbar.
-- Wenn synoptas.com tatsächlich nicht auf dieselbe App zeigt oder umleitet, müssen wir zusätzlich auf ein Link-Format wechseln, das immer `/` lädt (z.B. `https://synoptas.com/?invite=<token>` + App-internes Redirect). Aktuell sieht es aber nach App-Ladepfad aus, weil accept-invite Calls in Logs auftauchen.
+```text
+VITE_SUPABASE_PROJECT_ID="fhzqngbbvwpfdmhjfnvk"
+VITE_SUPABASE_PUBLISHABLE_KEY="[NEUER_ANON_KEY]"
+VITE_SUPABASE_URL="https://fhzqngbbvwpfdmhjfnvk.supabase.co"
+```
 
-Umfang: Dateien die wir anfassen werden
-- `src/pages/TeamInvite.tsx` (Hauptfix)
-- `supabase/functions/team-management/index.ts` (accept-invite Response vereinheitlichen + alreadyMember payload)
-- `src/pages/Auth.tsx` (email/returnTo aus URL, weiterreichen)
-- `src/pages/AuthCallback.tsx` (returnTo handling, pending_team_invite entfernen)
+### 1.2 `supabase/config.toml` aktualisieren
 
-Erwartetes Ergebnis
-- Keine generischen „Invitation Error“-Screens mehr für normale Fälle.
-- Einladungen funktionieren wieder vollständig, ohne Token in Browser-Storage zu speichern.
+```toml
+project_id = "fhzqngbbvwpfdmhjfnvk"
+```
+
+---
+
+## Phase 2: Edge Functions (12 Stück)
+
+Diese Edge Functions werden automatisch deployed:
+
+| Function | Beschreibung | JWT |
+|----------|--------------|-----|
+| `multi-ai-query` | Multi-AI Validierung | true |
+| `meta-evaluation` | Meta-Evaluation | true |
+| `team-management` | Team-Verwaltung | false |
+| `freemius-webhook` | Zahlungs-Webhooks | false |
+| `send-auth-email` | Auth-E-Mails | false |
+| `register-user` | Benutzer-Registrierung | false |
+| `sync-freemius-subscription` | Subscription-Sync | true |
+| `delete-account` | Account löschen | true |
+| `delete-blocked-account` | Blockierten Account löschen | true |
+| `check-deleted-account-block` | Block-Prüfung | false |
+| `check-email-availability` | E-Mail-Verfügbarkeit | false |
+| `check-reset-eligibility` | Reset-Berechtigung | false |
+
+---
+
+## Phase 3: Datenbank-Schema (104 Migrations)
+
+Die folgenden Tabellen werden erstellt:
+
+| Tabelle | Beschreibung |
+|---------|--------------|
+| `profiles` | Benutzerprofile |
+| `user_credits` | Premium-Status, Validierungslimits |
+| `user_roles` | Admin/Moderator-Rollen |
+| `validation_analyses` | Validierungshistorie |
+| `decision_records` | Entscheidungsprotokolle |
+| `decision_audit_log` | Audit-Trail |
+| `experiments` | Experimente |
+| `experiment_tasks` | Experiment-Aufgaben |
+| `experiment_checkpoints` | Checkpoints |
+| `experiment_evidence` | Evidenz |
+| `teams` | Team-Workspaces |
+| `team_members` | Team-Mitgliedschaften |
+| `team_invitations` | Einladungen |
+| `deleted_accounts` | 24h Account-Block |
+| `pending_premium` | Pending Premium-Status |
+| `processed_webhook_events` | Webhook-Deduplizierung |
+| `registration_attempts` | Rate-Limiting |
+
+---
+
+## Phase 4: Secrets übertragen (manuell erforderlich)
+
+Die folgenden Secrets müssen in deinem **neuen Supabase-Projekt** unter **Edge Functions → Secrets** gesetzt werden:
+
+| Secret | Beschreibung |
+|--------|--------------|
+| `LOVABLE_API_KEY` | Für Lovable AI Gateway |
+| `CLAUDE_API_KEY` | Für Claude Sonnet 4 |
+| `PERPLEXITY_API_KEY` | Für Perplexity Modelle |
+| `RESEND_API_KEY` | Für E-Mail-Versand |
+| `FREEMIUS_API_KEY` | Für Subscription-Sync |
+| `FREEMIUS_PRODUCT_ID` | Produkt-ID |
+| `FREEMIUS_PUBLIC_KEY` | Öffentlicher Schlüssel |
+| `FREEMIUS_SECRET_KEY` | Webhook-Signatur |
+| `FIRECRAWL_API_KEY` | Für Web-Scraping |
+
+**Wichtig:** Diese Secrets müssen manuell im Supabase Dashboard gesetzt werden, da Lovable keinen direkten Zugriff auf die Supabase Secrets hat.
+
+---
+
+## Phase 5: Auth-Konfiguration (manuell erforderlich)
+
+Im Supabase Dashboard unter **Authentication → URL Configuration**:
+
+**Site URL:**
+```text
+https://synoptas.com
+```
+
+**Redirect URLs:**
+```text
+https://synoptas.com/*
+https://wealthconomy.lovable.app/*
+http://localhost:5173/*
+```
+
+---
+
+## Phase 6: Google OAuth (manuell erforderlich)
+
+### Im Google Cloud Console:
+1. Gehe zu https://console.cloud.google.com/apis/credentials
+2. Füge neue Redirect URI hinzu:
+   ```text
+   https://fhzqngbbvwpfdmhjfnvk.supabase.co/auth/v1/callback
+   ```
+
+### Im Supabase Dashboard:
+1. Authentication → Providers → Google
+2. Client ID und Client Secret eingeben
+3. Aktivieren
+
+---
+
+## Phase 7: Freemius Webhook (manuell erforderlich)
+
+Im Freemius Dashboard die Webhook-URL aktualisieren:
+
+**Neue URL:**
+```text
+https://fhzqngbbvwpfdmhjfnvk.supabase.co/functions/v1/freemius-webhook
+```
+
+---
+
+## Phase 8: Storage Bucket (manuell erforderlich)
+
+Im Supabase Dashboard → Storage:
+1. Neuen Bucket erstellen: `website-screenshots`
+2. Public: Nein (private)
+
+---
+
+## Technische Details
+
+### Zu aktualisierende Dateien
+
+1. **`.env`** - Neue Supabase-Credentials
+2. **`supabase/config.toml`** - Neue Project-ID
+
+### Automatisches Deployment
+
+Nach der Konfigurationsänderung werden automatisch:
+- 12 Edge Functions deployed
+- 104 Migrations ausgeführt
+- 17 Tabellen erstellt
+- 50+ RLS Policies angewendet
+- 17+ Database Functions erstellt
+
+---
+
+## Zusammenfassung
+
+| Aufgabe | Wer | Status |
+|---------|-----|--------|
+| `.env` aktualisieren | Lovable | Wird implementiert |
+| `config.toml` aktualisieren | Lovable | Wird implementiert |
+| Edge Functions deployen | Automatisch | Nach Konfiguration |
+| Migrations ausführen | Automatisch | Nach Konfiguration |
+| Secrets im Supabase Dashboard setzen | Du | Manuell erforderlich |
+| Google OAuth konfigurieren | Du | Manuell erforderlich |
+| Freemius Webhook URL ändern | Du | Manuell erforderlich |
+| Storage Bucket erstellen | Du | Manuell erforderlich |
+
+---
+
+## Nächste Schritte nach Genehmigung
+
+1. Ich aktualisiere `.env` und `config.toml` mit der neuen Project-ID
+2. Die Edge Functions werden automatisch deployed
+3. Die Migrations werden automatisch ausgeführt
+4. Du setzt die Secrets im Supabase Dashboard
+5. Du konfigurierst Google OAuth und Freemius Webhook
+6. Gemeinsames Testing
+

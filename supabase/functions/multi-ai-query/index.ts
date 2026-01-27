@@ -22,9 +22,44 @@ const MODEL_ID_MAPPING: Record<string, string> = {
 };
 
 // Gemini model fallback candidates - if first fails with 404, try next
+// CORRECTED: Only use actually existing model IDs (January 2026)
+// gemini-2.0-pro and gemini-1.5-pro/flash do NOT exist and cause 404!
 const GEMINI_MODEL_CANDIDATES: Record<string, string[]> = {
-  'geminiPro': ['gemini-2.5-pro', 'gemini-2.0-pro', 'gemini-1.5-pro', 'gemini-2.0-flash'],
-  'geminiFlash': ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'],
+  'geminiPro': ['gemini-2.5-pro', 'gemini-3-pro-preview', 'gemini-2.0-flash'],
+  'geminiFlash': ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.0-flash'],
+};
+
+// JSON Response Schema for Gemini's structured output mode
+const GEMINI_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    recommendations: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          description: { type: "string" },
+          confidence: { type: "number" },
+          riskLevel: { type: "number" },
+          creativityLevel: { type: "number" },
+          reasoning: { type: "string" },
+          actionItems: { type: "array", items: { type: "string" } },
+          potentialRisks: { type: "array", items: { type: "string" } },
+          timeframe: { type: "string" },
+          competitiveAdvantage: { type: "string" },
+          longTermImplications: { type: "string" },
+          resourceRequirements: { type: "string" }
+        },
+        required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
+      }
+    },
+    summary: { type: "string" },
+    overallConfidence: { type: "number" },
+    marketContext: { type: "string" },
+    strategicOutlook: { type: "string" }
+  },
+  required: ["recommendations", "summary", "overallConfidence"]
 };
 
 // All available model configurations
@@ -416,8 +451,10 @@ CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explan
             ],
             generationConfig: {
               temperature: 0.7,
-              maxOutputTokens: 4096
-              // NO responseMimeType - using prompt-based JSON extraction instead
+              maxOutputTokens: 4096,
+              // Use structured JSON output with schema (per Google docs)
+              responseMimeType: "application/json",
+              responseSchema: GEMINI_RESPONSE_SCHEMA
             }
           }),
           signal: controller.signal

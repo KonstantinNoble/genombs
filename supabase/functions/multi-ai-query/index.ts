@@ -13,12 +13,12 @@ const MODEL_ID_MAPPING: Record<string, string> = {
   'openai/gpt-5': 'gpt-4o',
   'openai/gpt-5-nano': 'gpt-4o-mini',
   'openai/gpt-5.2': 'gpt-4o',
-  // Google models via direct API (updated to current model names)
-  'google/gemini-3-pro-preview': 'gemini-2.5-pro-preview-05-06',
-  'google/gemini-2.5-flash': 'gemini-2.5-flash-preview-05-20',
-  'google/gemini-2.5-pro': 'gemini-2.5-pro-preview-05-06',
-  'google/gemini-2.5-flash-lite': 'gemini-2.0-flash-lite',
-  'google/gemini-3-flash-preview': 'gemini-2.5-flash-preview-05-20',
+  // Google models via direct API (STABLE versions - January 2026)
+  'google/gemini-3-pro-preview': 'gemini-2.5-pro',
+  'google/gemini-2.5-flash': 'gemini-2.5-flash',
+  'google/gemini-2.5-pro': 'gemini-2.5-pro',
+  'google/gemini-2.5-flash-lite': 'gemini-2.5-flash-lite',
+  'google/gemini-3-flash-preview': 'gemini-2.5-flash',
 };
 
 // All available model configurations
@@ -337,7 +337,7 @@ async function queryGoogleModel(
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
   // Map internal model ID to Google API model ID
-  const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-1.5-flash';
+  const directModelId = MODEL_ID_MAPPING[modelConfig.id] || 'gemini-2.5-flash';
   
   console.log(`[${modelConfig.name}] Starting query via Google AI API (model: ${directModelId})...`);
   

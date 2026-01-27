@@ -15,8 +15,9 @@ const EXTERNAL_SUPABASE_URL = "https://fhzqngbbvwpfdmhjfnvk.supabase.co";
 const EXTERNAL_SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoenFuZ2JidndwZmRtaGpmbnZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MjIwNDEsImV4cCI6MjA4NTA5ODA0MX0.hWhaS9Sccw82F8oc2I27-AwIb6MpgxT_8ibiioUjGlo";
 
-// Export the URL for edge function calls
+// Export the URL and anon key for edge function calls
 export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
+export const SUPABASE_ANON_KEY = EXTERNAL_SUPABASE_ANON_KEY;
 export const SUPABASE_PROJECT_ID = "fhzqngbbvwpfdmhjfnvk";
 
 // Create and export the external Supabase client

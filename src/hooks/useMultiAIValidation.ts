@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase, SUPABASE_URL } from '@/lib/supabase/external-client';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase/external-client';
 
 export interface ModelRecommendation {
   title: string;
@@ -170,6 +170,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
+            'apikey': SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             prompt,
@@ -327,6 +328,7 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
+            'apikey': SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             modelResponses,

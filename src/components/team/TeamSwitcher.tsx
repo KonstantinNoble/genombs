@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ChevronDown, Building2, User, Plus, Loader2, Settings, Crown } from "lucide-react";
+import { Check, ChevronDown, Users, Plus, Loader2, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,12 +68,12 @@ export function TeamSwitcher() {
           >
             {currentTeam ? (
               <>
-                <Building2 className="h-4 w-4 shrink-0 text-primary" />
+                <Users className="h-4 w-4 shrink-0 text-primary" />
                 <span className="truncate hidden sm:inline">{currentTeam.name}</span>
               </>
             ) : (
               <>
-                <User className="h-4 w-4 shrink-0" />
+                <Users className="h-4 w-4 shrink-0" />
                 <span className="hidden sm:inline">Personal</span>
               </>
             )}
@@ -89,7 +89,7 @@ export function TeamSwitcher() {
             }}
             className="gap-2 min-h-[44px] sm:min-h-0"
           >
-            <User className="h-4 w-4 shrink-0" />
+            <Users className="h-4 w-4 shrink-0" />
             <span className="flex-1 truncate">Personal Workspace</span>
             {!currentTeam && <Check className="h-4 w-4 text-primary shrink-0" />}
           </DropdownMenuItem>
@@ -110,7 +110,7 @@ export function TeamSwitcher() {
                     }}
                     className="gap-2 pr-20 min-h-[48px] sm:min-h-0"
                   >
-                    <Building2 className="h-4 w-4 text-primary shrink-0" />
+                    <Users className="h-4 w-4 text-primary shrink-0" />
                     <div className="flex-1 min-w-0">
                       <span className="truncate block text-sm">{team.name}</span>
                       <span className="text-[10px] text-muted-foreground capitalize">
@@ -148,7 +148,7 @@ export function TeamSwitcher() {
             <Plus className="h-4 w-4 shrink-0" />
             <span className="flex-1">Create Team</span>
             {!isPremium ? (
-              <Crown className="h-4 w-4 text-amber-500 shrink-0" />
+              <span className="text-xs text-muted-foreground">(Premium)</span>
             ) : !canCreateMoreTeams ? (
               <span className="text-xs text-muted-foreground shrink-0">(5/5)</span>
             ) : null}

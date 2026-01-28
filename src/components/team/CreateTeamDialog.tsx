@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Building2 } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -92,7 +92,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 mb-2">
-              <Building2 className="h-6 w-6 text-primary" />
+              <Users className="h-6 w-6 text-primary" />
             </div>
             <DialogTitle className="text-center">Create a Team</DialogTitle>
             <DialogDescription className="text-center">

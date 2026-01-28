@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 26, 2026 | Version 5.5</p>
+          <p className="text-muted-foreground mb-8">Effective Date: January 28, 2026 | Version 5.6</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -510,25 +510,25 @@ const PrivacyPolicy = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (Direct API)</td>
                     <td className="border border-border p-3">GPT-5 Mini</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
                     <td className="border border-border p-3">Gemini 3 Flash</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Anthropic PBC</strong></td>
+                    <td className="border border-border p-3"><strong>Anthropic PBC</strong> (Direct API)</td>
                     <td className="border border-border p-3">Claude Sonnet 4</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong> (Direct API)</td>
                     <td className="border border-border p-3">Sonar Pro (with web search)</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
@@ -550,13 +550,13 @@ const PrivacyPolicy = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
                     <td className="border border-border p-3">Gemini 3 Pro Preview</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong> (Direct API)</td>
                     <td className="border border-border p-3">Sonar Reasoning Pro (with enhanced web search)</td>
                     <td className="border border-border p-3">United States</td>
                     <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
@@ -565,27 +565,6 @@ const PrivacyPolicy = () => {
               </table>
             </div>
 
-            <h4 className="text-lg font-semibold mb-2 mt-4">API Gateway Services</h4>
-            <div className="overflow-x-auto mb-4">
-              <table className="w-full text-muted-foreground border-collapse border border-border">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
-                    <th className="border border-border p-3 text-left font-semibold">Purpose</th>
-                    <th className="border border-border p-3 text-left font-semibold">Location</th>
-                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Lovable AI Gateway</strong></td>
-                    <td className="border border-border p-3">API routing for OpenAI and Google models</td>
-                    <td className="border border-border p-3">European Union</td>
-                    <td className="border border-border p-3">No third-country transfer (EU-based)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Web Search Functionality</h4>
             <p className="text-muted-foreground mb-4">
@@ -985,13 +964,13 @@ const PrivacyPolicy = () => {
             
             <h3 className="text-xl font-semibold mb-3 mt-6">8.1 Website Hosting</h3>
             <p className="text-muted-foreground mb-4">
-              Our website is hosted on infrastructure provided by Lovable (Lovable Cloud), which utilizes 
-              Supabase for backend services including database, authentication, and edge functions.
+              Our website frontend is hosted on infrastructure provided by Lovable. Backend services including 
+              database, authentication, and edge functions are provided directly by Supabase, Inc.
             </p>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Supabase, Inc. (via Lovable Cloud)
+              <strong>Provider:</strong> Supabase, Inc. (Direct Integration)
               <br />
               <strong>Location:</strong> Infrastructure distributed globally with EU data centers
               <br />
@@ -1005,6 +984,29 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing a reliable, secure, and 
               performant hosting infrastructure.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.2 Data Processing Agreement</h3>
+            <p className="text-muted-foreground mb-4">
+              We have concluded a Data Processing Agreement (DPA / Auftragsverarbeitungsvertrag) with Supabase, Inc. 
+              in accordance with Art. 28 GDPR. This agreement ensures that Supabase processes personal data 
+              exclusively on our behalf and in compliance with our instructions.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>The DPA covers:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Technical and organizational measures for data security</li>
+              <li>Sub-processor management and notification obligations</li>
+              <li>Data subject rights assistance</li>
+              <li>Data deletion upon contract termination</li>
+              <li>Audit rights and compliance verification</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              Supabase's DPA is available at:{" "}
+              <a href="https://supabase.com/legal/dpa" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://supabase.com/legal/dpa
+              </a>
             </p>
           </section>
 
@@ -1128,38 +1130,32 @@ const PrivacyPolicy = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>Lovable AI Gateway</strong></td>
-                    <td className="border border-border p-3">AI API routing</td>
-                    <td className="border border-border p-3">Validation prompts</td>
-                    <td className="border border-border p-3">EU (no transfer)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3"><strong>OpenAI</strong> (Direct API)</td>
                     <td className="border border-border p-3">AI validation analysis</td>
                     <td className="border border-border p-3">Validation prompts, preferences</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (via Lovable AI Gateway)</td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
                     <td className="border border-border p-3">AI validation, OAuth</td>
                     <td className="border border-border p-3">Validation prompts, OAuth data</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Anthropic</strong></td>
+                    <td className="border border-border p-3"><strong>Anthropic</strong> (Direct API)</td>
                     <td className="border border-border p-3">AI validation analysis</td>
                     <td className="border border-border p-3">Validation prompts, preferences</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI</strong></td>
+                    <td className="border border-border p-3"><strong>Perplexity AI</strong> (Direct API)</td>
                     <td className="border border-border p-3">AI validation with web research</td>
                     <td className="border border-border p-3">Validation prompts, preferences</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Supabase</strong></td>
-                    <td className="border border-border p-3">Hosting, database</td>
+                    <td className="border border-border p-3">Hosting, database, authentication (with DPA per Art. 28 GDPR)</td>
                     <td className="border border-border p-3">All stored data</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>

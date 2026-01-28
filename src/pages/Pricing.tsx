@@ -19,9 +19,9 @@ const PricingPage = () => {
   const comparisonFeatures = [
     { name: "Decision Records per Day", free: "2", premium: "10" },
     { name: "Documented Perspectives", free: "3", premium: "3" },
-    { name: "Priority Action Items", free: "3", premium: "5-7" },
+    { name: "Team Workspaces", free: "—", premium: "Up to 5" },
+    { name: "Team Members", free: "—", premium: "5 per team" },
     { name: "Strategic Alternatives", free: "—", premium: "✓" },
-    { name: "Competitive Context", free: "—", premium: "✓" },
     { name: "6-12 Month Outlook", free: "—", premium: "✓" },
     { name: "Full Model Reasoning", free: "—", premium: "✓" },
     { name: "PDF Audit Reports", free: "—", premium: "✓" },

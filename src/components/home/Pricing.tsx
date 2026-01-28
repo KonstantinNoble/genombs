@@ -137,9 +137,9 @@ const Pricing = ({ compact = false }: PricingProps) => {
                 {[
                   { text: "10 decision records per day", highlight: true },
                   { text: "Full perspective documentation", highlight: true },
-                  { text: "5-7 prioritized action items", highlight: true },
+                  { text: "Team Workspaces (up to 5 teams)", highlight: true },
+                  { text: "Invite up to 5 members per team", highlight: true },
                   { text: "Strategic alternatives (Plan B, C)", highlight: false },
-                  { text: "Competitive context analysis", highlight: false },
                   { text: "Stakeholder-ready PDF exports", highlight: false }
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">

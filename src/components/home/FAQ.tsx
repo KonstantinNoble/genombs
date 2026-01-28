@@ -33,8 +33,12 @@ const faqs = [
     answer: "Synoptas documents perspectives – it doesn't make decisions for you. The value is in having a traceable record that shows you considered multiple viewpoints before committing. The final decision is always yours."
   },
   {
+    question: "Can I collaborate with my team?",
+    answer: "Yes. Premium subscribers can create up to 5 team workspaces with up to 5 members each. Team members can create shared decision records, view analyses, and maintain a unified audit trail. Only the workspace owner needs a Premium subscription."
+  },
+  {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 decision records per day with core documentation. Premium ($26.99/mo): 10 records per day, full audit trail, competitor context, 6-12 month outlook, strategic alternatives, and stakeholder-ready PDF exports."
+    answer: "Free: 2 decision records per day with core documentation. Premium ($26.99/mo): 10 records per day, team workspaces, strategic alternatives, and stakeholder-ready PDF exports."
   },
   {
     question: "Can I try it before paying?",

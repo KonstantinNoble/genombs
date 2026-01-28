@@ -64,6 +64,10 @@ const Features = () => {
       description: "Instantly see where models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
     },
     { 
+      title: "Team Workspaces", 
+      description: "Create shared workspaces for your team. Collaborate on decision records, share analyses, and maintain a unified audit trail across your organization."
+    },
+    { 
       title: "Personal Analytics Dashboard", 
       description: "Track your validation history with confidence trends, AI consensus rates, and model usage statistics. Your decision patterns, visualized.",
       hasDashboardLink: true

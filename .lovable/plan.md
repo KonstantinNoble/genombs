@@ -1,187 +1,140 @@
 
-# Plan: Gemini API Fehler basierend auf offizieller Dokumentation beheben
+# Datenschutzerklärung Update: Rechtliche Korrektur
 
 ## Zusammenfassung
 
-Nach Durchsicht der offiziellen Google Gemini API Dokumentation habe ich die genauen Ursachen der 404- und "Invalid JSON"-Fehler identifiziert:
-
-1. **Falsche Modell-IDs in Fallback-Liste** - `gemini-2.0-pro` und `gemini-1.5-pro` existieren nicht
-2. **Veraltete API-Version** - Dein Code nutzt teils deprecated Modelle
-3. **Inkonsistente Schema-Konfiguration** - `responseMimeType` ohne `responseJsonSchema`
+Die aktuelle Datenschutzerklärung (v5.5) enthält mehrere rechtlich inkorrekte Aussagen, da sie noch die alte Architektur (Lovable Cloud + AI Gateway) beschreibt, obwohl du jetzt:
+- **Externes Supabase** direkt nutzt (mit DPA/AVV)
+- **Direkte API-Keys** für OpenAI, Google, Anthropic, Perplexity verwendest
 
 ---
 
-## Korrekte Modell-IDs (aus Google Docs Stand Januar 2026)
+## Erforderliche Änderungen
 
-| Modell | Korrekte ID | Status |
-|--------|-------------|--------|
-| Gemini 2.5 Pro | `gemini-2.5-pro` | Stable |
-| Gemini 2.5 Flash | `gemini-2.5-flash` | Stable |
-| Gemini 2.5 Flash Lite | `gemini-2.5-flash-lite` | Stable |
-| Gemini 3 Pro Preview | `gemini-3-pro-preview` | Preview |
-| Gemini 3 Flash Preview | `gemini-3-flash-preview` | Preview |
-| Gemini 2.0 Flash | `gemini-2.0-flash` | Deprecated (bis 31.03.2026) |
+### 1. Version und Datum
+**Zeile 17**
 
-**NICHT existierende IDs** (verursachen 404):
-- `gemini-2.0-pro`
-- `gemini-1.5-pro`
-- `gemini-1.5-flash`
-
----
-
-## Geplante Änderungen
-
-### 1. Fallback-Kandidaten korrigieren
-
-**Problem:** Die aktuelle `GEMINI_MODEL_CANDIDATES` enthält nicht existierende Model-IDs.
-
-**Aktuell (falsch):**
-```typescript
-const GEMINI_MODEL_CANDIDATES = {
-  'geminiPro': ['gemini-2.5-pro', 'gemini-2.0-pro', 'gemini-1.5-pro', 'gemini-2.0-flash'],
-  'geminiFlash': ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'],
-};
+Aktuell:
+```
+Effective Date: January 26, 2026 | Version 5.5
 ```
 
-**Korrigiert:**
-```typescript
-const GEMINI_MODEL_CANDIDATES = {
-  'geminiPro': ['gemini-2.5-pro', 'gemini-3-pro-preview', 'gemini-2.0-flash'],
-  'geminiFlash': ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.0-flash'],
-};
+Neu:
 ```
-
-### 2. Strukturierte Ausgabe korrekt implementieren
-
-**Problem:** `responseMimeType: "application/json"` ohne `responseJsonSchema` funktioniert nicht zuverlässig.
-
-**Lösung gemäss Google Docs:**
-```typescript
-generationConfig: {
-  temperature: 0.7,
-  maxOutputTokens: 4096,
-  responseMimeType: "application/json",
-  responseJsonSchema: {
-    type: "object",
-    properties: {
-      recommendations: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            title: { type: "string" },
-            description: { type: "string" },
-            confidence: { type: "number" },
-            riskLevel: { type: "number" },
-            creativityLevel: { type: "number" },
-            reasoning: { type: "string" },
-            actionItems: { type: "array", items: { type: "string" } },
-            potentialRisks: { type: "array", items: { type: "string" } },
-            timeframe: { type: "string" }
-          },
-          required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
-        }
-      },
-      summary: { type: "string" },
-      overallConfidence: { type: "number" }
-    },
-    required: ["recommendations", "summary", "overallConfidence"]
-  }
-}
-```
-
-### 3. MODEL_ID_MAPPING aktualisieren
-
-**Problem:** Mapping auf deprecated/nicht-existente IDs.
-
-**Korrigiert:**
-```typescript
-const MODEL_ID_MAPPING = {
-  'google/gemini-3-pro-preview': 'gemini-2.5-pro',      // Stable für Pro-Anfragen
-  'google/gemini-2.5-flash': 'gemini-2.5-flash',        // Stable
-  'google/gemini-2.5-pro': 'gemini-2.5-pro',            // Stable
-  'google/gemini-2.5-flash-lite': 'gemini-2.5-flash-lite',
-  'google/gemini-3-flash-preview': 'gemini-2.5-flash',  // Stable als Fallback
-};
+Effective Date: January 28, 2026 | Version 5.6
 ```
 
 ---
 
-## Technische Details
+### 2. Sektion 5.1 - AI Provider Tabellen
+**Zeilen 511-537 (Base Models) und 551-565 (Premium Models)**
 
-### Datei: `supabase/functions/multi-ai-query/index.ts`
+Alle "(via Lovable AI Gateway)" Referenzen entfernen:
 
-**Änderung 1 - GEMINI_MODEL_CANDIDATES (Zeile 25-28):**
-```typescript
-const GEMINI_MODEL_CANDIDATES: Record<string, string[]> = {
-  'geminiPro': ['gemini-2.5-pro', 'gemini-3-pro-preview', 'gemini-2.0-flash'],
-  'geminiFlash': ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.0-flash'],
-};
+| Provider | Aktuell | Neu |
+|----------|---------|-----|
+| OpenAI | "(via Lovable AI Gateway)" | "(Direct API)" |
+| Google LLC | "(via Lovable AI Gateway)" | "(Direct API)" |
+
+---
+
+### 3. Sektion 5.1 - API Gateway Services ENTFERNEN
+**Zeilen 568-588**
+
+Diese gesamte Untersektion wird gelöscht, da kein Lovable AI Gateway mehr verwendet wird:
+- Tabelle mit "Lovable AI Gateway" als Provider
+- Beschreibung "API routing for OpenAI and Google models"
+
+---
+
+### 4. Sektion 8.1 - Hosting aktualisieren
+**Zeilen 987-1002**
+
+Aktuell:
+```
+Our website is hosted on infrastructure provided by Lovable (Lovable Cloud), which utilizes 
+Supabase for backend services...
+
+Provider: Supabase, Inc. (via Lovable Cloud)
 ```
 
-**Änderung 2 - JSON Schema für Gemini (in queryGoogleModel):**
-
-Vollständiges `responseJsonSchema` hinzufügen, damit `responseMimeType: "application/json"` funktioniert:
-
-```typescript
-const GEMINI_RESPONSE_SCHEMA = {
-  type: "object",
-  properties: {
-    recommendations: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          title: { type: "string" },
-          description: { type: "string" },
-          confidence: { type: "number" },
-          riskLevel: { type: "number" },
-          creativityLevel: { type: "number" },
-          reasoning: { type: "string" },
-          actionItems: { type: "array", items: { type: "string" } },
-          potentialRisks: { type: "array", items: { type: "string" } },
-          timeframe: { type: "string" }
-        },
-        required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
-      }
-    },
-    summary: { type: "string" },
-    overallConfidence: { type: "number" }
-  },
-  required: ["recommendations", "summary", "overallConfidence"]
-};
+Neu:
 ```
+Our website frontend is hosted on infrastructure provided by Lovable. Backend services including 
+database, authentication, and edge functions are provided directly by Supabase, Inc.
 
-**Änderung 3 - generationConfig mit Schema:**
-```typescript
-generationConfig: {
-  temperature: 0.7,
-  maxOutputTokens: 4096,
-  responseMimeType: "application/json",
-  responseJsonSchema: GEMINI_RESPONSE_SCHEMA
-}
+Provider: Supabase, Inc. (Direct Integration)
 ```
 
 ---
 
-## Dateien die geändert werden
+### 5. Sektion 8.1 - DPA/AVV hinzufügen (NEUE Untersektion)
+**Nach Zeile 1008**
 
-| Datei | Änderung |
-|-------|----------|
-| `supabase/functions/multi-ai-query/index.ts` | Korrekte Model-IDs, vollständiges JSON Schema für Gemini |
+Neue Untersektion einfügen:
+
+```text
+8.2 Data Processing Agreement
+
+We have concluded a Data Processing Agreement (DPA / Auftragsverarbeitungsvertrag) with Supabase, Inc. 
+in accordance with Art. 28 GDPR. This agreement ensures that Supabase processes personal data 
+exclusively on our behalf and in compliance with our instructions.
+
+The DPA covers:
+- Technical and organizational measures for data security
+- Sub-processor management and notification obligations  
+- Data subject rights assistance
+- Data deletion upon contract termination
+- Audit rights and compliance verification
+
+Supabase's DPA is available at: https://supabase.com/legal/dpa
+```
 
 ---
 
-## Erwartetes Ergebnis
+### 6. Sektion 12 - Recipients Tabelle aktualisieren
+**Zeilen 1129-1180**
 
-Nach der Implementierung:
-- Keine 404-Fehler mehr (nur existierende Model-IDs werden verwendet)
-- Keine "Invalid JSON from request"-Fehler mehr (korrektes Schema)
-- Zuverlässige strukturierte JSON-Ausgaben von Gemini
-- Fallback auf Gemini 2.0 Flash als letzten Ausweg
+**Zeile entfernen:**
+- Lovable AI Gateway (komplette Tabellenzeile)
+
+**Zeilen aktualisieren:**
+
+| Recipient | Aktuell | Neu |
+|-----------|---------|-----|
+| OpenAI | "(via Lovable AI Gateway)" | "(Direct API)" |
+| Google LLC | "(via Lovable AI Gateway)" | "(Direct API)" |
+| Supabase | "Hosting, database" | "Hosting, database, authentication (with DPA per Art. 28 GDPR)" |
 
 ---
 
-## Deployment-Hinweis
+## Rechtliche Begründung
 
-Da deine App das **externe Supabase-Projekt** verwendet, musst du den aktualisierten Code manuell in dein externes Projekt kopieren und deployen.
+### Art. 28 DSGVO - Auftragsverarbeitung
+Da Supabase als Auftragsverarbeiter fungiert (nicht als eigenständiger Verantwortlicher), ist die Dokumentation des AVV rechtlich erforderlich. Die DPA muss folgende Mindestanforderungen erfüllen:
+- Gegenstand und Dauer der Verarbeitung
+- Art und Zweck der Verarbeitung
+- Kategorien betroffener Personen und Daten
+- Pflichten und Rechte des Verantwortlichen
+
+### Art. 46(2)(c) und Art. 45 DSGVO
+Die Rechtsgrundlagen für Drittlandtransfers bleiben unverändert:
+- **SCCs** für OpenAI, Anthropic, Perplexity, Resend
+- **EU-US DPF Adequacy Decision** für Google und Supabase
+
+### Transparenzpflicht (Art. 13/14 DSGVO)
+Die Korrektur von "via Lovable AI Gateway" zu "Direct API" ist notwendig, um die tatsächlichen Datenflüsse korrekt abzubilden.
+
+---
+
+## Zusammenfassung der Dateien
+
+| Datei | Änderungstyp |
+|-------|--------------|
+| `src/pages/PrivacyPolicy.tsx` | Update |
+
+## Geschätzter Umfang
+
+- ~10 gezielte Änderungen in einer Datei
+- Keine strukturellen Änderungen am Rest der Anwendung
+- Alle rechtlichen Grundlagen (DSGVO-Artikel) bleiben gültig

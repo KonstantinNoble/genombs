@@ -363,8 +363,8 @@ export default function TeamMembers() {
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">{currentTeam.name}</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
+            <p className="text-base sm:text-lg text-muted-foreground">
               Manage team members and invitations
             </p>
           </div>
@@ -389,17 +389,17 @@ export default function TeamMembers() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
               <div>
-                <p className="font-medium">Owner</p>
+                <p className="font-medium text-base">Owner</p>
                 <p className="text-muted-foreground">Full control, manage & delete team</p>
               </div>
               <div>
-                <p className="font-medium">Member</p>
+                <p className="font-medium text-base">Member</p>
                 <p className="text-muted-foreground">Create & view Decision Records and experiments</p>
               </div>
               <div>
-                <p className="font-medium">Viewer</p>
+                <p className="font-medium text-base">Viewer</p>
                 <p className="text-muted-foreground">View-only access to Decision Records</p>
               </div>
             </div>
@@ -410,14 +410,14 @@ export default function TeamMembers() {
         {isAdmin && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <UserPlus className="h-5 w-5" />
                 Invite Member
-                <span className="text-sm font-normal text-muted-foreground">
+                <span className="text-base font-normal text-muted-foreground">
                   ({members.length}/{TEAM_LIMITS.MAX_MEMBERS_PER_TEAM})
                 </span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Send an invitation email to add a new team member. They'll need to create an account or log in to accept.
               </CardDescription>
             </CardHeader>
@@ -486,7 +486,7 @@ export default function TeamMembers() {
         {/* Members List */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Users className="h-5 w-5" />
               Members ({members.length})
             </CardTitle>

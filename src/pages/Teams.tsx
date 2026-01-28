@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
-  Building2, 
-  User, 
   Users, 
   Settings, 
   ArrowRight, 
   Plus,
-  Crown,
-  Shield,
-  Eye,
   LogOut,
   Loader2
 } from "lucide-react";
@@ -39,18 +34,11 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { CreateTeamDialog } from "@/components/team/CreateTeamDialog";
 import { PremiumUpgradeDialog } from "@/components/team/PremiumUpgradeDialog";
 
-const roleIcons: Record<TeamRole, typeof Crown> = {
-  owner: Crown,
-  admin: Shield,
-  member: Users,
-  viewer: Eye,
-};
-
 const roleColors: Record<TeamRole, string> = {
-  owner: "bg-amber-500/10 text-amber-500 border-amber-500/20",
-  admin: "bg-primary/10 text-primary border-primary/20",
-  member: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-  viewer: "bg-muted text-muted-foreground border-muted",
+  owner: "bg-foreground/5 text-foreground border-foreground/10",
+  admin: "bg-foreground/5 text-foreground border-foreground/10",
+  member: "bg-foreground/5 text-muted-foreground border-foreground/10",
+  viewer: "bg-muted/50 text-muted-foreground border-muted",
 };
 
 export default function Teams() {
@@ -189,7 +177,7 @@ export default function Teams() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-3 sm:gap-4">
                       <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                        <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-base sm:text-lg">Personal Workspace</h3>
@@ -210,10 +198,9 @@ export default function Teams() {
               {teams.length > 0 && (
                 <div className="pt-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold flex items-center gap-2">
-                      <Building2 className="h-5 w-5" />
+                    <h2 className="text-lg font-semibold">
                       Teams
-                      <span className="text-sm font-normal text-muted-foreground">
+                      <span className="text-sm font-normal text-muted-foreground ml-2">
                         ({teams.length})
                       </span>
                     </h2>
@@ -221,7 +208,6 @@ export default function Teams() {
 
                   <div className="space-y-3">
                     {teams.map((team) => {
-                      const RoleIcon = roleIcons[team.role];
                       const isOwnerOrAdmin = team.role === "owner" || team.role === "admin";
                       const isOwner = team.role === "owner";
 
@@ -232,18 +218,14 @@ export default function Teams() {
                               {/* Team Info */}
                               <div className="flex items-center gap-3 sm:gap-4">
                                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                                  <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+                                  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-semibold text-base sm:text-lg truncate">{team.name}</h3>
-                                    <Badge variant="outline" className={cn("text-xs shrink-0", roleColors[team.role])}>
+                                  <h3 className="font-semibold text-base sm:text-lg truncate">{team.name}</h3>
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Badge variant="outline" className={cn("text-xs", roleColors[team.role])}>
                                       {team.role}
                                     </Badge>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <RoleIcon className="h-3.5 w-3.5" />
-                                    <span className="capitalize">{team.role}</span>
                                   </div>
                                 </div>
                               </div>
@@ -311,10 +293,9 @@ export default function Teams() {
               {/* Create Team Button - Always visible */}
               <div className="pt-6 space-y-3">
                 {isPremium && !canCreateMoreTeams && (
-                  <Card className="border-amber-500/30 bg-amber-500/5">
+                  <Card className="border-muted bg-muted/30">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <Crown className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium text-sm">Team limit reached</p>
                           <p className="text-sm text-muted-foreground">
@@ -343,7 +324,7 @@ export default function Teams() {
                   <Plus className="h-4 w-4" />
                   Create New Team
                   {!isPremium && (
-                    <Crown className="h-4 w-4 text-amber-500 ml-1" />
+                    <span className="text-xs text-muted-foreground ml-1">(Premium)</span>
                   )}
                 </Button>
               </div>

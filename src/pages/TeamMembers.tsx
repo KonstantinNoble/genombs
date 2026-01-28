@@ -4,9 +4,6 @@ import {
   Users, 
   UserPlus, 
   Mail, 
-  Shield, 
-  Eye, 
-  Crown, 
   Trash2, 
   Loader2,
   Clock,
@@ -70,18 +67,11 @@ interface TeamInvitation {
   created_at: string;
 }
 
-const roleIcons: Record<TeamRole, typeof Crown> = {
-  owner: Crown,
-  admin: Shield,
-  member: Users,
-  viewer: Eye,
-};
-
 const roleColors: Record<TeamRole, string> = {
-  owner: "bg-amber-500/10 text-amber-500 border-amber-500/20",
-  admin: "bg-primary/10 text-primary border-primary/20",
-  member: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-  viewer: "bg-muted text-muted-foreground border-muted",
+  owner: "bg-foreground/5 text-foreground border-foreground/10",
+  admin: "bg-foreground/5 text-foreground border-foreground/10",
+  member: "bg-foreground/5 text-muted-foreground border-foreground/10",
+  viewer: "bg-muted/50 text-muted-foreground border-muted",
 };
 
 export default function TeamMembers() {
@@ -400,26 +390,17 @@ export default function TeamMembers() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="flex items-start gap-2">
-                <Crown className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">Owner</p>
-                  <p className="text-muted-foreground">Full control, manage & delete team</p>
-                </div>
+              <div>
+                <p className="font-medium">Owner</p>
+                <p className="text-muted-foreground">Full control, manage & delete team</p>
               </div>
-              <div className="flex items-start gap-2">
-                <Users className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">Member</p>
-                  <p className="text-muted-foreground">Create & view Decision Records and experiments</p>
-                </div>
+              <div>
+                <p className="font-medium">Member</p>
+                <p className="text-muted-foreground">Create & view Decision Records and experiments</p>
               </div>
-              <div className="flex items-start gap-2">
-                <Eye className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">Viewer</p>
-                  <p className="text-muted-foreground">View-only access to Decision Records</p>
-                </div>
+              <div>
+                <p className="font-medium">Viewer</p>
+                <p className="text-muted-foreground">View-only access to Decision Records</p>
               </div>
             </div>
           </CardContent>
@@ -532,7 +513,6 @@ export default function TeamMembers() {
             ) : (
               <div className="space-y-3">
                 {members.map((member) => {
-                  const RoleIcon = roleIcons[member.role];
                   const isSelf = member.user_id === user?.id;
                   const canModify = isOwner && !isSelf && member.role !== "owner";
                   // Owner cannot be removed (not even by themselves)
@@ -546,7 +526,7 @@ export default function TeamMembers() {
                       {/* Member Info */}
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
-                          <RoleIcon className="h-5 w-5 text-muted-foreground" />
+                          <Users className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate text-sm sm:text-base">

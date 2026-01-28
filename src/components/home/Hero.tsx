@@ -85,8 +85,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Select 3 AI models. Weight them by what matters to you. 
-            Document, share, and defend your decisions with your team.
+            Select 3 AI models. Weight them by what matters to you.
+            Collaborate with your team. Document decisions together. Defend them with confidence.
           </p>
 
           {/* CTA Buttons */}

@@ -37,6 +37,10 @@ const PricingPage = () => {
       answer: "10 decision records per day instead of 2. Full perspective documentation with complete reasoning. Plus strategic alternatives, competitive context analysis, and 6-12 month outlook. Stakeholder-ready PDF exports included."
     },
     {
+      question: "How does team collaboration work?",
+      answer: "Premium subscribers can create up to 5 team workspaces with 5 members each. Team members can view and create shared decision records without needing their own Premium subscription – only the workspace owner needs Premium. Perfect for small teams, investment committees, or advisory boards."
+    },
+    {
       question: "When does my daily limit reset?",
       answer: "24 hours after your first record of the day. Free accounts get 2 records per day, Premium gets 10."
     },

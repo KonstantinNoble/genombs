@@ -4,7 +4,7 @@ const steps = [
   { number: "01", title: "Describe your decision", description: "Expansion, hiring, partnerships, technology, pricing – any business decision you need to document." },
   { number: "02", title: "Choose 3 models and assign weights", description: "Select from 6 AI models (GPT-5, Gemini, Claude, Perplexity). Assign 10-80% weight to control each model's influence." },
   { number: "03", title: "Review consensus, dissent, and alternatives", description: "See where models agree (strong signal), where they disagree (needs attention), and what alternatives exist." },
-  { number: "04", title: "Confirm, share, and export", description: "Acknowledge the decision is yours. Share with your team or export a stakeholder-ready PDF with timestamped reasoning." },
+  { number: "04", title: "Confirm, share, and export", description: "Acknowledge the decision is yours. Share instantly with your team workspace. Export stakeholder-ready PDFs with full audit trails." },
 ];
 
 const StepCard = ({ step, index }: { step: typeof steps[0]; index: number }) => {

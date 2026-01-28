@@ -79,8 +79,8 @@ const CTA = () => {
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
-              ? "10 daily analyses. Team workspaces. Personal analytics. Stakeholder-ready exports."
-              : "Two free analyses daily. No credit card required. Results in 60 seconds."}
+              ? "10 daily analyses. Collaborate with your team. Track patterns. Export audit-ready reports."
+              : "Two free analyses daily. No credit card required. Upgrade for team collaboration."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -110,9 +110,9 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground/80">
-            <span>Consensus & Dissent Scores</span>
+            <span>Team Collaboration</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>No credit card needed</span>
+            <span>Consensus & Dissent Scores</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Results in 60 seconds</span>
           </div>

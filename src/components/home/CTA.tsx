@@ -79,7 +79,7 @@ const CTA = () => {
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
-              ? "10 daily analyses. Consensus & dissent scores. Personal analytics. PDF exports on demand."
+              ? "10 daily analyses. Team workspaces. Personal analytics. Stakeholder-ready exports."
               : "Two free analyses daily. No credit card required. Results in 60 seconds."}
           </p>
 

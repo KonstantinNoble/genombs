@@ -62,7 +62,7 @@ const Hero = () => {
             }`}
           >
             <span className="text-subtitle tracking-widest text-primary/80">
-              Multi-AI Analysis Platform
+              Multi-AI Decision Platform
             </span>
           </div>
 
@@ -86,7 +86,7 @@ const Hero = () => {
             }`}
           >
             Select 3 AI models. Weight them by what matters to you. 
-            See where they agree, where they disagree, and what to do next.
+            Document, share, and defend your decisions with your team.
           </p>
 
           {/* CTA Buttons */}
@@ -124,9 +124,9 @@ const Hero = () => {
           >
             <span>6 AI Models</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Custom Weighting</span>
+            <span>Team Workspaces</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Ready in 60 seconds</span>
+            <span>Audit-Ready Exports</span>
           </div>
         </div>
       </div>

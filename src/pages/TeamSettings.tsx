@@ -218,11 +218,11 @@ export default function TeamSettings() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
             <Settings className="h-6 w-6" />
             Team Settings
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Configure your team: {currentTeam.name}
           </p>
         </div>
@@ -261,8 +261,8 @@ export default function TeamSettings() {
             {isAdmin && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Team Name</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">Team Name</CardTitle>
+                  <CardDescription className="text-base">
                     Change how your team appears to members
                   </CardDescription>
                 </CardHeader>
@@ -306,11 +306,11 @@ export default function TeamSettings() {
             {isOwner && (
               <Card className="border-destructive/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-destructive">
+                  <CardTitle className="flex items-center gap-2 text-destructive text-lg sm:text-xl">
                     <AlertTriangle className="h-5 w-5" />
                     Danger Zone
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Permanently delete this team and all its data including shared analyses.
                   </CardDescription>
                 </CardHeader>
@@ -330,11 +330,11 @@ export default function TeamSettings() {
             {!isOwner && (
               <Card className="border-destructive/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-destructive">
+                  <CardTitle className="flex items-center gap-2 text-destructive text-lg sm:text-xl">
                     <LogOut className="h-5 w-5" />
                     Leave Team
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Remove yourself from this team. You will lose access to all shared analyses and decisions.
                   </CardDescription>
                 </CardHeader>

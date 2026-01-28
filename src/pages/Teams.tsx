@@ -124,8 +124,8 @@ export default function Teams() {
         <main className="flex-1 container max-w-4xl py-8 px-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">My Workspaces</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2">My Workspaces</h1>
+            <p className="text-base sm:text-lg text-muted-foreground">
               Switch between your personal workspace and team collaborations
             </p>
           </div>
@@ -180,8 +180,8 @@ export default function Teams() {
                         <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-base sm:text-lg">Personal Workspace</h3>
-                        <p className="text-sm text-muted-foreground">
+                        <h3 className="font-semibold text-lg sm:text-xl">Personal Workspace</h3>
+                        <p className="text-base text-muted-foreground">
                           Your private analyses and experiments
                         </p>
                       </div>
@@ -198,9 +198,9 @@ export default function Teams() {
               {teams.length > 0 && (
                 <div className="pt-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-xl sm:text-2xl font-semibold">
                       Teams
-                      <span className="text-sm font-normal text-muted-foreground ml-2">
+                      <span className="text-base font-normal text-muted-foreground ml-2">
                         ({teams.length})
                       </span>
                     </h2>
@@ -221,9 +221,9 @@ export default function Teams() {
                                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <h3 className="font-semibold text-base sm:text-lg truncate">{team.name}</h3>
-                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Badge variant="outline" className={cn("text-xs", roleColors[team.role])}>
+                                  <h3 className="font-semibold text-lg sm:text-xl truncate">{team.name}</h3>
+                                  <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                    <Badge variant="outline" className={cn("text-sm", roleColors[team.role])}>
                                       {team.role}
                                     </Badge>
                                   </div>
@@ -297,8 +297,8 @@ export default function Teams() {
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div>
-                          <p className="font-medium text-sm">Team limit reached</p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="font-medium text-base">Team limit reached</p>
+                          <p className="text-base text-muted-foreground">
                             You've created {ownedTeamsCount} of {TEAM_LIMITS.MAX_TEAMS_PER_USER} teams. 
                             To create a new team, please delete an existing one first.
                           </p>

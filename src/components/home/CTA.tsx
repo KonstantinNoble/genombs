@@ -74,13 +74,13 @@ const CTA = () => {
           className={`premium-card premium-glow max-w-3xl mx-auto text-center rounded-3xl p-10 md:p-14 scroll-reveal ${isVisible ? 'revealed' : ''}`}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-5">
-            {isPremium && isLoggedIn ? "Your analyses are ready" : "Get Your First Analysis"}
+            {isPremium && isLoggedIn ? "Your analyses are ready" : "Your Next Big Decision Deserves a Second Opinion"}
           </h2>
 
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
-              ? "10 daily analyses. Collaborate with your team. Track patterns. Export audit-ready reports."
-              : "Two free analyses daily. No credit card required. Upgrade for team collaboration."}
+              ? "10 daily analyses. Collaborate with your team. Track patterns. Export investor-ready reports."
+              : "Two free decision records per day. No credit card. See what a structured multi-perspective analysis feels like."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -110,11 +110,11 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground/80">
-            <span>Team Collaboration</span>
+            <span>Solo Founder Friendly</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Consensus & Dissent Scores</span>
+            <span>Faster Than Scheduling a Call</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Results in 60 seconds</span>
+            <span>Keep the Receipts</span>
           </div>
         </div>
       </div>

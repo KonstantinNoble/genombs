@@ -52,29 +52,29 @@ const Features = () => {
 
   const features = [
     { 
-      title: "6 AI Models, Your Choice", 
-      description: "Choose from GPT-5 Mini, Gemini 3 Pro, Gemini Flash, Claude Sonnet 4, Perplexity Sonar, and Sonar Reasoning Pro. Pick 3 for every analysis." 
+      title: "6 Perspectives, You Pick 3", 
+      description: "GPT, Gemini, Claude, Perplexity – each thinks differently. Pick 3 that match your decision type." 
     },
     { 
-      title: "Team Workspaces", 
-      description: "Create up to 5 shared workspaces with 5 members each. Collaborate on decision records in real-time, share analyses across your organization, and maintain a unified audit trail. Only one Premium subscription required per team."
+      title: "Share with Co-Founders and Advisors", 
+      description: "Not a solo founder? Invite your team. Share decision records, build a shared history of how you think."
     },
     { 
-      title: "Custom Model Weighting", 
-      description: "Assign 10-80% influence to each model. Prioritize technical depth, market insight, or risk assessment based on your decision context."
+      title: "Weight What Matters to You", 
+      description: "Risk-averse? Growth-focused? Cash-conscious? Adjust the sliders. Get analysis weighted to your priorities."
     },
     { 
-      title: "Consensus & Dissent Analysis", 
-      description: "Instantly see where models agree (strong signals) and where they disagree (areas requiring deeper consideration)."
+      title: "Know Where to Dig Deeper", 
+      description: "When all perspectives agree, move fast. When they clash, that's your signal to investigate before committing."
     },
     { 
-      title: "Personal Analytics Dashboard", 
-      description: "Track your validation history with confidence trends, AI consensus rates, and model usage statistics. Your decision patterns, visualized.",
+      title: "Track Your Decision Patterns", 
+      description: "See your decision history. Notice patterns. Build confidence in your judgment over time.",
       hasDashboardLink: true
     },
     { 
-      title: "Stakeholder-Ready Audit Reports", 
-      description: "Export comprehensive PDF documentation including alternatives considered, risks identified, and your confirmation of decision ownership." 
+      title: "Investor-Ready Documentation", 
+      description: "Export PDFs that show what you considered. Perfect for board updates, investor calls, or just proving to yourself you did the homework." 
     }
   ];
 
@@ -84,7 +84,7 @@ const Features = () => {
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
           <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Features</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">What You Get</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Professional decision documentation for teams making high-stakes choices</p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Everything you need to make better decisions, alone or with your team</p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
         <div className="grid md:grid-cols-2 gap-5 lg:gap-6 max-w-5xl mx-auto">

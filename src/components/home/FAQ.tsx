@@ -9,40 +9,40 @@ import {
 
 const faqs = [
   {
-    question: "What exactly does Synoptas do?",
-    answer: "You describe any business decision – hiring, expansion, partnerships, technology choices, pricing. You choose 3 of 6 AI models (GPT-5, Gemini, Claude, Perplexity) and assign custom weights (10-80% each). In under 60 seconds, you get a documented analysis showing where models agree (consensus), where they disagree (dissent), and what alternatives exist. Export it as a stakeholder-ready PDF."
+    question: "Is this for solo founders?",
+    answer: "Absolutely. Synoptas was built for founders who don't have a co-founder or board to challenge their thinking. It's your structured second opinion – multiple AI perspectives before you commit to big decisions."
   },
   {
-    question: "Why three AI models instead of one?",
-    answer: "One model gives you one perspective with no way to verify it. Three models – each weighted by you – give you documented consensus (strong signal), documented dissent (needs attention), and a complete picture you can defend to stakeholders."
+    question: "Can I use this for hiring decisions?",
+    answer: "Yes. 'Should I hire this expensive senior dev?' is one of the most common questions. Get perspectives on timing, risk, and alternatives before making the call."
+  },
+  {
+    question: "Will this replace my advisor?",
+    answer: "No – it complements them. Advisors give you context and relationships. Synoptas gives you structured multi-perspective analysis you can share with your advisor. Think of it as preparation, not replacement."
+  },
+  {
+    question: "How is this different from just asking ChatGPT?",
+    answer: "ChatGPT gives you one answer with no way to verify it. Synoptas shows you where 3 different AI perspectives agree (strong signal) or disagree (dig deeper), weighted by what matters to you. Plus, you get a documented record of your thinking process."
   },
   {
     question: "What do 'consensus' and 'dissent' mean?",
     answer: "Consensus means all three models reached the same conclusion – a strong signal you're on the right track. Dissent means they disagree – these are the areas where you should dig deeper before deciding."
   },
   {
-    question: "How do the model weighting sliders work?",
-    answer: "Each model can be weighted from 10% to 80% influence on the final synthesis. Adjust weights based on which perspective matters most for your specific decision context."
+    question: "What kinds of decisions should I use this for?",
+    answer: "Any strategic decision you're wrestling with: market expansion, major hires, pricing changes, whether to raise funding, partnership opportunities. The higher the stakes, the more valuable the structured analysis."
   },
   {
-    question: "What kinds of decisions should I document?",
-    answer: "Any decision you might need to justify later: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The higher the stakes, the more valuable the documentation."
-  },
-  {
-    question: "How reliable is the analysis?",
-    answer: "Synoptas documents perspectives – it doesn't make decisions for you. The value is in having a traceable record that shows you considered multiple viewpoints before committing. The final decision is always yours."
-  },
-  {
-    question: "Can I collaborate with my team?",
-    answer: "Yes. Premium subscribers can create up to 5 team workspaces with up to 5 members each. Team members can create shared decision records, view analyses, and maintain a unified audit trail. Only the workspace owner needs a Premium subscription."
+    question: "Can I share analyses with my co-founder or team?",
+    answer: "Yes. Premium subscribers can create up to 5 team workspaces with up to 5 members each. Build a shared history of how your team thinks and decides. Only one subscription needed per team."
   },
   {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 decision records per day with core documentation. Premium ($26.99/mo): 10 records per day, team workspaces, strategic alternatives, and stakeholder-ready PDF exports."
+    answer: "Free: 2 decision records per day with core analysis. Premium ($26.99/mo): 10 records per day, team workspaces, strategic alternatives, and investor-ready PDF exports."
   },
   {
     question: "Can I try it before paying?",
-    answer: "Yes. 2 free decision records per day, no credit card required. Enough to see whether documented decisions work for your process."
+    answer: "Yes. 2 free analyses per day, no credit card required. Enough to see whether a structured second opinion helps your decision-making."
   },
   {
     question: "What happens to my decision records?",

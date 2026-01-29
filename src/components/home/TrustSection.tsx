@@ -8,13 +8,13 @@ const trustPoints = [
     icon: Shield
   },
   {
-    title: "Audit-Grade Documentation",
-    description: "Every perspective timestamped and traceable. Exportable PDFs ready for boards, investors, and regulators.",
+    title: "Decision Receipts",
+    description: "Every analysis timestamped. Export for investors, advisors, or your own records. Document your thinking before you commit.",
     icon: FileCheck
   },
   {
     title: "Ready in Seconds",
-    description: "From question to documented decision record in under 60 seconds. No lengthy onboarding. No complex setup.",
+    description: "From challenge to clarity in under 60 seconds. No lengthy onboarding. No complex setup. Just the second opinion you need.",
     icon: Clock
   }
 ];
@@ -36,10 +36,10 @@ const TrustSection = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
             <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
-              Built for Trust
+              Built for Founders Who Think Before They Leap
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Designed for professionals who need defensible decision documentation
+              Privacy, speed, and documentation you can trust
             </p>
           </div>
 

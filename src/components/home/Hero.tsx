@@ -62,7 +62,7 @@ const Hero = () => {
             }`}
           >
             <span className="text-subtitle tracking-widest text-primary/80">
-              Multi-AI Decision Platform
+              For Founders Making Big Calls Alone
             </span>
           </div>
 
@@ -72,9 +72,9 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            One Question.{" "}
+            Your Missing{" "}
             <span className="relative inline-block">
-              <span className="text-primary">Six AI Perspectives.</span>
+              <span className="text-primary">Advisory Board.</span>
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </span>
           </h1>
@@ -85,8 +85,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Select 3 AI models. Weight them by what matters to you.
-            Collaborate with your team. Document decisions together. Defend them with confidence.
+            No co-founder to challenge your thinking? No board to pressure-test your strategy? 
+            Get multiple AI perspectives on your next big decision – before you commit.
           </p>
 
           {/* CTA Buttons */}
@@ -122,11 +122,11 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <span>6 AI Models</span>
+            <span>Second Opinions</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Team Workspaces</span>
+            <span>Risk Check</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Audit-Ready Exports</span>
+            <span>Decision Records</span>
           </div>
         </div>
       </div>

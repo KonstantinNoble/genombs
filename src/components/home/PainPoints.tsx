@@ -29,10 +29,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "One AI model = one perspective", detail: "ChatGPT has blind spots. So does Claude. So does Gemini. You just don't know which ones until it's too late." },
-    { title: "You can't tell if the answer is reliable", detail: "Was that a confident recommendation or a guess? Without a second opinion, you're flying blind." },
-    { title: "Comparing AI outputs manually is tedious", detail: "Copy-paste between three chat windows. Read walls of text. Try to remember what each one said. There's a better way." },
-    { title: "Your priorities aren't factored in", detail: "Generic AI doesn't know if you care more about risk, growth, or speed. It just gives you a one-size-fits-all answer." },
+    { title: "You're making six-figure decisions alone", detail: "Hiring, pivoting, expanding – these decisions shape your company. But without a co-founder or board, you're the only one pressure-testing your logic." },
+    { title: "Mentors give opinions, not structured analysis", detail: "Even great advisors have blind spots. And they're not always available when you need to decide this week." },
+    { title: "Gut feeling doesn't scale", detail: "Your instincts got you here. But as stakes get higher, 'I felt it was right' won't satisfy investors, partners, or yourself." },
+    { title: "You've googled yourself in circles", detail: "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh the options against your specific situation." },
   ];
 
   return (
@@ -45,12 +45,12 @@ const PainPoints = () => {
           ref={headerRef}
           className={`mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
-          <span className="text-subtitle tracking-widest text-destructive/70 mb-4 block">The Problem</span>
+          <span className="text-subtitle tracking-widest text-destructive/70 mb-4 block">The Challenge</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            The Problem with Single-AI Answers
+            Sound Familiar?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Sound familiar? You're not alone.
+            Every founder knows this feeling. You're not alone.
           </p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-destructive/30 to-transparent" />
         </div>
@@ -71,7 +71,7 @@ const PainPoints = () => {
             to="/validate" 
             className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:gap-3 transition-all duration-300"
           >
-            Get your first multi-AI analysis
+            Get your first second opinion
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

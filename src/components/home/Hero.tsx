@@ -100,7 +100,7 @@ const Hero = () => {
               asChild 
               className="btn-glow rounded-2xl px-10 py-7 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
             >
-              <Link to="/validate" className="flex items-center gap-2">
+              <Link to={user ? "/validate" : "/auth"} className="flex items-center gap-2">
                 {isPremium && user ? "Back to Your Analyses" : "Try It Free"}
                 <ArrowRight className="w-5 h-5" />
               </Link>

@@ -75,9 +75,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <SEOHead
-        title="Document Decisions Before You Commit"
-        description="Document your decision process with multiple AI perspectives. Auditable, exportable, stakeholder-ready. For founders, investors, and regulated teams."
-        keywords="decision documentation, audit trail, due diligence, compliance, decision records, liability protection"
+        title="Your Missing Advisory Board"
+        description="Make better business decisions without a co-founder or board. Get multiple AI perspectives before you commit. For startup founders and solo entrepreneurs."
+        keywords="startup decisions, founder tools, strategic analysis, business decisions, second opinion, solo founder, advisory board"
         canonical="/"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -85,11 +85,11 @@ const Home = () => {
         name="Synoptas"
         url="https://synoptas.com"
         logo="https://synoptas.com/synoptas-favicon.png"
-        description="Decision documentation platform for founders, investors, and regulated teams"
+        description="Multi-AI decision platform for startup founders and solo entrepreneurs"
       />
       <WebPageSchema
-        name="Synoptas – Document Your Decision Process"
-        description="Create auditable decision records with multiple AI perspectives. Stakeholder-ready documentation for important decisions."
+        name="Synoptas – Your Missing Advisory Board"
+        description="Get multiple AI perspectives on your next big decision before you commit. Built for founders making high-stakes calls alone."
         url="https://synoptas.com/"
       />
       <Navbar />

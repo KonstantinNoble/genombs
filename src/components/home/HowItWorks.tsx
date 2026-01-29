@@ -1,10 +1,10 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
-  { number: "01", title: "Describe your decision", description: "Expansion, hiring, partnerships, technology, pricing – any business decision you need to document." },
-  { number: "02", title: "Choose 3 models and assign weights", description: "Select from 6 AI models (GPT-5, Gemini, Claude, Perplexity). Assign 10-80% weight to control each model's influence." },
-  { number: "03", title: "Review consensus, dissent, and alternatives", description: "See where models agree (strong signal), where they disagree (needs attention), and what alternatives exist." },
-  { number: "04", title: "Confirm, share, and export", description: "Acknowledge the decision is yours. Share instantly with your team workspace. Export stakeholder-ready PDFs with full audit trails." },
+  { number: "01", title: "Describe your challenge", description: "Should I hire this senior dev? Enter a new market? Raise now or bootstrap longer? Any strategic question you're wrestling with." },
+  { number: "02", title: "Set your priorities", description: "Pick 3 AI perspectives and weight what matters: risk tolerance, growth speed, cash preservation. Your context, your weights." },
+  { number: "03", title: "See where they agree – and where they don't", description: "Consensus = strong signal. Dissent = areas to dig deeper. In 60 seconds, not 60 meetings." },
+  { number: "04", title: "Keep the receipt", description: "Save your decision record. Share with co-founders or advisors. Export for investor updates. Your future self will thank you." },
 ];
 
 const StepCard = ({ step, index }: { step: typeof steps[0]; index: number }) => {
@@ -40,7 +40,7 @@ const HowItWorks = () => {
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
           <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Process</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">How It Works</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">From question to audit-ready decision record in under 60 seconds</p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">From challenge to clarity in under 60 seconds</p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
         <div className="max-w-3xl mx-auto space-y-4">

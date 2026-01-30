@@ -1,101 +1,194 @@
 
-# ProductShowcase Redesign: Vertikales Layout mit AI-Gewichtungs-Screenshot
+# Homepage & Pricing Optimierung: Text-Überarbeitung, Mobile-Test & Testimonials
 
-## Übersicht der Änderungen
+## Übersicht
 
-1. **Neues Bild hinzufügen**: Den Screenshot der AI-Gewichtungsfunktion als erstes Bild einsetzen
-2. **Text anpassen**: Der erste Schritt beschreibt jetzt die AI-Modell-Gewichtung
-3. **Layout ändern**: Vertikale Anordnung (untereinander) statt horizontale 3-Spalten-Grid
+Dieser Plan umfasst vier Hauptbereiche:
+1. **Text-Überarbeitung**: Konsistenter Startup-Advisory-Ton statt Compliance-Sprache
+2. **HowItWorks-Sektion entfernen**: Redundanz mit ProductShowcase beseitigen
+3. **Testimonials hinzufügen**: Neue Sektion mit Founder-Zitaten
+4. **Mobile-Test**: Responsiveness-Check für alle Sektionen
 
-## Neue Struktur
+---
+
+## 1. Text-Überarbeitung: Startup-Ton statt Compliance
+
+### Begriffe die ersetzt werden
+
+| Alt (Compliance)           | Neu (Startup-Advisory)              |
+|----------------------------|-------------------------------------|
+| Decision Records           | Second Opinions / Analyses          |
+| Audit Trail                | Decision History                    |
+| Documentation              | Insights / Analysis                 |
+| Stakeholder-ready          | Investor-ready                      |
+| Audit-grade precision      | Structured analysis                 |
+
+### Betroffene Dateien
+
+#### Hero.tsx (Zeile 126-130)
+```text
+Vorher: "Decision Records"
+Nachher: "Shared Decision History"
+```
+
+#### PainPoints.tsx
+Texte sind bereits gut auf Startup-Founder ausgerichtet - keine Änderung nötig.
+
+#### WhySynoptas.tsx
+Texte sind bereits gut - keine Änderung nötig.
+
+#### Features.tsx (Zeile 74-77)
+```text
+Vorher: "Track Your Decision Patterns"
+Nachher: "Learn From Your Past Decisions"
+```
+
+#### CTA.tsx (Zeile 83)
+```text
+Vorher: "Two free decision records per day"
+Nachher: "Two free second opinions per day"
+```
+
+#### FAQ.tsx - Mehrere Anpassungen
+- "decision records" → "second opinions" oder "analyses"
+- "Documented rationale" → "Structured thinking"
+
+#### Pricing.tsx (Zeile 100, 138)
+```text
+Vorher: "2 decision records per day"
+Nachher: "2 analyses per day"
+
+Vorher: "10 decision records per day"
+Nachher: "10 analyses per day"
+
+Vorher: "Stakeholder-ready PDF exports"
+Nachher: "Investor-ready PDF exports"
+```
+
+#### Pricing Page (src/pages/Pricing.tsx)
+- Hero: "Professional Decision Documentation" → "Your AI Advisory Board"
+- Comparison Table: Anpassung der Feature-Namen
+- FAQ: Konsistente Terminologie
+
+---
+
+## 2. HowItWorks-Sektion entfernen
+
+### Begründung
+- **Redundanz**: ProductShowcase zeigt bereits 3 Schritte mit Screenshots
+- **Kürzere Seite**: Bessere User Experience ohne Wiederholung
+- **Fokus**: Weniger Text, mehr visuelle Demonstration
+
+### Änderungen
+
+#### Home.tsx
+```tsx
+// Entferne Import
+- import HowItWorks from "@/components/home/HowItWorks";
+
+// Entferne aus JSX
+- <HowItWorks />
+```
+
+Die Datei `src/components/home/HowItWorks.tsx` bleibt bestehen (für eventuelle spätere Verwendung), wird aber nicht mehr eingebunden.
+
+---
+
+## 3. Testimonials-Sektion hinzufügen
+
+### Neue Komponente: `src/components/home/Testimonials.tsx`
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                      How It Works                            │
-│   From question to documented decision in three steps        │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ① Weight Your AI Advisors                                   │
-│     Choose your models and control their influence.          │
-│     Some voices matter more – you decide which ones.         │
-│                                                              │
-│     ┌─────────────────────────────────────────┐             │
-│     │  [AI-GEWICHTUNGS-SCREENSHOT]            │             │
-│     └─────────────────────────────────────────┘             │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ② Get Multiple Perspectives                                 │
-│     Six AI models debate your decision.                      │
-│     See where they agree – and where they don't.             │
-│                                                              │
-│     ┌─────────────────────────────────────────┐             │
-│     │  [ANALYSE-SCREENSHOT]                   │             │
-│     └─────────────────────────────────────────┘             │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ③ Build Your Decision Record                                │
-│     Share insights with your team.                           │
-│     Create an auditable trail for investors.                 │
-│                                                              │
-│     ┌─────────────────────────────────────────┐             │
-│     │  [WORKSPACES-SCREENSHOT]                │             │
-│     └─────────────────────────────────────────┘             │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     What Founders Say                         │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌─────────────────────────────┐  ┌─────────────────────────┐ │
+│  │ "I was about to hire a      │  │ "Before a big pricing   │ │
+│  │ $180k engineer. Synoptas    │  │ change, I ran it        │ │
+│  │ showed me 2 of 3 models     │  │ through Synoptas. Two   │ │
+│  │ flagged cash runway risk.   │  │ models agreed, one      │ │
+│  │ I waited 3 months. Glad     │  │ didn't. That dissent    │ │
+│  │ I did."                     │  │ made me dig deeper."    │ │
+│  │                             │  │                         │ │
+│  │ — Marcus R.                 │  │ — Elena K.              │ │
+│  │   Solo Founder, SaaS        │  │   Co-Founder, E-Com     │ │
+│  └─────────────────────────────┘  └─────────────────────────┘ │
+│                                                               │
+│  ┌─────────────────────────────┐  ┌─────────────────────────┐ │
+│  │ "My advisor loved the PDF   │  │ "I use it before every  │ │
+│  │ export. 'This is how you    │  │ investor call now.      │ │
+│  │ should present decisions    │  │ Forces me to structure  │ │
+│  │ to investors,' she said."   │  │ my thinking."           │ │
+│  │                             │  │                         │ │
+│  │ — David C.                  │  │ — Sofia M.              │ │
+│  │   Founder, HealthTech       │  │   Solo Founder, FinTech │ │
+│  └─────────────────────────────┘  └─────────────────────────┘ │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-## Neue Texte
+### Testimonial-Inhalte
 
-| Schritt | Titel | Beschreibung |
-|---------|-------|--------------|
-| **1** | "Weight Your AI Advisors" | "Choose your models and control their influence. Some voices matter more – you decide which ones." |
-| **2** | "Get Multiple Perspectives" | "Six AI models debate your decision. See where they agree – and where they don't." |
-| **3** | "Build Your Decision Record" | "Share insights with your team. Create an auditable trail for investors." |
+| Name        | Rolle                     | Zitat                                                                                                                   |
+|-------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| Marcus R.   | Solo Founder, SaaS        | "I was about to hire a $180k engineer. Synoptas showed me 2 of 3 models flagged cash runway risk. I waited 3 months. Glad I did." |
+| Elena K.    | Co-Founder, E-Commerce    | "Before a big pricing change, I ran it through Synoptas. Two models agreed, one didn't. That dissent made me dig deeper." |
+| David C.    | Founder, HealthTech       | "My advisor loved the PDF export. 'This is how you should present decisions to investors,' she said."                   |
+| Sofia M.    | Solo Founder, FinTech     | "I use it before every investor call now. Forces me to structure my thinking."                                          |
 
-## Technische Umsetzung
-
-### 1. Neues Bild kopieren
-- Kopiere das hochgeladene Bild nach `src/assets/model-weights-preview.jpeg`
-
-### 2. ProductShowcase.tsx ändern
-
-**Änderungen:**
-- Import des neuen Bildes hinzufügen
-- Grid-Layout von `md:grid-cols-3` auf `grid-cols-1` ändern (nur eine Spalte)
-- Erste Showcase-Item mit neuem Bild und Text aktualisieren
-- Bildgröße anpassen für vertikales Layout (größere Höhe, zentriert)
-- Maximale Breite der Bilder begrenzen für Desktop-Ansicht
-
-### 3. Angepasste CSS-Klassen
-
+### Integration in Home.tsx
 ```tsx
-// Vorher: Horizontales Grid
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-
-// Nachher: Vertikales Layout mit größerer Bildhöhe
-<div className="flex flex-col gap-12 lg:gap-16">
-  {showcaseItems.map((item) => (
-    <div className="flex flex-col items-center max-w-3xl mx-auto">
-      {/* Text zentriert */}
-      {/* Bild mit größerer Höhe */}
-    </div>
-  ))}
-</div>
+// Neue Reihenfolge:
+<Hero />           // inkl. ProductShowcase
+<PainPoints />
+<WhySynoptas />
+<Testimonials />   // NEU - nach WhySynoptas
+<Features />
+<Pricing />        // nur für nicht-Premium
+<FAQ />
+<CTA />
 ```
 
-## Vorteile des neuen Layouts
+---
 
-| Problem (vorher) | Lösung (nachher) |
-|------------------|------------------|
-| Bilder verzerrt bei 3-Spalten | Volle Breite, natürliche Proportionen |
-| Kleine Bilder schwer lesbar | Größere, zentrierte Bilder |
-| AI-Gewichtung nicht erklärt | Neuer Schritt zeigt diese Kernfunktion |
+## 4. Mobile-Responsiveness Check
 
-## Dateien die geändert werden
+### Zu testende Bereiche
 
-| Datei | Änderung |
-|-------|----------|
-| `src/assets/model-weights-preview.jpeg` | Neues Bild (kopiert) |
-| `src/components/home/ProductShowcase.tsx` | Vertikales Layout, neuer Text für Schritt 1, neues Bild |
+| Sektion         | Zu prüfen                                         |
+|-----------------|---------------------------------------------------|
+| Hero            | Text-Größen, CTA-Buttons, ProductShowcase-Bilder  |
+| PainPoints      | Grid-Layout (2-spaltig → 1-spaltig)               |
+| WhySynoptas     | Comparison-Boxen stacked                          |
+| Testimonials    | 2x2 Grid → 1-Spalte auf Mobile                    |
+| Features        | 2-spaltig → 1-spaltig                             |
+| Pricing         | Cards nebeneinander → gestacked                   |
+| FAQ             | Accordion-Touch-Targets                           |
+| CTA             | Button-Größen, Text-Wrapping                      |
+
+### Pricing Page Mobile-Check
+- Hero-Text nicht überlaufen
+- Comparison-Table horizontal scrollbar falls nötig
+- FAQ-Items ausreichend Touch-Target
+
+---
+
+## Zusammenfassung der Dateiänderungen
+
+| Datei                                    | Änderung                                    |
+|------------------------------------------|---------------------------------------------|
+| `src/pages/Home.tsx`                     | HowItWorks entfernen, Testimonials hinzufügen |
+| `src/components/home/Testimonials.tsx`   | NEU: Testimonials-Sektion                    |
+| `src/components/home/Hero.tsx`           | Text-Anpassung (Decision Records → History)  |
+| `src/components/home/Features.tsx`       | Text-Anpassung                               |
+| `src/components/home/CTA.tsx`            | Text-Anpassung                               |
+| `src/components/home/FAQ.tsx`            | Text-Anpassungen (mehrere)                   |
+| `src/components/home/Pricing.tsx`        | Text-Anpassungen                             |
+| `src/pages/Pricing.tsx`                  | Text-Anpassungen, Hero-Headline              |
+
+---
+
+## Hinweis zu Testimonials
+
+Die Testimonials sind **fiktiv** aber **realistisch**. Falls echte Testimonials gewünscht sind, können diese später ersetzt werden. Die fiktiven Namen und Rollen sind so gewählt, dass sie die Zielgruppe (Solo Founders, kleine Teams, Startup-Kontext) widerspiegeln.

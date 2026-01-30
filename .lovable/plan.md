@@ -1,151 +1,103 @@
 
-# Screenshot-Integration für Conversion-Optimierung
+# ProductShowcase Redesign: Alle Screenshots mit überzeugenden Texten
 
-## Analyse der Screenshots
+## Übersicht
 
-Du hast 3 Screenshots mit unterschiedlichen Zwecken:
+Ich werde die `ProductShowcase`-Komponente komplett umgestalten, sodass alle drei Screenshots gleichzeitig angezeigt werden – jeweils mit einem überzeugenden Titel und Text darüber.
 
-| Screenshot | Inhalt | Conversion-Wert | Beste Platzierung |
-|------------|--------|-----------------|-------------------|
-| **Analyse-Ergebnis** | Validation Results mit Consensus, Premium Insights, Model Responses | Sehr hoch - zeigt den Hauptwert | Hero-Section (primär) |
-| **Input-Bereich** | Frage-Eingabe mit Beispielen | Mittel - zeigt Einfachheit | "How It Works" Step 1 |
-| **Workspaces** | Team-Management | Niedrig für Solo-Founder | Features-Section (optional) |
+## Neues Layout
 
----
-
-## Strategie: Screenshot-Showcase in Hero
-
-Der **Analyse-Ergebnis-Screenshot** ist der wichtigste - er zeigt dem Besucher sofort, was er bekommt. Dieser sollte prominent in der Hero-Section erscheinen.
-
-### Layout-Lösung für unterschiedliche Bildgrößen
-
-Da die Screenshots unterschiedliche Größen haben, verwende ich ein "Browser-Mockup"-Design:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  ●  ●  ●                synoptas.com                    │  <- Browser-Header (normalisiert alle Größen)
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│              [Screenshot wird hier eingefügt]           │
-│              (object-fit: cover/contain)                │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+```text
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│     ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐   │
+│     │  1. ASK          │  │  2. ANALYZE      │  │  3. DOCUMENT     │   │
+│     │  Describe your   │  │  Get multiple    │  │  Share with your │   │
+│     │  challenge...    │  │  perspectives... │  │  team...         │   │
+│     │                  │  │                  │  │                  │   │
+│     │  [INPUT BILD]    │  │  [ANALYSE BILD]  │  │  [TEAMS BILD]    │   │
+│     │                  │  │                  │  │                  │   │
+│     └──────────────────┘  └──────────────────┘  └──────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Vorteile:**
-- Alle Screenshots sehen professionell aus
-- Unterschiedliche Größen werden durch den Browser-Rahmen normalisiert
-- Verstärkt die "echte App"-Wahrnehmung
+**Mobile:** Die drei Karten werden vertikal gestapelt.
 
----
+## Überzeugende Texte für jedes Bild
 
-## Implementierungsplan
+| Schritt | Titel | Subtext |
+|---------|-------|---------|
+| **1. Ask** | "Describe Your Challenge" | "No templates, no complexity. Just explain what you're facing in plain language." |
+| **2. Analyze** | "Get Multiple Perspectives" | "Six AI models debate your decision. See where they agree – and where they don't." |
+| **3. Document** | "Build Your Decision Record" | "Share insights with your team. Create an auditable trail for investors." |
 
-### 1. Neue Komponente: ProductShowcase
+## Design-Details
 
-**Neue Datei:** `src/components/home/ProductShowcase.tsx`
+- **Cards:** Jede Karte bekommt den Browser-Mockup-Stil (dots, rounded corners)
+- **Nummerierung:** Schritt 1, 2, 3 für klaren Ablauf
+- **Hover-Effekt:** Leichte Vergrößerung beim Hover
+- **Responsive:** 3 Spalten auf Desktop, 1 Spalte auf Mobile
+- **Keine Tab-Navigation mehr** – alles sichtbar
 
-Erstellt einen eleganten Browser-Mockup-Rahmen, der:
-- Screenshots in einheitlicher Größe darstellt
-- Responsive ist (mobil kleiner, desktop größer)
-- Optional zwischen Screenshots wechseln kann (Tabs)
+## Technische Umsetzung
 
-### 2. Hero.tsx Erweiterung
+### Datei: `src/components/home/ProductShowcase.tsx`
 
-Nach den Trust Indicators (Zeile 130) wird die ProductShowcase-Komponente eingefügt:
+Änderungen:
+1. `useState` und Tab-Navigation entfernen
+2. Grid-Layout mit 3 Spalten implementieren
+3. Für jeden Screenshot eine eigene Card mit:
+   - Schritt-Nummer (Badge)
+   - Überzeugendem Titel
+   - Beschreibungstext
+   - Browser-Mockup mit Bild
 
-```
-[Hero Text]
-[CTA Buttons]
-[Trust Indicators]
+### Code-Struktur
 
-     ↓ NEU ↓
+```tsx
+const showcaseItems = [
+  {
+    step: 1,
+    title: "Describe Your Challenge",
+    description: "No templates, no complexity. Just explain what you're facing in plain language.",
+    image: inputPreview,
+    alt: "..."
+  },
+  {
+    step: 2,
+    title: "Get Multiple Perspectives",
+    description: "Six AI models debate your decision. See where they agree – and where they don't.",
+    image: analysisPreview,
+    alt: "..."
+  },
+  {
+    step: 3,
+    title: "Build Your Decision Record",
+    description: "Share insights with your team. Create an auditable trail for investors.",
+    image: workspacesPreview,
+    alt: "..."
+  }
+];
 
-[ProductShowcase mit Analyse-Screenshot]
-```
-
-### 3. Optional: HowItWorks.tsx mit Input-Screenshot
-
-Bei Step 1 ("Describe your challenge") könnte der Input-Screenshot eingefügt werden, um den Prozess zu visualisieren.
-
----
-
-## Texte für die Screenshots
-
-### Unter dem Hero-Screenshot:
-- Badge: "Live Analysis Preview"
-- Subtext: "See how multiple AI perspectives help you make better decisions"
-
-### Alternative Tabs (wenn alle 3 gezeigt werden sollen):
-1. **"Analysis"** - Zeigt Validation Results
-2. **"Input"** - Zeigt Frage-Eingabe
-3. **"Teams"** - Zeigt Workspaces
-
----
-
-## Technische Details
-
-### Asset-Handling
-1. Screenshots werden nach `src/assets/` kopiert
-2. Import als ES6-Module für optimales Bundling
-3. Verwendung von `object-fit: cover` mit fixierter Höhe
-
-### Browser-Mockup CSS
-```css
-.browser-mockup {
-  border-radius: 12px;
-  border: 1px solid hsl(var(--border));
-  background: hsl(var(--card));
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
-}
-
-.browser-header {
-  height: 32px;
-  border-bottom: 1px solid hsl(var(--border));
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 6px;
-}
-
-.browser-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: hsl(var(--muted-foreground) / 0.3);
-}
+// Grid Layout
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  {showcaseItems.map((item) => (
+    <ShowcaseCard key={item.step} {...item} />
+  ))}
+</div>
 ```
 
-### Responsive Verhalten
-- **Desktop:** Max-Breite 1000px, Höhe 500px
-- **Tablet:** Max-Breite 100%, Höhe 400px
-- **Mobile:** Max-Breite 100%, Höhe 300px, horizontal scrollbar möglich
+## Erwarteter Conversion-Impact
 
----
+| Vorher (Tabs) | Nachher (Alle sichtbar) |
+|---------------|------------------------|
+| User muss klicken um alles zu sehen | Alles auf einen Blick |
+| Niedrige Interaktionsrate | Höhere Engagement-Rate |
+| Versteckter Wert | Sofort erkennbarer Wert |
 
-## Empfehlung
-
-**Für den Start:** Nur den Analyse-Screenshot (Nr. 3) in die Hero-Section einfügen.
-
-**Begründung:**
-- Er zeigt den höchsten Wert (Ergebnis einer Analyse)
-- Weniger Ablenkung für den Besucher
-- Die anderen Screenshots können später in den entsprechenden Sections hinzugefügt werden
-
----
-
-## Dateien die erstellt/geändert werden
+## Zusammenfassung der Änderungen
 
 | Datei | Änderung |
 |-------|----------|
-| `src/assets/analysis-preview.jpeg` | Kopie des Analyse-Screenshots |
-| `src/components/home/ProductShowcase.tsx` | Neue Komponente für Browser-Mockup |
-| `src/components/home/Hero.tsx` | Import und Einbindung der ProductShowcase |
-
----
-
-## Nächste Schritte nach Umsetzung
-
-1. **Social Proof:** Testimonials-Section hinzufügen
-2. **Decision Counter:** "X+ decisions analyzed" in Hero
-3. **Input-Screenshot:** In HowItWorks.tsx bei Step 1 einbinden
+| `src/components/home/ProductShowcase.tsx` | Komplettes Redesign: Grid-Layout mit allen 3 Bildern + überzeugende Texte |

@@ -8,6 +8,7 @@ import PainPoints from "@/components/home/PainPoints";
 import WhySynoptas from "@/components/home/WhySynoptas";
 import HowItWorks from "@/components/home/HowItWorks";
 import Features from "@/components/home/Features";
+import Testimonials from "@/components/home/Testimonials";
 import Pricing from "@/components/home/Pricing";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
@@ -97,6 +98,7 @@ const Home = () => {
         <Hero />
         <PainPoints />
         <WhySynoptas />
+        <Testimonials />
         <HowItWorks />
         <Features />
         

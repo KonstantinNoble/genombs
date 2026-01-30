@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "How is this different from just asking ChatGPT?",
-    answer: "ChatGPT gives you one answer with no way to verify it. Synoptas shows you where 3 different AI perspectives agree (strong signal) or disagree (dig deeper), weighted by what matters to you. Plus, you get a documented record of your thinking process."
+    answer: "ChatGPT gives you one answer with no way to verify it. Synoptas shows you where 3 different AI perspectives agree (strong signal) or disagree (dig deeper), weighted by what matters to you. Plus, you get a documented history of your thinking process."
   },
   {
     question: "What do 'consensus' and 'dissent' mean?",
@@ -38,15 +38,15 @@ const faqs = [
   },
   {
     question: "What's the difference between Free and Premium?",
-    answer: "Free: 2 decision records per day with core analysis. Premium ($26.99/mo): 10 records per day, team workspaces, strategic alternatives, and investor-ready PDF exports."
+    answer: "Free: 2 analyses per day with core insights. Premium ($26.99/mo): 10 analyses per day, team workspaces, strategic alternatives, and investor-ready PDF exports."
   },
   {
     question: "Can I try it before paying?",
     answer: "Yes. 2 free analyses per day, no credit card required. Enough to see whether a structured second opinion helps your decision-making."
   },
   {
-    question: "What happens to my decision records?",
-    answer: "Your records are private and encrypted. We never share them. Delete your account and we delete all your data. See our privacy policy for details."
+    question: "What happens to my analyses?",
+    answer: "Your analyses are private and encrypted. We never share them. Delete your account and we delete all your data. See our privacy policy for details."
   },
   {
     question: "Can I cancel anytime?",

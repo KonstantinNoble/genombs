@@ -1,14 +1,14 @@
 import analysisPreview from "@/assets/analysis-preview.jpeg";
-import inputPreview from "@/assets/input-preview.jpeg";
+import modelWeightsPreview from "@/assets/model-weights-preview.jpeg";
 import workspacesPreview from "@/assets/workspaces-preview.jpeg";
 
 const showcaseItems = [
   {
     step: 1,
-    title: "Describe Your Challenge",
-    description: "No templates, no complexity. Just explain what you're facing in plain language.",
-    image: inputPreview,
-    alt: "Synoptas input area for describing your business decision"
+    title: "Weight Your AI Advisors",
+    description: "Choose your models and control their influence. Some voices matter more – you decide which ones.",
+    image: modelWeightsPreview,
+    alt: "Synoptas AI model weighting interface for customizing advisor influence"
   },
   {
     step: 2,
@@ -28,9 +28,9 @@ const showcaseItems = [
 
 const ProductShowcase = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4">
+    <div className="w-full max-w-5xl mx-auto px-4">
       {/* Section Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 lg:mb-16">
         <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3">
           How It Works
         </h2>
@@ -39,35 +39,35 @@ const ProductShowcase = () => {
         </p>
       </div>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      {/* Vertical Layout */}
+      <div className="flex flex-col gap-16 lg:gap-20">
         {showcaseItems.map((item) => (
           <div 
             key={item.step}
-            className="group flex flex-col"
+            className="flex flex-col items-center"
           >
             {/* Text Content */}
-            <div className="mb-4 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 mb-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+            <div className="mb-6 text-center max-w-2xl">
+              <div className="inline-flex items-center gap-3 mb-3">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-semibold">
                   {item.step}
                 </span>
-                <h3 className="text-lg font-semibold text-foreground">
+                <h3 className="text-xl sm:text-2xl font-semibold text-foreground">
                   {item.title}
                 </h3>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-base sm:text-lg">
                 {item.description}
               </p>
             </div>
 
             {/* Browser Mockup Card */}
-            <div className="relative rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-lg overflow-hidden transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02]">
+            <div className="relative w-full max-w-3xl rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
               {/* Browser Header */}
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/30 border-b border-border/50">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
+              <div className="flex items-center gap-1.5 px-4 py-2.5 bg-muted/30 border-b border-border/50">
+                <div className="w-3 h-3 rounded-full bg-red-400/60" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
+                <div className="w-3 h-3 rounded-full bg-green-400/60" />
               </div>
 
               {/* Screenshot */}
@@ -75,12 +75,12 @@ const ProductShowcase = () => {
                 <img 
                   src={item.image}
                   alt={item.alt}
-                  className="w-full h-[180px] sm:h-[200px] lg:h-[240px] object-cover object-top"
+                  className="w-full h-auto object-contain"
                   loading="lazy"
                 />
                 
                 {/* Bottom Gradient Fade */}
-                <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent" />
               </div>
             </div>
           </div>

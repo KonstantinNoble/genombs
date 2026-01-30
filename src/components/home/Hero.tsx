@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import ProductShowcase from "./ProductShowcase";
 
 const Hero = () => {
   const { user, isPremium } = useAuth();
@@ -128,6 +129,15 @@ const Hero = () => {
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Decision Records</span>
           </div>
+        </div>
+        
+        {/* Product Showcase */}
+        <div 
+          className={`mt-16 transition-all duration-1000 delay-500 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+          }`}
+        >
+          <ProductShowcase />
         </div>
       </div>
     </section>

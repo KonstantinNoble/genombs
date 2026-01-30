@@ -12,17 +12,17 @@ const showcaseItems = [
   },
   {
     step: 2,
-    title: "Get Multiple Perspectives",
-    description: "Six AI models debate your decision. See where they agree – and where they don't.",
-    image: analysisPreview,
-    alt: "Synoptas analysis showing AI consensus and dissent for business decisions"
+    title: "See the Full Picture",
+    description: "Get documented perspectives, strategic scenarios, and points of dissent – all cross-validated by multiple AI models.",
+    image: workspacesPreview,
+    alt: "Synoptas validation results showing documented perspectives and AI consensus"
   },
   {
     step: 3,
-    title: "Build Your Decision Record",
-    description: "Share insights with your team. Create an auditable trail for investors.",
-    image: workspacesPreview,
-    alt: "Synoptas team workspaces for collaborative decision-making"
+    title: "Organize in Workspaces",
+    description: "Keep personal analyses private or collaborate with your team. Switch contexts with one click.",
+    image: analysisPreview,
+    alt: "Synoptas workspace switcher for personal and team collaboration"
   }
 ];
 

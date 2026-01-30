@@ -127,7 +127,7 @@ const Hero = () => {
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Risk Check</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Decision Records</span>
+            <span>Decision History</span>
           </div>
         </div>
         

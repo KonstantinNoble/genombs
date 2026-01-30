@@ -80,7 +80,7 @@ const CTA = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             {isPremium && isLoggedIn 
               ? "10 daily analyses. Collaborate with your team. Track patterns. Export investor-ready reports."
-              : "Two free decision records per day. No credit card. See what a structured multi-perspective analysis feels like."}
+              : "Two free second opinions per day. No credit card. See what a structured multi-perspective analysis feels like."}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">

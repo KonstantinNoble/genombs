@@ -57,7 +57,7 @@ const Features = () => {
     },
     { 
       title: "Share with Co-Founders and Advisors", 
-      description: "Not a solo founder? Invite your team. Share decision records, build a shared history of how you think."
+      description: "Not a solo founder? Invite your team. Share analyses, build a shared history of how you think."
     },
     { 
       title: "Weight What Matters to You", 
@@ -68,7 +68,7 @@ const Features = () => {
       description: "When all perspectives agree, move fast. When they clash, that's your signal to investigate before committing."
     },
     { 
-      title: "Track Your Decision Patterns", 
+      title: "Learn From Your Past Decisions", 
       description: "See your decision history. Notice patterns. Build confidence in your judgment over time.",
       hasDashboardLink: true
     },

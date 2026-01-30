@@ -97,7 +97,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               <div className="divider-gradient mb-8" />
               
               <ul className="space-y-4 mb-10">
-                {["2 decision records per day", "Three AI perspectives per decision", "Consensus and dissent analysis", "Core documentation features", "3 priority action items"].map((feature, i) => (
+                {["2 analyses per day", "Three AI perspectives per analysis", "Consensus and dissent insights", "Core documentation features", "3 priority action items"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-muted flex items-center justify-center mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
@@ -109,7 +109,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               
               <Button 
                 size="lg" 
-                variant="outline" 
+                variant="outline"
                 className="w-full rounded-xl py-6 font-semibold hover:bg-muted transition-all duration-500"
                 onClick={() => handlePlanClick('free')}
               >
@@ -135,12 +135,12 @@ const Pricing = ({ compact = false }: PricingProps) => {
               
               <ul className="space-y-4 mb-10">
                 {[
-                  { text: "10 decision records per day", highlight: true },
+                  { text: "10 analyses per day", highlight: true },
                   { text: "Full perspective documentation", highlight: true },
                   { text: "Team Workspaces (up to 5 teams)", highlight: true },
                   { text: "Invite up to 5 members per team", highlight: true },
                   { text: "Strategic alternatives (Plan B, C)", highlight: false },
-                  { text: "Stakeholder-ready PDF exports", highlight: false }
+                  { text: "Investor-ready PDF exports", highlight: false }
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">

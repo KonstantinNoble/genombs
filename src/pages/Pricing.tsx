@@ -17,40 +17,40 @@ const PricingPage = () => {
   const isLoggedIn = !!user;
 
   const comparisonFeatures = [
-    { name: "Decision Records per Day", free: "2", premium: "10" },
-    { name: "Documented Perspectives", free: "3", premium: "3" },
+    { name: "Analyses per Day", free: "2", premium: "10" },
+    { name: "AI Perspectives", free: "3", premium: "3" },
     { name: "Team Workspaces", free: "—", premium: "Up to 5" },
     { name: "Team Members", free: "—", premium: "5 per team" },
     { name: "Strategic Alternatives", free: "—", premium: "✓" },
     { name: "6-12 Month Outlook", free: "—", premium: "✓" },
     { name: "Full Model Reasoning", free: "—", premium: "✓" },
-    { name: "PDF Audit Reports", free: "—", premium: "✓" },
+    { name: "Investor-Ready PDF Exports", free: "—", premium: "✓" },
   ];
 
   const faqs = [
     {
-      question: "How does decision documentation work?",
-      answer: "Describe your decision context. Three AI models – GPT-5, Gemini Pro, and Flash – analyze it independently without seeing each other's responses. We show you consensus, majority, and dissent. Everything is documented with timestamps."
+      question: "How does it work?",
+      answer: "Describe your decision context. Three AI models – GPT-5, Gemini Pro, and Flash – analyze it independently without seeing each other's responses. We show you consensus, majority, and dissent. Everything is saved with timestamps."
     },
     {
       question: "What does Premium include?",
-      answer: "10 decision records per day instead of 2. Full perspective documentation with complete reasoning. Plus strategic alternatives, competitive context analysis, and 6-12 month outlook. Stakeholder-ready PDF exports included."
+      answer: "10 analyses per day instead of 2. Full perspective documentation with complete reasoning. Plus strategic alternatives, competitive context analysis, and 6-12 month outlook. Investor-ready PDF exports included."
     },
     {
       question: "How does team collaboration work?",
-      answer: "Premium subscribers can create up to 5 team workspaces with 5 members each. Team members can view and create shared decision records without needing their own Premium subscription – only the workspace owner needs Premium. Perfect for small teams, investment committees, or advisory boards."
+      answer: "Premium subscribers can create up to 5 team workspaces with 5 members each. Team members can view and create shared analyses without needing their own Premium subscription – only the workspace owner needs Premium. Perfect for small teams, investment committees, or advisory boards."
     },
     {
       question: "When does my daily limit reset?",
-      answer: "24 hours after your first record of the day. Free accounts get 2 records per day, Premium gets 10."
+      answer: "24 hours after your first analysis of the day. Free accounts get 2 analyses per day, Premium gets 10."
     },
     {
       question: "What types of decisions work best?",
-      answer: "Decisions you might need to justify later: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The more consequential, the more valuable the documentation."
+      answer: "Strategic decisions you're wrestling with: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The more consequential, the more valuable the multi-perspective analysis."
     },
     {
       question: "Can I try it before paying?",
-      answer: "Yes. 2 free decision records per day, no credit card required. Enough to evaluate whether documented decisions fit your workflow."
+      answer: "Yes. 2 free analyses per day, no credit card required. Enough to see whether structured second opinions fit your workflow."
     }
   ];
 
@@ -59,9 +59,9 @@ const PricingPage = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
-          title="Pricing – Professional Decision Documentation"
-          description="Start free with 2 decision records per day. Premium ($26.99/mo) unlocks 10 daily records, stakeholder-ready PDF exports, competitive context, and 6-12 month outlook."
-          keywords="decision documentation pricing, audit trail cost, business decision tool, premium features"
+          title="Pricing – Your AI Advisory Board"
+          description="Start free with 2 analyses per day. Premium ($26.99/mo) unlocks 10 daily analyses, investor-ready PDF exports, competitive context, and 6-12 month outlook."
+          keywords="startup decision pricing, AI advisory tool, founder decision tool, premium features"
           canonical="/pricing"
           ogImage="https://synoptas.com/synoptas-favicon.png"
         />
@@ -80,9 +80,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing – Professional Decision Documentation"
-        description="Start free with 2 decision records per day. Premium ($26.99/mo) unlocks 10 daily records, stakeholder-ready PDF exports, competitive context, and 6-12 month outlook."
-        keywords="decision documentation pricing, audit trail cost, business decision tool, premium features"
+        title="Pricing – Your AI Advisory Board"
+        description="Start free with 2 analyses per day. Premium ($26.99/mo) unlocks 10 daily analyses, investor-ready PDF exports, competitive context, and 6-12 month outlook."
+        keywords="startup decision pricing, AI advisory tool, founder decision tool, premium features"
         canonical="/pricing"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -106,12 +106,12 @@ const PricingPage = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
                 ? "You're all set" 
-                : "Professional Decision Documentation"}
+                : "Your AI Advisory Board"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "10 records a day, full audit trails, competitive context, long-term outlook. All yours."
-                : "Document decisions with audit-grade precision. Upgrade when you need deeper insights and stakeholder-ready exports."}
+                ? "10 analyses a day, full insights, competitive context, long-term outlook. All yours."
+                : "Get structured second opinions before every big decision. Upgrade when you need deeper insights and investor-ready exports."}
             </p>
           </div>
         </section>

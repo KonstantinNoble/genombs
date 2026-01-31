@@ -167,6 +167,17 @@ All colors MUST be HSL.
   }
 }
 
+/* Custom text selection color - green branding */
+::selection {
+  background-color: hsl(142 76% 36% / 0.3);
+  color: hsl(0 0% 8%);
+}
+
+::-moz-selection {
+  background-color: hsl(142 76% 36% / 0.3);
+  color: hsl(0 0% 8%);
+}
+
 /* Scroll Reveal Animations */
 .scroll-reveal {
   opacity: 0;

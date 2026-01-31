@@ -13,7 +13,7 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  keywords = "decision documentation, audit trail, due diligence, decision records, compliance documentation, liability protection, stakeholder reporting",
+  keywords = "AI advisory board, startup decisions, second opinions, business analysis, investor-ready, founder tools, strategic advice",
   canonical,
   ogType = "website",
   ogImage = "https://synoptas.com/favicon.png",

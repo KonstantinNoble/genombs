@@ -45,24 +45,24 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      quote: "I was about to hire a $180k engineer. Synoptas showed me 2 of 3 models flagged cash runway risk. I waited 3 months. Glad I did.",
-      name: "Marcus R.",
-      role: "Solo Founder, SaaS"
+      quote: "Was about to hire a $180k engineer. Ran it through Synoptas first - 2 of 3 models flagged runway concerns. Waited 3 months. Smart move.",
+      name: "Marcus Reinholt",
+      role: "Founder @ CloudMetrics"
     },
     {
-      quote: "Before a big pricing change, I ran it through Synoptas. Two models agreed, one didn't. That dissent made me dig deeper.",
-      name: "Elena K.",
-      role: "Co-Founder, E-Commerce"
+      quote: "Ran our pricing change through it before launch. Two models agreed, one had concerns. That dissent made me reconsider the timing.",
+      name: "Elena Kowalski",
+      role: "CEO @ Stylehaus"
     },
     {
-      quote: "My advisor loved the PDF export. 'This is how you should present decisions to investors,' she said.",
-      name: "David C.",
-      role: "Founder, HealthTech"
+      quote: "My advisor saw the PDF export and said 'This is exactly how you should present decisions to investors.' Using it for every board meeting now.",
+      name: "David Chen",
+      role: "Founder @ MedStack"
     },
     {
-      quote: "I use it before every investor call now. Forces me to structure my thinking.",
-      name: "Sofia M.",
-      role: "Solo Founder, FinTech"
+      quote: "Before every investor call, I run my key points through Synoptas. Helps me spot weak arguments before they do.",
+      name: "Sofia Martinez",
+      role: "Founder @ PayFlow"
     }
   ];
 

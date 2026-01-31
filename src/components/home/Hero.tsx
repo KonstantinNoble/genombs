@@ -73,10 +73,9 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Stop making bad decisions.
-            <br />
-            <span className="relative inline-block mt-2">
-              <span className="text-primary">Let your AI Advisory Board pressure-test your strategy.</span>
+            Stop making{" "}
+            <span className="relative inline-block">
+              <span className="text-primary">bad decisions.</span>
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </span>
           </h1>

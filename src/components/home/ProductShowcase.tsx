@@ -1,6 +1,6 @@
-import analysisPreview from "@/assets/analysis-preview.jpeg";
 import modelWeightsPreview from "@/assets/model-weights-preview.jpeg";
-import workspacesPreview from "@/assets/workspaces-preview.jpeg";
+import validationResultsPreview from "@/assets/validation-results-preview.jpeg";
+import teamMembersPreview from "@/assets/team-members-preview.jpeg";
 
 const showcaseItems = [
   {
@@ -14,15 +14,15 @@ const showcaseItems = [
     step: 2,
     title: "See the Full Picture",
     description: "Get documented perspectives, strategic scenarios, and points of dissent – all cross-validated by multiple AI models.",
-    image: workspacesPreview,
+    image: validationResultsPreview,
     alt: "Synoptas validation results showing documented perspectives and AI consensus"
   },
   {
     step: 3,
     title: "Organize in Workspaces",
     description: "Keep personal analyses private or collaborate with your team. Switch contexts with one click.",
-    image: analysisPreview,
-    alt: "Synoptas workspace switcher for personal and team collaboration"
+    image: teamMembersPreview,
+    alt: "Synoptas team members interface for workspace collaboration"
   }
 ];
 

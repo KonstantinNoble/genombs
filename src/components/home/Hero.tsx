@@ -73,9 +73,10 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            Your Missing{" "}
-            <span className="relative inline-block">
-              <span className="text-primary">Advisory Board.</span>
+            Stop making bad decisions.
+            <br />
+            <span className="relative inline-block mt-2">
+              <span className="text-primary">Let your AI Advisory Board pressure-test your strategy.</span>
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </span>
           </h1>
@@ -90,9 +91,9 @@ const Hero = () => {
             Get multiple AI perspectives on your next big decision – before you commit.
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Button */}
           <div 
-            className={`flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 transition-all duration-700 delay-300 ${
+            className={`flex items-center justify-center mb-16 transition-all duration-700 delay-300 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
@@ -105,15 +106,6 @@ const Hero = () => {
                 {isPremium && user ? "Back to Your Analyses" : "Try It Free"}
                 <ArrowRight className="w-5 h-5" />
               </Link>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="lg" 
-              asChild 
-              className="rounded-2xl px-10 py-7 text-lg font-medium border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-500 hover:-translate-y-1"
-            >
-              <Link to="/pricing">View Plans</Link>
             </Button>
           </div>
 

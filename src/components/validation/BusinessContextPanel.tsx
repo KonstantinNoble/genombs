@@ -270,7 +270,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
             <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-cyan-500/20">
               {/* Helper hint for new users */}
               <p className="text-xs text-muted-foreground pt-4 pb-0 -mb-2">
-                💡 Save your context so every AI analysis is tailored to your business.
+                Save your context so every AI analysis is tailored to your business.
               </p>
               
               {/* Dropdown Grid */}

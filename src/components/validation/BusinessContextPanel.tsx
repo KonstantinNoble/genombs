@@ -26,6 +26,7 @@ import {
   Sparkles,
   ExternalLink,
   RefreshCw,
+  Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -55,10 +56,15 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     scanWebsite,
     setLocalContext,
     localContext,
+    loadContext,
+    scansRemaining,
+    scanResetTime,
+    maxScansPerDay,
   } = useBusinessContext();
 
   const [isOpen, setIsOpen] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [countdown, setCountdown] = useState<string>("");
 
   // Check if context has any data
   const hasContextData = context && (
@@ -84,6 +90,39 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
       setWebsiteUrl(context.website_url);
     }
   }, [context?.website_url]);
+
+  // Countdown timer effect for scan reset
+  useEffect(() => {
+    if (!scanResetTime) {
+      setCountdown("");
+      return;
+    }
+    
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = scanResetTime.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setCountdown("");
+        loadContext(); // Refresh to unlock scanning
+        return;
+      }
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      if (hours > 0) {
+        setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+      } else {
+        setCountdown(`${minutes}m ${seconds}s`);
+      }
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [scanResetTime, loadContext]);
 
   // Determine if we need to scan the website
   const needsWebsiteScan = (): boolean => {
@@ -125,6 +164,10 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
   // Handler for re-scanning an already scanned URL
   const handleRescan = async () => {
     if (!websiteUrl || !websiteUrl.startsWith("https://")) return;
+    
+    if (scansRemaining <= 0) {
+      return; // Button should already be disabled, but extra safety
+    }
     
     const success = await scanWebsite(websiteUrl);
     
@@ -391,7 +434,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                           variant="ghost"
                           size="sm"
                           onClick={handleRescan}
-                          disabled={isScanning}
+                          disabled={isScanning || scansRemaining <= 0}
                           className="h-8 px-2.5 text-muted-foreground hover:text-foreground"
                         >
                           {isScanning ? (
@@ -403,6 +446,23 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                             </>
                           )}
                         </Button>
+                      </div>
+                    )}
+
+                    {/* Scan Usage Indicator */}
+                    {context?.scan_window_start && (
+                      <div className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded-md">
+                        <span className={scansRemaining > 0 ? "text-muted-foreground" : "text-amber-600 font-medium"}>
+                          {scansRemaining}/{maxScansPerDay} scans remaining today
+                        </span>
+                        
+                        {/* Reset Timer (only when limit reached) */}
+                        {scansRemaining === 0 && countdown && (
+                          <div className="flex items-center gap-1.5 text-amber-600">
+                            <Clock className="h-4 w-4" />
+                            <span className="font-mono text-xs">{countdown}</span>
+                          </div>
+                        )}
                       </div>
                     )}
 

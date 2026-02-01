@@ -15,6 +15,8 @@ export interface BusinessContext {
   website_url: string | null;
   website_summary: string | null;
   website_scraped_at: string | null;
+  scan_count: number | null;
+  scan_window_start: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -85,6 +87,10 @@ export const GEOGRAPHIC_OPTIONS = [
   { value: "global", label: "Global" },
 ];
 
+// Scan limit constants (must match Edge Function)
+export const MAX_SCANS_PER_DAY = 3;
+export const SCAN_WINDOW_HOURS = 24;
+
 interface UseBusinessContextReturn {
   context: BusinessContext | null;
   isLoading: boolean;
@@ -98,6 +104,9 @@ interface UseBusinessContextReturn {
   clearContext: () => Promise<boolean>;
   setLocalContext: (data: Partial<BusinessContextInput>) => void;
   localContext: BusinessContextInput;
+  scansRemaining: number;
+  scanResetTime: Date | null;
+  maxScansPerDay: number;
 }
 
 export function useBusinessContext(): UseBusinessContextReturn {
@@ -324,6 +333,34 @@ export function useBusinessContext(): UseBusinessContextReturn {
     ? new Date(context.website_scraped_at) 
     : null;
 
+  // Calculate scan status from DB values
+  const calculateScanStatus = (): { remaining: number; resetTime: Date | null } => {
+    if (!context?.scan_window_start) {
+      return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
+    }
+    
+    const windowStart = new Date(context.scan_window_start);
+    const now = new Date();
+    const windowEnd = new Date(windowStart.getTime() + SCAN_WINDOW_HOURS * 60 * 60 * 1000);
+    
+    // Check if window has expired
+    if (now >= windowEnd) {
+      return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
+    }
+    
+    const scanCount = context.scan_count || 0;
+    const remaining = Math.max(0, MAX_SCANS_PER_DAY - scanCount);
+    
+    return { 
+      remaining, 
+      resetTime: remaining === 0 ? windowEnd : null 
+    };
+  };
+
+  const scanStatus = calculateScanStatus();
+  const scansRemaining = scanStatus.remaining;
+  const scanResetTime = scanStatus.resetTime;
+
   return {
     context,
     isLoading,
@@ -337,5 +374,8 @@ export function useBusinessContext(): UseBusinessContextReturn {
     clearContext,
     setLocalContext,
     localContext,
+    scansRemaining,
+    scanResetTime,
+    maxScansPerDay: MAX_SCANS_PER_DAY,
   };
 }

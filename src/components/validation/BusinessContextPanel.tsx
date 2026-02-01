@@ -65,6 +65,9 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
   const [isOpen, setIsOpen] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [countdown, setCountdown] = useState<string>("");
+  
+  // URL validation
+  const isUrlInvalid = websiteUrl.length > 0 && !websiteUrl.startsWith("https://");
 
   // Check if context has any data
   const hasContextData = context && (
@@ -413,14 +416,19 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {isPremium ? (
                   <>
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-1.5">
                       <Input
                         type="url"
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
                         placeholder="https://your-company.com"
-                        className="h-10 text-base"
+                        className={`h-10 text-base ${isUrlInvalid ? "border-destructive focus-visible:ring-destructive" : ""}`}
                       />
+                      {isUrlInvalid && (
+                        <p className="text-sm text-destructive">
+                          URL must start with https://
+                        </p>
+                      )}
                     </div>
                     
                     {/* Already scanned indicator with Rescan button */}

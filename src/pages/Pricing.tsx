@@ -19,11 +19,12 @@ const PricingPage = () => {
   const comparisonFeatures = [
     { name: "Analyses per Day", free: "2", premium: "10" },
     { name: "AI Perspectives", free: "3", premium: "3" },
+    { name: "Business Context Profile", free: "✓", premium: "✓" },
+    { name: "Website Auto-Scan", free: "—", premium: "✓" },
     { name: "Team Workspaces", free: "—", premium: "Up to 5" },
     { name: "Team Members", free: "—", premium: "5 per team" },
     { name: "Strategic Alternatives", free: "—", premium: "✓" },
     { name: "6-12 Month Outlook", free: "—", premium: "✓" },
-    { name: "Full Model Reasoning", free: "—", premium: "✓" },
     { name: "Investor-Ready PDF Exports", free: "—", premium: "✓" },
   ];
 
@@ -33,8 +34,12 @@ const PricingPage = () => {
       answer: "Describe your decision context. Three AI models – GPT-5, Gemini Pro, and Flash – analyze it independently without seeing each other's responses. We show you consensus, majority, and dissent. Everything is saved with timestamps."
     },
     {
+      question: "What is Business Context?",
+      answer: "Your business profile (industry, stage, team size, revenue, market, region) that's automatically included in every analysis. All users can set this. Premium subscribers can also add their website URL and we'll automatically scan it for deeper context."
+    },
+    {
       question: "What does Premium include?",
-      answer: "10 analyses per day instead of 2. Full perspective documentation with complete reasoning. Plus strategic alternatives, competitive context analysis, and 6-12 month outlook. Investor-ready PDF exports included."
+      answer: "10 analyses per day instead of 2. Website auto-scanning for business context. Team workspaces with up to 5 members. Plus strategic alternatives, competitive context, and investor-ready PDF exports."
     },
     {
       question: "How does team collaboration work?",
@@ -43,10 +48,6 @@ const PricingPage = () => {
     {
       question: "When does my daily limit reset?",
       answer: "24 hours after your first analysis of the day. Free accounts get 2 analyses per day, Premium gets 10."
-    },
-    {
-      question: "What types of decisions work best?",
-      answer: "Strategic decisions you're wrestling with: investment decisions, strategic pivots, major hires, pricing changes, vendor selections. The more consequential, the more valuable the multi-perspective analysis."
     },
     {
       question: "Can I try it before paying?",

@@ -10,15 +10,16 @@ interface FeatureCardProps {
   index: number;
   hasDashboardLink?: boolean;
   showDashboardLink?: boolean;
+  isPremium?: boolean;
 }
 
-const FeatureCard = ({ title, description, index, hasDashboardLink, showDashboardLink }: FeatureCardProps) => {
+const FeatureCard = ({ title, description, index, hasDashboardLink, showDashboardLink, isPremium }: FeatureCardProps) => {
   const { ref, isVisible } = useScrollReveal();
 
   return (
     <div
       ref={ref}
-      className={`group relative rounded-2xl p-6 md:p-8 bg-card/50 border border-border/60 card-hover-subtle scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      className={`group relative rounded-2xl p-6 md:p-8 bg-card/50 border ${isPremium ? 'border-primary/40' : 'border-border/60'} card-hover-subtle scroll-reveal ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.08}s` }}
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -28,7 +29,14 @@ const FeatureCard = ({ title, description, index, hasDashboardLink, showDashboar
           <span className="step-number flex-shrink-0">
             {String(index + 1).padStart(2, '0')}
           </span>
-          <h3 className="text-xl font-bold text-foreground pt-1.5">{title}</h3>
+          <div className="flex items-center gap-2 pt-1.5">
+            <h3 className="text-xl font-bold text-foreground">{title}</h3>
+            {isPremium && (
+              <span className="inline-block px-2 py-0.5 bg-primary/15 text-primary text-xs font-semibold rounded-full">
+                Premium
+              </span>
+            )}
+          </div>
         </div>
         <p className="text-muted-foreground leading-relaxed ml-14">{description}</p>
         
@@ -58,6 +66,11 @@ const Features = () => {
     { 
       title: "Share with Co-Founders and Advisors", 
       description: "Not a solo founder? Invite your team. Share analyses, build a shared history of how you think."
+    },
+    { 
+      title: "AI That Knows Your Business", 
+      description: "Set your industry, stage, and team size – the AI adapts every recommendation. Premium: scan your website for even deeper context.",
+      isPremium: true
     },
     { 
       title: "Weight What Matters to You", 
@@ -96,6 +109,7 @@ const Features = () => {
               index={index}
               hasDashboardLink={feature.hasDashboardLink}
               showDashboardLink={!!user}
+              isPremium={feature.isPremium}
             />
           ))}
         </div>

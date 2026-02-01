@@ -1,298 +1,137 @@
 
 
-# Plan: Scan-Zähler & Reset-Timer aus Datenbank abrufen
+# Plan: Datenschutzerklärung für Business Context Feature aktualisieren
 
-## Überblick
+## Zusammenfassung der notwendigen Ergänzungen
 
-Die Scan-Informationen (`scan_count`, `scan_window_start`) werden direkt aus der Supabase-Datenbank geladen und im Frontend angezeigt.
-
----
-
-## Teil 1: Hook erweitern (`src/hooks/useBusinessContext.ts`)
-
-### 1.1 Interface erweitern
-
-Zeile 6-20: `BusinessContext` Interface um die neuen Spalten erweitern:
-
-```typescript
-export interface BusinessContext {
-  // ... existing fields ...
-  website_scraped_at: string | null;
-  scan_count: number | null;           // NEU
-  scan_window_start: string | null;    // NEU
-  created_at: string;
-  updated_at: string;
-}
-```
-
-### 1.2 Konstanten hinzufügen
-
-Nach den Dropdown-Options (Zeile 87):
-
-```typescript
-// Scan limit constants (must match Edge Function)
-export const MAX_SCANS_PER_DAY = 3;
-export const SCAN_WINDOW_HOURS = 24;
-```
-
-### 1.3 Return-Interface erweitern
-
-Zeile 88-101: Neue Return-Werte hinzufügen:
-
-```typescript
-interface UseBusinessContextReturn {
-  // ... existing ...
-  localContext: BusinessContextInput;
-  scansRemaining: number;     // NEU
-  scanResetTime: Date | null; // NEU
-  maxScansPerDay: number;     // NEU
-}
-```
-
-### 1.4 Berechnungslogik hinzufügen
-
-Nach `lastScanned` (Zeile 323-325):
-
-```typescript
-const lastScanned = context?.website_scraped_at 
-  ? new Date(context.website_scraped_at) 
-  : null;
-
-// Calculate scan status from DB values
-const calculateScanStatus = (): { remaining: number; resetTime: Date | null } => {
-  if (!context?.scan_window_start) {
-    return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
-  }
-  
-  const windowStart = new Date(context.scan_window_start);
-  const now = new Date();
-  const windowEnd = new Date(windowStart.getTime() + SCAN_WINDOW_HOURS * 60 * 60 * 1000);
-  
-  // Check if window has expired
-  if (now >= windowEnd) {
-    return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
-  }
-  
-  const scanCount = context.scan_count || 0;
-  const remaining = Math.max(0, MAX_SCANS_PER_DAY - scanCount);
-  
-  return { 
-    remaining, 
-    resetTime: remaining === 0 ? windowEnd : null 
-  };
-};
-
-const scanStatus = calculateScanStatus();
-const scansRemaining = scanStatus.remaining;
-const scanResetTime = scanStatus.resetTime;
-```
-
-### 1.5 Return erweitern
-
-Zeile 327-340:
-
-```typescript
-return {
-  context,
-  isLoading,
-  isSaving,
-  isScanning,
-  hasUnsavedChanges,
-  lastScanned,
-  loadContext,
-  saveContext,
-  scanWebsite,
-  clearContext,
-  setLocalContext,
-  localContext,
-  scansRemaining,        // NEU
-  scanResetTime,         // NEU
-  maxScansPerDay: MAX_SCANS_PER_DAY,  // NEU
-};
-```
+Das Business Context Feature erfordert Ergänzungen in der Privacy Policy, da:
+1. **Neue Datenkategorien** gespeichert werden (Geschäftskontextdaten)
+2. **Neuer Drittanbieter** (Firecrawl) für Website-Scraping genutzt wird
+3. **Daten an KI-Modelle** übergeben werden (als zusätzlicher Kontext)
 
 ---
 
-## Teil 2: UI-Komponente (`src/components/validation/BusinessContextPanel.tsx`)
+## Abschnitt 1: Neuer Abschnitt "5.9 Business Context" (Premium Feature)
 
-### 2.1 Hook-Destrukturierung erweitern
+**Position:** Nach Abschnitt 5.8 (Team Workspaces), vor Abschnitt 6
 
-Zeile ~48-58: Neue Werte aus Hook abrufen:
+**Inhalt:**
 
-```typescript
-const {
-  context,
-  isLoading,
-  isSaving,
-  isScanning,
-  lastScanned,
-  saveContext,
-  scanWebsite,
-  setLocalContext,
-  localContext,
-  loadContext,
-  scansRemaining,    // NEU
-  scanResetTime,     // NEU
-  maxScansPerDay,    // NEU
-} = useBusinessContext();
+### 5.9 Business Context (Premium)
+
+Premium-Nutzer können einen Geschäftskontext erstellen, der automatisch in alle KI-Analysen einfließt, um personalisierte und relevantere Empfehlungen zu erhalten.
+
+#### Erfasste und gespeicherte Daten
+
+Folgende Daten werden in der Datenbank gespeichert und können von Ihnen jederzeit bearbeitet oder gelöscht werden:
+
+| Datenfeld | Beschreibung |
+|-----------|--------------|
+| Branche | Ihre Branche (z.B. SaaS, E-Commerce, FinTech) |
+| Unternehmensphase | Entwicklungsstand (Idee bis Wachstumsphase) |
+| Teamgröße | Anzahl der Mitarbeiter |
+| Umsatzbereich | Monatlicher Umsatzbereich |
+| Zielmarkt | B2B, B2C, B2B2C, D2C |
+| Geografischer Fokus | Lokal, National, EU, US, Global |
+| Website-URL | Ihre Unternehmenswebsite (optional) |
+| Website-Zusammenfassung | Automatisch generierte Zusammenfassung Ihrer Website (max. 1000 Zeichen) |
+
+#### Website-Scanning (Firecrawl)
+
+Wenn Sie eine Website-URL angeben und den Scan-Button klicken, wird Ihre Website über den Dienst Firecrawl gescrapt:
+
+**Anbieter:** Firecrawl, Inc.
+**Standort:** Vereinigte Staaten
+**Datenschutzrichtlinie:** https://www.firecrawl.dev/privacy
+
+**Daten, die an Firecrawl übermittelt werden:**
+- Die von Ihnen eingegebene Website-URL
+
+**Daten, die von Firecrawl zurückgegeben und gespeichert werden:**
+- Markdown-Textinhalt der Hauptseite (ohne JavaScript, Tracking-Skripte, etc.)
+- Eine gekürzte Zusammenfassung (max. 1000 Zeichen) wird in unserer Datenbank gespeichert
+
+**Nutzungslimit:** Maximal 3 Website-Scans pro 24-Stunden-Zeitfenster (rollendes Fenster)
+
+#### Übergabe an KI-Modelle
+
+Der gespeicherte Business Context (einschließlich Website-Zusammenfassung) wird automatisch als zusätzlicher Kontext an die von Ihnen ausgewählten KI-Modelle übermittelt (siehe Abschnitt 5.1), um personalisierte Empfehlungen zu ermöglichen.
+
+**Wichtig:** 
+- Die KI-Modelle erhalten Ihren Business Context zusätzlich zu Ihrer Validierungsanfrage
+- Dadurch können OpenAI, Google, Anthropic und Perplexity Ihren Geschäftskontext verarbeiten
+- Die Datenschutzrichtlinien dieser Anbieter gelten entsprechend (siehe Abschnitt 5.1)
+
+#### Datenspeicherung und Löschung
+
+- Der Business Context wird dauerhaft gespeichert, bis Sie ihn manuell löschen
+- Sie können den gesamten Context über den "Clear Context" Button in der Anwendung löschen
+- Bei Löschung Ihres Benutzerkontos wird der Business Context automatisch gelöscht (CASCADE)
+
+#### Rechtsgrundlage
+
+- **Art. 6(1)(b) DSGVO:** Verarbeitung ist für die Vertragserfüllung erforderlich (Bereitstellung personalisierter KI-Analysen als Teil des Premium-Dienstes)
+- **Art. 6(1)(a) DSGVO:** Einwilligung durch aktive Nutzung des Features (Sie wählen selbst, ob Sie den Business Context ausfüllen und einen Website-Scan durchführen)
+
+---
+
+## Abschnitt 2: Tabelle "Recipients of Personal Data" (Abschnitt 12) erweitern
+
+**Neue Zeile hinzufügen:**
+
+| Empfänger | Zweck | Übermittelte Daten | Übermittlungsgrundlage |
+|-----------|-------|-------------------|----------------------|
+| **Firecrawl, Inc.** | Website-Scraping für Business Context | Website-URL | Art. 46(2)(c) DSGVO (Standardvertragsklauseln) |
+
+---
+
+## Abschnitt 3: Tabelle "Categories of Personal Data" (Abschnitt 11) erweitern
+
+**Neue Zeile hinzufügen:**
+
+| Kategorie | Beispiele | Zweck |
+|-----------|-----------|-------|
+| **Business Context** (Premium) | Branche, Unternehmensphase, Teamgröße, Umsatz, Zielmarkt, Geo-Fokus, Website-URL, Website-Zusammenfassung | Personalisierte KI-Analysen |
+
+---
+
+## Abschnitt 4: Third-Party Service Cookies Tabelle (falls zutreffend)
+
+Firecrawl setzt keine Cookies auf Ihrer Website, da:
+- Die API-Anfrage serverseitig über eine Edge Function erfolgt
+- Keine Client-seitige Integration stattfindet
+
+Daher ist keine Aktualisierung der Cookie-Tabelle erforderlich.
+
+---
+
+## Abschnitt 5: Versionsverlauf aktualisieren
+
+**Neue Zeile am Anfang:**
+
 ```
-
-### 2.2 Import hinzufügen
-
-Zeile 25-27: `Clock` Icon hinzufügen:
-
-```typescript
-import {
-  // ... existing ...
-  Clock,  // NEU
-} from "lucide-react";
-```
-
-### 2.3 Countdown-State und Effect
-
-Nach den anderen States (~Zeile 60):
-
-```typescript
-const [countdown, setCountdown] = useState<string>("");
-
-// Countdown timer effect
-useEffect(() => {
-  if (!scanResetTime) {
-    setCountdown("");
-    return;
-  }
-  
-  const updateCountdown = () => {
-    const now = new Date();
-    const diff = scanResetTime.getTime() - now.getTime();
-    
-    if (diff <= 0) {
-      setCountdown("");
-      loadContext(); // Refresh to unlock scanning
-      return;
-    }
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    if (hours > 0) {
-      setCountdown(`${hours}h ${minutes}m ${seconds}s`);
-    } else {
-      setCountdown(`${minutes}m ${seconds}s`);
-    }
-  };
-  
-  updateCountdown();
-  const interval = setInterval(updateCountdown, 1000);
-  return () => clearInterval(interval);
-}, [scanResetTime, loadContext]);
-```
-
-### 2.4 UI-Anzeige hinzufügen
-
-Nach dem "Already scanned indicator" Block (nach Zeile ~408), neue Anzeige für Scan-Limit:
-
-```tsx
-{/* Scan Usage Indicator */}
-{isPremium && context?.scan_window_start && (
-  <div className="flex items-center justify-between text-sm mt-2 p-2 bg-muted/50 rounded-md">
-    <span className={scansRemaining > 0 ? "text-muted-foreground" : "text-amber-600 font-medium"}>
-      {scansRemaining}/{maxScansPerDay} scans remaining today
-    </span>
-    
-    {/* Reset Timer (only when limit reached) */}
-    {scansRemaining === 0 && countdown && (
-      <div className="flex items-center gap-1.5 text-amber-600">
-        <Clock className="h-4 w-4" />
-        <span className="font-mono text-xs">{countdown}</span>
-      </div>
-    )}
-  </div>
-)}
-```
-
-### 2.5 Scan-Button deaktivieren wenn Limit erreicht
-
-In der `handleRescan` Funktion oder als Button-disabled-Prop:
-
-```typescript
-// Handler anpassen
-const handleRescan = async () => {
-  if (!websiteUrl || !websiteUrl.startsWith("https://")) return;
-  if (scansRemaining <= 0) {
-    toast({
-      title: "Scan limit reached",
-      description: `You've used all ${maxScansPerDay} daily scans. ${countdown ? `Resets in ${countdown}.` : ""}`,
-      variant: "destructive",
-    });
-    return;
-  }
-  
-  const success = await scanWebsite(websiteUrl);
-  if (success && onContextChange) onContextChange();
-};
-```
-
-Button disabled-Prop:
-```tsx
-<Button
-  variant="ghost"
-  size="sm"
-  onClick={handleRescan}
-  disabled={isScanning || scansRemaining <= 0}  // scansRemaining Prüfung hinzufügen
-  // ...
->
+Version 5.7 (1. Februar 2026): 
+- Hinzufügung von Abschnitt 5.9 "Business Context" 
+- Dokumentation der Firecrawl-Integration für Website-Scraping
+- Aktualisierung der Datenempfänger-Tabelle
+- Aktualisierung der Datenkategorien-Tabelle
 ```
 
 ---
 
-## Zusammenfassung der Dateiänderungen
+## Dateiänderungen
 
 | Datei | Änderung |
 |-------|----------|
-| `useBusinessContext.ts` | `scan_count`, `scan_window_start` zum Interface; `scansRemaining`, `scanResetTime`, `maxScansPerDay` berechnen und exportieren |
-| `BusinessContextPanel.tsx` | Import `Clock`; Countdown-State/Effect; UI für Scan-Zähler mit Timer; Button-Deaktivierung |
+| `src/pages/PrivacyPolicy.tsx` | Neuer Abschnitt 5.9 einfügen (nach Zeile ~765), Tabelle Abschnitt 11 erweitern (Zeile ~1109), Tabelle Abschnitt 12 erweitern (Zeile ~1175), Versionsverlauf aktualisieren |
 
 ---
 
-## Datenfluss
+## Rechtliche Hinweise
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    Supabase Database                        │
-│  user_business_context:                                     │
-│  - scan_count: 2                                            │
-│  - scan_window_start: "2026-02-01T10:00:00Z"                │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ SELECT * FROM user_business_context
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  useBusinessContext Hook                    │
-│  - Lädt context.scan_count, context.scan_window_start       │
-│  - Berechnet: scansRemaining = 3 - scan_count = 1           │
-│  - Berechnet: scanResetTime = window_start + 24h            │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ Return values
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                BusinessContextPanel.tsx                      │
-│  - Zeigt: "1/3 scans remaining today"                       │
-│  - Timer: "Resets in 12h 34m 56s" (wenn 0 remaining)        │
-│  - Button disabled wenn scansRemaining = 0                   │
-└─────────────────────────────────────────────────────────────┘
-```
+1. **Firecrawl DPA:** Prüfe, ob Firecrawl einen Auftragsverarbeitungsvertrag (DPA) per Art. 28 DSGVO anbietet. Falls ja, sollte dieser abgeschlossen werden.
 
----
+2. **Standardvertragsklauseln (SCCs):** Da Firecrawl in den USA sitzt und wahrscheinlich nicht unter das EU-US Data Privacy Framework fällt, sind SCCs die richtige Übermittlungsgrundlage.
 
-## Erwartetes Verhalten
-
-| Zustand | Anzeige |
-|---------|---------|
-| Erste Nutzung (kein Scan) | Keine Anzeige (scan_window_start = null) |
-| Nach 1. Scan | "2/3 scans remaining today" |
-| Nach 2. Scan | "1/3 scans remaining today" |
-| Nach 3. Scan | "0/3 scans remaining today" + Timer |
-| Timer läuft ab | Auto-Refresh, Anzeige verschwindet |
-| Neuer Scan nach Reset | "2/3 scans remaining today" |
+3. **Transparenz:** Die Nutzer müssen vor dem ersten Scan darüber informiert werden, dass ihre URL an Firecrawl übermittelt wird. Dies könnte auch als Info-Tooltip neben dem Scan-Button ergänzt werden.
 

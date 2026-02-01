@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: January 28, 2026 | Version 5.6</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.7</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -849,6 +849,132 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
+          {/* Section 5.9: Business Context */}
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.9 Business Context (Premium)</h3>
+            <p className="text-muted-foreground mb-4">
+              Premium subscribers can create a business context profile that is automatically included in all AI 
+              analyses to provide personalized and more relevant recommendations tailored to their specific business situation.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Collected and Stored</h4>
+            <p className="text-muted-foreground mb-4">
+              The following data is stored in the database and can be edited or deleted by you at any time:
+            </p>
+
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Data Field</th>
+                    <th className="border border-border p-3 text-left font-semibold">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Industry</strong></td>
+                    <td className="border border-border p-3">Your industry (e.g., SaaS, E-Commerce, FinTech)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Company Stage</strong></td>
+                    <td className="border border-border p-3">Development phase (Idea to Growth stage)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Team Size</strong></td>
+                    <td className="border border-border p-3">Number of employees</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Revenue Range</strong></td>
+                    <td className="border border-border p-3">Monthly revenue bracket</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Target Market</strong></td>
+                    <td className="border border-border p-3">B2B, B2C, B2B2C, or D2C</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Geographic Focus</strong></td>
+                    <td className="border border-border p-3">Local, National, EU, US, or Global</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Website URL</strong></td>
+                    <td className="border border-border p-3">Your company website (optional)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Website Summary</strong></td>
+                    <td className="border border-border p-3">Auto-generated summary of your website (max. 1,000 characters)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Website Scanning (Firecrawl)</h4>
+            <p className="text-muted-foreground mb-4">
+              When you provide a website URL and click the scan button, your website is scraped via the Firecrawl service:
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Firecrawl, Inc.
+              <br />
+              <strong>Location:</strong> United States
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://www.firecrawl.dev/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://www.firecrawl.dev/privacy
+              </a>
+            </p>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Data transmitted to Firecrawl:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The website URL you entered</li>
+            </ul>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Data returned from Firecrawl and stored:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Markdown text content of the main page (without JavaScript, tracking scripts, etc.)</li>
+              <li>A truncated summary (max. 1,000 characters) is stored in our database</li>
+            </ul>
+
+            <p className="text-muted-foreground mb-4">
+              <strong>Usage Limit:</strong> Maximum 3 website scans per 24-hour rolling window.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Transmission to AI Models</h4>
+            <p className="text-muted-foreground mb-4">
+              The stored Business Context (including website summary) is automatically transmitted as additional 
+              context to the AI models you select (see Section 5.1) to enable personalized recommendations.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Important:</strong>
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The AI models receive your Business Context in addition to your validation prompt</li>
+              <li>This means OpenAI, Google, Anthropic, and Perplexity may process your business context</li>
+              <li>The privacy policies of these providers apply accordingly (see Section 5.1)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage and Deletion</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The Business Context is stored permanently until you manually delete it</li>
+              <li>You can delete the entire context via the "Clear Context" button in the application</li>
+              <li>When you delete your user account, the Business Context is automatically deleted (CASCADE)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
+                (providing personalized AI analyses as part of the Premium service)
+              </li>
+              <li>
+                <strong>Art. 6(1)(a) GDPR:</strong> Consent through active use of the feature 
+                (you choose whether to fill in the Business Context and initiate a website scan)
+              </li>
+            </ul>
+          </section>
+
           {/* Section 6: Premium Subscription */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Premium Subscription and Payment Processing</h2>
@@ -1106,6 +1232,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Team names, slugs, memberships, roles, invitation tokens, invited emails</td>
                     <td className="border border-border p-3">Team collaboration and workspace management</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Business Context</strong> (Premium)</td>
+                    <td className="border border-border p-3">Industry, company stage, team size, revenue range, target market, geographic focus, website URL, website summary</td>
+                    <td className="border border-border p-3">Personalized AI analyses</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1169,6 +1300,12 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>Freemius</strong></td>
                     <td className="border border-border p-3">Payment processing</td>
                     <td className="border border-border p-3">Email, payment details</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Firecrawl, Inc.</strong></td>
+                    <td className="border border-border p-3">Website scraping for Business Context</td>
+                    <td className="border border-border p-3">Website URL</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                 </tbody>
@@ -1436,6 +1573,8 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.7 (February 1, 2026):</strong> Added Business Context section (5.9) documenting Premium feature for personalized AI analyses. Added Firecrawl, Inc. as data recipient for website scraping. Updated data categories table with Business Context data. Documented website scan rate limiting (3 scans per 24h rolling window).</li>
+              <li><strong>Version 5.6 (January 28, 2026):</strong> Minor formatting updates and clarifications.</li>
               <li><strong>Version 5.5 (January 26, 2026):</strong> Added Team Workspaces section (5.8) documenting Premium team collaboration features including: team creation, membership roles, invitation system, email visibility between members, rate limiting, and data retention. Updated Section 7.1 to include team invitation emails. Expanded data categories and retention tables with team-related data.</li>
               <li><strong>Version 5.4 (January 24, 2026):</strong> Added model weights to data stored list. Added Dashboard Statistics section (5.7). Corrected Gemini model name to "Gemini 3 Flash".</li>
               <li><strong>Version 5.3 (January 23, 2026):</strong> Added Decision Audit Records section (5.6) documenting Premium decision ownership confirmation feature, audit logging, and client-side PDF generation. Updated data categories and retention tables.</li>
@@ -1448,7 +1587,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: January 26, 2026
+              Last updated: February 1, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

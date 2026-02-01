@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -68,7 +67,6 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     context.revenue_range ||
     context.target_market ||
     context.geographic_focus ||
-    context.main_challenge ||
     context.website_url
   );
 
@@ -118,10 +116,17 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 animate-pulse">
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-muted" />
-          <div className="h-5 w-32 rounded bg-muted" />
+      <div className="relative">
+        <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/20 via-teal-400/15 to-cyan-500/20 blur-sm" />
+        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/30 via-teal-500/20 to-cyan-600/30" />
+        <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 p-4 animate-pulse">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-muted" />
+            <div className="space-y-2">
+              <div className="h-5 w-40 rounded bg-muted" />
+              <div className="h-4 w-56 rounded bg-muted" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -129,304 +134,305 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className="rounded-2xl border border-border/60 bg-muted/30 overflow-hidden transition-all duration-300">
-        {/* Header / Trigger */}
-        <CollapsibleTrigger asChild>
-          <button className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Briefcase className="h-4 w-4 text-primary" />
-              </div>
-              <span className="font-medium text-sm sm:text-base">Business Context</span>
-              {hasContextData && (
-                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary text-xs">
-                  <Check className="h-3 w-3 mr-1" />
-                  Active
-                </Badge>
-              )}
-              {hasUnsavedChanges && (
-                <Badge variant="outline" className="bg-amber-500/10 border-amber-500/30 text-amber-600 text-xs">
-                  Unsaved
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground hidden sm:inline group-hover:text-foreground transition-colors">
-                {isOpen ? "Collapse" : "Expand"}
-              </span>
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-              )}
-            </div>
-          </button>
-        </CollapsibleTrigger>
-
-        {/* Content */}
-        <CollapsibleContent>
-          <div className="px-4 pb-4 space-y-4 border-t border-border/40">
-            {/* Description */}
-            <p className="text-sm text-muted-foreground pt-3">
-              Add context about your business to get more personalized AI recommendations.
-            </p>
-
-            {/* Dropdown Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Industry */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Industry</Label>
-                <Select
-                  value={localContext.industry || ""}
-                  onValueChange={(value) => setLocalContext({ industry: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INDUSTRY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Company Stage */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Stage</Label>
-                <Select
-                  value={localContext.company_stage || ""}
-                  onValueChange={(value) => setLocalContext({ company_stage: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STAGE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Team Size */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Team Size</Label>
-                <Select
-                  value={localContext.team_size || ""}
-                  onValueChange={(value) => setLocalContext({ team_size: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TEAM_SIZE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Revenue */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Revenue</Label>
-                <Select
-                  value={localContext.revenue_range || ""}
-                  onValueChange={(value) => setLocalContext({ revenue_range: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {REVENUE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Target Market */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Target Market</Label>
-                <Select
-                  value={localContext.target_market || ""}
-                  onValueChange={(value) => setLocalContext({ target_market: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TARGET_MARKET_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Geographic Focus */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Region</Label>
-                <Select
-                  value={localContext.geographic_focus || ""}
-                  onValueChange={(value) => setLocalContext({ geographic_focus: value || null })}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GEOGRAPHIC_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Main Challenge */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">
-                Main Challenge <span className="text-muted-foreground/60">(optional)</span>
-              </Label>
-              <Textarea
-                value={localContext.main_challenge || ""}
-                onChange={(e) => setLocalContext({ main_challenge: e.target.value || null })}
-                placeholder="What's your biggest obstacle right now?"
-                className="min-h-[60px] resize-none text-sm"
-                maxLength={300}
-              />
-              <p className="text-xs text-muted-foreground text-right">
-                {(localContext.main_challenge?.length || 0)}/300
-              </p>
-            </div>
-
-            {/* Premium Website Section */}
-            <div className={`rounded-xl border p-4 space-y-3 ${
-              isPremium 
-                ? "border-primary/20 bg-primary/5" 
-                : "border-amber-500/20 bg-amber-500/5"
-            }`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {isPremium ? (
-                    <Globe className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-amber-600" />
-                  )}
-                  <span className="font-medium text-sm">Website URL</span>
+      <div className="relative">
+        {/* Cyan/Teal Glow Effect */}
+        <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/25 via-teal-400/15 to-cyan-500/25 blur-sm" />
+        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/35 via-teal-500/25 to-cyan-600/35" />
+        
+        <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 overflow-hidden transition-all duration-300">
+          {/* Header / Trigger */}
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-cyan-500/5 transition-colors group">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
+                  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-600" />
                 </div>
-                {!isPremium && (
-                  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Premium
-                  </Badge>
-                )}
-              </div>
-
-              {isPremium ? (
-                <>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <div className="flex-1">
-                      <Input
-                        type="url"
-                        value={websiteUrl}
-                        onChange={(e) => setWebsiteUrl(e.target.value)}
-                        placeholder="https://your-company.com"
-                        className="h-9 text-sm"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleScan}
-                      disabled={isScanning || !websiteUrl.startsWith("https://")}
-                      size="sm"
-                      className="h-9 px-4"
-                    >
-                      {isScanning ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                          Scanning...
-                        </>
-                      ) : (
-                        <>
-                          <Globe className="h-4 w-4 mr-1.5" />
-                          Scan Website
-                        </>
-                      )}
-                    </Button>
+                <div className="text-left">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-base sm:text-lg text-foreground">Business Context</span>
+                    {hasContextData && (
+                      <Badge variant="outline" className="bg-cyan-500/10 border-cyan-500/30 text-cyan-600 text-xs">
+                        <Check className="h-3 w-3 mr-1" />
+                        Active
+                      </Badge>
+                    )}
+                    {hasUnsavedChanges && (
+                      <Badge variant="outline" className="bg-amber-500/10 border-amber-500/30 text-amber-600 text-xs">
+                        Unsaved
+                      </Badge>
+                    )}
                   </div>
-                  
-                  {lastScanned && (
-                    <p className="text-xs text-muted-foreground">
-                      Last scanned: {formatLastScanned(lastScanned)}
-                    </p>
-                  )}
-
-                  {context?.website_summary && (
-                    <div className="p-3 rounded-lg bg-background/80 border border-border/40">
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Website Summary:</p>
-                      <p className="text-sm text-foreground line-clamp-3">
-                        {context.website_summary}
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Input
-                      type="url"
-                      placeholder="https://"
-                      disabled
-                      className="h-9 text-sm opacity-50 cursor-not-allowed"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Auto-scan your website to give AI more context about your business.
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Help AI understand your business
                   </p>
-                  <Link 
-                    to="/pricing" 
-                    className="inline-flex items-center text-xs font-semibold text-amber-600 hover:text-amber-500 transition-colors"
-                  >
-                    Upgrade to Premium
-                    <ExternalLink className="h-3 w-3 ml-1" />
-                  </Link>
                 </div>
-              )}
-            </div>
-
-            {/* Save Button */}
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="px-6"
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-cyan-500/10"
+                asChild
               >
-                {isSaving ? (
+                <span>
+                  {isOpen ? (
+                    <>
+                      <span className="hidden sm:inline">Close</span>
+                      <ChevronUp className="h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="hidden sm:inline">Edit</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </>
+                  )}
+                </span>
+              </Button>
+            </button>
+          </CollapsibleTrigger>
+
+          {/* Content */}
+          <CollapsibleContent>
+            <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-cyan-500/20">
+              {/* Dropdown Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+                {/* Industry */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Industry</Label>
+                  <Select
+                    value={localContext.industry || ""}
+                    onValueChange={(value) => setLocalContext({ industry: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INDUSTRY_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Company Stage */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Stage</Label>
+                  <Select
+                    value={localContext.company_stage || ""}
+                    onValueChange={(value) => setLocalContext({ company_stage: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STAGE_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Team Size */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Team Size</Label>
+                  <Select
+                    value={localContext.team_size || ""}
+                    onValueChange={(value) => setLocalContext({ team_size: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TEAM_SIZE_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Revenue */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Revenue</Label>
+                  <Select
+                    value={localContext.revenue_range || ""}
+                    onValueChange={(value) => setLocalContext({ revenue_range: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REVENUE_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Target Market */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Target Market</Label>
+                  <Select
+                    value={localContext.target_market || ""}
+                    onValueChange={(value) => setLocalContext({ target_market: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TARGET_MARKET_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Geographic Focus */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-foreground">Region</Label>
+                  <Select
+                    value={localContext.geographic_focus || ""}
+                    onValueChange={(value) => setLocalContext({ geographic_focus: value || null })}
+                  >
+                    <SelectTrigger className="h-10 text-base">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GEOGRAPHIC_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Premium Website Section */}
+              <div className={`rounded-xl border p-4 space-y-3 ${
+                isPremium 
+                  ? "border-primary/20 bg-primary/5" 
+                  : "border-amber-500/20 bg-amber-500/5"
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {isPremium ? (
+                      <Globe className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Lock className="h-5 w-5 text-amber-600" />
+                    )}
+                    <span className="font-semibold text-base">Website URL</span>
+                  </div>
+                  {!isPremium && (
+                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Premium
+                    </Badge>
+                  )}
+                </div>
+
+                {isPremium ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                    Saving...
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <div className="flex-1">
+                        <Input
+                          type="url"
+                          value={websiteUrl}
+                          onChange={(e) => setWebsiteUrl(e.target.value)}
+                          placeholder="https://your-company.com"
+                          className="h-10 text-base"
+                        />
+                      </div>
+                      <Button
+                        onClick={handleScan}
+                        disabled={isScanning || !websiteUrl.startsWith("https://")}
+                        size="sm"
+                        className="h-10 px-5"
+                      >
+                        {isScanning ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                            Scanning...
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="h-4 w-4 mr-1.5" />
+                            Scan Website
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    {lastScanned && (
+                      <p className="text-sm text-muted-foreground">
+                        Last scanned: {formatLastScanned(lastScanned)}
+                      </p>
+                    )}
+
+                    {context?.website_summary && (
+                      <div className="p-3 rounded-lg bg-background/80 border border-border/40">
+                        <p className="text-sm font-medium text-muted-foreground mb-1">Website Summary:</p>
+                        <p className="text-base text-foreground line-clamp-3">
+                          {context.website_summary}
+                        </p>
+                      </div>
+                    )}
                   </>
                 ) : (
-                  <>
-                    <Check className="h-4 w-4 mr-1.5" />
-                    Save Context
-                  </>
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Input
+                        type="url"
+                        placeholder="https://"
+                        disabled
+                        className="h-10 text-base opacity-50 cursor-not-allowed"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Auto-scan your website to give AI more context about your business.
+                    </p>
+                    <Link 
+                      to="/pricing" 
+                      className="inline-flex items-center text-sm font-semibold text-amber-600 hover:text-amber-500 transition-colors"
+                    >
+                      Upgrade to Premium
+                      <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                    </Link>
+                  </div>
                 )}
-              </Button>
+              </div>
+
+              {/* Save Button */}
+              <div className="flex items-center justify-end gap-3 pt-1">
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-6 h-10"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 mr-1.5" />
+                      Save Context
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
-          </div>
-        </CollapsibleContent>
+          </CollapsibleContent>
+        </div>
       </div>
     </Collapsible>
   );

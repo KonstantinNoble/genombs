@@ -1,237 +1,169 @@
 
-# Business Context AI - Frontend Implementierung
+# Business Context Panel - Visuelle Ueberarbeitung
 
-## Uebersicht
+## Zusammenfassung der Aenderungen
 
-Erstellung der Frontend-Komponenten fuer das Business Context Feature. Das Backend (Datenbank-Tabelle, Edge Functions) wird im naechsten Schritt separat implementiert.
-
----
-
-## Architektur
-
-```text
-ValidationPlatform.tsx
-        |
-        v
-+------------------------+
-| BusinessContextPanel   |  <-- Neues ausklappbares Panel
-+------------------------+
-        |
-        v
-+------------------------+
-| useBusinessContext     |  <-- Neuer React Hook
-| (CRUD + Scrape)        |
-+------------------------+
-        |
-        v (externe Supabase)
-+------------------------+
-| user_business_context  |  <-- Tabelle (spaeter)
-| scrape-business-website|  <-- Edge Function (spaeter)
-+------------------------+
-```
+Das Business Context Panel wird visuell aufgewertet und vereinfacht:
+1. "Main Challenge" Feld entfernen (redundant)
+2. Auffaelligeres Design mit Glow-Effekt und groesseren Schriften
+3. Bessere Sichtbarkeit der Aufklapp-Funktion
 
 ---
 
-## Neue Dateien
+## Designaenderungen
 
-### 1. `src/hooks/useBusinessContext.ts`
-
-React Hook fuer die Business Context Verwaltung:
-
-**Funktionen:**
-- `loadContext()` - Laedt bestehenden Context aus Supabase
-- `saveContext(data)` - Speichert/aktualisiert Context (upsert)
-- `scanWebsite(url)` - Ruft `scrape-business-website` Edge Function auf
-- `clearContext()` - Loescht den Context
-
-**States:**
-- `context: BusinessContext | null` - Aktueller Context
-- `isLoading: boolean` - Lade-Status
-- `isSaving: boolean` - Speicher-Status
-- `isScanning: boolean` - Website-Scan laeuft
-- `lastScanned: Date | null` - Zeitpunkt des letzten Scans
-
-**Interface:**
-```typescript
-interface BusinessContext {
-  id: string;
-  user_id: string;
-  industry: string | null;
-  company_stage: string | null;
-  team_size: string | null;
-  revenue_range: string | null;
-  target_market: string | null;
-  geographic_focus: string | null;
-  main_challenge: string | null;
-  website_url: string | null;        // Premium only
-  website_summary: string | null;    // Premium only
-  website_scraped_at: string | null; // Premium only
-}
-```
-
-**Wichtig:** Der Hook verwendet den externen Supabase Client (`@/lib/supabase/external-client`).
-
----
-
-### 2. `src/components/validation/BusinessContextPanel.tsx`
-
-Ausklappbares Panel-UI oberhalb des Validation-Inputs:
-
-**Struktur:**
+### Aktuelles Problem
 ```text
 +------------------------------------------------------------------+
-|  [Briefcase Icon] Business Context          [Collapse/Expand] [v]|
+|  [Briefcase] Business Context  [Active]           [Expand v]     |  <-- Zu subtil, leicht zu uebersehen
 +------------------------------------------------------------------+
-|  Context helps AI understand your specific situation             |
-|                                                                  |
-|  [Industry     v] [Stage        v] [Team Size    v]             |
-|  [Revenue      v] [Target Market v] [Region      v]             |
-|                                                                  |
-|  Main Challenge (optional):                                      |
-|  +------------------------------------------------------------+  |
-|  | What's your biggest obstacle right now?                    |  |
-|  +------------------------------------------------------------+  |
-|                                                                  |
-|  +-------------------- PREMIUM SECTION -----------------------+  |
-|  |  [Lock] Website URL                           PREMIUM       |  |
-|  |  +------------------------------------------------------+   |  |
-|  |  | https://                          [Scan Website]     |   |  |
-|  |  +------------------------------------------------------+   |  |
-|  |  (Upgrade to auto-scan your website for context)           |  |
-|  +-------------------------------------------------------------+  |
-|                                                                  |
-|  [Save Context]              Status: Saved / Unsaved / Saving   |
+|  (kleiner Text, grauer Hintergrund, 6 Dropdowns + Textarea)      |
 +------------------------------------------------------------------+
 ```
 
-**Dropdown-Optionen:**
+### Neues Design
+```text
++------------------------------------------------------------------+
+|                                                                  |
+|  [Glow-Border]                                                   |
+|  +------------------------------------------------------------+  |
+|  |                                                            |  |
+|  |  Business Context                     [Context Active]     |  |
+|  |  Help AI understand your business          [Edit v]        |  |
+|  |                                                            |  |
+|  +------------------------------------------------------------+  |
+|                                                                  |
++------------------------------------------------------------------+
+```
 
-| Feld | Optionen |
-|------|----------|
-| Industry | SaaS, E-Commerce, FinTech, HealthTech, EdTech, Marketplace, Agency, Consulting, Manufacturing, Other |
-| Company Stage | Idea, Pre-Seed, Seed, Series A, Series B+, Growth, Established |
-| Team Size | Solo, 2-5, 6-15, 16-50, 50+ |
-| Revenue Range | Pre-revenue, <$10k/mo, $10k-50k/mo, $50k-100k/mo, $100k+/mo |
-| Target Market | B2B, B2C, B2B2C, D2C |
-| Geographic Focus | Local, National, EU, US, Global |
-
-**Premium-Gating fuer URL-Feld:**
-- Free User: Deaktiviertes Feld mit Lock-Icon und "Premium Feature" Badge
-- Premium User: Aktives Feld mit "Scan Website" Button
-
-**Collapsible-Verhalten:**
-- Initial eingeklappt wenn leer, ausgeklappt wenn Daten vorhanden
-- Badge zeigt "Context Active" wenn mindestens ein Feld ausgefuellt
-- Smooth Animation beim Ein-/Ausklappen
+**Aufgeklappt:**
+```text
++------------------------------------------------------------------+
+|  [Cyan/Teal Glow-Border - Permanenter Akzent]                    |
+|  +------------------------------------------------------------+  |
+|  |  Business Context                    [Context Active]      |  |
+|  |  Help AI understand your business         [Collapse ^]     |  |
+|  +------------------------------------------------------------+  |
+|                                                                  |
+|  +------------------------------------------------------------+  |
+|  |  [Industry v]      [Stage v]         [Team Size v]         |  |
+|  |  [Revenue v]       [Market v]        [Region v]            |  |
+|  +------------------------------------------------------------+  |
+|                                                                  |
+|  +------------------- PREMIUM SECTION ------------------------+  |
+|  |  Website URL                                  [PREMIUM]    |  |
+|  |  +------------------------------------------------------+  |  |
+|  |  | https://                            [Scan Website]   |  |  |
+|  |  +------------------------------------------------------+  |  |
+|  +------------------------------------------------------------+  |
+|                                                                  |
+|  [Save Context]                                                  |
++------------------------------------------------------------------+
+```
 
 ---
 
-## Bearbeitete Dateien
+## Spezifische Aenderungen
 
-### 3. `src/pages/ValidationPlatform.tsx`
+### 1. Entferne "Main Challenge" Feld
 
-Aenderungen:
-1. Import des neuen `useBusinessContext` Hooks
-2. Import der neuen `BusinessContextPanel` Komponente
-3. Platzierung des Panels zwischen Header und ValidationInput Card
-4. Weitergabe von `isPremium` an das Panel
+**Datei:** `src/hooks/useBusinessContext.ts`
+- Entferne `main_challenge` aus dem `BusinessContext` Interface
+- Entferne es aus dem `BusinessContextInput` Interface
+- Entferne es aus `setLocalContextState` und `saveContext`
 
-**Einbindung (nach Zeile 545, vor der Card):**
+**Datei:** `src/components/validation/BusinessContextPanel.tsx`
+- Entferne das Textarea fuer "Main Challenge" (Zeilen 297-312)
+- Entferne `main_challenge` aus der `hasContextData` Pruefung
+
+### 2. Auffaelligeres Header-Design
+
+**Aenderungen am Collapsible-Trigger:**
+- Groessere Schrift: `text-base sm:text-lg font-bold` statt `font-medium text-sm sm:text-base`
+- Subtitel hinzufuegen: "Help AI understand your business"
+- Prominenterer Expand/Collapse Button mit Text "Edit" / "Close"
+- Cyan/Teal Glow-Effekt aehnlich dem ValidationInput (aber mit anderen Farben zur Unterscheidung)
+
+### 3. Besserer Glow-Effekt
+
+Anstatt `bg-muted/30` verwenden wir:
 ```tsx
-{/* Business Context Panel */}
-<BusinessContextPanel 
-  isPremium={isPremium}
-  onContextChange={() => {
-    // Optional: Toast wenn Context gespeichert
-  }}
-/>
+// Permanenter Glow-Effekt (Cyan/Teal Farbschema)
+<div className="relative">
+  <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/30 via-teal-400/20 to-cyan-500/30 blur-sm" />
+  <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/40 via-teal-500/30 to-cyan-600/40" />
+  
+  <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 ...">
+    ...
+  </div>
+</div>
+```
 
-<Card className="border-primary/20 shadow-elegant">
-  ...
+### 4. Groessere Dropdown-Labels
+
+**Aktuelle Labels:** `text-xs font-medium text-muted-foreground`
+**Neue Labels:** `text-sm font-semibold text-foreground`
+
+**Aktuelle SelectTrigger:** `h-9`
+**Neue SelectTrigger:** `h-10 text-base`
+
+### 5. Prominenterer Collapse-Hinweis
+
+Anstatt einem kleinen Chevron:
+```tsx
+<Button variant="ghost" size="sm" className="gap-1.5">
+  {isOpen ? (
+    <>
+      <span>Close</span>
+      <ChevronUp className="h-4 w-4" />
+    </>
+  ) : (
+    <>
+      <span>Edit</span>
+      <ChevronDown className="h-4 w-4" />
+    </>
+  )}
+</Button>
 ```
 
 ---
 
-## UI/UX Details
+## Dateien die bearbeitet werden
 
-### Collapsed State (Badge-Anzeige)
-```text
-+------------------------------------------------------------------+
-|  [Briefcase] Business Context  [Context Active ✓]      [Expand v]|
-+------------------------------------------------------------------+
-```
+1. **`src/hooks/useBusinessContext.ts`**
+   - Entferne `main_challenge` aus allen Interfaces
+   - Entferne es aus der Context-Synchronisation
 
-### Expanded State (vollstaendig)
-- 6 Dropdowns in 2 Reihen (responsive: 3 pro Reihe auf Desktop, 2 auf Tablet, 1 auf Mobile)
-- Main Challenge Textarea (max 300 Zeichen)
-- Premium Website URL Section mit visueller Trennung
-- Save Button mit Lade-Status
-
-### Premium Teaser (fuer Free User)
-```text
-+------------------------------------------------------------+
-|  [Lock Icon] Website URL                      PREMIUM       |
-|  +--------------------------------------------------------+ |
-|  | https://                                [Deaktiviert]  | |
-|  +--------------------------------------------------------+ |
-|  Auto-scan your website to give AI more context            |
-|  [Upgrade to Premium ->]                                    |
-+------------------------------------------------------------+
-```
-
-### Nach erfolgreichem Scan
-```text
-|  Website: https://example.com       [Re-scan] Last: 2d ago  |
-|  +--------------------------------------------------------+ |
-|  | "B2B SaaS platform for project management..."          | |
-|  +--------------------------------------------------------+ |
-```
+2. **`src/components/validation/BusinessContextPanel.tsx`**
+   - Entferne Main Challenge Textarea
+   - Neues Header-Design mit Glow-Effekt
+   - Groessere Schriften fuer Labels
+   - Prominenterer Edit/Close Button
+   - Verbesserte visuelle Hierarchie
 
 ---
 
-## Styling-Richtlinien
+## Farbschema-Unterscheidung
 
-- Verwendet bestehende Tailwind-Klassen und UI-Komponenten
-- Collapsible verwendet `@radix-ui/react-collapsible`
-- Dropdowns verwenden `Select` aus `@/components/ui/select`
-- Konsistentes Design mit ValidationInput (rounded-2xl, Glow-Effekte)
-- Badge fuer "Premium Feature" nutzt Amber-Farbschema (wie bestehende Premium-Badges)
-- Panel-Hintergrund: `bg-muted/30` mit `border border-border/60`
-
----
-
-## Technische Hinweise
-
-### Supabase Client
-Der Hook verwendet den **externen Supabase Client**:
-```typescript
-import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase/external-client';
-```
-
-### Vorbereitung fuer Backend
-Der Hook ist so strukturiert, dass er mit der geplanten Tabelle `user_business_context` und Edge Function `scrape-business-website` funktioniert. Bis das Backend existiert:
-- `loadContext()` gibt `null` zurueck (Tabelle existiert noch nicht)
-- `saveContext()` zeigt temporaer einen Toast mit Info
-- `scanWebsite()` zeigt Fehlermeldung (Edge Function existiert noch nicht)
-
-### TypeScript Types
-Da die Tabelle noch nicht existiert, werden die Types manuell im Hook definiert. Nach der Backend-Migration werden sie automatisch in `types.ts` generiert.
+| Element | Farbe | Bedeutung |
+|---------|-------|-----------|
+| ValidationInput | Emerald/Green Glow | Primaere Eingabe |
+| Business Context | Cyan/Teal Glow | Kontext-Einstellungen |
+| Premium Section | Amber/Gold | Premium Feature |
 
 ---
 
-## Implementierungs-Reihenfolge
+## Vorher/Nachher Vergleich
 
-1. **`useBusinessContext.ts`** - Hook mit Interface und Supabase-Calls (prepared)
-2. **`BusinessContextPanel.tsx`** - UI-Komponente mit allen Feldern
-3. **`ValidationPlatform.tsx`** - Integration des Panels
-4. **Testen** - UI-Funktionalitaet pruefen (Saves werden erst nach Backend funktionieren)
+**Vorher:**
+- Grauer, subtiler Hintergrund
+- Kleine `text-xs` Labels
+- Versteckter Collapse-Button
+- 7 Eingabefelder (inkl. Main Challenge)
 
----
-
-## Naechster Schritt (Backend)
-
-Nach dieser Frontend-Implementierung:
-1. SQL Migration im externen Supabase ausfuehren
-2. Edge Function `scrape-business-website` erstellen
-3. `multi-ai-query` erweitern um Context-Injection
-4. Edge Functions manuell deployen
+**Nachher:**
+- Auffaelliger Cyan/Teal Glow-Rahmen
+- Groessere `text-sm` Labels mit besserer Lesbarkeit
+- Prominenter "Edit" / "Close" Button
+- 6 Eingabefelder (ohne Main Challenge)
+- Bessere Konsistenz mit dem ValidationInput Design

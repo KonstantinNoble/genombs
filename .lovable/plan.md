@@ -1,132 +1,179 @@
 
+# Plan: Unified "Save Context" Button with Smart Website Scanning
 
-# Plan: Vollständig korrigierte multi-ai-query Edge Function
+## Problem
+Currently the user must click two separate buttons:
+1. "Save Context" to save dropdown fields
+2. "Scan Website" to scan the URL
 
-## Problemübersicht
+This is confusing UX and requires extra clicks.
 
-Der aktuelle Code hat eine kritische Lücke: Der Business Context wird zwar korrekt aus der Datenbank geladen und an den User-Prompt angehängt, **aber die System Prompts der AI-Modelle enthalten keine Anweisung, diesen Context aktiv zu nutzen**.
+## Solution
+Create a single, intelligent button that:
+- Dynamically changes label based on URL state
+- Automatically scans website when needed (new/changed URL)
+- Skips scanning if URL unchanged (already scanned)
 
-Das bedeutet: Die AI-Modelle könnten den Business Context einfach ignorieren.
+---
 
-## Änderungen
+## Logic Flow
 
-### 1. OpenAI System Prompt (Zeile 264-280)
-
-**Vorher:**
-```typescript
-const systemPrompt = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-Analyze the user's business question...
-```
-
-**Nachher:**
-```typescript
-const systemPrompt = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
-
-Analyze the user's business question...
-```
-
-### 2. Gemini System Instruction (Zeile 391-426)
-
-**Vorher:**
-```typescript
-const systemInstruction = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-Analyze the user's business question...
-```
-
-**Nachher:**
-```typescript
-const systemInstruction = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
-
-Analyze the user's business question...
-```
-
-### 3. Claude System Prompt (Zeile 588-596)
-
-**Vorher:**
-```typescript
-const systemPrompt = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
-Each recommendation should be practical and implementable.
-Be specific with numbers, timeframes, and concrete steps.
-Consider both opportunities and risks.`;
-```
-
-**Nachher:**
-```typescript
-const systemPrompt = `You are a senior business strategist providing actionable recommendations.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
-
-Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
-Each recommendation should be practical and implementable.
-Be specific with numbers, timeframes, and concrete steps.
-Consider both opportunities and risks.`;
-```
-
-### 4. Perplexity System Prompt (Zeile 694-721)
-
-**Vorher:**
-```typescript
-const systemPrompt = `You are a senior business strategist with access to real-time web data.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-Analyze the user's business question using current market data and trends.
-```
-
-**Nachher:**
-```typescript
-const systemPrompt = `You are a senior business strategist with access to real-time web data.
-    
-Your style: ${modelConfig.characteristics.tendency}
-Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
-
-IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context and use web search to find industry-specific data, benchmarks, and trends. Generic advice is not acceptable when context is provided.
-
-Analyze the user's business question using current market data and trends.
+```text
+User clicks Save button
+        |
+        v
+Is there a website URL entered?
+        |
+   +----+----+
+   |         |
+   No        Yes
+   |         |
+   v         v
+Save only   Is URL different from saved URL?
+context          |
+             +---+---+
+             |       |
+            No       Yes (or never scanned)
+             |       |
+             v       v
+         Save only   Save context THEN
+         context     scan website
 ```
 
 ---
 
-## Vollständiger korrigierter Code
+## Button States
 
-Da du den kompletten Code benötigst, werde ich dir im nächsten Schritt den **gesamten überarbeiteten Code** als einzelnen Block bereitstellen, den du direkt in dein Supabase Dashboard → Edge Functions → `multi-ai-query` kopieren kannst.
-
-**Die 4 kritischen Änderungen sind:**
-1. Zeile 267-270: Business Context Anweisung für OpenAI
-2. Zeile 394-397: Business Context Anweisung für Gemini
-3. Zeile 591-594: Business Context Anweisung für Claude
-4. Zeile 697-700: Business Context Anweisung für Perplexity
+| State | Button Label | Action |
+|-------|--------------|--------|
+| No URL entered | "Save Context" | Save dropdowns only |
+| URL entered, never scanned | "Save Context & Scan Website" | Save + Scan |
+| URL entered, same as saved & already scanned | "Save Context" | Save only (no rescan) |
+| URL entered, different from saved URL | "Save Context & Scan Website" | Save + Scan new URL |
 
 ---
 
-## Nächster Schritt
+## Technical Implementation
 
-Klicke auf **"Approve"** und ich werde dir den vollständigen, korrigierten Code generieren, den du 1:1 in dein Supabase Dashboard kopieren kannst.
+### File: `src/components/validation/BusinessContextPanel.tsx`
 
+#### 1. Add URL comparison logic
+
+```typescript
+// Determine if we need to scan the website
+const needsWebsiteScan = (): boolean => {
+  if (!isPremium) return false;
+  if (!websiteUrl || !websiteUrl.startsWith("https://")) return false;
+  
+  // If no context exists or URL changed, need to scan
+  if (!context?.website_url) return true;
+  if (context.website_url !== websiteUrl) return true;
+  
+  // If same URL but never scanned, need to scan
+  if (!context.website_scraped_at) return true;
+  
+  return false;
+};
+
+const shouldShowScanButton = needsWebsiteScan();
+```
+
+#### 2. Create unified save handler
+
+Replace the separate `handleSave` and `handleScan` with a unified function:
+
+```typescript
+const handleSaveAndScan = async () => {
+  // First, save the context (including the URL)
+  const saveSuccess = await saveContext({
+    ...localContext,
+    website_url: isPremium ? websiteUrl || null : null,
+  });
+  
+  if (!saveSuccess) return;
+  
+  // If we need to scan the website, do it after save
+  if (needsWebsiteScan()) {
+    await scanWebsite(websiteUrl);
+  }
+  
+  if (onContextChange) {
+    onContextChange();
+  }
+};
+```
+
+#### 3. Update button UI
+
+Replace the current save button with dynamic label:
+
+```tsx
+<Button
+  onClick={handleSaveAndScan}
+  disabled={isSaving || isScanning}
+  className="px-6 h-10"
+>
+  {isSaving || isScanning ? (
+    <>
+      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+      {isScanning ? "Scanning..." : "Saving..."}
+    </>
+  ) : (
+    <>
+      {shouldShowScanButton ? (
+        <>
+          <Globe className="h-4 w-4 mr-1.5" />
+          Save Context & Scan Website
+        </>
+      ) : (
+        <>
+          <Check className="h-4 w-4 mr-1.5" />
+          Save Context
+        </>
+      )}
+    </>
+  )}
+</Button>
+```
+
+#### 4. Remove separate Scan Website button
+
+The separate "Scan Website" button in the website URL section will be removed since scanning is now handled by the main save button.
+
+#### 5. Add visual indicator for "already scanned" state
+
+When URL is already scanned, show a checkmark next to the input:
+
+```tsx
+{isPremium && context?.website_url === websiteUrl && context?.website_scraped_at && (
+  <div className="flex items-center gap-1.5 text-sm text-green-600">
+    <Check className="h-4 w-4" />
+    <span>Scanned {formatLastScanned(lastScanned)}</span>
+  </div>
+)}
+```
+
+---
+
+## Summary of Changes
+
+| Component | Change |
+|-----------|--------|
+| `BusinessContextPanel.tsx` | Add `needsWebsiteScan()` function |
+| `BusinessContextPanel.tsx` | Create unified `handleSaveAndScan()` handler |
+| `BusinessContextPanel.tsx` | Dynamic button label based on URL state |
+| `BusinessContextPanel.tsx` | Remove separate "Scan Website" button |
+| `BusinessContextPanel.tsx` | Add visual "already scanned" indicator |
+
+---
+
+## User Experience After Implementation
+
+1. **User fills out dropdowns** (Industry, Stage, Team Size, etc.)
+2. **User enters website URL** (Premium only)
+3. **User sees button change** to "Save Context & Scan Website"
+4. **User clicks once** → Context saved + Website scanned
+5. **Next time with same URL** → Button shows "Save Context" (no rescan needed)
+6. **User changes URL** → Button shows "Save Context & Scan Website" again
+
+This creates a seamless, single-click experience while being smart about when to rescan.

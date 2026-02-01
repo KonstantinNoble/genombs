@@ -84,21 +84,38 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     }
   }, [context?.website_url]);
 
-  const handleSave = async () => {
-    const success = await saveContext({
+  // Determine if we need to scan the website
+  const needsWebsiteScan = (): boolean => {
+    if (!isPremium) return false;
+    if (!websiteUrl || !websiteUrl.startsWith("https://")) return false;
+    
+    // If no context exists or URL changed, need to scan
+    if (!context?.website_url) return true;
+    if (context.website_url !== websiteUrl) return true;
+    
+    // If same URL but never scanned, need to scan
+    if (!context.website_scraped_at) return true;
+    
+    return false;
+  };
+
+  const shouldShowScanButton = needsWebsiteScan();
+
+  // Unified save handler that also scans website if needed
+  const handleSaveAndScan = async () => {
+    // First, save the context (including the URL)
+    const saveSuccess = await saveContext({
       ...localContext,
       website_url: isPremium ? websiteUrl || null : null,
     });
-    if (success && onContextChange) {
-      onContextChange();
+    
+    if (!saveSuccess) return;
+    
+    // If we need to scan the website, do it after save
+    if (needsWebsiteScan()) {
+      await scanWebsite(websiteUrl);
     }
-  };
-
-  const handleScan = async () => {
-    if (!websiteUrl.startsWith("https://")) {
-      return;
-    }
-    await scanWebsite(websiteUrl);
+    
     if (onContextChange) {
       onContextChange();
     }
@@ -341,40 +358,22 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {isPremium ? (
                   <>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <div className="flex-1">
-                        <Input
-                          type="url"
-                          value={websiteUrl}
-                          onChange={(e) => setWebsiteUrl(e.target.value)}
-                          placeholder="https://your-company.com"
-                          className="h-10 text-base"
-                        />
-                      </div>
-                      <Button
-                        onClick={handleScan}
-                        disabled={isScanning || !websiteUrl.startsWith("https://")}
-                        size="sm"
-                        className="h-10 px-5"
-                      >
-                        {isScanning ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                            Scanning...
-                          </>
-                        ) : (
-                          <>
-                            <Globe className="h-4 w-4 mr-1.5" />
-                            Scan Website
-                          </>
-                        )}
-                      </Button>
+                    <div className="flex-1">
+                      <Input
+                        type="url"
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        placeholder="https://your-company.com"
+                        className="h-10 text-base"
+                      />
                     </div>
                     
-                    {lastScanned && (
-                      <p className="text-sm text-muted-foreground">
-                        Last scanned: {formatLastScanned(lastScanned)}
-                      </p>
+                    {/* Already scanned indicator */}
+                    {context?.website_url === websiteUrl && context?.website_scraped_at && (
+                      <div className="flex items-center gap-1.5 text-sm text-green-600">
+                        <Check className="h-4 w-4" />
+                        <span>Scanned {formatLastScanned(lastScanned)}</span>
+                      </div>
                     )}
 
                     {context?.website_summary && (
@@ -410,22 +409,31 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                 )}
               </div>
 
-              {/* Save Button */}
+              {/* Unified Save Button */}
               <div className="flex items-center justify-end gap-3 pt-1">
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving}
+                  onClick={handleSaveAndScan}
+                  disabled={isSaving || isScanning}
                   className="px-6 h-10"
                 >
-                  {isSaving ? (
+                  {isSaving || isScanning ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                      Saving...
+                      {isScanning ? "Scanning..." : "Saving..."}
                     </>
                   ) : (
                     <>
-                      <Check className="h-4 w-4 mr-1.5" />
-                      Save Context
+                      {shouldShowScanButton ? (
+                        <>
+                          <Globe className="h-4 w-4 mr-1.5" />
+                          Save Context & Scan Website
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4 mr-1.5" />
+                          Save Context
+                        </>
+                      )}
                     </>
                   )}
                 </Button>

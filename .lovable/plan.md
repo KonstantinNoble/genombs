@@ -1,382 +1,298 @@
 
-# Plan: Rate-Limit auf 3/24h erhöhen + "Scan Again" Button
+
+# Plan: Scan-Zähler & Reset-Timer aus Datenbank abrufen
 
 ## Überblick
-1. **Backend:** Rate-Limit von 1 auf 3 Scans pro 24 Stunden erhöhen
-2. **Frontend:** "Scan Again" Button hinzufügen für bereits gescannte URLs
+
+Die Scan-Informationen (`scan_count`, `scan_window_start`) werden direkt aus der Supabase-Datenbank geladen und im Frontend angezeigt.
 
 ---
 
-## Teil 1: Edge Function `scrape-business-website` (Supabase)
+## Teil 1: Hook erweitern (`src/hooks/useBusinessContext.ts`)
 
-### Änderungen am Rate-Limit
+### 1.1 Interface erweitern
 
-Zeile 73-94 in der Edge Function ändern:
+Zeile 6-20: `BusinessContext` Interface um die neuen Spalten erweitern:
 
-**Vorher:**
 ```typescript
-if (existingContext?.website_scraped_at) {
-  const lastScan = new Date(existingContext.website_scraped_at);
-  const hoursSinceLastScan = (now.getTime() - lastScan.getTime()) / (1000 * 60 * 60);
-  
-  if (hoursSinceLastScan < 24) {
-    const hoursRemaining = Math.ceil(24 - hoursSinceLastScan);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: `Rate limit: You can scan your website once per 24 hours. Please try again in ${hoursRemaining} hour(s).`
-      }),
-      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
+export interface BusinessContext {
+  // ... existing fields ...
+  website_scraped_at: string | null;
+  scan_count: number | null;           // NEU
+  scan_window_start: string | null;    // NEU
+  created_at: string;
+  updated_at: string;
 }
 ```
 
-**Nachher:**
+### 1.2 Konstanten hinzufügen
+
+Nach den Dropdown-Options (Zeile 87):
+
 ```typescript
-// Check scan count in last 24 hours
-const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+// Scan limit constants (must match Edge Function)
+export const MAX_SCANS_PER_DAY = 3;
+export const SCAN_WINDOW_HOURS = 24;
+```
 
-const { data: recentScans, error: scanCountError } = await adminClient
-  .from('user_business_context_scan_log')
-  .select('scanned_at')
-  .eq('user_id', user.id)
-  .gte('scanned_at', oneDayAgo);
+### 1.3 Return-Interface erweitern
 
-const scanCount = recentScans?.length || 0;
-const MAX_SCANS_PER_DAY = 3;
+Zeile 88-101: Neue Return-Werte hinzufügen:
 
-if (scanCount >= MAX_SCANS_PER_DAY) {
-  // Find oldest scan to calculate when limit resets
-  const oldestScan = recentScans?.[0]?.scanned_at;
-  const resetTime = oldestScan 
-    ? new Date(new Date(oldestScan).getTime() + 24 * 60 * 60 * 1000)
-    : null;
-  
-  return new Response(
-    JSON.stringify({ 
-      success: false, 
-      error: `Rate limit reached: Maximum ${MAX_SCANS_PER_DAY} scans per 24 hours. ${resetTime ? `Resets at ${resetTime.toLocaleTimeString()}.` : ''}`
-    }),
-    { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-  );
+```typescript
+interface UseBusinessContextReturn {
+  // ... existing ...
+  localContext: BusinessContextInput;
+  scansRemaining: number;     // NEU
+  scanResetTime: Date | null; // NEU
+  maxScansPerDay: number;     // NEU
 }
 ```
 
-### Alternative ohne neue Tabelle (einfacher)
+### 1.4 Berechnungslogik hinzufügen
 
-Falls du keine neue Tabelle für Scan-Logs erstellen möchtest, kann das Rate-Limit einfach auf "1 Scan pro 8 Stunden" gesetzt werden (effektiv ~3/Tag):
+Nach `lastScanned` (Zeile 323-325):
 
 ```typescript
-const HOURS_BETWEEN_SCANS = 8; // ~3 scans per day
+const lastScanned = context?.website_scraped_at 
+  ? new Date(context.website_scraped_at) 
+  : null;
 
-if (existingContext?.website_scraped_at) {
-  const lastScan = new Date(existingContext.website_scraped_at);
-  const hoursSinceLastScan = (now.getTime() - lastScan.getTime()) / (1000 * 60 * 60);
-  
-  if (hoursSinceLastScan < HOURS_BETWEEN_SCANS) {
-    const hoursRemaining = Math.ceil(HOURS_BETWEEN_SCANS - hoursSinceLastScan);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: `Rate limit: Please wait ${hoursRemaining} hour(s) before scanning again. (Max 3 scans per 24 hours)`
-      }),
-      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+// Calculate scan status from DB values
+const calculateScanStatus = (): { remaining: number; resetTime: Date | null } => {
+  if (!context?.scan_window_start) {
+    return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
   }
-}
+  
+  const windowStart = new Date(context.scan_window_start);
+  const now = new Date();
+  const windowEnd = new Date(windowStart.getTime() + SCAN_WINDOW_HOURS * 60 * 60 * 1000);
+  
+  // Check if window has expired
+  if (now >= windowEnd) {
+    return { remaining: MAX_SCANS_PER_DAY, resetTime: null };
+  }
+  
+  const scanCount = context.scan_count || 0;
+  const remaining = Math.max(0, MAX_SCANS_PER_DAY - scanCount);
+  
+  return { 
+    remaining, 
+    resetTime: remaining === 0 ? windowEnd : null 
+  };
+};
+
+const scanStatus = calculateScanStatus();
+const scansRemaining = scanStatus.remaining;
+const scanResetTime = scanStatus.resetTime;
+```
+
+### 1.5 Return erweitern
+
+Zeile 327-340:
+
+```typescript
+return {
+  context,
+  isLoading,
+  isSaving,
+  isScanning,
+  hasUnsavedChanges,
+  lastScanned,
+  loadContext,
+  saveContext,
+  scanWebsite,
+  clearContext,
+  setLocalContext,
+  localContext,
+  scansRemaining,        // NEU
+  scanResetTime,         // NEU
+  maxScansPerDay: MAX_SCANS_PER_DAY,  // NEU
+};
 ```
 
 ---
 
-## Teil 2: Frontend - "Scan Again" Button
+## Teil 2: UI-Komponente (`src/components/validation/BusinessContextPanel.tsx`)
 
-### Datei: `src/components/validation/BusinessContextPanel.tsx`
+### 2.1 Hook-Destrukturierung erweitern
 
-### Änderung 1: Neuen State für Force-Scan hinzufügen
+Zeile ~48-58: Neue Werte aus Hook abrufen:
 
-Bei den anderen States (Zeile ~59-60):
 ```typescript
-const [websiteUrl, setWebsiteUrl] = useState("");
-const [forceScan, setForceScan] = useState(false);
+const {
+  context,
+  isLoading,
+  isSaving,
+  isScanning,
+  lastScanned,
+  saveContext,
+  scanWebsite,
+  setLocalContext,
+  localContext,
+  loadContext,
+  scansRemaining,    // NEU
+  scanResetTime,     // NEU
+  maxScansPerDay,    // NEU
+} = useBusinessContext();
 ```
 
-### Änderung 2: needsWebsiteScan anpassen
+### 2.2 Import hinzufügen
 
-Zeile 88-100:
+Zeile 25-27: `Clock` Icon hinzufügen:
+
 ```typescript
-const needsWebsiteScan = (): boolean => {
-  if (!isPremium) return false;
-  if (!websiteUrl || !websiteUrl.startsWith("https://")) return false;
-  
-  // Force scan requested by user
-  if (forceScan) return true;
-  
-  // If no context exists or URL changed, need to scan
-  if (!context?.website_url) return true;
-  if (context.website_url !== websiteUrl) return true;
-  
-  // If same URL but never scanned, need to scan
-  if (!context.website_scraped_at) return true;
-  
-  return false;
-};
+import {
+  // ... existing ...
+  Clock,  // NEU
+} from "lucide-react";
 ```
 
-### Änderung 3: Separate "Scan Again" Handler
+### 2.3 Countdown-State und Effect
 
-Neue Funktion nach handleSaveAndScan:
+Nach den anderen States (~Zeile 60):
+
 ```typescript
-const handleRescan = async () => {
-  if (!websiteUrl || !websiteUrl.startsWith("https://")) return;
-  
-  // Trigger the scan directly
-  const success = await scanWebsite(websiteUrl);
-  
-  if (success && onContextChange) {
-    onContextChange();
+const [countdown, setCountdown] = useState<string>("");
+
+// Countdown timer effect
+useEffect(() => {
+  if (!scanResetTime) {
+    setCountdown("");
+    return;
   }
-};
+  
+  const updateCountdown = () => {
+    const now = new Date();
+    const diff = scanResetTime.getTime() - now.getTime();
+    
+    if (diff <= 0) {
+      setCountdown("");
+      loadContext(); // Refresh to unlock scanning
+      return;
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    if (hours > 0) {
+      setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+    } else {
+      setCountdown(`${minutes}m ${seconds}s`);
+    }
+  };
+  
+  updateCountdown();
+  const interval = setInterval(updateCountdown, 1000);
+  return () => clearInterval(interval);
+}, [scanResetTime, loadContext]);
 ```
 
-### Änderung 4: UI für "Already Scanned" mit Rescan Button
+### 2.4 UI-Anzeige hinzufügen
 
-Zeile 371-377 ersetzen:
+Nach dem "Already scanned indicator" Block (nach Zeile ~408), neue Anzeige für Scan-Limit:
+
 ```tsx
-{/* Already scanned indicator with Rescan button */}
-{isPremium && context?.website_url === websiteUrl && context?.website_scraped_at && (
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-1.5 text-sm text-green-600">
-      <Check className="h-4 w-4" />
-      <span>Scanned {formatLastScanned(lastScanned)}</span>
-    </div>
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleRescan}
-      disabled={isScanning}
-      className="text-muted-foreground hover:text-foreground"
-    >
-      {isScanning ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <>
-          <Globe className="h-4 w-4 mr-1.5" />
-          Scan Again
-        </>
-      )}
-    </Button>
+{/* Scan Usage Indicator */}
+{isPremium && context?.scan_window_start && (
+  <div className="flex items-center justify-between text-sm mt-2 p-2 bg-muted/50 rounded-md">
+    <span className={scansRemaining > 0 ? "text-muted-foreground" : "text-amber-600 font-medium"}>
+      {scansRemaining}/{maxScansPerDay} scans remaining today
+    </span>
+    
+    {/* Reset Timer (only when limit reached) */}
+    {scansRemaining === 0 && countdown && (
+      <div className="flex items-center gap-1.5 text-amber-600">
+        <Clock className="h-4 w-4" />
+        <span className="font-mono text-xs">{countdown}</span>
+      </div>
+    )}
   </div>
 )}
 ```
 
+### 2.5 Scan-Button deaktivieren wenn Limit erreicht
+
+In der `handleRescan` Funktion oder als Button-disabled-Prop:
+
+```typescript
+// Handler anpassen
+const handleRescan = async () => {
+  if (!websiteUrl || !websiteUrl.startsWith("https://")) return;
+  if (scansRemaining <= 0) {
+    toast({
+      title: "Scan limit reached",
+      description: `You've used all ${maxScansPerDay} daily scans. ${countdown ? `Resets in ${countdown}.` : ""}`,
+      variant: "destructive",
+    });
+    return;
+  }
+  
+  const success = await scanWebsite(websiteUrl);
+  if (success && onContextChange) onContextChange();
+};
+```
+
+Button disabled-Prop:
+```tsx
+<Button
+  variant="ghost"
+  size="sm"
+  onClick={handleRescan}
+  disabled={isScanning || scansRemaining <= 0}  // scansRemaining Prüfung hinzufügen
+  // ...
+>
+```
+
 ---
 
-## Zusammenfassung der Änderungen
+## Zusammenfassung der Dateiänderungen
 
-| Komponente | Änderung |
-|------------|----------|
-| **Edge Function** | Rate-Limit von 1 auf 3 Scans pro 24h (8h Cooldown) |
-| **BusinessContextPanel** | "Scan Again" Button bei bereits gescannten URLs |
-| **BusinessContextPanel** | `handleRescan()` Funktion für direkten Rescan |
+| Datei | Änderung |
+|-------|----------|
+| `useBusinessContext.ts` | `scan_count`, `scan_window_start` zum Interface; `scansRemaining`, `scanResetTime`, `maxScansPerDay` berechnen und exportieren |
+| `BusinessContextPanel.tsx` | Import `Clock`; Countdown-State/Effect; UI für Scan-Zähler mit Timer; Button-Deaktivierung |
+
+---
+
+## Datenfluss
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Supabase Database                        │
+│  user_business_context:                                     │
+│  - scan_count: 2                                            │
+│  - scan_window_start: "2026-02-01T10:00:00Z"                │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ SELECT * FROM user_business_context
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  useBusinessContext Hook                    │
+│  - Lädt context.scan_count, context.scan_window_start       │
+│  - Berechnet: scansRemaining = 3 - scan_count = 1           │
+│  - Berechnet: scanResetTime = window_start + 24h            │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ Return values
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                BusinessContextPanel.tsx                      │
+│  - Zeigt: "1/3 scans remaining today"                       │
+│  - Timer: "Resets in 12h 34m 56s" (wenn 0 remaining)        │
+│  - Button disabled wenn scansRemaining = 0                   │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Erwartetes Verhalten
 
-1. **URL eingeben** -> Button zeigt "Save Context & Scan Website"
-2. **Speichern & Scannen** -> Website wird gescannt, grüner Haken erscheint
-3. **"Scan Again" Button** erscheint rechts neben dem Haken
-4. **Klick auf "Scan Again"** -> Neuer Scan wird durchgeführt (max 3x/24h)
-5. **Bei Limit erreicht** -> Toast-Fehler: "Max 3 scans per 24 hours"
+| Zustand | Anzeige |
+|---------|---------|
+| Erste Nutzung (kein Scan) | Keine Anzeige (scan_window_start = null) |
+| Nach 1. Scan | "2/3 scans remaining today" |
+| Nach 2. Scan | "1/3 scans remaining today" |
+| Nach 3. Scan | "0/3 scans remaining today" + Timer |
+| Timer läuft ab | Auto-Refresh, Anzeige verschwindet |
+| Neuer Scan nach Reset | "2/3 scans remaining today" |
 
----
-
-## Vollständiger Edge Function Code
-
-Hier der komplette korrigierte Code für `scrape-business-website`:
-
-```typescript
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
-  try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const firecrawlApiKey = Deno.env.get("FIRECRAWL_API_KEY");
-
-    if (!firecrawlApiKey) {
-      console.error("FIRECRAWL_API_KEY not configured");
-      return new Response(
-        JSON.stringify({ success: false, error: "Website scanning is not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Get authorization header
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Create admin client for DB operations
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Verify user from JWT
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await adminClient.auth.getUser(token);
-
-    if (userError || !user) {
-      console.error("Auth error:", userError?.message);
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid or expired token" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Parse request body
-    const { url } = await req.json();
-
-    if (!url || !url.startsWith("https://")) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Valid HTTPS URL is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log(`User ${user.id} requesting scan for: ${url}`);
-
-    // Check existing context and rate limit
-    const { data: existingContext } = await adminClient
-      .from("user_business_context")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const now = new Date();
-    const HOURS_BETWEEN_SCANS = 8; // ~3 scans per 24 hours
-
-    if (existingContext?.website_scraped_at) {
-      const lastScan = new Date(existingContext.website_scraped_at);
-      const hoursSinceLastScan = (now.getTime() - lastScan.getTime()) / (1000 * 60 * 60);
-      
-      if (hoursSinceLastScan < HOURS_BETWEEN_SCANS) {
-        const hoursRemaining = Math.ceil(HOURS_BETWEEN_SCANS - hoursSinceLastScan);
-        const minutesRemaining = Math.ceil((HOURS_BETWEEN_SCANS - hoursSinceLastScan) * 60);
-        
-        const timeMessage = hoursRemaining > 1 
-          ? `${hoursRemaining} hour(s)` 
-          : `${minutesRemaining} minute(s)`;
-        
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: `Rate limit: Please wait ${timeMessage} before scanning again. (Max 3 scans per 24 hours)`
-          }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    }
-
-    // Call Firecrawl API to scrape the website
-    console.log("Calling Firecrawl API for:", url);
-    
-    const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${firecrawlApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url: url,
-        formats: ["markdown"],
-        onlyMainContent: true,
-      }),
-    });
-
-    const firecrawlData = await firecrawlResponse.json();
-
-    if (!firecrawlResponse.ok || !firecrawlData.success) {
-      console.error("Firecrawl error:", firecrawlData);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: firecrawlData.error || "Failed to scrape website" 
-        }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Extract markdown content
-    const markdown = firecrawlData.data?.markdown || "";
-    
-    // Create a summary (first 1000 chars, cleaned up)
-    const summary = markdown
-      .replace(/\[.*?\]\(.*?\)/g, "") // Remove markdown links
-      .replace(/#{1,6}\s/g, "") // Remove headers
-      .replace(/\*\*/g, "") // Remove bold
-      .replace(/\n{3,}/g, "\n\n") // Collapse multiple newlines
-      .trim()
-      .slice(0, 1000);
-
-    console.log("Scraped content length:", markdown.length, "Summary length:", summary.length);
-
-    // Update user_business_context with scraped data
-    const { error: updateError } = await adminClient
-      .from("user_business_context")
-      .upsert({
-        user_id: user.id,
-        website_url: url,
-        website_summary: summary,
-        website_scraped_at: now.toISOString(),
-        updated_at: now.toISOString(),
-      }, {
-        onConflict: "user_id",
-      });
-
-    if (updateError) {
-      console.error("Database update error:", updateError);
-      return new Response(
-        JSON.stringify({ success: false, error: "Failed to save website data" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log("Successfully saved website summary for user:", user.id);
-
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "Website scanned successfully",
-        summary_length: summary.length,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-
-  } catch (error) {
-    console.error("Unexpected error:", error);
-    return new Response(
-      JSON.stringify({ success: false, error: "Internal server error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-});
-```
-
-Die Änderungen sind:
-- **Zeile 70:** `HOURS_BETWEEN_SCANS = 8` (statt 24)
-- **Zeile 78-80:** Verbesserte Zeitmeldung (Minuten wenn < 1 Stunde)
-- **Zeile 82:** Klarere Fehlermeldung: "Max 3 scans per 24 hours"

@@ -63,7 +63,7 @@ const Hero = () => {
             }`}
           >
             <span className="text-subtitle tracking-widest text-primary/80">
-              For Founders Making Big Calls Alone
+              For Founding Teams Without a Board
             </span>
           </div>
 
@@ -86,8 +86,8 @@ const Hero = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            No co-founder to challenge your thinking? No board to pressure-test your strategy? 
-            Get multiple AI perspectives on your next big decision – before you commit.
+            No board to pressure-test your strategy? No budget for consultants? 
+            Get structured AI perspectives before your team commits.
           </p>
 
           {/* CTA Button */}

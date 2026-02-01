@@ -29,10 +29,10 @@ const PainPoints = () => {
   const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
 
   const painPoints = [
-    { title: "You're making six-figure decisions alone", detail: "Hiring, pivoting, expanding – these decisions shape your company. But without a co-founder or board, you're the only one pressure-testing your logic." },
-    { title: "Mentors give opinions, not structured analysis", detail: "Even great advisors have blind spots. And they're not always available when you need to decide this week." },
-    { title: "Gut feeling doesn't scale", detail: "Your instincts got you here. But as stakes get higher, 'I felt it was right' won't satisfy investors, partners, or yourself." },
-    { title: "You've googled yourself in circles", detail: "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh the options against your specific situation." },
+    { title: "Your team debates, but nobody has the full picture", detail: "Hiring, pivoting, expanding – everyone has an opinion. But without external expertise, you're validating each other's assumptions." },
+    { title: "Advisors are expensive, and their time is limited", detail: "Good consultants charge $300+/hour. And even great mentors can't be on every call when you need to decide this week." },
+    { title: "Gut feeling doesn't survive team disagreements", detail: "When founders disagree, 'I feel it's right' creates friction. Structured analysis gives everyone common ground." },
+    { title: "You're googling in circles, finding contradicting advice", detail: "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh options for your specific situation." },
   ];
 
   return (

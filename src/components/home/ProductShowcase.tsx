@@ -15,7 +15,7 @@ const showcaseItems = [
   {
     step: 2,
     title: "Ask Your Strategic Question",
-    description: "Type in your decision. Market expansion, hiring, pivots – any high-stakes call you need a second opinion on.",
+    description: "Type in your team's decision. Market expansion, new hires, pivots – any strategic call you need multiple perspectives on.",
     image: inputQuestionPreview,
     alt: "Synoptas input field for strategic business questions"
   },
@@ -36,7 +36,7 @@ const showcaseItems = [
   {
     step: 5,
     title: "Organize in Workspaces",
-    description: "Keep personal analyses private or collaborate with your team. Switch contexts with one click.",
+    description: "Organize decisions by project or team member. Share analyses with co-founders or keep them private.",
     image: teamMembersPreview,
     alt: "Synoptas team members interface for workspace collaboration"
   }

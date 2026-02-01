@@ -45,22 +45,22 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      quote: "Was about to hire a $180k engineer. Ran it through Synoptas first - 2 of 3 models flagged runway concerns. Waited 3 months. Smart move.",
+      quote: "We debated expanding to Europe for weeks. Ran it through Synoptas – one model flagged timing concerns the others missed. Saved us from a costly mistake.",
       name: "Marcus Reinholt",
-      role: "SaaS Founder"
+      role: "SaaS Founding Team"
     },
     {
-      quote: "Ran our pricing change through it before launch. Two models agreed, one had concerns. That dissent made me reconsider the timing.",
+      quote: "Our co-founder disagreed on pricing strategy. Synoptas gave us structured arguments both sides could work with. Decision made in one meeting.",
       name: "Elena Kowalski",
       role: "E-Commerce CEO"
     },
     {
-      quote: "My advisor saw the PDF export and said 'This is exactly how you should present decisions to investors.' Using it for every board meeting now.",
+      quote: "Before our partnership negotiations, we run key terms through Synoptas. Helps our whole team prepare for tough questions.",
       name: "David Chen",
-      role: "HealthTech Founder"
+      role: "HealthTech Founding Team"
     },
     {
-      quote: "Before every investor call, I run my key points through Synoptas. Helps me spot weak arguments before they do.",
+      quote: "When we pivoted our product, Synoptas documented every perspective. Six months later, investors loved seeing our decision process.",
       name: "Sofia Martinez",
       role: "FinTech Founder"
     }

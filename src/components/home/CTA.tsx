@@ -110,11 +110,11 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground/80">
-            <span>Solo Founder Friendly</span>
+            <span>Founding Team Friendly</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Faster Than Scheduling a Call</span>
+            <span>Faster Than Hiring a Consultant</span>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <span>Keep the Receipts</span>
+            <span>Align on Strategy</span>
           </div>
         </div>
       </div>

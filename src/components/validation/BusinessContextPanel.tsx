@@ -268,8 +268,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
           {/* Content */}
           <CollapsibleContent>
             <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-cyan-500/20">
+              {/* Helper hint for new users */}
+              <p className="text-xs text-muted-foreground pt-4 pb-0 -mb-2">
+                💡 Save your context so every AI analysis is tailored to your business.
+              </p>
+              
               {/* Dropdown Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Industry */}
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-foreground">Industry</Label>

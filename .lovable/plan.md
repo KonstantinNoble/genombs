@@ -1,169 +1,132 @@
 
-# Business Context Panel - Visuelle Ueberarbeitung
 
-## Zusammenfassung der Aenderungen
+# Plan: Vollständig korrigierte multi-ai-query Edge Function
 
-Das Business Context Panel wird visuell aufgewertet und vereinfacht:
-1. "Main Challenge" Feld entfernen (redundant)
-2. Auffaelligeres Design mit Glow-Effekt und groesseren Schriften
-3. Bessere Sichtbarkeit der Aufklapp-Funktion
+## Problemübersicht
 
----
+Der aktuelle Code hat eine kritische Lücke: Der Business Context wird zwar korrekt aus der Datenbank geladen und an den User-Prompt angehängt, **aber die System Prompts der AI-Modelle enthalten keine Anweisung, diesen Context aktiv zu nutzen**.
 
-## Designaenderungen
+Das bedeutet: Die AI-Modelle könnten den Business Context einfach ignorieren.
 
-### Aktuelles Problem
-```text
-+------------------------------------------------------------------+
-|  [Briefcase] Business Context  [Active]           [Expand v]     |  <-- Zu subtil, leicht zu uebersehen
-+------------------------------------------------------------------+
-|  (kleiner Text, grauer Hintergrund, 6 Dropdowns + Textarea)      |
-+------------------------------------------------------------------+
-```
+## Änderungen
 
-### Neues Design
-```text
-+------------------------------------------------------------------+
-|                                                                  |
-|  [Glow-Border]                                                   |
-|  +------------------------------------------------------------+  |
-|  |                                                            |  |
-|  |  Business Context                     [Context Active]     |  |
-|  |  Help AI understand your business          [Edit v]        |  |
-|  |                                                            |  |
-|  +------------------------------------------------------------+  |
-|                                                                  |
-+------------------------------------------------------------------+
-```
-
-**Aufgeklappt:**
-```text
-+------------------------------------------------------------------+
-|  [Cyan/Teal Glow-Border - Permanenter Akzent]                    |
-|  +------------------------------------------------------------+  |
-|  |  Business Context                    [Context Active]      |  |
-|  |  Help AI understand your business         [Collapse ^]     |  |
-|  +------------------------------------------------------------+  |
-|                                                                  |
-|  +------------------------------------------------------------+  |
-|  |  [Industry v]      [Stage v]         [Team Size v]         |  |
-|  |  [Revenue v]       [Market v]        [Region v]            |  |
-|  +------------------------------------------------------------+  |
-|                                                                  |
-|  +------------------- PREMIUM SECTION ------------------------+  |
-|  |  Website URL                                  [PREMIUM]    |  |
-|  |  +------------------------------------------------------+  |  |
-|  |  | https://                            [Scan Website]   |  |  |
-|  |  +------------------------------------------------------+  |  |
-|  +------------------------------------------------------------+  |
-|                                                                  |
-|  [Save Context]                                                  |
-+------------------------------------------------------------------+
-```
-
----
-
-## Spezifische Aenderungen
-
-### 1. Entferne "Main Challenge" Feld
-
-**Datei:** `src/hooks/useBusinessContext.ts`
-- Entferne `main_challenge` aus dem `BusinessContext` Interface
-- Entferne es aus dem `BusinessContextInput` Interface
-- Entferne es aus `setLocalContextState` und `saveContext`
-
-**Datei:** `src/components/validation/BusinessContextPanel.tsx`
-- Entferne das Textarea fuer "Main Challenge" (Zeilen 297-312)
-- Entferne `main_challenge` aus der `hasContextData` Pruefung
-
-### 2. Auffaelligeres Header-Design
-
-**Aenderungen am Collapsible-Trigger:**
-- Groessere Schrift: `text-base sm:text-lg font-bold` statt `font-medium text-sm sm:text-base`
-- Subtitel hinzufuegen: "Help AI understand your business"
-- Prominenterer Expand/Collapse Button mit Text "Edit" / "Close"
-- Cyan/Teal Glow-Effekt aehnlich dem ValidationInput (aber mit anderen Farben zur Unterscheidung)
-
-### 3. Besserer Glow-Effekt
-
-Anstatt `bg-muted/30` verwenden wir:
-```tsx
-// Permanenter Glow-Effekt (Cyan/Teal Farbschema)
-<div className="relative">
-  <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/30 via-teal-400/20 to-cyan-500/30 blur-sm" />
-  <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/40 via-teal-500/30 to-cyan-600/40" />
-  
-  <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 ...">
-    ...
-  </div>
-</div>
-```
-
-### 4. Groessere Dropdown-Labels
-
-**Aktuelle Labels:** `text-xs font-medium text-muted-foreground`
-**Neue Labels:** `text-sm font-semibold text-foreground`
-
-**Aktuelle SelectTrigger:** `h-9`
-**Neue SelectTrigger:** `h-10 text-base`
-
-### 5. Prominenterer Collapse-Hinweis
-
-Anstatt einem kleinen Chevron:
-```tsx
-<Button variant="ghost" size="sm" className="gap-1.5">
-  {isOpen ? (
-    <>
-      <span>Close</span>
-      <ChevronUp className="h-4 w-4" />
-    </>
-  ) : (
-    <>
-      <span>Edit</span>
-      <ChevronDown className="h-4 w-4" />
-    </>
-  )}
-</Button>
-```
-
----
-
-## Dateien die bearbeitet werden
-
-1. **`src/hooks/useBusinessContext.ts`**
-   - Entferne `main_challenge` aus allen Interfaces
-   - Entferne es aus der Context-Synchronisation
-
-2. **`src/components/validation/BusinessContextPanel.tsx`**
-   - Entferne Main Challenge Textarea
-   - Neues Header-Design mit Glow-Effekt
-   - Groessere Schriften fuer Labels
-   - Prominenterer Edit/Close Button
-   - Verbesserte visuelle Hierarchie
-
----
-
-## Farbschema-Unterscheidung
-
-| Element | Farbe | Bedeutung |
-|---------|-------|-----------|
-| ValidationInput | Emerald/Green Glow | Primaere Eingabe |
-| Business Context | Cyan/Teal Glow | Kontext-Einstellungen |
-| Premium Section | Amber/Gold | Premium Feature |
-
----
-
-## Vorher/Nachher Vergleich
+### 1. OpenAI System Prompt (Zeile 264-280)
 
 **Vorher:**
-- Grauer, subtiler Hintergrund
-- Kleine `text-xs` Labels
-- Versteckter Collapse-Button
-- 7 Eingabefelder (inkl. Main Challenge)
+```typescript
+const systemPrompt = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question...
+```
 
 **Nachher:**
-- Auffaelliger Cyan/Teal Glow-Rahmen
-- Groessere `text-sm` Labels mit besserer Lesbarkeit
-- Prominenter "Edit" / "Close" Button
-- 6 Eingabefelder (ohne Main Challenge)
-- Bessere Konsistenz mit dem ValidationInput Design
+```typescript
+const systemPrompt = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
+
+Analyze the user's business question...
+```
+
+### 2. Gemini System Instruction (Zeile 391-426)
+
+**Vorher:**
+```typescript
+const systemInstruction = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question...
+```
+
+**Nachher:**
+```typescript
+const systemInstruction = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
+
+Analyze the user's business question...
+```
+
+### 3. Claude System Prompt (Zeile 588-596)
+
+**Vorher:**
+```typescript
+const systemPrompt = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
+Each recommendation should be practical and implementable.
+Be specific with numbers, timeframes, and concrete steps.
+Consider both opportunities and risks.`;
+```
+
+**Nachher:**
+```typescript
+const systemPrompt = `You are a senior business strategist providing actionable recommendations.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context. Generic advice is not acceptable when context is provided. Consider the company's specific situation, resources, and market position.
+
+Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
+Each recommendation should be practical and implementable.
+Be specific with numbers, timeframes, and concrete steps.
+Consider both opportunities and risks.`;
+```
+
+### 4. Perplexity System Prompt (Zeile 694-721)
+
+**Vorher:**
+```typescript
+const systemPrompt = `You are a senior business strategist with access to real-time web data.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+Analyze the user's business question using current market data and trends.
+```
+
+**Nachher:**
+```typescript
+const systemPrompt = `You are a senior business strategist with access to real-time web data.
+    
+Your style: ${modelConfig.characteristics.tendency}
+Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+IMPORTANT: If the user provides BUSINESS CONTEXT (industry, company stage, team size, target market, geographic focus, etc.), you MUST tailor ALL your recommendations specifically to that context and use web search to find industry-specific data, benchmarks, and trends. Generic advice is not acceptable when context is provided.
+
+Analyze the user's business question using current market data and trends.
+```
+
+---
+
+## Vollständiger korrigierter Code
+
+Da du den kompletten Code benötigst, werde ich dir im nächsten Schritt den **gesamten überarbeiteten Code** als einzelnen Block bereitstellen, den du direkt in dein Supabase Dashboard → Edge Functions → `multi-ai-query` kopieren kannst.
+
+**Die 4 kritischen Änderungen sind:**
+1. Zeile 267-270: Business Context Anweisung für OpenAI
+2. Zeile 394-397: Business Context Anweisung für Gemini
+3. Zeile 591-594: Business Context Anweisung für Claude
+4. Zeile 697-700: Business Context Anweisung für Perplexity
+
+---
+
+## Nächster Schritt
+
+Klicke auf **"Approve"** und ich werde dir den vollständigen, korrigierten Code generieren, den du 1:1 in dein Supabase Dashboard kopieren kannst.
+

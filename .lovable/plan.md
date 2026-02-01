@@ -1,156 +1,115 @@
 
+# Homepage-Texte für kleine Team-Gründer optimieren
 
-# Plan: Homepage verkürzen und Business Context / Website-Scanning als Premium-Feature bewerben
+## Zielgruppen-Fokus
 
-## Analyse: Warum wirkt die Homepage überladen?
+**Primäre Zielgruppe:** Kleine Gründerteams (2-5 Personen) ohne formelles Advisory Board
 
-Die aktuelle Homepage hat **8 Sektionen** nach dem Hero:
-1. PainPoints (4 Schmerzpunkte)
-2. WhySynoptas (Vergleich)
-3. Testimonials (4 Zitate)
-4. HowItWorks (4 Schritte)
-5. Features (6 Features)
-6. Pricing (2 Pläne)
-7. FAQ (11 Fragen)
-8. CTA
+**Haupt-Use-Case:** Strategische Wachstumsentscheidungen (Marktexpansion, neue Produkte, Partnerschaften, Pivots)
 
-**Zusätzlich** enthält der Hero bereits einen ProductShowcase mit 3 Browser-Mockups und "How It Works" – das wiederholt sich mit der separaten HowItWorks-Sektion.
+**Kernproblem:** Das Team muss gemeinsam entscheiden, aber niemand hat Erfahrung in allen Bereichen. Externe Berater sind zu teuer.
 
 ---
 
-## Teil 1: Homepage verkürzen
+## Geplante Textänderungen
 
-### Änderungen an `src/pages/Home.tsx`
+### 1. Hero Section (Hero.tsx)
 
-**Entfernen:**
-- `HowItWorks` Komponente (redundant zum ProductShowcase im Hero)
-- `WhySynoptas` Komponente (der Vergleich ist weniger überzeugend als echte Testimonials)
+**Aktuell:** "For Founders Making Big Calls Alone"
 
-**Neue Sektionsreihenfolge:**
-```text
-Hero (inkl. ProductShowcase)
-  ↓
-PainPoints (Problem aufzeigen)
-  ↓
-Features (Lösung präsentieren) - Hier Business Context + URL-Scan hinzufügen
-  ↓
-Testimonials (Social Proof)
-  ↓
-Pricing (nur für nicht-eingeloggte oder Free-User)
-  ↓
-FAQ (reduziert auf 6-7 wichtigste Fragen)
-  ↓
-CTA (Abschluss)
-```
+**Neu:** "For Founding Teams Without a Board"
 
-### Änderungen an `src/components/home/FAQ.tsx`
+**Aktuell:** "No co-founder to challenge your thinking? No board to pressure-test your strategy?"
 
-**Reduzieren von 11 auf 7 FAQs:**
-Behalten:
-1. "Is this for solo founders?"
-2. "How is this different from just asking ChatGPT?"
-3. "What do 'consensus' and 'dissent' mean?"
-4. "Can I share analyses with my co-founder or team?"
-5. "What's the difference between Free and Premium?"
-6. "Can I try it before paying?"
-7. "Can I cancel anytime?"
-
-Entfernen:
-- "Can I use this for hiring decisions?" (zu spezifisch)
-- "Will this replace my advisor?" (defensiv)
-- "What kinds of decisions should I use this for?" (redundant mit ersten FAQ)
-- "What happens to my analyses?" (Details für Privacy Policy)
+**Neu:** "No board to pressure-test your strategy? No budget for consultants? Get structured AI perspectives before your team commits."
 
 ---
 
-## Teil 2: Business Context + Website URL als Premium-Feature bewerben
+### 2. Pain Points Section (PainPoints.tsx)
 
-### Neue Feature-Karte in `src/components/home/Features.tsx`
+**Aktuelle Punkte:** Solo-Founder fokussiert
 
-**Neues Feature hinzufügen (Position 3 oder 4):**
+**Neue Punkte (Team-fokussiert):**
 
-```typescript
-{
-  title: "AI That Knows Your Business",
-  description: "Set your industry, stage, and team size – the AI adapts every recommendation. Premium: scan your website for even deeper context.",
-  isPremium: true
-}
-```
+1. **"Your team debates, but nobody has the full picture"**
+   - "Hiring, pivoting, expanding – everyone has an opinion. But without external expertise, you're validating each other's assumptions."
 
-### Neue Feature in `src/components/home/Pricing.tsx`
+2. **"Advisors are expensive, and their time is limited"**
+   - "Good consultants charge $300+/hour. And even great mentors can't be on every call when you need to decide this week."
 
-**Premium-Liste erweitern:**
-```typescript
-{ text: "Business Context with Website Scanning", highlight: true }
-```
+3. **"Gut feeling doesn't survive team disagreements"**
+   - "When founders disagree, 'I feel it's right' creates friction. Structured analysis gives everyone common ground."
 
-### Änderungen an `src/pages/Pricing.tsx`
-
-**Vergleichstabelle erweitern:**
-```typescript
-{ name: "Business Context Profile", free: "✓", premium: "✓" },
-{ name: "Website Auto-Scan", free: "—", premium: "✓" },
-```
-
-**FAQ auf Pricing-Seite hinzufügen:**
-```typescript
-{
-  question: "What is Business Context?",
-  answer: "Your business profile (industry, stage, team size, revenue, market, region) that's automatically included in every analysis. All users can set this. Premium subscribers can also add their website URL and we'll automatically scan it for deeper context."
-}
-```
+4. **"You're googling in circles, finding contradicting advice"**
+   - "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh options for your specific situation."
 
 ---
 
-## Zusammenfassung der Änderungen
+### 3. Features Section (Features.tsx)
 
-| Datei | Aktion | Details |
-|-------|--------|---------|
-| `src/pages/Home.tsx` | Entfernen | `HowItWorks` und `WhySynoptas` Imports und Komponenten |
-| `src/components/home/Features.tsx` | Hinzufügen | Neues Feature "AI That Knows Your Business" mit Premium-Badge |
-| `src/components/home/Pricing.tsx` | Erweitern | "Business Context with Website Scanning" als Premium-Feature |
-| `src/pages/Pricing.tsx` | Erweitern | Vergleichstabelle + neue FAQ |
-| `src/components/home/FAQ.tsx` | Reduzieren | Von 11 auf 7 FAQs |
+**Aktuell:** "Everything you need to make better decisions, alone or with your team"
+
+**Neu:** "Everything your founding team needs to make better growth decisions together"
 
 ---
 
-## UI-Vorschau: Neue Features-Sektion
+### 4. Testimonials (Testimonials.tsx)
 
-```text
-┌──────────────────────────────────────────────────────────┐
-│  01  6 Perspectives, You Pick 3                          │
-│      GPT, Gemini, Claude, Perplexity – each thinks       │
-│      differently. Pick 3 that match your decision type.  │
-├──────────────────────────────────────────────────────────┤
-│  02  Share with Co-Founders and Advisors                 │
-│      Not a solo founder? Invite your team...             │
-├──────────────────────────────────────────────────────────┤
-│  03  AI That Knows Your Business        [Premium Badge]  │ ← NEU
-│      Set your industry, stage, and team size – the AI    │
-│      adapts. Premium: scan your website for deeper...    │
-├──────────────────────────────────────────────────────────┤
-│  04  Weight What Matters to You                          │
-│      Risk-averse? Growth-focused? Adjust the sliders...  │
-├──────────────────────────────────────────────────────────┤
-│  05  Know Where to Dig Deeper                            │
-│      When perspectives agree, move fast. When they...    │
-├──────────────────────────────────────────────────────────┤
-│  06  Learn From Your Past Decisions                      │
-│      See your decision history. Notice patterns...       │
-├──────────────────────────────────────────────────────────┤
-│  07  Investor-Ready Documentation                        │
-│      Export PDFs that show what you considered...        │
-└──────────────────────────────────────────────────────────┘
-```
+Testimonials werden auf Team-Szenarien und Wachstumsentscheidungen angepasst:
+
+1. **Marcus Reinholt (SaaS Founding Team)**
+   - "We debated expanding to Europe for weeks. Ran it through Synoptas – one model flagged timing concerns the others missed. Saved us from a costly mistake."
+
+2. **Elena Kowalski (E-Commerce CEO)**
+   - "Our co-founder disagreed on pricing strategy. Synoptas gave us structured arguments both sides could work with. Decision made in one meeting."
+
+3. **David Chen (HealthTech Founding Team)**
+   - "Before our partnership negotiations, we run key terms through Synoptas. Helps our whole team prepare for tough questions."
+
+4. **Sofia Martinez (FinTech Founder)**
+   - "When we pivoted our product, Synoptas documented every perspective. Six months later, investors loved seeing our decision process."
 
 ---
 
-## Erwartetes Ergebnis
+### 5. CTA Section (CTA.tsx)
 
-**Vorher:** 8 Sektionen + redundanter ProductShowcase
-**Nachher:** 6 Sektionen, fokussierter, Business Context prominent beworben
+**Aktuelle Trust-Indikatoren:** "Solo Founder Friendly"
 
-**Premium-Differenzierung:**
-- Business Context Dropdown-Felder → **Alle Nutzer**
-- Website URL + Auto-Scan → **Premium** (klar kommuniziert mit Badge)
+**Neue Trust-Indikatoren:** "Founding Team Friendly", "Faster Than Hiring a Consultant", "Align on Strategy"
 
+---
+
+### 6. Product Showcase (ProductShowcase.tsx)
+
+Beschreibungen werden für Team-Kontext angepasst:
+
+- Step 2: "Type in your team's decision. Market expansion, new hires, pivots – any strategic call you need multiple perspectives on."
+
+- Step 5: "Organize decisions by project or team member. Share analyses with co-founders or keep them private."
+
+---
+
+## Betroffene Dateien
+
+| Datei | Änderungen |
+|-------|------------|
+| `src/components/home/Hero.tsx` | Subtitle + Subheadline anpassen |
+| `src/components/home/PainPoints.tsx` | Alle 4 Pain Points neu formulieren |
+| `src/components/home/Features.tsx` | Subtitle anpassen |
+| `src/components/home/Testimonials.tsx` | Alle 4 Testimonials auf Team-Fokus umschreiben |
+| `src/components/home/CTA.tsx` | Trust-Indikatoren ändern |
+| `src/components/home/ProductShowcase.tsx` | 2 Beschreibungen anpassen |
+
+---
+
+## Zusammenfassung der Positionierung
+
+**Vorher:** "Solo-Founder, der alleine entscheidet"
+
+**Nachher:** "Kleine Gründerteams, die gemeinsam strategische Wachstumsentscheidungen treffen müssen – ohne teures Advisory Board oder Berater"
+
+Diese Änderungen betonen:
+- Team-Dynamik statt Einsamkeit
+- Wachstumsentscheidungen statt generische Entscheidungen
+- Konsens-Building statt individuelle Validierung
+- Kostenersparnis gegenüber Beratern

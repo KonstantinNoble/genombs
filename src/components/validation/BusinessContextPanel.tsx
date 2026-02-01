@@ -62,7 +62,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     maxScansPerDay,
   } = useBusinessContext();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [countdown, setCountdown] = useState<string>("");
   

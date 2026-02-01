@@ -1,137 +1,92 @@
 
 
-# Plan: Datenschutzerklärung für Business Context Feature aktualisieren
+# Plan: Privacy Policy korrigieren - Business Context ist KEIN Premium-Feature
 
-## Zusammenfassung der notwendigen Ergänzungen
+## Problem
 
-Das Business Context Feature erfordert Ergänzungen in der Privacy Policy, da:
-1. **Neue Datenkategorien** gespeichert werden (Geschäftskontextdaten)
-2. **Neuer Drittanbieter** (Firecrawl) für Website-Scraping genutzt wird
-3. **Daten an KI-Modelle** übergeben werden (als zusätzlicher Kontext)
+Die Privacy Policy (v5.8) beschreibt den "Business Context" fälschlicherweise als reines Premium-Feature. In Wirklichkeit:
 
----
+- **Für ALLE Nutzer:** Die 6 Dropdown-Felder (Industry, Stage, Team Size, Revenue, Target Market, Geographic Focus)
+- **NUR für Premium:** Website URL-Eingabe und Website-Scanning via Firecrawl
 
-## Abschnitt 1: Neuer Abschnitt "5.9 Business Context" (Premium Feature)
+## Änderungen
 
-**Position:** Nach Abschnitt 5.8 (Team Workspaces), vor Abschnitt 6
+### 1. Abschnitt 5.9 Überschrift korrigieren
 
-**Inhalt:**
-
-### 5.9 Business Context (Premium)
-
-Premium-Nutzer können einen Geschäftskontext erstellen, der automatisch in alle KI-Analysen einfließt, um personalisierte und relevantere Empfehlungen zu erhalten.
-
-#### Erfasste und gespeicherte Daten
-
-Folgende Daten werden in der Datenbank gespeichert und können von Ihnen jederzeit bearbeitet oder gelöscht werden:
-
-| Datenfeld | Beschreibung |
-|-----------|--------------|
-| Branche | Ihre Branche (z.B. SaaS, E-Commerce, FinTech) |
-| Unternehmensphase | Entwicklungsstand (Idee bis Wachstumsphase) |
-| Teamgröße | Anzahl der Mitarbeiter |
-| Umsatzbereich | Monatlicher Umsatzbereich |
-| Zielmarkt | B2B, B2C, B2B2C, D2C |
-| Geografischer Fokus | Lokal, National, EU, US, Global |
-| Website-URL | Ihre Unternehmenswebsite (optional) |
-| Website-Zusammenfassung | Automatisch generierte Zusammenfassung Ihrer Website (max. 1000 Zeichen) |
-
-#### Website-Scanning (Firecrawl)
-
-Wenn Sie eine Website-URL angeben und den Scan-Button klicken, wird Ihre Website über den Dienst Firecrawl gescrapt:
-
-**Anbieter:** Firecrawl, Inc.
-**Standort:** Vereinigte Staaten
-**Datenschutzrichtlinie:** https://www.firecrawl.dev/privacy
-
-**Daten, die an Firecrawl übermittelt werden:**
-- Die von Ihnen eingegebene Website-URL
-
-**Daten, die von Firecrawl zurückgegeben und gespeichert werden:**
-- Markdown-Textinhalt der Hauptseite (ohne JavaScript, Tracking-Skripte, etc.)
-- Eine gekürzte Zusammenfassung (max. 1000 Zeichen) wird in unserer Datenbank gespeichert
-
-**Nutzungslimit:** Maximal 3 Website-Scans pro 24-Stunden-Zeitfenster (rollendes Fenster)
-
-#### Übergabe an KI-Modelle
-
-Der gespeicherte Business Context (einschließlich Website-Zusammenfassung) wird automatisch als zusätzlicher Kontext an die von Ihnen ausgewählten KI-Modelle übermittelt (siehe Abschnitt 5.1), um personalisierte Empfehlungen zu ermöglichen.
-
-**Wichtig:** 
-- Die KI-Modelle erhalten Ihren Business Context zusätzlich zu Ihrer Validierungsanfrage
-- Dadurch können OpenAI, Google, Anthropic und Perplexity Ihren Geschäftskontext verarbeiten
-- Die Datenschutzrichtlinien dieser Anbieter gelten entsprechend (siehe Abschnitt 5.1)
-
-#### Datenspeicherung und Löschung
-
-- Der Business Context wird dauerhaft gespeichert, bis Sie ihn manuell löschen
-- Sie können den gesamten Context über den "Clear Context" Button in der Anwendung löschen
-- Bei Löschung Ihres Benutzerkontos wird der Business Context automatisch gelöscht (CASCADE)
-
-#### Rechtsgrundlage
-
-- **Art. 6(1)(b) DSGVO:** Verarbeitung ist für die Vertragserfüllung erforderlich (Bereitstellung personalisierter KI-Analysen als Teil des Premium-Dienstes)
-- **Art. 6(1)(a) DSGVO:** Einwilligung durch aktive Nutzung des Features (Sie wählen selbst, ob Sie den Business Context ausfüllen und einen Website-Scan durchführen)
-
----
-
-## Abschnitt 2: Tabelle "Recipients of Personal Data" (Abschnitt 12) erweitern
-
-**Neue Zeile hinzufügen:**
-
-| Empfänger | Zweck | Übermittelte Daten | Übermittlungsgrundlage |
-|-----------|-------|-------------------|----------------------|
-| **Firecrawl, Inc.** | Website-Scraping für Business Context | Website-URL | Art. 46(2)(c) DSGVO (Standardvertragsklauseln) |
-
----
-
-## Abschnitt 3: Tabelle "Categories of Personal Data" (Abschnitt 11) erweitern
-
-**Neue Zeile hinzufügen:**
-
-| Kategorie | Beispiele | Zweck |
-|-----------|-----------|-------|
-| **Business Context** (Premium) | Branche, Unternehmensphase, Teamgröße, Umsatz, Zielmarkt, Geo-Fokus, Website-URL, Website-Zusammenfassung | Personalisierte KI-Analysen |
-
----
-
-## Abschnitt 4: Third-Party Service Cookies Tabelle (falls zutreffend)
-
-Firecrawl setzt keine Cookies auf Ihrer Website, da:
-- Die API-Anfrage serverseitig über eine Edge Function erfolgt
-- Keine Client-seitige Integration stattfindet
-
-Daher ist keine Aktualisierung der Cookie-Tabelle erforderlich.
-
----
-
-## Abschnitt 5: Versionsverlauf aktualisieren
-
-**Neue Zeile am Anfang:**
-
+**Zeile 854 - Alt:**
 ```
-Version 5.7 (1. Februar 2026): 
-- Hinzufügung von Abschnitt 5.9 "Business Context" 
-- Dokumentation der Firecrawl-Integration für Website-Scraping
-- Aktualisierung der Datenempfänger-Tabelle
-- Aktualisierung der Datenkategorien-Tabelle
+5.9 Business Context (Premium)
 ```
 
----
+**Neu:**
+```
+5.9 Business Context
+```
 
-## Dateiänderungen
+### 2. Abschnitt 5.9 Einleitung korrigieren
 
-| Datei | Änderung |
-|-------|----------|
-| `src/pages/PrivacyPolicy.tsx` | Neuer Abschnitt 5.9 einfügen (nach Zeile ~765), Tabelle Abschnitt 11 erweitern (Zeile ~1109), Tabelle Abschnitt 12 erweitern (Zeile ~1175), Versionsverlauf aktualisieren |
+**Zeilen 855-858 - Alt:**
+```
+Premium subscribers can create a business context profile that is automatically 
+included in all AI analyses to provide personalized and more relevant 
+recommendations tailored to their specific business situation.
+```
 
----
+**Neu:**
+```
+All registered users can create a business context profile that is automatically 
+included in all AI analyses to provide personalized and more relevant 
+recommendations tailored to their specific business situation. Premium 
+subscribers have access to additional website scanning features.
+```
 
-## Rechtliche Hinweise
+### 3. Datenfelder-Tabelle ergänzen
 
-1. **Firecrawl DPA:** Prüfe, ob Firecrawl einen Auftragsverarbeitungsvertrag (DPA) per Art. 28 DSGVO anbietet. Falls ja, sollte dieser abgeschlossen werden.
+Nach der bestehenden Tabelle einen Hinweis einfügen:
 
-2. **Standardvertragsklauseln (SCCs):** Da Firecrawl in den USA sitzt und wahrscheinlich nicht unter das EU-US Data Privacy Framework fällt, sind SCCs die richtige Übermittlungsgrundlage.
+```
+**Note:** All fields except Website URL and Website Summary are available to 
+all registered users. Website URL input and automatic website scanning via 
+Firecrawl is a Premium-exclusive feature.
+```
 
-3. **Transparenz:** Die Nutzer müssen vor dem ersten Scan darüber informiert werden, dass ihre URL an Firecrawl übermittelt wird. Dies könnte auch als Info-Tooltip neben dem Scan-Button ergänzt werden.
+### 4. Website-Scanning Abschnitt klarer kennzeichnen
+
+Vor dem "Website Scanning (Firecrawl)" Abschnitt hinzufügen:
+
+```
+#### Website Scanning (Premium Feature)
+```
+
+### 5. Speicherdauer-Tabelle korrigieren
+
+**Zeile 1458 - Alt:**
+```
+Business Context (Premium)
+```
+
+**Neu:**
+```
+Business Context
+```
+
+### 6. Versionsverlauf aktualisieren
+
+Neue Version 5.9 hinzufügen:
+```
+Version 5.9 (February 1, 2026): Corrected Business Context section - 
+basic profile fields are available to all users, only website scanning 
+is Premium-exclusive.
+```
+
+## Zusammenfassung der Dateiänderungen
+
+| Datei | Zeilen | Änderung |
+|-------|--------|----------|
+| `src/pages/PrivacyPolicy.tsx` | 854 | "(Premium)" aus Überschrift entfernen |
+| `src/pages/PrivacyPolicy.tsx` | 855-858 | "Premium subscribers" → "All registered users" + Premium-Hinweis |
+| `src/pages/PrivacyPolicy.tsx` | ~920 | Hinweis zu Free vs. Premium Zugang hinzufügen |
+| `src/pages/PrivacyPolicy.tsx` | ~925 | "Website Scanning" → "Website Scanning (Premium Feature)" |
+| `src/pages/PrivacyPolicy.tsx` | 1458 | "(Premium)" aus Speichertabelle entfernen |
+| `src/pages/PrivacyPolicy.tsx` | Versionshistorie | Version 5.9 hinzufügen |
 

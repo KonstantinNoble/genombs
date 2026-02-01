@@ -5,8 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
 import PainPoints from "@/components/home/PainPoints";
-import WhySynoptas from "@/components/home/WhySynoptas";
-import HowItWorks from "@/components/home/HowItWorks";
 import Features from "@/components/home/Features";
 import Testimonials from "@/components/home/Testimonials";
 import Pricing from "@/components/home/Pricing";
@@ -97,10 +95,8 @@ const Home = () => {
       <main>
         <Hero />
         <PainPoints />
-        <WhySynoptas />
-        <Testimonials />
-        <HowItWorks />
         <Features />
+        <Testimonials />
         
         {(!isLoggedIn || !isPremium) && (
           <div id="pricing-section">

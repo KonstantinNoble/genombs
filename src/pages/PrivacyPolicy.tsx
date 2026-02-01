@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.8</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.9</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -851,10 +851,11 @@ const PrivacyPolicy = () => {
 
           {/* Section 5.9: Business Context */}
           <section className="mb-8">
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.9 Business Context (Premium)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.9 Business Context</h3>
             <p className="text-muted-foreground mb-4">
-              Premium subscribers can create a business context profile that is automatically included in all AI 
+              All registered users can create a business context profile that is automatically included in all AI 
               analyses to provide personalized and more relevant recommendations tailored to their specific business situation.
+              Premium subscribers have access to additional website scanning features.
             </p>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Collected and Stored</h4>
@@ -907,7 +908,12 @@ const PrivacyPolicy = () => {
               </table>
             </div>
 
-            <h4 className="text-lg font-semibold mb-2 mt-4">Website Scanning (Firecrawl)</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Note:</strong> All fields except Website URL and Website Summary are available to all registered users. 
+              Website URL input and automatic website scanning via Firecrawl is a Premium-exclusive feature.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Website Scanning (Premium Feature)</h4>
             <p className="text-muted-foreground mb-4">
               When you provide a website URL and click the scan button, your website is scraped via the Firecrawl service:
             </p>
@@ -1455,7 +1461,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Automatic cleanup</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3">Business Context (Premium)</td>
+                    <td className="border border-border p-3">Business Context</td>
                     <td className="border border-border p-3">Until manual deletion or account deletion</td>
                     <td className="border border-border p-3">User-initiated or CASCADE on account deletion</td>
                   </tr>
@@ -1578,6 +1584,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.9 (February 1, 2026):</strong> Corrected Business Context section - basic profile fields (Industry, Stage, Team Size, Revenue, Target Market, Geographic Focus) are available to all registered users; only Website URL input and website scanning via Firecrawl is Premium-exclusive.</li>
               <li><strong>Version 5.8 (February 1, 2026):</strong> Added Business Context to storage duration table (Section 15).</li>
               <li><strong>Version 5.7 (February 1, 2026):</strong> Added Business Context section (5.9) documenting Premium feature for personalized AI analyses. Added Firecrawl, Inc. as data recipient for website scraping. Updated data categories table with Business Context data. Documented website scan rate limiting (3 scans per 24h rolling window).</li>
               <li><strong>Version 5.6 (January 28, 2026):</strong> Minor formatting updates and clarifications.</li>

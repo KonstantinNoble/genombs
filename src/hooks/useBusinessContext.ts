@@ -12,7 +12,6 @@ export interface BusinessContext {
   revenue_range: string | null;
   target_market: string | null;
   geographic_focus: string | null;
-  main_challenge: string | null;
   website_url: string | null;
   website_summary: string | null;
   website_scraped_at: string | null;
@@ -28,7 +27,6 @@ export interface BusinessContextInput {
   revenue_range?: string | null;
   target_market?: string | null;
   geographic_focus?: string | null;
-  main_challenge?: string | null;
   website_url?: string | null;
 }
 
@@ -122,7 +120,6 @@ export function useBusinessContext(): UseBusinessContextReturn {
         revenue_range: context.revenue_range,
         target_market: context.target_market,
         geographic_focus: context.geographic_focus,
-        main_challenge: context.main_challenge,
         website_url: context.website_url,
       });
     }

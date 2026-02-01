@@ -1,24 +1,32 @@
 import modelWeightsPreview from "@/assets/model-weights-preview.jpeg";
 import validationResultsPreview from "@/assets/validation-results-preview.jpeg";
 import teamMembersPreview from "@/assets/team-members-preview.jpeg";
+import businessContextPreview from "@/assets/business-context-preview.jpeg";
 
 const showcaseItems = [
   {
     step: 1,
+    title: "Teach AI Your Business",
+    description: "Set your industry, stage, and goals. Every analysis gets tailored to your specific context.",
+    image: businessContextPreview,
+    alt: "Synoptas Business Context panel for personalized AI recommendations"
+  },
+  {
+    step: 2,
     title: "Weight Your AI Advisors",
     description: "Choose your models and control their influence. Some voices matter more – you decide which ones.",
     image: modelWeightsPreview,
     alt: "Synoptas AI model weighting interface for customizing advisor influence"
   },
   {
-    step: 2,
+    step: 3,
     title: "See the Full Picture",
     description: "Get documented perspectives, strategic scenarios, and points of dissent – all cross-validated by multiple AI models.",
     image: validationResultsPreview,
     alt: "Synoptas validation results showing documented perspectives and AI consensus"
   },
   {
-    step: 3,
+    step: 4,
     title: "Organize in Workspaces",
     description: "Keep personal analyses private or collaborate with your team. Switch contexts with one click.",
     image: teamMembersPreview,

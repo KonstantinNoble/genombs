@@ -64,19 +64,6 @@ const Features = () => {
       description: "GPT, Gemini, Claude, Perplexity – each thinks differently. Pick 3 that match your decision type." 
     },
     { 
-      title: "Share with Co-Founders and Advisors", 
-      description: "Not a solo founder? Invite your team. Share analyses, build a shared history of how you think."
-    },
-    { 
-      title: "AI That Knows Your Business", 
-      description: "Set your industry, stage, and team size – the AI adapts every recommendation. Premium: scan your website for even deeper context.",
-      isPremium: true
-    },
-    { 
-      title: "Weight What Matters to You", 
-      description: "Risk-averse? Growth-focused? Cash-conscious? Adjust the sliders. Get analysis weighted to your priorities."
-    },
-    { 
       title: "Know Where to Dig Deeper", 
       description: "When all perspectives agree, move fast. When they clash, that's your signal to investigate before committing."
     },
@@ -109,7 +96,6 @@ const Features = () => {
               index={index}
               hasDashboardLink={feature.hasDashboardLink}
               showDashboardLink={!!user}
-              isPremium={feature.isPremium}
             />
           ))}
         </div>

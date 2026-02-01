@@ -25,6 +25,7 @@ import {
   Check,
   Sparkles,
   ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -117,6 +118,17 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     }
     
     if (onContextChange) {
+      onContextChange();
+    }
+  };
+
+  // Handler for re-scanning an already scanned URL
+  const handleRescan = async () => {
+    if (!websiteUrl || !websiteUrl.startsWith("https://")) return;
+    
+    const success = await scanWebsite(websiteUrl);
+    
+    if (success && onContextChange) {
       onContextChange();
     }
   };
@@ -368,11 +380,29 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                       />
                     </div>
                     
-                    {/* Already scanned indicator */}
+                    {/* Already scanned indicator with Rescan button */}
                     {context?.website_url === websiteUrl && context?.website_scraped_at && (
-                      <div className="flex items-center gap-1.5 text-sm text-green-600">
-                        <Check className="h-4 w-4" />
-                        <span>Scanned {formatLastScanned(lastScanned)}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-sm text-green-600">
+                          <Check className="h-4 w-4" />
+                          <span>Scanned {formatLastScanned(lastScanned)}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleRescan}
+                          disabled={isScanning}
+                          className="h-8 px-2.5 text-muted-foreground hover:text-foreground"
+                        >
+                          {isScanning ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <RefreshCw className="h-4 w-4 mr-1.5" />
+                              Scan Again
+                            </>
+                          )}
+                        </Button>
                       </div>
                     )}
 

@@ -2,6 +2,7 @@ import modelWeightsPreview from "@/assets/model-weights-preview.jpeg";
 import validationResultsPreview from "@/assets/validation-results-preview.jpeg";
 import teamMembersPreview from "@/assets/team-members-preview.jpeg";
 import businessContextPreview from "@/assets/business-context-preview.jpeg";
+import inputQuestionPreview from "@/assets/input-question-preview.jpeg";
 
 const showcaseItems = [
   {
@@ -13,20 +14,27 @@ const showcaseItems = [
   },
   {
     step: 2,
+    title: "Ask Your Strategic Question",
+    description: "Type in your decision. Market expansion, hiring, pivots – any high-stakes call you need a second opinion on.",
+    image: inputQuestionPreview,
+    alt: "Synoptas input field for strategic business questions"
+  },
+  {
+    step: 3,
     title: "Weight Your AI Advisors",
     description: "Choose your models and control their influence. Some voices matter more – you decide which ones.",
     image: modelWeightsPreview,
     alt: "Synoptas AI model weighting interface for customizing advisor influence"
   },
   {
-    step: 3,
+    step: 4,
     title: "See the Full Picture",
     description: "Get documented perspectives, strategic scenarios, and points of dissent – all cross-validated by multiple AI models.",
     image: validationResultsPreview,
     alt: "Synoptas validation results showing documented perspectives and AI consensus"
   },
   {
-    step: 4,
+    step: 5,
     title: "Organize in Workspaces",
     description: "Keep personal analyses private or collaborate with your team. Switch contexts with one click.",
     image: teamMembersPreview,
@@ -43,7 +51,7 @@ const ProductShowcase = () => {
           How It Works
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          From question to documented decision in three simple steps
+          From question to documented decision in five simple steps
         </p>
       </div>
 

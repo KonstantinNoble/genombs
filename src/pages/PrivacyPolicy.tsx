@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.7</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.8</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -1454,6 +1454,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">24 hours</td>
                     <td className="border border-border p-3">Automatic cleanup</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3">Business Context (Premium)</td>
+                    <td className="border border-border p-3">Until manual deletion or account deletion</td>
+                    <td className="border border-border p-3">User-initiated or CASCADE on account deletion</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1573,6 +1578,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 5.8 (February 1, 2026):</strong> Added Business Context to storage duration table (Section 15).</li>
               <li><strong>Version 5.7 (February 1, 2026):</strong> Added Business Context section (5.9) documenting Premium feature for personalized AI analyses. Added Firecrawl, Inc. as data recipient for website scraping. Updated data categories table with Business Context data. Documented website scan rate limiting (3 scans per 24h rolling window).</li>
               <li><strong>Version 5.6 (January 28, 2026):</strong> Minor formatting updates and clarifications.</li>
               <li><strong>Version 5.5 (January 26, 2026):</strong> Added Team Workspaces section (5.8) documenting Premium team collaboration features including: team creation, membership roles, invitation system, email visibility between members, rate limiting, and data retention. Updated Section 7.1 to include team invitation emails. Expanded data categories and retention tables with team-related data.</li>

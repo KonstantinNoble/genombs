@@ -84,7 +84,7 @@ const Features = () => {
         <div ref={headerRef} className={`text-center max-w-3xl mx-auto mb-20 scroll-reveal ${headerVisible ? 'revealed' : ''}`}>
           <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Features</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">What You Get</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Everything you need to make better decisions, alone or with your team</p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Everything your founding team needs to make better growth decisions together</p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
         <div className="grid md:grid-cols-2 gap-5 lg:gap-6 max-w-5xl mx-auto">

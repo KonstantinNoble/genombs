@@ -17,6 +17,7 @@ import { MultiModelLoader } from "@/components/validation/MultiModelLoader";
 import { LimitReachedDialog } from "@/components/validation/LimitReachedDialog";
 import { ExperimentSetupDialog, ExperimentSetupData } from "@/components/experiment/ExperimentSetupDialog";
 import { ExperimentWorkflow } from "@/components/experiment/ExperimentWorkflow";
+import { BusinessContextPanel } from "@/components/validation/BusinessContextPanel";
 
 import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hooks/useMultiAIValidation";
 import { useExperiment } from "@/hooks/useExperiment";
@@ -543,6 +544,14 @@ export default function ValidationPlatform() {
                 )}
               </div>
             </div>
+
+            {/* Business Context Panel */}
+            <BusinessContextPanel 
+              isPremium={isPremium}
+              onContextChange={() => {
+                // Optional: Could reload or show feedback
+              }}
+            />
 
             <Card className="border-primary/20 shadow-elegant">
               <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-4">

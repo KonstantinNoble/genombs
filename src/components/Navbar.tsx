@@ -77,7 +77,7 @@ const Navbar = () => {
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link 
       to={to} 
-      className={`relative text-base font-medium transition-colors duration-200 py-1 group ${
+      className={`relative text-[15px] font-medium transition-colors duration-200 py-1 group ${
         isActive(to) 
           ? "text-foreground" 
           : "text-muted-foreground hover:text-foreground"
@@ -100,11 +100,11 @@ const Navbar = () => {
           ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
           : "bg-background/60 backdrop-blur-md border-b border-transparent"
       }`}>
-        <div className="container mx-auto flex h-20 items-center px-4">
+        <div className="container mx-auto flex h-18 items-center px-4">
           {/* Logo - Left */}
           <div className="flex items-center shrink-0">
-            <Link to="/" className="flex items-center gap-3 pr-8 border-r border-border">
-              <div className="w-11 h-11 overflow-hidden rounded-xl">
+            <Link to="/" className="flex items-center gap-2.5 pr-6 border-r border-border">
+              <div className="w-10 h-10 overflow-hidden rounded-lg">
                 <img 
                   src={logo} 
                   alt="Synoptas Logo" 
@@ -112,10 +112,10 @@ const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-semibold tracking-tight text-foreground">
+                <span className="text-lg font-semibold tracking-tight text-foreground">
                   Synoptas
                 </span>
-                <span className="text-xs font-medium text-muted-foreground -mt-0.5 tracking-wide uppercase">
+                <span className="text-[11px] font-medium text-muted-foreground -mt-0.5 tracking-wide uppercase">
                   AI Validation
                 </span>
               </div>
@@ -123,7 +123,7 @@ const Navbar = () => {
           </div>
           
           {/* Desktop Navigation - Center */}
-          <div className="hidden md:flex flex-1 items-center justify-center gap-8">
+          <div className="hidden md:flex flex-1 items-center justify-center gap-7">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/validate">Features</NavLink>
             <NavLink to="/pricing">Pricing</NavLink>
@@ -143,7 +143,7 @@ const Navbar = () => {
             {user ? (
               <Link 
                 to="/profile"
-                className="bg-foreground text-background rounded-full px-6 py-2.5 text-base font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
               >
                 Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -151,7 +151,7 @@ const Navbar = () => {
             ) : (
               <Link 
                 to="/auth"
-                className="bg-foreground text-background rounded-full px-6 py-2.5 text-base font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />

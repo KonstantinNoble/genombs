@@ -73,21 +73,23 @@ const Navbar = () => {
     return () => subscription.unsubscribe();
   }, [user]);
 
-  // Desktop NavLink with underline hover effect
+  // Desktop NavLink with underline hover effect and green click animation
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link 
       to={to} 
-      className={`relative text-[15px] font-medium transition-colors duration-200 py-1 group ${
+      className={`relative text-base font-medium transition-all duration-200 py-1.5 group active:text-primary active:scale-95 ${
         isActive(to) 
           ? "text-foreground" 
           : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {children}
-      {/* Underline effect */}
+      {/* Underline effect - green on active */}
       <span 
-        className={`absolute bottom-0 left-0 h-0.5 bg-foreground transition-all duration-300 ${
-          isActive(to) ? "w-full" : "w-0 group-hover:w-full"
+        className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ${
+          isActive(to) 
+            ? "w-full bg-primary" 
+            : "w-0 bg-foreground group-hover:w-full group-active:bg-primary"
         }`} 
       />
     </Link>

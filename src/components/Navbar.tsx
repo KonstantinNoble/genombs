@@ -65,10 +65,10 @@ const Navbar = () => {
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link 
       to={to} 
-      className={`text-sm font-medium transition-all duration-300 relative py-1.5 px-3 rounded-lg ${
+      className={`text-sm font-medium transition-colors duration-200 ${
         isActive(to) 
-          ? "text-primary bg-primary/10" 
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          ? "text-foreground" 
+          : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {children}
@@ -83,29 +83,28 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent-cool/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 p-0.5 transition-all duration-300 group-hover:scale-105">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center gap-3 pr-6 border-r border-border">
+            <div className="w-9 h-9 overflow-hidden rounded-lg">
               <img 
                 src={logo} 
                 alt="Synoptas Logo" 
-                className="w-full h-full object-cover rounded-lg"
+                className="w-full h-full object-cover"
               />
             </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-300">
-              Synoptas
-            </span>
-            <span className="text-[10px] font-medium text-muted-foreground/70 -mt-0.5 tracking-wide uppercase">
-              AI Validation
-            </span>
-          </div>
-        </Link>
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold tracking-tight text-foreground">
+                Synoptas
+              </span>
+              <span className="text-[10px] font-medium text-muted-foreground -mt-0.5 tracking-wide uppercase">
+                AI Validation
+              </span>
+            </div>
+          </Link>
+        </div>
         
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-6 pl-6">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/validate">Features</NavLink>
           <NavLink to="/pricing">Pricing</NavLink>
@@ -120,31 +119,26 @@ const Navbar = () => {
               <TeamSwitcher />
             </div>
           )}
-          
-          <div className="ml-4 pl-4 border-l border-border/50 flex items-center gap-2">
-            {user ? (
-              <Button
-                size="sm"
-                className="relative overflow-hidden group/btn"
-                asChild
-              >
-                <Link to="/profile">
-                  <span className="relative z-10">Profile</span>
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                className="relative overflow-hidden group/btn shadow-sm hover:shadow-md transition-shadow"
-                asChild
-              >
-                <Link to="/auth" className="flex items-center gap-1.5">
-                  <span>Get Started</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </Button>
-            )}
-          </div>
+        </div>
+        
+        <div className="hidden md:flex items-center">
+          {user ? (
+            <Link 
+              to="/profile"
+              className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-all duration-200"
+            >
+              Profile
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          ) : (
+            <Link 
+              to="/auth"
+              className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-all duration-200"
+            >
+              Get Started
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}

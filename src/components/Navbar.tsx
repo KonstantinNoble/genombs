@@ -81,9 +81,9 @@ const Navbar = () => {
         ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
         : "bg-background/60 backdrop-blur-md border-b border-transparent"
     }`}>
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <div className="flex items-center">
+      <div className="container mx-auto flex h-16 items-center px-4">
+        {/* Logo - Left */}
+        <div className="flex items-center shrink-0">
           <Link to="/" className="flex items-center gap-3 pr-6 border-r border-border">
             <div className="w-9 h-9 overflow-hidden rounded-lg">
               <img 
@@ -103,8 +103,8 @@ const Navbar = () => {
           </Link>
         </div>
         
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6 pl-6">
+        {/* Desktop Navigation - Center */}
+        <div className="hidden md:flex flex-1 items-center justify-center gap-6">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/validate">Features</NavLink>
           <NavLink to="/pricing">Pricing</NavLink>
@@ -115,13 +115,12 @@ const Navbar = () => {
           
           {/* Team Switcher */}
           {showTeamSwitcher && (
-            <div className="ml-2">
-              <TeamSwitcher />
-            </div>
+            <TeamSwitcher />
           )}
         </div>
         
-        <div className="hidden md:flex items-center">
+        {/* CTA Button - Right */}
+        <div className="hidden md:flex items-center shrink-0">
           {user ? (
             <Link 
               to="/profile"

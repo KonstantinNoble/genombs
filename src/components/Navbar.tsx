@@ -95,7 +95,7 @@ const Navbar = () => {
   
   return (
     <>
-      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 pt-2 ${
+      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 pt-4 ${
         scrolled 
           ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm pt-0" 
           : "bg-background/60 backdrop-blur-md border-b border-transparent"

@@ -1,115 +1,97 @@
 
-# Homepage-Texte für kleine Team-Gründer optimieren
+# Navbar Redesign – Modernes, dynamisches Header-Design
 
-## Zielgruppen-Fokus
+## Überblick
+Der Header wird nach dem Vorbild des Referenz-Designs modernisiert: klare Struktur, elegante Trennung, und ein prominenter CTA-Button mit starkem Kontrast.
 
-**Primäre Zielgruppe:** Kleine Gründerteams (2-5 Personen) ohne formelles Advisory Board
+## Design-Änderungen
 
-**Haupt-Use-Case:** Strategische Wachstumsentscheidungen (Marktexpansion, neue Produkte, Partnerschaften, Pivots)
+### 1. Layout-Struktur
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│  [Logo]  │   Features   Pricing   Contact  ...   │  [Get Started →] │
+│          │   (Zentrierte Navigation-Links)       │   (CTA Button)   │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-**Kernproblem:** Das Team muss gemeinsam entscheiden, aber niemand hat Erfahrung in allen Bereichen. Externe Berater sind zu teuer.
+- **Links:** Logo mit vertikaler Trennlinie (`border-l`)
+- **Mitte:** Navigation-Links ohne Hintergrund-Hover (nur Textfarbe)
+- **Rechts:** Prominenter schwarzer CTA-Button mit Pfeil-Icon
 
----
+### 2. Spezifische Styling-Änderungen
 
-## Geplante Textänderungen
+| Element | Aktuell | Neu |
+|---------|---------|-----|
+| Logo-Bereich | Glow-Effekt, Gradient-Text | Schlicht, vertikale Trennlinie rechts |
+| Nav-Links | Rounded Background bei Hover | Nur Textfarbe-Änderung, keine Box |
+| CTA-Button | Primär-Farbe (Grün) | Dunkel/Schwarz mit weißem Text |
+| Trennlinien | Nur vor Buttons | Zwischen Logo und Nav |
 
-### 1. Hero Section (Hero.tsx)
+### 3. Hover-Effekte
 
-**Aktuell:** "For Founders Making Big Calls Alone"
+**Aktuelle Nav-Links:**
+- `hover:bg-muted/50` (Hintergrund)
+- `rounded-lg` Box-Style
 
-**Neu:** "For Founding Teams Without a Board"
+**Neue Nav-Links:**
+- Nur `hover:text-foreground` (Farbe wechselt)
+- Keine Hintergrund-Änderung
+- Cleaner, minimalistischer Look
 
-**Aktuell:** "No co-founder to challenge your thinking? No board to pressure-test your strategy?"
+### 4. CTA-Button Styling
 
-**Neu:** "No board to pressure-test your strategy? No budget for consultants? Get structured AI perspectives before your team commits."
+**Neu:**
+- Schwarzer/Dunkelgrauer Hintergrund
+- Weiße Schrift
+- Pill-Shape (bereits `rounded-2xl`)
+- Pfeil-Icon mit sanfter Bewegung bei Hover
+- `transition-transform` für Pfeil: `group-hover:translate-x-0.5`
 
----
+## Technical Details
 
-### 2. Pain Points Section (PainPoints.tsx)
+### Betroffene Datei
+`src/components/Navbar.tsx`
 
-**Aktuelle Punkte:** Solo-Founder fokussiert
+### Änderungen im Detail
 
-**Neue Punkte (Team-fokussiert):**
+1. **Logo-Bereich vereinfachen:**
+   - Glow-Effekt entfernen (`absolute -inset-1 bg-gradient-to-r...`)
+   - Gradient-Text auf normalen Text umstellen
+   - Tagline "AI Validation" beibehalten
+   - Vertikale Trennlinie rechts vom Logo hinzufügen
 
-1. **"Your team debates, but nobody has the full picture"**
-   - "Hiring, pivoting, expanding – everyone has an opinion. But without external expertise, you're validating each other's assumptions."
+2. **NavLink-Komponente anpassen:**
+   - `rounded-lg` und `px-3 py-1.5` entfernen
+   - `hover:bg-muted/50` durch `hover:text-foreground` ersetzen
+   - Nur Text-Transition behalten
 
-2. **"Advisors are expensive, and their time is limited"**
-   - "Good consultants charge $300+/hour. And even great mentors can't be on every call when you need to decide this week."
+3. **CTA-Button umgestalten:**
+   - Neue Variante oder direktes Styling: `bg-foreground text-background`
+   - Hover: `hover:bg-foreground/90` mit leichtem Scale
+   - Pfeil animieren bei Hover
 
-3. **"Gut feeling doesn't survive team disagreements"**
-   - "When founders disagree, 'I feel it's right' creates friction. Structured analysis gives everyone common ground."
+4. **Layout-Anpassungen:**
+   - Container-Trennung mit `border-r` nach Logo
+   - Navigation zentrierter erscheinen lassen
+   - Spacing gleichmäßiger verteilen
 
-4. **"You're googling in circles, finding contradicting advice"**
-   - "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh options for your specific situation."
+### CSS-Klassen für neuen CTA
 
----
+```tsx
+className="bg-foreground text-background rounded-full px-5 py-2 
+           flex items-center gap-2 group hover:bg-foreground/90 
+           transition-all duration-200"
+```
 
-### 3. Features Section (Features.tsx)
+Pfeil-Animation:
+```tsx
+<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+```
 
-**Aktuell:** "Everything you need to make better decisions, alone or with your team"
+## Zusammenfassung
 
-**Neu:** "Everything your founding team needs to make better growth decisions together"
-
----
-
-### 4. Testimonials (Testimonials.tsx)
-
-Testimonials werden auf Team-Szenarien und Wachstumsentscheidungen angepasst:
-
-1. **Marcus Reinholt (SaaS Founding Team)**
-   - "We debated expanding to Europe for weeks. Ran it through Synoptas – one model flagged timing concerns the others missed. Saved us from a costly mistake."
-
-2. **Elena Kowalski (E-Commerce CEO)**
-   - "Our co-founder disagreed on pricing strategy. Synoptas gave us structured arguments both sides could work with. Decision made in one meeting."
-
-3. **David Chen (HealthTech Founding Team)**
-   - "Before our partnership negotiations, we run key terms through Synoptas. Helps our whole team prepare for tough questions."
-
-4. **Sofia Martinez (FinTech Founder)**
-   - "When we pivoted our product, Synoptas documented every perspective. Six months later, investors loved seeing our decision process."
-
----
-
-### 5. CTA Section (CTA.tsx)
-
-**Aktuelle Trust-Indikatoren:** "Solo Founder Friendly"
-
-**Neue Trust-Indikatoren:** "Founding Team Friendly", "Faster Than Hiring a Consultant", "Align on Strategy"
-
----
-
-### 6. Product Showcase (ProductShowcase.tsx)
-
-Beschreibungen werden für Team-Kontext angepasst:
-
-- Step 2: "Type in your team's decision. Market expansion, new hires, pivots – any strategic call you need multiple perspectives on."
-
-- Step 5: "Organize decisions by project or team member. Share analyses with co-founders or keep them private."
-
----
-
-## Betroffene Dateien
-
-| Datei | Änderungen |
-|-------|------------|
-| `src/components/home/Hero.tsx` | Subtitle + Subheadline anpassen |
-| `src/components/home/PainPoints.tsx` | Alle 4 Pain Points neu formulieren |
-| `src/components/home/Features.tsx` | Subtitle anpassen |
-| `src/components/home/Testimonials.tsx` | Alle 4 Testimonials auf Team-Fokus umschreiben |
-| `src/components/home/CTA.tsx` | Trust-Indikatoren ändern |
-| `src/components/home/ProductShowcase.tsx` | 2 Beschreibungen anpassen |
-
----
-
-## Zusammenfassung der Positionierung
-
-**Vorher:** "Solo-Founder, der alleine entscheidet"
-
-**Nachher:** "Kleine Gründerteams, die gemeinsam strategische Wachstumsentscheidungen treffen müssen – ohne teures Advisory Board oder Berater"
-
-Diese Änderungen betonen:
-- Team-Dynamik statt Einsamkeit
-- Wachstumsentscheidungen statt generische Entscheidungen
-- Konsens-Building statt individuelle Validierung
-- Kostenersparnis gegenüber Beratern
+Der neue Header wirkt:
+- **Cleaner** – weniger visuelle Effekte, fokussierter
+- **Professioneller** – klare Struktur wie bei etablierten SaaS-Produkten
+- **Dynamischer** – subtile Hover-Animationen statt schwerer Effekte
+- **Kontrastreicher** – schwarzer CTA hebt sich deutlich ab

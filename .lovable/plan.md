@@ -1,460 +1,354 @@
 
+# Stabilitäts- und Mobile-Optimierungsplan
 
-# Visuelles Redesign: Authentifizierte Seiten (Workspace, Analyse, etc.)
+## Übersicht
 
-## Ziel
-
-Die Seiten nach der Anmeldung werden visuell verbessert mit einem minimalistischen, professionellen Design. Icons und Emojis werden stark reduziert. 
-
-**AUSNAHME: ValidationOutput wird NICHT verandert** (weder visuell noch funktional).
-
----
-
-## Ubersicht der Anderungen
-
-| Seite | Hauptanderungen |
-|-------|-----------------|
-| ValidationPlatform.tsx | Icon-Reduktion, cleaner Header, verbesserte Card-Stile |
-| Teams.tsx | Users-Icon entfernen, Text-basierte Workspace-Cards |
-| TeamMembers.tsx | Icon-Reduktion (Users, Mail, Settings entfernen) |
-| TeamSettings.tsx | Settings-Icon aus Header entfernen |
-| Profile.tsx | Building2-Icons entfernen, cleaner Layout |
-| Dashboard.tsx | Bereits minimal - nur kleine Verbesserungen |
-| TeamSwitcher.tsx | Users-Icons entfernen |
-| BusinessContextPanel.tsx | Briefcase, Globe, Lock Icons entfernen |
-| ValidationInput.tsx | Risk-Icons bleiben (sind custom SVG, keine Lucide) |
-| ModelSelector.tsx | Keine Icons vorhanden - nur Badges |
-| MultiModelLoader.tsx | Custom Icons (ModelTriangle, SynthesisIcon) bleiben |
-| ExperimentWorkflow.tsx | Bereits minimal |
+Dieser Plan verbessert die Stabilität und mobile Benutzerfreundlichkeit der Website durch:
+1. Verbesserte Fehlerbehandlung und Crash-Prävention
+2. Mobile Touch-Optimierungen
+3. Performance-Verbesserungen
+4. Responsives Layout-Feintuning
 
 ---
 
-## Phase 1: ValidationPlatform.tsx
+## Phase 1: Erweiterte Fehlerbehandlung
 
-### Aktuelle Icons zu entfernen:
-- `Building2` aus Team-Mode Banner
-- `Eye` aus Viewer-Restriction Alert
+### 1.1 ErrorBoundary Verbesserung
 
-### Anderungen:
+**Datei:** `src/components/ErrorBoundary.tsx`
 
-**Team Mode Banner (Zeilen 505-527)**
-```tsx
-// VORHER:
-<Building2 className="h-5 w-5 text-primary shrink-0" />
+Aktuell zeigt der ErrorBoundary bei einem Fehler `null` an, was den Benutzer im Unklaren lässt. Ein verbessertes Fallback-UI wird implementiert.
 
-// NACHHER: Entfernen, nur Text-Badge verwenden
-<div className="flex items-center gap-2 min-w-0">
-  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs font-semibold shrink-0">
-    Team
-  </Badge>
-  <div className="min-w-0">
-    <p className="font-medium text-sm sm:text-base truncate">
-      {currentTeam.name}
-    </p>
-  </div>
-</div>
+**Änderungen:**
+- Benutzerfreundliche Fehlermeldung mit Retry-Button anzeigen
+- Fehlerprotokollierung verbessern
+- Option zum Neuladen der Seite anbieten
+
+```text
+┌─────────────────────────────────────────┐
+│                                         │
+│     Etwas ist schiefgelaufen            │
+│                                         │
+│     [Seite neu laden]                   │
+│                                         │
+└─────────────────────────────────────────┘
 ```
 
-**Header Section (Zeilen 530-545)**
-```tsx
-// VORHER: Building2-Icon im Badge
-<Badge variant="outline" className="border-primary/30 text-primary text-xs">
-  <Building2 className="h-3 w-3 mr-1" />
-  Team Mode
-</Badge>
+### 1.2 AuthContext Stabilisierung
 
-// NACHHER: Nur Text
-<Badge variant="outline" className="border-primary/30 text-primary text-xs font-semibold">
-  Team
-</Badge>
-```
+**Datei:** `src/contexts/AuthContext.tsx`
 
-**Viewer Alert (Zeilen 589-598)**
-```tsx
-// VORHER:
-<Eye className="h-4 w-4 text-blue-500" />
+**Änderungen:**
+- Try-Catch um Realtime-Subscription für Edge Cases
+- Timeout für Premium-Status-Abfragen (verhindert Hängen)
+- Bessere Fehlerbehandlung bei Netzwerkproblemen
 
-// NACHHER: Entfernen, Alert-Styling anpassen
-<Alert className="border-blue-500/30 bg-blue-500/10">
-  <AlertTitle className="text-blue-600 font-semibold">View Only Mode</AlertTitle>
-  <AlertDescription className="text-muted-foreground">
-    As a team viewer, you can view shared analyses but cannot create new ones. 
-  </AlertDescription>
-</Alert>
-```
+### 1.3 App.tsx Fehler-Wrapper
 
-**Verbesserte Card-Stile:**
-- History-Sidebar: Subtilere Borders, cleaner Hover-States
-- Main Content Cards: Konsistente border-radius (rounded-2xl)
+**Datei:** `src/App.tsx`
+
+**Änderungen:**
+- Suspense-Boundary für lazy-loaded Komponenten
+- Globale Error-Recovery-Logik
 
 ---
 
-## Phase 2: Teams.tsx
+## Phase 2: Mobile Touch-Optimierungen
 
-### Aktuelle Icons zu entfernen:
-- `Users` (6x verwendet)
-- `Settings` 
-- `ArrowRight` (behalten - ist CTA-Icon)
-- `Plus` (behalten - ist Action-Icon)
-- `LogOut` (behalten - ist kritische Aktion)
-- `Loader2` (behalten - ist Feedback)
+### 2.1 Touch-Ziele vergrößern
 
-### Anderungen:
+**Allgemeine Änderungen (CSS):**
 
-**Personal Workspace Card (Zeilen 179-181)**
-```tsx
-// VORHER:
-<div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-</div>
-
-// NACHHER: Initialen-Circle oder Gradient-Shape
-<div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center shrink-0">
-  <span className="text-base sm:text-lg font-bold text-primary">P</span>
-</div>
-```
-
-**Team Cards (Zeilen 220-221)**
-```tsx
-// VORHER:
-<Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-
-// NACHHER: Team-Initialen
-<span className="text-base sm:text-lg font-bold text-foreground">
-  {team.name.charAt(0).toUpperCase()}
-</span>
-```
-
-**Action Buttons (Zeilen 237-258)**
-```tsx
-// VORHER:
-<Users className="h-4 w-4" /> Members
-<Settings className="h-4 w-4" /> Settings
-
-// NACHHER: Nur Text
-<span>Members</span>
-<span>Settings</span>
-```
-
----
-
-## Phase 3: TeamMembers.tsx
-
-### Aktuelle Icons zu entfernen:
-- `Users` (4x)
-- `UserPlus`
-- `Mail`
-- `Trash2` (behalten - kritische Aktion)
-- `Loader2` (behalten - Feedback)
-- `Clock`
-- `X`
-- `ChevronLeft` (behalten - Navigation)
-- `Settings`
-- `Info`
-- `AlertTriangle` (behalten - Warnung)
-
-### Anderungen:
-
-**Header (Zeilen 363-381)**
-```tsx
-// VORHER:
-<h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
-
-// NACHHER: Cleaner mit Initiale
-<div className="flex items-center gap-3">
-  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-    <span className="text-lg font-bold text-primary">{currentTeam.name.charAt(0)}</span>
-  </div>
-  <div>
-    <h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
-    <p className="text-base text-muted-foreground">Manage members and invitations</p>
-  </div>
-</div>
-```
-
-**Role Permissions Card (Zeilen 384-407)**
-```tsx
-// VORHER:
-<Info className="h-4 w-4" /> Role Permissions
-
-// NACHHER: Nur Text-Header
-<CardTitle className="text-sm font-medium">Role Permissions</CardTitle>
-```
-
-**Invite Form (Zeilen 413-419)**
-```tsx
-// VORHER:
-<UserPlus className="h-5 w-5" /> Invite Member
-
-// NACHHER: Nur Text
-<CardTitle className="text-lg sm:text-xl">Invite Member</CardTitle>
-```
-
-**Members List (Zeilen 489-491)**
-```tsx
-// VORHER:
-<Users className="h-5 w-5" /> Members (X)
-
-// NACHHER:
-<CardTitle className="text-lg sm:text-xl">Members ({members.length})</CardTitle>
-```
-
-**Invite Button (Zeilen 469-480)**
-```tsx
-// VORHER:
-<Mail className="h-4 w-4" />
-
-// NACHHER: Nur Text "Send Invite"
-```
-
----
-
-## Phase 4: TeamSettings.tsx
-
-### Aktuelle Icons zu entfernen:
-- `Settings` aus Header
-
-### Anderungen:
-
-**Header (Zeilen 221-228)**
-```tsx
-// VORHER:
-<h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-  <Settings className="h-6 w-6" />
-  Team Settings
-</h1>
-
-// NACHHER:
-<h1 className="text-2xl sm:text-3xl font-bold">Team Settings</h1>
-```
-
----
-
-## Phase 5: Profile.tsx
-
-### Aktuelle Icons zu entfernen:
-- `Building2` (3x)
-- `AlertTriangle` (behalten - kritische Warnung)
-- `ArrowRight` (behalten - CTA)
-- `Settings` (1x)
-
-### Anderungen:
-
-**My Teams Section (Zeilen 271-275)**
-```tsx
-// VORHER:
-<Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-<span className="text-sm font-medium truncate">{team.name}</span>
-
-// NACHHER:
-<div className="h-6 w-6 rounded bg-muted flex items-center justify-center shrink-0">
-  <span className="text-xs font-bold text-muted-foreground">{team.name.charAt(0)}</span>
-</div>
-<span className="text-sm font-medium truncate">{team.name}</span>
-```
-
-**Manage Link (Zeilen 279-284)**
-```tsx
-// VORHER:
-<Settings className="h-3 w-3" /> Manage
-
-// NACHHER: Nur Text
-Manage
-```
-
-**Workspace Warning (Zeilen 320-324)**
-```tsx
-// VORHER:
-<Building2 className="h-4 w-4 text-primary" />
-<span className="font-medium">{team.name}</span>
-
-// NACHHER:
-<span className="font-medium">{team.name}</span>
-```
-
----
-
-## Phase 6: TeamSwitcher.tsx
-
-### Aktuelle Icons zu entfernen:
-- `Users` (4x)
-- `Check` (behalten - Auswahl-Indikator)
-- `ChevronDown` (behalten - Dropdown-Indikator)
-- `Plus` (behalten - Action)
-- `Loader2` (behalten - Feedback)
-- `Settings` (1x)
-
-### Anderungen:
-
-**Trigger Button (Zeilen 69-80)**
-```tsx
-// VORHER:
-<Users className="h-4 w-4 shrink-0 text-primary" />
-<span className="truncate">{currentTeam.name}</span>
-
-// NACHHER: Initialen-Badge
-<span className="h-5 w-5 rounded bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-  {currentTeam.name.charAt(0)}
-</span>
-<span className="truncate hidden sm:inline">{currentTeam.name}</span>
-```
-
-**Dropdown Items (Zeilen 92, 113)**
-```tsx
-// VORHER:
-<Users className="h-4 w-4 shrink-0" />
-
-// NACHHER: Initialen-Circle
-<span className="h-5 w-5 rounded bg-muted flex items-center justify-center text-xs font-semibold shrink-0">
-  P
-</span>
-```
-
-**Manage Button (Zeilen 125-131)**
-```tsx
-// VORHER:
-<Settings className="h-3.5 w-3.5" /> Manage
-
-// NACHHER:
-Manage
-```
-
----
-
-## Phase 7: BusinessContextPanel.tsx
-
-### Aktuelle Icons zu entfernen:
-- `Briefcase`
-- `Globe`
-- `Lock`
-- `Sparkles`
-- `Check` (behalten - Status-Indikator)
-- `ChevronDown/Up` (behalten - Collapsible)
-- `Loader2` (behalten - Feedback)
-- `ExternalLink`
-- `RefreshCw` (behalten - Action)
-- `Clock`
-
-### Anderungen:
-
-**Header (Zeilen 222-224)**
-```tsx
-// VORHER:
-<div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
-  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-600" />
-</div>
-
-// NACHHER: Initialen-Shape
-<div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
-  <span className="text-lg sm:text-xl font-bold text-cyan-600">BC</span>
-</div>
-```
-
-**Website URL Section (Zeilen 407-420)**
-```tsx
-// VORHER:
-<Globe className="h-5 w-5 text-primary" />
-// oder
-<Lock className="h-5 w-5 text-amber-600" />
-<Sparkles className="h-3 w-3 mr-1" />
-
-// NACHHER: Nur Text-Labels
-<span className="font-semibold text-base">Website URL</span>
-{!isPremium && (
-  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
-    Premium
-  </Badge>
-)}
-```
-
----
-
-## Phase 8: Dashboard.tsx (minimal)
-
-### Aktuelle Icons:
-- `ArrowRight` (behalten - CTA)
-
-### Anderungen:
-- Gradient-Circle im Empty State entfernen und durch Text ersetzen
-
-**Empty State (Zeilen 117-120)**
-```tsx
-// VORHER:
-<div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 via-accent-cool/10 to-accent-warm/20" />
-
-// NACHHER:
-<div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-  <span className="text-4xl font-bold text-primary/40">0</span>
-</div>
-```
-
----
-
-## Phase 9: Globale Stil-Verbesserungen
-
-### Konsistente Card-Stile:
 ```css
-/* Einheitliche Card-Borders */
-.glass-card {
-  border-radius: 1rem; /* rounded-2xl */
-  border: 1px solid hsl(var(--border) / 0.6);
-}
-
-/* Hover-State fur interactive Cards */
-.glass-card:hover {
-  border-color: hsl(var(--primary) / 0.3);
+/* Minimale Touch-Target-Größe: 44x44px */
+@media (max-width: 767px) {
+  button, 
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 ```
 
-### Typography-Verbesserungen:
-- Konsistente Header-Grossen: text-2xl sm:text-3xl fur Page-Titles
-- Muted-Foreground fur Beschreibungstexte
-- Font-semibold fur Section-Headers
+### 2.2 Navbar Mobile-Verbesserungen
+
+**Datei:** `src/components/Navbar.tsx`
+
+**Änderungen:**
+- Größere Touch-Targets für Mobile-Menu-Items
+- Swipe-to-close für Mobile-Menu
+- Bessere Abstände zwischen Menüpunkten
+
+```text
+Mobile Menu (verbesserter Abstand):
+┌─────────────────────┐
+│                 [X] │
+│                     │
+│      Synoptas       │
+│                     │
+│   ─────────────     │
+│                     │
+│      Home           │  ← min-height: 56px
+│                     │
+│      Features       │  ← min-height: 56px
+│                     │
+│      Pricing        │  ← min-height: 56px
+│                     │
+└─────────────────────┘
+```
+
+### 2.3 ValidationInput Mobile-Optimierung
+
+**Datei:** `src/components/validation/ValidationInput.tsx`
+
+**Änderungen:**
+- Textarea automatisch bei Fokus erweitern
+- Bessere Slider-Touch-Interaktion
+- Risk-Icons größer auf Mobile (40px statt 32px)
+
+### 2.4 TeamSwitcher Mobile-Fix
+
+**Datei:** `src/components/team/TeamSwitcher.tsx`
+
+**Änderungen:**
+- Dropdown-Breite auf Mobile anpassen
+- Touch-freundliche Item-Größen
 
 ---
 
-## Zusammenfassung der Icon-Reduktion
+## Phase 3: Performance-Optimierungen
 
-| Komponente | Vorher | Nachher |
-|------------|--------|---------|
-| ValidationPlatform | 3 Icons | 0 Icons |
-| Teams | 6 Icons | 3 Icons (Plus, LogOut, ArrowRight) |
-| TeamMembers | 9 Icons | 3 Icons (ChevronLeft, Trash2, AlertTriangle) |
-| TeamSettings | 5 Icons | 4 Icons (ChevronLeft, Trash2, LogOut, AlertTriangle) |
-| Profile | 5 Icons | 2 Icons (AlertTriangle, ArrowRight) |
-| TeamSwitcher | 6 Icons | 3 Icons (Check, ChevronDown, Plus) |
-| BusinessContextPanel | 10 Icons | 3 Icons (Check, ChevronUp/Down, RefreshCw) |
+### 3.1 CSS-Animationen optimieren
 
-**Behaltene Icons (nur fur kritische Funktionen):**
-- Navigation: ChevronLeft, ChevronDown, ChevronUp
-- CTAs: ArrowRight, Plus
-- Feedback: Loader2, Check
-- Kritische Aktionen: Trash2, LogOut
-- Warnungen: AlertTriangle
-- Funktional: RefreshCw (Rescan)
+**Datei:** `src/index.css`
+
+**Änderungen:**
+- `will-change` für animierte Elemente
+- `prefers-reduced-motion` Media Query berücksichtigen
+- GPU-Beschleunigung für Animationen
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+### 3.2 Lazy Loading für schwere Komponenten
+
+**Datei:** `src/App.tsx`
+
+**Änderungen:**
+- React.lazy für Dashboard, Teams, Profile-Seiten
+- Suspense mit Loading-Fallback
+
+```tsx
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Teams = lazy(() => import('./pages/Teams'));
+```
+
+### 3.3 Image-Optimierung
+
+**Datei:** `src/components/Navbar.tsx`, `src/components/home/Hero.tsx`
+
+**Änderungen:**
+- `loading="lazy"` für Bilder
+- `fetchpriority="high"` für kritische Bilder
 
 ---
 
-## Dateien die geandert werden
+## Phase 4: Responsives Layout-Feintuning
 
-| Datei | Anderung |
-|-------|----------|
-| `src/pages/ValidationPlatform.tsx` | Icon-Imports entfernen, Team-Banner vereinfachen |
-| `src/pages/Teams.tsx` | Users-Icons durch Initialen ersetzen |
-| `src/pages/TeamMembers.tsx` | Icons aus Headers entfernen |
-| `src/pages/TeamSettings.tsx` | Settings-Icon aus Header entfernen |
-| `src/pages/Profile.tsx` | Building2-Icons durch Initialen ersetzen |
-| `src/pages/Dashboard.tsx` | Empty-State verbessern |
-| `src/components/team/TeamSwitcher.tsx` | Users-Icons durch Initialen ersetzen |
-| `src/components/validation/BusinessContextPanel.tsx` | Briefcase/Globe/Lock entfernen |
+### 4.1 Container-Padding konsistent machen
+
+**Datei:** `src/index.css`
+
+**Änderungen:**
+- Mobile-first padding: `px-4` (16px)
+- Tablet: `sm:px-6` (24px)
+- Desktop: `lg:px-8` (32px)
+
+### 4.2 Typography-Skalierung
+
+**Datei:** `src/index.css`
+
+**Änderungen:**
+- Fluid Typography mit `clamp()`
+- Bessere Lesbarkeit auf kleinen Screens
+
+```css
+.hero-title {
+  font-size: clamp(2rem, 5vw + 1rem, 4.5rem);
+}
+```
+
+### 4.3 FeatureShowcase Grid-Optimierung
+
+**Datei:** `src/components/home/FeatureShowcase.tsx`
+
+**Änderungen:**
+- Mindesthöhe auf Mobile reduzieren: `min-h-[240px]` statt `min-h-[280px]`
+- Bessere Card-Abstände auf kleinen Screens
+
+### 4.4 Footer Mobile-Layout
+
+**Datei:** `src/components/Footer.tsx`
+
+**Änderungen:**
+- Zentrierte Links auf Mobile
+- Größerer Tap-Target für Links
 
 ---
 
-## Nicht geandert (explizite Ausnahmen)
+## Phase 5: Safe Storage und Browser-Kompatibilität
 
-- **ValidationOutput.tsx** - KEINE Anderungen (User-Anforderung)
-- **RiskIcons.tsx** - Custom SVG Icons, keine Lucide
-- **ModelTriangle.tsx** - Funktionales Visualisierungs-Element
-- **SynthesisIcon.tsx** - Funktionales Visualisierungs-Element
-- **ModelSelector.tsx** - Keine Icons, nur Badges
+### 5.1 Safe Storage Verbesserung
+
+**Datei:** `src/polyfills/safe-storage.ts`
+
+**Änderungen:**
+- SessionStorage-Fallback hinzufügen
+- Bessere Fehlerbehandlung für Edge-Browser
+
+### 5.2 useIsMobile Hook Stabilisierung
+
+**Datei:** `src/hooks/use-mobile.tsx`
+
+**Änderungen:**
+- Initial-Wert sofort setzen (verhindert Flash)
+- Debounce für resize-Events
+
+```tsx
+// Sofortiger Initial-Wert ohne undefined
+const [isMobile, setIsMobile] = useState(() => {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
+});
+```
+
+---
+
+## Phase 6: Viewport-Meta und PWA-Grundlagen
+
+### 6.1 Viewport-Meta verbessern
+
+**Datei:** `index.html`
+
+**Änderungen:**
+- `viewport-fit=cover` für iPhone-Notch
+- `maximum-scale=5` für bessere Accessibility
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
+```
+
+### 6.2 Theme-Color aktualisieren
+
+**Datei:** `index.html`
+
+**Änderungen:**
+- Theme-Color auf Primary-Grün ändern (statt Orange)
+
+```html
+<meta name="theme-color" content="#22C55E" />
+```
+
+---
+
+## Zusammenfassung der Änderungen
+
+| Datei | Änderung | Priorität |
+|-------|----------|-----------|
+| `src/components/ErrorBoundary.tsx` | Benutzerfreundliches Fallback-UI | Hoch |
+| `src/contexts/AuthContext.tsx` | Bessere Fehlerbehandlung | Hoch |
+| `src/App.tsx` | Lazy Loading + Suspense | Mittel |
+| `src/components/Navbar.tsx` | Touch-Targets vergrößern | Hoch |
+| `src/components/validation/ValidationInput.tsx` | Mobile-optimierte Slider | Mittel |
+| `src/components/team/TeamSwitcher.tsx` | Mobile Dropdown-Breite | Mittel |
+| `src/index.css` | Reduced Motion, Touch-Targets, Fluid Typography | Hoch |
+| `src/hooks/use-mobile.tsx` | Kein undefined-Flash | Mittel |
+| `src/components/home/FeatureShowcase.tsx` | Mobile Card-Größen | Niedrig |
+| `src/components/Footer.tsx` | Mobile-zentriertes Layout | Niedrig |
+| `index.html` | Viewport-Meta, Theme-Color | Mittel |
+
+---
+
+## Erwartete Verbesserungen
+
+| Bereich | Vorher | Nachher |
+|---------|--------|---------|
+| Crash-Recovery | Leerer Bildschirm | Benutzerfreundliche Fehlermeldung mit Retry |
+| Touch-Targets | 32-40px | Mind. 44px auf Mobile |
+| Animation-Performance | Standard | GPU-beschleunigt + Reduced Motion Support |
+| Initial-Load | Flash bei Mobile-Detection | Sofortiger korrekter Wert |
+| Lazy-Loading | Alle Seiten sofort geladen | Nur kritische Seiten sofort |
+| Viewport | Standard | iPhone-Notch + Accessibility-optimiert |
+
+---
+
+## Technische Details
+
+### Neue CSS-Klassen
+
+```css
+/* Touch-optimierte Buttons */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fluid Typography */
+.text-fluid-xl {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.text-fluid-2xl {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+/* Safe area padding für iPhone */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+```
+
+### Lazy Loading Pattern
+
+```tsx
+// App.tsx
+import { Suspense, lazy } from 'react';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Teams = lazy(() => import('./pages/Teams'));
+
+// In Routes:
+<Suspense fallback={<LoadingSpinner />}>
+  <Route path="/dashboard" element={<Dashboard />} />
+</Suspense>
+```
+
+---
+
+## Dateien die geändert werden
+
+| Datei | Art der Änderung |
+|-------|------------------|
+| `src/components/ErrorBoundary.tsx` | Erweitern |
+| `src/contexts/AuthContext.tsx` | Erweitern |
+| `src/App.tsx` | Lazy Loading hinzufügen |
+| `src/components/Navbar.tsx` | Touch-Targets verbessern |
+| `src/components/validation/ValidationInput.tsx` | Mobile-Optimierung |
+| `src/components/team/TeamSwitcher.tsx` | Mobile-Dropdown-Fix |
+| `src/index.css` | Neue Utility-Klassen + Reduced Motion |
+| `src/hooks/use-mobile.tsx` | Initial-Wert verbessern |
+| `src/components/home/FeatureShowcase.tsx` | Mobile Card-Größen |
+| `src/components/Footer.tsx` | Mobile-Layout |
+| `index.html` | Meta-Tags aktualisieren |
 

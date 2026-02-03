@@ -31,6 +31,11 @@ const DecisionFlowAnimation = () => {
   const synthesisY = 260;
   const synthesisX = 200;
 
+  // Helper function for SVG-native scale transform around a point
+  const getScaleTransform = (x: number, y: number, scale: number) => {
+    return `translate(${x}, ${y}) scale(${scale}) translate(${-x}, ${-y})`;
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -110,47 +115,79 @@ const DecisionFlowAnimation = () => {
         />
 
         {/* Animated particles - one for each model */}
+        {/* Using rotate="0" and calcMode="spline" for consistent rendering across browsers */}
         {isVisible && (
           <>
             {/* GPT Particle */}
-            <circle r="5" fill="hsl(220, 70%, 50%)" opacity="0.9">
-              <animateMotion dur="2.5s" repeatCount="indefinite" begin="0s">
+            <circle r="4" fill="hsl(220, 70%, 50%)" opacity="0.9">
+              <animateMotion 
+                dur="2.5s" 
+                repeatCount="indefinite" 
+                begin="0s"
+                rotate="0"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1"
+                keyTimes="0;1"
+              >
                 <mpath href="#path1" />
               </animateMotion>
             </circle>
             
             {/* Claude Particle */}
-            <circle r="5" fill="hsl(25, 85%, 55%)" opacity="0.9">
-              <animateMotion dur="2.5s" repeatCount="indefinite" begin="0.6s">
+            <circle r="4" fill="hsl(25, 85%, 55%)" opacity="0.9">
+              <animateMotion 
+                dur="2.5s" 
+                repeatCount="indefinite" 
+                begin="0.6s"
+                rotate="0"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1"
+                keyTimes="0;1"
+              >
                 <mpath href="#path2" />
               </animateMotion>
             </circle>
             
             {/* Gemini Particle */}
-            <circle r="5" fill="hsl(142, 70%, 45%)" opacity="0.9">
-              <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.2s">
+            <circle r="4" fill="hsl(142, 70%, 45%)" opacity="0.9">
+              <animateMotion 
+                dur="2.5s" 
+                repeatCount="indefinite" 
+                begin="1.2s"
+                rotate="0"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1"
+                keyTimes="0;1"
+              >
                 <mpath href="#path3" />
               </animateMotion>
             </circle>
             
             {/* Perplexity Particle */}
-            <circle r="5" fill="hsl(190, 85%, 45%)" opacity="0.9">
-              <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.8s">
+            <circle r="4" fill="hsl(190, 85%, 45%)" opacity="0.9">
+              <animateMotion 
+                dur="2.5s" 
+                repeatCount="indefinite" 
+                begin="1.8s"
+                rotate="0"
+                calcMode="spline"
+                keySplines="0.4 0 0.2 1"
+                keyTimes="0;1"
+              >
                 <mpath href="#path4" />
               </animateMotion>
             </circle>
           </>
         )}
 
-        {/* Model nodes */}
+        {/* Model nodes - using SVG transform attribute instead of CSS transform-origin */}
         {models.map((model) => (
           <g 
             key={model.name}
+            transform={getScaleTransform(model.x, model.y, isVisible ? 1 : 0.8)}
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'scale(1)' : 'scale(0.8)',
-              transformOrigin: `${model.x}px ${model.y}px`,
-              transition: `all 0.6s ease-out`,
+              transition: `opacity 0.6s ease-out, transform 0.6s ease-out`,
               transitionDelay: model.delay,
             }}
           >
@@ -188,13 +225,12 @@ const DecisionFlowAnimation = () => {
           </g>
         ))}
 
-        {/* Synthesis point - central result */}
+        {/* Synthesis point - central result - using SVG transform attribute */}
         <g
+          transform={getScaleTransform(synthesisX, synthesisY, isVisible ? 1 : 0.5)}
           style={{
             opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'scale(1)' : 'scale(0.5)',
-            transformOrigin: `${synthesisX}px ${synthesisY}px`,
-            transition: 'all 0.8s ease-out',
+            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
             transitionDelay: '0.5s',
           }}
         >

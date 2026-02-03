@@ -150,6 +150,7 @@ All colors MUST be HSL.
       linear-gradient(to right, hsl(0 0% 0% / 0.06) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(0 0% 0% / 0.06) 1px, transparent 1px);
     background-size: 48px 48px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Typography refinements */
@@ -165,6 +166,72 @@ All colors MUST be HSL.
   p {
     line-height: 1.7;
   }
+}
+
+/* ============================================
+   MOBILE TOUCH & ACCESSIBILITY OPTIMIZATIONS
+   ============================================ */
+
+/* Minimum touch target size for mobile */
+@media (max-width: 767px) {
+  button:not(.no-touch-optimize),
+  [role="button"]:not(.no-touch-optimize),
+  a:not(.no-touch-optimize) {
+    min-height: 44px;
+  }
+}
+
+/* Touch target utility class */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fluid Typography */
+.text-fluid-xl {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.text-fluid-2xl {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.text-fluid-3xl {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+/* Safe area padding for iPhone notch */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* GPU acceleration for animated elements */
+.glass-card,
+.feature-card,
+.premium-card,
+.card-elevated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Custom text selection color - green branding */

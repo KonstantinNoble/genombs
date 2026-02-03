@@ -15,7 +15,7 @@ const FeatureCard = ({ title, description, visual, delay, isPremium }: FeatureCa
   return (
     <div
       ref={ref}
-      className={`feature-card relative p-6 rounded-xl bg-card border border-border/60 min-h-[280px] flex flex-col transition-all duration-700 hover:border-primary/20 hover:shadow-lg ${
+      className={`feature-card relative p-5 sm:p-6 rounded-xl bg-card border border-border/60 min-h-[240px] sm:min-h-[280px] flex flex-col transition-all duration-700 hover:border-primary/20 hover:shadow-lg ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
       style={{ transitionDelay: `${delay}s` }}
@@ -30,7 +30,7 @@ const FeatureCard = ({ title, description, visual, delay, isPremium }: FeatureCa
         {visual}
       </div>
       
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
     </div>
   );
@@ -296,23 +296,23 @@ const FeatureShowcase = () => {
   ];
 
   return (
-    <section className="py-20 sm:py-24 md:py-32 relative overflow-hidden">
+    <section className="py-16 sm:py-20 md:py-32 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div 
           ref={headerRef}
-          className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          className={`text-center max-w-3xl mx-auto mb-12 sm:mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
           <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">Features</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-fluid-2xl font-bold text-foreground mb-6">
             Everything You Need to Decide
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             From weighting AI perspectives to sharing with your team – every tool designed for strategic clarity.
           </p>
           <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <FeatureCard
               key={feature.title}

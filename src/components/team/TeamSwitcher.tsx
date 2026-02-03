@@ -29,7 +29,7 @@ export function TeamSwitcher() {
 
   if (isLoading) {
     return (
-      <Button variant="ghost" size="sm" disabled className="gap-2">
+      <Button variant="ghost" size="sm" disabled className="gap-2 min-h-[44px]">
         <Loader2 className="h-4 w-4 animate-spin" />
         <span className="hidden sm:inline">Loading...</span>
       </Button>
@@ -62,7 +62,7 @@ export function TeamSwitcher() {
             variant="ghost"
             size="sm"
             className={cn(
-              "gap-2 px-2 sm:px-3 max-w-[160px] sm:max-w-[200px]",
+              "gap-2 px-2 sm:px-3 max-w-[160px] sm:max-w-[200px] min-h-[44px]",
               currentTeam && "bg-primary/10 border border-primary/20"
             )}
           >
@@ -91,7 +91,7 @@ export function TeamSwitcher() {
               switchTeam(null);
               setOpen(false);
             }}
-            className="gap-2 min-h-[44px] sm:min-h-0"
+            className="gap-2 min-h-[48px]"
           >
             <span className="h-5 w-5 rounded bg-muted flex items-center justify-center text-xs font-semibold shrink-0">
               P
@@ -114,7 +114,7 @@ export function TeamSwitcher() {
                       switchTeam(team.id);
                       setOpen(false);
                     }}
-                    className="gap-2 pr-20 min-h-[48px] sm:min-h-0"
+                    className="gap-2 pr-20 min-h-[52px]"
                   >
                     <span className="h-5 w-5 rounded bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                       {team.name.charAt(0)}
@@ -132,7 +132,7 @@ export function TeamSwitcher() {
                   {/* Manage button overlay */}
                   <button
                     onClick={(e) => handleManageTeam(e, team.id)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors min-h-[36px]"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors min-h-[40px]"
                   >
                     <span>Manage</span>
                   </button>
@@ -147,7 +147,7 @@ export function TeamSwitcher() {
             onClick={handleCreateTeamClick}
             disabled={isPremium && !canCreateMoreTeams}
             className={cn(
-              "gap-2 min-h-[44px] sm:min-h-0",
+              "gap-2 min-h-[48px]",
               isPremium && canCreateMoreTeams && "text-primary",
               isPremium && !canCreateMoreTeams && "opacity-50 cursor-not-allowed"
             )}

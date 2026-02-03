@@ -23,6 +23,14 @@ export const useAuth = () => {
   return context;
 };
 
+// Timeout wrapper for async operations
+const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
+  const timeout = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error('Operation timed out')), ms);
+  });
+  return Promise.race([promise, timeout]);
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isPremium, setIsPremium] = useState(false);
@@ -57,42 +65,66 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!user) return;
 
-    const channel = supabase
-      .channel(`user_credits_${user.id}`)
-      .on<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'user_credits',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload: RealtimePostgresUpdatePayload<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>) => {
-          console.log('Realtime premium status update:', payload.new);
-          const newPremiumStatus = calculatePremiumStatus(payload.new);
-          setIsPremium(newPremiumStatus);
-        }
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    try {
+      channel = supabase
+        .channel(`user_credits_${user.id}`)
+        .on<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'user_credits',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload: RealtimePostgresUpdatePayload<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>) => {
+            console.log('Realtime premium status update:', payload.new);
+            const newPremiumStatus = calculatePremiumStatus(payload.new);
+            setIsPremium(newPremiumStatus);
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'CHANNEL_ERROR') {
+            console.warn('Realtime channel error - premium updates may be delayed');
+          }
+        });
+    } catch (error) {
+      console.error('Failed to setup realtime subscription:', error);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.error('Error removing channel:', error);
+        }
+      }
     };
   }, [user, calculatePremiumStatus]);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await withTimeout(
+          supabase.auth.getSession(),
+          10000 // 10 second timeout
+        );
         setUser(session?.user ?? null);
         
         if (session?.user) {
           try {
-            const { data } = await supabase
+            const creditsQuery = supabase
               .from('user_credits')
               .select('is_premium, subscription_end_date, auto_renew')
               .eq('user_id', session.user.id)
               .single();
+            
+            const { data } = await withTimeout(
+              Promise.resolve(creditsQuery),
+              8000 // 8 second timeout
+            );
             
             setIsPremium(calculatePremiumStatus(data));
           } catch (error) {
@@ -115,11 +147,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         setTimeout(async () => {
           try {
-            const { data } = await supabase
+            const creditsQuery = supabase
               .from('user_credits')
               .select('is_premium, subscription_end_date, auto_renew')
               .eq('user_id', session.user.id)
               .single();
+            
+            const { data } = await withTimeout(
+              Promise.resolve(creditsQuery),
+              8000
+            );
             
             setIsPremium(calculatePremiumStatus(data));
           } catch (error) {

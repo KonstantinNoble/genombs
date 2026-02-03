@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-background">
+    <footer className="relative bg-background safe-bottom">
       {/* Top gradient line */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       
@@ -18,13 +18,22 @@ const Footer = () => {
             <div className="space-y-4">
               <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide text-center sm:text-left">Legal</h3>
               <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Legal links">
-                <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
+                <Link 
+                  to="/privacy-policy" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
                   Privacy Policy
                 </Link>
-                <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
+                <Link 
+                  to="/terms-of-service" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
                   Terms of Service
                 </Link>
-                <Link to="/imprint" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
+                <Link 
+                  to="/imprint" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
                   Imprint
                 </Link>
               </nav>
@@ -33,7 +42,10 @@ const Footer = () => {
             <div className="space-y-4">
               <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide text-center sm:text-left">Business</h3>
               <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Business links">
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
+                <Link 
+                  to="/contact" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
                   Business Inquiries
                 </Link>
               </nav>

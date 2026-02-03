@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -65,10 +64,46 @@ class ErrorBoundary extends Component<Props, State> {
     }
   }
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
+  handleReload = () => {
+    window.location.reload();
+  };
+
   render() {
-    // No UI - just log error and return null
     if (this.state.hasError) {
-      return null;
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+          <Card className="max-w-md w-full">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl font-semibold text-foreground">
+                Something went wrong
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                We encountered an unexpected error. Please try again.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <Button 
+                onClick={this.handleRetry}
+                variant="default"
+                className="w-full min-h-[44px]"
+              >
+                Try Again
+              </Button>
+              <Button 
+                onClick={this.handleReload}
+                variant="outline"
+                className="w-full min-h-[44px]"
+              >
+                Reload Page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      );
     }
 
     return this.props.children;

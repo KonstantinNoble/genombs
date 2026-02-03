@@ -2,7 +2,6 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 interface FeatureCardProps {
   title: string;
@@ -43,8 +42,8 @@ const FeatureCard = ({ title, description, index, hasDashboardLink, showDashboar
         {hasDashboardLink && showDashboardLink && (
           <div className="mt-5 ml-14">
             <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80 hover:bg-primary/5 -ml-2">
-              <Link to="/dashboard" className="flex items-center gap-1.5">
-                View Analytics <ArrowRight className="w-3.5 h-3.5" />
+              <Link to="/dashboard">
+                View Analytics
               </Link>
             </Button>
           </div>

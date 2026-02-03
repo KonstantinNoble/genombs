@@ -2,71 +2,90 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
-const PainPointItem = ({ point, index }: { point: { title: string; detail: string }; index: number }) => {
-  const { ref, isVisible } = useScrollReveal();
-  
-  return (
-    <div
-      ref={ref}
-      className={`group flex items-start gap-4 rounded-2xl p-6 text-left border border-destructive/10 bg-destructive/[0.02] hover:bg-destructive/[0.04] transition-all duration-400 scroll-reveal ${isVisible ? 'revealed' : ''}`}
-      style={{ 
-        transitionDelay: `${index * 0.08}s`
-      }}
-    >
-      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center mt-0.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-destructive/60" />
-      </span>
-      <div>
-        <span className="text-foreground block font-semibold mb-2 leading-snug">{point.title}</span>
-        <span className="text-muted-foreground text-sm leading-relaxed">{point.detail}</span>
-      </div>
-    </div>
-  );
-};
-
 const PainPoints = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
-  const { ref: badgeRef, isVisible: badgeVisible } = useScrollReveal();
+  const { ref: contentRef, isVisible: contentVisible } = useScrollReveal();
 
-  const painPoints = [
-    { title: "Your team debates, but nobody has the full picture", detail: "Hiring, pivoting, expanding – everyone has an opinion. But without external expertise, you're validating each other's assumptions." },
-    { title: "Advisors are expensive, and their time is limited", detail: "Good consultants charge $300+/hour. And even great mentors can't be on every call when you need to decide this week." },
-    { title: "Gut feeling doesn't survive team disagreements", detail: "When founders disagree, 'I feel it's right' creates friction. Structured analysis gives everyone common ground." },
-    { title: "You're googling in circles, finding contradicting advice", detail: "Articles, podcasts, Twitter threads – information overload, but no structured way to weigh options for your specific situation." },
+  const problems = [
+    { text: "Your team debates, but nobody has the full picture" },
+    { text: "Advisors are expensive – $300+/hour for good ones" },
+    { text: "Gut feeling doesn't survive team disagreements" },
+    { text: "Information overload from contradicting advice" },
+  ];
+
+  const solutions = [
+    { text: "Three structured perspectives in 60 seconds" },
+    { text: "$0-27/month for unlimited guidance" },
+    { text: "Common ground for team alignment" },
+    { text: "Synthesized insights tailored to your situation" },
   ];
 
   return (
     <section className="py-24 sm:py-28 md:py-36 px-4 relative overflow-hidden">
-      {/* Subtle top gradient */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-muted/30 to-transparent pointer-events-none" />
       
-      <div className="max-w-5xl mx-auto text-center relative z-10">
+      <div className="max-w-5xl mx-auto relative z-10">
         <div 
           ref={headerRef}
-          className={`mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
+          className={`text-center mb-16 scroll-reveal ${headerVisible ? 'revealed' : ''}`}
         >
-          <span className="text-subtitle tracking-widest text-destructive/70 mb-4 block">The Challenge</span>
+          <span className="text-subtitle tracking-widest text-primary/80 mb-4 block">The Challenge</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Sound Familiar?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Every founder knows this feeling. You're not alone.
           </p>
-          <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-destructive/30 to-transparent" />
+          <div className="mt-6 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-16">
-          {painPoints.map((point, index) => (
-            <PainPointItem key={index} point={point} index={index} />
-          ))}
-        </div>
-
+        {/* Before/After Grid */}
         <div 
-          ref={badgeRef}
-          className={`flex flex-col items-center gap-6 scroll-reveal ${badgeVisible ? 'revealed' : ''}`}
-          style={{ transitionDelay: "0.4s" }}
+          ref={contentRef}
+          className={`grid md:grid-cols-2 gap-6 lg:gap-8 mb-16 scroll-reveal ${contentVisible ? 'revealed' : ''}`}
         >
-          <p className="text-xl font-semibold text-foreground">That's why we built Synoptas.</p>
+          {/* Problems Column */}
+          <div className="comparison-card-problem rounded-2xl p-6 md:p-8">
+            <h3 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+              <span className="text-destructive/70">Without Synoptas</span>
+            </h3>
+            <ul className="space-y-4">
+              {problems.map((problem, index) => (
+                <li 
+                  key={index} 
+                  className="flex items-start gap-3 text-muted-foreground"
+                  style={{ transitionDelay: `${index * 0.05}s` }}
+                >
+                  <span className="flex-shrink-0 text-destructive/60 font-medium mt-0.5">×</span>
+                  <span className="text-sm leading-relaxed">{problem.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Solutions Column */}
+          <div className="comparison-card-solution rounded-2xl p-6 md:p-8">
+            <h3 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+              <span className="text-primary">With Synoptas</span>
+            </h3>
+            <ul className="space-y-4">
+              {solutions.map((solution, index) => (
+                <li 
+                  key={index} 
+                  className="flex items-start gap-3 text-foreground"
+                  style={{ transitionDelay: `${index * 0.05}s` }}
+                >
+                  <span className="flex-shrink-0 text-primary font-medium mt-0.5">✓</span>
+                  <span className="text-sm leading-relaxed">{solution.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center">
+          <p className="text-xl font-semibold text-foreground mb-6">That's why we built Synoptas.</p>
           <Link 
             to="/validate" 
             className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:gap-3 transition-all duration-300"

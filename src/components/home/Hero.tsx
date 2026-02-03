@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import ProductShowcase from "./ProductShowcase";
+import DecisionFlowAnimation from "./DecisionFlowAnimation";
 
 const Hero = () => {
   const { user, isPremium } = useAuth();
@@ -16,12 +16,11 @@ const Hero = () => {
 
   return (
     <section
-      className="relative min-h-[95vh] flex items-center justify-center overflow-hidden"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       aria-label="Hero section"
     >
       {/* Elegant background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Slower, elegant gradient orbs */}
         <div 
           className="absolute top-1/4 left-1/6 w-[600px] h-[600px] rounded-full opacity-25"
           style={{ 
@@ -39,7 +38,6 @@ const Hero = () => {
           }}
         />
         
-        {/* Subtle flowing lines */}
         <div 
           className="absolute top-1/3 left-0 w-2/3 h-px"
           style={{
@@ -48,7 +46,6 @@ const Hero = () => {
           }}
         />
         
-        {/* Elegant bottom fade */}
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
 
@@ -82,17 +79,25 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p 
-            className={`text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed transition-all duration-700 delay-200 ${
+            className={`text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed transition-all duration-700 delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            No board to pressure-test your strategy? No budget for consultants? 
-            Get structured AI perspectives before your team commits.
+            No board to pressure-test your strategy? Get structured AI perspectives in 60 seconds – see where they agree, where they disagree, and what you might be missing.
           </p>
+
+          {/* Decision Flow Animation */}
+          <div 
+            className={`transition-all duration-1000 delay-300 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <DecisionFlowAnimation />
+          </div>
 
           {/* CTA Button */}
           <div 
-            className={`flex items-center justify-center mb-16 transition-all duration-700 delay-300 ${
+            className={`flex items-center justify-center mb-12 transition-all duration-700 delay-500 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
@@ -110,7 +115,7 @@ const Hero = () => {
 
           {/* Trust Indicators */}
           <div 
-            className={`flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-muted-foreground/70 transition-all duration-700 delay-400 ${
+            className={`flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-muted-foreground/70 transition-all duration-700 delay-600 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
@@ -120,15 +125,6 @@ const Hero = () => {
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <span>Decision History</span>
           </div>
-        </div>
-        
-        {/* Product Showcase */}
-        <div 
-          className={`mt-16 transition-all duration-1000 delay-500 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-          }`}
-        >
-          <ProductShowcase />
         </div>
       </div>
     </section>

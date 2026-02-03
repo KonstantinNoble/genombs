@@ -842,6 +842,54 @@ All colors MUST be HSL.
 }
 
 /* ============================================
+   FEATURE SHOWCASE ANIMATIONS
+   ============================================ */
+
+/* Staggered fade-in for feature cards */
+@keyframes feature-reveal {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Avatar pop-in for team feature */
+@keyframes avatar-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Document float for PDF export */
+@keyframes doc-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.doc-float {
+  animation: doc-float 3s ease-in-out infinite;
+}
+
+/* Timeline dot pulse */
+@keyframes timeline-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+  50% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+}
+
+/* Feature card hover enhancement */
+.feature-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Data flow animation for SVG paths */
+@keyframes data-flow-path {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* ============================================
    PROGRESS BAR VISUALIZATION
    ============================================ */
 

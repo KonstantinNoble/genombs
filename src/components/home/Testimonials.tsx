@@ -1,5 +1,4 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { Quote } from "lucide-react";
 
 interface TestimonialProps {
   quote: string;
@@ -14,15 +13,14 @@ const TestimonialCard = ({ quote, name, role, index }: TestimonialProps) => {
   return (
     <div
       ref={ref}
-      className={`group relative rounded-2xl p-6 md:p-8 bg-card/50 border border-border/60 card-hover-subtle scroll-reveal ${isVisible ? 'revealed' : ''}`}
+      className={`quote-card group relative rounded-2xl p-6 md:p-8 pt-12 bg-card/50 border border-border/60 card-hover-subtle scroll-reveal ${isVisible ? 'revealed' : ''}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
       <div className="relative">
-        <Quote className="w-8 h-8 text-primary/30 mb-4" />
-        <p className="text-foreground leading-relaxed mb-6 italic">
-          "{quote}"
+        <p className="text-foreground leading-relaxed mb-6">
+          {quote}
         </p>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">

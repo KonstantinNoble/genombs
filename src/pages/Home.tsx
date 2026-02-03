@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase/external-client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/home/Hero";
+import ProcessTimeline from "@/components/home/ProcessTimeline";
 import PainPoints from "@/components/home/PainPoints";
 import Features from "@/components/home/Features";
 import Testimonials from "@/components/home/Testimonials";
@@ -94,6 +95,7 @@ const Home = () => {
       <Navbar />
       <main>
         <Hero />
+        <ProcessTimeline />
         <PainPoints />
         <Features />
         <Testimonials />

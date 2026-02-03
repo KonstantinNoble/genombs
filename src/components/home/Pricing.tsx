@@ -99,9 +99,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
               <ul className="space-y-4 mb-10">
                 {["2 analyses per day", "Three AI perspectives per analysis", "Consensus and dissent insights", "Core documentation features", "3 priority action items"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-muted flex items-center justify-center mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
-                    </span>
+                    <span className="flex-shrink-0 text-muted-foreground/60 mt-0.5">✓</span>
                     <span className="text-muted-foreground">{feature}</span>
                   </li>
                 ))}
@@ -143,9 +141,7 @@ const Pricing = ({ compact = false }: PricingProps) => {
                   { text: "Investor-ready PDF exports", highlight: false }
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    </span>
+                    <span className="flex-shrink-0 text-primary mt-0.5">✓</span>
                     <span className={feature.highlight ? "text-foreground font-medium" : "text-muted-foreground"}>{feature.text}</span>
                   </li>
                 ))}

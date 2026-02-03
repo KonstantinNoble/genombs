@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/external-client";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
   const [isPremium, setIsPremium] = useState(false);
@@ -101,9 +100,8 @@ const CTA = () => {
                 className="rounded-2xl px-10 py-7 text-lg font-medium border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-500 hover:-translate-y-1"
                 asChild
               >
-                <Link to="/dashboard" className="flex items-center gap-2">
+                <Link to="/dashboard">
                   View Your Analytics
-                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
             )}

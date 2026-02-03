@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,7 +23,7 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -38,6 +38,23 @@ const Navbar = () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Handle swipe to close
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    (e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX);
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const touch = e.changedTouches[0];
+    const startX = Number((e.currentTarget as HTMLElement).dataset.touchStartX || 0);
+    const diffX = touch.clientX - startX;
+    
+    // If swiped right by more than 100px, close menu
+    if (diffX > 100) {
+      setIsOpen(false);
+    }
+  }, []);
 
   const validateSession = async () => {
     const { data, error } = await supabase.auth.getUser();
@@ -109,6 +126,8 @@ const Navbar = () => {
                   src={logo} 
                   alt="Synoptas Logo" 
                   className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
                 />
               </div>
               <div className="flex flex-col">
@@ -143,7 +162,7 @@ const Navbar = () => {
             {user ? (
               <Link 
                 to="/profile"
-                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200 min-h-[44px]"
               >
                 Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -151,7 +170,7 @@ const Navbar = () => {
             ) : (
               <Link 
                 to="/auth"
-                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200 min-h-[44px]"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -161,7 +180,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden ml-auto p-2.5 rounded-xl text-foreground hover:bg-muted/50 transition-colors"
+            className="md:hidden ml-auto p-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -172,7 +191,11 @@ const Navbar = () => {
 
       {/* Mobile Fullscreen Overlay Menu */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div 
+          className="fixed inset-0 z-[100] md:hidden"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-background/98 backdrop-blur-xl animate-fade-in"
@@ -180,12 +203,12 @@ const Navbar = () => {
           />
           
           {/* Menu Content */}
-          <div className="relative h-full flex flex-col">
+          <div className="relative h-full flex flex-col safe-bottom">
             {/* Close Button - Top Right */}
             <div className="flex justify-end p-4">
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors"
+                className="p-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
                 aria-label="Close menu"
               >
                 <X className="w-8 h-8" />
@@ -255,7 +278,7 @@ const Navbar = () => {
                 <Link 
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200"
+                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
                 >
                   Profile
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -264,7 +287,7 @@ const Navbar = () => {
                 <Link 
                   to="/auth"
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200"
+                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
                 >
                   Get Started
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -296,7 +319,7 @@ const MobileNavLink = ({
   return (
     <Link
       to={to}
-      className={`text-2xl font-medium py-3 px-6 rounded-xl transition-all duration-200 animate-fade-in ${
+      className={`text-2xl font-medium py-4 px-6 rounded-xl transition-all duration-200 animate-fade-in min-h-[56px] flex items-center justify-center ${
         isActive 
           ? "text-foreground bg-muted/50" 
           : "text-muted-foreground hover:text-foreground hover:bg-muted/30"

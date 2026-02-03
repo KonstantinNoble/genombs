@@ -95,7 +95,7 @@ Is hiring a dedicated CTO the right move for our stage?
 
 Should we pivot our business model from B2C to B2B?"
             className={cn(
-              "relative min-h-[140px] sm:min-h-[180px] text-base sm:text-lg resize-none leading-relaxed",
+              "relative min-h-[160px] sm:min-h-[180px] text-base sm:text-lg resize-none leading-relaxed",
               "bg-background border-2 border-emerald-500/50 rounded-xl",
               "placeholder:text-muted-foreground/40 placeholder:leading-relaxed",
               "focus:border-emerald-400 focus:shadow-[0_0_20px_hsl(142,70%,45%,0.3)]",
@@ -140,14 +140,16 @@ Should we pivot our business model from B2C to B2B?"
           </span>
         </div>
         
-        {/* Risk Icons Row */}
+        {/* Risk Icons Row - Mobile optimized with larger touch targets */}
         <div className="flex items-center justify-between px-2 py-3">
-          <div className="flex flex-col items-center gap-1">
-            <RiskShieldIcon 
-              size={32} 
-              active={riskPreference <= 2}
-              className="cursor-pointer"
-            />
+          <div className="flex flex-col items-center gap-1 min-w-[60px]">
+            <div className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
+              <RiskShieldIcon 
+                size={40} 
+                active={riskPreference <= 2}
+                className="cursor-pointer"
+              />
+            </div>
             <span className={cn(
               "text-xs font-medium transition-colors",
               riskPreference <= 2 ? "text-primary" : "text-muted-foreground"
@@ -156,12 +158,14 @@ Should we pivot our business model from B2C to B2B?"
             </span>
           </div>
           
-          <div className="flex flex-col items-center gap-1">
-            <RiskBalanceIcon 
-              size={32} 
-              active={riskPreference === 3}
-              className="cursor-pointer"
-            />
+          <div className="flex flex-col items-center gap-1 min-w-[60px]">
+            <div className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
+              <RiskBalanceIcon 
+                size={40} 
+                active={riskPreference === 3}
+                className="cursor-pointer"
+              />
+            </div>
             <span className={cn(
               "text-xs font-medium transition-colors",
               riskPreference === 3 ? "text-primary" : "text-muted-foreground"
@@ -170,12 +174,14 @@ Should we pivot our business model from B2C to B2B?"
             </span>
           </div>
           
-          <div className="flex flex-col items-center gap-1">
-            <RiskRocketIcon 
-              size={32} 
-              active={riskPreference >= 4}
-              className="cursor-pointer"
-            />
+          <div className="flex flex-col items-center gap-1 min-w-[60px]">
+            <div className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
+              <RiskRocketIcon 
+                size={40} 
+                active={riskPreference >= 4}
+                className="cursor-pointer"
+              />
+            </div>
             <span className={cn(
               "text-xs font-medium transition-colors",
               riskPreference >= 4 ? "text-primary" : "text-muted-foreground"
@@ -185,15 +191,18 @@ Should we pivot our business model from B2C to B2B?"
           </div>
         </div>
 
-        <Slider
-          value={[riskPreference]}
-          onValueChange={([value]) => onRiskChange(value)}
-          min={1}
-          max={5}
-          step={1}
-          disabled={disabled}
-          className="cursor-pointer"
-        />
+        {/* Slider with larger touch area */}
+        <div className="py-2">
+          <Slider
+            value={[riskPreference]}
+            onValueChange={([value]) => onRiskChange(value)}
+            min={1}
+            max={5}
+            step={1}
+            disabled={disabled}
+            className="cursor-pointer touch-target"
+          />
+        </div>
       </div>
     </div>
   );

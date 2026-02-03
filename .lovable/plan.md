@@ -1,250 +1,460 @@
 
 
-# Fix: DecisionFlowAnimation - Vollständige Animationen und korrigierte Darstellung
+# Visuelles Redesign: Authentifizierte Seiten (Workspace, Analyse, etc.)
 
-## Probleme
+## Ziel
 
-### Problem 1: Fehlende Animationen für Gemini und Perplexity
-- Aktuell: Nur `path1` (GPT) und `path2` (Claude) haben animierte Partikel
-- `path3` und `path4` für Gemini und Perplexity existieren nicht als animierte Pfade
+Die Seiten nach der Anmeldung werden visuell verbessert mit einem minimalistischen, professionellen Design. Icons und Emojis werden stark reduziert. 
 
-### Problem 2: Verzerrter Synthese-Punkt
-- Das SVG und die HTML-Elemente sind nicht synchronisiert
-- Der grüne Kreis wird als separates `div` gerendert, das nicht zum SVG-Koordinatensystem passt
-- Das `viewBox="0 0 400 280"` hat ein anderes Seitenverhältnis als der Container
+**AUSNAHME: ValidationOutput wird NICHT verandert** (weder visuell noch funktional).
 
 ---
 
-## Lösung
+## Ubersicht der Anderungen
 
-### Ansatz: Vollständiges SVG-basiertes Layout
-
-Anstatt SVG-Linien mit HTML-Divs zu mischen, werden **alle Elemente innerhalb des SVGs** gerendert:
-- 4 Model-Kreise als SVG `<circle>` und `<text>`
-- 4 animierte Verbindungslinien
-- 4 animierte Partikel (einer pro Modell)
-- Synthese-Punkt als SVG `<circle>` mit Checkmark
-
----
-
-## Technische Änderungen
-
-### Datei: `src/components/home/DecisionFlowAnimation.tsx`
-
-**Struktur neu:**
-
-```text
-SVG viewBox="0 0 400 320"
-│
-├── <defs> (Gradients für alle 4 Linien)
-│
-├── 4x Verbindungslinien (animiert mit strokeDashoffset)
-│   ├── path1: GPT → Center (Blau)
-│   ├── path2: Claude → Center (Orange)
-│   ├── path3: Gemini → Center (Grün)
-│   └── path4: Perplexity → Center (Cyan)
-│
-├── 4x Animierte Partikel (<circle> mit <animateMotion>)
-│   ├── GPT-Partikel
-│   ├── Claude-Partikel
-│   ├── Gemini-Partikel
-│   └── Perplexity-Partikel
-│
-├── 4x Model-Nodes (als SVG-Kreise + Text)
-│   ├── GPT (Position: 80, 50)
-│   ├── Claude (Position: 320, 50)
-│   ├── Gemini (Position: 80, 130)
-│   └── Perplexity (Position: 320, 130)
-│
-├── Synthese-Punkt (SVG-Kreis bei 200, 230)
-│   ├── Äußerer Ring (r=35)
-│   ├── Innerer Kreis (r=22)
-│   └── Checkmark als <text>
-│
-└── "Synthesized Insight" Label
-```
+| Seite | Hauptanderungen |
+|-------|-----------------|
+| ValidationPlatform.tsx | Icon-Reduktion, cleaner Header, verbesserte Card-Stile |
+| Teams.tsx | Users-Icon entfernen, Text-basierte Workspace-Cards |
+| TeamMembers.tsx | Icon-Reduktion (Users, Mail, Settings entfernen) |
+| TeamSettings.tsx | Settings-Icon aus Header entfernen |
+| Profile.tsx | Building2-Icons entfernen, cleaner Layout |
+| Dashboard.tsx | Bereits minimal - nur kleine Verbesserungen |
+| TeamSwitcher.tsx | Users-Icons entfernen |
+| BusinessContextPanel.tsx | Briefcase, Globe, Lock Icons entfernen |
+| ValidationInput.tsx | Risk-Icons bleiben (sind custom SVG, keine Lucide) |
+| ModelSelector.tsx | Keine Icons vorhanden - nur Badges |
+| MultiModelLoader.tsx | Custom Icons (ModelTriangle, SynthesisIcon) bleiben |
+| ExperimentWorkflow.tsx | Bereits minimal |
 
 ---
 
-## Code-Änderungen im Detail
+## Phase 1: ValidationPlatform.tsx
 
-### 1. SVG ViewBox anpassen
+### Aktuelle Icons zu entfernen:
+- `Building2` aus Team-Mode Banner
+- `Eye` aus Viewer-Restriction Alert
 
+### Anderungen:
+
+**Team Mode Banner (Zeilen 505-527)**
 ```tsx
-<svg 
-  className="w-full h-auto"
-  viewBox="0 0 400 340"
-  preserveAspectRatio="xMidYMid meet"
->
+// VORHER:
+<Building2 className="h-5 w-5 text-primary shrink-0" />
+
+// NACHHER: Entfernen, nur Text-Badge verwenden
+<div className="flex items-center gap-2 min-w-0">
+  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs font-semibold shrink-0">
+    Team
+  </Badge>
+  <div className="min-w-0">
+    <p className="font-medium text-sm sm:text-base truncate">
+      {currentTeam.name}
+    </p>
+  </div>
+</div>
 ```
 
-### 2. Alle 4 Pfade mit Animation definieren
-
+**Header Section (Zeilen 530-545)**
 ```tsx
-// Pfade für alle 4 Modelle
-<path id="path1" d="M 80 50 Q 120 160 200 230" />
-<path id="path2" d="M 320 50 Q 280 160 200 230" />
-<path id="path3" d="M 80 130 Q 140 190 200 230" />
-<path id="path4" d="M 320 130 Q 260 190 200 230" />
+// VORHER: Building2-Icon im Badge
+<Badge variant="outline" className="border-primary/30 text-primary text-xs">
+  <Building2 className="h-3 w-3 mr-1" />
+  Team Mode
+</Badge>
+
+// NACHHER: Nur Text
+<Badge variant="outline" className="border-primary/30 text-primary text-xs font-semibold">
+  Team
+</Badge>
 ```
 
-### 3. Animierte Partikel für alle Modelle
-
+**Viewer Alert (Zeilen 589-598)**
 ```tsx
-{/* GPT Partikel */}
-<circle r="4" fill="hsl(220, 70%, 50%)" opacity="0.9">
-  <animateMotion dur="2.5s" repeatCount="indefinite" begin="0s">
-    <mpath href="#path1" />
-  </animateMotion>
-</circle>
+// VORHER:
+<Eye className="h-4 w-4 text-blue-500" />
 
-{/* Claude Partikel */}
-<circle r="4" fill="hsl(25, 85%, 55%)" opacity="0.9">
-  <animateMotion dur="2.5s" repeatCount="indefinite" begin="0.6s">
-    <mpath href="#path2" />
-  </animateMotion>
-</circle>
-
-{/* Gemini Partikel */}
-<circle r="4" fill="hsl(142, 70%, 45%)" opacity="0.9">
-  <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.2s">
-    <mpath href="#path3" />
-  </animateMotion>
-</circle>
-
-{/* Perplexity Partikel */}
-<circle r="4" fill="hsl(190, 85%, 45%)" opacity="0.9">
-  <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.8s">
-    <mpath href="#path4" />
-  </animateMotion>
-</circle>
+// NACHHER: Entfernen, Alert-Styling anpassen
+<Alert className="border-blue-500/30 bg-blue-500/10">
+  <AlertTitle className="text-blue-600 font-semibold">View Only Mode</AlertTitle>
+  <AlertDescription className="text-muted-foreground">
+    As a team viewer, you can view shared analyses but cannot create new ones. 
+  </AlertDescription>
+</Alert>
 ```
 
-### 4. Model-Kreise als SVG-Elemente
+**Verbesserte Card-Stile:**
+- History-Sidebar: Subtilere Borders, cleaner Hover-States
+- Main Content Cards: Konsistente border-radius (rounded-2xl)
 
+---
+
+## Phase 2: Teams.tsx
+
+### Aktuelle Icons zu entfernen:
+- `Users` (6x verwendet)
+- `Settings` 
+- `ArrowRight` (behalten - ist CTA-Icon)
+- `Plus` (behalten - ist Action-Icon)
+- `LogOut` (behalten - ist kritische Aktion)
+- `Loader2` (behalten - ist Feedback)
+
+### Anderungen:
+
+**Personal Workspace Card (Zeilen 179-181)**
 ```tsx
-{models.map((model) => (
-  <g key={model.name}>
-    {/* Kreis */}
-    <circle 
-      cx={model.x} 
-      cy={model.y} 
-      r="32" 
-      fill="white"
-      stroke={model.color}
-      strokeWidth="2"
-      className="drop-shadow-lg"
-    />
-    {/* Label */}
-    <text 
-      x={model.x} 
-      y={model.y} 
-      textAnchor="middle" 
-      dominantBaseline="middle"
-      className="text-xs font-semibold fill-foreground"
-    >
-      {model.name}
-    </text>
-  </g>
-))}
+// VORHER:
+<div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+</div>
+
+// NACHHER: Initialen-Circle oder Gradient-Shape
+<div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center shrink-0">
+  <span className="text-base sm:text-lg font-bold text-primary">P</span>
+</div>
 ```
 
-### 5. Synthese-Punkt als SVG
-
+**Team Cards (Zeilen 220-221)**
 ```tsx
-{/* Äußerer Ring */}
-<circle 
-  cx="200" 
-  cy="230" 
-  r="35" 
-  fill="hsl(142, 76%, 36%, 0.1)"
-  stroke="hsl(142, 76%, 36%)"
-  strokeWidth="2"
-  className="synthesis-point"
-/>
+// VORHER:
+<Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
 
-{/* Innerer Kreis */}
-<circle 
-  cx="200" 
-  cy="230" 
-  r="22" 
-  fill="hsl(142, 76%, 36%, 0.2)"
-/>
+// NACHHER: Team-Initialen
+<span className="text-base sm:text-lg font-bold text-foreground">
+  {team.name.charAt(0).toUpperCase()}
+</span>
+```
 
-{/* Checkmark */}
-<text 
-  x="200" 
-  y="232" 
-  textAnchor="middle" 
-  dominantBaseline="middle"
-  className="text-xl font-bold"
-  fill="hsl(142, 76%, 36%)"
->
-  ✓
-</text>
+**Action Buttons (Zeilen 237-258)**
+```tsx
+// VORHER:
+<Users className="h-4 w-4" /> Members
+<Settings className="h-4 w-4" /> Settings
+
+// NACHHER: Nur Text
+<span>Members</span>
+<span>Settings</span>
 ```
 
 ---
 
-## Model-Positionen (angepasst)
+## Phase 3: TeamMembers.tsx
 
-| Modell | X | Y | Farbe |
-|--------|---|---|-------|
-| GPT | 80 | 50 | hsl(220, 70%, 50%) - Blau |
-| Claude | 320 | 50 | hsl(25, 85%, 55%) - Orange |
-| Gemini | 80 | 130 | hsl(142, 70%, 45%) - Grün |
-| Perplexity | 320 | 130 | hsl(190, 85%, 45%) - Cyan |
-| Synthese | 200 | 230 | hsl(142, 76%, 36%) - Primary |
+### Aktuelle Icons zu entfernen:
+- `Users` (4x)
+- `UserPlus`
+- `Mail`
+- `Trash2` (behalten - kritische Aktion)
+- `Loader2` (behalten - Feedback)
+- `Clock`
+- `X`
+- `ChevronLeft` (behalten - Navigation)
+- `Settings`
+- `Info`
+- `AlertTriangle` (behalten - Warnung)
+
+### Anderungen:
+
+**Header (Zeilen 363-381)**
+```tsx
+// VORHER:
+<h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
+
+// NACHHER: Cleaner mit Initiale
+<div className="flex items-center gap-3">
+  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+    <span className="text-lg font-bold text-primary">{currentTeam.name.charAt(0)}</span>
+  </div>
+  <div>
+    <h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
+    <p className="text-base text-muted-foreground">Manage members and invitations</p>
+  </div>
+</div>
+```
+
+**Role Permissions Card (Zeilen 384-407)**
+```tsx
+// VORHER:
+<Info className="h-4 w-4" /> Role Permissions
+
+// NACHHER: Nur Text-Header
+<CardTitle className="text-sm font-medium">Role Permissions</CardTitle>
+```
+
+**Invite Form (Zeilen 413-419)**
+```tsx
+// VORHER:
+<UserPlus className="h-5 w-5" /> Invite Member
+
+// NACHHER: Nur Text
+<CardTitle className="text-lg sm:text-xl">Invite Member</CardTitle>
+```
+
+**Members List (Zeilen 489-491)**
+```tsx
+// VORHER:
+<Users className="h-5 w-5" /> Members (X)
+
+// NACHHER:
+<CardTitle className="text-lg sm:text-xl">Members ({members.length})</CardTitle>
+```
+
+**Invite Button (Zeilen 469-480)**
+```tsx
+// VORHER:
+<Mail className="h-4 w-4" />
+
+// NACHHER: Nur Text "Send Invite"
+```
 
 ---
 
-## Zusätzliche Verbesserungen
+## Phase 4: TeamSettings.tsx
 
-### Pulse-Animation für Synthese-Punkt
+### Aktuelle Icons zu entfernen:
+- `Settings` aus Header
 
+### Anderungen:
+
+**Header (Zeilen 221-228)**
+```tsx
+// VORHER:
+<h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+  <Settings className="h-6 w-6" />
+  Team Settings
+</h1>
+
+// NACHHER:
+<h1 className="text-2xl sm:text-3xl font-bold">Team Settings</h1>
+```
+
+---
+
+## Phase 5: Profile.tsx
+
+### Aktuelle Icons zu entfernen:
+- `Building2` (3x)
+- `AlertTriangle` (behalten - kritische Warnung)
+- `ArrowRight` (behalten - CTA)
+- `Settings` (1x)
+
+### Anderungen:
+
+**My Teams Section (Zeilen 271-275)**
+```tsx
+// VORHER:
+<Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+<span className="text-sm font-medium truncate">{team.name}</span>
+
+// NACHHER:
+<div className="h-6 w-6 rounded bg-muted flex items-center justify-center shrink-0">
+  <span className="text-xs font-bold text-muted-foreground">{team.name.charAt(0)}</span>
+</div>
+<span className="text-sm font-medium truncate">{team.name}</span>
+```
+
+**Manage Link (Zeilen 279-284)**
+```tsx
+// VORHER:
+<Settings className="h-3 w-3" /> Manage
+
+// NACHHER: Nur Text
+Manage
+```
+
+**Workspace Warning (Zeilen 320-324)**
+```tsx
+// VORHER:
+<Building2 className="h-4 w-4 text-primary" />
+<span className="font-medium">{team.name}</span>
+
+// NACHHER:
+<span className="font-medium">{team.name}</span>
+```
+
+---
+
+## Phase 6: TeamSwitcher.tsx
+
+### Aktuelle Icons zu entfernen:
+- `Users` (4x)
+- `Check` (behalten - Auswahl-Indikator)
+- `ChevronDown` (behalten - Dropdown-Indikator)
+- `Plus` (behalten - Action)
+- `Loader2` (behalten - Feedback)
+- `Settings` (1x)
+
+### Anderungen:
+
+**Trigger Button (Zeilen 69-80)**
+```tsx
+// VORHER:
+<Users className="h-4 w-4 shrink-0 text-primary" />
+<span className="truncate">{currentTeam.name}</span>
+
+// NACHHER: Initialen-Badge
+<span className="h-5 w-5 rounded bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+  {currentTeam.name.charAt(0)}
+</span>
+<span className="truncate hidden sm:inline">{currentTeam.name}</span>
+```
+
+**Dropdown Items (Zeilen 92, 113)**
+```tsx
+// VORHER:
+<Users className="h-4 w-4 shrink-0" />
+
+// NACHHER: Initialen-Circle
+<span className="h-5 w-5 rounded bg-muted flex items-center justify-center text-xs font-semibold shrink-0">
+  P
+</span>
+```
+
+**Manage Button (Zeilen 125-131)**
+```tsx
+// VORHER:
+<Settings className="h-3.5 w-3.5" /> Manage
+
+// NACHHER:
+Manage
+```
+
+---
+
+## Phase 7: BusinessContextPanel.tsx
+
+### Aktuelle Icons zu entfernen:
+- `Briefcase`
+- `Globe`
+- `Lock`
+- `Sparkles`
+- `Check` (behalten - Status-Indikator)
+- `ChevronDown/Up` (behalten - Collapsible)
+- `Loader2` (behalten - Feedback)
+- `ExternalLink`
+- `RefreshCw` (behalten - Action)
+- `Clock`
+
+### Anderungen:
+
+**Header (Zeilen 222-224)**
+```tsx
+// VORHER:
+<div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
+  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-600" />
+</div>
+
+// NACHHER: Initialen-Shape
+<div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
+  <span className="text-lg sm:text-xl font-bold text-cyan-600">BC</span>
+</div>
+```
+
+**Website URL Section (Zeilen 407-420)**
+```tsx
+// VORHER:
+<Globe className="h-5 w-5 text-primary" />
+// oder
+<Lock className="h-5 w-5 text-amber-600" />
+<Sparkles className="h-3 w-3 mr-1" />
+
+// NACHHER: Nur Text-Labels
+<span className="font-semibold text-base">Website URL</span>
+{!isPremium && (
+  <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
+    Premium
+  </Badge>
+)}
+```
+
+---
+
+## Phase 8: Dashboard.tsx (minimal)
+
+### Aktuelle Icons:
+- `ArrowRight` (behalten - CTA)
+
+### Anderungen:
+- Gradient-Circle im Empty State entfernen und durch Text ersetzen
+
+**Empty State (Zeilen 117-120)**
+```tsx
+// VORHER:
+<div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 via-accent-cool/10 to-accent-warm/20" />
+
+// NACHHER:
+<div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+  <span className="text-4xl font-bold text-primary/40">0</span>
+</div>
+```
+
+---
+
+## Phase 9: Globale Stil-Verbesserungen
+
+### Konsistente Card-Stile:
 ```css
-.synthesis-point {
-  animation: synthesis-pulse 2.5s ease-in-out infinite;
+/* Einheitliche Card-Borders */
+.glass-card {
+  border-radius: 1rem; /* rounded-2xl */
+  border: 1px solid hsl(var(--border) / 0.6);
 }
 
-@keyframes synthesis-pulse {
-  0%, 100% { 
-    filter: drop-shadow(0 0 8px hsl(142, 76%, 36%, 0.3));
-  }
-  50% { 
-    filter: drop-shadow(0 0 20px hsl(142, 76%, 36%, 0.6));
-  }
+/* Hover-State fur interactive Cards */
+.glass-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
 }
 ```
 
-### Staggered Entry für Model-Kreise
-
-```tsx
-<circle
-  style={{ 
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'scale(1)' : 'scale(0.8)',
-    transition: `all 0.6s ease-out ${model.delay}`,
-  }}
-/>
-```
+### Typography-Verbesserungen:
+- Konsistente Header-Grossen: text-2xl sm:text-3xl fur Page-Titles
+- Muted-Foreground fur Beschreibungstexte
+- Font-semibold fur Section-Headers
 
 ---
 
-## Erwartetes Ergebnis
+## Zusammenfassung der Icon-Reduktion
 
-| Vorher | Nachher |
-|--------|---------|
-| 2 animierte Partikel | 4 animierte Partikel |
-| Verzerrter grüner Kreis | Perfekt runder SVG-Kreis |
-| HTML/SVG Mix | Alles in SVG |
-| Inkonsistente Positionen | Pixel-genaue Ausrichtung |
+| Komponente | Vorher | Nachher |
+|------------|--------|---------|
+| ValidationPlatform | 3 Icons | 0 Icons |
+| Teams | 6 Icons | 3 Icons (Plus, LogOut, ArrowRight) |
+| TeamMembers | 9 Icons | 3 Icons (ChevronLeft, Trash2, AlertTriangle) |
+| TeamSettings | 5 Icons | 4 Icons (ChevronLeft, Trash2, LogOut, AlertTriangle) |
+| Profile | 5 Icons | 2 Icons (AlertTriangle, ArrowRight) |
+| TeamSwitcher | 6 Icons | 3 Icons (Check, ChevronDown, Plus) |
+| BusinessContextPanel | 10 Icons | 3 Icons (Check, ChevronUp/Down, RefreshCw) |
+
+**Behaltene Icons (nur fur kritische Funktionen):**
+- Navigation: ChevronLeft, ChevronDown, ChevronUp
+- CTAs: ArrowRight, Plus
+- Feedback: Loader2, Check
+- Kritische Aktionen: Trash2, LogOut
+- Warnungen: AlertTriangle
+- Funktional: RefreshCw (Rescan)
 
 ---
 
-## Dateien die geändert werden
+## Dateien die geandert werden
 
-| Datei | Änderung |
+| Datei | Anderung |
 |-------|----------|
-| `src/components/home/DecisionFlowAnimation.tsx` | Komplette Neustrukturierung als reines SVG |
+| `src/pages/ValidationPlatform.tsx` | Icon-Imports entfernen, Team-Banner vereinfachen |
+| `src/pages/Teams.tsx` | Users-Icons durch Initialen ersetzen |
+| `src/pages/TeamMembers.tsx` | Icons aus Headers entfernen |
+| `src/pages/TeamSettings.tsx` | Settings-Icon aus Header entfernen |
+| `src/pages/Profile.tsx` | Building2-Icons durch Initialen ersetzen |
+| `src/pages/Dashboard.tsx` | Empty-State verbessern |
+| `src/components/team/TeamSwitcher.tsx` | Users-Icons durch Initialen ersetzen |
+| `src/components/validation/BusinessContextPanel.tsx` | Briefcase/Globe/Lock entfernen |
+
+---
+
+## Nicht geandert (explizite Ausnahmen)
+
+- **ValidationOutput.tsx** - KEINE Anderungen (User-Anforderung)
+- **RiskIcons.tsx** - Custom SVG Icons, keine Lucide
+- **ModelTriangle.tsx** - Funktionales Visualisierungs-Element
+- **SynthesisIcon.tsx** - Funktionales Visualisierungs-Element
+- **ModelSelector.tsx** - Keine Icons, nur Badges
 

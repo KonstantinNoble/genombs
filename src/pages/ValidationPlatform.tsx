@@ -23,7 +23,6 @@ import { useMultiAIValidation, ValidationResult, LimitReachedInfo } from "@/hook
 import { useExperiment } from "@/hooks/useExperiment";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { useTeam } from "@/contexts/TeamContext";
-import { Building2, Eye } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface HistoryItem {
@@ -503,15 +502,17 @@ export default function ValidationPlatform() {
           <main className="flex-1 space-y-4 sm:space-y-6 order-1 lg:order-2">
             {/* Team Mode Banner */}
             {isInTeamMode && currentTeam && (
-              <div className="flex items-center justify-between gap-3 p-3 sm:p-4 rounded-lg bg-primary/10 border border-primary/20">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Building2 className="h-5 w-5 text-primary shrink-0" />
+              <div className="flex items-center justify-between gap-3 p-3 sm:p-4 rounded-xl bg-primary/5 border border-primary/20">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Badge className="bg-primary/20 text-primary border-primary/30 text-xs font-semibold shrink-0">
+                    Team
+                  </Badge>
                   <div className="min-w-0">
                     <p className="font-medium text-sm sm:text-base truncate">
-                      Team: {currentTeam.name}
+                      {currentTeam.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Analyses saved here are visible to all team members
+                      Analyses visible to all team members
                     </p>
                   </div>
                 </div>
@@ -521,7 +522,7 @@ export default function ValidationPlatform() {
                   className="shrink-0 text-xs"
                   asChild
                 >
-                  <Link to="/teams">Manage Team</Link>
+                  <Link to="/teams">Manage</Link>
                 </Button>
               </div>
             )}
@@ -537,9 +538,8 @@ export default function ValidationPlatform() {
               <div className="flex items-center justify-center gap-3">
                 <span className="text-sm sm:text-base text-muted-foreground">Validations: <span className="font-bold text-foreground">{validationCount}/{validationLimit}</span> daily</span>
                 {isInTeamMode && (
-                  <Badge variant="outline" className="border-primary/30 text-primary text-xs">
-                    <Building2 className="h-3 w-3 mr-1" />
-                    Team Mode
+                  <Badge variant="outline" className="border-primary/30 text-primary text-xs font-semibold">
+                    Team
                   </Badge>
                 )}
               </div>
@@ -587,9 +587,8 @@ export default function ValidationPlatform() {
                 
                 {/* Viewer restriction notice */}
                 {isInTeamMode && teamRole === 'viewer' && (
-                  <Alert className="border-blue-500/30 bg-blue-500/10">
-                    <Eye className="h-4 w-4 text-blue-500" />
-                    <AlertTitle className="text-blue-600">View Only Mode</AlertTitle>
+                  <Alert className="border-blue-500/30 bg-blue-500/5">
+                    <AlertTitle className="text-blue-600 font-semibold">View Only Mode</AlertTitle>
                     <AlertDescription className="text-muted-foreground">
                       As a team viewer, you can view shared analyses but cannot create new ones. 
                       Contact your team owner for Member access.

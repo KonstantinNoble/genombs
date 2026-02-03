@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Settings, 
   Trash2, 
   Loader2,
   ChevronLeft,
@@ -218,8 +217,7 @@ export default function TeamSettings() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-            <Settings className="h-6 w-6" />
+          <h1 className="text-2xl sm:text-3xl font-bold">
             Team Settings
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground">

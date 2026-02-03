@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
-  Users, 
-  Settings, 
   ArrowRight, 
   Plus,
   LogOut,
@@ -137,7 +135,7 @@ export default function Teams() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <Skeleton className="h-12 w-12 rounded-lg" />
+                      <Skeleton className="h-12 w-12 rounded-xl" />
                       <div className="space-y-2">
                         <Skeleton className="h-5 w-40" />
                         <Skeleton className="h-4 w-56" />
@@ -154,7 +152,7 @@ export default function Teams() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Skeleton className="h-12 w-12 rounded-lg" />
+                        <Skeleton className="h-12 w-12 rounded-xl" />
                         <div className="space-y-2">
                           <Skeleton className="h-5 w-36" />
                           <Skeleton className="h-4 w-24" />
@@ -176,8 +174,8 @@ export default function Teams() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-3 sm:gap-4">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center shrink-0">
+                        <span className="text-base sm:text-lg font-bold text-primary">P</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg sm:text-xl">Personal Workspace</h3>
@@ -217,8 +215,10 @@ export default function Teams() {
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                               {/* Team Info */}
                               <div className="flex items-center gap-3 sm:gap-4">
-                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                                  <Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                                  <span className="text-base sm:text-lg font-bold text-foreground">
+                                    {team.name.charAt(0).toUpperCase()}
+                                  </span>
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <h3 className="font-semibold text-lg sm:text-xl truncate">{team.name}</h3>
@@ -241,8 +241,7 @@ export default function Teams() {
                                       asChild
                                     >
                                       <Link to="/team/members" onClick={() => handleSetTeamForLink(team.id)}>
-                                        <Users className="h-4 w-4" />
-                                        <span className="hidden xs:inline">Members</span>
+                                        <span>Members</span>
                                       </Link>
                                     </Button>
                                     <Button
@@ -252,8 +251,7 @@ export default function Teams() {
                                       asChild
                                     >
                                       <Link to="/team/settings" onClick={() => handleSetTeamForLink(team.id)}>
-                                        <Settings className="h-4 w-4" />
-                                        <span className="hidden xs:inline">Settings</span>
+                                        <span>Settings</span>
                                       </Link>
                                     </Button>
                                   </>

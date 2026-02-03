@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, ChevronDown, Users, Plus, Loader2, Settings } from "lucide-react";
+import { Check, ChevronDown, Plus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,12 +68,16 @@ export function TeamSwitcher() {
           >
             {currentTeam ? (
               <>
-                <Users className="h-4 w-4 shrink-0 text-primary" />
+                <span className="h-5 w-5 rounded bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                  {currentTeam.name.charAt(0)}
+                </span>
                 <span className="truncate hidden sm:inline">{currentTeam.name}</span>
               </>
             ) : (
               <>
-                <Users className="h-4 w-4 shrink-0" />
+                <span className="h-5 w-5 rounded bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
+                  P
+                </span>
                 <span className="hidden sm:inline">Personal</span>
               </>
             )}
@@ -89,7 +93,9 @@ export function TeamSwitcher() {
             }}
             className="gap-2 min-h-[44px] sm:min-h-0"
           >
-            <Users className="h-4 w-4 shrink-0" />
+            <span className="h-5 w-5 rounded bg-muted flex items-center justify-center text-xs font-semibold shrink-0">
+              P
+            </span>
             <span className="flex-1 truncate">Personal Workspace</span>
             {!currentTeam && <Check className="h-4 w-4 text-primary shrink-0" />}
           </DropdownMenuItem>
@@ -110,7 +116,9 @@ export function TeamSwitcher() {
                     }}
                     className="gap-2 pr-20 min-h-[48px] sm:min-h-0"
                   >
-                    <Users className="h-4 w-4 text-primary shrink-0" />
+                    <span className="h-5 w-5 rounded bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                      {team.name.charAt(0)}
+                    </span>
                     <div className="flex-1 min-w-0">
                       <span className="truncate block text-sm">{team.name}</span>
                       <span className="text-[10px] text-muted-foreground capitalize">
@@ -126,8 +134,7 @@ export function TeamSwitcher() {
                     onClick={(e) => handleManageTeam(e, team.id)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-3 py-2 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors min-h-[36px]"
                   >
-                    <Settings className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Manage</span>
+                    <span>Manage</span>
                   </button>
                 </div>
               ))}

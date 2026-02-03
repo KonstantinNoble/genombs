@@ -1,16 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
-  Users, 
-  UserPlus, 
-  Mail, 
   Trash2, 
   Loader2,
-  Clock,
-  X,
   ChevronLeft,
-  Settings,
-  Info,
   AlertTriangle
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -362,11 +355,16 @@ export default function TeamMembers() {
 
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
-            <p className="text-base sm:text-lg text-muted-foreground">
-              Manage team members and invitations
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+              <span className="text-lg font-bold text-primary">{currentTeam.name.charAt(0)}</span>
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">{currentTeam.name}</h1>
+              <p className="text-base text-muted-foreground">
+                Manage members and invitations
+              </p>
+            </div>
           </div>
           {(userRole === "owner" || userRole === "admin") && (
             <Button
@@ -374,7 +372,6 @@ export default function TeamMembers() {
               onClick={() => navigate("/team/settings")}
               className="gap-2 shrink-0 w-full sm:w-auto min-h-[44px] sm:min-h-0"
             >
-              <Settings className="h-4 w-4" />
               Team Settings
             </Button>
           )}
@@ -383,8 +380,7 @@ export default function TeamMembers() {
         {/* Role Descriptions */}
         <Card className="mb-6 bg-muted/30">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Info className="h-4 w-4" />
+            <CardTitle className="text-sm font-medium">
               Role Permissions
             </CardTitle>
           </CardHeader>
@@ -410,10 +406,9 @@ export default function TeamMembers() {
         {isAdmin && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                <UserPlus className="h-5 w-5" />
+              <CardTitle className="text-lg sm:text-xl">
                 Invite Member
-                <span className="text-base font-normal text-muted-foreground">
+                <span className="text-base font-normal text-muted-foreground ml-2">
                   ({members.length}/{TEAM_LIMITS.MAX_MEMBERS_PER_TEAM})
                 </span>
               </CardTitle>
@@ -474,9 +469,8 @@ export default function TeamMembers() {
                   {isInviting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Mail className="h-4 w-4" />
+                    "Send Invite"
                   )}
-                  <span className="ml-2">Invite</span>
                 </Button>
               </form>
             </CardContent>
@@ -486,8 +480,7 @@ export default function TeamMembers() {
         {/* Members List */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-              <Users className="h-5 w-5" />
+            <CardTitle className="text-lg sm:text-xl">
               Members ({members.length})
             </CardTitle>
           </CardHeader>
@@ -526,7 +519,9 @@ export default function TeamMembers() {
                       {/* Member Info */}
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
-                          <Users className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-sm font-bold text-muted-foreground">
+                            {member.email.charAt(0).toUpperCase()}
+                          </span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate text-sm sm:text-base">
@@ -590,8 +585,7 @@ export default function TeamMembers() {
         {isAdmin && invitations.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
+              <CardTitle>
                 Pending Invitations ({invitations.length})
               </CardTitle>
             </CardHeader>
@@ -617,11 +611,11 @@ export default function TeamMembers() {
                       </Badge>
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+                        size="sm"
+                        className="min-h-[44px] sm:min-h-0 text-muted-foreground hover:text-destructive"
                         onClick={() => setInviteToCancel(invite)}
                       >
-                        <X className="h-4 w-4" />
+                        Cancel
                       </Button>
                     </div>
                   </div>

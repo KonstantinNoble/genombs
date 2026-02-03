@@ -12,7 +12,7 @@ import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useTeam } from "@/contexts/TeamContext";
-import { Building2, AlertTriangle, ArrowRight, Settings } from "lucide-react";
+import { AlertTriangle, ArrowRight } from "lucide-react";
 
 interface OwnedTeam {
   id: string;
@@ -270,16 +270,17 @@ const Profile = () => {
                       {teams.slice(0, 3).map(team => (
                         <div key={team.id} className="flex flex-col xs:flex-row xs:items-center justify-between p-3 rounded-lg bg-background border gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <div className="h-6 w-6 rounded bg-muted flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-muted-foreground">{team.name.charAt(0)}</span>
+                            </div>
                             <span className="text-sm font-medium truncate">{team.name}</span>
                             <span className="text-xs text-muted-foreground capitalize shrink-0">({team.role})</span>
                           </div>
                           {(team.role === "owner" || team.role === "admin") && (
                             <Link 
                               to="/team/members" 
-                              className="text-xs text-primary hover:underline flex items-center gap-1 py-2 px-3 -mx-1 rounded-md hover:bg-primary/5 transition-colors min-h-[44px] xs:min-h-0 justify-center xs:justify-start"
+                              className="text-xs text-primary hover:underline py-2 px-3 -mx-1 rounded-md hover:bg-primary/5 transition-colors min-h-[44px] xs:min-h-0 flex items-center justify-center xs:justify-start"
                             >
-                              <Settings className="h-3 w-3" />
                               Manage
                             </Link>
                           )}
@@ -319,7 +320,6 @@ const Profile = () => {
                         <ul className="space-y-2">
                           {ownedTeams.map(team => (
                             <li key={team.id} className="flex items-center gap-2 text-sm">
-                              <Building2 className="h-4 w-4 text-primary" />
                               <span className="font-medium">{team.name}</span>
                               <Link 
                                 to="/team/settings" 

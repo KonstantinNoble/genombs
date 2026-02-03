@@ -16,17 +16,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { 
-  Briefcase, 
   ChevronDown, 
   ChevronUp, 
-  Lock, 
-  Globe, 
   Loader2, 
   Check,
-  Sparkles,
-  ExternalLink,
   RefreshCw,
-  Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -220,7 +214,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
             <button className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-cyan-500/5 transition-colors group">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
-                  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-600" />
+                  <span className="text-lg sm:text-xl font-bold text-cyan-600">BC</span>
                 </div>
                 <div className="text-left">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -403,17 +397,9 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   : "border-amber-500/20 bg-amber-500/5"
               }`}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {isPremium ? (
-                      <Globe className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Lock className="h-5 w-5 text-amber-600" />
-                    )}
-                    <span className="font-semibold text-base">Website URL</span>
-                  </div>
+                  <span className="font-semibold text-base">Website URL</span>
                   {!isPremium && (
                     <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
-                      <Sparkles className="h-3 w-3 mr-1" />
                       Premium
                     </Badge>
                   )}
@@ -472,7 +458,6 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                         {/* Reset Timer (only when limit reached) */}
                         {scansRemaining === 0 && countdown && (
                           <div className="flex items-center gap-1.5 text-amber-600">
-                            <Clock className="h-4 w-4" />
                             <span className="font-mono text-xs">{countdown}</span>
                           </div>
                         )}
@@ -505,8 +490,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                       to="/pricing" 
                       className="inline-flex items-center text-sm font-semibold text-amber-600 hover:text-amber-500 transition-colors"
                     >
-                      Upgrade to Premium
-                      <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                      Upgrade to Premium →
                     </Link>
                   </div>
                 )}
@@ -527,10 +511,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   ) : (
                     <>
                       {shouldShowScanButton ? (
-                        <>
-                          <Globe className="h-4 w-4 mr-1.5" />
-                          Save Context & Scan Website
-                        </>
+                        "Save Context & Scan Website"
                       ) : (
                         <>
                           <Check className="h-4 w-4 mr-1.5" />

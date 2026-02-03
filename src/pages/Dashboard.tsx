@@ -116,7 +116,9 @@ export default function Dashboard() {
               {stats.validation_stats.total_validations === 0 && (
                 <Card className="glass-card mt-8">
                   <CardContent className="py-16 text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 via-accent-cool/10 to-accent-warm/20" />
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                      <span className="text-4xl font-bold text-primary/40">0</span>
+                    </div>
                     <h3 className="text-xl font-semibold mb-2 text-foreground">
                       Start Building Your Decision Trail
                     </h3>

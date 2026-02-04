@@ -181,83 +181,47 @@ const DecisionFlowAnimation = () => {
           </>
         )}
 
-        {/* Mobile: Pulsing indicators at each model node + animated rings at synthesis */}
+        {/* Mobile: Moving particles with animate cx/cy for stability (instead of animateMotion) */}
         {isMobile && isVisible && (
           <>
-            {/* Pulsing dots at each model position - staggered timing */}
             {models.map((model, index) => (
               <circle 
-                key={`mobile-pulse-${model.name}`}
-                cx={model.x} 
-                cy={model.y + 38}
-                r="3"
-                fill={model.color}
-                opacity="0.8"
+                key={`mobile-particle-${model.name}`}
+                r="4" 
+                fill={model.color} 
+                opacity="0.9"
               >
+                {/* Movement on X-axis */}
                 <animate 
-                  attributeName="r" 
-                  values="3;6;3" 
-                  dur="1.5s" 
-                  begin={`${index * 0.4}s`}
-                  repeatCount="indefinite" 
+                  attributeName="cx" 
+                  values={`${model.x};${synthesisX};${model.x}`}
+                  dur="2.5s" 
+                  begin={`${index * 0.6}s`}
+                  repeatCount="indefinite"
+                  calcMode="spline"
+                  keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
                 />
+                {/* Movement on Y-axis */}
+                <animate 
+                  attributeName="cy" 
+                  values={`${model.y};${synthesisY};${model.y}`}
+                  dur="2.5s" 
+                  begin={`${index * 0.6}s`}
+                  repeatCount="indefinite"
+                  calcMode="spline"
+                  keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+                />
+                {/* Fade at target point */}
                 <animate 
                   attributeName="opacity" 
-                  values="0.8;0.3;0.8" 
-                  dur="1.5s" 
-                  begin={`${index * 0.4}s`}
-                  repeatCount="indefinite" 
+                  values="0.9;0.9;0.3;0.9"
+                  keyTimes="0;0.4;0.5;1"
+                  dur="2.5s" 
+                  begin={`${index * 0.6}s`}
+                  repeatCount="indefinite"
                 />
               </circle>
             ))}
-            
-            {/* Animated expanding rings at synthesis point */}
-            <circle 
-              cx={synthesisX} 
-              cy={synthesisY} 
-              r="50"
-              fill="none"
-              stroke="hsl(142, 76%, 36%)"
-              strokeWidth="1"
-              opacity="0"
-            >
-              <animate 
-                attributeName="r" 
-                values="35;55" 
-                dur="2s" 
-                repeatCount="indefinite" 
-              />
-              <animate 
-                attributeName="opacity" 
-                values="0.5;0" 
-                dur="2s" 
-                repeatCount="indefinite" 
-              />
-            </circle>
-            <circle 
-              cx={synthesisX} 
-              cy={synthesisY} 
-              r="50"
-              fill="none"
-              stroke="hsl(142, 76%, 36%)"
-              strokeWidth="1"
-              opacity="0"
-            >
-              <animate 
-                attributeName="r" 
-                values="35;55" 
-                dur="2s" 
-                begin="1s"
-                repeatCount="indefinite" 
-              />
-              <animate 
-                attributeName="opacity" 
-                values="0.5;0" 
-                dur="2s" 
-                begin="1s"
-                repeatCount="indefinite" 
-              />
-            </circle>
           </>
         )}
 

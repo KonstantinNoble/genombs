@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,8 +18,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Loader2, 
-  Check,
-  RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -185,16 +182,11 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
   if (isLoading) {
     return (
-      <div className="relative">
-        <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/20 via-teal-400/15 to-cyan-500/20 blur-sm" />
-        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/30 via-teal-500/20 to-cyan-600/30" />
-        <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 p-4 animate-pulse">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-muted" />
-            <div className="space-y-2">
-              <div className="h-5 w-40 rounded bg-muted" />
-              <div className="h-4 w-56 rounded bg-muted" />
-            </div>
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm p-4 animate-pulse">
+        <div className="flex items-center gap-3">
+          <div className="space-y-2 flex-1">
+            <div className="h-5 w-40 rounded bg-muted" />
+            <div className="h-4 w-56 rounded bg-muted" />
           </div>
         </div>
       </div>
@@ -203,75 +195,60 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className="relative">
-        {/* Cyan/Teal Glow Effect */}
-        <div className="absolute -inset-[2px] rounded-2xl bg-gradient-to-r from-cyan-500/25 via-teal-400/15 to-cyan-500/25 blur-sm" />
-        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-cyan-500/35 via-teal-500/25 to-cyan-600/35" />
-        
-        <div className="relative rounded-2xl border border-cyan-500/30 bg-background/95 overflow-hidden transition-all duration-300">
-          {/* Header / Trigger */}
-          <CollapsibleTrigger asChild>
-            <button className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-cyan-500/5 transition-colors group">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 border border-cyan-500/20">
-                  <span className="text-lg sm:text-xl font-bold text-cyan-600">BC</span>
-                </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-base sm:text-lg text-foreground">Business Context</span>
-                    {hasContextData && (
-                      <Badge variant="outline" className="bg-cyan-500/10 border-cyan-500/30 text-cyan-600 text-xs">
-                        <Check className="h-3 w-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
-                    {hasUnsavedChanges && (
-                      <Badge variant="outline" className="bg-amber-500/10 border-amber-500/30 text-amber-600 text-xs">
-                        Unsaved
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Help AI understand your business
-                  </p>
-                </div>
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden transition-all duration-300">
+        {/* Header / Trigger */}
+        <CollapsibleTrigger asChild>
+          <button className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-muted/50 transition-colors group">
+            <div className="text-left">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-lg sm:text-xl text-foreground tracking-tight">Business Context</span>
+                {hasContextData && (
+                  <span className="text-xs font-medium text-primary/80">(Active)</span>
+                )}
+                {hasUnsavedChanges && (
+                  <span className="text-xs font-medium text-amber-600">(Unsaved)</span>
+                )}
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-cyan-500/10"
-                asChild
-              >
-                <span>
-                  {isOpen ? (
-                    <>
-                      <span className="hidden sm:inline">Close</span>
-                      <ChevronUp className="h-4 w-4" />
-                    </>
-                  ) : (
-                    <>
-                      <span className="hidden sm:inline">Edit</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </>
-                  )}
-                </span>
-              </Button>
-            </button>
-          </CollapsibleTrigger>
-
-          {/* Content */}
-          <CollapsibleContent>
-            <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-cyan-500/20">
-              {/* Helper hint for new users */}
-              <p className="text-xs text-muted-foreground pt-4 pb-0 -mb-2">
-                Save your context so every AI analysis is tailored to your business.
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Help AI understand your business
               </p>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              asChild
+            >
+              <span>
+                {isOpen ? (
+                  <>
+                    <span className="hidden sm:inline">Close</span>
+                    <ChevronUp className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Edit</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </span>
+            </Button>
+          </button>
+        </CollapsibleTrigger>
+
+        {/* Content */}
+        <CollapsibleContent>
+          <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-border/40">
+            {/* Helper hint for new users */}
+            <p className="text-sm text-muted-foreground pt-4 pb-0 -mb-2">
+              Save your context so every AI analysis is tailored to your business.
+            </p>
               
               {/* Dropdown Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Industry */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Industry</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Industry</Label>
                   <Select
                     value={localContext.industry || ""}
                     onValueChange={(value) => setLocalContext({ industry: value || null })}
@@ -291,7 +268,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {/* Company Stage */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Stage</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Stage</Label>
                   <Select
                     value={localContext.company_stage || ""}
                     onValueChange={(value) => setLocalContext({ company_stage: value || null })}
@@ -311,7 +288,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {/* Team Size */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Team Size</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Team Size</Label>
                   <Select
                     value={localContext.team_size || ""}
                     onValueChange={(value) => setLocalContext({ team_size: value || null })}
@@ -331,7 +308,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {/* Revenue */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Revenue</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Revenue</Label>
                   <Select
                     value={localContext.revenue_range || ""}
                     onValueChange={(value) => setLocalContext({ revenue_range: value || null })}
@@ -351,7 +328,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {/* Target Market */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Target Market</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Target Market</Label>
                   <Select
                     value={localContext.target_market || ""}
                     onValueChange={(value) => setLocalContext({ target_market: value || null })}
@@ -371,7 +348,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
                 {/* Geographic Focus */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-foreground">Region</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">Region</Label>
                   <Select
                     value={localContext.geographic_focus || ""}
                     onValueChange={(value) => setLocalContext({ geographic_focus: value || null })}
@@ -391,17 +368,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
               </div>
 
               {/* Premium Website Section */}
-              <div className={`rounded-xl border p-4 space-y-3 ${
-                isPremium 
-                  ? "border-primary/20 bg-primary/5" 
-                  : "border-amber-500/20 bg-amber-500/5"
-              }`}>
+              <div className="pt-4 mt-2 border-t border-border/40 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-base">Website URL</span>
+                  <span className="text-sm font-medium text-foreground">Website URL</span>
                   {!isPremium && (
-                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 text-xs">
+                    <span className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded">
                       Premium
-                    </Badge>
+                    </span>
                   )}
                 </div>
 
@@ -425,10 +398,9 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                     {/* Already scanned indicator with Rescan button */}
                     {context?.website_url === websiteUrl && context?.website_scraped_at && (
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-sm text-green-600">
-                          <Check className="h-4 w-4" />
-                          <span>Scanned {formatLastScanned(lastScanned)}</span>
-                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          Scanned {formatLastScanned(lastScanned)}
+                        </span>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -439,10 +411,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                           {isScanning ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
-                            <>
-                              <RefreshCw className="h-4 w-4 mr-1.5" />
-                              Scan Again
-                            </>
+                            "Scan Again"
                           )}
                         </Button>
                       </div>
@@ -496,8 +465,9 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                 )}
               </div>
 
+
               {/* Unified Save Button */}
-              <div className="flex items-center justify-end gap-3 pt-1">
+              <div className="flex items-center justify-end gap-3 pt-2">
                 <Button
                   onClick={handleSaveAndScan}
                   disabled={isSaving || isScanning}
@@ -509,22 +479,12 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                       {isScanning ? "Scanning..." : "Saving..."}
                     </>
                   ) : (
-                    <>
-                      {shouldShowScanButton ? (
-                        "Save Context & Scan Website"
-                      ) : (
-                        <>
-                          <Check className="h-4 w-4 mr-1.5" />
-                          Save Context
-                        </>
-                      )}
-                    </>
+                    shouldShowScanButton ? "Save Context & Scan Website" : "Save Context"
                   )}
                 </Button>
               </div>
             </div>
           </CollapsibleContent>
-        </div>
       </div>
     </Collapsible>
   );

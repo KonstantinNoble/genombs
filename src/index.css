@@ -491,6 +491,39 @@ All colors MUST be HSL.
   animation: morph-blob 20s ease-in-out infinite, gradient-shift 15s ease-in-out infinite;
 }
 
+/* ============================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+/* Disable expensive animations on mobile to improve stability and battery life */
+@media (max-width: 767px) {
+  .gradient-orb,
+  .float-slow,
+  .float-medium,
+  .float-fast {
+    animation: none !important;
+    filter: none !important;
+    opacity: 0.3;
+  }
+  
+  /* Disable blur filters on mobile */
+  .glass,
+  .glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Reduce transform complexity */
+  .tilt-card:hover {
+    transform: none;
+  }
+  
+  /* Simpler card hover effects */
+  .card-elevated:hover,
+  .premium-card:hover {
+    transform: none;
+  }
+}
+
 @keyframes gradient-shift {
   0%, 100% { 
     transform: scale(1) rotate(0deg);

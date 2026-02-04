@@ -4,10 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import DecisionFlowAnimation from "./DecisionFlowAnimation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Hero = () => {
   const { user, isPremium } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -19,35 +21,45 @@ const Hero = () => {
       className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Elegant background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-1/4 left-1/6 w-[600px] h-[600px] rounded-full opacity-25"
-          style={{ 
-            background: 'radial-gradient(circle at center, hsl(142 76% 36% / 0.2), transparent 60%)',
-            filter: 'blur(80px)',
-            animation: 'float 25s ease-in-out infinite'
-          }}
-        />
-        <div 
-          className="absolute bottom-1/4 right-1/6 w-[500px] h-[500px] rounded-full opacity-20"
-          style={{ 
-            background: 'radial-gradient(circle at center, hsl(220 76% 55% / 0.15), transparent 60%)',
-            filter: 'blur(80px)',
-            animation: 'float 30s ease-in-out infinite reverse'
-          }}
-        />
-        
-        <div 
-          className="absolute top-1/3 left-0 w-2/3 h-px"
-          style={{
-            background: 'linear-gradient(90deg, transparent, hsl(142 76% 36% / 0.12), transparent)',
-            animation: 'line-flow 8s ease-in-out infinite'
-          }}
-        />
-        
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/60 to-transparent" />
-      </div>
+      {/* Background effects - Desktop only (blur + animated blobs cause performance issues on mobile) */}
+      {!isMobile && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute top-1/4 left-1/6 w-[600px] h-[600px] rounded-full opacity-25"
+            style={{ 
+              background: 'radial-gradient(circle at center, hsl(142 76% 36% / 0.2), transparent 60%)',
+              filter: 'blur(80px)',
+              animation: 'float 25s ease-in-out infinite'
+            }}
+          />
+          <div 
+            className="absolute bottom-1/4 right-1/6 w-[500px] h-[500px] rounded-full opacity-20"
+            style={{ 
+              background: 'radial-gradient(circle at center, hsl(220 76% 55% / 0.15), transparent 60%)',
+              filter: 'blur(80px)',
+              animation: 'float 30s ease-in-out infinite reverse'
+            }}
+          />
+          
+          <div 
+            className="absolute top-1/3 left-0 w-2/3 h-px"
+            style={{
+              background: 'linear-gradient(90deg, transparent, hsl(142 76% 36% / 0.12), transparent)',
+              animation: 'line-flow 8s ease-in-out infinite'
+            }}
+          />
+          
+          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        </div>
+      )}
+
+      {/* Mobile: Simple static gradient background */}
+      {isMobile && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-16">

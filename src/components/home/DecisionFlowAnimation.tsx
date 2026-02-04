@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const DecisionFlowAnimation = () => {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -114,9 +116,8 @@ const DecisionFlowAnimation = () => {
           className={`transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
         />
 
-        {/* Animated particles - one for each model */}
-        {/* Using rotate="0" and calcMode="spline" for consistent rendering across browsers */}
-        {isVisible && (
+        {/* Animated particles - Desktop only (animateMotion has issues on mobile browsers) */}
+        {!isMobile && isVisible && (
           <>
             {/* GPT Particle */}
             <circle r="4" fill="hsl(220, 70%, 50%)" opacity="0.9">
@@ -176,6 +177,32 @@ const DecisionFlowAnimation = () => {
               >
                 <mpath href="#path4" />
               </animateMotion>
+            </circle>
+          </>
+        )}
+
+        {/* Mobile: Simple pulse at synthesis point instead of complex path animations */}
+        {isMobile && isVisible && (
+          <>
+            <circle 
+              cx={synthesisX} 
+              cy={synthesisY - 40} 
+              r="5"
+              fill="hsl(142, 76%, 36%)"
+              opacity="0.6"
+            >
+              <animate 
+                attributeName="r" 
+                values="5;8;5" 
+                dur="2s" 
+                repeatCount="indefinite" 
+              />
+              <animate 
+                attributeName="opacity" 
+                values="0.6;0.3;0.6" 
+                dur="2s" 
+                repeatCount="indefinite" 
+              />
             </circle>
           </>
         )}

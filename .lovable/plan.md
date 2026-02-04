@@ -1,70 +1,176 @@
 
-# Fix für verzerrte Partikel-Animation auf Mobile
+# Mobile Homepage Stabilisierung
 
-## Problem-Analyse
+## Problem-Zusammenfassung
 
-Die `DecisionFlowAnimation`-Komponente zeigt auf mobilen Geräten verzerrte Partikel-Bewegungen. Die Ursache liegt in mehreren Faktoren:
+Die Homepage zeigt auf mobilen Geräten folgende Probleme:
+- Verzerrte Partikel-Animationen
+- Instabiles Verhalten
+- Ruckelnde Performance
 
-### Identifizierte Probleme
+## Ursachen-Analyse
 
-1. **CSS `transform-origin` mit Pixel-Werten in SVG**
-   - Die Modell-Nodes verwenden `transformOrigin: \`${model.x}px ${model.y}px\``
-   - In SVG funktioniert `transform-origin` mit Pixel-Werten nicht zuverlässig, besonders wenn das SVG skaliert wird (auf Mobile)
-
-2. **`animateMotion` und Skalierung**
-   - Die SVG-Partikel verwenden `<animateMotion>` mit `<mpath>`, was auf verschiedenen Browser-Engines unterschiedlich gerendert wird
-   - Safari/iOS hat bekannte Probleme mit `animateMotion` bei skalierten SVGs
-
-3. **Fehlende `rotate` Eigenschaft**
-   - `animateMotion` benötigt `rotate="auto"` oder `rotate="0"` für konsistentes Verhalten
+| Problem | Ursache | Auswirkung |
+|---------|---------|------------|
+| Verzerrte Partikel | SVG `animateMotion` + `mpath` funktioniert nicht konsistent auf iOS Safari | Partikel bewegen sich nicht korrekt entlang der Pfade |
+| Hintergrund-Ruckeln | Komplexe CSS-Animationen (blur + scale + rotate) überfordern Mobile-GPU | Seite wirkt instabil |
+| Performance-Probleme | Zu viele gleichzeitige Animationen | Browser-Framerate sinkt |
 
 ---
 
 ## Lösung
 
-### Datei: `src/components/home/DecisionFlowAnimation.tsx`
+### Phase 1: Partikel-Animation Mobile-Fallback
+
+**Datei:** `src/components/home/DecisionFlowAnimation.tsx`
 
 **Änderungen:**
 
-1. **`transform-origin` auf SVG-Attribute umstellen**
-   - Anstelle von CSS `transform-origin` mit Pixeln: SVG `transform` mit `translate`-Trick verwenden
-   - Für Scale-Animationen: Element zum Ursprung bewegen, skalieren, zurückbewegen
+1. **CSS-basierte Animation statt `animateMotion`**
+   - Auf Mobile: Einfachere CSS-Keyframe-Animation für Partikel
+   - Partikel pulsieren und verblassen statt komplexer Pfad-Bewegung
+   - `animateMotion` nur auf Desktop verwenden
 
-2. **`rotate="0"` zu allen `animateMotion`-Elementen hinzufügen**
-   - Verhindert ungewollte Rotation der Partikel während der Bewegung
+2. **Mobile-Detection Hook verwenden**
+   - `useIsMobile()` Hook importieren
+   - Bedingte Rendering-Logik für Mobile vs Desktop
 
-3. **Kleinere Partikel-Größe auf Mobile**
-   - Partikelradius von `r="5"` auf responsive Wert anpassen
-
-4. **CSS-basierte Animation als Fallback**
-   - Für Browser die `animateMotion` nicht gut unterstützen: CSS-Keyframe-Alternative
-
-### Technische Implementierung
+3. **Vereinfachte Mobile-Variante**
+   - Statische Verbindungslinien (keine Partikel-Animation)
+   - Dezente Puls-Animation am Synthesis-Punkt
+   - Deutlich weniger GPU-Last
 
 ```text
-Vorher (problematisch):
-┌─────────────────────────────────────────┐
-│  style={{                               │
-│    transformOrigin: `${model.x}px ...`  │  ← Pixel in SVG = Verzerrung
-│  }}                                     │
-└─────────────────────────────────────────┘
-
-Nachher (stabil):
-┌─────────────────────────────────────────┐
-│  transform={`translate(${x}, ${y})     │
-│              scale(${isVisible ? 1 : 0.8})  │  ← SVG-native Transformation
-│              translate(${-x}, ${-y})`}  │
-└─────────────────────────────────────────┘
+Desktop:                     Mobile (vereinfacht):
+┌─────────────────┐          ┌─────────────────┐
+│  [GPT] [Claude] │          │  [GPT] [Claude] │
+│    ●→  ←●       │          │    |      |     │
+│  [Gem] [Perp]   │          │  [Gem] [Perp]   │
+│    ●→  ←●       │          │    |      |     │
+│      [✓]        │          │    [●✓●]        │  ← Puls-Animation
+└─────────────────┘          └─────────────────┘
 ```
 
-### Partikel-Animation Fix
+### Phase 2: Hintergrund-Animationen reduzieren
 
-```text
-Vorher:
-<animateMotion dur="2.5s" repeatCount="indefinite">
+**Datei:** `src/components/home/Hero.tsx`
 
-Nachher:
-<animateMotion dur="2.5s" repeatCount="indefinite" rotate="0" calcMode="spline" keySplines="0.4 0 0.2 1">
+**Änderungen:**
+
+1. **Blobs auf Mobile deaktivieren**
+   - Die floating blobs mit blur-Filter entfernen auf Mobile
+   - Nur dezenter statischer Gradient-Hintergrund
+
+2. **line-flow Animation entfernen auf Mobile**
+   - Die animierte Linie ist auf kleinen Screens ohnehin nicht sichtbar
+
+```tsx
+// Hero.tsx - Mobile-optimierter Hintergrund
+{!isMobile && (
+  <div className="absolute top-1/4 left-1/6 w-[600px] h-[600px] ..." />
+)}
+```
+
+### Phase 3: CSS-Animationen optimieren
+
+**Datei:** `src/index.css`
+
+**Änderungen:**
+
+1. **Mobile-spezifische Animation-Reduktion**
+   - `will-change: auto` auf Mobile (nicht `transform`)
+   - Keine Blur-Filter in Animationen auf Mobile
+
+2. **GPU-schonende Animationen**
+   - Nur `opacity` und `transform` animieren (composited properties)
+   - Keine `filter` oder `backdrop-filter` in Animationen auf Mobile
+
+```css
+@media (max-width: 767px) {
+  .gradient-orb,
+  .float-slow,
+  .float-medium,
+  .float-fast {
+    animation: none !important;
+    opacity: 0.3;
+  }
+}
+```
+
+---
+
+## Implementierungs-Details
+
+### DecisionFlowAnimation.tsx (Mobile-Fallback)
+
+```tsx
+// Import Hook
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const DecisionFlowAnimation = () => {
+  const isMobile = useIsMobile();
+  
+  // ... bestehende Logik ...
+  
+  return (
+    <svg ...>
+      {/* Verbindungslinien bleiben gleich */}
+      
+      {/* Partikel: Nur auf Desktop */}
+      {!isMobile && isVisible && (
+        <>
+          {/* animateMotion Partikel */}
+        </>
+      )}
+      
+      {/* Mobile: Synthesis-Punkt mit stärkerer Puls-Animation */}
+      {isMobile && (
+        <circle 
+          cx={synthesisX} 
+          cy={synthesisY} 
+          r="6"
+          fill="hsl(142, 76%, 36%)"
+          opacity="0.8"
+        >
+          <animate 
+            attributeName="r" 
+            values="6;10;6" 
+            dur="2s" 
+            repeatCount="indefinite" 
+          />
+        </circle>
+      )}
+    </svg>
+  );
+};
+```
+
+### Hero.tsx (Mobile-optimierter Hintergrund)
+
+```tsx
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const Hero = () => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <section>
+      {/* Hintergrund-Effekte nur auf Desktop */}
+      {!isMobile && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Blobs und Linien */}
+        </div>
+      )}
+      
+      {/* Einfacher Gradient auf Mobile */}
+      {isMobile && (
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
+      )}
+      
+      {/* Rest bleibt gleich */}
+    </section>
+  );
+};
 ```
 
 ---
@@ -73,16 +179,28 @@ Nachher:
 
 | Datei | Änderung |
 |-------|----------|
-| `src/components/home/DecisionFlowAnimation.tsx` | SVG-Transformationen korrigieren, `rotate="0"` hinzufügen, Mobile-optimierte Partikelgröße |
+| `src/components/home/DecisionFlowAnimation.tsx` | Mobile-Fallback ohne animateMotion, vereinfachte Puls-Animation |
+| `src/components/home/Hero.tsx` | Blobs/Linien auf Mobile deaktivieren, einfacher Gradient |
+| `src/index.css` | Mobile-spezifische Animation-Reduktion |
 
 ---
 
-## Erwartetes Ergebnis
+## Erwartete Verbesserungen
 
-| Gerät | Vorher | Nachher |
-|-------|--------|---------|
-| Desktop | Funktioniert | Funktioniert |
-| Mobile (iOS Safari) | Verzerrte Partikel | Flüssige Animation |
-| Mobile (Android Chrome) | Verzerrte Partikel | Flüssige Animation |
+| Metrik | Vorher | Nachher |
+|--------|--------|---------|
+| Partikel-Animation | Verzerrt auf Mobile | Stabile Puls-Animation oder keine Animation |
+| Framerate auf Mobile | ~30fps (ruckelig) | ~60fps (flüssig) |
+| GPU-Auslastung | Hoch (blur + scale + rotate) | Niedrig (nur opacity) |
+| Akku-Verbrauch | Hoch | Reduziert |
+| Visuelle Qualität Desktop | Unverändert | Unverändert |
 
-Die Animation wird auf allen Geräten konsistent und ohne Verzerrung dargestellt.
+---
+
+## Zusammenfassung
+
+Die Lösung folgt dem Prinzip "Progressive Enhancement":
+- **Desktop**: Volle Animation-Erfahrung bleibt erhalten
+- **Mobile**: Vereinfachte, stabile Animationen die auf allen Geräten funktionieren
+
+Die Änderungen sind rückwärtskompatibel und verschlechtern die Desktop-Erfahrung nicht.

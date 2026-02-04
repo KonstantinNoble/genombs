@@ -181,26 +181,80 @@ const DecisionFlowAnimation = () => {
           </>
         )}
 
-        {/* Mobile: Simple pulse at synthesis point instead of complex path animations */}
+        {/* Mobile: Pulsing indicators at each model node + animated rings at synthesis */}
         {isMobile && isVisible && (
           <>
+            {/* Pulsing dots at each model position - staggered timing */}
+            {models.map((model, index) => (
+              <circle 
+                key={`mobile-pulse-${model.name}`}
+                cx={model.x} 
+                cy={model.y + 38}
+                r="3"
+                fill={model.color}
+                opacity="0.8"
+              >
+                <animate 
+                  attributeName="r" 
+                  values="3;6;3" 
+                  dur="1.5s" 
+                  begin={`${index * 0.4}s`}
+                  repeatCount="indefinite" 
+                />
+                <animate 
+                  attributeName="opacity" 
+                  values="0.8;0.3;0.8" 
+                  dur="1.5s" 
+                  begin={`${index * 0.4}s`}
+                  repeatCount="indefinite" 
+                />
+              </circle>
+            ))}
+            
+            {/* Animated expanding rings at synthesis point */}
             <circle 
               cx={synthesisX} 
-              cy={synthesisY - 40} 
-              r="5"
-              fill="hsl(142, 76%, 36%)"
-              opacity="0.6"
+              cy={synthesisY} 
+              r="50"
+              fill="none"
+              stroke="hsl(142, 76%, 36%)"
+              strokeWidth="1"
+              opacity="0"
             >
               <animate 
                 attributeName="r" 
-                values="5;8;5" 
+                values="35;55" 
                 dur="2s" 
                 repeatCount="indefinite" 
               />
               <animate 
                 attributeName="opacity" 
-                values="0.6;0.3;0.6" 
+                values="0.5;0" 
                 dur="2s" 
+                repeatCount="indefinite" 
+              />
+            </circle>
+            <circle 
+              cx={synthesisX} 
+              cy={synthesisY} 
+              r="50"
+              fill="none"
+              stroke="hsl(142, 76%, 36%)"
+              strokeWidth="1"
+              opacity="0"
+            >
+              <animate 
+                attributeName="r" 
+                values="35;55" 
+                dur="2s" 
+                begin="1s"
+                repeatCount="indefinite" 
+              />
+              <animate 
+                attributeName="opacity" 
+                values="0.5;0" 
+                dur="2s" 
+                begin="1s"
                 repeatCount="indefinite" 
               />
             </circle>

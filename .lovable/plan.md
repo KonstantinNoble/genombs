@@ -1,129 +1,67 @@
 
 
-# Auto-Save für Business Context
+# Fix: Alte URL wird verwendet statt neuer URL
 
-## Übersicht
+## Problem-Diagnose
 
-Implementierung eines Auto-Save-Features, das Änderungen an Dropdowns und URL automatisch in der Datenbank speichert, ohne dass der Benutzer auf "Save Context" klicken muss.
+Das Problem liegt in der **doppelten Hook-Instanziierung** und einem **leeren Callback**:
 
-## Aktueller Zustand
+| Komponente | Hook-Instanz | Problem |
+|------------|--------------|---------|
+| `ValidationPlatform.tsx` (Zeile 61) | `useBusinessContext()` #1 | Verwendet alten `businessContext` bei `validate()` |
+| `BusinessContextPanel.tsx` (Zeile 42-57) | `useBusinessContext()` #2 | Aktualisiert nur eigenen State |
 
-| Element | Verhalten |
-|---------|-----------|
-| Dropdowns (Industry, Stage, etc.) | Ändern nur `localContext` State |
-| URL-Feld | Ändern nur `websiteUrl` State |
-| Save Button | Erforderlich um Änderungen zu speichern |
+Wenn du im Panel die URL änderst:
+1. Panel-Instanz speichert neue URL in DB ✅
+2. Panel-Instanz aktualisiert eigenen `context` State ✅
+3. ValidationPlatform-Instanz behält **alten** `context` ❌
+4. `handleValidate()` sendet **alte** URL an die KI ❌
 
-## Neuer Zustand
+Zusätzlich: `onContextChange` (Zeile 553-555) ist leer und lädt nichts neu.
 
-| Element | Verhalten |
-|---------|-----------|
-| Dropdowns (Industry, Stage, etc.) | Auto-Save nach Auswahl (sofort) |
-| URL-Feld | Auto-Save nach 800ms Debounce (wenn gültige https:// URL) |
-| Save Button | Wird zu "Scan Website" Button (nur für Premium URL-Scanning) |
+## Lösung
 
-## Technische Implementierung
+### Änderung 1: `useBusinessContext.ts` - `loadContext()` gibt Context zurück
 
-### Änderung 1: useBusinessContext.ts erweitern
+**Datei:** `src/hooks/useBusinessContext.ts`
 
-Neue Funktion `autoSaveField` hinzufügen, die einzelne Felder direkt in der Datenbank speichert:
+Die `loadContext()` Funktion muss den geladenen Context **zurückgeben**, damit `ValidationPlatform` ihn direkt vor der Validierung abrufen kann.
 
-```typescript
-const autoSaveField = useCallback(async (
-  field: keyof BusinessContextInput, 
-  value: string | null
-): Promise<boolean> => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) return false;
+**Änderungen:**
+- Signatur ändern: `loadContext: () => Promise<BusinessContext | null>`
+- Nach erfolgreichem Select: `return data as BusinessContext | null`
+- Bei Fehler/nicht eingeloggt: `return null`
 
-    const { error } = await (supabase as any)
-      .from("user_business_context")
-      .upsert({
-        user_id: session.user.id,
-        [field]: value,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: "user_id",
-      });
+### Änderung 2: `ValidationPlatform.tsx` - Frischen Context vor Validierung laden
 
-    if (error) {
-      console.error("Auto-save failed:", error);
-      return false;
-    }
+**Datei:** `src/pages/ValidationPlatform.tsx`
 
-    // Update local context and DB context
-    setContext(prev => prev ? { ...prev, [field]: value } : null);
-    return true;
-  } catch (err) {
-    console.error("Auto-save error:", err);
-    return false;
-  }
-}, []);
-```
+1. `loadContext` aus dem Hook destrukturieren (zusätzlich zu `context`)
+2. In `handleValidate()` vor `validate()` aufrufen: `const freshContext = await loadContext()`
+3. `freshContext` an `validate()` übergeben statt `businessContext`
+4. `onContextChange` Callback nutzen um `loadContext()` aufzurufen
 
-**Neue Returns:**
-- `autoSaveField`: Funktion zum automatischen Speichern einzelner Felder
+### Änderung 3: Optional - Warnung wenn URL ohne Scan
 
-### Änderung 2: BusinessContextPanel.tsx anpassen
+Falls eine URL eingegeben aber nicht gescannt wurde, könnte ein Hinweis angezeigt werden. (Optional, nicht kritisch)
 
-**Dropdowns (sofortiges Auto-Save):**
-```typescript
-// Statt:
-onValueChange={(value) => setLocalContext({ industry: value || null })}
+## Datei-Änderungen
 
-// Wird zu:
-onValueChange={async (value) => {
-  setLocalContext({ industry: value || null });
-  await autoSaveField("industry", value || null);
-}}
-```
+| Datei | Zeilen | Änderung |
+|-------|--------|----------|
+| `src/hooks/useBusinessContext.ts` | 100, 136-164 | `loadContext()` gibt `BusinessContext \| null` zurück |
+| `src/pages/ValidationPlatform.tsx` | 61 | `loadContext` destrukturieren |
+| `src/pages/ValidationPlatform.tsx` | 254-257 | Frischen Context laden vor `validate()` |
+| `src/pages/ValidationPlatform.tsx` | 553-555 | `onContextChange` callback implementieren |
 
-**URL-Feld (Debounced Auto-Save):**
-```typescript
-// Neuer useEffect mit Debounce
-useEffect(() => {
-  // Nur speichern wenn URL gültig oder leer ist
-  if (websiteUrl && !websiteUrl.startsWith("https://")) return;
-  
-  const timer = setTimeout(async () => {
-    // Nur speichern wenn URL sich geändert hat
-    if (websiteUrl !== context?.website_url) {
-      await autoSaveField("website_url", websiteUrl || null);
-    }
-  }, 800);
-  
-  return () => clearTimeout(timer);
-}, [websiteUrl]);
-```
+## Erwartetes Ergebnis
 
-**Save Button wird zu Scan Button:**
-- Der "Save Context" Button wird entfernt
-- Der "Scan Website" Button wird nur angezeigt, wenn eine neue/geänderte URL vorhanden ist
-- "Unsaved" Badge wird entfernt (da alles auto-saved wird)
+Nach dieser Änderung:
+1. Jede URL-Änderung wird sofort in DB gespeichert (Auto-Save) ✅
+2. Vor jeder Validierung wird der **aktuelle** Context aus der DB geladen ✅
+3. Die KI erhält immer die **neueste** URL und alle Felder ✅
 
-### Änderung 3: UI-Feedback für Auto-Save
+## Kein Edge Function Deployment nötig
 
-Subtile Bestätigung, dass Änderungen gespeichert wurden:
-- Kleines Check-Icon mit kurzer Animation neben dem geänderten Feld
-- Kein Toast für einzelne Feld-Speicherungen (zu störend)
-- Toast nur bei Fehlern
-
-## Zusammenfassung der Datei-Änderungen
-
-| Datei | Änderungen |
-|-------|------------|
-| `src/hooks/useBusinessContext.ts` | `autoSaveField` Funktion hinzufügen |
-| `src/components/validation/BusinessContextPanel.tsx` | Dropdown-Handler + URL-Debounce + UI-Anpassungen |
-
-## UX-Verbesserungen
-
-1. **Keine Unterbrechung**: Benutzer können Felder ändern ohne den Flow zu unterbrechen
-2. **Schnelles Feedback**: Änderungen werden sofort reflektiert
-3. **Fehlertoleranz**: Bei Netzwerkfehler wird subtil angezeigt, dass Speichern fehlgeschlagen ist
-4. **Website-Scanning bleibt explizit**: Das Premium Website-Scanning erfordert weiterhin einen expliziten Klick
-
-## Deployment
-
-Da dies nur Frontend-Änderungen sind, ist kein manuelles Deployment zum externen Supabase-Projekt erforderlich. Die Änderungen werden automatisch mit Lovable deployed.
+Da dies nur Frontend-Änderungen sind, muss keine Edge Function deployed werden.
 

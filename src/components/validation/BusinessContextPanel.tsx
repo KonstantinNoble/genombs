@@ -44,11 +44,11 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     isLoading,
     isSaving,
     isScanning,
-    hasUnsavedChanges,
     lastScanned,
     saveContext,
     scanWebsite,
     setLocalContext,
+    autoSaveField,
     localContext,
     loadContext,
     scansRemaining,
@@ -59,6 +59,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
   const [isOpen, setIsOpen] = useState(true);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [countdown, setCountdown] = useState<string>("");
+  const [savingField, setSavingField] = useState<string | null>(null);
   
   // URL validation
   const isUrlInvalid = websiteUrl.length > 0 && !websiteUrl.startsWith("https://");
@@ -87,6 +88,27 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
       setWebsiteUrl(context.website_url);
     }
   }, [context?.website_url]);
+
+  // Debounced auto-save for URL field
+  useEffect(() => {
+    // Skip if URL is invalid (except empty is allowed)
+    if (websiteUrl && !websiteUrl.startsWith("https://")) return;
+    
+    // Skip if URL hasn't changed from DB
+    if (websiteUrl === (context?.website_url || "")) return;
+    
+    // Don't auto-save for non-premium users
+    if (!isPremium && websiteUrl) return;
+    
+    const timer = setTimeout(async () => {
+      setSavingField("website_url");
+      await autoSaveField("website_url", websiteUrl || null);
+      setSavingField(null);
+      if (onContextChange) onContextChange();
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, [websiteUrl, context?.website_url, autoSaveField, isPremium, onContextChange]);
 
   // Countdown timer effect for scan reset
   useEffect(() => {
@@ -138,22 +160,17 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
 
   const shouldShowScanButton = needsWebsiteScan();
 
-  // Unified save handler that also scans website if needed
+  // Handler to scan website (URL is already auto-saved via debounce)
   const handleSaveAndScan = async () => {
-    // First, save the context (including the URL)
-    const saveSuccess = await saveContext({
-      ...localContext,
-      website_url: isPremium ? websiteUrl || null : null,
-    });
-    
-    if (!saveSuccess) return;
-    
-    // If we need to scan the website, do it after save
-    if (needsWebsiteScan()) {
-      await scanWebsite(websiteUrl);
+    // Ensure URL is saved before scanning
+    if (websiteUrl !== context?.website_url) {
+      await autoSaveField("website_url", websiteUrl || null);
     }
     
-    if (onContextChange) {
+    // Scan the website
+    const success = await scanWebsite(websiteUrl);
+    
+    if (success && onContextChange) {
       onContextChange();
     }
   };
@@ -225,9 +242,10 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                         Active
                       </Badge>
                     )}
-                    {hasUnsavedChanges && (
-                      <Badge variant="outline" className="bg-amber-500/10 border-amber-500/30 text-amber-600 text-xs">
-                        Unsaved
+                    {savingField && (
+                      <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary text-xs">
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        Saving...
                       </Badge>
                     )}
                   </div>
@@ -264,7 +282,7 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
             <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-cyan-500/20">
               {/* Helper hint for new users */}
               <p className="text-xs text-muted-foreground pt-4 pb-0 -mb-2">
-                Save your context so every AI analysis is tailored to your business.
+                Your context is saved automatically as you make changes.
               </p>
               
               {/* Dropdown Grid */}
@@ -274,7 +292,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Industry</Label>
                   <Select
                     value={localContext.industry || ""}
-                    onValueChange={(value) => setLocalContext({ industry: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ industry: value || null });
+                      setSavingField("industry");
+                      await autoSaveField("industry", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -294,7 +318,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Stage</Label>
                   <Select
                     value={localContext.company_stage || ""}
-                    onValueChange={(value) => setLocalContext({ company_stage: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ company_stage: value || null });
+                      setSavingField("company_stage");
+                      await autoSaveField("company_stage", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -314,7 +344,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Team Size</Label>
                   <Select
                     value={localContext.team_size || ""}
-                    onValueChange={(value) => setLocalContext({ team_size: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ team_size: value || null });
+                      setSavingField("team_size");
+                      await autoSaveField("team_size", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -334,7 +370,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Revenue</Label>
                   <Select
                     value={localContext.revenue_range || ""}
-                    onValueChange={(value) => setLocalContext({ revenue_range: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ revenue_range: value || null });
+                      setSavingField("revenue_range");
+                      await autoSaveField("revenue_range", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -354,7 +396,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Target Market</Label>
                   <Select
                     value={localContext.target_market || ""}
-                    onValueChange={(value) => setLocalContext({ target_market: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ target_market: value || null });
+                      setSavingField("target_market");
+                      await autoSaveField("target_market", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -374,7 +422,13 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                   <Label className="text-sm font-semibold text-foreground">Region</Label>
                   <Select
                     value={localContext.geographic_focus || ""}
-                    onValueChange={(value) => setLocalContext({ geographic_focus: value || null })}
+                    onValueChange={async (value) => {
+                      setLocalContext({ geographic_focus: value || null });
+                      setSavingField("geographic_focus");
+                      await autoSaveField("geographic_focus", value || null);
+                      setSavingField(null);
+                      if (onContextChange) onContextChange();
+                    }}
                   >
                     <SelectTrigger className="h-10 text-base">
                       <SelectValue placeholder="Select..." />
@@ -496,32 +550,25 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                 )}
               </div>
 
-              {/* Unified Save Button */}
-              <div className="flex items-center justify-end gap-3 pt-1">
-                <Button
-                  onClick={handleSaveAndScan}
-                  disabled={isSaving || isScanning}
-                  className="px-6 h-10"
-                >
-                  {isSaving || isScanning ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                      {isScanning ? "Scanning..." : "Saving..."}
-                    </>
-                  ) : (
-                    <>
-                      {shouldShowScanButton ? (
-                        "Save Context & Scan Website"
-                      ) : (
-                        <>
-                          <Check className="h-4 w-4 mr-1.5" />
-                          Save Context
-                        </>
-                      )}
-                    </>
-                  )}
-                </Button>
-              </div>
+              {/* Scan Website Button (only for Premium when new URL needs scanning) */}
+              {isPremium && shouldShowScanButton && (
+                <div className="flex items-center justify-end gap-3 pt-1">
+                  <Button
+                    onClick={handleSaveAndScan}
+                    disabled={isSaving || isScanning || scansRemaining <= 0}
+                    className="px-6 h-10"
+                  >
+                    {isScanning ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                        Scanning...
+                      </>
+                    ) : (
+                      "Scan Website"
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </CollapsibleContent>
         </div>

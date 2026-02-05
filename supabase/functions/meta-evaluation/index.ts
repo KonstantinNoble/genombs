@@ -279,6 +279,109 @@ function generateContextualInsights(
     `Maintain market awareness and strategic agility to respond to competitive dynamics.`;
 }
 
+// ========== JSON RECOVERY UTILITIES (String-Aware) ==========
+
+/**
+ * Sanitizes JSON strings by escaping raw control characters (newlines, tabs, etc.)
+ * and closing truncated strings. This fixes "Unterminated string" errors.
+ */
+function sanitizeJsonStrings(jsonStr: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  
+  for (let i = 0; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+    
+    if (escaped) {
+      result += char;
+      escaped = false;
+      continue;
+    }
+    
+    if (char === '\\') {
+      result += char;
+      escaped = true;
+      continue;
+    }
+    
+    if (char === '"') {
+      inString = !inString;
+      result += char;
+      continue;
+    }
+    
+    // Inside a string: escape control characters
+    if (inString) {
+      if (char === '\n') {
+        result += '\\n';
+      } else if (char === '\r') {
+        result += '\\r';
+      } else if (char === '\t') {
+        result += '\\t';
+      } else {
+        result += char;
+      }
+    } else {
+      result += char;
+    }
+  }
+  
+  // If still inside a string at EOF, close it (truncated string)
+  if (inString) {
+    result += '"';
+    console.log('[JSON Sanitize] Closed truncated string at EOF');
+  }
+  
+  return result;
+}
+
+/**
+ * String-aware repair: counts brackets/braces ONLY outside of strings,
+ * then adds missing closures at the end.
+ */
+function repairTruncatedJSONStringAware(jsonStr: string): string {
+  let repaired = jsonStr.trim();
+  
+  // String-aware counting (only count outside of strings)
+  let inString = false;
+  let escaped = false;
+  let openBraces = 0, closeBraces = 0;
+  let openBrackets = 0, closeBrackets = 0;
+  
+  for (const char of repaired) {
+    if (escaped) { escaped = false; continue; }
+    if (char === '\\') { escaped = true; continue; }
+    if (char === '"') { inString = !inString; continue; }
+    
+    if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') closeBraces++;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') closeBrackets++;
+    }
+  }
+  
+  // If balanced, return as-is
+  if (openBraces === closeBraces && openBrackets === closeBrackets) {
+    return repaired;
+  }
+  
+  console.log(`[JSON Repair] Unbalanced: { ${openBraces}/${closeBraces} } [ ${openBrackets}/${closeBrackets} ]`);
+  
+  // Add missing closing brackets first (innermost)
+  const missingBrackets = Math.max(0, openBrackets - closeBrackets);
+  repaired += ']'.repeat(missingBrackets);
+  
+  // Then add missing closing braces
+  const missingBraces = Math.max(0, openBraces - closeBraces);
+  repaired += '}'.repeat(missingBraces);
+  
+  console.log(`[JSON Repair] Added ${missingBrackets} ] and ${missingBraces} }`);
+  
+  return repaired;
+}
+
 // ========== DETERMINISTIC WEIGHTING FUNCTIONS ==========
 
 function calculateWeightedScore(confidence: number, weight: number): number {
@@ -1479,34 +1582,25 @@ MODELS: ${modelSummaries.join('\n')}`;
             // Continue to next recovery attempt
           }
           
-          // Fallback 2: Truncation repair - add missing brackets/braces
+          // Fallback 2: Sanitize strings + String-aware truncation repair
           if (!formattingParsed) {
             try {
-              let repaired = content;
+              // Step 1: Sanitize strings (escapes control chars, closes truncated strings)
+              const sanitized = sanitizeJsonStrings(content);
               
-              // Count open vs closed brackets/braces
-              const openBraces = (content.match(/{/g) || []).length;
-              const closeBraces = (content.match(/}/g) || []).length;
-              const openBrackets = (content.match(/\[/g) || []).length;
-              const closeBrackets = (content.match(/]/g) || []).length;
-              
-              // Add missing closures
-              repaired += ']'.repeat(Math.max(0, openBrackets - closeBrackets));
-              repaired += '}'.repeat(Math.max(0, openBraces - closeBraces));
+              // Step 2: Repair structure (close brackets/braces - string-aware)
+              const repaired = repairTruncatedJSONStringAware(sanitized);
               
               const parsed = JSON.parse(repaired);
               if (parsed && typeof parsed === 'object') {
                 formattedEvaluation = parsed;
                 formattingParsed = true;
-                formattingParseError = 'Recovered via truncation repair';
-                console.log('Recovered JSON via truncation repair', {
-                  addedBrackets: Math.max(0, openBrackets - closeBrackets),
-                  addedBraces: Math.max(0, openBraces - closeBraces)
-                });
+                formattingParseError = 'Recovered via sanitize+repair';
+                console.log('Recovered JSON via sanitize+repair');
               }
-            } catch {
+            } catch (recoveryError) {
               // Keep original error - computed fallback will be used
-              console.warn('Truncation repair failed, using computed fallback');
+              console.warn('Sanitize+repair failed (using computed fallback):', recoveryError instanceof Error ? recoveryError.message : String(recoveryError));
             }
           }
         }

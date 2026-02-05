@@ -1,72 +1,66 @@
-# Agreement/Dissent Classification Update - COMPLETED ✅
 
-## Ziel
-Points of Agreement und Points of Dissent **immer sichtbar** machen, mit korrekter Klassifizierung basierend auf Modellübereinstimmung.
 
----
+## Zwei Fixes erforderlich
 
-## Durchgeführte Änderungen
+### Problem 1: Similarity-Threshold zu streng
+**Datei:** `supabase/functions/meta-evaluation/index.ts` Zeile 295
 
-### 1. ✅ Backend: Neue Agreement-Definition
-**Datei:** `supabase/functions/meta-evaluation/index.ts`
+Der aktuelle Threshold von `0.50` ist zu hoch - Empfehlungen mit ähnlichem Intent werden nicht gruppiert, daher bleibt `uniqueModels.length` fast immer 1.
 
-**Neue Logik:**
-- `uniqueModels.length === modelCount` → **Full Consensus** (alle Modelle)
-- `uniqueModels.length >= 2` → **Partial Consensus** (≥2 Modelle)
-- `uniqueModels.length === 1` → **Dissent** (echte Outlier)
-
-**Ergebnis:**
-- Agreement erscheint jetzt bei ≥2 Modellen (nicht nur bei 100%)
-- Dissent enthält nur echte Einzelmeinungen
-
----
-
-### 2. ✅ Frontend: ConsensusSection mit Empty-State
-**Datei:** `src/components/validation/ConsensusSection.tsx`
-
-- Sektion wird immer gerendert, auch wenn leer
-- Empty-State: "No shared recommendations across models for this decision."
-- Dynamischer Titel: "Full Consensus" vs "Points of Agreement" (bei partial)
-- Badge "Partial" für Teile-Übereinstimmungen
-
----
-
-### 3. ✅ Frontend: DissentSection mit Empty-State
-**Datei:** `src/components/validation/DissentSection.tsx`
-
-- Sektion wird immer gerendert, auch wenn leer
-- Empty-State: "No strongly conflicting perspectives detected."
-- Aktualisierter Subtitle: "Unique perspectives from individual models"
-
----
-
-### 4. ✅ TypeScript Interface erweitert
-**Datei:** `src/hooks/useMultiAIValidation.ts`
-
+**Fix:**
 ```typescript
-export interface ConsensusPoint {
-  topic: string;
-  description: string;
-  confidence: number;
-  actionItems: string[];
-  agreementLevel?: 'full' | 'partial';  // NEU
-  supportingModels?: string[];           // NEU
-}
+// Zeile 295
+threshold: number = 0.35  // Gesenkt von 0.50
 ```
 
 ---
 
-## Ergebnis
+### Problem 2: Falsches Gemini Model Mapping
+**Datei:** `supabase/functions/meta-evaluation/index.ts` Zeilen 10-14
 
-| Vorher | Nachher |
-|--------|---------|
-| Agreement nur bei 3/3 Modellen | Agreement bei ≥2 Modellen |
-| Sektionen verschwinden wenn leer | Sektionen immer sichtbar mit Empty-State |
-| Dissent als Catch-all | Dissent nur für echte Einzelmeinungen |
-| Inkonsistente UI-Struktur | Stabile, vorhersehbare Seitenstruktur |
+Das aktuelle Mapping zeigt auf veraltete Modelle:
+```typescript
+// FALSCH (aktuell)
+'google/gemini-3-flash-preview': 'gemini-1.5-flash',  // ← 404!
+'google/gemini-2.5-flash': 'gemini-1.5-flash',         // ← 404!
+'google/gemini-3-pro-preview': 'gemini-1.5-pro',       // ← 404!
+'google/gemini-2.5-pro': 'gemini-1.5-pro',             // ← 404!
+```
+
+**Fix:**
+```typescript
+// KORREKT (neu)
+const GOOGLE_MODEL_MAPPING: Record<string, string> = {
+  'google/gemini-3-flash-preview': 'gemini-2.5-flash',
+  'google/gemini-2.5-flash': 'gemini-2.5-flash',
+  'google/gemini-3-pro-preview': 'gemini-2.5-pro',
+  'google/gemini-2.5-pro': 'gemini-2.5-pro',
+};
+```
+
+Und Zeile 958 Fallback-Wert:
+```typescript
+// VORHER
+const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-1.5-flash';
+// NACHHER
+const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-2.5-flash';
+```
 
 ---
 
-## Hinweis
+## Zusammenfassung der Änderungen
 
-ValidationOutput.tsx wurde **nicht** geändert (Visual Freeze). Alle Änderungen beschränken sich auf die internen Komponenten.
+| Datei | Zeile | Änderung |
+|-------|-------|----------|
+| `meta-evaluation/index.ts` | 11-14 | Model IDs von `1.5` auf `2.5` aktualisieren |
+| `meta-evaluation/index.ts` | 295 | Threshold `0.50` → `0.35` |
+| `meta-evaluation/index.ts` | 958 | Fallback `gemini-1.5-flash` → `gemini-2.5-flash` |
+
+---
+
+## Erwartetes Ergebnis
+
+1. **Keine 404-Fehler mehr** bei Gemini Flash/Pro
+2. **Mehr Agreement-Punkte** da ähnliche Empfehlungen bei 0.35 Threshold besser gruppiert werden
+3. **uniqueModels.length >= 2** wird häufiger erreicht → "Points of Agreement" erscheint
+

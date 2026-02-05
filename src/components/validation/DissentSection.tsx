@@ -37,7 +37,26 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
-  if (points.length === 0) return null;
+  // Empty state - always render section
+  if (points.length === 0) {
+    return (
+      <div className="p-4 sm:p-5 bg-amber-50 dark:bg-amber-950/30 rounded-xl border-l-4 border-l-amber-500 border border-amber-200 dark:border-amber-800">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="p-1.5 sm:p-2 bg-amber-500/20 rounded-lg shrink-0">
+            <DissentIcon size={20} className="text-amber-600 sm:w-6 sm:h-6" />
+          </div>
+          <div className="min-w-0">
+            <span className="font-bold text-amber-700 dark:text-amber-400 text-base sm:text-xl block">
+              Points of Dissent
+            </span>
+            <p className="text-sm text-amber-600/70 dark:text-amber-500/70 mt-1">
+              No strongly conflicting perspectives detected.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const toggleCard = (index: number) => {
     setExpandedCards((prev) => {
@@ -63,7 +82,7 @@ export function DissentSection({ points, defaultOpen = false }: DissentSectionPr
               Points of Dissent
             </span>
             <span className="text-xs text-amber-600/70 dark:text-amber-500/70 hidden sm:block">
-              Models have different views
+              Unique perspectives from individual models
             </span>
           </div>
           <Badge variant="secondary" className="text-sm sm:text-base bg-amber-500/20 text-amber-700 dark:text-amber-300 border-0 px-2 sm:px-4 py-1 sm:py-1.5 shrink-0">

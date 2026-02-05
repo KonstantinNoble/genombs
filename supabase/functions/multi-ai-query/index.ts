@@ -925,7 +925,8 @@ serve(async (req) => {
       riskPreference = 3, 
       selectedModels,
       modelWeights,
-      streaming = true 
+      streaming = true,
+      businessContext
     } = await req.json();
 
     // Validate request
@@ -1037,11 +1038,74 @@ serve(async (req) => {
       );
     }
 
-    // Prepare the enhanced prompt with user context
+    // Format business context for AI prompts
+    function formatBusinessContext(ctx: any): string {
+      if (!ctx) return '';
+      
+      const parts: string[] = [];
+      
+      if (ctx.industry) {
+        const industryLabels: Record<string, string> = {
+          'saas': 'SaaS', 'ecommerce': 'E-Commerce', 'fintech': 'FinTech',
+          'healthtech': 'HealthTech', 'edtech': 'EdTech', 'marketplace': 'Marketplace',
+          'agency': 'Agency', 'consulting': 'Consulting', 'manufacturing': 'Manufacturing', 'other': 'Other'
+        };
+        parts.push(`Industry: ${industryLabels[ctx.industry] || ctx.industry}`);
+      }
+      
+      if (ctx.company_stage) {
+        const stageLabels: Record<string, string> = {
+          'idea': 'Idea Stage', 'pre-seed': 'Pre-Seed', 'seed': 'Seed',
+          'series-a': 'Series A', 'series-b-plus': 'Series B+', 
+          'growth': 'Growth Stage', 'established': 'Established'
+        };
+        parts.push(`Company Stage: ${stageLabels[ctx.company_stage] || ctx.company_stage}`);
+      }
+      
+      if (ctx.team_size) {
+        parts.push(`Team Size: ${ctx.team_size} people`);
+      }
+      
+      if (ctx.revenue_range) {
+        const revenueLabels: Record<string, string> = {
+          'pre-revenue': 'Pre-revenue', 'less-10k': 'Less than $10k/month',
+          '10k-50k': '$10k-50k/month', '50k-100k': '$50k-100k/month', '100k-plus': '$100k+/month'
+        };
+        parts.push(`Revenue: ${revenueLabels[ctx.revenue_range] || ctx.revenue_range}`);
+      }
+      
+      if (ctx.target_market) {
+        const marketLabels: Record<string, string> = {
+          'b2b': 'B2B', 'b2c': 'B2C', 'b2b2c': 'B2B2C', 'd2c': 'D2C'
+        };
+        parts.push(`Target Market: ${marketLabels[ctx.target_market] || ctx.target_market}`);
+      }
+      
+      if (ctx.geographic_focus) {
+        const geoLabels: Record<string, string> = {
+          'local': 'Local', 'national': 'National', 'eu': 'European Union', 
+          'us': 'United States', 'global': 'Global'
+        };
+        parts.push(`Geographic Focus: ${geoLabels[ctx.geographic_focus] || ctx.geographic_focus}`);
+      }
+      
+      if (ctx.website_summary) {
+        parts.push(`Website Summary: ${ctx.website_summary}`);
+      }
+      
+      if (parts.length === 0) return '';
+      
+      return `
+- BUSINESS CONTEXT (MANDATORY - Tailor ALL recommendations specifically to this context):
+  ${parts.join('\n  ')}`;
+    }
+
+    // Prepare the enhanced prompt with user context + business context
+    const contextString = formatBusinessContext(businessContext);
     const enhancedPrompt = `${prompt}
 
 Context for your analysis:
-- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations`;
+- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations${contextString}`;
 
     if (streaming) {
       const stream = new ReadableStream({

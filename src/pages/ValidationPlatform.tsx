@@ -58,7 +58,7 @@ export default function ValidationPlatform() {
   const { openCheckout } = useFreemiusCheckout();
   const { createExperiment, getActiveExperiment, isLoading: isCreatingExperiment } = useExperiment();
   const { currentTeam, isInTeamMode, teamRole } = useTeam();
-  const { context: businessContext } = useBusinessContext();
+  const { context: businessContext, loadContext: loadBusinessContext } = useBusinessContext();
   
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -252,9 +252,12 @@ export default function ValidationPlatform() {
     setDisplayedResult(null);
     
     try {
-      // Pass team_id if in team mode + business context
+      // Load fresh business context from DB to ensure we have the latest data
+      const freshContext = await loadBusinessContext();
+      
+      // Pass team_id if in team mode + fresh business context
       const teamId = isInTeamMode && currentTeam ? currentTeam.id : undefined;
-      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights, teamId, businessContext);
+      await validate(prompt.trim(), riskPreference, selectedModels, modelWeights, teamId, freshContext);
     } catch (error) {
       // Error already handled in onError callback
     }
@@ -551,7 +554,8 @@ export default function ValidationPlatform() {
             <BusinessContextPanel 
               isPremium={isPremium}
               onContextChange={() => {
-                // Optional: Could reload or show feedback
+                // Reload context when panel updates (e.g., after scan or field change)
+                loadBusinessContext();
               }}
             />
 

@@ -1,49 +1,146 @@
 
 
-## Problem: GPT Mini berücksichtigt die Website-URL nicht
+## Ziel
+Points of Agreement und Points of Dissent **immer sichtbar** machen, mit korrekter Klassifizierung basierend auf Modellübereinstimmung.
 
-Ich habe die Edge Function `multi-ai-query` untersucht und folgende **potenzielle Ursachen** identifiziert:
+---
 
-### Was ich gefunden habe:
+## Änderungsübersicht
 
-1. **Business Context wird korrekt verarbeitet** (Zeile 1181-1185):
-   - Die `formatBusinessContext()` Funktion wird aufgerufen
-   - Der Kontext wird in den `enhancedPrompt` eingefügt
-   - Der Prompt wird an **alle** Modelle gesendet
+### 1. Backend: Neue Agreement-Definition
+**Datei:** `supabase/functions/meta-evaluation/index.ts`
 
-2. **Aber für OpenAI-Modelle (GPT Mini = gpt-4o-mini) gibt es ein potenzielles Problem**:
-   - Der Business Context wird nur im **User Message Content** platziert (Zeile 307)
-   - Das System Prompt hat Instruktionen zum Business Context, aber der Context selbst sitzt nur in der User Message
-   - GPT Mini könnte weniger auf Context im User-Content reagieren als andere Modelle
+**Aktuelle Logik (Zeile 432-449):**
+```typescript
+if (uniqueModels.length === modelCount) {
+  consensus.push(computed);  // Nur 3/3 = Agreement
+} else if (uniqueModelWeights >= 60) {
+  majority.push(computed);
+} else if (uniqueModels.length === 1 && recs.length === 1) {
+  dissent.push(...);
+}
+```
 
-3. **Unterschied zu anderen Modellen**:
-   - Gemini, Claude und Perplexity erhalten denselben `enhancedPrompt`, aber möglicherweise mit anderer Prompt-Engineering-Effizienz
-   - OpenAI Models könnten "blinker" für User-Content-Context sein
+**Neue Logik:**
+```typescript
+if (uniqueModels.length === modelCount) {
+  // Full Consensus: Alle Modelle
+  computed.agreementLevel = 'full';
+  consensus.push(computed);
+} else if (uniqueModels.length >= 2) {
+  // Partial Consensus: >= 2 Modelle
+  computed.agreementLevel = 'partial';
+  consensus.push(computed);  // ← Jetzt auch in Agreement!
+} else if (uniqueModels.length === 1) {
+  // Echte Einzelmeinung = Dissent
+  dissent.push({...});
+}
+```
 
-### Lösungsansatz:
+**Ergebnis:**
+- `uniqueModels.length >= 2` → **Agreement** (full oder partial)
+- `uniqueModels.length === 1` → **Dissent** (echte Outlier)
 
-**Drei Maßnahmen zur Behebung:**
+---
 
-1. **System Prompt für OpenAI verstärken**
-   - Den System Prompt für OpenAI-Modelle (Zeile 264-295) mit expliziterem Business Context-Handling erweitern
-   - Spezifische Instruktion: "The following business context MUST be considered in every recommendation"
+### 2. Frontend: Sektionen immer rendern
+**Dateien:** 
+- `src/components/validation/ConsensusSection.tsx`
+- `src/components/validation/DissentSection.tsx`
 
-2. **Business Context prominenter im User Message platzieren**
-   - Den Business Context an den **Anfang** des `enhancedPrompt` verschieben (statt an das Ende)
-   - So wird die Website URL/Summary zuerst gelesen
+**Aktuelle Logik (Zeile 18 bzw. 40):**
+```typescript
+if (points.length === 0) return null;
+```
 
-3. **Logging für Debugging hinzufügen**
-   - Explizite Log-Ausgabe, wenn `businessContext` für GPT Mini verarbeitet wird
-   - So können wir sehen, ob der Context überhaupt bei der API ankommt
+**Neue Logik:** Empty-State anzeigen statt `null` zurückgeben:
 
-### Dateien, die geändert werden:
+```typescript
+// ConsensusSection.tsx
+if (points.length === 0) {
+  return (
+    <div className="p-5 bg-green-50 dark:bg-green-950/30 rounded-xl border-l-4 border-l-green-500 border border-green-200 dark:border-green-800">
+      <div className="flex items-center gap-4">
+        <ConsensusIcon size={24} className="text-green-600" />
+        <div>
+          <span className="font-bold text-green-700 dark:text-green-400 text-xl">Points of Agreement</span>
+          <p className="text-sm text-green-600/70 mt-1">No shared recommendations across models for this decision.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// DissentSection.tsx (analog mit amber)
+if (points.length === 0) {
+  return (
+    <div className="p-5 bg-amber-50 dark:bg-amber-950/30 rounded-xl border-l-4 border-l-amber-500 border border-amber-200 dark:border-amber-800">
+      <div className="flex items-center gap-4">
+        <DissentIcon size={24} className="text-amber-600" />
+        <div>
+          <span className="font-bold text-amber-700 dark:text-amber-400 text-xl">Points of Dissent</span>
+          <p className="text-sm text-amber-600/70 mt-1">No strongly conflicting perspectives detected.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### 3. Frontend: Agreement-Level anzeigen
+**Datei:** `src/components/validation/ConsensusSection.tsx`
+
+Den Titel dynamisch anpassen basierend auf `agreementLevel`:
+
+```typescript
+// Header anpassen
+<span className="font-bold text-green-700 dark:text-green-400 text-base sm:text-xl">
+  {hasPartialOnly ? 'Points of Agreement' : 'Full Consensus'}
+</span>
+<span className="text-xs text-green-600/70">
+  {hasPartialOnly ? 'Majority of models agree' : 'All models agree'}
+</span>
+```
+
+Optional: Badge pro Karte mit `full` oder `partial` Label.
+
+---
+
+### 4. Majority-Sektion entfernen (optional, empfohlen)
+
+Da `>=2 Modelle` jetzt in Agreement landet und nur `1 Modell` in Dissent:
+- **Majority wird redundant** (war für 60% Gewicht, aber bei 3 Modellen ist 2/3 = 66%)
+- Kann vereinfacht werden: Majority-Inhalte in Agreement integrieren
+
+**Vorschlag:** Majority-Sektion vorerst behalten, aber mit reduzierter Priorität (nur für gewichtsbasierte Sortierung intern).
+
+---
+
+## Dateien die geändert werden
 
 | Datei | Änderung |
 |-------|----------|
-| `supabase/functions/multi-ai-query/index.ts` | System Prompt für OpenAI verstärken + Business Context prominenter platzieren |
-| `supabase/functions/multi-ai-query/index.ts` | Zusätzliche Console-Logs für GPT Mini Business Context |
+| `supabase/functions/meta-evaluation/index.ts` | Zeile 432-449: Neue Klassifizierungslogik |
+| `src/components/validation/ConsensusSection.tsx` | Empty-State + dynamischer Titel |
+| `src/components/validation/DissentSection.tsx` | Empty-State |
+| `src/hooks/useMultiAIValidation.ts` | Ggf. TypeScript-Interface für `agreementLevel` erweitern |
 
-### Wichtig:
-- Diese Änderung wird automatisch deployed (keine manuelle Synch mit externem Backend nötig, da du mit Lovable Cloud arbeitest)
-- Die Testwirklichkeit: Danach sollte GPT Mini Website-Inhalte genauso berücksichtigen wie Gemini/Claude/Perplexity
+---
+
+## Erwartetes Ergebnis
+
+| Vorher | Nachher |
+|--------|---------|
+| Agreement nur bei 3/3 Modellen | Agreement bei ≥2 Modellen |
+| Sektionen verschwinden wenn leer | Sektionen immer sichtbar mit Empty-State |
+| Dissent als Catch-all | Dissent nur für echte Einzelmeinungen |
+| Inkonsistente UI-Struktur | Stabile, vorhersehbare Seitenstruktur |
+
+---
+
+## Wichtiger Hinweis
+
+Da ValidationOutput.tsx unter einem **visuellen Freeze** steht, werde ich dort keine Layout-Änderungen vornehmen. Die Änderungen beschränken sich auf die internen Komponenten `ConsensusSection` und `DissentSection`, die weiterhin an derselben Stelle gerendert werden.
 

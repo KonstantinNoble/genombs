@@ -1,138 +1,161 @@
 
+
 ## Ziel
-Die "Unexpected end of JSON input" Fehler in `multi-ai-query` beheben durch präventive Schema-Constraints und robuste Truncation-Recovery.
+Die "Unterminated string in JSON" Fehler in `multi-ai-query` und `meta-evaluation` beheben durch einen erweiterten JSON-Sanitizer, der Strings korrekt behandelt.
 
 ---
 
-## Root Cause
-Das Problem tritt im `queryGoogleModel` bei Line 568 auf:
-- Gemini gibt großes JSON zurück (4096 maxOutputTokens)
-- Wenn Response truncated wird, ist das JSON unvollständig: `{"recommendations": [{"title": "..."`
-- `JSON.parse()` schlägt fehl mit "Unexpected end of JSON input"
-- Alle Kandidaten (gemini-2.5-pro, gemini-2.5-flash, etc.) fail → error wird returnt
+## Root Cause Analyse
 
-**Fehler aus Logs:**
+Der aktuelle `repairTruncatedJSON` macht folgendes:
+```typescript
+// Zählt { } [ ] und fügt fehlende am Ende hinzu
+repaired += ']'.repeat(missingBrackets);
+repaired += '}'.repeat(missingBraces);
 ```
-[Gemini 3 Pro] Failed to parse JSON from gemini-2.5-pro: SyntaxError: Unexpected end of JSON input
-[Gemini Flash] Failed to parse JSON from gemini-2.5-flash: SyntaxError: Unexpected end of JSON input
-```
+
+Das Problem: **"Unterminated string"** entsteht durch:
+1. **Echte Zeilenumbrüche in Strings** → `{"title": "Some\ntitle"}` ist ungültiges JSON
+2. **Abgeschnittene Strings** → `{"title": "Some ti` ohne schließendes `"`
+
+Der Bracket-Repair hilft hier nicht, weil der Parser bereits beim String-Parsing scheitert.
 
 ---
 
-## Lösung: 3-Schritte-Fix (ähnlich wie meta-evaluation)
+## Lösung: String-Aware JSON Sanitizer
 
-### Schritt 1: maxLength-Constraints im GEMINI_RESPONSE_SCHEMA (Zeile 33-63)
+### Schritt 1: Neue `sanitizeJsonStrings` Funktion
 
-Aktuell hat das Schema **keine maxLength-Felder**. Das muss sich ändern:
+Eine State-Machine, die JSON durchläuft und:
+- **Innerhalb von Strings** gefundene echte Control-Characters (Newline, Tab, etc.) escaped
+- **Am Ende abgeschnittene Strings** mit `"` schließt
+
+```typescript
+function sanitizeJsonStrings(jsonStr: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  
+  for (let i = 0; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+    
+    if (escaped) {
+      result += char;
+      escaped = false;
+      continue;
+    }
+    
+    if (char === '\\') {
+      result += char;
+      escaped = true;
+      continue;
+    }
+    
+    if (char === '"') {
+      inString = !inString;
+      result += char;
+      continue;
+    }
+    
+    // Innerhalb eines Strings: Control-Characters escapen
+    if (inString) {
+      if (char === '\n') {
+        result += '\\n';
+      } else if (char === '\r') {
+        result += '\\r';
+      } else if (char === '\t') {
+        result += '\\t';
+      } else {
+        result += char;
+      }
+    } else {
+      result += char;
+    }
+  }
+  
+  // Wenn am Ende noch inString=true, schließen
+  if (inString) {
+    result += '"';
+  }
+  
+  return result;
+}
+```
+
+**Effekt:** Behebt beide Ursachen von "Unterminated string":
+- Echte Newlines → `\n` (escaped)
+- Abgeschnittene Strings → mit `"` geschlossen
+
+---
+
+### Schritt 2: Integration in Parsing-Pipeline
+
+**multi-ai-query/index.ts (Zeile ~600):**
 
 ```typescript
 // VORHER
-title: { type: "string" }
-description: { type: "string" }
-reasoning: { type: "string" }
-actionItems: { type: "array", items: { type: "string" } }
-// ... etc
+try {
+  parsed = JSON.parse(jsonStr);
+} catch (directParseError) {
+  const repairedJson = repairTruncatedJSON(jsonStr);
+  parsed = JSON.parse(repairedJson);
+}
 
 // NACHHER
-title: { type: "string", maxLength: 120 }
-description: { type: "string", maxLength: 300 }
-reasoning: { type: "string", maxLength: 250 }
-actionItems: { type: "array", items: { type: "string", maxLength: 150 } }
-potentialRisks: { type: "array", items: { type: "string", maxLength: 120 } }
-competitiveAdvantage: { type: "string", maxLength: 200 }
-longTermImplications: { type: "string", maxLength: 250 }
-resourceRequirements: { type: "string", maxLength: 250 }
-summary: { type: "string", maxLength: 500 }
-marketContext: { type: "string", maxLength: 400 }
-strategicOutlook: { type: "string", maxLength: 400 }
+try {
+  parsed = JSON.parse(jsonStr);
+} catch (directParseError) {
+  // Step 1: Sanitize strings (fix newlines + close truncated strings)
+  const sanitized = sanitizeJsonStrings(jsonStr);
+  
+  // Step 2: Repair structure (close brackets/braces)
+  const repaired = repairTruncatedJSON(sanitized);
+  
+  parsed = JSON.parse(repaired);
+  console.log(`[${modelConfig.name}] JSON recovery SUCCEEDED for ${candidateId}`);
+}
 ```
 
-**Effekt:** Gemini wird verpflichtet, kleinere Felder zu generieren → weniger Truncation-Risiko
+**meta-evaluation/index.ts (Zeile ~1460):**
+
+Gleiche Logik für das Formatting-Parsing.
 
 ---
 
-### Schritt 2: Neue Repair-Funktion vor queryGoogleModel (Zeile ~388)
+### Schritt 3: String-Aware Bracket Repair
 
-Neue Helper-Funktion für robuste JSON-Reparatur bei Truncation:
+Der aktuelle Bracket-Repair zählt alle `{`, `}`, `[`, `]` per Regex – auch die in Strings. Das ist falsch.
+
+**Verbesserter Repair:**
 
 ```typescript
-// Helper: Repair truncated JSON by closing unclosed braces/brackets
 function repairTruncatedJSON(jsonStr: string): string {
-  let repaired = jsonStr;
-
-  // Count opening and closing brackets/braces
-  const openBraces = (repaired.match(/{/g) || []).length;
-  const closeBraces = (repaired.match(/}/g) || []).length;
-  const openBrackets = (repaired.match(/\[/g) || []).length;
-  const closeBrackets = (repaired.match(/]/g) || []).length;
-
-  // Add missing closing brackets first (from innermost)
+  let repaired = jsonStr.trim();
+  
+  // String-aware counting (nur außerhalb von Strings zählen)
+  let inString = false;
+  let escaped = false;
+  let openBraces = 0, closeBraces = 0;
+  let openBrackets = 0, closeBrackets = 0;
+  
+  for (const char of repaired) {
+    if (escaped) { escaped = false; continue; }
+    if (char === '\\') { escaped = true; continue; }
+    if (char === '"') { inString = !inString; continue; }
+    
+    if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') closeBraces++;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') closeBrackets++;
+    }
+  }
+  
+  // Add missing closures
   repaired += ']'.repeat(Math.max(0, openBrackets - closeBrackets));
-  
-  // Then add missing closing braces
   repaired += '}'.repeat(Math.max(0, openBraces - closeBraces));
-
+  
   return repaired;
-}
-```
-
----
-
-### Schritt 3: Robust JSON Parsing in queryGoogleModel (Zeile 541-574)
-
-Modifiziere die JSON-Extraktion, um Truncation-Repair zu nutzen:
-
-**VORHER (Zeile 541-574):**
-```typescript
-let parsed;
-try {
-  let jsonStr = content.trim();
-  
-  // Pattern 1: ```json ... ```
-  const jsonCodeBlock = content.match(/```json\s*([\s\S]*?)\s*```/);
-  if (jsonCodeBlock) {
-    jsonStr = jsonCodeBlock[1].trim();
-  } else {
-    // ... other patterns
-  }
-  
-  parsed = JSON.parse(jsonStr);  // ← FAILS on truncated JSON
-} catch (parseError) {
-  console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId}:`, parseError);
-  lastError = "Invalid JSON response from model";
-  continue;
-}
-```
-
-**NACHHER:** Mit Repair-Fallback
-
-```typescript
-let parsed;
-try {
-  let jsonStr = content.trim();
-  
-  // Pattern 1: ```json ... ```
-  const jsonCodeBlock = content.match(/```json\s*([\s\S]*?)\s*```/);
-  if (jsonCodeBlock) {
-    jsonStr = jsonCodeBlock[1].trim();
-  } else {
-    // ... other patterns
-  }
-  
-  // First attempt: Direct parse
-  try {
-    parsed = JSON.parse(jsonStr);
-  } catch (directParseError) {
-    // Second attempt: Repair truncated JSON and retry
-    console.log(`[${modelConfig.name}] Direct parse failed, attempting truncation repair...`);
-    const repairedJson = repairTruncatedJSON(jsonStr);
-    parsed = JSON.parse(repairedJson);  // ← Retry with repaired JSON
-  }
-} catch (parseError) {
-  console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId}:`, parseError);
-  console.log(`[${modelConfig.name}] Raw content (first 500 chars):`, content.substring(0, 500));
-  lastError = "Invalid JSON response from model";
-  continue;
 }
 ```
 
@@ -142,34 +165,42 @@ try {
 
 | Aspekt | Lösung |
 |--------|--------|
-| **Präventiv** | maxLength im Schema reduziert Truncation-Wahrscheinlichkeit |
-| **Robust** | Repair-Fallback schließt abgeschnittene Strukturen |
-| **Sicher** | Kein String-Manipulations-Code (nur strukturelle Brackets) |
-| **Transparent** | Logging zeigt wenn Repair triggert |
-| **Fallback-Chain** | Immer noch alle Kandidaten probieren |
+| **Newlines in Strings** | `sanitizeJsonStrings` escaped sie zu `\n` |
+| **Abgeschnittene Strings** | `sanitizeJsonStrings` schließt mit `"` |
+| **Brackets in Strings** | String-aware Repair ignoriert sie |
+| **Determinismus** | Keine Heuristik, reine State-Machine |
+| **Sicherheit** | Nur strukturelle Reparatur, keine Inhaltsänderung |
 
 ---
 
-## Dateien zu ändern
+## Dateien die geändert werden
+
 - `supabase/functions/multi-ai-query/index.ts`
-  - GEMINI_RESPONSE_SCHEMA (Zeile 33-63): maxLength Constraints hinzufügen
-  - Neue Funktion `repairTruncatedJSON()` (vor Line 388)
-  - queryGoogleModel JSON-Parsing (Line 541-574): Repair-Logik integrieren
+  - Neue `sanitizeJsonStrings()` Funktion (~Zeile 65)
+  - Verbesserter `repairTruncatedJSON()` (string-aware, ~Zeile 95)
+  - Integration in Parsing-Pipeline (~Zeile 600)
+
+- `supabase/functions/meta-evaluation/index.ts`
+  - Gleiche `sanitizeJsonStrings()` Funktion
+  - Gleicher string-aware `repairTruncatedJSON()`
+  - Integration in Formatting-Parse (~Zeile 1460)
 
 ---
 
 ## Deployment
-Nach Änderung muss die Edge Function manuell zum externen Supabase (`fhzqngbbvwpfdmhjfnvk`) deployed werden.
+
+Nach Änderung müssen beide Edge Functions manuell zum externen Supabase (`fhzqngbbvwpfdmhjfnvk`) deployed werden.
 
 ---
 
 ## Erwartetes Ergebnis
 
-| Szenario | Vorher | Nachher |
-|----------|--------|---------|
-| Normales Response (vollständig) | ✅ Parse erfolg | ✅ Parse erfolg (unverändert) |
-| Truncated Response (abgeschnitten) | ❌ Parse Error → nächster Kandidat | ✅ Repair → Parse erfolg |
-| Alle Kandidaten truncated | ❌ Error zurückgeben | ⚠️ Besser: Repair über alle Kandidaten |
-| maxLength beachtet | ❌ Große Felder | ✅ Kleinere, safer Responses |
+| Fehlertyp | Vorher | Nachher |
+|-----------|--------|---------|
+| `Unexpected end of JSON` | ⚠️ Bracket-Repair (oft erfolgreich) | ✅ Sanitizer + Repair |
+| `Unterminated string` (Newline) | ❌ Fehler → Fallback | ✅ Sanitizer escaped → Parse OK |
+| `Unterminated string` (Truncation) | ❌ Fehler → Fallback | ✅ Sanitizer schließt → Parse OK |
+| Brackets in Strings falsch gezählt | ⚠️ Falscher Repair | ✅ String-aware counting |
 
-**Resultat:** Keine "Unexpected end of JSON input" Fehler mehr bei truncated Responses.
+**Resultat:** Beide "Unterminated string" Varianten werden behoben, keine Error-Logs mehr.
+

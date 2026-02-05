@@ -8,10 +8,10 @@ const corsHeaders = {
 
 // Model ID mapping for direct Google AI API
 const GOOGLE_MODEL_MAPPING: Record<string, string> = {
-  'google/gemini-3-flash-preview': 'gemini-1.5-flash',
-  'google/gemini-2.5-flash': 'gemini-1.5-flash',
-  'google/gemini-3-pro-preview': 'gemini-1.5-pro',
-  'google/gemini-2.5-pro': 'gemini-1.5-pro',
+  'google/gemini-3-flash-preview': 'gemini-2.5-flash',
+  'google/gemini-2.5-flash': 'gemini-2.5-flash',
+  'google/gemini-3-pro-preview': 'gemini-2.5-pro',
+  'google/gemini-2.5-pro': 'gemini-2.5-pro',
 };
 
 interface ModelRecommendation {
@@ -292,7 +292,7 @@ function calculateEnhancedSimilarity(title1: string, title2: string): number {
 function findSimilarGroup(
   title: string, 
   existingGroups: Map<string, WeightedRecommendation[]>,
-  threshold: number = 0.50 // Erhöht von 0.35 auf 0.50 für stabileres Matching
+  threshold: number = 0.35 // Gesenkt von 0.50 für bessere Gruppierung
 ): string | null {
   for (const [groupTitle] of existingGroups) {
     if (calculateEnhancedSimilarity(title, groupTitle) >= threshold) {
@@ -955,7 +955,7 @@ ${modelSummaries.join('\n\n')}
 Output the formatted version as JSON. Remember: improve language only, do not change decisions.`;
 
     // Use direct Google AI API instead of Lovable Gateway
-    const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-1.5-flash';
+    const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-2.5-flash';
     
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent?key=${googleApiKey}`,

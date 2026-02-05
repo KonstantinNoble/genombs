@@ -44,7 +44,7 @@ interface ModelResponse {
 interface ConsensusPoint {
   topic: string;
   description: string;
-  agreementLevel: 'full' | 'majority';
+  agreementLevel: 'full' | 'partial';
   supportingModels: string[];
   confidence: number;
   actionItems: string[];
@@ -85,7 +85,7 @@ interface WeightedRecommendation {
 interface ComputedConsensus {
   topic: string;
   description: string;
-  agreementLevel: 'full' | 'majority';
+  agreementLevel: 'full' | 'partial';
   supportingModels: string[];
   weightedAgreement: number;
   confidence: number;
@@ -422,21 +422,29 @@ function computeConsensusFromRecommendations(
     const computed: ComputedConsensus = {
       topic: bestRec.title,
       description: bestRec.description,
-      agreementLevel: uniqueModels.length === modelCount ? 'full' : 'majority',
+      agreementLevel: uniqueModels.length === modelCount ? 'full' : 'partial',
       supportingModels: uniqueModels,
       weightedAgreement: uniqueModelWeights,
       confidence: avgConfidence,
       actionItems: bestRec.actionItems || []
     };
     
+    // NEW CLASSIFICATION LOGIC:
+    // Agreement = at least 2 models agree (full or partial)
+    // Dissent = only 1 model recommends this (true outlier)
+    
     if (uniqueModels.length === modelCount) {
-      // All models agree = Full Consensus
+      // Full Consensus: All models agree
+      computed.agreementLevel = 'full';
       consensus.push(computed);
-    } else if (uniqueModelWeights >= 60) {
-      // >= 60% weighted agreement = Majority
-      majority.push(computed);
-    } else if (uniqueModels.length === 1 && recs.length === 1) {
-      // Single model recommendation with < 60% weight = Dissent
+      console.log(`Full consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models`);
+    } else if (uniqueModels.length >= 2) {
+      // Partial Consensus: >= 2 models agree (but not all)
+      computed.agreementLevel = 'partial';
+      consensus.push(computed);
+      console.log(`Partial consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models`);
+    } else if (uniqueModels.length === 1) {
+      // True Dissent: Only 1 model recommends this
       dissent.push({
         topic: bestRec.title,
         positions: recs.map(r => ({
@@ -446,7 +454,11 @@ function computeConsensusFromRecommendations(
           weight: r.weight
         }))
       });
+      console.log(`Dissent (outlier): "${bestRec.title.substring(0, 40)}" - only ${uniqueModels[0]}`);
     }
+    
+    // Note: Majority array is now deprecated for classification, 
+    // but kept for backward compatibility in sorting/weighting
   }
   
   // Sort by weighted agreement (highest first)

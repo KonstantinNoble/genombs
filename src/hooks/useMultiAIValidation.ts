@@ -32,6 +32,8 @@ export interface ConsensusPoint {
   description: string;
   confidence: number;
   actionItems: string[];
+  agreementLevel?: 'full' | 'partial';
+  supportingModels?: string[];
 }
 
 export interface MajorityPoint {

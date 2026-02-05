@@ -1,237 +1,199 @@
 
 
-# Optimiertes Semantisches Title-Matching (Finale Version)
+# Business Context Integration Fix
 
-## Zusammenfassung
+## Problemanalyse
 
-Implementierung eines robusten Hybrid-Matching-Algorithmus für die `meta-evaluation` Edge Function mit allen technischen Feinschliff-Korrekturen.
+Der **Business Context wird in der Analyse ignoriert**, weil er zwar in der Datenbank gespeichert wird, aber nie an die AI-Modelle übergeben wird.
 
----
+### Technische Ursachen
 
-## Änderungen gegenüber dem vorherigen Plan
-
-| Punkt | Vorher | Nachher |
-|-------|--------|---------|
-| ACTION_VERBS | Gemischte Roh- und Canonical-Formen | Nur kanonische Formen |
-| Target-Extraktion | Wert-basierter Filter | Index-basierter Filter |
-| Bonus | Multiplikativ (`* 1.2`) | Additiv (`+ 0.15`) |
-| Fallback | Kein echter Fallback | Fallback bei < 2 Keywords |
-| Normalisierung | Inkonsistent (`a-z` vs `a-z0-9`) | Einheitlich `a-z0-9` |
+| Komponente | Datei | Problem |
+|------------|-------|---------|
+| Frontend Hook | `useMultiAIValidation.ts` Zeile 175-181 | `businessContext` wird nicht im Request Body gesendet |
+| Validation Page | `ValidationPlatform.tsx` Zeile 255 | `validate()` wird ohne Business Context aufgerufen |
+| Edge Function | `multi-ai-query/index.ts` Zeile 923-929 | `businessContext` wird nicht aus dem Request geparst |
+| Enhanced Prompt | `multi-ai-query/index.ts` Zeile 1040-1044 | Nur `riskPreference` wird in den Prompt eingefügt |
 
 ---
 
-## Technische Implementation
+## Lösung
 
-### 1. Einheitliche Normalisierungsfunktion
+### Schritt 1: Frontend - useMultiAIValidation.ts anpassen
+
+**Datei:** `src/hooks/useMultiAIValidation.ts`
+
+Die `validate`-Funktion muss einen neuen Parameter `businessContext` akzeptieren:
 
 ```typescript
-function normalizeText(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+// Zeile 135-141: Parameter hinzufügen
+const validate = useCallback(async (
+  prompt: string,
+  riskPreference: number = 3,
+  selectedModels: string[],
+  modelWeights: Record<string, number>,
+  teamId?: string,
+  businessContext?: BusinessContext | null  // NEU
+) => {
+
+// Zeile 175-181: Im Request Body senden
+body: JSON.stringify({
+  prompt,
+  riskPreference,
+  selectedModels,
+  modelWeights,
+  streaming: true,
+  businessContext  // NEU
+}),
+```
+
+### Schritt 2: Frontend - ValidationPlatform.tsx anpassen
+
+**Datei:** `src/pages/ValidationPlatform.tsx`
+
+Den Business Context Hook importieren und an validate() übergeben:
+
+```typescript
+// Import hinzufügen (nach Zeile 23)
+import { useBusinessContext } from "@/hooks/useBusinessContext";
+
+// Hook im Component verwenden (nach Zeile 59)
+const { context: businessContext } = useBusinessContext();
+
+// In handleValidate() - Zeile 255 anpassen
+await validate(
+  prompt.trim(), 
+  riskPreference, 
+  selectedModels, 
+  modelWeights, 
+  teamId, 
+  businessContext  // NEU
+);
+```
+
+### Schritt 3: Edge Function - multi-ai-query/index.ts anpassen
+
+**Datei:** `supabase/functions/multi-ai-query/index.ts`
+
+**WICHTIG:** Diese Änderung musst du manuell in dein externes Supabase-Projekt (`fhzqngbbvwpfdmhjfnvk`) deployen!
+
+#### 3.1 Request Parsing erweitern (Zeile 923-929)
+
+```typescript
+const { 
+  prompt, 
+  riskPreference = 3, 
+  selectedModels,
+  modelWeights,
+  streaming = true,
+  businessContext  // NEU
+} = await req.json();
+```
+
+#### 3.2 Business Context Formatter hinzufügen (vor Zeile 1040)
+
+```typescript
+// Business Context String erstellen
+function formatBusinessContext(ctx: any): string {
+  if (!ctx) return '';
+  
+  const parts: string[] = [];
+  
+  if (ctx.industry) {
+    const industryLabels: Record<string, string> = {
+      'saas': 'SaaS', 'ecommerce': 'E-Commerce', 'fintech': 'FinTech',
+      'healthtech': 'HealthTech', 'edtech': 'EdTech', 'marketplace': 'Marketplace',
+      'agency': 'Agency', 'consulting': 'Consulting', 'manufacturing': 'Manufacturing', 'other': 'Other'
+    };
+    parts.push(`Industry: ${industryLabels[ctx.industry] || ctx.industry}`);
+  }
+  
+  if (ctx.company_stage) {
+    const stageLabels: Record<string, string> = {
+      'idea': 'Idea Stage', 'pre-seed': 'Pre-Seed', 'seed': 'Seed',
+      'series-a': 'Series A', 'series-b-plus': 'Series B+', 
+      'growth': 'Growth Stage', 'established': 'Established'
+    };
+    parts.push(`Company Stage: ${stageLabels[ctx.company_stage] || ctx.company_stage}`);
+  }
+  
+  if (ctx.team_size) {
+    parts.push(`Team Size: ${ctx.team_size} people`);
+  }
+  
+  if (ctx.revenue_range) {
+    const revenueLabels: Record<string, string> = {
+      'pre-revenue': 'Pre-revenue', 'less-10k': 'Less than $10k/month',
+      '10k-50k': '$10k-50k/month', '50k-100k': '$50k-100k/month', '100k-plus': '$100k+/month'
+    };
+    parts.push(`Revenue: ${revenueLabels[ctx.revenue_range] || ctx.revenue_range}`);
+  }
+  
+  if (ctx.target_market) {
+    const marketLabels: Record<string, string> = {
+      'b2b': 'B2B', 'b2c': 'B2C', 'b2b2c': 'B2B2C', 'd2c': 'D2C'
+    };
+    parts.push(`Target Market: ${marketLabels[ctx.target_market] || ctx.target_market}`);
+  }
+  
+  if (ctx.geographic_focus) {
+    const geoLabels: Record<string, string> = {
+      'local': 'Local', 'national': 'National', 'eu': 'European Union', 
+      'us': 'United States', 'global': 'Global'
+    };
+    parts.push(`Geographic Focus: ${geoLabels[ctx.geographic_focus] || ctx.geographic_focus}`);
+  }
+  
+  if (ctx.website_summary) {
+    parts.push(`Website Summary: ${ctx.website_summary}`);
+  }
+  
+  if (parts.length === 0) return '';
+  
+  return `\n\nBUSINESS CONTEXT (MANDATORY - Tailor ALL recommendations specifically to this context):
+${parts.join('\n')}`;
 }
 ```
 
-### 2. Canonical Token Map
+#### 3.3 Enhanced Prompt erweitern (Zeile 1040-1044)
 
 ```typescript
-const CANONICAL_TOKENS: Record<string, string> = {
-  // Validierung → "validate"
-  'test': 'validate', 'verify': 'validate', 'confirm': 'validate',
-  'check': 'validate', 'assess': 'validate', 'pilot': 'validate',
-  'trial': 'validate', 'experiment': 'validate',
-  
-  // Wachstum → "scale"
-  'grow': 'scale', 'expand': 'scale', 'increase': 'scale',
-  'amplify': 'scale', 'accelerate': 'scale',
-  
-  // Teams → "team"
-  'org': 'team', 'squad': 'team', 'group': 'team', 'staff': 'team',
-  
-  // Launch → "launch"
-  'release': 'launch', 'deploy': 'launch', 'introduce': 'launch',
-  'rollout': 'launch', 'ship': 'launch',
-  
-  // Hire → "hire"
-  'recruit': 'hire', 'onboard': 'hire',
-  
-  // Focus → "focus"
-  'concentrate': 'focus', 'prioritize': 'focus',
-  
-  // Markt → "market"
-  'segment': 'market', 'audience': 'market',
-  
-  // Kunde → "customer"
-  'user': 'customer', 'client': 'customer', 'buyer': 'customer'
-};
+// Business Context formatieren
+const contextString = formatBusinessContext(businessContext);
 
-function canonicalize(word: string): string {
-  const lower = word.toLowerCase();
-  return CANONICAL_TOKENS[lower] || lower;
-}
-```
+// Prepare the enhanced prompt with user context
+const enhancedPrompt = `${prompt}
 
-### 3. ACTION_VERBS nur in kanonischer Form
-
-```typescript
-// NUR kanonische Verben - keine Synonyme mehr im Set
-const ACTION_VERBS = new Set([
-  'scale', 'focus', 'launch', 'build', 'validate', 'hire', 'develop',
-  'optimize', 'reduce', 'improve', 'create', 'establish', 'implement',
-  'integrate', 'invest', 'acquire', 'retain', 'enter', 'dominate'
-]);
-```
-
-### 4. Action + Target Extraktion (Index-basiert)
-
-```typescript
-function extractActionTarget(title: string): { action: string; target: string } {
-  const normalized = normalizeText(title);
-  const words = normalized.split(/\s+/).filter(w => w.length > 2);
-  
-  // Content-Wörter (ohne Stop-Words)
-  const contentWords = words.filter(w => !STOP_WORDS.has(w));
-  
-  // Erste Aktion finden (nach Kanonisierung prüfen)
-  let actionIndex = -1;
-  for (let i = 0; i < contentWords.length; i++) {
-    if (ACTION_VERBS.has(canonicalize(contentWords[i]))) {
-      actionIndex = i;
-      break;
-    }
-  }
-  
-  // Action kanonisieren
-  const action = actionIndex >= 0 
-    ? canonicalize(contentWords[actionIndex]) 
-    : (contentWords[0] ? canonicalize(contentWords[0]) : '');
-  
-  // Target = letzte 2 Content-Wörter, Action per INDEX entfernen
-  const targetWords = contentWords.filter((_, idx) => idx !== actionIndex);
-  const lastTwo = targetWords.slice(-2);
-  
-  // Beide Wörter kanonisieren und zusammenfügen
-  const target = lastTwo.map(w => canonicalize(w)).join(' ');
-  
-  return { action, target };
-}
-```
-
-### 5. Verbesserter Similarity-Algorithmus
-
-```typescript
-function extractCanonicalKeywords(text: string): Set<string> {
-  return new Set(
-    normalizeText(text)
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !STOP_WORDS.has(word))
-      .map(word => canonicalize(word))
-  );
-}
-
-// Fallback: Einfacher Token-Jaccard ohne Kanonisierung
-function calculateSimpleJaccard(title1: string, title2: string): number {
-  const words1 = new Set(
-    normalizeText(title1).split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w))
-  );
-  const words2 = new Set(
-    normalizeText(title2).split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w))
-  );
-  
-  if (words1.size === 0 || words2.size === 0) return 0;
-  
-  const intersection = new Set([...words1].filter(w => words2.has(w)));
-  const union = new Set([...words1, ...words2]);
-  
-  return intersection.size / union.size;
-}
-
-function calculateEnhancedSimilarity(title1: string, title2: string): number {
-  // Schritt 1: Exakte Übereinstimmung nach Normalisierung
-  const norm1 = normalizeText(title1);
-  const norm2 = normalizeText(title2);
-  if (norm1 === norm2) return 1.0;
-  
-  // Schritt 2: Kanonisierte Keywords extrahieren
-  const keywords1 = extractCanonicalKeywords(title1);
-  const keywords2 = extractCanonicalKeywords(title2);
-  
-  // Fallback für sehr kurze Titel (< 2 Keywords)
-  if (keywords1.size < 2 || keywords2.size < 2) {
-    return calculateSimpleJaccard(title1, title2);
-  }
-  
-  // Schritt 3: Action + Target Extraktion
-  const { action: action1, target: target1 } = extractActionTarget(title1);
-  const { action: action2, target: target2 } = extractActionTarget(title2);
-  
-  const sameAction = action1 === action2;
-  const sameTarget = target1 === target2;
-  
-  // Schritt 4: Jaccard auf kanonisierten Keywords
-  const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
-  const union = new Set([...keywords1, ...keywords2]);
-  
-  let similarity = intersection.size / union.size;
-  
-  // Schritt 5: Penalty bei gleicher Action + unterschiedlichem Target
-  if (sameAction && !sameTarget && target1.length > 0 && target2.length > 0) {
-    similarity *= 0.6;
-  }
-  
-  // Schritt 6: ADDITIVER Bonus für gleiche Action UND gleiches Target
-  if (sameAction && sameTarget && target1.length > 0) {
-    similarity = Math.min(1.0, similarity + 0.15);
-  }
-  
-  return similarity;
-}
-```
-
-### 6. Erhöhte Schwelle
-
-```typescript
-function findSimilarGroup(
-  title: string, 
-  existingGroups: Map<string, WeightedRecommendation[]>,
-  threshold: number = 0.50
-): string | null {
-  for (const [groupTitle] of existingGroups) {
-    if (calculateEnhancedSimilarity(title, groupTitle) >= threshold) {
-      return groupTitle;
-    }
-  }
-  return null;
-}
+Context for your analysis:
+- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations${contextString}`;
 ```
 
 ---
 
-## Erwartete Verbesserungen
+## Zusammenfassung der Änderungen
 
-| Szenario | Vorher | Nachher |
-|----------|--------|---------|
-| "Focus on Customer Acquisition" vs "Focus on Customer Retention" | Gruppiert (50%) | Getrennt (30% nach Penalty) |
-| "Scale Engineering Team" vs "Scale Sales Team" | Gruppiert (50%) | Getrennt (Penalty greift) |
-| "Validate Market Fit" vs "Test Market Assumptions" | Getrennt (25%) | Gruppiert (Kanonisierung) |
-| "Scale Engineering Team" vs "Grow Engineering Org" | Getrennt (33%) | Gruppiert (Kanonisierung) |
-| "MVP launch" vs "Launch MVP" | Instabil | Stabil (Fallback greift) |
+| Änderungsort | Was wird geändert | Wo deployen |
+|--------------|-------------------|-------------|
+| `useMultiAIValidation.ts` | BusinessContext Parameter + Request Body | Lovable (automatisch) |
+| `ValidationPlatform.tsx` | useBusinessContext Hook + validate() Aufruf | Lovable (automatisch) |
+| `multi-ai-query/index.ts` | Request Parsing + formatBusinessContext() + Enhanced Prompt | **Manuell in Supabase** |
 
 ---
 
-## Dateiänderungen
+## Erwartetes Ergebnis
 
-| Datei | Änderung |
-|-------|----------|
-| `supabase/functions/meta-evaluation/index.ts` | Zeilen 136-178: Bestehende Funktionen ersetzen durch neue Implementation |
+Nach der Implementation:
+- Der Business Context wird bei jeder Analyse automatisch aus der DB geladen
+- Der Context wird an die Edge Function gesendet
+- Alle AI-Modelle erhalten den Context als Teil des System Prompts
+- Empfehlungen werden spezifisch auf Industry, Stage, Team Size, Market etc. zugeschnitten
 
 ---
 
-## Algorithmus-Eigenschaften
+## Deployment-Workflow
 
-| Eigenschaft | Status |
-|-------------|--------|
-| Deterministisch | Ja |
-| Transitiv (Synonyme) | Ja (durch Kanonisierung) |
-| Stabil bei kurzen Titeln | Ja (Fallback) |
-| Konsistente Normalisierung | Ja (einheitliche Funktion) |
-| Index-basierte Filterung | Ja (keine Wert-Kollisionen) |
+1. **Lovable**: Änderungen an `useMultiAIValidation.ts` und `ValidationPlatform.tsx` werden automatisch deployed
+2. **Supabase**: Du musst die `multi-ai-query` Edge Function manuell in dein externes Projekt deployen:
+   - Option A: Supabase CLI mit `supabase functions deploy multi-ai-query`
+   - Option B: Code manuell ins Supabase Dashboard kopieren
 

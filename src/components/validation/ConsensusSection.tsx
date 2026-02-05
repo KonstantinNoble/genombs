@@ -32,7 +32,7 @@ export function ConsensusSection({ points, defaultOpen = true }: ConsensusSectio
               Points of Agreement
             </span>
             <p className="text-sm text-green-600/70 dark:text-green-500/70 mt-1">
-              No shared recommendations across models for this decision.
+              No high-confidence overlaps detected. Models may still align on broader themes.
             </p>
           </div>
         </div>

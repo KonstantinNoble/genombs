@@ -133,57 +133,81 @@ function getDominantModel(
   return dominant;
 }
 
-// ========== SEMANTIC TITLE MATCHING ==========
+// ========== SEMANTIC TITLE MATCHING (IMPROVED MULTILINGUAL) ==========
 
+// Extended stop words with German
 const STOP_WORDS = new Set([
+  // English
   'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
   'by', 'is', 'are', 'be', 'this', 'that', 'your', 'their', 'its', 'as', 'from',
   'it', 'we', 'you', 'they', 'our', 'can', 'will', 'should', 'would', 'could',
-  'have', 'has', 'had', 'do', 'does', 'did', 'been', 'being', 'was', 'were'
+  'have', 'has', 'had', 'do', 'does', 'did', 'been', 'being', 'was', 'were',
+  // German
+  'der', 'die', 'das', 'ein', 'eine', 'einer', 'einem', 'einen', 'und', 'oder',
+  'aber', 'in', 'im', 'auf', 'an', 'zu', 'zum', 'zur', 'fur', 'fuer', 'mit', 'von',
+  'ist', 'sind', 'sein', 'war', 'waren', 'wird', 'werden', 'wurde', 'wurden',
+  'sie', 'er', 'es', 'wir', 'ihr', 'sie', 'haben', 'hat', 'hatte', 'hatten',
+  'kann', 'konnen', 'soll', 'sollen', 'muss', 'mussen', 'diese', 'dieser', 'diesem'
 ]);
 
-// ========== CANONICAL TOKEN MAPPING (EXPANDED) ==========
+// ========== CANONICAL TOKEN MAPPING (EXPANDED WITH GERMAN) ==========
 
 const CANONICAL_TOKENS: Record<string, string> = {
   // Validierung → "validate"
   'test': 'validate', 'verify': 'validate', 'confirm': 'validate',
   'check': 'validate', 'assess': 'validate', 'pilot': 'validate',
   'trial': 'validate', 'experiment': 'validate',
+  'validieren': 'validate', 'prufen': 'validate', 'pruefen': 'validate',
+  'testen': 'validate', 'verifizieren': 'validate',
   
   // Wachstum → "scale"
   'grow': 'scale', 'expand': 'scale', 'increase': 'scale',
   'amplify': 'scale', 'accelerate': 'scale',
+  'skalieren': 'scale', 'wachsen': 'scale', 'erweitern': 'scale',
   
   // Teams → "team"
   'org': 'team', 'squad': 'team', 'group': 'team', 'staff': 'team',
+  'organisation': 'team', 'mannschaft': 'team', 'gruppe': 'team',
   
   // Launch → "launch"
   'release': 'launch', 'deploy': 'launch', 'introduce': 'launch',
   'rollout': 'launch', 'ship': 'launch',
+  'starten': 'launch', 'launchen': 'launch', 'einfuhren': 'launch', 'einfuehren': 'launch',
   
   // Hire → "hire"
   'recruit': 'hire', 'onboard': 'hire',
+  'einstellen': 'hire', 'rekrutieren': 'hire', 'anwerben': 'hire',
   
   // Focus → "focus"
   'concentrate': 'focus', 'prioritize': 'focus',
+  'fokussieren': 'focus', 'konzentrieren': 'focus', 'priorisieren': 'focus',
   
   // Markt → "market"
   'segment': 'market', 'audience': 'market',
+  'markt': 'market', 'zielgruppe': 'market',
   
   // Kunde → "customer"
   'user': 'customer', 'client': 'customer', 'buyer': 'customer',
+  'kunde': 'customer', 'kunden': 'customer', 'nutzer': 'customer',
   
-  // Use/Leverage → "use" (NEW)
+  // Use/Leverage → "use"
   'utilize': 'use', 'leverage': 'use', 'adopt': 'use', 'employ': 'use',
+  'nutzen': 'use', 'verwenden': 'use', 'einsetzen': 'use',
   
-  // Build → "build" (NEW)
+  // Build → "build"
   'create': 'build', 'develop': 'build', 'establish': 'build', 'construct': 'build',
+  'erstellen': 'build', 'aufbauen': 'build', 'entwickeln': 'build', 'bauen': 'build',
   
-  // Improve → "improve" (NEW)
+  // Improve → "improve"
   'enhance': 'improve', 'optimize': 'improve', 'strengthen': 'improve', 'boost': 'improve',
+  'verbessern': 'improve', 'optimieren': 'improve', 'verstarken': 'improve', 'verstaerken': 'improve',
   
-  // Strategy → "strategy" (NEW)
-  'approach': 'strategy', 'plan': 'strategy', 'method': 'strategy'
+  // Strategy → "strategy"
+  'approach': 'strategy', 'plan': 'strategy', 'method': 'strategy',
+  'strategie': 'strategy', 'ansatz': 'strategy', 'methode': 'strategy',
+  
+  // Implement → "implement"
+  'umsetzen': 'implement', 'implementieren': 'implement', 'ausfuhren': 'implement', 'ausfuehren': 'implement'
 };
 
 function canonicalize(word: string): string {
@@ -267,6 +291,23 @@ function calculateIntentSimilarity(rec1: WeightedRecommendation, rec2: WeightedR
   return intersection.size / union.size;
 }
 
+// NEW: Description-based similarity for additional matching signal
+function calculateDescriptionSimilarity(rec1: WeightedRecommendation, rec2: WeightedRecommendation): number {
+  // Use first 200 chars of description for efficiency
+  const desc1 = (rec1.description || '').substring(0, 200);
+  const desc2 = (rec2.description || '').substring(0, 200);
+  
+  const keywords1 = extractCanonicalKeywords(desc1);
+  const keywords2 = extractCanonicalKeywords(desc2);
+  
+  if (keywords1.size === 0 || keywords2.size === 0) return 0;
+  
+  const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
+  const union = new Set([...keywords1, ...keywords2]);
+  
+  return intersection.size / union.size;
+}
+
 // Fallback: Einfacher Token-Jaccard ohne Kanonisierung
 function calculateSimpleJaccard(title1: string, title2: string): number {
   const words1 = new Set(
@@ -312,9 +353,9 @@ function calculateEnhancedSimilarity(title1: string, title2: string): number {
   
   let similarity = intersection.size / union.size;
   
-  // Schritt 5: Penalty bei gleicher Action + unterschiedlichem Target
+  // Schritt 5: REDUCED Penalty bei gleicher Action + unterschiedlichem Target (0.8 statt 0.6)
   if (sameAction && !sameTarget && target1.length > 0 && target2.length > 0) {
-    similarity *= 0.6;
+    similarity *= 0.8;
   }
   
   // Schritt 6: ADDITIVER Bonus für gleiche Action UND gleiches Target
@@ -325,14 +366,15 @@ function calculateEnhancedSimilarity(title1: string, title2: string): number {
   return similarity;
 }
 
-// ========== COMBINED SIMILARITY: Title + Intent ==========
+// ========== COMBINED SIMILARITY: Title + Intent + Description ==========
 
 function calculateCombinedSimilarity(rec1: WeightedRecommendation, rec2: WeightedRecommendation): number {
   const titleSim = calculateEnhancedSimilarity(rec1.title, rec2.title);
   const intentSim = calculateIntentSimilarity(rec1, rec2);
+  const descSim = calculateDescriptionSimilarity(rec1, rec2);
   
-  // Take the maximum of both - if actionItems match well, that's enough
-  return Math.max(titleSim, intentSim);
+  // Take the maximum of all three - if any signal matches well, that's enough
+  return Math.max(titleSim, intentSim, descSim);
 }
 
 // ========== UNION-FIND (DISJOINT SET) FOR GRAPH-BASED CLUSTERING ==========
@@ -389,8 +431,8 @@ class UnionFind {
 
 function clusterRecommendations(
   allRecs: WeightedRecommendation[],
-  threshold: number = 0.35,
-  fallbackThreshold: number = 0.28
+  threshold: number = 0.32, // LOWERED from 0.35
+  fallbackThreshold: number = 0.24 // LOWERED from 0.28
 ): Map<number, WeightedRecommendation[]> {
   
   const n = allRecs.length;
@@ -423,6 +465,16 @@ function clusterRecommendations(
   // Log top 10 cross-model similarity pairs
   crossModelPairs.sort((a, b) => b.sim - a.sim);
   const top10 = crossModelPairs.slice(0, 10);
+  const maxCrossModelSimilarity = crossModelPairs.length > 0 ? crossModelPairs[0].sim : 0;
+  const crossModelPairsAboveThreshold = crossModelPairs.filter(p => p.sim >= threshold).length;
+  
+  console.log('Cross-model similarity analysis:', {
+    totalPairs: crossModelPairs.length,
+    maxSimilarity: maxCrossModelSimilarity.toFixed(3),
+    pairsAboveThreshold: crossModelPairsAboveThreshold,
+    threshold
+  });
+  
   console.log('Top 10 cross-model similarity pairs:');
   for (const pair of top10) {
     console.log(`  ${allRecs[pair.i].title.substring(0, 30)} <-> ${allRecs[pair.j].title.substring(0, 30)}: ${pair.sim.toFixed(3)} [${pair.models.join(' vs ')}]`);
@@ -430,6 +482,7 @@ function clusterRecommendations(
   
   // Get initial clusters
   let clusters = uf.getClusters();
+  let clusteringPass = 'strict';
   
   // Check if we have any multi-model clusters
   let hasMultiModelCluster = false;
@@ -441,27 +494,82 @@ function clusterRecommendations(
     }
   }
   
-  // Adaptive fallback: if no multi-model clusters, try lower threshold
+  // Adaptive fallback: if no multi-model clusters, try lower threshold with guardrail
   if (!hasMultiModelCluster && crossModelPairs.length > 0) {
     console.log(`No multi-model clusters at threshold ${threshold}, trying fallback ${fallbackThreshold}`);
+    clusteringPass = 'fallback';
     
     const ufFallback = new UnionFind(n);
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
         const sim = calculateCombinedSimilarity(allRecs[i], allRecs[j]);
         if (sim >= fallbackThreshold) {
-          // Guardrail: require at least 2 common canonical keywords
+          // Guardrail: require at least 1 common canonical keyword (reduced from 2)
           const keywords1 = extractCanonicalKeywords(allRecs[i].title);
           const keywords2 = extractCanonicalKeywords(allRecs[j].title);
           const commonKeywords = [...keywords1].filter(k => keywords2.has(k));
           
-          if (commonKeywords.length >= 2) {
+          if (commonKeywords.length >= 1) {
             ufFallback.union(i, j);
           }
         }
       }
     }
     clusters = ufFallback.getClusters();
+    
+    // Check again for multi-model clusters
+    hasMultiModelCluster = false;
+    for (const [_, indices] of clusters) {
+      const uniqueModels = new Set(indices.map(i => allRecs[i].sourceModel));
+      if (uniqueModels.size >= 2) {
+        hasMultiModelCluster = true;
+        break;
+      }
+    }
+  }
+  
+  // NEW: Loose Pass for Cross-Model only if still no multi-model clusters
+  if (!hasMultiModelCluster && crossModelPairs.length > 0) {
+    console.log(`Still no multi-model clusters, trying loose cross-model pass`);
+    clusteringPass = 'loose';
+    
+    const ufLoose = new UnionFind(n);
+    
+    // First, apply strict threshold for same-model pairs
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        if (allRecs[i].sourceModel === allRecs[j].sourceModel) {
+          const sim = calculateCombinedSimilarity(allRecs[i], allRecs[j]);
+          if (sim >= threshold) {
+            ufLoose.union(i, j);
+          }
+        }
+      }
+    }
+    
+    // Then, apply loose matching for cross-model pairs
+    for (const pair of crossModelPairs) {
+      const rec1 = allRecs[pair.i];
+      const rec2 = allRecs[pair.j];
+      
+      // Extract action-target for both
+      const { action: action1, target: target1 } = extractActionTarget(rec1.title);
+      const { action: action2, target: target2 } = extractActionTarget(rec2.title);
+      
+      // Loose condition: same canonical action AND (at least 1 common keyword OR intent similarity > 0.15)
+      const sameAction = action1 === action2 && action1.length > 0;
+      const keywords1 = extractCanonicalKeywords(rec1.title);
+      const keywords2 = extractCanonicalKeywords(rec2.title);
+      const commonKeywords = [...keywords1].filter(k => keywords2.has(k));
+      const intentSim = calculateIntentSimilarity(rec1, rec2);
+      
+      if (sameAction && (commonKeywords.length >= 1 || intentSim > 0.15)) {
+        ufLoose.union(pair.i, pair.j);
+        console.log(`Loose match: "${rec1.title.substring(0, 25)}" <-> "${rec2.title.substring(0, 25)}" (action: ${action1}, commonKW: ${commonKeywords.length}, intentSim: ${intentSim.toFixed(2)})`);
+      }
+    }
+    
+    clusters = ufLoose.getClusters();
   }
   
   // Convert to Map<clusterId, recommendations[]>
@@ -470,7 +578,7 @@ function clusterRecommendations(
     result.set(clusterId, indices.map(i => allRecs[i]));
   }
   
-  console.log(`Graph-based clustering: ${n} recommendations -> ${result.size} clusters`);
+  console.log(`Graph-based clustering (${clusteringPass} pass): ${n} recommendations -> ${result.size} clusters`);
   
   return result;
 }
@@ -785,107 +893,107 @@ function computeFinalRecommendation(
   };
 }
 
-// Meta-evaluation tool schema - for LLM formatting only
-const getFormattingTool = (isPremium: boolean) => ({
-  type: "function",
-  function: {
-    name: "format_evaluation",
-    description: "Format pre-computed analysis results with professional language",
-    parameters: {
-      type: "object",
-      properties: {
-        formattedConsensus: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              topic: { type: "string" },
-              description: { type: "string", description: "Professionally written description" },
-              confidence: { type: "number" },
-              actionItems: { type: "array", items: { type: "string" } }
-            },
-            required: ["topic", "description", "confidence", "actionItems"]
-          }
-        },
-        formattedMajority: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              topic: { type: "string" },
-              description: { type: "string" },
-              supportingModels: { type: "array", items: { type: "string" } },
-              confidence: { type: "number" }
-            },
-            required: ["topic", "description", "supportingModels", "confidence"]
-          }
-        },
-        formattedDissent: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              topic: { type: "string" },
-              positions: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    modelName: { type: "string" },
-                    position: { type: "string" },
-                    reasoning: { type: "string" }
-                  },
-                  required: ["modelName", "position", "reasoning"]
-                }
-              }
-            },
-            required: ["topic", "positions"]
-          }
-        },
-        formattedFinalRecommendation: {
-          type: "object",
+// Gemini Response Schema (uppercase types for Gemini API)
+function getGeminiResponseSchema(isPremium: boolean): any {
+  const baseSchema = {
+    type: "OBJECT",
+    properties: {
+      formattedConsensus: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
           properties: {
-            title: { type: "string" },
-            description: { type: "string" },
-            confidence: { type: "number" },
-            reasoning: { type: "string" },
-            topActions: { type: "array", items: { type: "string" } }
+            topic: { type: "STRING" },
+            description: { type: "STRING" },
+            confidence: { type: "NUMBER" },
+            actionItems: { type: "ARRAY", items: { type: "STRING" } }
           },
-          required: ["title", "description", "confidence", "reasoning", "topActions"]
-        },
-        synthesisReasoning: { type: "string" },
-        ...(isPremium && {
-          strategicAlternatives: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                scenario: { type: "string" },
-                pros: { type: "array", items: { type: "string" } },
-                cons: { type: "array", items: { type: "string" } },
-                bestFor: { type: "string" }
-              },
-              required: ["scenario", "pros", "cons", "bestFor"]
+          required: ["topic", "description", "confidence", "actionItems"]
+        }
+      },
+      formattedMajority: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            topic: { type: "STRING" },
+            description: { type: "STRING" },
+            supportingModels: { type: "ARRAY", items: { type: "STRING" } },
+            confidence: { type: "NUMBER" }
+          },
+          required: ["topic", "description", "supportingModels", "confidence"]
+        }
+      },
+      formattedDissent: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            topic: { type: "STRING" },
+            positions: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  modelName: { type: "STRING" },
+                  position: { type: "STRING" },
+                  reasoning: { type: "STRING" }
+                },
+                required: ["modelName", "position", "reasoning"]
+              }
             }
           },
-          longTermOutlook: {
-            type: "object",
-            properties: {
-              sixMonths: { type: "string" },
-              twelveMonths: { type: "string" },
-              keyMilestones: { type: "array", items: { type: "string" } }
-            },
-            required: ["sixMonths", "twelveMonths", "keyMilestones"]
-          },
-          competitorInsights: { type: "string" }
-        })
+          required: ["topic", "positions"]
+        }
       },
-      required: isPremium 
-        ? ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning", "strategicAlternatives", "longTermOutlook", "competitorInsights"]
-        : ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning"]
-    }
+      formattedFinalRecommendation: {
+        type: "OBJECT",
+        properties: {
+          title: { type: "STRING" },
+          description: { type: "STRING" },
+          confidence: { type: "NUMBER" },
+          reasoning: { type: "STRING" },
+          topActions: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["title", "description", "confidence", "reasoning", "topActions"]
+      },
+      synthesisReasoning: { type: "STRING" }
+    },
+    required: ["formattedConsensus", "formattedMajority", "formattedDissent", "formattedFinalRecommendation", "synthesisReasoning"]
+  };
+  
+  if (isPremium) {
+    baseSchema.properties = {
+      ...baseSchema.properties,
+      strategicAlternatives: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            scenario: { type: "STRING" },
+            pros: { type: "ARRAY", items: { type: "STRING" } },
+            cons: { type: "ARRAY", items: { type: "STRING" } },
+            bestFor: { type: "STRING" }
+          },
+          required: ["scenario", "pros", "cons", "bestFor"]
+        }
+      },
+      longTermOutlook: {
+        type: "OBJECT",
+        properties: {
+          sixMonths: { type: "STRING" },
+          twelveMonths: { type: "STRING" },
+          keyMilestones: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["sixMonths", "twelveMonths", "keyMilestones"]
+      },
+      competitorInsights: { type: "STRING" }
+    };
+    baseSchema.required = [...baseSchema.required, "strategicAlternatives", "longTermOutlook", "competitorInsights"];
   }
-});
+  
+  return baseSchema;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -962,47 +1070,50 @@ serve(async (req) => {
     // ========== VIEWER ROLE CHECK ==========
     // Viewers can only read, not create analyses in team context
     if (teamId) {
-      const { data: memberData, error: memberError } = await supabase
+      const { data: teamMember } = await supabase
         .from('team_members')
         .select('role')
         .eq('team_id', teamId)
         .eq('user_id', user.id)
         .single();
       
-      if (memberError || !memberData) {
+      if (teamMember?.role === 'viewer') {
         return new Response(
-          JSON.stringify({ error: 'Not a member of this team' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (memberData.role === 'viewer') {
-        return new Response(
-          JSON.stringify({ error: 'Viewers cannot create team analyses. Ask your team admin for Member access.' }),
+          JSON.stringify({ error: 'Viewers cannot create analyses. Please upgrade your role or contact the team admin.' }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
     }
 
-    console.log(`Meta-evaluation started for user ${user.id} (Premium: ${isPremium})`);
-    console.log(`Selected models: ${selectedModels?.join(', ')}, Weights: ${JSON.stringify(modelWeights)}`);
     const startTime = Date.now();
+    console.log(`Starting meta-evaluation for user ${user.id}, Premium: ${isPremium}, BusinessContext: ${!!businessContext}`);
 
-    // ========== STEP 1: COLLECT ALL RECOMMENDATIONS ==========
-    const modelSummaries: string[] = [];
+    // ========== STEP 1: COLLECT AND WEIGHT ALL RECOMMENDATIONS ==========
+    
     const allRecommendations: WeightedRecommendation[] = [];
+    const modelSummaries: string[] = [];
     let allCitations: string[] = [];
     let totalWeight = 0;
 
+    // Process each model's response
     for (const modelKey of (selectedModels || Object.keys(modelResponses))) {
       const response = modelResponses[modelKey];
-      if (!response || response.error) continue;
+      if (!response || response.error) {
+        console.log(`Skipping ${modelKey}: ${response?.error || 'no response'}`);
+        continue;
+      }
       
       const weight = modelWeights?.[modelKey] || 33;
       totalWeight += weight;
       
+      // TRIMMED model summaries for formatting prompt (reduce token usage)
+      const summaryTrimmed = (response.summary || 'No response').substring(0, 300);
+      const marketContextTrimmed = isPremium && response.marketContext 
+        ? response.marketContext.substring(0, 200) 
+        : '';
+      
       modelSummaries.push(
-        `${response.modelName} (Weight: ${weight}%, Confidence: ${response.overallConfidence || 0}%): ${response.summary || 'No response'}${isPremium && response.marketContext ? `\nMarket Context: ${response.marketContext}` : ''}`
+        `${response.modelName} (${weight}%): ${summaryTrimmed}${marketContextTrimmed ? `\nMarket: ${marketContextTrimmed}` : ''}`
       );
       
       // Add recommendations with weighted scores
@@ -1057,84 +1168,90 @@ serve(async (req) => {
       riskPreference: riskPref
     });
 
-    // ========== STEP 3: LLM FOR FORMATTING ONLY (via direct Google AI API) ==========
+    // ========== STEP 3: LLM FOR FORMATTING ONLY (via direct Google AI API with Schema) ==========
     
     const riskContext = riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced';
     
-    // Build business context section for the prompt if available
+    // Build TRIMMED business context section (reduce token usage)
     let businessContextSection = '';
     if (businessContext && (businessContext.website_url || businessContext.website_summary || businessContext.industry)) {
       const contextParts: string[] = [];
       if (businessContext.industry) contextParts.push(`Industry: ${businessContext.industry}`);
       if (businessContext.company_stage) contextParts.push(`Stage: ${businessContext.company_stage}`);
-      if (businessContext.team_size) contextParts.push(`Team Size: ${businessContext.team_size}`);
-      if (businessContext.target_market) contextParts.push(`Target Market: ${businessContext.target_market}`);
-      if (businessContext.geographic_focus) contextParts.push(`Geographic Focus: ${businessContext.geographic_focus}`);
-      if (businessContext.website_url) contextParts.push(`Website: ${businessContext.website_url}`);
-      if (businessContext.website_summary) contextParts.push(`Website Analysis:\n${businessContext.website_summary}`);
+      if (businessContext.team_size) contextParts.push(`Team: ${businessContext.team_size}`);
+      if (businessContext.target_market) contextParts.push(`Market: ${businessContext.target_market}`);
+      // Trim website summary to avoid token overflow
+      if (businessContext.website_summary) {
+        const trimmedSummary = businessContext.website_summary.substring(0, 500);
+        contextParts.push(`Website Summary: ${trimmedSummary}...`);
+      }
       
-      businessContextSection = `
-BUSINESS CONTEXT (Consider this when polishing recommendations):
-${contextParts.join('\n')}
-`;
+      businessContextSection = `\nBUSINESS CONTEXT:\n${contextParts.join('\n')}\n`;
     }
     
-    const systemPrompt = `You are a professional business writer. Your ONLY job is to POLISH and FORMAT the pre-computed analysis results below.
+    // TRIMMED system prompt
+    const systemPrompt = `You are a business writer. Polish the pre-computed analysis below.
 ${businessContextSection}
-CRITICAL RULES:
-1. You MUST NOT change which topics are consensus/majority/dissent - these are mathematically determined
-2. You MUST NOT change the final recommendation title or source models
-3. You MUST NOT change the action items order or content - they are weight-prioritized
-4. You MUST NOT change confidence scores
-5. Your job is ONLY to improve the professional language and add business context
-${businessContext?.website_summary ? '6. IMPORTANT: Reference specific points from the Website Analysis when relevant to make recommendations more tailored' : ''}
+RULES:
+1. Do NOT change which items are consensus/majority/dissent
+2. Do NOT change titles, action items order, or confidence scores
+3. ONLY improve language and add context
+4. User has ${riskContext} risk tolerance
 
-The user has a ${riskContext} risk tolerance. Frame the language accordingly.
+${isPremium ? `PREMIUM FEATURES REQUIRED:
+- strategicAlternatives: 2-3 scenarios with pros/cons/bestFor
+- longTermOutlook: 6-month, 12-month projections + milestones
+- competitorInsights: ~800 chars max of competitive analysis` : ''}`;
 
-${isPremium ? `PREMIUM USER - MANDATORY PREMIUM FEATURES:
-You MUST generate ALL of the following premium features for this premium user. These are REQUIRED, not optional:
+    // TRIMMED user prompt - only send essential data
+    const consensusSummary = computedConsensus.map(c => ({
+      topic: c.topic.substring(0, 100),
+      description: c.description.substring(0, 200),
+      confidence: c.confidence,
+      actionItems: c.actionItems.slice(0, 3).map(a => a.substring(0, 100))
+    }));
+    
+    const dissentSummary = computedDissent.slice(0, 5).map(d => ({
+      topic: d.topic.substring(0, 100),
+      positions: d.positions.slice(0, 2).map(p => ({
+        modelName: p.modelName,
+        position: p.position.substring(0, 150)
+      }))
+    }));
+    
+    const finalSummary = {
+      title: computedFinal.title.substring(0, 100),
+      description: computedFinal.description.substring(0, 300),
+      topActions: computedFinal.topActions.slice(0, 5).map(a => a.substring(0, 100)),
+      confidence: computedFinal.confidence
+    };
+    
+    const userPrompt = `Polish these results (keep decisions intact):
 
-1. strategicAlternatives (REQUIRED): Generate exactly 2-3 alternative strategic scenarios based on the dissent points and different approaches. Each must have scenario, pros (array), cons (array), and bestFor fields.
+CONSENSUS (${computedConsensus.length}):
+${JSON.stringify(consensusSummary)}
 
-2. longTermOutlook (REQUIRED): Create specific projections with:
-   - sixMonths: Detailed 6-month projection
-   - twelveMonths: Detailed 12-month projection  
-   - keyMilestones: At least 3 key milestones
+MAJORITY (${computedMajority.length}):
+${JSON.stringify(computedMajority.slice(0, 3))}
 
-3. competitorInsights (REQUIRED): Synthesize actionable competitive analysis based on the model summaries${businessContext?.website_summary ? ' and the Website Analysis' : ''}. This should be a detailed paragraph.
+DISSENT (${computedDissent.length}):
+${JSON.stringify(dissentSummary)}
 
-FAILURE TO INCLUDE THESE PREMIUM FIELDS IS NOT ACCEPTABLE. Every premium user MUST receive all three premium sections.` : ''}
+FINAL:
+${JSON.stringify(finalSummary)}
 
-IMPORTANT: Respond with a valid JSON object matching the format_evaluation schema. Include all required fields.`;
+MODELS: ${modelSummaries.join('\n')}`;
 
-    const userPrompt = `Here are the PRE-COMPUTED results. Polish the language but keep all decisions intact:
-
-COMPUTED CONSENSUS (${computedConsensus.length} items - ALL models agree on these):
-${JSON.stringify(computedConsensus, null, 2)}
-
-COMPUTED MAJORITY (${computedMajority.length} items - >=60% weighted agreement):
-${JSON.stringify(computedMajority, null, 2)}
-
-COMPUTED DISSENT (${computedDissent.length} items - <60% agreement, show all positions):
-${JSON.stringify(computedDissent, null, 2)}
-
-COMPUTED FINAL RECOMMENDATION (based on ${dominantModel ? `dominant model ${dominantModel.name} at ${dominantModel.weight}%` : 'weighted scoring'}):
-${JSON.stringify(computedFinal, null, 2)}
-
-ORIGINAL MODEL SUMMARIES (for context and premium features only):
-${modelSummaries.join('\n\n')}
-
-Output the formatted version as JSON. Remember: improve language only, do not change decisions.`;
-
-    // Use direct Google AI API instead of Lovable Gateway
+    // Use direct Google AI API with response schema
     const directModelId = GOOGLE_MODEL_MAPPING['google/gemini-3-flash-preview'] || 'gemini-2.5-flash';
     
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent?key=${googleApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${directModelId}:generateContent`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-goog-api-key": googleApiKey // Header-based auth
         },
         body: JSON.stringify({
           contents: [
@@ -1145,54 +1262,53 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 8192,
-            responseMimeType: "application/json"
+            maxOutputTokens: 6000, // Reduced to prevent truncation
+            responseMimeType: "application/json",
+            responseSchema: getGeminiResponseSchema(isPremium)
           }
         }),
       }
     );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Formatting API error:', response.status, errorText);
-      // Fall back to computed results without formatting
-      console.log('Using computed results without LLM formatting');
-    }
-
     let formattedEvaluation: any = null;
     let formattingParsed = false;
     let formattingParseError: string | null = null;
-    
-    if (response.ok) {
+    let formattingFinishReason: string | null = null;
+    let formattingContentLength: number | null = null;
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.warn('Formatting API error (using computed fallback):', response.status, errorText.substring(0, 200));
+      formattingParseError = `API error: ${response.status}`;
+    } else {
       const data = await response.json();
+      formattingFinishReason = data.candidates?.[0]?.finishReason || null;
       const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      formattingContentLength = content?.length || 0;
       
       if (content) {
         try {
-          // Robust JSON extraction: try multiple patterns
-          let jsonStr = content;
-          
-          // Pattern 1: Markdown code blocks
-          const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
-          if (codeBlockMatch) {
-            jsonStr = codeBlockMatch[1];
-          } else if (!content.trim().startsWith('{')) {
-            // Pattern 2: Extract JSON object from mixed content
-            const firstBrace = content.indexOf('{');
-            const lastBrace = content.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace > firstBrace) {
-              jsonStr = content.substring(firstBrace, lastBrace + 1);
-            }
-          }
-          
-          formattedEvaluation = JSON.parse(jsonStr);
+          // With response schema, content should be clean JSON
+          formattedEvaluation = JSON.parse(content);
           formattingParsed = true;
-          console.log('Formatting parsed successfully');
+          console.log('Formatting parsed successfully (schema-enforced)');
         } catch (e) {
           formattingParseError = e instanceof Error ? e.message : String(e);
-          console.error('Failed to parse formatted evaluation:', formattingParseError);
-          // Log first 500 chars for debugging
-          console.log('Raw content preview (first 500 chars):', content?.substring(0, 500));
+          console.warn('Formatting parse failed (using computed fallback):', formattingParseError);
+          console.log('Content preview:', content?.substring(0, 300));
+          
+          // Fallback: try extracting JSON from potential markdown
+          try {
+            const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
+            if (codeBlockMatch) {
+              formattedEvaluation = JSON.parse(codeBlockMatch[1]);
+              formattingParsed = true;
+              formattingParseError = 'Recovered from code block';
+              console.log('Recovered JSON from code block');
+            }
+          } catch {
+            // Keep original error
+          }
         }
       }
     }
@@ -1287,7 +1403,8 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
       majorityCount: finalEvaluation.majorityPoints.length,
       dissentCount: finalEvaluation.dissentPoints.length,
       formattingParsed,
-      formattingParseError: formattingParseError ? 'yes' : 'no'
+      formattingFinishReason,
+      formattingContentLength
     });
     
     // Log premium feature generation status
@@ -1364,6 +1481,8 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
           computedDissentCount: computedDissent.length,
           formattingParsed,
           formattingParseError,
+          formattingFinishReason,
+          formattingContentLength,
           formattedConsensusLength: formattedEvaluation?.formattedConsensus?.length ?? null,
           formattedDissentLength: formattedEvaluation?.formattedDissent?.length ?? null
         }

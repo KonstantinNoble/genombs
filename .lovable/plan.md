@@ -1,119 +1,132 @@
 
-## Beobachtung (aus deinem Log)
-In `meta-evaluation` ist die neue Klassifizierung bereits aktiv (Agreement wäre **>= 2 Modelle pro Gruppe**). Trotzdem kommt:
+## Was die Logs eindeutig zeigen
 
-- `consensusCount: 0`
-- `dissentCount: 7`
+### 1) Das System “bricht” nicht komplett, aber der Formatting-Schritt ist instabil
+Dein Error:
+- `Failed to parse formatted evaluation: SyntaxError: Expected double-quoted property name in JSON ...`
 
-Das heißt nicht “UI-Bug”, sondern: **Kein einziges Topic-Cluster enthält Empfehlungen von mindestens 2 unterschiedlichen Modellen.**  
-Der Similarity-Threshold wurde zwar auf `0.35` gesenkt, aber die Gruppierung findet weiterhin kaum/keine Cross-Model-Matches.
+kommt aus `supabase/functions/meta-evaluation/index.ts` im **Formatting-Schritt (Step 3)**, wo der Gemini-Output als JSON geparst wird:
 
----
+- Es wird `content` gelesen und dann `JSON.parse(...)` gemacht.
+- Bei Premium ist der Output größer (mehr Felder + längere Texte), und der Model-Output ist häufiger **kein strikt valides JSON** (z.B. Keys ohne Anführungszeichen wie `competitorInsights: "..."`).
 
-## Wahrscheinlichste Ursachen (Code-basiert)
-### A) Order-Bias in der Gruppierung (sehr wahrscheinlich)
-Aktuell wird sequentiell in eine `Map<title, recs[]>` gruppiert:
+Wichtig: Dieser Parse-Error betrifft primär das **“Polishing/Formatting”** und die Premium-Sektionen; die eigentliche deterministische Consensus-Berechnung läuft davor (Step 2).
 
-- Eine Gruppe wird durch den **ersten Titel** (`groupTitle`) “repräsentiert”.
-- Neue Titel werden **nur** gegen diese Group-Keys verglichen (nicht gegen alle Titel innerhalb der Gruppe).
-- Dadurch kann ein “Similarity-Ketteneffekt” verloren gehen:
+### 2) Es gibt zusätzlich eine echte Logik-Falle, die Agreements “leer wirken lassen” kann
+Im Merge (Step 4) passiert aktuell:
 
-Beispiel:
-- Titel A ~ Titel B (0.40)
-- Titel B ~ Titel C (0.40)
-- Titel A !~ Titel C (0.30)
+```ts
+consensusPoints: (formattedEvaluation?.formattedConsensus || computedConsensus).map(...)
+```
 
-Mit deiner aktuellen Logik kann C **nicht** in die Gruppe kommen, obwohl es über B semantisch “verbunden” wäre. Ergebnis: **zu viele 1-Model-Gruppen**.
+Problem: Wenn `formattedConsensus` existiert, aber **leer ist** (`[]`), ist das in JS “truthy” und überschreibt `computedConsensus` vollständig. Ergebnis: **UI zeigt 0 Agreements**, obwohl die deterministische Berechnung ggf. welche hatte.
 
-### B) Title-only Matching ist zu schwach (wahrscheinlich)
-Die Similarity nutzt nur `rec.title`. Wenn Modelle denselben Inhalt anders “betiteln”, aber in Description/ActionItems sehr ähnlich sind, erkennt das System keine Übereinstimmung.
+Das ist ein Konsistenz-Problem: Ein LLM darf niemals die “Existenz” der computed Points überschreiben.
 
-### C) Canonicalization/Verb-Liste deckt Marketing-Formulierungen + DE/EN-Mix nicht gut ab (möglich)
-`normalizeText()` lässt nur `[a-z0-9]` zu. Bei nicht-englischen Zeichen/Sprachen kann das Keywords “kaputt-normalisieren”. Außerdem ist die Synonym-Abdeckung in `CANONICAL_TOKENS` begrenzt (z.B. “utilize/leverage/adopt” etc.).
+### 3) Dass `consensusCount: 0` in manchen Runs vorkommt, kann trotzdem “korrekt” sein
+Die deterministische Log-Zeile:
+- `consensusCount: 0, dissentCount: 13`
 
----
+bedeutet: Im aktuellen Prompt/Run gab es tatsächlich keine Cross-Model-Cluster (>=2 Modelle) über dem Similarity-Mechanismus. Das kann vorkommen – ist aber erst dann vertrauenswürdig, wenn (a) der Merge nicht computed überschreiben kann und (b) die Similarity-Logs sauber sind.
 
-## Vorgehen zur Verifikation (ohne Ratespiel)
-Wir bauen gezielte Debug-Logs in `meta-evaluation` ein, damit du in den Backend-Logs sofort siehst, was passiert:
-
-1) **Active Models & Rec-Counts** (pro Modell)
-- Modellname
-- #Recommendations
-- 2–3 Beispiel-Titel
-
-2) **Cross-Model Similarity Stats**
-- Für jede Empfehlung: `maxSimilarityToOtherModel`
-- Top 10 Paarungen (modelA/titleA ↔ modelB/titleB) mit Similarity-Score
-
-Erwartung:
-- Wenn die Top Cross-Model Similarities fast immer < 0.35 sind: Threshold/Features müssen verbessert werden.
-- Wenn viele Scores > 0.35 existieren, aber trotzdem keine Gruppen entstehen: dann ist es sehr wahrscheinlich **Order-Bias/Grouping-Implementierung**.
+## Zielzustand (“korrekt funktioniert” bedeutet hier)
+1) **Kein Parse-Error mehr** beim Premium-Formatting (oder sauberer Fallback ohne Error-Spam).
+2) **Computed (deterministisch) ist Source of Truth**:
+   - Agreements/Majority/Dissent, die rechnerisch gefunden wurden, erscheinen immer.
+   - LLM darf nur Sprache “polishen”, nicht Inhalte/Existenz/Counts bestimmen.
+3) Wenn Agreements wirklich 0 sind, ist das nachvollziehbar über Logs:
+   - Top Cross-Model Similarity Pairs zeigen dann wirklich nur niedrige Werte.
 
 ---
 
-## Implementations-Änderungen (Fix)
-### 1) Order-unabhängige Clusterbildung (Hauptfix)
-Wir ersetzen die aktuelle “Map + first-title-key” Logik durch eine deterministische, order-unabhängige Clustering-Variante:
+## Änderungen, die ich implementieren werde (ohne UI-Anpassungen)
 
-- Baue alle Recommendations in eine Liste `allRecs`.
-- Berechne paarweise Similarities (O(n²), bei typischen 6–15 recs absolut ok).
-- Nutze **Union-Find** (Disjoint Set) oder BFS über einen Similarity-Graph:
-  - Kante zwischen i und j, wenn `similarity(i,j) >= threshold`
-  - Cluster = zusammenhängende Komponente
+### A) JSON Parsing im Formatting Schritt robust & schema-gebunden machen
+**Datei:** `supabase/functions/meta-evaluation/index.ts`
 
-Damit werden “Ketten-Ähnlichkeiten” korrekt zu einem Cluster zusammengefasst.
+1) **Response Schema aktivieren**, analog zu `multi-ai-query`:
+   - Aktuell ist nur `responseMimeType: "application/json"` gesetzt.
+   - Ich werde zusätzlich `responseSchema` setzen, damit Gemini wirklich strikt JSON mit quoted keys liefert.
 
-### 2) Besseres Similarity-Feature: Title + ActionItems (und optional Description)
-Wir definieren eine “Intent-Signatur” pro Recommendation:
-- Textbasis: `title + " " + actionItems.slice(0,2).join(" ")` (optional + `description`)
-- Daraus canonical keywords extrahieren (wie bisher)
+   Technisch:
+   - `responseSchema` wird aus dem vorhandenen Schema abgeleitet:
+     - `getFormattingTool(isPremium).function.parameters`
 
-Similarity dann z.B.:
-- `titleSim = calculateEnhancedSimilarity(titleA, titleB)`
-- `intentSim = jaccard(canonicalKeywords(intentTextA), canonicalKeywords(intentTextB))`
-- `finalSim = Math.max(titleSim, intentSim)`
+2) **Robustere JSON-Extraktion** vor `JSON.parse`:
+   - Übernehme das bewährte Pattern aus `multi-ai-query`:
+     - Codeblock-Extraction (` ```json ... ``` `)
+     - Wenn nicht mit `{` startend: substring zwischen erster `{` und letzter `}`
 
-Damit matchen Modelle, die denselben Schritt vorschlagen, aber anders betiteln.
+3) Optionaler Sicherheitsgurt:
+   - Wenn Parse fehlschlägt, logge ich zusätzlich eine gekürzte Vorschau des Outputs (z.B. erste 500 chars), damit du bei Bedarf sofort siehst, ob es JS-Object-Style oder Truncation war.
 
-### 3) Optional: Adaptive Fallback (nur wenn weiterhin 0 Agreements)
-Wenn nach Clusterbildung `consensus.length === 0` aber **>=2 Modelle** aktiv sind:
-- zweite Pass-Runde mit leicht niedrigerem Threshold (z.B. 0.28–0.30)
-- Guardrail gegen “False Agreements”: mindestens 2 gemeinsame nicht-generische Keywords
+4) API Call Konsistenz:
+   - Umstellen auf Header-Auth (`x-goog-api-key`) statt Query-Param `?key=...` (wie in `multi-ai-query`), um das Verhalten zu vereinheitlichen.
 
-### 4) Canonicalization erweitern (gezielt, nicht wild)
-- Ergänze `CANONICAL_TOKENS` um häufige Synonyme:
-  - use/utilize/leverage/adopt → `use`
-  - social/instagram/reels etc. optional nicht nötig, aber “use/leverage” hilft
-- Optional: normalizeText Unicode-freundlich machen (wichtig falls DE/FR/… in Titles):
-  - statt nur `[a-z0-9]` → Unicode Letter/Number Klassen behalten
+### B) Merge-Logik: Computed Listen sind immer die Iterationsbasis (entscheidend für Konsistenz)
+**Datei:** `supabase/functions/meta-evaluation/index.ts`
 
----
+Ich ändere Step 4 so, dass:
+- `finalEvaluation.consensusPoints` immer aus `computedConsensus.map(...)` entsteht
+- `formattedEvaluation?.formattedConsensus` darf nur **Beschreibung/ActionItems** “polishen”, niemals:
+  - Items entfernen
+  - Reihenfolge/Existenz bestimmen
 
-## Dateien, die wir ändern würden
-- `supabase/functions/meta-evaluation/index.ts`
-  - Debug-Logging
-  - neue Clustering-Implementierung (Union-Find / Graph Components)
-  - Similarity auf Intent-Signatur erweitern
-  - optional: adaptive Threshold-Fallback + canonicalization tweaks
+Konkretes Merge-Verhalten:
+- Baseline: `computedConsensus[i]`
+- Falls `formattedConsensus[i]` vorhanden: nutze `description`, optional `actionItems`
+- Fallback wenn formatted fehlt: computed 그대로
 
-Frontend muss dafür nicht geändert werden, weil es bereits korrekt “Empty State” zeigt.
+Das gleiche Prinzip gilt für:
+- `majorityPoints` (computed als Basis)
+- `dissentPoints` (computed als Basis; optional nur Topic/Position-Text polishen, ohne Modelle/Anzahl zu verändern)
 
----
+Damit ist garantiert: “Agreements sind konsistent”, weil sie deterministisch sind und durch LLM nicht verschwinden können.
 
-## Akzeptanzkriterien (was du danach sehen solltest)
-1) In Logs:
-   - `Semantic grouping: X recommendations -> Y topic groups` wird ersetzt/ergänzt durch Cluster-Logs
-   - Mindestens einige Logs wie: `Partial consensus: ... - 2/3 models`
-2) In UI:
-   - “Points of Agreement” enthält Einträge (bei typischen Prompts, bei denen Modelle inhaltlich overlap haben)
-3) Kein massives Over-Grouping:
-   - Agreements sollen thematisch plausibel bleiben (Guardrails/Keywords verhindern “alles wird eins”)
+### C) Premium-Formatting darf niemals leere Arrays liefern, die computed “überschreiben”
+Auch wenn Schema aktiv ist, kann das Modell theoretisch leere Arrays ausgeben. Durch (B) ist das dann egal; computed bleibt sichtbar.
+
+### D) (Optional aber sinnvoll) Mehr Debug-Signal im Response statt nur Logs
+In der Response gibt es bereits `_debug` mit Counts.
+Ich erweitere `_debug` optional um:
+- `formattingParsed: boolean`
+- `formattingParseError: string | null`
+- `formattedConsensusLength` etc.
+
+So kannst du im Frontend/Network sofort sehen: “Computed hatte X, Formatting war ok/kaputt”.
 
 ---
 
-## Testplan (End-to-End)
-1) 2–3 typische Prompts laufen lassen, die erfahrungsgemäß ähnliche Empfehlungen erzeugen (z.B. “Go-to-market für …”).
-2) Prüfen:
-   - Agreements > 0
-   - Dissent weiterhin sinnvoll (echte Outliers)
-3) Logs prüfen: Top Cross-Model Similarity Pairs, Cluster-Zusammensetzung pro Topic.
+## Validierungs-/Testplan (End-to-End)
+
+### 1) Premium-Run reproduzieren
+- Prompt wie bei deinem Error erneut laufen lassen
+- Erwartung:
+  - Kein `Failed to parse formatted evaluation` mehr (oder mindestens: “parse failed -> fallback” ohne JSON-Syntaxfehler-Spam)
+  - UI zeigt Agreements exakt entsprechend computed (wenn computed>0)
+
+### 2) Vergleich: Free vs Premium mit identischem Prompt
+- Erwartung:
+  - Agreements/Dissents sollten im Kern gleich bleiben (weil deterministisch)
+  - Premium hat nur bessere Sprache + Premium Insights, aber keine “anderen” Agreement-Counts aufgrund LLM
+
+### 3) Falls Agreements weiterhin 0 sind:
+- Die bereits eingebauten Logs “Top 10 cross-model similarity pairs” aus Step 2 anschauen:
+  - Wenn Top-Scores < ~0.28: dann ist es ein “echtes” Nicht-Agreement (Modelle sind wirklich verschieden)
+  - Wenn Top-Scores >= 0.35 existieren, aber dennoch 0 Agreements: dann wäre es ein Clustering-Bug (würde ich dann als nächsten Schritt fixen)
+
+---
+
+## Rollout / was du danach beachten musst
+- Nach Umsetzung muss die aktualisierte `meta-evaluation` Backend-Funktion neu deployed werden (damit der Fix im echten Premium-Test greift).
+- Danach bitte 1–2 Premium-Analysen durchlaufen lassen und mir:
+  - die neuen Logs rund um “formatting parsed” + “Top 10 cross-model similarity pairs”
+  - sowie das `_debug` Feld aus der Response (Network-Response)
+  schicken, falls noch etwas auffällig ist.
+
+---
+
+## Erwartetes Ergebnis
+- Premium-Analysen erzeugen keine JSON-Parse-Errors mehr.
+- Agreements verschwinden nicht mehr “zufällig” (weil computed nicht mehr von formatted überschrieben werden kann).
+- Wenn Agreements 0 sind, ist es nachvollziehbar und technisch korrekt begründet (Similarity-Distribution), nicht wegen Parsing/Merge.

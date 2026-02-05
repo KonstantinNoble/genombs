@@ -686,7 +686,7 @@ CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explan
           console.log(`[${modelConfig.name}] JSON recovery SUCCEEDED for ${candidateId}`);
         }
       } catch (parseError) {
-        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId} (even after sanitize+repair):`, parseError);
+        console.log(`[${modelConfig.name}] JSON parse failed for ${candidateId} (continuing to next candidate):`, parseError);
         console.log(`[${modelConfig.name}] Raw content (first 500 chars):`, content.substring(0, 500));
         lastError = "Invalid JSON response from model";
         continue;

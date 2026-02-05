@@ -987,7 +987,7 @@ function getGeminiResponseSchema(isPremium: boolean): any {
         },
         required: ["sixMonths", "twelveMonths", "keyMilestones"]
       },
-      competitorInsights: { type: "STRING" }
+      competitorInsights: { type: "STRING", maxLength: 800 }
     };
     baseSchema.required = [...baseSchema.required, "strategicAlternatives", "longTermOutlook", "competitorInsights"];
   }
@@ -1198,10 +1198,10 @@ RULES:
 3. ONLY improve language and add context
 4. User has ${riskContext} risk tolerance
 
-${isPremium ? `PREMIUM FEATURES REQUIRED:
-- strategicAlternatives: 2-3 scenarios with pros/cons/bestFor
-- longTermOutlook: 6-month, 12-month projections + milestones
-- competitorInsights: ~800 chars max of competitive analysis` : ''}`;
+${isPremium ? `PREMIUM FEATURES REQUIRED (STRICT LENGTH LIMITS):
+- strategicAlternatives: 2-3 scenarios with pros/cons/bestFor (each field max 150 chars)
+- longTermOutlook: 6-month, 12-month projections + milestones (each max 200 chars)
+- competitorInsights: max 600 chars STRICT of competitive analysis` : ''}`;
 
     // TRIMMED user prompt - only send essential data
     const consensusSummary = computedConsensus.map(c => ({
@@ -1211,11 +1211,12 @@ ${isPremium ? `PREMIUM FEATURES REQUIRED:
       actionItems: c.actionItems.slice(0, 3).map(a => a.substring(0, 100))
     }));
     
-    const dissentSummary = computedDissent.slice(0, 5).map(d => ({
-      topic: d.topic.substring(0, 100),
+    // REDUCED: 3 dissents (from 5), 100 chars position (from 150) to prevent truncation
+    const dissentSummary = computedDissent.slice(0, 3).map(d => ({
+      topic: d.topic.substring(0, 80),
       positions: d.positions.slice(0, 2).map(p => ({
         modelName: p.modelName,
-        position: p.position.substring(0, 150)
+        position: p.position.substring(0, 100)
       }))
     }));
     
@@ -1262,7 +1263,7 @@ MODELS: ${modelSummaries.join('\n')}`;
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 6000, // Reduced to prevent truncation
+            maxOutputTokens: 8192, // Increased to prevent truncation (Gemini 2.5 Flash max)
             responseMimeType: "application/json",
             responseSchema: getGeminiResponseSchema(isPremium)
           }
@@ -1294,10 +1295,10 @@ MODELS: ${modelSummaries.join('\n')}`;
           console.log('Formatting parsed successfully (schema-enforced)');
         } catch (e) {
           formattingParseError = e instanceof Error ? e.message : String(e);
-          console.warn('Formatting parse failed (using computed fallback):', formattingParseError);
+          console.warn('Formatting parse failed (trying recovery):', formattingParseError);
           console.log('Content preview:', content?.substring(0, 300));
           
-          // Fallback: try extracting JSON from potential markdown
+          // Fallback 1: try extracting JSON from potential markdown
           try {
             const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
             if (codeBlockMatch) {
@@ -1307,7 +1308,38 @@ MODELS: ${modelSummaries.join('\n')}`;
               console.log('Recovered JSON from code block');
             }
           } catch {
-            // Keep original error
+            // Continue to next recovery attempt
+          }
+          
+          // Fallback 2: Truncation repair - add missing brackets/braces
+          if (!formattingParsed) {
+            try {
+              let repaired = content;
+              
+              // Count open vs closed brackets/braces
+              const openBraces = (content.match(/{/g) || []).length;
+              const closeBraces = (content.match(/}/g) || []).length;
+              const openBrackets = (content.match(/\[/g) || []).length;
+              const closeBrackets = (content.match(/]/g) || []).length;
+              
+              // Add missing closures
+              repaired += ']'.repeat(Math.max(0, openBrackets - closeBrackets));
+              repaired += '}'.repeat(Math.max(0, openBraces - closeBraces));
+              
+              const parsed = JSON.parse(repaired);
+              if (parsed && typeof parsed === 'object') {
+                formattedEvaluation = parsed;
+                formattingParsed = true;
+                formattingParseError = 'Recovered via truncation repair';
+                console.log('Recovered JSON via truncation repair', {
+                  addedBrackets: Math.max(0, openBrackets - closeBrackets),
+                  addedBraces: Math.max(0, openBraces - closeBraces)
+                });
+              }
+            } catch {
+              // Keep original error - computed fallback will be used
+              console.warn('Truncation repair failed, using computed fallback');
+            }
           }
         }
       }

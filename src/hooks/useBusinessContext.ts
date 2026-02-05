@@ -96,13 +96,13 @@ interface UseBusinessContextReturn {
   isLoading: boolean;
   isSaving: boolean;
   isScanning: boolean;
-  hasUnsavedChanges: boolean;
   lastScanned: Date | null;
   loadContext: () => Promise<void>;
   saveContext: (data: BusinessContextInput) => Promise<boolean>;
   scanWebsite: (url: string) => Promise<boolean>;
   clearContext: () => Promise<boolean>;
   setLocalContext: (data: Partial<BusinessContextInput>) => void;
+  autoSaveField: (field: keyof BusinessContextInput, value: string | null) => Promise<boolean>;
   localContext: BusinessContextInput;
   scansRemaining: number;
   scanResetTime: Date | null;
@@ -117,7 +117,6 @@ export function useBusinessContext(): UseBusinessContextReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Sync local context when DB context loads
   useEffect(() => {
@@ -168,10 +167,47 @@ export function useBusinessContext(): UseBusinessContextReturn {
     loadContext();
   }, [loadContext]);
 
-  const setLocalContext = useCallback((data: Partial<BusinessContextInput>) => {
+const setLocalContext = useCallback((data: Partial<BusinessContextInput>) => {
     setLocalContextState(prev => ({ ...prev, ...data }));
-    setHasUnsavedChanges(true);
   }, []);
+
+  // Auto-save individual fields without requiring manual save button
+  const autoSaveField = useCallback(async (
+    field: keyof BusinessContextInput, 
+    value: string | null
+  ): Promise<boolean> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return false;
+
+      const { error } = await (supabase as any)
+        .from("user_business_context")
+        .upsert({
+          user_id: session.user.id,
+          [field]: value,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "user_id",
+        });
+
+      if (error) {
+        console.error("Auto-save failed:", error);
+        toast({
+          title: "Save failed",
+          description: "Could not save your changes. Please try again.",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      // Update local context state
+      setContext(prev => prev ? { ...prev, [field]: value } : null);
+      return true;
+    } catch (err) {
+      console.error("Auto-save error:", err);
+      return false;
+    }
+  }, [toast]);
 
   const saveContext = useCallback(async (data: BusinessContextInput): Promise<boolean> => {
     setIsSaving(true);
@@ -217,12 +253,6 @@ export function useBusinessContext(): UseBusinessContextReturn {
         return false;
       }
 
-      setHasUnsavedChanges(false);
-      toast({
-        title: "Context saved",
-        description: "Your business context will be used in future validations.",
-      });
-      
       // Reload to get updated data
       await loadContext();
       return true;
@@ -317,7 +347,6 @@ export function useBusinessContext(): UseBusinessContextReturn {
 
       setContext(null);
       setLocalContextState({});
-      setHasUnsavedChanges(false);
       toast({
         title: "Context cleared",
         description: "Your business context has been removed.",
@@ -366,13 +395,13 @@ export function useBusinessContext(): UseBusinessContextReturn {
     isLoading,
     isSaving,
     isScanning,
-    hasUnsavedChanges,
     lastScanned,
     loadContext,
     saveContext,
     scanWebsite,
     clearContext,
     setLocalContext,
+    autoSaveField,
     localContext,
     scansRemaining,
     scanResetTime,

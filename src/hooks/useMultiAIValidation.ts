@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase/external-client';
+import { BusinessContext } from '@/hooks/useBusinessContext';
 
 export interface ModelRecommendation {
   title: string;
@@ -137,7 +138,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
     riskPreference: number = 3,
     selectedModels: string[],
     modelWeights: Record<string, number>,
-    teamId?: string
+    teamId?: string,
+    businessContext?: BusinessContext | null
   ) => {
     setIsValidating(true);
     resetState();
@@ -177,7 +179,8 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             riskPreference,
             selectedModels,
             modelWeights,
-            streaming: true
+            streaming: true,
+            businessContext: businessContext || null
           }),
           signal: abortController.signal
         }

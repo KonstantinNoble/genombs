@@ -30,6 +30,7 @@ const GEMINI_MODEL_CANDIDATES: Record<string, string[]> = {
 };
 
 // JSON Response Schema for Gemini's structured output mode
+// OPTIMIZED: Added maxLength constraints to prevent truncation
 const GEMINI_RESPONSE_SCHEMA = {
   type: "object",
   properties: {
@@ -38,29 +39,59 @@ const GEMINI_RESPONSE_SCHEMA = {
       items: {
         type: "object",
         properties: {
-          title: { type: "string" },
-          description: { type: "string" },
+          title: { type: "string", maxLength: 120 },
+          description: { type: "string", maxLength: 300 },
           confidence: { type: "number" },
           riskLevel: { type: "number" },
           creativityLevel: { type: "number" },
-          reasoning: { type: "string" },
-          actionItems: { type: "array", items: { type: "string" } },
-          potentialRisks: { type: "array", items: { type: "string" } },
-          timeframe: { type: "string" },
-          competitiveAdvantage: { type: "string" },
-          longTermImplications: { type: "string" },
-          resourceRequirements: { type: "string" }
+          reasoning: { type: "string", maxLength: 250 },
+          actionItems: { type: "array", items: { type: "string", maxLength: 150 } },
+          potentialRisks: { type: "array", items: { type: "string", maxLength: 120 } },
+          timeframe: { type: "string", maxLength: 80 },
+          competitiveAdvantage: { type: "string", maxLength: 200 },
+          longTermImplications: { type: "string", maxLength: 250 },
+          resourceRequirements: { type: "string", maxLength: 250 }
         },
         required: ["title", "description", "confidence", "riskLevel", "creativityLevel", "reasoning", "actionItems", "potentialRisks", "timeframe"]
       }
     },
-    summary: { type: "string" },
+    summary: { type: "string", maxLength: 500 },
     overallConfidence: { type: "number" },
-    marketContext: { type: "string" },
-    strategicOutlook: { type: "string" }
+    marketContext: { type: "string", maxLength: 400 },
+    strategicOutlook: { type: "string", maxLength: 400 }
   },
   required: ["recommendations", "summary", "overallConfidence"]
 };
+
+// Helper: Repair truncated JSON by closing unclosed braces/brackets
+function repairTruncatedJSON(jsonStr: string): string {
+  let repaired = jsonStr.trim();
+  
+  // Count opening and closing brackets/braces
+  const openBraces = (repaired.match(/{/g) || []).length;
+  const closeBraces = (repaired.match(/}/g) || []).length;
+  const openBrackets = (repaired.match(/\[/g) || []).length;
+  const closeBrackets = (repaired.match(/]/g) || []).length;
+  
+  // If balanced, return as-is
+  if (openBraces === closeBraces && openBrackets === closeBrackets) {
+    return repaired;
+  }
+  
+  console.log(`[JSON Repair] Unbalanced: { ${openBraces}/${closeBraces} } [ ${openBrackets}/${closeBrackets} ]`);
+  
+  // Add missing closing brackets first (innermost)
+  const missingBrackets = Math.max(0, openBrackets - closeBrackets);
+  repaired += ']'.repeat(missingBrackets);
+  
+  // Then add missing closing braces
+  const missingBraces = Math.max(0, openBraces - closeBraces);
+  repaired += '}'.repeat(missingBraces);
+  
+  console.log(`[JSON Repair] Added ${missingBrackets} ] and ${missingBraces} }`);
+  
+  return repaired;
+}
 
 // All available model configurations
 const ALL_MODELS: Record<string, { id: string; name: string; gateway: 'openai' | 'google' | 'anthropic' | 'perplexity'; characteristics: { reasoning: string; tendency: string; strengths: string[] } }> = {
@@ -538,7 +569,7 @@ CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explan
         continue;
       }
 
-      // Robust JSON parsing (handles markdown code blocks, plain JSON, etc.)
+      // Robust JSON parsing with truncation repair fallback
       let parsed;
       try {
         // Try multiple extraction patterns
@@ -565,9 +596,18 @@ CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explan
           }
         }
         
-        parsed = JSON.parse(jsonStr);
+        // First attempt: Direct parse
+        try {
+          parsed = JSON.parse(jsonStr);
+        } catch (directParseError) {
+          // Second attempt: Repair truncated JSON and retry
+          console.log(`[${modelConfig.name}] Direct parse failed for ${candidateId}, attempting truncation repair...`);
+          const repairedJson = repairTruncatedJSON(jsonStr);
+          parsed = JSON.parse(repairedJson);
+          console.log(`[${modelConfig.name}] Truncation repair SUCCEEDED for ${candidateId}`);
+        }
       } catch (parseError) {
-        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId}:`, parseError);
+        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId} (even after repair):`, parseError);
         console.log(`[${modelConfig.name}] Raw content (first 500 chars):`, content.substring(0, 500));
         lastError = "Invalid JSON response from model";
         continue;

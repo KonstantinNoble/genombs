@@ -97,7 +97,7 @@ interface UseBusinessContextReturn {
   isSaving: boolean;
   isScanning: boolean;
   lastScanned: Date | null;
-  loadContext: () => Promise<void>;
+  loadContext: () => Promise<BusinessContext | null>;
   saveContext: (data: BusinessContextInput) => Promise<boolean>;
   scanWebsite: (url: string) => Promise<boolean>;
   clearContext: () => Promise<boolean>;
@@ -133,13 +133,13 @@ export function useBusinessContext(): UseBusinessContextReturn {
     }
   }, [context]);
 
-  const loadContext = useCallback(async () => {
+  const loadContext = useCallback(async (): Promise<BusinessContext | null> => {
     setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         setIsLoading(false);
-        return;
+        return null;
       }
 
       // Use type assertion since table doesn't exist in types yet
@@ -153,11 +153,14 @@ export function useBusinessContext(): UseBusinessContextReturn {
         // Table might not exist yet - that's expected before backend migration
         console.log("Business context not available yet:", error.message);
         setContext(null);
+        return null;
       } else {
         setContext(data as BusinessContext | null);
+        return data as BusinessContext | null;
       }
     } catch (err) {
       console.error("Error loading business context:", err);
+      return null;
     } finally {
       setIsLoading(false);
     }

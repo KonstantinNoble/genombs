@@ -63,15 +63,88 @@ const GEMINI_RESPONSE_SCHEMA = {
   required: ["recommendations", "summary", "overallConfidence"]
 };
 
-// Helper: Repair truncated JSON by closing unclosed braces/brackets
+// ========== JSON RECOVERY UTILITIES (String-Aware) ==========
+
+/**
+ * Sanitizes JSON strings by escaping raw control characters (newlines, tabs, etc.)
+ * and closing truncated strings. This fixes "Unterminated string" errors.
+ */
+function sanitizeJsonStrings(jsonStr: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  
+  for (let i = 0; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+    
+    if (escaped) {
+      result += char;
+      escaped = false;
+      continue;
+    }
+    
+    if (char === '\\') {
+      result += char;
+      escaped = true;
+      continue;
+    }
+    
+    if (char === '"') {
+      inString = !inString;
+      result += char;
+      continue;
+    }
+    
+    // Inside a string: escape control characters
+    if (inString) {
+      if (char === '\n') {
+        result += '\\n';
+      } else if (char === '\r') {
+        result += '\\r';
+      } else if (char === '\t') {
+        result += '\\t';
+      } else {
+        result += char;
+      }
+    } else {
+      result += char;
+    }
+  }
+  
+  // If still inside a string at EOF, close it (truncated string)
+  if (inString) {
+    result += '"';
+    console.log('[JSON Sanitize] Closed truncated string at EOF');
+  }
+  
+  return result;
+}
+
+/**
+ * String-aware repair: counts brackets/braces ONLY outside of strings,
+ * then adds missing closures at the end.
+ */
 function repairTruncatedJSON(jsonStr: string): string {
   let repaired = jsonStr.trim();
   
-  // Count opening and closing brackets/braces
-  const openBraces = (repaired.match(/{/g) || []).length;
-  const closeBraces = (repaired.match(/}/g) || []).length;
-  const openBrackets = (repaired.match(/\[/g) || []).length;
-  const closeBrackets = (repaired.match(/]/g) || []).length;
+  // String-aware counting (only count outside of strings)
+  let inString = false;
+  let escaped = false;
+  let openBraces = 0, closeBraces = 0;
+  let openBrackets = 0, closeBrackets = 0;
+  
+  for (const char of repaired) {
+    if (escaped) { escaped = false; continue; }
+    if (char === '\\') { escaped = true; continue; }
+    if (char === '"') { inString = !inString; continue; }
+    
+    if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') closeBraces++;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') closeBrackets++;
+    }
+  }
   
   // If balanced, return as-is
   if (openBraces === closeBraces && openBrackets === closeBrackets) {
@@ -600,14 +673,20 @@ CRITICAL: You MUST respond with ONLY a valid JSON object (no markdown, no explan
         try {
           parsed = JSON.parse(jsonStr);
         } catch (directParseError) {
-          // Second attempt: Repair truncated JSON and retry
-          console.log(`[${modelConfig.name}] Direct parse failed for ${candidateId}, attempting truncation repair...`);
-          const repairedJson = repairTruncatedJSON(jsonStr);
-          parsed = JSON.parse(repairedJson);
-          console.log(`[${modelConfig.name}] Truncation repair SUCCEEDED for ${candidateId}`);
+          // Second attempt: Sanitize strings (fix newlines + close truncated strings) + repair structure
+          console.log(`[${modelConfig.name}] Direct parse failed for ${candidateId}, attempting sanitize + repair...`);
+          
+          // Step 1: Sanitize strings (escapes control chars, closes truncated strings)
+          const sanitized = sanitizeJsonStrings(jsonStr);
+          
+          // Step 2: Repair structure (close brackets/braces - now string-aware)
+          const repaired = repairTruncatedJSON(sanitized);
+          
+          parsed = JSON.parse(repaired);
+          console.log(`[${modelConfig.name}] JSON recovery SUCCEEDED for ${candidateId}`);
         }
       } catch (parseError) {
-        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId} (even after repair):`, parseError);
+        console.error(`[${modelConfig.name}] Failed to parse JSON from ${candidateId} (even after sanitize+repair):`, parseError);
         console.log(`[${modelConfig.name}] Raw content (first 500 chars):`, content.substring(0, 500));
         lastError = "Invalid JSON response from model";
         continue;

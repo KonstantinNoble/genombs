@@ -266,20 +266,27 @@ async function queryOpenAIModel(
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
 
-CRITICAL INSTRUCTION - BUSINESS CONTEXT:
-The user's query may contain a "BUSINESS CONTEXT" section with specific information about their company:
+## MANDATORY: BUSINESS CONTEXT HANDLING
+The user's query will contain a "BUSINESS CONTEXT" section at the VERY BEGINNING with critical information:
 - Industry, company stage, team size, and revenue range
 - Target market (B2B/B2C) and geographic focus
-- Website URL and/or website analysis summary
+- **Company Website URL and Website Analysis** (if available)
 
-You MUST tailor ALL your recommendations specifically to this context:
+### CRITICAL REQUIREMENT FOR WEBSITE CONTENT:
+If the business context includes "Website Analysis" or "Company Website", you MUST:
+1. Reference specific information from the website analysis in your recommendations
+2. Align your strategies with what the company actually does (based on their website)
+3. Mention the website content explicitly in at least 2 of your recommendations
+4. Use the website insights to make your advice MORE SPECIFIC and TAILORED
+
+### GENERAL TAILORING RULES:
 - Adjust advice based on company stage (e.g., idea stage vs. Series A)
 - Consider team size constraints when suggesting resources
 - Factor in revenue range for budget-related recommendations
 - Align strategies with target market (B2B vs B2C approaches differ)
 - Consider geographic focus for market-specific advice
 
-If no business context is provided, give general best-practice recommendations.
+If NO business context is provided, give general best-practice recommendations.
 
 Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
 ${detailLevel}
@@ -1178,11 +1185,37 @@ serve(async (req) => {
     }
 
     // Prepare the enhanced prompt with user context + business context
+    // IMPORTANT: Business context is placed at the BEGINNING for better model attention
     const contextString = formatBusinessContext(businessContext);
-    const enhancedPrompt = `${prompt}
+    
+    // Log specifically for GPT Mini debugging
+    if (selectedModels.includes('gptMini')) {
+      console.log('[GPT-Mini-Debug] Business context for GPT Mini:', contextString ? 'PROVIDED' : 'EMPTY');
+      if (businessContext?.website_url) {
+        console.log('[GPT-Mini-Debug] Website URL:', businessContext.website_url);
+      }
+      if (businessContext?.website_summary) {
+        console.log('[GPT-Mini-Debug] Website Summary length:', businessContext.website_summary.length, 'chars');
+      }
+    }
+    
+    const enhancedPrompt = contextString 
+      ? `${contextString}
+
+---
+
+USER'S QUESTION:
+${prompt}
+
+---
+
+ANALYSIS PREFERENCES:
+- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations
+- Remember: Your recommendations MUST be tailored to the BUSINESS CONTEXT above`
+      : `${prompt}
 
 Context for your analysis:
-- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations${contextString}`;
+- User prefers ${riskPreference <= 2 ? 'conservative' : riskPreference >= 4 ? 'aggressive/bold' : 'balanced'} recommendations`;
 
     if (streaming) {
       const stream = new ReadableStream({

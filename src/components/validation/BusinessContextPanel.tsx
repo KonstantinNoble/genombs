@@ -152,11 +152,19 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
     if (!context?.website_url) return true;
     if (context.website_url !== websiteUrl) return true;
     
-    // If same URL but never scanned, need to scan
+    // If same URL but never scanned OR no summary (invalidated), need to scan
     if (!context.website_scraped_at) return true;
+    if (!context.website_summary) return true;
     
     return false;
   };
+  
+  // Check if URL is entered but not yet scanned (show warning)
+  const hasUnscannedUrl = isPremium && 
+    websiteUrl && 
+    websiteUrl.startsWith("https://") && 
+    context?.website_url === websiteUrl &&
+    (!context?.website_summary || !context?.website_scraped_at);
 
   const shouldShowScanButton = needsWebsiteScan();
 
@@ -515,6 +523,15 @@ export function BusinessContextPanel({ isPremium, onContextChange }: BusinessCon
                             <span className="font-mono text-xs">{countdown}</span>
                           </div>
                         )}
+                      </div>
+                    )}
+
+                    {/* Warning when URL entered but not scanned */}
+                    {hasUnscannedUrl && (
+                      <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                        <p className="text-sm text-amber-600">
+                          Website not scanned yet – scan to include website content in AI analysis.
+                        </p>
                       </div>
                     )}
 

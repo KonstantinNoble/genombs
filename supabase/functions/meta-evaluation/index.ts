@@ -771,7 +771,8 @@ serve(async (req) => {
       prompt,
       saveToHistory = true,
       isPremium = false,
-      teamId = null
+      teamId = null,
+      businessContext = null
     } = await req.json();
 
     // ========== VIEWER ROLE CHECK ==========
@@ -876,14 +877,33 @@ serve(async (req) => {
     
     const riskContext = riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced';
     
+    // Build business context section for the prompt if available
+    let businessContextSection = '';
+    if (businessContext && (businessContext.website_url || businessContext.website_summary || businessContext.industry)) {
+      const contextParts: string[] = [];
+      if (businessContext.industry) contextParts.push(`Industry: ${businessContext.industry}`);
+      if (businessContext.company_stage) contextParts.push(`Stage: ${businessContext.company_stage}`);
+      if (businessContext.team_size) contextParts.push(`Team Size: ${businessContext.team_size}`);
+      if (businessContext.target_market) contextParts.push(`Target Market: ${businessContext.target_market}`);
+      if (businessContext.geographic_focus) contextParts.push(`Geographic Focus: ${businessContext.geographic_focus}`);
+      if (businessContext.website_url) contextParts.push(`Website: ${businessContext.website_url}`);
+      if (businessContext.website_summary) contextParts.push(`Website Analysis:\n${businessContext.website_summary}`);
+      
+      businessContextSection = `
+BUSINESS CONTEXT (Consider this when polishing recommendations):
+${contextParts.join('\n')}
+`;
+    }
+    
     const systemPrompt = `You are a professional business writer. Your ONLY job is to POLISH and FORMAT the pre-computed analysis results below.
-
+${businessContextSection}
 CRITICAL RULES:
 1. You MUST NOT change which topics are consensus/majority/dissent - these are mathematically determined
 2. You MUST NOT change the final recommendation title or source models
 3. You MUST NOT change the action items order or content - they are weight-prioritized
 4. You MUST NOT change confidence scores
 5. Your job is ONLY to improve the professional language and add business context
+${businessContext?.website_summary ? '6. IMPORTANT: Reference specific points from the Website Analysis when relevant to make recommendations more tailored' : ''}
 
 The user has a ${riskContext} risk tolerance. Frame the language accordingly.
 
@@ -897,7 +917,7 @@ You MUST generate ALL of the following premium features for this premium user. T
    - twelveMonths: Detailed 12-month projection  
    - keyMilestones: At least 3 key milestones
 
-3. competitorInsights (REQUIRED): Synthesize actionable competitive analysis based on the model summaries. This should be a detailed paragraph.
+3. competitorInsights (REQUIRED): Synthesize actionable competitive analysis based on the model summaries${businessContext?.website_summary ? ' and the Website Analysis' : ''}. This should be a detailed paragraph.
 
 FAILURE TO INCLUDE THESE PREMIUM FIELDS IS NOT ACCEPTABLE. Every premium user MUST receive all three premium sections.` : ''}
 

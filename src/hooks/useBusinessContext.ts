@@ -175,6 +175,7 @@ const setLocalContext = useCallback((data: Partial<BusinessContextInput>) => {
   }, []);
 
   // Auto-save individual fields without requiring manual save button
+  // IMPORTANT: When website_url changes, invalidate old scan data to prevent stale content
   const autoSaveField = useCallback(async (
     field: keyof BusinessContextInput, 
     value: string | null
@@ -183,13 +184,31 @@ const setLocalContext = useCallback((data: Partial<BusinessContextInput>) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return false;
 
+      // Build the upsert payload
+      const upsertPayload: Record<string, any> = {
+        user_id: session.user.id,
+        [field]: value,
+        updated_at: new Date().toISOString(),
+      };
+
+      // CRITICAL: If website_url changes, invalidate old scan data
+      // This prevents stale website_summary from being sent to AI models
+      if (field === "website_url") {
+        const currentUrl = context?.website_url || null;
+        const newUrl = value || null;
+        
+        // Only invalidate if URL actually changed (and not just saving same URL)
+        if (currentUrl !== newUrl) {
+          console.log("URL changed, invalidating old scan data:", { old: currentUrl, new: newUrl });
+          upsertPayload.website_summary = null;
+          upsertPayload.website_scraped_at = null;
+          // Note: scan_count and scan_window_start are rate limits, keep them intact
+        }
+      }
+
       const { error } = await (supabase as any)
         .from("user_business_context")
-        .upsert({
-          user_id: session.user.id,
-          [field]: value,
-          updated_at: new Date().toISOString(),
-        }, {
+        .upsert(upsertPayload, {
           onConflict: "user_id",
         });
 
@@ -204,13 +223,31 @@ const setLocalContext = useCallback((data: Partial<BusinessContextInput>) => {
       }
 
       // Update local context state
-      setContext(prev => prev ? { ...prev, [field]: value } : null);
+      if (field === "website_url") {
+        const currentUrl = context?.website_url || null;
+        const newUrl = value || null;
+        
+        if (currentUrl !== newUrl) {
+          // Also invalidate local state so UI updates immediately
+          setContext(prev => prev ? { 
+            ...prev, 
+            [field]: value,
+            website_summary: null,
+            website_scraped_at: null
+          } : null);
+        } else {
+          setContext(prev => prev ? { ...prev, [field]: value } : null);
+        }
+      } else {
+        setContext(prev => prev ? { ...prev, [field]: value } : null);
+      }
+      
       return true;
     } catch (err) {
       console.error("Auto-save error:", err);
       return false;
     }
-  }, [toast]);
+  }, [toast, context?.website_url]);
 
   const saveContext = useCallback(async (data: BusinessContextInput): Promise<boolean> => {
     setIsSaving(true);

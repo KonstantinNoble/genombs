@@ -266,6 +266,21 @@ async function queryOpenAIModel(
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
 
+CRITICAL INSTRUCTION - BUSINESS CONTEXT:
+The user's query may contain a "BUSINESS CONTEXT" section with specific information about their company:
+- Industry, company stage, team size, and revenue range
+- Target market (B2B/B2C) and geographic focus
+- Website URL and/or website analysis summary
+
+You MUST tailor ALL your recommendations specifically to this context:
+- Adjust advice based on company stage (e.g., idea stage vs. Series A)
+- Consider team size constraints when suggesting resources
+- Factor in revenue range for budget-related recommendations
+- Align strategies with target market (B2B vs B2C approaches differ)
+- Consider geographic focus for market-specific advice
+
+If no business context is provided, give general best-practice recommendations.
+
 Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
 ${detailLevel}
 Each recommendation should be practical and implementable.
@@ -392,6 +407,21 @@ async function queryGoogleModel(
     
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+CRITICAL INSTRUCTION - BUSINESS CONTEXT:
+The user's query may contain a "BUSINESS CONTEXT" section with specific information about their company:
+- Industry, company stage, team size, and revenue range
+- Target market (B2B/B2C) and geographic focus
+- Website URL and/or website analysis summary
+
+You MUST tailor ALL your recommendations specifically to this context:
+- Adjust advice based on company stage (e.g., idea stage vs. Series A)
+- Consider team size constraints when suggesting resources
+- Factor in revenue range for budget-related recommendations
+- Align strategies with target market (B2B vs B2C approaches differ)
+- Consider geographic focus for market-specific advice
+
+If no business context is provided, give general best-practice recommendations.
 
 Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
 ${detailLevel}
@@ -611,6 +641,21 @@ async function queryClaudeModel(
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
 
+CRITICAL INSTRUCTION - BUSINESS CONTEXT:
+The user's query may contain a "BUSINESS CONTEXT" section with specific information about their company:
+- Industry, company stage, team size, and revenue range
+- Target market (B2B/B2C) and geographic focus
+- Website URL and/or website analysis summary
+
+You MUST tailor ALL your recommendations specifically to this context:
+- Adjust advice based on company stage (e.g., idea stage vs. Series A)
+- Consider team size constraints when suggesting resources
+- Factor in revenue range for budget-related recommendations
+- Align strategies with target market (B2B vs B2C approaches differ)
+- Consider geographic focus for market-specific advice
+
+If no business context is provided, give general best-practice recommendations.
+
 Analyze the user's business question and provide ${recommendationCount} concrete, actionable recommendations.
 Each recommendation should be practical and implementable.
 Be specific with numbers, timeframes, and concrete steps.
@@ -716,6 +761,22 @@ async function queryPerplexityModel(
     
 Your style: ${modelConfig.characteristics.tendency}
 Your strengths: ${modelConfig.characteristics.strengths.join(', ')}
+
+CRITICAL INSTRUCTION - BUSINESS CONTEXT:
+The user's query may contain a "BUSINESS CONTEXT" section with specific information about their company:
+- Industry, company stage, team size, and revenue range
+- Target market (B2B/B2C) and geographic focus
+- Website URL and/or website analysis summary
+
+You MUST tailor ALL your recommendations specifically to this context:
+- Adjust advice based on company stage (e.g., idea stage vs. Series A)
+- Consider team size constraints when suggesting resources
+- Factor in revenue range for budget-related recommendations
+- Align strategies with target market (B2B vs B2C approaches differ)
+- Consider geographic focus for market-specific advice
+- If a company website is provided, consider what you know about similar companies in that space
+
+If no business context is provided, give general best-practice recommendations based on current market trends.
 
 Analyze the user's business question using current market data and trends.
 Provide ${recommendationCount} concrete, actionable recommendations.
@@ -1040,7 +1101,10 @@ serve(async (req) => {
 
     // Format business context for AI prompts
     function formatBusinessContext(ctx: any): string {
-      if (!ctx) return '';
+      if (!ctx) {
+        console.log('[BusinessContext] No context provided');
+        return '';
+      }
       
       const parts: string[] = [];
       
@@ -1089,15 +1153,28 @@ serve(async (req) => {
         parts.push(`Geographic Focus: ${geoLabels[ctx.geographic_focus] || ctx.geographic_focus}`);
       }
       
-      if (ctx.website_summary) {
-        parts.push(`Website Summary: ${ctx.website_summary}`);
+      // Include website URL even if no summary is available
+      if (ctx.website_url) {
+        parts.push(`Company Website: ${ctx.website_url}`);
       }
       
-      if (parts.length === 0) return '';
+      if (ctx.website_summary) {
+        parts.push(`Website Analysis: ${ctx.website_summary}`);
+      }
       
-      return `
+      if (parts.length === 0) {
+        console.log('[BusinessContext] Context object provided but all fields empty');
+        return '';
+      }
+      
+      const contextString = `
 - BUSINESS CONTEXT (MANDATORY - Tailor ALL recommendations specifically to this context):
   ${parts.join('\n  ')}`;
+      
+      // Debug logging
+      console.log('[BusinessContext] Formatted context for AI:', contextString);
+      
+      return contextString;
     }
 
     // Prepare the enhanced prompt with user context + business context

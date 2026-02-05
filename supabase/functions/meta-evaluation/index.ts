@@ -142,35 +142,160 @@ const STOP_WORDS = new Set([
   'have', 'has', 'had', 'do', 'does', 'did', 'been', 'being', 'was', 'were'
 ]);
 
-function extractKeywords(text: string): Set<string> {
+// ========== CANONICAL TOKEN MAPPING ==========
+
+const CANONICAL_TOKENS: Record<string, string> = {
+  // Validierung → "validate"
+  'test': 'validate', 'verify': 'validate', 'confirm': 'validate',
+  'check': 'validate', 'assess': 'validate', 'pilot': 'validate',
+  'trial': 'validate', 'experiment': 'validate',
+  
+  // Wachstum → "scale"
+  'grow': 'scale', 'expand': 'scale', 'increase': 'scale',
+  'amplify': 'scale', 'accelerate': 'scale',
+  
+  // Teams → "team"
+  'org': 'team', 'squad': 'team', 'group': 'team', 'staff': 'team',
+  
+  // Launch → "launch"
+  'release': 'launch', 'deploy': 'launch', 'introduce': 'launch',
+  'rollout': 'launch', 'ship': 'launch',
+  
+  // Hire → "hire"
+  'recruit': 'hire', 'onboard': 'hire',
+  
+  // Focus → "focus"
+  'concentrate': 'focus', 'prioritize': 'focus',
+  
+  // Markt → "market"
+  'segment': 'market', 'audience': 'market',
+  
+  // Kunde → "customer"
+  'user': 'customer', 'client': 'customer', 'buyer': 'customer'
+};
+
+function canonicalize(word: string): string {
+  const lower = word.toLowerCase();
+  return CANONICAL_TOKENS[lower] || lower;
+}
+
+// NUR kanonische Verben - keine Synonyme mehr im Set
+const ACTION_VERBS = new Set([
+  'scale', 'focus', 'launch', 'build', 'validate', 'hire', 'develop',
+  'optimize', 'reduce', 'improve', 'create', 'establish', 'implement',
+  'integrate', 'invest', 'acquire', 'retain', 'enter', 'dominate'
+]);
+
+// Einheitliche Normalisierungsfunktion
+function normalizeText(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+}
+
+function extractActionTarget(title: string): { action: string; target: string } {
+  const normalized = normalizeText(title);
+  const words = normalized.split(/\s+/).filter(w => w.length > 2);
+  
+  // Content-Wörter (ohne Stop-Words)
+  const contentWords = words.filter(w => !STOP_WORDS.has(w));
+  
+  // Erste Aktion finden (nach Kanonisierung prüfen)
+  let actionIndex = -1;
+  for (let i = 0; i < contentWords.length; i++) {
+    if (ACTION_VERBS.has(canonicalize(contentWords[i]))) {
+      actionIndex = i;
+      break;
+    }
+  }
+  
+  // Action kanonisieren
+  const action = actionIndex >= 0 
+    ? canonicalize(contentWords[actionIndex]) 
+    : (contentWords[0] ? canonicalize(contentWords[0]) : '');
+  
+  // Target = letzte 2 Content-Wörter, Action per INDEX entfernen
+  const targetWords = contentWords.filter((_, idx) => idx !== actionIndex);
+  const lastTwo = targetWords.slice(-2);
+  
+  // Beide Wörter kanonisieren und zusammenfügen
+  const target = lastTwo.map(w => canonicalize(w)).join(' ');
+  
+  return { action, target };
+}
+
+function extractCanonicalKeywords(text: string): Set<string> {
   return new Set(
-    text.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
+    normalizeText(text)
       .split(/\s+/)
       .filter(word => word.length > 2 && !STOP_WORDS.has(word))
+      .map(word => canonicalize(word))
   );
 }
 
-function calculateTitleSimilarity(title1: string, title2: string): number {
-  const keywords1 = extractKeywords(title1);
-  const keywords2 = extractKeywords(title2);
+// Fallback: Einfacher Token-Jaccard ohne Kanonisierung
+function calculateSimpleJaccard(title1: string, title2: string): number {
+  const words1 = new Set(
+    normalizeText(title1).split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w))
+  );
+  const words2 = new Set(
+    normalizeText(title2).split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w))
+  );
   
-  if (keywords1.size === 0 || keywords2.size === 0) return 0;
+  if (words1.size === 0 || words2.size === 0) return 0;
   
-  // Jaccard-Index: |Intersection| / |Union|
+  const intersection = new Set([...words1].filter(w => words2.has(w)));
+  const union = new Set([...words1, ...words2]);
+  
+  return intersection.size / union.size;
+}
+
+function calculateEnhancedSimilarity(title1: string, title2: string): number {
+  // Schritt 1: Exakte Übereinstimmung nach Normalisierung
+  const norm1 = normalizeText(title1);
+  const norm2 = normalizeText(title2);
+  if (norm1 === norm2) return 1.0;
+  
+  // Schritt 2: Kanonisierte Keywords extrahieren
+  const keywords1 = extractCanonicalKeywords(title1);
+  const keywords2 = extractCanonicalKeywords(title2);
+  
+  // Fallback für sehr kurze Titel (< 2 Keywords)
+  if (keywords1.size < 2 || keywords2.size < 2) {
+    return calculateSimpleJaccard(title1, title2);
+  }
+  
+  // Schritt 3: Action + Target Extraktion
+  const { action: action1, target: target1 } = extractActionTarget(title1);
+  const { action: action2, target: target2 } = extractActionTarget(title2);
+  
+  const sameAction = action1 === action2;
+  const sameTarget = target1 === target2;
+  
+  // Schritt 4: Jaccard auf kanonisierten Keywords
   const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
   const union = new Set([...keywords1, ...keywords2]);
   
-  return intersection.size / union.size;
+  let similarity = intersection.size / union.size;
+  
+  // Schritt 5: Penalty bei gleicher Action + unterschiedlichem Target
+  if (sameAction && !sameTarget && target1.length > 0 && target2.length > 0) {
+    similarity *= 0.6;
+  }
+  
+  // Schritt 6: ADDITIVER Bonus für gleiche Action UND gleiches Target
+  if (sameAction && sameTarget && target1.length > 0) {
+    similarity = Math.min(1.0, similarity + 0.15);
+  }
+  
+  return similarity;
 }
 
 function findSimilarGroup(
   title: string, 
   existingGroups: Map<string, WeightedRecommendation[]>,
-  threshold: number = 0.35 // 35% keyword overlap = same group
+  threshold: number = 0.50 // Erhöht von 0.35 auf 0.50 für stabileres Matching
 ): string | null {
   for (const [groupTitle] of existingGroups) {
-    if (calculateTitleSimilarity(title, groupTitle) >= threshold) {
+    if (calculateEnhancedSimilarity(title, groupTitle) >= threshold) {
       return groupTitle;
     }
   }

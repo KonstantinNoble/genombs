@@ -341,7 +341,9 @@ export function useMultiAIValidation(options?: UseMultiAIValidationOptions) {
             prompt,
             saveToHistory: true,
             isPremium: verifiedPremiumStatus,
-            teamId: teamId || null
+            teamId: teamId || null,
+            // Pass business context to meta-evaluation for consistent website content consideration
+            businessContext: businessContext || null
           }),
         }
       );

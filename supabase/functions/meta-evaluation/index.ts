@@ -1160,6 +1160,8 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
     }
 
     let formattedEvaluation: any = null;
+    let formattingParsed = false;
+    let formattingParseError: string | null = null;
     
     if (response.ok) {
       const data = await response.json();
@@ -1167,44 +1169,80 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
       
       if (content) {
         try {
-          // Try to extract JSON from content (might be wrapped in markdown code blocks)
-          const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
-          const jsonStr = jsonMatch ? jsonMatch[1] : content;
+          // Robust JSON extraction: try multiple patterns
+          let jsonStr = content;
+          
+          // Pattern 1: Markdown code blocks
+          const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```\s*([\s\S]*?)\s*```/);
+          if (codeBlockMatch) {
+            jsonStr = codeBlockMatch[1];
+          } else if (!content.trim().startsWith('{')) {
+            // Pattern 2: Extract JSON object from mixed content
+            const firstBrace = content.indexOf('{');
+            const lastBrace = content.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace > firstBrace) {
+              jsonStr = content.substring(firstBrace, lastBrace + 1);
+            }
+          }
+          
           formattedEvaluation = JSON.parse(jsonStr);
+          formattingParsed = true;
+          console.log('Formatting parsed successfully');
         } catch (e) {
-          console.error('Failed to parse formatted evaluation:', e);
+          formattingParseError = e instanceof Error ? e.message : String(e);
+          console.error('Failed to parse formatted evaluation:', formattingParseError);
+          // Log first 500 chars for debugging
+          console.log('Raw content preview (first 500 chars):', content?.substring(0, 500));
         }
       }
     }
 
-    // ========== STEP 4: MERGE COMPUTED + FORMATTED (computed takes precedence) ==========
+    // ========== STEP 4: MERGE COMPUTED + FORMATTED (computed is ALWAYS source of truth) ==========
+    // CRITICAL: Computed lists are the iteration basis - LLM can only polish text, never remove items
     
     const finalEvaluation = {
-      consensusPoints: (formattedEvaluation?.formattedConsensus || computedConsensus).map((c: any, i: number) => ({
-        topic: computedConsensus[i]?.topic || c.topic,
-        description: c.description || computedConsensus[i]?.description,
-        agreementLevel: computedConsensus[i]?.agreementLevel || 'full',
-        supportingModels: computedConsensus[i]?.supportingModels || [],
-        confidence: computedConsensus[i]?.confidence || c.confidence,
-        actionItems: computedConsensus[i]?.actionItems || c.actionItems || []
-      })),
-      majorityPoints: (formattedEvaluation?.formattedMajority || computedMajority).map((m: any, i: number) => ({
-        topic: computedMajority[i]?.topic || m.topic,
-        description: m.description || computedMajority[i]?.description,
-        supportingModels: computedMajority[i]?.supportingModels || m.supportingModels || [],
-        confidence: computedMajority[i]?.confidence || m.confidence
-      })),
-      dissentPoints: (formattedEvaluation?.formattedDissent || computedDissent).map((d: any, i: number) => ({
-        topic: computedDissent[i]?.topic || d.topic,
-        positions: computedDissent[i]?.positions || d.positions || []
-      })),
+      // CONSENSUS: Iterate over computedConsensus, optionally enhance with LLM formatting
+      consensusPoints: computedConsensus.map((computed, i) => {
+        const formatted = formattedEvaluation?.formattedConsensus?.[i];
+        return {
+          topic: computed.topic, // ALWAYS computed
+          description: formatted?.description || computed.description,
+          agreementLevel: computed.agreementLevel, // ALWAYS computed
+          supportingModels: computed.supportingModels, // ALWAYS computed
+          confidence: computed.confidence, // ALWAYS computed
+          actionItems: computed.actionItems // ALWAYS computed (weight-ordered)
+        };
+      }),
+      // MAJORITY: Same pattern - computed is basis
+      majorityPoints: computedMajority.map((computed, i) => {
+        const formatted = formattedEvaluation?.formattedMajority?.[i];
+        return {
+          topic: computed.topic, // ALWAYS computed
+          description: formatted?.description || computed.description,
+          supportingModels: computed.supportingModels, // ALWAYS computed
+          confidence: computed.confidence // ALWAYS computed
+        };
+      }),
+      // DISSENT: Same pattern - computed is basis
+      dissentPoints: computedDissent.map((computed, i) => {
+        const formatted = formattedEvaluation?.formattedDissent?.[i];
+        return {
+          topic: computed.topic, // ALWAYS computed
+          positions: computed.positions.map((pos, j) => ({
+            modelName: pos.modelName, // ALWAYS computed
+            position: formatted?.positions?.[j]?.position || pos.position,
+            reasoning: formatted?.positions?.[j]?.reasoning || pos.reasoning,
+            weight: pos.weight // ALWAYS computed
+          }))
+        };
+      }),
       finalRecommendation: {
-        title: computedFinal.title, // ALWAYS use computed
+        title: computedFinal.title, // ALWAYS computed
         description: formattedEvaluation?.formattedFinalRecommendation?.description || computedFinal.description,
-        confidence: computedFinal.confidence, // ALWAYS use computed
+        confidence: computedFinal.confidence, // ALWAYS computed
         reasoning: formattedEvaluation?.formattedFinalRecommendation?.reasoning || computedFinal.reasoning,
-        topActions: computedFinal.topActions, // ALWAYS use computed (weight-ordered)
-        sourceModels: computedFinal.sourceModels // ALWAYS use computed
+        topActions: computedFinal.topActions, // ALWAYS computed (weight-ordered)
+        sourceModels: computedFinal.sourceModels // ALWAYS computed
       },
       overallConfidence: computedFinal.confidence,
       synthesisReasoning: formattedEvaluation?.synthesisReasoning || 
@@ -1243,6 +1281,14 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
           || "Based on the multi-model analysis, focus on differentiation through unique value propositions and operational excellence. Monitor competitor movements closely and maintain agility to respond to market changes. Leverage identified strengths while addressing gaps in current positioning."
       })
     };
+    
+    console.log('Merge complete - computed as source of truth:', {
+      consensusCount: finalEvaluation.consensusPoints.length,
+      majorityCount: finalEvaluation.majorityPoints.length,
+      dissentCount: finalEvaluation.dissentPoints.length,
+      formattingParsed,
+      formattingParseError: formattingParseError ? 'yes' : 'no'
+    });
     
     // Log premium feature generation status
     if (isPremium) {
@@ -1315,7 +1361,11 @@ Output the formatted version as JSON. Remember: improve language only, do not ch
           dominantWeight: dominantModel?.weight || null,
           computedConsensusCount: computedConsensus.length,
           computedMajorityCount: computedMajority.length,
-          computedDissentCount: computedDissent.length
+          computedDissentCount: computedDissent.length,
+          formattingParsed,
+          formattingParseError,
+          formattedConsensusLength: formattedEvaluation?.formattedConsensus?.length ?? null,
+          formattedDissentLength: formattedEvaluation?.formattedDissent?.length ?? null
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -142,7 +142,7 @@ const STOP_WORDS = new Set([
   'have', 'has', 'had', 'do', 'does', 'did', 'been', 'being', 'was', 'were'
 ]);
 
-// ========== CANONICAL TOKEN MAPPING ==========
+// ========== CANONICAL TOKEN MAPPING (EXPANDED) ==========
 
 const CANONICAL_TOKENS: Record<string, string> = {
   // Validierung → "validate"
@@ -171,7 +171,19 @@ const CANONICAL_TOKENS: Record<string, string> = {
   'segment': 'market', 'audience': 'market',
   
   // Kunde → "customer"
-  'user': 'customer', 'client': 'customer', 'buyer': 'customer'
+  'user': 'customer', 'client': 'customer', 'buyer': 'customer',
+  
+  // Use/Leverage → "use" (NEW)
+  'utilize': 'use', 'leverage': 'use', 'adopt': 'use', 'employ': 'use',
+  
+  // Build → "build" (NEW)
+  'create': 'build', 'develop': 'build', 'establish': 'build', 'construct': 'build',
+  
+  // Improve → "improve" (NEW)
+  'enhance': 'improve', 'optimize': 'improve', 'strengthen': 'improve', 'boost': 'improve',
+  
+  // Strategy → "strategy" (NEW)
+  'approach': 'strategy', 'plan': 'strategy', 'method': 'strategy'
 };
 
 function canonicalize(word: string): string {
@@ -183,12 +195,16 @@ function canonicalize(word: string): string {
 const ACTION_VERBS = new Set([
   'scale', 'focus', 'launch', 'build', 'validate', 'hire', 'develop',
   'optimize', 'reduce', 'improve', 'create', 'establish', 'implement',
-  'integrate', 'invest', 'acquire', 'retain', 'enter', 'dominate'
+  'integrate', 'invest', 'acquire', 'retain', 'enter', 'dominate', 'use'
 ]);
 
-// Einheitliche Normalisierungsfunktion
+// Einheitliche Normalisierungsfunktion - jetzt Unicode-freundlich
 function normalizeText(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+  return text.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim();
 }
 
 function extractActionTarget(title: string): { action: string; target: string } {
@@ -229,6 +245,26 @@ function extractCanonicalKeywords(text: string): Set<string> {
       .filter(word => word.length > 2 && !STOP_WORDS.has(word))
       .map(word => canonicalize(word))
   );
+}
+
+// ========== INTENT SIGNATURE: Title + ActionItems for better matching ==========
+
+function extractIntentSignature(rec: WeightedRecommendation): string {
+  const titlePart = rec.title || '';
+  const actionPart = (rec.actionItems || []).slice(0, 2).join(' ');
+  return `${titlePart} ${actionPart}`;
+}
+
+function calculateIntentSimilarity(rec1: WeightedRecommendation, rec2: WeightedRecommendation): number {
+  const intent1 = extractCanonicalKeywords(extractIntentSignature(rec1));
+  const intent2 = extractCanonicalKeywords(extractIntentSignature(rec2));
+  
+  if (intent1.size === 0 || intent2.size === 0) return 0;
+  
+  const intersection = new Set([...intent1].filter(k => intent2.has(k)));
+  const union = new Set([...intent1, ...intent2]);
+  
+  return intersection.size / union.size;
 }
 
 // Fallback: Einfacher Token-Jaccard ohne Kanonisierung
@@ -289,17 +325,154 @@ function calculateEnhancedSimilarity(title1: string, title2: string): number {
   return similarity;
 }
 
-function findSimilarGroup(
-  title: string, 
-  existingGroups: Map<string, WeightedRecommendation[]>,
-  threshold: number = 0.35 // Gesenkt von 0.50 für bessere Gruppierung
-): string | null {
-  for (const [groupTitle] of existingGroups) {
-    if (calculateEnhancedSimilarity(title, groupTitle) >= threshold) {
-      return groupTitle;
+// ========== COMBINED SIMILARITY: Title + Intent ==========
+
+function calculateCombinedSimilarity(rec1: WeightedRecommendation, rec2: WeightedRecommendation): number {
+  const titleSim = calculateEnhancedSimilarity(rec1.title, rec2.title);
+  const intentSim = calculateIntentSimilarity(rec1, rec2);
+  
+  // Take the maximum of both - if actionItems match well, that's enough
+  return Math.max(titleSim, intentSim);
+}
+
+// ========== UNION-FIND (DISJOINT SET) FOR GRAPH-BASED CLUSTERING ==========
+
+class UnionFind {
+  private parent: number[];
+  private rank: number[];
+  
+  constructor(size: number) {
+    this.parent = Array.from({ length: size }, (_, i) => i);
+    this.rank = new Array(size).fill(0);
+  }
+  
+  find(x: number): number {
+    if (this.parent[x] !== x) {
+      this.parent[x] = this.find(this.parent[x]); // Path compression
+    }
+    return this.parent[x];
+  }
+  
+  union(x: number, y: number): void {
+    const rootX = this.find(x);
+    const rootY = this.find(y);
+    
+    if (rootX !== rootY) {
+      // Union by rank
+      if (this.rank[rootX] < this.rank[rootY]) {
+        this.parent[rootX] = rootY;
+      } else if (this.rank[rootX] > this.rank[rootY]) {
+        this.parent[rootY] = rootX;
+      } else {
+        this.parent[rootY] = rootX;
+        this.rank[rootX]++;
+      }
     }
   }
-  return null;
+  
+  connected(x: number, y: number): boolean {
+    return this.find(x) === this.find(y);
+  }
+  
+  getClusters(): Map<number, number[]> {
+    const clusters = new Map<number, number[]>();
+    for (let i = 0; i < this.parent.length; i++) {
+      const root = this.find(i);
+      if (!clusters.has(root)) {
+        clusters.set(root, []);
+      }
+      clusters.get(root)!.push(i);
+    }
+    return clusters;
+  }
+}
+
+function clusterRecommendations(
+  allRecs: WeightedRecommendation[],
+  threshold: number = 0.35,
+  fallbackThreshold: number = 0.28
+): Map<number, WeightedRecommendation[]> {
+  
+  const n = allRecs.length;
+  if (n === 0) return new Map();
+  
+  const uf = new UnionFind(n);
+  
+  // Debug: Track cross-model similarity pairs
+  const crossModelPairs: { i: number; j: number; sim: number; models: string[] }[] = [];
+  
+  // Pairwise similarity computation and union
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const sim = calculateCombinedSimilarity(allRecs[i], allRecs[j]);
+      
+      // Track cross-model pairs for debugging
+      if (allRecs[i].sourceModel !== allRecs[j].sourceModel) {
+        crossModelPairs.push({
+          i, j, sim,
+          models: [allRecs[i].sourceModel, allRecs[j].sourceModel]
+        });
+      }
+      
+      if (sim >= threshold) {
+        uf.union(i, j);
+      }
+    }
+  }
+  
+  // Log top 10 cross-model similarity pairs
+  crossModelPairs.sort((a, b) => b.sim - a.sim);
+  const top10 = crossModelPairs.slice(0, 10);
+  console.log('Top 10 cross-model similarity pairs:');
+  for (const pair of top10) {
+    console.log(`  ${allRecs[pair.i].title.substring(0, 30)} <-> ${allRecs[pair.j].title.substring(0, 30)}: ${pair.sim.toFixed(3)} [${pair.models.join(' vs ')}]`);
+  }
+  
+  // Get initial clusters
+  let clusters = uf.getClusters();
+  
+  // Check if we have any multi-model clusters
+  let hasMultiModelCluster = false;
+  for (const [_, indices] of clusters) {
+    const uniqueModels = new Set(indices.map(i => allRecs[i].sourceModel));
+    if (uniqueModels.size >= 2) {
+      hasMultiModelCluster = true;
+      break;
+    }
+  }
+  
+  // Adaptive fallback: if no multi-model clusters, try lower threshold
+  if (!hasMultiModelCluster && crossModelPairs.length > 0) {
+    console.log(`No multi-model clusters at threshold ${threshold}, trying fallback ${fallbackThreshold}`);
+    
+    const ufFallback = new UnionFind(n);
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const sim = calculateCombinedSimilarity(allRecs[i], allRecs[j]);
+        if (sim >= fallbackThreshold) {
+          // Guardrail: require at least 2 common canonical keywords
+          const keywords1 = extractCanonicalKeywords(allRecs[i].title);
+          const keywords2 = extractCanonicalKeywords(allRecs[j].title);
+          const commonKeywords = [...keywords1].filter(k => keywords2.has(k));
+          
+          if (commonKeywords.length >= 2) {
+            ufFallback.union(i, j);
+          }
+        }
+      }
+    }
+    clusters = ufFallback.getClusters();
+  }
+  
+  // Convert to Map<clusterId, recommendations[]>
+  const result = new Map<number, WeightedRecommendation[]>();
+  for (const [clusterId, indices] of clusters) {
+    result.set(clusterId, indices.map(i => allRecs[i]));
+  }
+  
+  console.log(`Graph-based clustering: ${n} recommendations -> ${result.size} clusters`);
+  
+  return result;
 }
 
 // ========== RISK SCORE AS MATHEMATICAL WEIGHT ==========
@@ -380,28 +553,28 @@ function computeConsensusFromRecommendations(
   totalWeight: number
 ): { consensus: ComputedConsensus[]; majority: ComputedConsensus[]; dissent: ComputedDissent[] } {
   
-  // Group by semantically similar titles
-  const topicGroups = new Map<string, WeightedRecommendation[]>();
-  
+  // Debug: Log input recommendations per model
+  const modelRecCounts = new Map<string, number>();
   for (const rec of allRecs) {
-    // Find existing group with similar title
-    const existingGroup = findSimilarGroup(rec.title, topicGroups);
-    
-    if (existingGroup) {
-      topicGroups.get(existingGroup)!.push(rec);
-    } else {
-      // Create new group with this title as key
-      topicGroups.set(rec.title, [rec]);
-    }
+    modelRecCounts.set(rec.sourceModel, (modelRecCounts.get(rec.sourceModel) || 0) + 1);
+  }
+  console.log('Active models and recommendation counts:');
+  for (const [model, count] of modelRecCounts) {
+    const sampleTitles = allRecs
+      .filter(r => r.sourceModel === model)
+      .slice(0, 3)
+      .map(r => r.title.substring(0, 40));
+    console.log(`  ${model}: ${count} recs - samples: ${sampleTitles.join(' | ')}`);
   }
   
-  console.log(`Semantic grouping: ${allRecs.length} recommendations -> ${topicGroups.size} topic groups`);
+  // NEW: Use graph-based Union-Find clustering (order-independent)
+  const clusters = clusterRecommendations(allRecs);
   
   const consensus: ComputedConsensus[] = [];
   const majority: ComputedConsensus[] = [];
   const dissent: ComputedDissent[] = [];
   
-  for (const [_topic, recs] of topicGroups) {
+  for (const [_clusterId, recs] of clusters) {
     const uniqueModels = [...new Set(recs.map(r => r.sourceModel))];
     
     // Calculate unique model weights
@@ -429,7 +602,7 @@ function computeConsensusFromRecommendations(
       actionItems: bestRec.actionItems || []
     };
     
-    // NEW CLASSIFICATION LOGIC:
+    // Classification Logic:
     // Agreement = at least 2 models agree (full or partial)
     // Dissent = only 1 model recommends this (true outlier)
     
@@ -437,12 +610,12 @@ function computeConsensusFromRecommendations(
       // Full Consensus: All models agree
       computed.agreementLevel = 'full';
       consensus.push(computed);
-      console.log(`Full consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models`);
+      console.log(`Full consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models [${uniqueModels.join(', ')}]`);
     } else if (uniqueModels.length >= 2) {
       // Partial Consensus: >= 2 models agree (but not all)
       computed.agreementLevel = 'partial';
       consensus.push(computed);
-      console.log(`Partial consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models`);
+      console.log(`Partial consensus: "${bestRec.title.substring(0, 40)}" - ${uniqueModels.length}/${modelCount} models [${uniqueModels.join(', ')}]`);
     } else if (uniqueModels.length === 1) {
       // True Dissent: Only 1 model recommends this
       dissent.push({
@@ -456,14 +629,13 @@ function computeConsensusFromRecommendations(
       });
       console.log(`Dissent (outlier): "${bestRec.title.substring(0, 40)}" - only ${uniqueModels[0]}`);
     }
-    
-    // Note: Majority array is now deprecated for classification, 
-    // but kept for backward compatibility in sorting/weighting
   }
   
   // Sort by weighted agreement (highest first)
   consensus.sort((a, b) => b.weightedAgreement - a.weightedAgreement);
   majority.sort((a, b) => b.weightedAgreement - a.weightedAgreement);
+  
+  console.log(`Final classification: ${consensus.length} agreements, ${dissent.length} dissents`);
   
   return { consensus, majority, dissent };
 }

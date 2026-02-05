@@ -111,173 +111,8 @@ interface ComputedFinal {
   reasoning: string;
 }
 
-// ========== CONTEXTUAL PREMIUM FALLBACK FUNCTIONS ==========
-
-/**
- * Generates contextual strategic alternatives based on computed consensus/dissent data.
- * Used as fallback when LLM formatting fails - ensures Premium users always get
- * personalized content rather than generic static defaults.
- */
-function generateContextualAlternatives(
-  consensusItems: ComputedConsensus[],
-  dissentItems: ComputedDissent[],
-  finalRec: ComputedFinal
-): any[] {
-  const alternatives: any[] = [];
-  
-  // Scenario 1: Consensus Path - based on top consensus point
-  const topConsensus = consensusItems[0];
-  if (topConsensus) {
-    alternatives.push({
-      scenario: "Consensus-Driven Approach",
-      description: topConsensus.description?.substring(0, 200) || "Follow the primary recommendation where all models agree.",
-      pros: [
-        `Supported by ${topConsensus.supportingModels?.length || 'multiple'} AI models`,
-        `High confidence level (${topConsensus.confidence || 75}%)`,
-        "Reduced uncertainty through multi-model validation",
-        "Lower execution risk due to strong agreement"
-      ],
-      cons: [
-        "May overlook alternative perspectives",
-        "Consensus can sometimes miss contrarian opportunities",
-        "Less exploration of edge cases"
-      ],
-      bestFor: "Risk-averse decision-makers seeking validated, high-confidence strategies"
-    });
-  }
-  
-  // Scenario 2: Dissent-Driven Path - based on dissent points if available
-  const topDissent = dissentItems[0];
-  if (topDissent) {
-    const dissentModel = topDissent.positions?.[0]?.modelName || "minority model";
-    alternatives.push({
-      scenario: "Contrarian Perspective",
-      description: topDissent.topic?.substring(0, 200) || "Explore the minority viewpoint for potential overlooked opportunities.",
-      pros: [
-        "Challenges consensus assumptions",
-        "May uncover hidden opportunities",
-        "Increases decision robustness through falsification",
-        "Could provide first-mover advantage if consensus is wrong"
-      ],
-      cons: [
-        `Only supported by ${dissentModel}`,
-        "Higher execution risk",
-        "Requires stronger conviction to pursue"
-      ],
-      bestFor: "Innovation-focused leaders comfortable with higher uncertainty"
-    });
-  }
-  
-  // Scenario 3: Hybrid approach based on final recommendation
-  if (finalRec.topActions?.length > 0) {
-    alternatives.push({
-      scenario: "Phased Implementation",
-      description: `Start with ${finalRec.topActions[0]?.substring(0, 100) || 'primary action'}, then expand based on results.`,
-      pros: [
-        "Balances speed with risk management",
-        "Allows for course correction",
-        "Builds evidence before full commitment",
-        "Preserves optionality"
-      ],
-      cons: [
-        "Slower than aggressive approaches",
-        "May lose competitive timing",
-        "Requires disciplined milestone tracking"
-      ],
-      bestFor: "Organizations seeking balanced risk-reward with learning opportunities"
-    });
-  }
-  
-  // Ensure at least 2 alternatives
-  if (alternatives.length < 2) {
-    alternatives.push({
-      scenario: "Adaptive Strategy",
-      description: "Monitor market conditions and adjust approach based on early signals.",
-      pros: ["Maximum flexibility", "Responsive to change", "Minimizes sunk cost risk"],
-      cons: ["Requires constant vigilance", "May appear indecisive"],
-      bestFor: "Dynamic environments with high uncertainty"
-    });
-  }
-  
-  return alternatives;
-}
-
-/**
- * Generates contextual long-term outlook based on final recommendation.
- * Used as fallback when LLM formatting fails.
- */
-function generateContextualOutlook(
-  finalRec: ComputedFinal,
-  riskContext: string
-): { sixMonths: string; twelveMonths: string; keyMilestones: string[] } {
-  const confidence = finalRec.confidence || 75;
-  const topActions = finalRec.topActions || [];
-  const sourceModels = finalRec.sourceModels || [];
-  
-  const sixMonths = finalRec.description 
-    ? `Execute primary strategy: ${finalRec.description.substring(0, 150)}. Focus on validating core assumptions and building initial momentum.`
-    : `Initial implementation phase focusing on market validation and establishing core operations. Expected confidence: ${confidence}%.`;
-  
-  const scaleApproach = riskContext === 'aggressive' 
-    ? 'accelerated scaling with bold market expansion'
-    : riskContext === 'conservative'
-    ? 'measured growth with thorough validation at each stage'
-    : 'balanced scaling based on performance metrics';
-  
-  const twelveMonths = `Scaling phase with ${scaleApproach}. ` +
-    `Based on ${sourceModels.length} model analysis (${confidence}% confidence), ` +
-    `focus on optimizing operations and expanding market presence.`;
-  
-  const keyMilestones: string[] = [];
-  
-  // Generate milestones from action items
-  if (topActions.length > 0) {
-    keyMilestones.push(`Month 1-2: ${topActions[0]?.substring(0, 80) || 'Initial execution'}`);
-  }
-  if (topActions.length > 1) {
-    keyMilestones.push(`Month 3-4: ${topActions[1]?.substring(0, 80) || 'Second phase implementation'}`);
-  }
-  if (topActions.length > 2) {
-    keyMilestones.push(`Month 5-6: ${topActions[2]?.substring(0, 80) || 'Optimization and scaling'}`);
-  }
-  
-  // Add generic milestones if needed
-  while (keyMilestones.length < 4) {
-    const monthRange = keyMilestones.length * 3 + 1;
-    keyMilestones.push(
-      keyMilestones.length === 0 ? `Month 1-3: Complete initial market entry and validation` :
-      keyMilestones.length === 1 ? `Month 4-6: Achieve early traction and refine approach` :
-      keyMilestones.length === 2 ? `Month 7-9: Scale operations based on validated learnings` :
-      `Month 10-12: Optimize for sustainable growth and competitive positioning`
-    );
-  }
-  
-  return { sixMonths, twelveMonths, keyMilestones };
-}
-
-/**
- * Generates contextual competitor insights from model summaries.
- * Used as fallback when LLM formatting fails.
- */
-function generateContextualInsights(
-  modelSummaries: string[],
-  consensusTopics: string[]
-): string {
-  const validSummaries = modelSummaries.filter(s => s && s.length > 0);
-  const topicList = consensusTopics.slice(0, 3).join(', ');
-  
-  if (validSummaries.length === 0 && consensusTopics.length === 0) {
-    return "Multi-model analysis suggests focusing on differentiation through unique value propositions. " +
-      "Monitor competitor movements and maintain strategic agility.";
-  }
-  
-  const modelCount = validSummaries.length;
-  const topicContext = topicList ? ` Key strategic areas: ${topicList}.` : '';
-  
-  return `Competitive analysis synthesized from ${modelCount} AI models.${topicContext} ` +
-    `Focus on differentiation through the identified consensus points while addressing areas of model disagreement. ` +
-    `Maintain market awareness and strategic agility to respond to competitive dynamics.`;
-}
+// ========== (Removed: CONTEXTUAL PREMIUM FALLBACK FUNCTIONS) ==========
+// Premium fields now return null if LLM formatting fails - UI handles gracefully
 
 // ========== JSON RECOVERY UTILITIES (String-Aware) ==========
 
@@ -1566,7 +1401,7 @@ MODELS: ${modelSummaries.join('\n')}`;
           console.log('Formatting parsed successfully (schema-enforced)');
         } catch (e) {
           formattingParseError = e instanceof Error ? e.message : String(e);
-          console.warn('Formatting parse failed (trying recovery):', formattingParseError);
+          console.log('[Formatting] Initial parse failed, trying recovery:', formattingParseError);
           console.log('Content preview:', content?.substring(0, 300));
           
           // Fallback 1: try extracting JSON from potential markdown
@@ -1599,8 +1434,8 @@ MODELS: ${modelSummaries.join('\n')}`;
                 console.log('Recovered JSON via sanitize+repair');
               }
             } catch (recoveryError) {
-              // Keep original error - computed fallback will be used
-              console.warn('Sanitize+repair failed (using computed fallback):', recoveryError instanceof Error ? recoveryError.message : String(recoveryError));
+              // Keep original error - continuing without premium polish
+              console.log('[Formatting] Recovery failed, continuing without premium polish:', recoveryError instanceof Error ? recoveryError.message : String(recoveryError));
             }
           }
         }
@@ -1657,22 +1492,11 @@ MODELS: ${modelSummaries.join('\n')}`;
       overallConfidence: computedFinal.confidence,
       synthesisReasoning: formattedEvaluation?.synthesisReasoning || 
         `Analysis weighted by user configuration: ${dominantModel ? `${dominantModel.name} (${dominantModel.weight}%) as dominant` : 'balanced weights'}`,
-      // Premium features with CONTEXTUAL fallbacks (not static defaults)
+      // Premium features - null if LLM formatting failed (UI handles gracefully)
       ...(isPremium && {
-        strategicAlternatives: formattedEvaluation?.strategicAlternatives?.length > 0 
-          ? formattedEvaluation.strategicAlternatives 
-          : generateContextualAlternatives(computedConsensus, computedDissent, computedFinal),
-        longTermOutlook: formattedEvaluation?.longTermOutlook?.sixMonths 
-          ? formattedEvaluation.longTermOutlook 
-          : generateContextualOutlook(
-              computedFinal, 
-              riskPref <= 2 ? 'conservative' : riskPref >= 4 ? 'aggressive' : 'balanced'
-            ),
-        competitorInsights: formattedEvaluation?.competitorInsights 
-          || generateContextualInsights(
-              modelResponses ? Object.values(modelResponses).map((m: any) => m?.summary || '').filter((s: string) => s) : [],
-              computedConsensus.map(c => c.topic)
-            )
+        strategicAlternatives: formattedEvaluation?.strategicAlternatives || null,
+        longTermOutlook: formattedEvaluation?.longTermOutlook || null,
+        competitorInsights: formattedEvaluation?.competitorInsights || null
       })
     };
     
@@ -1685,18 +1509,12 @@ MODELS: ${modelSummaries.join('\n')}`;
       formattingContentLength
     });
     
-    // Log premium feature generation status with contextual fallback indicator
+    // Log premium feature status
     if (isPremium) {
-      const usingContextualFallbacks = !formattedEvaluation?.strategicAlternatives?.length 
-        || !formattedEvaluation?.longTermOutlook?.sixMonths 
-        || !formattedEvaluation?.competitorInsights;
-      
       console.log('Premium features status:', {
-        strategicAlternativesFromLLM: !!formattedEvaluation?.strategicAlternatives?.length,
-        longTermOutlookFromLLM: !!formattedEvaluation?.longTermOutlook?.sixMonths,
-        competitorInsightsFromLLM: !!formattedEvaluation?.competitorInsights,
-        usingContextualFallbacks,
-        fallbackSource: usingContextualFallbacks ? 'computed-data (personalized)' : 'LLM-generated'
+        strategicAlternatives: formattedEvaluation?.strategicAlternatives ? 'available' : 'null',
+        longTermOutlook: formattedEvaluation?.longTermOutlook ? 'available' : 'null',
+        competitorInsights: formattedEvaluation?.competitorInsights ? 'available' : 'null'
       });
     }
 

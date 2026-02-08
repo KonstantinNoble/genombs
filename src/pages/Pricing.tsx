@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
           title="Pricing"
-          description="Simple, transparent pricing for Synoptas."
+          description="Simple, transparent pricing for Business Genome."
           canonical="/pricing"
         />
         <Navbar />
@@ -34,11 +34,34 @@ const PricingPage = () => {
     );
   }
 
+  const freeFeatures = [
+    { text: "3 analyses per month", included: true },
+    { text: "Business model detection", included: true },
+    { text: "Offer structure analysis", included: true },
+    { text: "Audience cluster identification", included: true },
+    { text: "Funnel type recognition", included: true },
+    { text: "Traffic data (SimilarWeb)", included: false },
+    { text: "PDF export", included: false },
+    { text: "Competitor comparison", included: false },
+  ];
+
+  const premiumFeatures = [
+    { text: "Unlimited analyses", included: true },
+    { text: "Business model detection", included: true },
+    { text: "Offer structure analysis", included: true },
+    { text: "Audience cluster identification", included: true },
+    { text: "Funnel type recognition", included: true },
+    { text: "Traffic data (SimilarWeb)", included: true },
+    { text: "PDF export", included: true },
+    { text: "Competitor comparison", included: true, comingSoon: true },
+    { text: "Priority support", included: true },
+  ];
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing"
-        description="Simple, transparent pricing for Synoptas. Start free, upgrade when you need more."
+        title="Pricing – Business Genome"
+        description="Simple, transparent pricing. Start free with 3 analyses per month. Upgrade for unlimited access."
         canonical="/pricing"
       />
 
@@ -49,21 +72,19 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
             {isPremium && isLoggedIn ? (
-              <Badge className="mb-4 bg-primary text-primary-foreground">
-                Premium Member
-              </Badge>
+              <Badge className="mb-4 bg-primary text-primary-foreground">Premium Member</Badge>
             ) : (
-              <Badge variant="outline" className="mb-4">Simple, Transparent Pricing</Badge>
+              <Badge variant="outline" className="mb-4">
+                Simple, Transparent Pricing
+              </Badge>
             )}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-              {isPremium && isLoggedIn 
-                ? "You're all set" 
-                : "Choose your plan"}
+              {isPremium && isLoggedIn ? "You're all set" : "Choose your plan"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              {isPremium && isLoggedIn 
+              {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
-                : "Start free. Upgrade when you need more."}
+                : "Start free with 3 analyses per month. Upgrade when you need more."}
             </p>
           </div>
         </section>
@@ -81,17 +102,25 @@ const PricingPage = () => {
                 $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
               </div>
               <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-foreground">
-                  <Check className="w-4 h-4 text-primary shrink-0" />
-                  Basic access
-                </li>
+                {freeFeatures.map((feature) => (
+                  <li key={feature.text} className="flex items-center gap-2 text-foreground">
+                    {feature.included ? (
+                      <Check className="w-4 h-4 text-primary shrink-0" />
+                    ) : (
+                      <X className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                    )}
+                    <span className={feature.included ? "" : "text-muted-foreground/50"}>
+                      {feature.text}
+                    </span>
+                  </li>
+                ))}
               </ul>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => navigate(isLoggedIn ? '/profile' : '/auth')}
+                onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
               >
-                {isLoggedIn ? "Current Plan" : "Get Started"}
+                {isLoggedIn ? "Go to Dashboard" : "Get Started"}
               </Button>
             </div>
 
@@ -108,28 +137,27 @@ const PricingPage = () => {
                 $26.99<span className="text-lg font-normal text-muted-foreground">/mo</span>
               </div>
               <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-foreground">
-                  <Check className="w-4 h-4 text-primary shrink-0" />
-                  Everything in Free
-                </li>
-                <li className="flex items-center gap-2 text-foreground">
-                  <Check className="w-4 h-4 text-primary shrink-0" />
-                  Premium features
-                </li>
-                <li className="flex items-center gap-2 text-foreground">
-                  <Check className="w-4 h-4 text-primary shrink-0" />
-                  Priority support
-                </li>
+                {premiumFeatures.map((feature) => (
+                  <li key={feature.text} className="flex items-center gap-2 text-foreground">
+                    <Check className="w-4 h-4 text-primary shrink-0" />
+                    {feature.text}
+                    {"comingSoon" in feature && feature.comingSoon && (
+                      <Badge variant="outline" className="text-xs ml-1">
+                        Soon
+                      </Badge>
+                    )}
+                  </li>
+                ))}
               </ul>
               <Button
                 className="w-full"
                 onClick={() => {
                   if (isPremium && isLoggedIn) {
-                    navigate('/profile');
+                    navigate("/profile");
                   } else if (isLoggedIn) {
                     openCheckout(user?.email || undefined);
                   } else {
-                    navigate('/auth?intent=premium');
+                    navigate("/auth?intent=premium");
                   }
                 }}
               >
@@ -143,21 +171,19 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              {isPremium && isLoggedIn 
-                ? "You're all set" 
-                : "Ready to get started?"}
+              {isPremium && isLoggedIn ? "You're all set" : "Ready to decode your market?"}
             </h2>
             <p className="text-lg text-muted-foreground">
-              {isPremium && isLoggedIn 
-                ? "Head back to your profile to manage your account."
-                : "Join Synoptas today and see the difference."}
+              {isPremium && isLoggedIn
+                ? "Head to your dashboard to start a new analysis."
+                : "Start free with 3 analyses. No credit card required."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button 
+              <Button
                 size="lg"
-                onClick={() => navigate(isLoggedIn ? '/profile' : '/auth')}
+                onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
               >
-                {isLoggedIn ? "Go to Profile" : "Create Account"}
+                {isLoggedIn ? "Go to Dashboard" : "Create Account"}
               </Button>
             </div>
           </div>

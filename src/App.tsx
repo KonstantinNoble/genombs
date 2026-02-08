@@ -15,6 +15,8 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 
 // Lazy load authenticated and less critical pages
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const GenomeView = lazy(() => import("./pages/GenomeView"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PricingPage = lazy(() => import("./pages/Pricing"));
@@ -61,6 +63,8 @@ const App = () => (
                   <Route path="/" element={<Home />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/genome/:id" element={<GenomeView />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/pricing" element={<PricingPage />} />
                   <Route path="/contact" element={<Contact />} />

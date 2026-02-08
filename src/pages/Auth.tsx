@@ -237,14 +237,11 @@ const Auth = () => {
   
   const getIntentMessage = () => {
     if (intent === 'premium') {
-      return 'Sign in to purchase Premium Plan and unlock Deep Analysis';
+      return 'Sign in to purchase Premium Plan';
     } else if (intent === 'free') {
-      return 'Sign in to start your free AI analysis';
+      return 'Sign in to get started';
     }
-    if (returnTo?.includes('/team/invite/')) {
-      return 'Sign in to accept your team invitation';
-    }
-    return 'Access your AI-powered business insights';
+    return 'Sign in to access your account';
   };
 
   return (

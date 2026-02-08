@@ -192,82 +192,6 @@ const TermsOfService = () => {
                 <strong> 30 days in advance</strong> via email to affected users.
               </p>
 
-              <h3 className="text-xl font-semibold mt-6 mb-3">III.C Decision Documentation (Premium Feature)</h3>
-              <p className="mb-4">
-                Premium users can document their business decisions using our Decision Audit feature:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Document your decision context and the perspectives gathered from multiple AI models</li>
-                <li>Confirm your ownership of the final decision</li>
-                <li>Export a Decision Audit Report as PDF documentation</li>
-              </ul>
-
-              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">⚠️ IMPORTANT: Decision Records are DOCUMENTATION ONLY</p>
-                <ul className="list-disc pl-6 space-y-2">
-                  <li>Decision Records document perspectives – they do <strong>NOT</strong> make decisions for you</li>
-                  <li>The Decision Audit Report is <strong>NOT</strong> a legal document, certificate, or binding agreement</li>
-                  <li>Decision Records have <strong>NO legal force</strong> or evidentiary value in legal proceedings</li>
-                  <li>Your confirmation ("I confirm that the final decision remains with me") is a personal acknowledgment, not a legally binding declaration</li>
-                  <li>We make no guarantees that documented perspectives are complete, accurate, or suitable for your situation</li>
-                  <li>You remain <strong>solely responsible</strong> for all decisions and their consequences</li>
-                </ul>
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Decision Records and their associated audit logs are permanently deleted upon account termination (see Section VII).
-              </p>
-
-              <h3 className="text-xl font-semibold mt-6 mb-3">III.D Team Workspaces (Premium Feature)</h3>
-              <p className="mb-4">
-                Premium subscribers can create team workspaces to collaborate with other users:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Create up to <strong>5 teams</strong> per Premium account</li>
-                <li>Invite up to <strong>5 members</strong> per team</li>
-                <li>Share validation analyses, experiments, and decision records within the team</li>
-                <li>Assign roles: <strong>Owner</strong> (full control), <strong>Member</strong> (create and view), <strong>Viewer</strong> (view only)</li>
-              </ul>
-
-              <p className="mb-4">
-                <strong>Team Roles and Permissions:</strong>
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li><strong>Owner:</strong> Full control including team deletion, member management, and role assignment</li>
-                <li><strong>Member:</strong> Can create validation analyses, experiments, and decision records</li>
-                <li><strong>Viewer:</strong> View-only access to shared team resources (cannot create content)</li>
-              </ul>
-
-              <p className="mb-4">
-                <strong>Owner Responsibilities:</strong>
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>The team owner is responsible for managing team membership and content</li>
-                <li>Owners must delete all owned teams before deleting their personal account</li>
-                <li>Only Premium users can create teams; if Premium expires, existing teams remain but no new teams can be created</li>
-              </ul>
-
-              <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">⚠️ IMPORTANT: Data Visibility in Teams</p>
-                <ul className="list-disc pl-6 space-y-2">
-                  <li>All team members can see each other's <strong>email addresses</strong></li>
-                  <li>All shared validation analyses, experiments, and decision records are visible to <strong>all team members</strong></li>
-                  <li>By joining a team, you consent to this data visibility</li>
-                </ul>
-              </div>
-
-              <p className="mb-4">
-                <strong>Prohibited Activities:</strong>
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Spamming invitations or abusing the invitation system</li>
-                <li>Circumventing rate limits (10 invitations/team/day, 3 pending invitations/email)</li>
-                <li>Creating teams for purposes that violate these Terms</li>
-              </ul>
-
-              <p className="mb-4 text-sm text-muted-foreground">
-                Team invitations expire after 7 days. For details on data processing, see our{" "}
-                <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link> Section 5.8.
-              </p>
             </section>
             {/* Section IV - Pricing */}
             <section>
@@ -449,9 +373,7 @@ const TermsOfService = () => {
 
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Business decisions or investments based on AI recommendations</li>
-                <li>Decisions documented through Decision Records or Decision Audit Reports</li>
-                <li>Reliance on documented AI perspectives as legal or professional advice</li>
-                <li>Use of Decision Audit Reports as evidence in legal, regulatory, or contractual disputes</li>
+                <li>Reliance on AI-generated content as legal or professional advice</li>
                 <li>Lost profits, revenue, or business opportunities (subject to the general limitation above)</li>
                 <li>Data loss if backups were not maintained before account deletion</li>
                 <li>Third-party services, external links, force majeure events</li>
@@ -544,7 +466,7 @@ const TermsOfService = () => {
                 <strong>Account Deletion & Data:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Profile data, complete analysis history from all services, and credit tracking data are permanently deleted</li>
+                <li>Profile data and all associated account data are permanently deleted</li>
                 <li>Local device data must be cleared manually via browser settings</li>
                 <li>
                   <strong>Email Hash:</strong> A SHA-256 hash of your email is stored for <strong>24 hours</strong>{" "}

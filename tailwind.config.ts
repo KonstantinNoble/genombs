@@ -43,19 +43,6 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        "accent-warm": {
-          DEFAULT: "hsl(var(--accent-warm))",
-          foreground: "hsl(var(--accent-warm-foreground))",
-        },
-        "accent-cool": {
-          DEFAULT: "hsl(var(--accent-cool))",
-          foreground: "hsl(var(--accent-cool-foreground))",
-        },
-        "accent-info": {
-          DEFAULT: "hsl(var(--accent-info))",
-          foreground: "hsl(var(--accent-info-foreground))",
-        },
-        "neon-green": "hsl(var(--neon-green))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -85,8 +72,6 @@ export default {
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
-        'glow-warm': 'var(--shadow-glow-warm)',
-        'glow-cool': 'var(--shadow-glow-cool)',
         'lift': 'var(--shadow-lift)',
       },
       keyframes: {
@@ -144,22 +129,6 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
-        "aurora-drift": {
-          "0%": { transform: "scale(1.3) translateX(0%) translateY(0%)" },
-          "25%": { transform: "scale(1.4) translateX(-5%) translateY(3%)" },
-          "50%": { transform: "scale(1.35) translateX(-3%) translateY(6%)" },
-          "75%": { transform: "scale(1.4) translateX(4%) translateY(3%)" },
-          "100%": { transform: "scale(1.3) translateX(0%) translateY(0%)" },
-        },
-        "aurora-glow": {
-          "0%, 100%": { opacity: "0.5" },
-          "50%": { opacity: "1" },
-        },
-        "gradient": {
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
-        },
         "grid-pulse": {
           "0%, 100%": { opacity: "0.03" },
           "50%": { opacity: "0.08" },
@@ -182,25 +151,6 @@ export default {
         "morph": {
           "0%, 100%": { borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
           "50%": { borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%" },
-        },
-        // New professional animations
-        "gradient-shift": {
-          "0%, 100%": { 
-            backgroundPosition: "0% 50%",
-            transform: "scale(1) rotate(0deg)"
-          },
-          "25%": { 
-            backgroundPosition: "100% 50%",
-            transform: "scale(1.02) rotate(1deg)"
-          },
-          "50%": { 
-            backgroundPosition: "100% 100%",
-            transform: "scale(1.05) rotate(0deg)"
-          },
-          "75%": { 
-            backgroundPosition: "0% 100%",
-            transform: "scale(1.02) rotate(-1deg)"
-          }
         },
         "morph-blob": {
           "0%, 100%": {
@@ -265,27 +215,6 @@ export default {
           "0%, 100%": { filter: "drop-shadow(0 0 2px hsl(var(--primary) / 0.3))" },
           "50%": { filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.5))" }
         },
-        // Consensus/Majority/Dissent section animations
-        "consensus-pulse": {
-          "0%, 100%": { 
-            boxShadow: "0 0 0 0 hsl(142 76% 36% / 0.2)",
-            borderColor: "hsl(142 76% 36% / 0.3)"
-          },
-          "50%": { 
-            boxShadow: "0 0 12px 4px hsl(142 76% 36% / 0.15)",
-            borderColor: "hsl(142 76% 36% / 0.5)"
-          }
-        },
-        "majority-wiggle": {
-          "0%, 100%": { transform: "rotate(0deg)" },
-          "25%": { transform: "rotate(1deg)" },
-          "75%": { transform: "rotate(-1deg)" }
-        },
-        "dissent-shake": {
-          "0%, 100%": { transform: "translateX(0)" },
-          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-1px)" },
-          "20%, 40%, 60%, 80%": { transform: "translateX(1px)" }
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -301,16 +230,11 @@ export default {
         "pulse-soft": "pulse-soft 3s ease-in-out infinite",
         "spin-slow": "spin-slow 20s linear infinite",
         "bounce-soft": "bounce-soft 2s ease-in-out infinite",
-        "aurora-drift": "aurora-drift 12s ease-in-out infinite",
-        "aurora-glow": "aurora-glow 5s ease-in-out infinite",
-        "gradient": "gradient 4s ease infinite",
         "grid-pulse": "grid-pulse 4s ease-in-out infinite",
         "line-flow": "line-flow 3s ease-in-out infinite",
         "dot-pulse": "dot-pulse 2s ease-in-out infinite",
         "wave": "wave 4s ease-in-out infinite",
         "morph": "morph 8s ease-in-out infinite",
-        // New professional animations
-        "gradient-shift": "gradient-shift 15s ease-in-out infinite",
         "morph-blob": "morph-blob 20s ease-in-out infinite",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         "reveal-up": "reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
@@ -319,13 +243,8 @@ export default {
         "text-shimmer": "text-shimmer 4s ease-in-out infinite",
         "slide-up-fade": "slide-up-fade 0.5s ease-out forwards",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
-        // Consensus/Majority/Dissent animations
-        "consensus-pulse": "consensus-pulse 3s ease-in-out infinite",
-        "majority-wiggle": "majority-wiggle 4s ease-in-out infinite",
-        "dissent-shake": "dissent-shake 0.5s ease-in-out"
       },
       backgroundImage: {
-        "hero-gradient": "radial-gradient(ellipse at top, hsl(var(--primary) / 0.15), transparent 50%)",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },

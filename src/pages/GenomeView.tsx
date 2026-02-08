@@ -15,6 +15,7 @@ import {
   Globe,
   Sparkles,
   Lock,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ import SectionNav from "@/components/genome/SectionNav";
 import RecommendationCard from "@/components/genome/RecommendationCard";
 import ChannelStrengthBar from "@/components/genome/ChannelStrengthBar";
 import CompetitorPreview from "@/components/genome/CompetitorPreview";
+import KeyTakeaways from "@/components/genome/KeyTakeaways";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { demoGenomes } from "@/lib/demo-data";
@@ -56,15 +58,16 @@ const CHART_COLORS = [
 
 const sections = [
   { id: "overview", label: "Overview" },
+  { id: "business-model", label: "Market Position" },
   { id: "offers", label: "Offers" },
   { id: "audience", label: "Audience" },
-  { id: "funnel", label: "Funnel" },
+  { id: "funnel", label: "Growth Strategy" },
   { id: "messaging", label: "Messaging" },
   { id: "channels", label: "Channels" },
   { id: "content", label: "Content" },
   { id: "trust", label: "Trust" },
   { id: "traffic", label: "Traffic" },
-  { id: "recommendations", label: "Recommendations" },
+  { id: "insights", label: "Market Insights" },
 ];
 
 const GenomeView = () => {
@@ -115,9 +118,9 @@ const GenomeView = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <SEOHead
-        title={`${genome.companyName} – Business Genome`}
-        description={`Market intelligence report for ${genome.domain}`}
+       <SEOHead
+        title={`Intelligence Report: ${genome.companyName} – Business Genome`}
+        description={`Market intelligence report for ${genome.domain} — market position, strategy, and competitive analysis.`}
         canonical={`/genome/${genome.id}`}
       />
       <Navbar />
@@ -144,9 +147,9 @@ const GenomeView = () => {
                 </Badge>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
-                {genome.companyName}
+                Intelligence Report: {genome.companyName}
               </h1>
-              <p className="text-muted-foreground">{date}</p>
+              <p className="text-muted-foreground">Market position analysis for {genome.marketSegment} · {date}</p>
             </div>
             <div className="flex gap-2">
               <TooltipProvider>
@@ -166,7 +169,7 @@ const GenomeView = () => {
               </TooltipProvider>
               <Button size="sm" onClick={() => navigate("/dashboard")}>
                 <Plus className="w-4 h-4 mr-2" />
-                New Analysis
+                New Research
               </Button>
             </div>
           </div>
@@ -216,9 +219,10 @@ const GenomeView = () => {
 
           {/* Genome Cards Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* Business Model */}
+            {/* Business Model / Market Position */}
             <div id="business-model" className="lg:col-span-2 scroll-mt-28">
-              <GenomeCard title="Business Model" icon={Building2} className="lg:col-span-2">
+              <GenomeCard title="How This Company Makes Money" icon={Building2} className="lg:col-span-2">
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">Observed business model and revenue structure</p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary">{genome.businessModel}</Badge>
@@ -237,7 +241,8 @@ const GenomeView = () => {
 
             {/* Offers */}
             <div id="offers" className="scroll-mt-28">
-              <GenomeCard title="Offer Structure" icon={Package}>
+              <GenomeCard title="Products & Services Detected" icon={Package}>
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">What this company sells and at what price points</p>
                 <div className="space-y-0">
                   {/* Table header */}
                   <div className="grid grid-cols-12 gap-2 pb-2 border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -267,7 +272,8 @@ const GenomeView = () => {
 
             {/* Audience Clusters */}
             <div id="audience" className="scroll-mt-28">
-              <GenomeCard title="Audience Clusters" icon={Users}>
+              <GenomeCard title="Who They Target" icon={Users}>
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">Identified target audiences based on messaging and content analysis</p>
                 <div className="space-y-4">
                   {genome.audienceClusters.map((cluster) => (
                     <div key={cluster.name} className="p-3 rounded-lg bg-muted/50 border border-border">
@@ -298,7 +304,8 @@ const GenomeView = () => {
 
             {/* Funnel Analysis */}
             <div id="funnel" className="scroll-mt-28">
-              <GenomeCard title="Funnel Analysis" icon={GitFork}>
+              <GenomeCard title="Their Growth Playbook" icon={GitFork}>
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">How this company acquires and converts customers</p>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary">{genome.funnelType}</Badge>
@@ -328,7 +335,8 @@ const GenomeView = () => {
 
             {/* Messaging / USPs */}
             <div id="messaging" className="scroll-mt-28">
-              <GenomeCard title="Messaging & USPs" icon={MessageSquare}>
+              <GenomeCard title="Their Positioning & Value Props" icon={MessageSquare}>
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">Key messages and unique selling propositions detected</p>
                 <div className="space-y-3">
                   {genome.messagingPatterns.map((pattern, i) => (
                     <div
@@ -347,7 +355,8 @@ const GenomeView = () => {
 
             {/* Channels */}
             <div id="channels" className="scroll-mt-28">
-              <GenomeCard title="Channel Usage" icon={Megaphone}>
+              <GenomeCard title="Where They Reach Their Audience" icon={Megaphone}>
+                <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">Distribution channels and their relative strength</p>
                 <ChannelStrengthBar channels={genome.channelStrengths} />
               </GenomeCard>
             </div>
@@ -467,13 +476,16 @@ const GenomeView = () => {
               </GenomeCard>
             </div>
 
-            {/* Recommendations */}
-            <div id="recommendations" className="lg:col-span-2 scroll-mt-28">
+            {/* Market Insights */}
+            <div id="insights" className="lg:col-span-2 scroll-mt-28">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  <h2 className="text-lg font-semibold text-foreground">Recommendations</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Market Insights</h2>
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  Key observations and patterns detected in this market segment.
+                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {genome.recommendations.map((rec, i) => (
                     <RecommendationCard
@@ -486,7 +498,12 @@ const GenomeView = () => {
               </div>
             </div>
 
-            {/* Competitor Snapshot */}
+            {/* Key Takeaways */}
+            <div className="lg:col-span-2">
+              <KeyTakeaways takeaways={genome.keyTakeaways} />
+            </div>
+
+            {/* Market Landscape */}
             <div className="lg:col-span-2">
               <CompetitorPreview
                 competitors={genome.competitors}

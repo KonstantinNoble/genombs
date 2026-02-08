@@ -211,10 +211,6 @@ export type Database = {
         Returns: boolean
       }
       is_premium_user: { Args: { _user_id: string }; Returns: boolean }
-      log_decision_action: {
-        Args: { p_action: string; p_decision_id: string; p_metadata?: Json }
-        Returns: string
-      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

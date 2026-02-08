@@ -14,14 +14,14 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 1, 2026 | Version 5.9</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 8, 2026 | Version 6.0</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Introduction and Controller Information</h2>
             <p className="text-muted-foreground mb-4">
               We appreciate your interest in our website. This Privacy Policy explains how we handle personal data when
-              you visit our website and use our Multi-AI Validation Platform.
+              you visit our website and use our platform.
             </p>
             <p className="text-muted-foreground mb-4">
               <strong>Data Controller (as defined in the GDPR):</strong>
@@ -396,7 +396,7 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Your account and all associated personal data are permanently deleted</li>
-              <li>All your validation analyses, experiments, tasks, and checkpoints are deleted (via database CASCADE)</li>
+              <li>All associated account data is permanently deleted</li>
               <li>Your email address is hashed (using SHA-256) and stored for 24 hours to prevent immediate re-registration abuse</li>
               <li>After 24 hours, the email hash is automatically deleted</li>
               <li>This deletion is irreversible</li>
@@ -451,547 +451,17 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 5: Multi-AI Validation Platform */}
+          {/* Section 5: Premium Subscription */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">5. Multi-AI Validation Platform</h2>
-            <p className="text-muted-foreground mb-4">
-              Our core service is the Multi-AI Validation Platform, which analyzes your business decisions 
-              and questions using multiple AI models in parallel to provide comprehensive, validated recommendations.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Multi-AI Validation Service</h3>
-            <p className="text-muted-foreground mb-4">
-              When you submit a validation request, your prompt is analyzed by three AI models simultaneously:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>OpenAI GPT-5 Mini</strong> (with GPT-5-nano as automatic fallback for reliability)</li>
-              <li><strong>Google Gemini 3 Pro</strong></li>
-              <li><strong>Google Gemini 3 Flash</strong> (also performs meta-evaluation/synthesis)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed</h4>
-            <p className="text-muted-foreground mb-4">
-              For each validation request, the following data is processed:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Your prompt:</strong> The business question or decision you want validated (maximum 500 characters)</li>
-              <li><strong>Risk tolerance preference:</strong> A value from 1-5 indicating your risk tolerance</li>
-              <li><strong>Analysis style preference:</strong> A value from 1-5 indicating your preferred analysis style (conservative to creative)</li>
-              <li><strong>User ID:</strong> Your authenticated user identifier (to associate results with your account)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored</h4>
-            <p className="text-muted-foreground mb-4">
-              After processing, the following data is stored in our database:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your original prompt</li>
-              <li>Your risk and creativity preferences</li>
-              <li>The responses from each AI model (GPT, Gemini Pro, Gemini Flash)</li>
-              <li>The meta-evaluation results (consensus points, majority opinions, dissenting views)</li>
-              <li>The final synthesized recommendation</li>
-              <li>Overall confidence score</li>
-              <li>Processing time</li>
-              <li>Timestamp of the analysis</li>
-              <li>Model weights (optional user-defined influence percentages for each selected AI model)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">AI Model Providers</h4>
-            <h4 className="text-lg font-semibold mb-2 mt-4">Base Models (Available to All Users)</h4>
-            <div className="overflow-x-auto mb-4">
-              <table className="w-full text-muted-foreground border-collapse border border-border">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
-                    <th className="border border-border p-3 text-left font-semibold">Model</th>
-                    <th className="border border-border p-3 text-left font-semibold">Location</th>
-                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (Direct API)</td>
-                    <td className="border border-border p-3">GPT-5 Mini</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
-                    <td className="border border-border p-3">Gemini 3 Flash</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Anthropic PBC</strong> (Direct API)</td>
-                    <td className="border border-border p-3">Claude Sonnet 4</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong> (Direct API)</td>
-                    <td className="border border-border p-3">Sonar Pro (with web search)</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Premium Models (Available to Premium Subscribers Only)</h4>
-            <div className="overflow-x-auto mb-4">
-              <table className="w-full text-muted-foreground border-collapse border border-border">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
-                    <th className="border border-border p-3 text-left font-semibold">Model</th>
-                    <th className="border border-border p-3 text-left font-semibold">Location</th>
-                    <th className="border border-border p-3 text-left font-semibold">Data Transfer Basis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
-                    <td className="border border-border p-3">Gemini 3 Pro Preview</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 45 GDPR (EU-US DPF Adequacy)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong> (Direct API)</td>
-                    <td className="border border-border p-3">Sonar Reasoning Pro (with enhanced web search)</td>
-                    <td className="border border-border p-3">United States</td>
-                    <td className="border border-border p-3">Art. 46(2)(c) GDPR (SCCs)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Web Search Functionality</h4>
-            <p className="text-muted-foreground mb-4">
-              Certain AI models (Perplexity Sonar Pro and Sonar Reasoning Pro) perform automated web searches 
-              to provide up-to-date market data and industry information in their analyses. When you use these models:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Your validation prompt is used as the basis for web searches</li>
-              <li>Relevant web content is retrieved and incorporated into the AI analysis</li>
-              <li>Source URLs are provided as citations in the response</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              This web search functionality is integral to providing current and grounded business recommendations.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Third-Party AI Provider Privacy Policies</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  OpenAI Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Google Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Anthropic Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="https://www.perplexity.ai/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Perplexity AI Privacy Policy
-                </a>
-              </li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the 
-                contract (providing the AI validation service you requested)
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing accurate and reliable 
-                AI-powered business recommendations
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Validation Limits and Usage Tracking</h3>
-            <p className="text-muted-foreground mb-4">
-              To ensure fair usage and service sustainability, validation requests are subject to daily limits:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Free users:</strong> 2 validations per 24-hour rolling window</li>
-              <li><strong>Premium users ($26.99/month):</strong> 10 validations per 24-hour rolling window</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored for Usage Tracking</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>validation_count:</strong> Number of validations used in the current 24-hour window</li>
-              <li><strong>validation_window_start:</strong> Timestamp when the current 24-hour window began</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              The 24-hour window resets automatically when you make a new request after the previous window has expired.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary to enforce the terms of service 
-              and subscription limits.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Validation History</h3>
-            <p className="text-muted-foreground mb-4">
-              Your validation history is automatically managed to optimize storage:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Retention limit:</strong> Only your 10 most recent analyses are retained</li>
-              <li><strong>Automatic cleanup:</strong> When loading your history, older analyses (beyond the 10 most recent) are automatically deleted along with any associated experiments</li>
-              <li><strong>Manual deletion:</strong> You can delete individual analyses at any time through the platform interface</li>
-              <li><strong>Cascade deletion:</strong> When an analysis is deleted, all associated experiments, tasks, and checkpoints are automatically deleted (database CASCADE)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for providing the validation 
-              history feature as part of the service.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.4 Experiment Workflow</h3>
-            <p className="text-muted-foreground mb-4">
-              You can convert validation results into structured experiments to track decision implementation. 
-              This feature helps you move from analysis to action with clear accountability.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Decision question:</strong> The specific question you're testing (maximum 300 characters)</li>
-              <li><strong>Hypothesis:</strong> Your expected outcome (maximum 300 characters)</li>
-              <li><strong>Experiment duration:</strong> The planned length of your experiment in days</li>
-              <li><strong>Success metrics:</strong> Configurable metrics with target values and weights for scoring</li>
-              <li><strong>Tasks:</strong> Individual action items with outcomes (positive/negative/neutral evidence)</li>
-              <li><strong>Scorecard results:</strong> 1-10 ratings for each success metric</li>
-              <li><strong>Final decision:</strong> GO or NO-GO determination</li>
-              <li><strong>Decision rationale:</strong> Your reasoning for the final decision (maximum 300 characters)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Experiment Lifecycle</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Experiments are linked to their parent validation analysis</li>
-              <li>Only one active experiment can exist per validation</li>
-              <li>Experiments are permanently deleted when completed (not archived)</li>
-              <li>Experiments are automatically deleted when the parent analysis is deleted (CASCADE)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for providing the experiment 
-                tracking feature as part of the service
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.5 Premium Features and Gating</h3>
-            <p className="text-muted-foreground mb-4">
-              Premium subscribers receive enhanced analysis output:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Free users:</strong> Limited to 1 recommendation and 2 action items per analysis</li>
-              <li><strong>Premium users:</strong> Receive 4-5 recommendations, 5-7 action items, plus exclusive sections (strategic alternatives, long-term outlook, competitor insights)</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              Premium status is determined by your subscription status stored in the user_credits table.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.6 Decision Audit Records (Premium)</h3>
-            <p className="text-muted-foreground mb-4">
-              Premium subscribers can create auditable decision records that document their acknowledgment 
-              of decision ownership. This feature provides legal documentation for compliance and 
-              accountability purposes.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Decision title:</strong> First 100 characters of your validation prompt</li>
-              <li><strong>Decision context:</strong> Full validation prompt text</li>
-              <li><strong>Ownership confirmation status:</strong> Whether you confirmed decision ownership</li>
-              <li><strong>Confirmation timestamp:</strong> When confirmation was submitted</li>
-              <li><strong>Export metadata:</strong> PDF export count and timestamps</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Audit Log</h4>
-            <p className="text-muted-foreground mb-4">
-              Each confirmation creates an audit log entry containing:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Action performed ("confirmed")</li>
-              <li>Actor ID (your user identifier)</li>
-              <li>Timestamp of the action</li>
-              <li>Metadata (which acknowledgment statements were confirmed)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">PDF Generation</h4>
-            <p className="text-muted-foreground mb-4">
-              Decision audit reports are generated locally in your browser using client-side PDF rendering. 
-              The PDF file is never transmitted to our servers – it is created and downloaded directly to 
-              your device.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
-                (providing the decision documentation feature as part of Premium service)
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in providing legally defensible 
-                documentation for business decisions
-              </li>
-            </ul>
-          </section>
-
-          {/* Section 5.7: Dashboard Statistics */}
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.7 Dashboard Statistics</h3>
-            <p className="text-muted-foreground mb-4">
-              Your personal Dashboard displays aggregated statistics derived from your stored validation 
-              analyses, including model usage frequency, confidence score trends, and AI agreement rates. 
-              This data is calculated from already stored validation data (as described in Section 5.1) 
-              and is not shared with third parties.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (contract performance).
-            </p>
-          </section>
-
-          {/* Section 5.8: Team Workspaces */}
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.8 Team Workspaces (Premium)</h3>
-            <p className="text-muted-foreground mb-4">
-              Premium subscribers can create and manage team workspaces to collaborate with other users. 
-              This feature allows sharing validation analyses, experiments, and decision records within a team context.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Processed and Stored</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Team metadata:</strong> Team name, unique slug (URL identifier), creation timestamp</li>
-              <li><strong>Team membership:</strong> User IDs, assigned roles (Owner, Member, Viewer), join timestamps</li>
-              <li><strong>Team invitations:</strong> Invited email address, invitation token (UUID), expiry date (7 days), inviting user ID</li>
-              <li><strong>Shared resources:</strong> Validation analyses, experiments, and decision records associated with the team</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Visibility Within Teams</h4>
-            <p className="text-muted-foreground mb-4">
-              <strong>Important:</strong> When you join a team or invite others, the following data becomes visible to all team members:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Email addresses:</strong> All team members can see each other's email addresses</li>
-              <li><strong>Shared content:</strong> All validation analyses, experiments, and decision records created within the team context are visible to all team members</li>
-              <li><strong>Role information:</strong> Your role within the team (Owner, Member, or Viewer) is visible to other members</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Team Invitation Emails</h4>
-            <p className="text-muted-foreground mb-4">
-              When you are invited to a team, you receive an invitation email via Resend containing:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Team name and inviting user's email</li>
-              <li>Secure invitation link (valid for 7 days)</li>
-              <li>Your assigned role in the team</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              Invitation emails are sent from <strong>noreply@wealthconomy.com</strong>.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Rate Limiting and Security</h4>
-            <p className="text-muted-foreground mb-4">
-              To prevent abuse of the invitation system, the following rate limits apply:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>10 invitations per team per day</strong></li>
-              <li><strong>3 pending invitations per email address</strong> across all teams</li>
-              <li>Invitation tokens expire after 7 days and are automatically cleaned up</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              Rate limit tracking data (invitation timestamps, email hashes) is retained for 24 hours for security purposes.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Team Limits</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Maximum <strong>5 teams</strong> per user (as owner)</li>
-              <li>Maximum <strong>5 members</strong> per team</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Team Deletion and Data Handling</h4>
-            <p className="text-muted-foreground mb-4">
-              When a team is deleted by its owner:
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>All team memberships are permanently deleted (CASCADE)</li>
-              <li>All pending invitations are permanently deleted (CASCADE)</li>
-              <li>Shared validation analyses, experiments, and decision records remain but lose their team association</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Note:</strong> Team owners must delete all their owned teams before deleting their personal account 
-              (see Section 4.5). This ensures proper data handling and prevents orphaned teams.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
-                (providing the team collaboration feature as part of Premium service)
-              </li>
-              <li>
-                <strong>Art. 6(1)(f) GDPR:</strong> Legitimate interest in rate limiting to prevent 
-                invitation system abuse and ensure platform security
-              </li>
-            </ul>
-          </section>
-
-          {/* Section 5.9: Business Context */}
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold mb-3 mt-6">5.9 Business Context</h3>
-            <p className="text-muted-foreground mb-4">
-              All registered users can create a business context profile that is automatically included in all AI 
-              analyses to provide personalized and more relevant recommendations tailored to their specific business situation.
-              Premium subscribers have access to additional website scanning features.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Collected and Stored</h4>
-            <p className="text-muted-foreground mb-4">
-              The following data is stored in the database and can be edited or deleted by you at any time:
-            </p>
-
-            <div className="overflow-x-auto mb-4">
-              <table className="w-full text-muted-foreground border-collapse border border-border">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="border border-border p-3 text-left font-semibold">Data Field</th>
-                    <th className="border border-border p-3 text-left font-semibold">Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Industry</strong></td>
-                    <td className="border border-border p-3">Your industry (e.g., SaaS, E-Commerce, FinTech)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Company Stage</strong></td>
-                    <td className="border border-border p-3">Development phase (Idea to Growth stage)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Team Size</strong></td>
-                    <td className="border border-border p-3">Number of employees</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Revenue Range</strong></td>
-                    <td className="border border-border p-3">Monthly revenue bracket</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Target Market</strong></td>
-                    <td className="border border-border p-3">B2B, B2C, B2B2C, or D2C</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Geographic Focus</strong></td>
-                    <td className="border border-border p-3">Local, National, EU, US, or Global</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Website URL</strong></td>
-                    <td className="border border-border p-3">Your company website (optional)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Website Summary</strong></td>
-                    <td className="border border-border p-3">Auto-generated summary of your website (max. 1,000 characters)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Note:</strong> All fields except Website URL and Website Summary are available to all registered users. 
-              Website URL input and automatic website scanning via Firecrawl is a Premium-exclusive feature.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Website Scanning (Premium Feature)</h4>
-            <p className="text-muted-foreground mb-4">
-              When you provide a website URL and click the scan button, your website is scraped via the Firecrawl service:
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Provider:</strong> Firecrawl, Inc.
-              <br />
-              <strong>Location:</strong> United States
-              <br />
-              <strong>Privacy Policy:</strong>{" "}
-              <a href="https://www.firecrawl.dev/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                https://www.firecrawl.dev/privacy
-              </a>
-            </p>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Data transmitted to Firecrawl:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The website URL you entered</li>
-            </ul>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Data returned from Firecrawl and stored:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Markdown text content of the main page (without JavaScript, tracking scripts, etc.)</li>
-              <li>A truncated summary (max. 1,000 characters) is stored in our database</li>
-            </ul>
-
-            <p className="text-muted-foreground mb-4">
-              <strong>Usage Limit:</strong> Maximum 3 website scans per 24-hour rolling window.
-            </p>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Transmission to AI Models</h4>
-            <p className="text-muted-foreground mb-4">
-              The stored Business Context (including website summary) is automatically transmitted as additional 
-              context to the AI models you select (see Section 5.1) to enable personalized recommendations.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Important:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The AI models receive your Business Context in addition to your validation prompt</li>
-              <li>This means OpenAI, Google, Anthropic, and Perplexity may process your business context</li>
-              <li>The privacy policies of these providers apply accordingly (see Section 5.1)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Data Storage and Deletion</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The Business Context is stored permanently until you manually delete it</li>
-              <li>You can delete the entire context via the "Clear Context" button in the application</li>
-              <li>When you delete your user account, the Business Context is automatically deleted (CASCADE)</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>
-                <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for contract performance 
-                (providing personalized AI analyses as part of the Premium service)
-              </li>
-              <li>
-                <strong>Art. 6(1)(a) GDPR:</strong> Consent through active use of the feature 
-                (you choose whether to fill in the Business Context and initiate a website scan)
-              </li>
-            </ul>
-          </section>
-
-          {/* Section 6: Premium Subscription */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">6. Premium Subscription and Payment Processing</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. Premium Subscription and Payment Processing</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Subscription Overview</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Subscription Overview</h3>
             <p className="text-muted-foreground mb-4">
-              We offer a Premium subscription at $26.99/month that provides enhanced validation limits 
-              and more detailed analysis output.
+              We offer a Premium subscription at $26.99/month that provides enhanced features 
+              and capabilities.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Payment Processing via Freemius</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Payment Processing via Freemius</h3>
             <p className="text-muted-foreground mb-4">
               Payment processing is handled by Freemius, a third-party payment and subscription management platform.
             </p>
@@ -1031,7 +501,7 @@ const PrivacyPolicy = () => {
               subscription contract.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.3 Subscription Status Synchronization</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">5.3 Subscription Status Synchronization</h3>
             <p className="text-muted-foreground mb-4">
               Your premium status is synchronized automatically via webhooks from Freemius:
             </p>
@@ -1044,18 +514,17 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* Section 7: Email Communication */}
+          {/* Section 6: Email Communication */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">7. Email Communication</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">7.1 Transactional Emails</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails</h3>
             <p className="text-muted-foreground mb-4">
               We send transactional emails that are necessary for the operation of your account:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>Account confirmation emails</li>
               <li>Password reset emails</li>
-              <li>Team invitation emails (Premium)</li>
               <li>Important account notifications</li>
             </ul>
             <p className="text-muted-foreground mb-4">
@@ -1065,7 +534,7 @@ const PrivacyPolicy = () => {
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance).
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">7.2 Marketing Emails (Optional)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Marketing Emails (Optional)</h3>
             <p className="text-muted-foreground mb-4">
               With your explicit consent, we may send you marketing communications about new features, 
               tips for using the platform, and special offers.
@@ -1090,11 +559,11 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 8: Hosting */}
+          {/* Section 7: Hosting */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Hosting and Infrastructure</h2>
+            <h2 className="text-2xl font-semibold mb-4">7. Hosting and Infrastructure</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">8.1 Website Hosting</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.1 Website Hosting</h3>
             <p className="text-muted-foreground mb-4">
               Our website frontend is hosted on infrastructure provided by Lovable. Backend services including 
               database, authentication, and edge functions are provided directly by Supabase, Inc.
@@ -1118,7 +587,7 @@ const PrivacyPolicy = () => {
               performant hosting infrastructure.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">8.2 Data Processing Agreement</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">7.2 Data Processing Agreement</h3>
             <p className="text-muted-foreground mb-4">
               We have concluded a Data Processing Agreement (DPA / Auftragsverarbeitungsvertrag) with Supabase, Inc. 
               in accordance with Art. 28 GDPR. This agreement ensures that Supabase processes personal data 
@@ -1142,9 +611,9 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 9: Contact */}
+          {/* Section 8: Contact */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. Contact Form and Email Inquiries</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Contact Form and Email Inquiries</h2>
             <p className="text-muted-foreground mb-4">
               If you contact us via email (mail@wealthconomy.com), the data you provide (your email address, 
               name if provided, and the content of your message) will be stored and processed for the purpose 
@@ -1167,18 +636,18 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* Section 10: External Links */}
+          {/* Section 9: External Links */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. External Links</h2>
+            <h2 className="text-2xl font-semibold mb-4">9. External Links</h2>
             <p className="text-muted-foreground mb-4">
               Our website may contain links to external websites. We have no control over the content or 
               privacy practices of these external sites. Please refer to their respective privacy policies.
             </p>
           </section>
 
-          {/* Section 11: Categories of Personal Data */}
+          {/* Section 10: Categories of Personal Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Categories of Personal Data Processed</h2>
+            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data Processed</h2>
             <p className="text-muted-foreground mb-4">
               The following categories of personal data may be processed through our platform:
             </p>
@@ -1199,23 +668,8 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Authentication and account management</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Validation Data</strong></td>
-                    <td className="border border-border p-3">Prompts (max 500 chars), risk/creativity preferences</td>
-                    <td className="border border-border p-3">Multi-AI validation service</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>AI Responses</strong></td>
-                    <td className="border border-border p-3">GPT-5 Mini, Gemini 2.5 Flash, Gemini 3 Pro, Claude Sonnet 4, Sonar Pro, Sonar Reasoning Pro responses, meta-evaluation</td>
-                    <td className="border border-border p-3">Providing comprehensive analysis</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Experiment Data</strong></td>
-                    <td className="border border-border p-3">Hypotheses, tasks, outcomes, scorecard ratings, decisions</td>
-                    <td className="border border-border p-3">Decision tracking and accountability</td>
-                  </tr>
-                  <tr>
                     <td className="border border-border p-3"><strong>Usage Data</strong></td>
-                    <td className="border border-border p-3">Validation counts, timestamps, premium status</td>
+                    <td className="border border-border p-3">Timestamps, premium status</td>
                     <td className="border border-border p-3">Service limits and subscription management</td>
                   </tr>
                   <tr>
@@ -1228,29 +682,14 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Freemius IDs, subscription status, billing cycle</td>
                     <td className="border border-border p-3">Payment and subscription management</td>
                   </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Decision Records</strong> (Premium)</td>
-                    <td className="border border-border p-3">Ownership confirmations, decision context, export metadata, audit logs</td>
-                    <td className="border border-border p-3">Legal documentation and decision accountability</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Team Data</strong> (Premium)</td>
-                    <td className="border border-border p-3">Team names, slugs, memberships, roles, invitation tokens, invited emails</td>
-                    <td className="border border-border p-3">Team collaboration and workspace management</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Business Context</strong> (Premium)</td>
-                    <td className="border border-border p-3">Industry, company stage, team size, revenue range, target market, geographic focus, website URL, website summary</td>
-                    <td className="border border-border p-3">Personalized AI analyses</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
           </section>
 
-          {/* Section 12: Recipients of Personal Data */}
+          {/* Section 11: Recipients of Personal Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
             <p className="text-muted-foreground mb-4">
               Your personal data may be shared with the following categories of recipients:
             </p>
@@ -1267,28 +706,10 @@ const PrivacyPolicy = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-border p-3"><strong>OpenAI</strong> (Direct API)</td>
-                    <td className="border border-border p-3">AI validation analysis</td>
-                    <td className="border border-border p-3">Validation prompts, preferences</td>
-                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Google LLC</strong> (Direct API)</td>
-                    <td className="border border-border p-3">AI validation, OAuth</td>
-                    <td className="border border-border p-3">Validation prompts, OAuth data</td>
+                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
+                    <td className="border border-border p-3">OAuth authentication</td>
+                    <td className="border border-border p-3">OAuth data</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Anthropic</strong> (Direct API)</td>
-                    <td className="border border-border p-3">AI validation analysis</td>
-                    <td className="border border-border p-3">Validation prompts, preferences</td>
-                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Perplexity AI</strong> (Direct API)</td>
-                    <td className="border border-border p-3">AI validation with web research</td>
-                    <td className="border border-border p-3">Validation prompts, preferences</td>
-                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Supabase</strong></td>
@@ -1308,12 +729,6 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Email, payment details</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
-                  <tr>
-                    <td className="border border-border p-3"><strong>Firecrawl, Inc.</strong></td>
-                    <td className="border border-border p-3">Website scraping for Business Context</td>
-                    <td className="border border-border p-3">Website URL</td>
-                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1323,9 +738,9 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 13: Obligation to Provide Data */}
+          {/* Section 12: Obligation to Provide Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Obligation to Provide Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Personal Data</h2>
             <p className="text-muted-foreground mb-4">
               The provision of personal data is partially required by law or may result from contractual 
               provisions. Specifically:
@@ -1333,11 +748,7 @@ const PrivacyPolicy = () => {
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
               <li>
                 <strong>Email address:</strong> Required for account creation and authentication. Without 
-                providing an email address, you cannot create an account or use the validation services.
-              </li>
-              <li>
-                <strong>Validation prompt:</strong> Required to receive AI-powered analysis. Without 
-                submitting your question, we cannot provide recommendations.
+                providing an email address, you cannot create an account or use our services.
               </li>
               <li>
                 <strong>Payment information:</strong> Required only if you wish to subscribe to Premium. 
@@ -1346,41 +757,23 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* Section 14: Automated Decision-Making */}
+          {/* Section 13: Automated Decision-Making */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Automated Decision-Making and Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making and Profiling</h2>
             <p className="text-muted-foreground mb-4">
-              Our Multi-AI Validation Platform uses artificial intelligence to analyze your business questions 
-              and provide recommendations. This constitutes automated processing but NOT automated decision-making 
-              with legal effects as defined in Art. 22 GDPR, because:
+              We do not currently engage in automated decision-making with legal effects as defined in 
+              Art. 22 GDPR. Our platform does not make binding decisions about you based on automated 
+              processing alone.
             </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>The AI provides recommendations and analysis, not binding decisions</li>
-              <li>You retain full control over whether to act on any recommendation</li>
-              <li>The output does not produce legal effects or similarly significantly affect you</li>
-              <li>The analysis is advisory in nature and requires your human judgment for implementation</li>
-            </ul>
-
-            <h4 className="text-lg font-semibold mb-2 mt-4">How the AI Processing Works</h4>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>You select exactly 3 AI models from the available options and assign influence weights (10-80% each)</li>
-              <li>Your prompt is sent to all three selected models simultaneously</li>
-              <li>Available models include: GPT-5 Mini, Gemini 2.5 Flash, Claude Sonnet 4, Perplexity Sonar Pro (base); Gemini 3 Pro Preview, Sonar Reasoning Pro (premium)</li>
-              <li>Each model provides independent analysis based on the prompt and your preferences</li>
-              <li>A synthesis AI process (meta-evaluation by Gemini 2.5 Flash) combines the responses, respecting your assigned weights</li>
-              <li>The system identifies consensus points, majority opinions, and dissenting views</li>
-              <li>A final recommendation is generated based on this weighted multi-model analysis</li>
-            </ul>
-
             <p className="text-muted-foreground mb-4">
-              <strong>Transparency:</strong> You can see the individual responses from each AI model, 
-              allowing you to understand how the final recommendation was derived.
+              Should we introduce AI-powered features in the future, any such processing will be documented 
+              in an updated version of this Privacy Policy with appropriate transparency and safeguards.
             </p>
           </section>
 
-          {/* Section 15: Storage Duration */}
+          {/* Section 14: Storage Duration */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Storage Duration</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Storage Duration</h2>
             <p className="text-muted-foreground mb-4">
               We store your personal data only for as long as necessary for the purposes for which it was collected:
             </p>
@@ -1399,21 +792,6 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Account data</td>
                     <td className="border border-border p-3">Until account deletion</td>
                     <td className="border border-border p-3">User-initiated deletion</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Validation analyses</td>
-                    <td className="border border-border p-3">10 most recent retained</td>
-                    <td className="border border-border p-3">Automatic cleanup or manual deletion</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Experiments</td>
-                    <td className="border border-border p-3">Until completion or deletion</td>
-                    <td className="border border-border p-3">User completes/deletes experiment</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Usage counters</td>
-                    <td className="border border-border p-3">24-hour rolling window</td>
-                    <td className="border border-border p-3">Automatic reset after 24 hours</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3">Registration attempts (IP hash)</td>
@@ -1435,101 +813,70 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Indefinitely (deduplication)</td>
                     <td className="border border-border p-3">Fraud prevention and duplicate payment detection</td>
                   </tr>
-                  <tr>
-                    <td className="border border-border p-3">Decision records (Premium)</td>
-                    <td className="border border-border p-3">Until account deletion</td>
-                    <td className="border border-border p-3">User-initiated or CASCADE on account deletion</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Decision audit logs (Premium)</td>
-                    <td className="border border-border p-3">Until account deletion</td>
-                    <td className="border border-border p-3">CASCADE when parent decision record is deleted</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Team membership (Premium)</td>
-                    <td className="border border-border p-3">Until team exit or team deletion</td>
-                    <td className="border border-border p-3">User leaves team, team deleted, or account deletion</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Team invitation tokens (Premium)</td>
-                    <td className="border border-border p-3">7 days</td>
-                    <td className="border border-border p-3">Automatic expiry and cleanup</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Invitation rate-limit tracking</td>
-                    <td className="border border-border p-3">24 hours</td>
-                    <td className="border border-border p-3">Automatic cleanup</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-border p-3">Business Context</td>
-                    <td className="border border-border p-3">Until manual deletion or account deletion</td>
-                    <td className="border border-border p-3">User-initiated or CASCADE on account deletion</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
 
             <p className="text-muted-foreground mb-4">
-              When you delete your account, all associated data is permanently deleted, including 
-              decision records and their associated audit logs (database CASCADE), except for the 
-              temporary email hash used to prevent immediate re-registration (deleted after 24 hours).
+              When you delete your account, all associated data is permanently deleted, 
+              except for the temporary email hash used to prevent immediate re-registration (deleted after 24 hours).
             </p>
           </section>
 
-          {/* Section 16: Your Rights */}
+          {/* Section 15: Your Rights */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Your Rights Under GDPR</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Your Rights Under GDPR</h2>
             <p className="text-muted-foreground mb-4">
               Under the General Data Protection Regulation (GDPR), you have the following rights regarding 
               your personal data:
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.1 Right of Access (Art. 15 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.1 Right of Access (Art. 15 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to obtain confirmation as to whether personal data concerning you is being 
               processed. If so, you have the right to access that data and receive information about the 
               processing.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.2 Right to Rectification (Art. 16 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.2 Right to Rectification (Art. 16 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request correction of inaccurate personal data and, where applicable, 
               completion of incomplete personal data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.3 Right to Erasure (Art. 17 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.3 Right to Erasure (Art. 17 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request deletion of your personal data under certain conditions. You 
               can delete your account at any time through the Profile settings, which will permanently 
               erase all your data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.4 Right to Restriction of Processing (Art. 18 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.4 Right to Restriction of Processing (Art. 18 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request restriction of processing under certain conditions, for example, 
               if you contest the accuracy of the data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.5 Right to Data Portability (Art. 20 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.5 Right to Data Portability (Art. 20 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to receive your personal data in a structured, commonly used, and 
               machine-readable format and to transmit that data to another controller.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.6 Right to Object (Art. 21 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.6 Right to Object (Art. 21 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to object to processing based on legitimate interests (Art. 6(1)(f) GDPR). 
               We will cease processing unless we demonstrate compelling legitimate grounds that override 
               your interests.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.7 Right to Withdraw Consent (Art. 7(3) GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.7 Right to Withdraw Consent (Art. 7(3) GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               Where processing is based on consent (e.g., marketing emails), you have the right to withdraw 
               consent at any time. Withdrawal does not affect the lawfulness of processing before withdrawal.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.8 Right to Lodge a Complaint (Art. 77 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.8 Right to Lodge a Complaint (Art. 77 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to lodge a complaint with a supervisory authority. The responsible 
               supervisory authority for us is:
@@ -1549,7 +896,7 @@ const PrivacyPolicy = () => {
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">16.9 Exercising Your Rights</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">15.9 Exercising Your Rights</h3>
             <p className="text-muted-foreground mb-4">
               To exercise any of these rights, please contact us at:
             </p>
@@ -1562,9 +909,9 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 17: Changes to Privacy Policy */}
+          {/* Section 16: Changes to Privacy Policy */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">17. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to reflect changes in our services, 
               legal requirements, or operational practices. Changes will be indicated by updating the 
@@ -1584,23 +931,16 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Version 5.9 (February 1, 2026):</strong> Corrected Business Context section - basic profile fields (Industry, Stage, Team Size, Revenue, Target Market, Geographic Focus) are available to all registered users; only Website URL input and website scanning via Firecrawl is Premium-exclusive.</li>
-              <li><strong>Version 5.8 (February 1, 2026):</strong> Added Business Context to storage duration table (Section 15).</li>
-              <li><strong>Version 5.7 (February 1, 2026):</strong> Added Business Context section (5.9) documenting Premium feature for personalized AI analyses. Added Firecrawl, Inc. as data recipient for website scraping. Updated data categories table with Business Context data. Documented website scan rate limiting (3 scans per 24h rolling window).</li>
-              <li><strong>Version 5.6 (January 28, 2026):</strong> Minor formatting updates and clarifications.</li>
-              <li><strong>Version 5.5 (January 26, 2026):</strong> Added Team Workspaces section (5.8) documenting Premium team collaboration features including: team creation, membership roles, invitation system, email visibility between members, rate limiting, and data retention. Updated Section 7.1 to include team invitation emails. Expanded data categories and retention tables with team-related data.</li>
-              <li><strong>Version 5.4 (January 24, 2026):</strong> Added model weights to data stored list. Added Dashboard Statistics section (5.7). Corrected Gemini model name to "Gemini 3 Flash".</li>
-              <li><strong>Version 5.3 (January 23, 2026):</strong> Added Decision Audit Records section (5.6) documenting Premium decision ownership confirmation feature, audit logging, and client-side PDF generation. Updated data categories and retention tables.</li>
-              <li><strong>Version 5.2 (January 21, 2026):</strong> Corrected Berlin Data Protection Authority address (Alt-Moabit 59-61). Updated Recipients table: removed OpenRouter, added Lovable AI Gateway, Anthropic, and Perplexity AI. Updated AI model names in data categories.</li>
-              <li><strong>Version 5.1 (January 21, 2026):</strong> Removed obsolete database tables and edge functions (Business Tools Advisor, Ads Advisor, Firecrawl). Cleaned up version history to reflect current platform scope.</li>
-              <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic (Claude Sonnet 4) and Perplexity AI (Sonar Pro, Sonar Reasoning Pro) providers. Documented Lovable AI Gateway. Added web search functionality disclosure. Updated model selection and weighting documentation.</li>
-              <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform. Added documentation for multi-model AI validation, experiment workflow, and updated data processing practices.</li>
+              <li><strong>Version 6.0 (February 8, 2026):</strong> Platform update – removed feature-specific sections (Multi-AI Validation, Team Workspaces, Business Context, Dashboard Statistics, Decision Audit Records, Experiment Workflow) pending new service implementation. Simplified data categories, recipients, and retention tables accordingly. Renumbered all sections.</li>
+              <li><strong>Version 5.9 (February 1, 2026):</strong> Corrected Business Context section – basic profile fields available to all registered users; only Website URL input and website scanning via Firecrawl is Premium-exclusive.</li>
+              <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic and Perplexity AI providers. Documented Lovable AI Gateway. Added web search functionality disclosure.</li>
+              <li><strong>Version 4.0 (January 17, 2026):</strong> Complete rewrite for Multi-AI Validation Platform.</li>
             </ul>
           </section>
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: February 1, 2026
+              Last updated: February 8, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

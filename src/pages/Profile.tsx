@@ -114,18 +114,18 @@ const Profile = () => {
         canonical="/profile"
         noindex={true}
       />
-      <div className="min-h-screen bg-gradient-to-b from-background via-muted/30 to-background">
+      <div className="min-h-screen bg-background">
         <Navbar />
       
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold text-primary mb-2">
               Profile Settings
             </h1>
             <p className="text-muted-foreground">Manage your account and preferences</p>
           </div>
-          <Card className="bg-card border-border shadow-elegant hover:shadow-hover transition-shadow duration-300">
+          <Card className="bg-card border-border shadow-lg transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="text-2xl">Account Information</CardTitle>
               <CardDescription>

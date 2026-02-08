@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="relative bg-background safe-bottom">
-      {/* Top gradient line */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      {/* Top border line */}
+      <div className="absolute inset-x-0 top-0 h-px bg-border" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="max-w-lg mx-auto">
@@ -53,7 +53,7 @@ const Footer = () => {
           </div>
           
           {/* Divider */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/80 to-transparent mb-8" />
+          <div className="w-full h-px bg-border mb-8" />
           
           {/* Bottom section */}
           <div className="flex flex-col items-center">

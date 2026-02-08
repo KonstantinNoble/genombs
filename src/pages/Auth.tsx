@@ -248,7 +248,7 @@ const Auth = () => {
     <>
       <SEOHead
         title={isSignUp ? "Create Account" : "Sign In"}
-        description="Sign in to Synoptas to access your AI-powered business strategies."
+        description="Sign in to Synoptas to access your account."
         canonical="/auth"
         noindex={true}
       />

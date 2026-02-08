@@ -1,184 +1,148 @@
 
 
-# Komplettes Redesign: Professionelles Schwarz-Orange Theme
+# Frontend-Aufbau: Business Genome Plattform
 
 ## Ueberblick
-Die gesamte Webseite wird von dem aktuellen gruenen Light-Theme auf ein professionelles dunkles Schwarz-Orange Design umgestellt. Keine Gradient-Farben -- nur klare, flache Farben.
+
+Wir bauen zuerst das komplette Frontend -- alle Seiten, Navigation, und das visuelle Design -- mit statischen Demodaten. Keine API-Aufrufe, keine Edge Functions, keine Datenbank-Aenderungen. Alles wird mit Beispieldaten befuellt, sodass du das Look-and-Feel sehen und pruefen kannst, bevor wir das Backend anbinden.
 
 ---
 
-## Farbpalette (Neu)
+## Was genau gebaut wird
 
-```text
-Hintergrund:        #0A0A0A (fast schwarz)
-Karten/Cards:       #141414 (dunkelgrau)
-Borders:            #262626 (subtiles grau)
-Text (primaer):     #FAFAFA (weiss)
-Text (gedaempft):   #A3A3A3 (grau)
-Primary/Akzent:     #F97316 (Orange)
-Primary Hover:      #EA580C (dunkleres Orange)
-Destructive:        #EF4444 (rot)
-Muted Background:   #1A1A1A
-Input Background:   #1A1A1A
-```
+### 1. Neue Seite: `/dashboard` -- Analyse-Uebersicht
 
----
+Die zentrale Seite nach dem Login. Besteht aus:
 
-## Betroffene Dateien
+**Oberer Bereich:**
+- URL-Eingabefeld mit grossem "Analyze" Button (orange)
+- Scan-Limit-Anzeige: z.B. "2 von 3 Analysen diesen Monat" (als Progress-Bar)
+- Upgrade-Hinweis fuer Free-User
 
-### 1. `src/index.css` -- Design-System Kern (groesste Aenderung)
+**Unterer Bereich: Scan-Historie**
+- Karten-Grid (2 Spalten Desktop, 1 Spalte Mobil) mit bisherigen Analysen
+- Pro Karte: Domain-Name, Marktsegment, Datum, Status-Badge, Link zur Detail-Ansicht
+- Leerer Zustand mit Illustration: "Starte deine erste Analyse"
+- 3-4 Beispiel-Karten mit Demodaten (z.B. "stripe.com", "notion.so", "linear.app")
 
-**CSS-Variablen aktualisieren (Zeilen 9-82, plus .dark Block):**
-- `--background`: von weiss auf fast-schwarz (0 0% 4%)
-- `--foreground`: von dunkel auf weiss (0 0% 98%)
-- `--card`: dunkelgrau (0 0% 8%)
-- `--primary`: von gruen (142 76% 36%) auf orange (25 95% 53%)
-- `--accent`: gleiche Orange-Werte
-- `--muted`: dunkles grau (0 0% 10%)
-- `--border`: subtiles grau (0 0% 15%)
-- `--ring`: orange
-- Alle `--accent-warm`, `--accent-cool`, `--neon-green` entfernen oder auf orange anpassen
-- `--shadow-glow` auf orange-basiert aendern
+### 2. Neue Seite: `/genome/:id` -- Business Genome Detail-Ansicht
 
-**.dark Block (Zeilen 85-139):** Gleiche Werte wie :root (da jetzt immer dunkel)
+Die Ergebnis-Seite einer Analyse. Aufgebaut als Karten-Dashboard:
 
-**Body Background (Zeilen 147-154):** Grid-Pattern auf subtiles dunkles Muster aendern oder entfernen
+**Header:**
+- Domain-Name gross, Analyse-Datum, Status-Badge
+- "PDF Export" Button und "Neue Analyse" Button
 
-**Text Selection (Zeilen 238-246):** Auf Orange umstellen
+**Karten-Bereiche (jeweils eigene Card-Komponente):**
+- **Geschaeftsmodell**: Typ (SaaS, E-Commerce, etc.), kurze Beschreibung
+- **Angebotsstruktur**: Liste erkannter Produkte/Services mit Preissignalen
+- **Zielgruppen-Cluster**: 2-3 erkannte Zielgruppen mit Beschreibung
+- **Funnel-Analyse**: Funnel-Typ (z.B. "Product-Led Growth"), erkannte Elemente
+- **Kanal-Nutzung**: Welche Kanaele genutzt werden (SEO, Social, Paid, etc.) als Tags
+- **Content-Formate**: Blog, Video, Podcast etc. als Tags
+- **Messaging / USPs**: Erkannte Nutzenversprechen als Liste
+- **Trust-Elemente**: Testimonials, Logos, Zertifikate
+- **Traffic-Daten**: Besucherzahlen, Top-Keywords (SimilarWeb-Platzhalter)
 
-**Gradient-Referenzen entfernen/vereinfachen:**
-- `.gradient-text` (Zeile 459): Einfach orange Farbe statt Gradient
-- `.card-elevated` (Zeile 379): Flat dark background statt Gradient
-- `.premium-card` (Zeile 585): Flat dark background statt Gradient
-- `.animate-shimmer` (Zeile 310): Orange-basiert
-- `.comparison-card-solution` (Zeile 1057): Flat ohne Gradient
-- `.comparison-card-problem` (Zeile 1041): Flat ohne Gradient
-- `.progress-visual-fill` (Zeile 1003): Flat orange statt Gradient
-- `.divider-gradient` (Zeile 857): Solid border statt Gradient
-- `.section-fade-top/bottom`: Auf neuen Hintergrund anpassen
-- `.hero-gradient` Hintergrund im Tailwind Config: entfernen oder anpassen
+Alles mit Demodaten befuellt (Beispiel: stripe.com).
 
-**Alle `linear-gradient` Referenzen in CSS-Klassen durch flache Farben ersetzen.**
+### 3. Aktualisierte Seite: `/` -- Homepage (Produkt-Landingpage)
 
-### 2. `tailwind.config.ts` -- Tailwind Konfiguration
+Von "Coming Soon" zu einer richtigen Produkt-Seite:
 
-- `backgroundImage.hero-gradient`: Entfernen (keine Gradients)
-- Animationen die gruen referenzieren (consensus-pulse, etc.) auf Orange umstellen oder entfernen
-- `boxShadow` Glow-Werte auf Orange aktualisieren
+**Hero-Section:**
+- Headline: "Understand any business from a single URL"
+- Subheadline: "Turn any website into a structured market intelligence report"
+- CTA-Button: "Start Analyzing" (fuehrt zu /dashboard oder /auth)
+- Darunter: Mock-Screenshot oder stilisiertes Genome-Preview
 
-### 3. `src/components/ui/button.tsx` -- Button-Varianten
+**Features-Section (3 Spalten):**
+- "Domain Intelligence" -- Automatische Geschaeftsmodell-Erkennung
+- "Market Positioning" -- Wettbewerbs- und Marktanalyse
+- "Actionable Insights" -- Konkrete Empfehlungen
 
-- `default`: `bg-primary` bleibt (wird automatisch orange durch CSS-Variablen)
-- `warm` und `cool` Varianten: Entfernen oder auf eine einzelne Akzent-Variante reduzieren
-- `hover:shadow-glow-warm` und `hover:shadow-glow-cool` durch `hover:shadow-glow` ersetzen
-- Alle Varianten behalten `rounded-2xl`
+**How-it-Works-Section (3 Schritte):**
+1. URL eingeben
+2. KI analysiert die Webseite
+3. Strukturiertes Business Genome erhalten
 
-### 4. `src/components/Navbar.tsx` -- Navigation
+**CTA-Section unten:**
+- "Ready to decode your market?" mit Button
 
-- Hintergrund: Transparent auf dunklem Hintergrund mit Orange-Akzenten
-- Logo-Text: `text-foreground` bleibt (wird weiss)
-- NavLink Underline: `bg-primary` bleibt (wird orange)
-- CTA-Button: `bg-foreground text-background` beibehalten (weisser Button auf dunkel -- oder auf Orange umstellen fuer mehr Akzent)
-- Mobile Menu Backdrop: `bg-background/98` anpassen
-- Border zwischen Logo und Nav: `border-border` passt sich automatisch an
+### 4. Aktualisierte Seite: `/pricing` -- Pricing mit konkreten Features
 
-### 5. `src/components/Footer.tsx` -- Footer
+Die bestehende Pricing-Seite bekommt konkrete Feature-Listen:
 
-- Gradient-Linien (`bg-gradient-to-r from-transparent via-border to-transparent`) durch solide `border-border` Linien ersetzen
+**Free Plan ($0/mo):**
+- 3 Analysen pro Monat
+- Basis Business Genome
+- Geschaeftsmodell-Erkennung
+- Angebotsstruktur-Analyse
 
-### 6. `src/pages/Home.tsx` -- Startseite
+**Premium Plan ($26.99/mo):**
+- Unbegrenzte Analysen
+- Vollstaendiges Business Genome
+- Traffic-Daten (SimilarWeb)
+- PDF-Export
+- Wettbewerbs-Vergleich (Coming Soon)
+- Prioritaets-Support
 
-- Keine spezifischen Farbklassen zu aendern (nutzt Design-Token)
-- Funktioniert automatisch mit neuem Theme
+### 5. Aktualisierte Navigation
 
-### 7. `src/pages/Auth.tsx` -- Authentifizierung
+**Navbar (Desktop):**
+- Home | Dashboard | Pricing | Contact
+- "Dashboard" nur sichtbar wenn eingeloggt
 
-- Hintergrund-Pattern passt sich automatisch an
-- Card-Styling: `shadow-2xl` und `border-border/50` anpassen
-- SEO description (Zeile 251): "AI-powered business strategies" durch generischen Text ersetzen
+**Navbar (Mobil):**
+- Gleiches Menue mit Dashboard-Link fuer eingeloggte User
 
-### 8. `src/pages/Pricing.tsx` -- Preise
+### 6. Neue Komponenten
 
-- Premium-Card Border: `border-2 border-primary` wird automatisch orange
-- Check-Icons: `text-primary` wird automatisch orange
-- Keine Gradients vorhanden
+Wiederverwendbare Komponenten fuer das Genome-Dashboard:
 
-### 9. `src/pages/Profile.tsx` -- Profil
-
-- **Zeile 117:** `bg-gradient-to-b from-background via-muted/30 to-background` durch `bg-background` ersetzen (kein Gradient)
-- **Zeile 123:** `bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent` durch `text-primary` ersetzen (kein Gradient)
-- **Zeile 128:** `shadow-elegant hover:shadow-hover` -- diese Custom Shadows existieren nicht, entfernen
-
-### 10. `src/pages/Contact.tsx` -- Kontakt
-
-- Icon-Hintergrund: `bg-primary/10` wird automatisch orange-getint
-- Link-Farbe: `text-primary` wird automatisch orange
-
-### 11. `src/pages/Imprint.tsx` -- Impressum
-
-- `prose-invert` Klasse beibehalten (funktioniert fuer dunkles Theme)
-
-### 12. `src/pages/ResetPassword.tsx` und `src/pages/UpdatePassword.tsx`
-
-- Hintergrund-Pattern passt sich automatisch an
-- Alle `text-primary` und `bg-primary/10` Referenzen werden automatisch orange
+- `GenomeCard` -- Einzelne Info-Karte (Titel, Icon, Inhalt)
+- `TagList` -- Horizontal scrollbare Tag-Liste (fuer Kanaele, Formate)
+- `ScanCard` -- Karte fuer die Dashboard-Historie
+- `EmptyState` -- Leerer Zustand mit Icon und Text
+- `ScanLimitBar` -- Progress-Bar fuer Scan-Limit
 
 ---
 
-## Zusammenfassung der Gradient-Entfernungen
+## Dateien die erstellt oder geaendert werden
 
-Alle `linear-gradient` und `radial-gradient` Vorkommen in `src/index.css` werden durch flache Farben ersetzt:
+### Neue Dateien:
+- `src/pages/Dashboard.tsx` -- Dashboard-Seite
+- `src/pages/GenomeView.tsx` -- Business Genome Detail-Ansicht
+- `src/lib/demo-data.ts` -- Statische Demodaten fuer alle Ansichten
 
-| Klasse | Vorher (Gradient) | Nachher (Flat) |
-|---|---|---|
-| body background | Grid-Gradient | Solide oder sehr subtiles Muster |
-| .card-elevated | linear-gradient top-bottom | Flat `hsl(var(--card))` |
-| .gradient-text | Gradient clip | Einfach `color: hsl(var(--primary))` |
-| .premium-card | linear-gradient | Flat card color |
-| .btn-glow::before | linear-gradient shine | Einfacher opacity-Effekt |
-| .animated-line | Gradient line | Solide dünne Linie |
-| .divider-gradient | Gradient divider | Solid border |
-| .progress-visual-fill | Gradient fill | Solid orange |
-| .section-fade-top/bottom | Gradient fade | Entfernen oder solid |
-| .comparison-cards | Gradient backgrounds | Flat backgrounds |
-| .glow-border::before | Gradient glow | Solid border-color change |
-| .section-header::after | Gradient underline | Solid orange line |
-| Footer gradient lines | Gradient lines | Solid border |
+### Geaenderte Dateien:
+- `src/App.tsx` -- Neue Routen `/dashboard` und `/genome/:id` hinzufuegen
+- `src/pages/Home.tsx` -- Komplett ueberarbeitet als Produkt-Landingpage
+- `src/pages/Pricing.tsx` -- Konkrete Feature-Listen
+- `src/components/Navbar.tsx` -- Dashboard-Link fuer eingeloggte User
 
 ---
 
-## Technische Details
+## Design-Prinzipien
 
-### CSS-Variablen Mapping (:root)
+- Schwarz-Orange Farbschema (bestehend, keine Aenderung)
+- Keine Gradients -- nur flache Farben
+- Karten mit `bg-card border-border` (bestehende Design-Token)
+- Orange fuer primaere Aktionen und Highlights
+- Helle Texte (`text-foreground`) fuer Hauptinhalte
+- Gedaempfte Texte (`text-muted-foreground` bei 85% Helligkeit) fuer sekundaere Infos
+- Responsive: Mobile-first, 1-Spalte mobil, 2-3 Spalten Desktop
+- Alle Komponenten nutzen bestehende shadcn/ui Bausteine (Card, Badge, Button, Progress)
 
-```text
-Vorher (Gruen/Light)          Nachher (Orange/Dark)
---background: 0 0% 100%      --background: 0 0% 4%
---foreground: 0 0% 8%        --foreground: 0 0% 98%
---card: 0 0% 98%             --card: 0 0% 8%
---card-foreground: 0 0% 8%   --card-foreground: 0 0% 98%
---popover: 0 0% 100%         --popover: 0 0% 8%
---popover-foreground: 0 0% 8%  --popover-foreground: 0 0% 98%
---primary: 142 76% 36%       --primary: 25 95% 53%
---primary-foreground: 0 0% 100%  --primary-foreground: 0 0% 100%
---secondary: 0 0% 96%        --secondary: 0 0% 12%
---secondary-foreground: 0 0% 8%  --secondary-foreground: 0 0% 98%
---muted: 0 0% 96%            --muted: 0 0% 10%
---muted-foreground: 0 0% 15%   --muted-foreground: 0 0% 64%
---accent: 142 76% 36%        --accent: 25 95% 53%
---accent-foreground: 0 0% 100%  --accent-foreground: 0 0% 100%
---destructive: 0 72% 51%     --destructive: 0 72% 51% (bleibt)
---border: 0 0% 90%           --border: 0 0% 15%
---input: 0 0% 90%            --input: 0 0% 15%
---ring: 142 76% 36%          --ring: 25 95% 53%
-```
+---
 
-### Reihenfolge der Implementierung
-1. `src/index.css` -- CSS-Variablen und Utility-Klassen (Kern-Aenderung)
-2. `tailwind.config.ts` -- Gradient-Referenzen und gruen-spezifische Animationen
-3. `src/components/ui/button.tsx` -- Warm/Cool Varianten bereinigen
-4. `src/pages/Profile.tsx` -- Gradient-Klassen entfernen
-5. `src/components/Footer.tsx` -- Gradient-Linien durch solide ersetzen
-6. `src/pages/Auth.tsx` -- SEO-Text korrigieren
-7. Alle anderen Seiten: Automatische Anpassung durch Design-Token
+## Was NICHT gebaut wird (spaeter mit Backend)
+
+- Kein Firecrawl-Aufruf
+- Kein SimilarWeb-Aufruf
+- Keine LLM-Analyse
+- Keine Datenbank-Tabellen
+- Keine Edge Functions
+- Kein echter PDF-Export (Button ist da, Funktion kommt spaeter)
+- Keine echte Scan-Limit-Pruefung
 

@@ -81,7 +81,7 @@ const PricingPage = () => {
                 $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
               </div>
               <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-muted-foreground">
+                <li className="flex items-center gap-2 text-foreground">
                   <Check className="w-4 h-4 text-primary shrink-0" />
                   Basic access
                 </li>
@@ -108,15 +108,15 @@ const PricingPage = () => {
                 $26.99<span className="text-lg font-normal text-muted-foreground">/mo</span>
               </div>
               <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-muted-foreground">
+                <li className="flex items-center gap-2 text-foreground">
                   <Check className="w-4 h-4 text-primary shrink-0" />
                   Everything in Free
                 </li>
-                <li className="flex items-center gap-2 text-muted-foreground">
+                <li className="flex items-center gap-2 text-foreground">
                   <Check className="w-4 h-4 text-primary shrink-0" />
                   Premium features
                 </li>
-                <li className="flex items-center gap-2 text-muted-foreground">
+                <li className="flex items-center gap-2 text-foreground">
                   <Check className="w-4 h-4 text-primary shrink-0" />
                   Priority support
                 </li>

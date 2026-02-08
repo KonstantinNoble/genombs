@@ -1,248 +1,221 @@
 
 
-# Frontend-Erweiterung: Umfassende Strukturen und Funktionsuebersichten
+# Perspektivwechsel: Von Website-Audit zu Market Intelligence
 
-## Ueberblick
+## Das Problem
 
-Das aktuelle Frontend hat die Grundbausteine, wirkt aber noch wie ein Prototyp. Dieses Update macht aus jeder Seite eine vollwertige, professionelle Ansicht mit echten Strukturen, Leisten, Indikatoren und Funktionsuebersichten -- sodass das Produkt "Business Genome" sofort greifbar wird.
+Das aktuelle UI ist aus der Perspektive einer **Selbst-Analyse** aufgebaut -- als wuerde der User seine eigene Website analysieren (wie ein SEO-Audit-Tool). Aber das Produkt ist **Market Intelligence**: Man analysiert FREMDE Unternehmen, um den MARKT zu verstehen.
 
----
+Konkrete Beispiele, was aktuell falsch ist:
 
-## 1. Homepage (`/`) -- Vollstaendige Produkt-Landingpage
-
-**Aktuell:** Hero + 3 Feature-Cards + 3 Schritte + CTA = 4 Sektionen, relativ schlank.
-
-**Neu hinzugefuegt:**
-
-### Social-Proof-Leiste (nach Hero)
-- Zahlenreihe: "500+ Businesses Analyzed" | "12 Market Segments" | "< 60s per Analysis"
-- Animierte Counter-Zahlen (statisch als Demo)
-
-### Use-Cases-Sektion (nach Features)
-- 3-4 konkrete Anwendungsfaelle als Karten:
-  - "Competitor Research" -- Wettbewerber analysieren in Sekunden
-  - "Market Entry" -- Neuen Markt verstehen bevor man einsteigt
-  - "Sales Intelligence" -- Leads qualifizieren durch Website-Analyse
-  - "Content Strategy" -- Content-Luecken im Markt finden
-- Jede Karte mit Icon, Titel, Beschreibung und Beispiel-Badge
-
-### Vergleichstabelle (neue Sektion)
-- "Business Genome vs. Traditional Tools"
-- Tabelle mit Zeilen: Speed, Depth, Cost, Automation, Graph-based
-- Business Genome hat Haekchen/Check, andere Tools haben X oder "Partial"
-
-### Testimonial-Platzhalter (vor CTA)
-- 2-3 Zitat-Karten mit Platzhalter-Namen und -Firmen
-- Vorbereitet fuer echte Testimonials spaeter
-
-### FAQ-Sektion (vor Footer)
-- Accordion-Element mit 5-6 haeufigen Fragen:
-  - "What is a Business Genome?"
-  - "How accurate is the analysis?"
-  - "What data sources do you use?"
-  - "How long does an analysis take?"
-  - "Can I export reports?"
-  - "Is my data secure?"
+```text
+AKTUELL (falsch)                              RICHTIG (Market Intelligence)
+--------------------------------------------- -----------------------------------------------
+"Enter a URL to generate a Business Genome"   "Research any company to decode its market"
+Recommendations: "Add a free trial to         Market Insight: "72% of competitors in this
+your funnel"                                  segment offer free trials -- this is a
+                                              standard market pattern"
+"Genome Completeness" Score                   "Intelligence Depth" Score
+"Credits Remaining" (eigene Scans)            "Research Credits" (Markt-Recherchen)
+"Your Business Genome"                        "Market Intelligence Report"
+Traffic Data als Self-Check                   Traffic Data als Wettbewerbs-Intelligence
+"Analyze" Button                              "Research" Button
+```
 
 ---
 
-## 2. Dashboard (`/dashboard`) -- Vollstaendiges Analyse-Cockpit
+## Was sich aendert (Seite fuer Seite)
 
-**Aktuell:** Nur URL-Input + Scan-Limit-Bar + Scan-History. Keine Uebersicht.
+### 1. Dashboard -- Von "Analyse-Cockpit" zu "Research Hub"
 
-**Neu hinzugefuegt:**
+**Aktuell:** "Enter a URL to generate a Business Genome"
+**Neu:** "Research any company -- decode its market position, strategy, and playbook"
 
-### Begruessung + Quick-Stats-Leiste (oben)
-- "Welcome back, [Name]" oder "Welcome back" (wenn kein Name vorhanden)
-- 4 Stat-Karten nebeneinander:
-  - "Total Analyses" (Zahl + Icon)
-  - "This Month" (Zahl + Icon)
-  - "Credits Remaining" (Zahl + Fortschrittsbalken)
-  - "Plan" (Free/Premium Badge + Upgrade-Link)
+Aenderungen:
+- Headline: "Market Research Hub" statt "Welcome back"
+- URL-Input Label: "Which company do you want to research?" statt "Enter URL"
+- Button: "Research" statt "Analyze"
+- Supported-Text: "Enter any company website to generate a market intelligence report"
+- Stats: "Companies Researched" statt "Total Analyses"
+- Stats: "Research Credits" statt "Credits Remaining"
+- Recent URLs: "Recent Research" statt "Recent"
+- Tab-Sektion: "Research History" statt "Analyses"
+- ScanCard: Framing als "researched company" nicht als "analysierte eigene Seite"
 
-### Verbesserter URL-Input-Bereich
-- Bleibt, bekommt aber einen Hinweis-Text:
-  - "Supported: Company websites, SaaS landing pages, E-Commerce shops"
-- Und eine "Recent URLs" Schnellauswahl darunter (letzte 3 analysierte Domains als Chips)
+### 2. Genome View -- Von "Self-Audit" zu "Intelligence Dossier"
 
-### Tab-Navigation fuer Scan-Historie
-- Tabs: "All" | "Completed" | "In Progress" | "Failed"
-- Suchfeld zum Filtern nach Domain/Company
-- Sortierung: "Newest first" / "Oldest first"
+Dies ist die groesste Aenderung. Jede Sektion muss aus der Perspektive eines EXTERNEN BETRACHTERS formuliert sein.
 
-### Verbesserte ScanCard
-- Zusaetzlich zum bestehenden Inhalt:
-  - Kleine Tag-Zeile mit erkanntem Business Model (z.B. "SaaS", "E-Commerce")
-  - Genome-Completeness-Indikator (kleiner Fortschrittsbalken: "9/9 sections analyzed")
-  - Quick-Actions: "View" | "Re-analyze" | "Delete" (als Hover-Aktionen)
+**Header:**
+- Aktuell: "Stripe" mit Badges
+- Neu: "Intelligence Report: Stripe" -- klar als Forschungsobjekt markiert
+- Untertitel: "Market position analysis for Financial Infrastructure / Payments"
 
-### Leerer Zustand verbessert
-- Groesserer visueller Bereich mit gestricheltem Border
-- Schritt-fuer-Schritt Anleitung: "1. Enter URL  2. Click Analyze  3. View your Genome"
-- Beispiel-URL als klickbarer Vorschlag: "Try: stripe.com"
+**Executive Summary:**
+- Aktuell: Zusammenfassung der Firma
+- Neu: Zusammenfassung MIT Markt-Kontext: "Stripe dominates the API-first payment infrastructure segment. Key takeaway for market researchers: Their PLG motion and developer-first positioning create high barriers to entry."
+- Score umbenennen: "Intelligence Depth" statt "Genome Completeness"
+- Mini-Stats umbenennen: "Offers Detected" bleibt, "Channels Active" bleibt -- das sind externe Beobachtungen, das passt
+
+**Section Navigation:**
+- Aktuell: Overview | Offers | Audience | Funnel | etc.
+- Neu: Overview | Market Position | Offers | Audience | Growth Strategy | Channels | Content | Trust | Traffic | Market Insights
+
+**Business Model Card:**
+- Framing aendern: "How this company makes money" statt nur Badges
+- Untertitel: "Observed business model and revenue structure"
+
+**Offer Structure Card:**
+- Framing: "Products & Services detected" -- als externe Beobachtung
+- Untertitel: "What this company sells and at what price points"
+
+**Audience Clusters Card:**
+- Framing: "Who they target" -- nicht "Deine Zielgruppen"
+- Untertitel: "Identified target audiences based on messaging and content analysis"
+
+**Funnel Analysis Card:**
+- Framing: "Their growth playbook" statt "Your funnel"
+- Untertitel: "How this company acquires and converts customers"
+
+**Messaging Card:**
+- Framing: "Their positioning & value props"
+- Untertitel: "Key messages and unique selling propositions detected"
+
+**Channels Card:**
+- Framing: "Where they reach their audience"
+- Untertitel: "Distribution channels and their relative strength"
+
+**Traffic Data Card:**
+- Das ist bereits korrekt -- externe Traffic-Daten sind Market Intelligence
+
+**Recommendations Section -- KOMPLETT UMBAUEN:**
+- Aktuell: Ratschlaege fuer die analysierte Firma ("Add a free trial...")
+- Neu: **"Market Insights"** -- Was der RESEARCHER aus dieser Analyse lernen kann
+
+Neue Empfehlungs-Kategorien:
+- **Market Pattern**: "72% of companies in this segment use PLG -- this is the dominant go-to-market strategy"
+- **Competitive Gap**: "Content marketing (case studies) is underutilized in this segment -- potential opportunity"
+- **Entry Barrier**: "Developer documentation quality is a key differentiator -- new entrants need to match this"
+- **Market Signal**: "Transaction-based pricing is standard in this segment -- subscription models are rare"
+
+Jede Empfehlung wird zu einem "Market Insight" mit:
+- Insight-Typ (Pattern, Gap, Barrier, Signal) statt Priority
+- Beschreibung aus Markt-Perspektive
+- "What this means" Erklaerung (warum das relevant ist)
+
+**Competitor Snapshot:**
+- Aktuell: "3 competitors detected" mit Lock
+- Neu: "Market Landscape" -- "3 major players in this segment detected"
+- Framing: "Other companies operating in this market space"
+
+**Neuer Bereich: "Key Takeaways"**
+- 3-4 Bullet Points am Ende der Seite
+- Zusammenfassung der wichtigsten Markt-Erkenntnisse
+- z.B. "This segment is dominated by PLG companies with developer-first positioning"
+- z.B. "Average pricing transparency is high -- public pricing is expected"
+- z.B. "SEO and developer documentation are the primary acquisition channels"
+
+### 3. Homepage -- Messaging anpassen
+
+**Hero:**
+- Aktuell: "Understand any business from a single URL"
+- Neu: "Decode any market from a single URL" -- Fokus auf MARKT, nicht auf einzelnes Business
+
+**Sub-Headline:**
+- Aktuell: "Turn any website into a structured market intelligence report"
+- Neu: "Research any company to understand its market, strategy, and competitive position -- in under 60 seconds"
+
+**Features:**
+- "Domain Intelligence" bleibt (passt schon)
+- "Market Positioning" wird zu "Competitive Intelligence" -- "See how any company positions itself and who they compete with"
+- "Actionable Insights" wird zu "Market Insights" -- "Discover market patterns, competitive gaps, and strategic opportunities"
+
+**Use Cases -- Texte anpassen:**
+- "Competitor Research": "Decode a competitor's entire playbook in seconds -- from pricing to funnel strategy"
+- "Market Entry": "Research the key players before entering a new market. Understand what works."
+- "Sales Intelligence": "Research prospects before the first call. Know their business model, pain points, and tech stack."
+- "Content Strategy": "Analyze what content works in any market segment. Find the gaps others miss."
+
+**Comparison Table:**
+- "Cost per Analysis" wird zu "Cost per Research"
+
+**Testimonials -- Texte anpassen:**
+- Aus "I can now analyze any company" wird "I can research any competitor's strategy in under a minute"
+
+### 4. Pricing -- Kleine Anpassungen
+
+- "3 Analyses per month" wird zu "3 Market Research Reports per month"
+- "Unlimited Analyses" wird zu "Unlimited Market Research"
+- Feature-Liste: "Competitor Analysis" wird zu "Competitive Landscape View"
+
+### 5. Demo-Daten (`demo-data.ts`) -- Recommendations umschreiben
+
+Die gesamte `recommendations` Struktur aendert sich:
+
+Alte Struktur:
+```text
+priority: "high" | "medium" | "low"
+category: "Content" | "Channel" | "Funnel" | "Positioning"
+description: "Advice for the company"
+```
+
+Neue Struktur:
+```text
+insightType: "pattern" | "gap" | "barrier" | "signal"
+category: "Market" | "Channel" | "Content" | "Positioning"
+description: "Market observation"
+implication: "What this means for researchers"
+```
+
+Beispiele fuer Stripe:
+- Pattern: "Developer documentation is the primary acquisition channel in the payment infrastructure segment. 4 out of 5 top players invest heavily in docs."
+  - Implication: "Any new entrant needs best-in-class developer docs to compete."
+- Gap: "Case studies and social proof content are surprisingly underutilized in this segment despite high enterprise deal values."
+  - Implication: "Content marketing focused on case studies could be a differentiation opportunity."
+- Barrier: "Transaction-based pricing with free sandbox access creates high switching costs once integrated."
+  - Implication: "Competing on price alone is insufficient -- developer experience is the moat."
+- Signal: "All top players in this segment are expanding into financial services beyond payments (lending, incorporation, treasury)."
+  - Implication: "The segment is expanding from pure payments to full financial infrastructure."
 
 ---
 
-## 3. Genome-Ansicht (`/genome/:id`) -- Vollstaendiges Intelligence-Dashboard
-
-**Aktuell:** 9 Karten in einem Grid. Keine Uebersicht, kein Scoring, keine Navigation.
-
-**Neu hinzugefuegt:**
-
-### Executive Summary (neuer Bereich oben, volle Breite)
-- Zusammenfassung in 2-3 Saetzen (aus Demo-Daten)
-- Genome-Score als grosser Kreis-Indikator (z.B. "87/100") mit Label "Genome Completeness"
-- 4 Mini-Stat-Karten daneben:
-  - "Offers Detected" (Zahl)
-  - "Audience Clusters" (Zahl)
-  - "Channels Active" (Zahl)
-  - "Trust Signals" (Zahl)
-
-### Inhaltsverzeichnis / Quick-Navigation
-- Horizontale Leiste mit klickbaren Ankern zu jeder Genome-Sektion
-- Sticky am oberen Rand beim Scrollen
-- Aktive Sektion wird highlighted (z.B. orange Unterstrich)
-- Sektionen: Overview | Offers | Audience | Funnel | Messaging | Channels | Content | Trust | Traffic
-
-### Verbesserte Genome-Cards
-
-**Business Model Card (erweitert):**
-- Zusaetzlich: "Revenue Model" Tag (z.B. "Transaction-based", "Subscription")
-- "Pricing Transparency" Indikator (Low/Medium/High als farbige Badge)
-
-**Offer Structure Card (erweitert):**
-- Tabellen-artige Darstellung statt nur Liste
-- Spalten: Name | Type | Price Signal | Tier
-- Visuelle Trennung zwischen Angeboten
-
-**Audience Clusters Card (erweitert):**
-- Jeder Cluster bekommt einen "Size Estimate" Tag (Small/Medium/Large)
-- Und ein "Priority" Level (Primary/Secondary)
-
-**Funnel Analysis Card (erweitert):**
-- Visueller Funnel als vertikale Leiste/Fortschrittsanzeige
-- Jedes Element mit Nummer und Verbindungslinie
-- Funnel-Score: "Completeness: 4/5 stages"
-
-**Channel Usage Card (erweitert):**
-- Nicht nur Tags, sondern eine Tabelle mit:
-  - Channel-Name | Strength (Low/Medium/High als farbige Balken) | Priority
-
-**Traffic Data Card (erweitert):**
-- Balkendiagramm fuer Traffic Sources (mit recharts, bereits installiert)
-- Kreisdiagramm / Donut fuer Traffic-Verteilung
-
-### Neue Sektionen
-
-**Recommendations (neuer Bereich):**
-- 3-5 konkrete Empfehlungen basierend auf der Analyse
-- Jede Empfehlung als Karte mit:
-  - Priority (High/Medium/Low) als farbige Badge
-  - Kategorie (Content, Channel, Funnel, Positioning)
-  - Beschreibung
-- Beispiel: "Add a free trial to your funnel -- 72% of competitors offer one"
-- Premium-only Badge fuer detailliertere Empfehlungen
-
-**Competitor Snapshot (neuer Platzhalter-Bereich):**
-- "Coming Soon" Bereich mit Vorschau
-- "Top 3 Competitors detected" mit Platzhalter-Karten
-- Lock-Icon fuer Premium
-- CTA: "Upgrade to unlock competitor analysis"
-
-### PDF Export Vorschau
-- Button bleibt disabled, aber beim Hover: Tooltip "Coming soon -- Premium feature"
-
----
-
-## 4. Pricing (`/pricing`) -- Erweiterte Preis-Seite
-
-**Aktuell:** 2 Karten + CTA. Minimal.
-
-**Neu hinzugefuegt:**
-
-### Feature-Vergleichstabelle (nach den Karten)
-- Vollstaendige Tabelle mit allen Features
-- Zeilen: Analyses/Month, Business Model, Offers, Audience, Funnel, Channels, Content, Trust, Traffic Data, PDF Export, Competitor Analysis, API Access, Priority Support
-- Spalten: Free | Premium
-- Check/X Icons pro Zelle
-
-### FAQ-Sektion
-- Accordion mit Pricing-spezifischen Fragen:
-  - "Can I cancel anytime?"
-  - "What happens when I hit the free limit?"
-  - "Do you offer annual billing?"
-  - "Is there a refund policy?"
-
-### Trust-Leiste
-- Kleine Icons/Badges: "Cancel anytime" | "No credit card for free" | "SSL encrypted" | "GDPR compliant"
-
----
-
-## 5. Neue/Erweiterte Komponenten
-
-### Neue Komponenten:
-- `StatCard` -- Kleine Statistik-Karte (Zahl, Label, Icon, optionaler Trend)
-- `GenomeScore` -- Kreis-Indikator fuer Genome-Completeness
-- `SectionNav` -- Sticky horizontale Navigation fuer Genome-Ansicht
-- `FeatureComparisonTable` -- Tabelle fuer Pricing-Vergleich
-- `RecommendationCard` -- Empfehlungskarte mit Priority-Badge
-- `ChannelStrengthBar` -- Horizontaler Staerke-Balken
-- `CompetitorPreview` -- Platzhalter fuer Wettbewerbsanalyse
-- `FAQSection` -- Wiederverwendbare Accordion-FAQ-Komponente
-
-### Erweiterte Demo-Daten (`demo-data.ts`):
-- `recommendations` Array pro Genome (3-5 Empfehlungen)
-- `executiveSummary` pro Genome (2-3 Saetze)
-- `genomeScore` pro Genome (0-100)
-- `channelStrengths` mit Staerke-Werten pro Kanal
-- `competitors` Platzhalter-Array (3 erkannte Wettbewerber)
-- `audienceCluster.size` und `.priority` Felder
-- `pricingTransparency` Feld (low/medium/high)
-- `revenueModel` Feld
-
----
-
-## 6. Technische Details
-
-### Dateien die ERSTELLT werden:
-- `src/components/genome/StatCard.tsx`
-- `src/components/genome/GenomeScore.tsx`
-- `src/components/genome/SectionNav.tsx`
-- `src/components/genome/RecommendationCard.tsx`
-- `src/components/genome/ChannelStrengthBar.tsx`
-- `src/components/genome/CompetitorPreview.tsx`
-- `src/components/genome/FeatureComparisonTable.tsx`
-- `src/components/genome/FAQSection.tsx`
+## Technische Aenderungen
 
 ### Dateien die GEAENDERT werden:
-- `src/lib/demo-data.ts` -- Erweiterte Datenstruktur und Inhalte
-- `src/pages/Home.tsx` -- 4 neue Sektionen
-- `src/pages/Dashboard.tsx` -- Stats, Tabs, verbesserte Karten
-- `src/pages/GenomeView.tsx` -- Summary, Navigation, Empfehlungen, Charts
-- `src/pages/Pricing.tsx` -- Vergleichstabelle, FAQ, Trust-Leiste
-- `src/components/genome/ScanCard.tsx` -- Zusaetzliche Infos und Quick-Actions
+- `src/lib/demo-data.ts` -- Recommendation-Interface + alle Demo-Empfehlungen umschreiben
+- `src/pages/Dashboard.tsx` -- Copy/Labels/Framing
+- `src/pages/GenomeView.tsx` -- Alle Section-Titel, Executive Summary, Market Insights statt Recommendations
+- `src/pages/Home.tsx` -- Hero, Features, Use Cases, Testimonials Copy
+- `src/pages/Pricing.tsx` -- Labels anpassen
+- `src/components/genome/RecommendationCard.tsx` -- Wird zu MarketInsightCard (neues Design mit insightType)
+- `src/components/genome/CompetitorPreview.tsx` -- "Market Landscape" statt "Competitor Snapshot"
+- `src/components/genome/EmptyState.tsx` -- "Research" statt "Analyze"
+- `src/components/genome/ScanCard.tsx` -- "Researched" Framing
+- `src/components/genome/GenomeScore.tsx` -- "Intelligence Depth" Label
 
-### Verwendete bestehende Bibliotheken:
-- `recharts` (bereits installiert) -- fuer Traffic-Diagramme
-- `@radix-ui/react-accordion` (bereits installiert) -- fuer FAQs
-- `@radix-ui/react-tabs` (bereits installiert) -- fuer Dashboard-Tabs
-- `@radix-ui/react-progress` (bereits installiert) -- fuer Staerke-Balken
-- `@radix-ui/react-tooltip` (bereits installiert) -- fuer Hover-Infos
-- `lucide-react` (bereits installiert) -- fuer Icons
+### Dateien die NEU erstellt werden:
+- `src/components/genome/KeyTakeaways.tsx` -- Neuer Bereich am Ende der Genome View mit 3-4 zusammenfassenden Markt-Erkenntnissen
 
-### Design-Regeln (unveraendert):
-- Schwarz-Orange Farbschema (#0A0A0A + #F97316)
-- Keine Gradients -- nur flache Farben
-- `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`
-- Responsive: 1 Spalte mobil, 2-3 Spalten Desktop
+### Design:
+- Keine visuellen/Farb-Aenderungen -- nur Text und Perspektive
+- Schwarz-Orange Farbschema bleibt unveraendert
+- Alle bestehenden Komponenten und Layouts bleiben
+- insightType-Badges bekommen eigene Farben (pattern=blau, gap=orange, barrier=rot, signal=gruen)
 
 ---
 
-## Was NICHT gebaut wird (bleibt Demo/Platzhalter)
+## Zusammenfassung der Perspektiv-Verschiebung
 
-- Kein Backend / keine API-Anbindung
-- Keine echte Scan-Funktion
-- Kein echter PDF-Export
-- Keine echte Wettbewerbsanalyse
-- Alle Daten sind statisch aus `demo-data.ts`
+```text
+VORHER (Self-Audit)              NACHHER (Market Intelligence)
+-------------------------------  --------------------------------
+"Analyze your website"           "Research any company"
+"Your Business Genome"           "Intelligence Report"
+"Improve your funnel"            "This is how the market works"
+"Add a free trial"               "Free trials are standard here"
+"Your competitors"               "Market landscape"
+"Genome Completeness"            "Intelligence Depth"
+User = analysiertes Unternehmen  User = externer Researcher
+```
 
+Das Produkt wird damit klar zu dem, was es sein soll: Ein Tool, mit dem man JEDEN Markt von aussen verstehen kann -- nicht ein Audit-Tool fuer die eigene Webseite.

@@ -79,11 +79,11 @@ const ScanCard = ({
           </div>
         )}
 
-        {/* Genome Completeness */}
+        {/* Intelligence Depth */}
         {status === "completed" && (
           <div className="mb-3 space-y-1">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{sectionsCompleted}/{totalSections} sections analyzed</span>
+              <span>{sectionsCompleted}/{totalSections} sections researched</span>
               <span className="font-mono">{Math.round(completionPercent)}%</span>
             </div>
             <Progress value={completionPercent} className="h-1" />

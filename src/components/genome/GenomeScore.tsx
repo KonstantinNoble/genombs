@@ -4,7 +4,7 @@ interface GenomeScoreProps {
   label?: string;
 }
 
-const GenomeScore = ({ score, size = "md", label = "Genome Score" }: GenomeScoreProps) => {
+const GenomeScore = ({ score, size = "md", label = "Intelligence Depth" }: GenomeScoreProps) => {
   const dimensions = {
     sm: { width: 80, stroke: 6, fontSize: "text-lg", labelSize: "text-[10px]" },
     md: { width: 120, stroke: 8, fontSize: "text-3xl", labelSize: "text-xs" },

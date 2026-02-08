@@ -1,9 +1,13 @@
-export interface Recommendation {
-  priority: "high" | "medium" | "low";
-  category: "Content" | "Channel" | "Funnel" | "Positioning";
+export interface MarketInsight {
+  insightType: "pattern" | "gap" | "barrier" | "signal";
+  category: "Market" | "Channel" | "Content" | "Positioning";
   description: string;
+  implication: string;
   premiumOnly?: boolean;
 }
+
+// Keep old type alias for backward compatibility during transition
+export type Recommendation = MarketInsight;
 
 export interface Competitor {
   name: string;
@@ -28,6 +32,7 @@ export interface BusinessGenome {
   pricingTransparency: "low" | "medium" | "high";
   executiveSummary: string;
   genomeScore: number;
+  keyTakeaways: string[];
   offers: Array<{
     name: string;
     type: string;
@@ -58,7 +63,7 @@ export interface BusinessGenome {
       percentage: number;
     }>;
   } | null;
-  recommendations: Recommendation[];
+  recommendations: MarketInsight[];
   competitors: Competitor[];
   createdAt: string;
   status: "completed" | "analyzing" | "pending" | "failed";
@@ -74,8 +79,14 @@ export const demoGenomes: BusinessGenome[] = [
     revenueModel: "Transaction-based",
     pricingTransparency: "high",
     executiveSummary:
-      "Stripe is a dominant API-first payment infrastructure provider targeting developers and tech companies. Its product-led growth strategy, powered by best-in-class documentation and a free sandbox, drives adoption from startups to enterprises. Revenue is primarily transaction-based with expanding SaaS revenue streams.",
+      "Stripe dominates the API-first payment infrastructure segment. Key takeaway for market researchers: Their PLG motion and developer-first positioning create high barriers to entry. New entrants face a steep challenge — best-in-class documentation and a free sandbox drive adoption from startups to enterprises, making switching costs significant once integrated.",
     genomeScore: 92,
+    keyTakeaways: [
+      "This segment is dominated by PLG companies with developer-first positioning — documentation quality is the primary competitive moat.",
+      "Transaction-based pricing with free sandbox access is the industry standard — subscription-only models are rare.",
+      "SEO and developer documentation are the primary acquisition channels; social media plays a secondary role.",
+      "All top players are expanding beyond payments into full financial infrastructure (lending, incorporation, treasury).",
+    ],
     businessModelDescription:
       "Stripe provides payment processing infrastructure as a service. Revenue is generated through transaction fees (2.9% + 30¢ per successful charge) and subscription-based products for advanced features like Billing, Connect, and Atlas.",
     offers: [
@@ -148,24 +159,28 @@ export const demoGenomes: BusinessGenome[] = [
     },
     recommendations: [
       {
-        priority: "high",
-        category: "Funnel",
-        description: "Strong PLG motion — consider adding interactive product demos to reduce time-to-value for non-technical decision makers.",
+        insightType: "pattern",
+        category: "Market",
+        description: "Developer documentation is the primary acquisition channel in the payment infrastructure segment. 4 out of 5 top players invest heavily in docs.",
+        implication: "Any new entrant needs best-in-class developer docs to compete.",
       },
       {
-        priority: "medium",
+        insightType: "gap",
         category: "Content",
-        description: "Case studies are underutilized. Publishing industry-specific success stories could accelerate enterprise adoption.",
+        description: "Case studies and social proof content are surprisingly underutilized in this segment despite high enterprise deal values.",
+        implication: "Content marketing focused on case studies could be a differentiation opportunity.",
       },
       {
-        priority: "medium",
-        category: "Channel",
-        description: "Social media presence is relatively weak compared to organic. Investing in developer-focused video content on YouTube could expand reach.",
-      },
-      {
-        priority: "low",
+        insightType: "barrier",
         category: "Positioning",
-        description: "Consider creating a dedicated SMB landing page — current messaging is heavily developer/enterprise focused.",
+        description: "Transaction-based pricing with free sandbox access creates high switching costs once integrated.",
+        implication: "Competing on price alone is insufficient — developer experience is the moat.",
+      },
+      {
+        insightType: "signal",
+        category: "Market",
+        description: "All top players in this segment are expanding into financial services beyond payments (lending, incorporation, treasury).",
+        implication: "The segment is expanding from pure payments to full financial infrastructure.",
         premiumOnly: true,
       },
     ],
@@ -186,8 +201,14 @@ export const demoGenomes: BusinessGenome[] = [
     revenueModel: "Subscription",
     pricingTransparency: "high",
     executiveSummary:
-      "Notion is a freemium productivity platform combining notes, docs, wikis, and project management. Its viral adoption among individuals and teams, combined with a large template ecosystem, drives organic growth. The product is a strong contender in the workspace consolidation trend.",
+      "Notion is a dominant player in the workspace consolidation trend, combining notes, docs, wikis, and project management. Key takeaway for market researchers: The template marketplace acts as a powerful organic growth channel. Viral adoption among individuals creates a bottom-up enterprise play that competitors struggle to replicate.",
     genomeScore: 87,
+    keyTakeaways: [
+      "Freemium with bottom-up adoption is the dominant go-to-market in this segment — individual users pull the product into teams.",
+      "Template marketplaces and community-driven content are emerging as high-impact acquisition channels.",
+      "Per-user subscription pricing is the revenue standard — usage-based pricing is rare in this segment.",
+      "The consolidation trend (replacing multiple tools) is the core positioning for all top players.",
+    ],
     businessModelDescription:
       "Notion offers a free personal plan with limited features. Revenue comes from team and business subscriptions with per-user pricing. The product combines notes, docs, wikis, and project management.",
     offers: [
@@ -249,20 +270,23 @@ export const demoGenomes: BusinessGenome[] = [
     },
     recommendations: [
       {
-        priority: "high",
+        insightType: "pattern",
         category: "Channel",
-        description: "Template marketplace is a powerful discovery channel. Investing in curated, high-quality templates for specific industries could accelerate growth.",
+        description: "Template marketplaces are emerging as a high-impact discovery channel in the productivity segment. Community-created content drives organic reach.",
+        implication: "Companies entering this segment should invest in ecosystem-driven content, not just owned channels.",
       },
       {
-        priority: "medium",
-        category: "Funnel",
-        description: "Consider adding an onboarding wizard that pre-populates workspaces for specific use cases (project management, wiki, CRM).",
-      },
-      {
-        priority: "low",
+        insightType: "gap",
         category: "Content",
-        description: "Create comparison landing pages targeting Confluence, Coda, and Asana to capture competitive search traffic.",
+        description: "Comparison landing pages targeting direct competitors (Confluence, Coda, Asana) are underutilized despite high search intent.",
+        implication: "Capturing competitive search traffic through comparison content is an untapped opportunity.",
         premiumOnly: true,
+      },
+      {
+        insightType: "signal",
+        category: "Market",
+        description: "Bottom-up adoption (individual → team → enterprise) is the dominant growth pattern. All leading players rely on viral, user-driven expansion.",
+        implication: "Enterprise-only go-to-market strategies face a significant disadvantage in this segment.",
       },
     ],
     competitors: [
@@ -282,8 +306,14 @@ export const demoGenomes: BusinessGenome[] = [
     revenueModel: "Subscription",
     pricingTransparency: "high",
     executiveSummary:
-      "Linear is a fast, keyboard-driven project management tool aimed at engineering and product teams frustrated with legacy tools like Jira. Its cult-like following in the developer community and word-of-mouth growth make it a strong challenger in the project management space.",
+      "Linear has carved out a strong niche in the developer tools segment by positioning against legacy tools like Jira. Key takeaway for market researchers: Speed and developer experience are the primary differentiators, not feature breadth. Word-of-mouth in the dev community drives growth — a playbook that's hard to replicate without authentic product quality.",
     genomeScore: 81,
+    keyTakeaways: [
+      "In the dev-tools PM segment, speed and UX are stronger differentiators than feature completeness.",
+      "Word-of-mouth and community presence (Hacker News, Twitter/X) drive growth more than paid acquisition.",
+      "Freemium with issue-based limits is the standard pricing pattern — free trials are less common.",
+      "Jira migration tools are a critical acquisition lever for all challengers in this segment.",
+    ],
     businessModelDescription:
       "Linear offers a free tier for small teams and charges per-user for larger teams. Focus on speed and developer experience for issue tracking and project management.",
     offers: [
@@ -333,19 +363,22 @@ export const demoGenomes: BusinessGenome[] = [
     trafficData: null,
     recommendations: [
       {
-        priority: "high",
+        insightType: "gap",
         category: "Content",
-        description: "Create SEO-optimized comparison pages (Linear vs Jira, Linear vs Asana) to capture high-intent search traffic.",
+        description: "SEO-optimized comparison pages (Linear vs Jira, Linear vs Asana) are largely absent in this segment despite high search intent for migration queries.",
+        implication: "Comparison content targeting frustrated Jira users is a high-value, low-competition opportunity.",
       },
       {
-        priority: "medium",
-        category: "Funnel",
-        description: "Add a free trial to your funnel — 72% of competitors offer one beyond the issue-limited free plan.",
+        insightType: "pattern",
+        category: "Market",
+        description: "72% of companies in this segment offer a free tier with usage limits rather than time-limited trials. The free-to-paid conversion depends on team growth.",
+        implication: "Free trials are less effective here — usage-based freemium is the proven conversion model.",
       },
       {
-        priority: "medium",
+        insightType: "signal",
         category: "Channel",
-        description: "YouTube presence is minimal. Developer-focused tutorials and workflow videos could expand reach significantly.",
+        description: "YouTube presence is minimal across the segment. Developer-focused tutorials and workflow videos are an emerging but underexploited channel.",
+        implication: "Early investment in developer video content could establish channel dominance before competitors move in.",
         premiumOnly: true,
       },
     ],

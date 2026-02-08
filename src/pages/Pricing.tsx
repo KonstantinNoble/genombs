@@ -38,25 +38,25 @@ const PricingPage = () => {
   }
 
   const freeFeatures = [
-    { text: "3 analyses per month", included: true },
+    { text: "3 market research reports per month", included: true },
     { text: "Business model detection", included: true },
     { text: "Offer structure analysis", included: true },
     { text: "Audience cluster identification", included: true },
     { text: "Funnel type recognition", included: true },
     { text: "Traffic data (SimilarWeb)", included: false },
     { text: "PDF export", included: false },
-    { text: "Competitor comparison", included: false },
+    { text: "Competitive landscape view", included: false },
   ];
 
   const premiumFeatures = [
-    { text: "Unlimited analyses", included: true },
+    { text: "Unlimited market research", included: true },
     { text: "Business model detection", included: true },
     { text: "Offer structure analysis", included: true },
     { text: "Audience cluster identification", included: true },
     { text: "Funnel type recognition", included: true },
     { text: "Traffic data (SimilarWeb)", included: true },
     { text: "PDF export", included: true },
-    { text: "Competitor comparison", included: true, comingSoon: true },
+    { text: "Competitive landscape view", included: true, comingSoon: true },
     { text: "Priority support", included: true },
   ];
 
@@ -67,7 +67,7 @@ const PricingPage = () => {
     },
     {
       question: "What happens when I hit the free limit?",
-      answer: "When you've used all 3 free analyses in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing analyses and reports remain accessible.",
+      answer: "When you've used all 3 free research reports in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing research and reports remain accessible.",
     },
     {
       question: "Do you offer annual billing?",
@@ -90,7 +90,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing – Business Genome"
-        description="Simple, transparent pricing. Start free with 3 analyses per month. Upgrade for unlimited access."
+        description="Simple, transparent pricing. Start free with 3 research reports per month. Upgrade for unlimited access."
         canonical="/pricing"
       />
 
@@ -113,7 +113,7 @@ const PricingPage = () => {
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
-                : "Start free with 3 analyses per month. Upgrade when you need more."}
+                : "Start free with 3 research reports per month. Upgrade when you need more."}
             </p>
           </div>
         </section>
@@ -242,8 +242,8 @@ const PricingPage = () => {
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn
-                ? "Head to your dashboard to start a new analysis."
-                : "Start free with 3 analyses. No credit card required."}
+                ? "Head to your dashboard to start new research."
+                : "Start free with 3 research reports. No credit card required."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button

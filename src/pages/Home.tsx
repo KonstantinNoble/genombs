@@ -84,19 +84,19 @@ const Home = () => {
       icon: Globe,
       title: "Domain Intelligence",
       description:
-        "Automatically detect business models, offer structures, pricing signals, and funnel types from any website.",
+        "Automatically detect business models, offer structures, pricing signals, and funnel types from any company website.",
     },
     {
       icon: Target,
-      title: "Market Positioning",
+      title: "Competitive Intelligence",
       description:
-        "Understand audience clusters, competitive positioning, and market segments at a glance.",
+        "See how any company positions itself, who they target, and how they compare to others in their market.",
     },
     {
       icon: Lightbulb,
-      title: "Actionable Insights",
+      title: "Market Insights",
       description:
-        "Get concrete recommendations for content strategy, channel usage, and messaging improvements.",
+        "Discover market patterns, competitive gaps, entry barriers, and strategic signals across any segment.",
     },
   ];
 
@@ -105,19 +105,19 @@ const Home = () => {
       icon: Search,
       step: "01",
       title: "Enter a URL",
-      description: "Paste any company website to start the analysis.",
+      description: "Paste any company website to start your market research.",
     },
     {
       icon: Cpu,
       step: "02",
-      title: "AI analyzes the site",
-      description: "Our engine crawls, extracts, and structures the business data.",
+      title: "AI decodes the company",
+      description: "Our engine crawls, extracts, and structures the business intelligence.",
     },
     {
       icon: FileText,
       step: "03",
-      title: "Get your Business Genome",
-      description: "Receive a structured intelligence report you can act on.",
+      title: "Get your Intelligence Report",
+      description: "Receive a structured market intelligence report with actionable insights.",
     },
   ];
 
@@ -125,25 +125,25 @@ const Home = () => {
     {
       icon: Crosshair,
       title: "Competitor Research",
-      description: "Analyze competitor websites in seconds. Understand their positioning, funnel strategy, and channel usage.",
+      description: "Decode a competitor's entire playbook in seconds — from pricing to funnel strategy to channel usage.",
       badge: "Most Popular",
     },
     {
       icon: TrendingUp,
       title: "Market Entry",
-      description: "Understand a new market before entering. Decode the playbooks of established players.",
+      description: "Research the key players before entering a new market. Understand what works and where the gaps are.",
       badge: "Strategic",
     },
     {
       icon: Users,
       title: "Sales Intelligence",
-      description: "Qualify leads by analyzing their website. Know their business model and pain points before the first call.",
+      description: "Research prospects before the first call. Know their business model, pain points, and tech stack.",
       badge: "Revenue",
     },
     {
       icon: PenTool,
       title: "Content Strategy",
-      description: "Find content gaps in your market. Understand what formats and channels your competitors use.",
+      description: "Analyze what content works in any market segment. Find the gaps others miss.",
       badge: "Growth",
     },
   ];
@@ -151,7 +151,7 @@ const Home = () => {
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
     { feature: "Data Depth", genome: "9 structured sections", traditional: "Surface-level overview" },
-    { feature: "Cost per Analysis", genome: "Free / $26.99/mo unlimited", traditional: "$500+ per report" },
+    { feature: "Cost per Research", genome: "Free / $26.99/mo unlimited", traditional: "$500+ per report" },
     { feature: "Automation", genome: true, traditional: false },
     { feature: "Structured Output", genome: true, traditional: "partial" },
     { feature: "Real-time Data", genome: true, traditional: false },
@@ -159,19 +159,19 @@ const Home = () => {
 
   const testimonials = [
     {
-      quote: "Business Genome saved me hours of manual competitor research. I can now analyze any company in under a minute.",
+      quote: "I can research any competitor's strategy in under a minute. Business Genome replaced hours of manual market research for our team.",
       name: "Sarah K.",
       role: "Product Manager",
       company: "TechVentures Inc.",
     },
     {
-      quote: "The structured output is incredibly useful for sales prep. I know exactly what a prospect's business model looks like before the call.",
+      quote: "Before every sales call, I research the prospect's company. I know their business model and positioning before they even speak.",
       name: "Marcus L.",
       role: "Account Executive",
       company: "GrowthStack",
     },
     {
-      quote: "We use Business Genome for every market entry analysis. The funnel and channel insights are spot on.",
+      quote: "We use Business Genome for every market entry analysis. The market insights and channel intelligence are incredibly valuable.",
       name: "Dr. Elena M.",
       role: "Strategy Lead",
       company: "Innovate Partners",
@@ -206,9 +206,9 @@ const Home = () => {
   ];
 
   const stats = [
-    { value: "500+", label: "Businesses Analyzed", icon: BarChart3 },
+    { value: "500+", label: "Companies Researched", icon: BarChart3 },
     { value: "12", label: "Market Segments", icon: Target },
-    { value: "<60s", label: "Per Analysis", icon: Clock },
+    { value: "<60s", label: "Per Research", icon: Clock },
     { value: "9", label: "Intelligence Sections", icon: Zap },
   ];
 
@@ -241,17 +241,16 @@ const Home = () => {
             Market Intelligence Platform
           </Badge>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-            Understand any business{" "}
+            Decode any market{" "}
             <span className="text-primary">from a single URL</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Turn any website into a structured market intelligence report. Decode business models,
-            audiences, funnels, and competitive positioning — instantly.
+            Research any company to understand its market, strategy, and competitive position — in under 60 seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button size="lg" asChild className="text-base px-8 h-13">
               <Link to={isLoggedIn ? "/dashboard" : "/auth"}>
-                Start Analyzing
+                Start Researching
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
@@ -482,12 +481,12 @@ const Home = () => {
       {/* CTA Section */}
       <section className="py-20 sm:py-24 border-t border-border">
         <div className="container mx-auto px-4 text-center max-w-2xl space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
-            Ready to decode your market?
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Start with 3 free analyses per month. No credit card required.
-          </p>
+           <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+             Ready to decode your market?
+           </h2>
+           <p className="text-lg text-muted-foreground">
+             Start with 3 free research reports per month. No credit card required.
+           </p>
           <div className="pt-4">
             <Button size="lg" asChild className="text-base px-8 h-13">
               <Link to={isLoggedIn ? "/dashboard" : "/auth"}>

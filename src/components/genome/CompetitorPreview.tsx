@@ -18,13 +18,13 @@ const CompetitorPreview = ({ competitors, isPremium = false }: CompetitorPreview
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-foreground">Competitor Snapshot</h3>
+            <h3 className="text-lg font-semibold text-foreground">Market Landscape</h3>
             <Badge variant="outline" className="text-xs">Coming Soon</Badge>
           </div>
           {!isPremium && <Lock className="w-4 h-4 text-muted-foreground" />}
         </div>
         <p className="text-sm text-muted-foreground mb-4">
-          {competitors.length} potential competitors detected based on market segment and audience overlap.
+          {competitors.length} major players detected in this market segment based on audience overlap and positioning.
         </p>
         <div className="space-y-3">
           {competitors.map((comp) => (
@@ -40,7 +40,7 @@ const CompetitorPreview = ({ competitors, isPremium = false }: CompetitorPreview
                 </div>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {comp.similarity}% match
+                {comp.similarity}% overlap
               </Badge>
             </div>
           ))}
@@ -53,7 +53,7 @@ const CompetitorPreview = ({ competitors, isPremium = false }: CompetitorPreview
               onClick={() => navigate("/pricing")}
               className="gap-1"
             >
-              Upgrade to unlock
+              Upgrade to unlock market landscape
               <ArrowRight className="w-3 h-3" />
             </Button>
           </div>

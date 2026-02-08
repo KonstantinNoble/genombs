@@ -1,21 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lock } from "lucide-react";
-import type { Recommendation } from "@/lib/demo-data";
+import type { MarketInsight } from "@/lib/demo-data";
 
 interface RecommendationCardProps {
-  recommendation: Recommendation;
+  recommendation: MarketInsight;
   isPremium?: boolean;
 }
 
-const priorityConfig = {
-  high: { label: "High", className: "bg-primary/15 text-primary border-primary/30" },
-  medium: { label: "Medium", className: "bg-chart-3/15 text-chart-3 border-chart-3/30" },
-  low: { label: "Low", className: "bg-muted text-muted-foreground border-border" },
+const insightConfig = {
+  pattern: { label: "Market Pattern", className: "bg-chart-1/15 text-chart-1 border-chart-1/30" },
+  gap: { label: "Competitive Gap", className: "bg-primary/15 text-primary border-primary/30" },
+  barrier: { label: "Entry Barrier", className: "bg-destructive/15 text-destructive border-destructive/30" },
+  signal: { label: "Market Signal", className: "bg-chart-4/15 text-chart-4 border-chart-4/30" },
 };
 
 const RecommendationCard = ({ recommendation, isPremium = false }: RecommendationCardProps) => {
-  const config = priorityConfig[recommendation.priority];
+  const config = insightConfig[recommendation.insightType];
   const isLocked = recommendation.premiumOnly && !isPremium;
 
   return (
@@ -34,9 +35,15 @@ const RecommendationCard = ({ recommendation, isPremium = false }: Recommendatio
             <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
           )}
         </div>
-        <p className={`text-sm leading-relaxed ${isLocked ? "text-muted-foreground blur-[2px]" : "text-muted-foreground"}`}>
+        <p className={`text-sm leading-relaxed mb-2 ${isLocked ? "text-muted-foreground blur-[2px]" : "text-foreground"}`}>
           {recommendation.description}
         </p>
+        {!isLocked && recommendation.implication && (
+          <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+            <span className="font-medium text-primary">What this means:</span>{" "}
+            {recommendation.implication}
+          </p>
+        )}
         {isLocked && (
           <p className="text-xs text-primary mt-2 font-medium">Upgrade to Premium for full details</p>
         )}

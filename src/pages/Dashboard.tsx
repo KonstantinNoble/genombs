@@ -61,7 +61,7 @@ const Dashboard = () => {
     if (list.length === 0) {
       return (
         <div className="text-center py-10 text-sm text-muted-foreground">
-          No analyses match this filter.
+          No research results match this filter.
         </div>
       );
     }
@@ -76,9 +76,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <SEOHead
-        title="Dashboard – Business Genome"
-        description="Analyze any business from a single URL. Get structured market intelligence reports."
+       <SEOHead
+        title="Research Hub – Business Genome"
+        description="Research any company to decode its market position, strategy, and competitive playbook."
         canonical="/dashboard"
       />
       <Navbar />
@@ -88,17 +88,17 @@ const Dashboard = () => {
           {/* Welcome + Stats */}
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
-              Welcome back
+              Market Research Hub
             </h1>
             <p className="text-muted-foreground mb-6">
-              Enter a URL to generate a Business Genome – a structured intelligence report.
+              Research any company — decode its market position, strategy, and playbook.
             </p>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-              <StatCard label="Total Analyses" value={scans.length} icon={BarChart3} />
+              <StatCard label="Companies Researched" value={scans.length} icon={BarChart3} />
               <StatCard label="This Month" value={2} icon={CalendarDays} />
-              <StatCard label="Credits Remaining" value={isPremium ? "∞" : 1} icon={CreditCard}>
+              <StatCard label="Research Credits" value={isPremium ? "∞" : 1} icon={CreditCard}>
                 {!isPremium && (
                   <div className="mt-2">
                     <ScanLimitBar used={2} total={3} isPremium={false} />
@@ -142,12 +142,12 @@ const Dashboard = () => {
                   disabled={!url.trim()}
                   className="h-12 px-8 text-base font-semibold"
                 >
-                  <Search className="w-4 h-4 mr-2" />
-                  Analyze
+                   <Search className="w-4 h-4 mr-2" />
+                   Research
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-3">
-                Supported: Company websites, SaaS landing pages, E-Commerce shops
+                Enter any company website to generate a market intelligence report
               </p>
             </CardContent>
           </Card>
@@ -155,7 +155,7 @@ const Dashboard = () => {
           {/* Recent URLs */}
           {recentDomains.length > 0 && (
             <div className="flex items-center gap-2 mb-8 flex-wrap">
-              <span className="text-xs text-muted-foreground">Recent:</span>
+              <span className="text-xs text-muted-foreground">Recent Research:</span>
               {recentDomains.map((domain) => (
                 <button
                   key={domain}
@@ -171,7 +171,7 @@ const Dashboard = () => {
           {/* Scan History */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="text-xl font-bold text-foreground">Analyses</h2>
+              <h2 className="text-xl font-bold text-foreground">Research History</h2>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -218,8 +218,8 @@ const Dashboard = () => {
             ) : (
               <EmptyState
                 icon={Search}
-                title="No analyses yet"
-                description="Enter a URL above to generate your first Business Genome report."
+                title="No research yet"
+                description="Enter any company URL above to generate your first market intelligence report."
                 showSteps
                 onTryExample={() => setUrl("https://stripe.com")}
               />

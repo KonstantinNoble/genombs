@@ -21,8 +21,8 @@ const EmptyState = ({ icon: Icon, title, description, showSteps, onTryExample }:
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-6">
           {[
             { step: "1", text: "Enter URL" },
-            { step: "2", text: "Click Analyze" },
-            { step: "3", text: "View your Genome" },
+            { step: "2", text: "Click Research" },
+            { step: "3", text: "Get Intelligence" },
           ].map((s, i) => (
             <div key={s.step} className="flex items-center gap-2">
               {i > 0 && <span className="hidden sm:inline text-muted-foreground/30">→</span>}

@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Pricing from "@/components/home/Pricing";
 import { useNavigate } from "react-router-dom";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 
 const PricingPage = () => {
@@ -16,55 +14,13 @@ const PricingPage = () => {
   const { user, isPremium, isLoading } = useAuth();
   const isLoggedIn = !!user;
 
-  const comparisonFeatures = [
-    { name: "Analyses per Day", free: "2", premium: "10" },
-    { name: "AI Perspectives", free: "3", premium: "3" },
-    { name: "Business Context Profile", free: "✓", premium: "✓" },
-    { name: "Website Auto-Scan", free: "—", premium: "✓" },
-    { name: "Team Workspaces", free: "—", premium: "Up to 5" },
-    { name: "Team Members", free: "—", premium: "5 per team" },
-    { name: "Strategic Alternatives", free: "—", premium: "✓" },
-    { name: "6-12 Month Outlook", free: "—", premium: "✓" },
-    { name: "Investor-Ready PDF Exports", free: "—", premium: "✓" },
-  ];
-
-  const faqs = [
-    {
-      question: "How does it work?",
-      answer: "Describe your decision context. Three AI models – GPT-5, Gemini Pro, and Flash – analyze it independently without seeing each other's responses. We show you consensus, majority, and dissent. Everything is saved with timestamps."
-    },
-    {
-      question: "What is Business Context?",
-      answer: "Your business profile (industry, stage, team size, revenue, market, region) that's automatically included in every analysis. All users can set this. Premium subscribers can also add their website URL and we'll automatically scan it for deeper context."
-    },
-    {
-      question: "What does Premium include?",
-      answer: "10 analyses per day instead of 2. Website auto-scanning for business context. Team workspaces with up to 5 members. Plus strategic alternatives, competitive context, and investor-ready PDF exports."
-    },
-    {
-      question: "How does team collaboration work?",
-      answer: "Premium subscribers can create up to 5 team workspaces with 5 members each. Team members can view and create shared analyses without needing their own Premium subscription – only the workspace owner needs Premium. Perfect for small teams, investment committees, or advisory boards."
-    },
-    {
-      question: "When does my daily limit reset?",
-      answer: "24 hours after your first analysis of the day. Free accounts get 2 analyses per day, Premium gets 10."
-    },
-    {
-      question: "Can I try it before paying?",
-      answer: "Yes. 2 free analyses per day, no credit card required. Enough to see whether structured second opinions fit your workflow."
-    }
-  ];
-
-  // Show loading state while auth is being determined
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
-          title="Pricing – Your AI Advisory Board"
-          description="Start free with 2 analyses per day. Premium ($26.99/mo) unlocks 10 daily analyses, investor-ready PDF exports, competitive context, and 6-12 month outlook."
-          keywords="startup decision pricing, AI advisory tool, founder decision tool, premium features"
+          title="Pricing"
+          description="Simple, transparent pricing for Synoptas."
           canonical="/pricing"
-          ogImage="https://synoptas.com/synoptas-favicon.png"
         />
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
@@ -81,14 +37,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing – Your AI Advisory Board"
-        description="Start free with 2 analyses per day. Premium ($26.99/mo) unlocks 10 daily analyses, investor-ready PDF exports, competitive context, and 6-12 month outlook."
-        keywords="startup decision pricing, AI advisory tool, founder decision tool, premium features"
+        title="Pricing"
+        description="Simple, transparent pricing for Synoptas. Start free, upgrade when you need more."
         canonical="/pricing"
-        ogImage="https://synoptas.com/synoptas-favicon.png"
-      />
-      <FAQSchema
-        faqs={faqs.map(faq => ({ question: faq.question, answer: faq.answer }))}
       />
 
       <Navbar />
@@ -107,67 +58,83 @@ const PricingPage = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
               {isPremium && isLoggedIn 
                 ? "You're all set" 
-                : "Your AI Advisory Board"}
+                : "Choose your plan"}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn 
-                ? "10 analyses a day, full insights, competitive context, long-term outlook. All yours."
-                : "Get structured second opinions before every big decision. Upgrade when you need deeper insights and investor-ready exports."}
+                ? "You have full access to all Premium features."
+                : "Start free. Upgrade when you need more."}
             </p>
           </div>
         </section>
 
         {/* Pricing Cards */}
-        <Pricing compact={false} />
-
-        {/* Comparison Table */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                Free vs Premium
-              </h2>
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+            {/* Free Plan */}
+            <div className="border border-border rounded-2xl p-8 space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">Free</h3>
+                <p className="text-muted-foreground mt-1">Get started at no cost</p>
+              </div>
+              <div className="text-4xl font-extrabold text-foreground">
+                $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2 text-muted-foreground">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Basic access
+                </li>
+              </ul>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate(isLoggedIn ? '/profile' : '/auth')}
+              >
+                {isLoggedIn ? "Current Plan" : "Get Started"}
+              </Button>
             </div>
 
-            <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/50">
-                    <th className="text-left p-4 font-medium">Feature</th>
-                    <th className="text-center p-4 font-medium">Free</th>
-                    <th className="text-center p-4 font-medium text-primary">Premium</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonFeatures.map((feature, index) => (
-                    <tr key={index} className="border-b border-border last:border-0">
-                      <td className="p-4">{feature.name}</td>
-                      <td className="text-center p-4 text-muted-foreground">{feature.free}</td>
-                      <td className="text-center p-4 font-medium">{feature.premium}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                Frequently Asked Questions
-              </h2>
-            </div>
-
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div key={index} className="border-b border-border pb-6 last:border-0">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
-                </div>
-              ))}
+            {/* Premium Plan */}
+            <div className="border-2 border-primary rounded-2xl p-8 space-y-6 relative">
+              <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
+                Recommended
+              </Badge>
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">Premium</h3>
+                <p className="text-muted-foreground mt-1">Full access to everything</p>
+              </div>
+              <div className="text-4xl font-extrabold text-foreground">
+                $26.99<span className="text-lg font-normal text-muted-foreground">/mo</span>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2 text-muted-foreground">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Everything in Free
+                </li>
+                <li className="flex items-center gap-2 text-muted-foreground">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Premium features
+                </li>
+                <li className="flex items-center gap-2 text-muted-foreground">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Priority support
+                </li>
+              </ul>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  if (isPremium && isLoggedIn) {
+                    navigate('/profile');
+                  } else if (isLoggedIn) {
+                    openCheckout(user?.email || undefined);
+                  } else {
+                    navigate('/auth?intent=premium');
+                  }
+                }}
+              >
+                {isPremium && isLoggedIn ? "Manage Subscription" : "Get Premium"}
+              </Button>
             </div>
           </div>
         </section>
@@ -177,30 +144,21 @@ const PricingPage = () => {
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               {isPremium && isLoggedIn 
-                ? "Back to documenting" 
-                : "Ready to document your decisions?"}
+                ? "You're all set" 
+                : "Ready to get started?"}
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn 
-                ? "Your 10 daily records are ready. Full documentation, full context."
-                : "Three perspectives, one documented decision. See how it protects your process."}
+                ? "Head back to your profile to manage your account."
+                : "Join Synoptas today and see the difference."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button 
                 size="lg"
-                onClick={() => navigate(isPremium && isLoggedIn ? '/validate' : (isLoggedIn ? '/validate' : '/auth?intent=free'))}
+                onClick={() => navigate(isLoggedIn ? '/profile' : '/auth')}
               >
-                {isPremium && isLoggedIn ? "Open Decision Records" : "Create Your First Record"}
+                {isLoggedIn ? "Go to Profile" : "Create Account"}
               </Button>
-              {!isPremium && (
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  onClick={() => isLoggedIn ? openCheckout() : navigate('/auth?intent=premium')}
-                >
-                  Get Premium – $26.99/mo
-                </Button>
-              )}
             </div>
           </div>
         </section>

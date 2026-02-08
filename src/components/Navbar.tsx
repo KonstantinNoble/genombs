@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { TeamSwitcher } from "@/components/team/TeamSwitcher";
 
 const logo = "/synoptas-favicon.png";
 
@@ -12,9 +11,6 @@ const Navbar = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  
-  // Show team switcher on relevant pages
-  const showTeamSwitcher = !!user;
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -134,9 +130,6 @@ const Navbar = () => {
                 <span className="text-lg font-semibold tracking-tight text-foreground">
                   Synoptas
                 </span>
-                <span className="text-[11px] font-medium text-muted-foreground -mt-0.5 tracking-wide uppercase">
-                  AI Validation
-                </span>
               </div>
             </Link>
           </div>
@@ -144,17 +137,8 @@ const Navbar = () => {
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center gap-7">
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/validate">Features</NavLink>
             <NavLink to="/pricing">Pricing</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            
-            {user && <NavLink to="/teams">Workspaces</NavLink>}
-            {user && <NavLink to="/dashboard">Dashboard</NavLink>}
-            
-            {/* Team Switcher */}
-            {showTeamSwitcher && (
-              <TeamSwitcher />
-            )}
           </div>
           
           {/* CTA Button - Right */}
@@ -227,9 +211,6 @@ const Navbar = () => {
               <span className="text-2xl font-semibold tracking-tight text-foreground">
                 Synoptas
               </span>
-              <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
-                AI Validation
-              </span>
             </div>
             
             {/* Separator */}
@@ -240,33 +221,12 @@ const Navbar = () => {
               <MobileNavLink to="/" onClick={() => setIsOpen(false)} delay={0}>
                 Home
               </MobileNavLink>
-              <MobileNavLink to="/validate" onClick={() => setIsOpen(false)} delay={1}>
-                Features
-              </MobileNavLink>
-              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={2}>
+              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={1}>
                 Pricing
               </MobileNavLink>
-              <MobileNavLink to="/contact" onClick={() => setIsOpen(false)} delay={3}>
+              <MobileNavLink to="/contact" onClick={() => setIsOpen(false)} delay={2}>
                 Contact
               </MobileNavLink>
-
-              {user && (
-                <>
-                  <MobileNavLink to="/teams" onClick={() => setIsOpen(false)} delay={4}>
-                    Workspaces
-                  </MobileNavLink>
-                  <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={5}>
-                    Dashboard
-                  </MobileNavLink>
-                </>
-              )}
-              
-              {/* Team Switcher for mobile */}
-              {showTeamSwitcher && (
-                <div className="mt-4 w-full max-w-xs animate-fade-in" style={{ animationDelay: '150ms' }}>
-                  <TeamSwitcher />
-                </div>
-              )}
             </div>
             
             {/* Separator */}

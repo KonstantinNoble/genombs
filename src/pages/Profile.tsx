@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,18 +11,10 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { useTeam } from "@/contexts/TeamContext";
-import { AlertTriangle, ArrowRight } from "lucide-react";
-
-interface OwnedTeam {
-  id: string;
-  name: string;
-}
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [ownedTeams, setOwnedTeams] = useState<OwnedTeam[]>([]);
   const [credits, setCredits] = useState<{
     is_premium: boolean;
     premium_since: string | null;
@@ -33,7 +25,6 @@ const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { openCheckout } = useFreemiusCheckout();
-  const { teams } = useTeam();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -48,7 +39,6 @@ const Profile = () => {
 
       setUser(session.user);
 
-      // Fetch user credits/premium status
       if (session.user) {
         const { data } = await supabase
           .from('user_credits')
@@ -81,21 +71,8 @@ const Profile = () => {
     navigate("/");
   };
 
-
   const handleDeleteAccount = async () => {
     if (!user) return;
-
-    // Check for owned teams first (client-side check, server also validates)
-    const userOwnedTeams = teams.filter(t => t.role === "owner");
-    if (userOwnedTeams.length > 0) {
-      setOwnedTeams(userOwnedTeams.map(t => ({ id: t.id, name: t.name })));
-      toast({
-        title: "Delete workspaces first",
-        description: "You must delete your workspaces before deleting your account.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     setDeleting(true);
 
@@ -104,18 +81,6 @@ const Profile = () => {
         method: "POST",
         body: {},
       });
-      
-      // Handle team ownership error from server
-      if (data?.error === "TRANSFER_OWNERSHIP_REQUIRED") {
-        setOwnedTeams(data.teams || []);
-        toast({
-          title: "Delete workspaces first",
-          description: "You must delete your workspaces before deleting your account.",
-          variant: "destructive",
-        });
-        setDeleting(false);
-        return;
-      }
       
       if (error) throw error;
 
@@ -182,7 +147,6 @@ const Profile = () => {
                 </p>
               </div>
 
-
               <div className="space-y-2">
                 <Label>Premium Status</Label>
                 <div className="p-3 bg-muted rounded-md border border-border">
@@ -209,7 +173,7 @@ const Profile = () => {
                       <div className="flex items-center gap-2 flex-wrap">
                         {credits.auto_renew === null ? (
                           <span className="text-muted-foreground text-sm">
-                            ⓘ Status unknown - sync with Freemius may be pending
+                            ⓘ Status unknown - sync may be pending
                           </span>
                         ) : credits.auto_renew ? (
                           <>
@@ -245,57 +209,6 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* My Teams Section */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>My Teams</Label>
-                  <Link 
-                    to="/teams" 
-                    className="text-xs text-primary hover:underline flex items-center gap-1"
-                  >
-                    View all
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
-                </div>
-                <div className="p-3 bg-muted rounded-md border border-border space-y-2">
-                  {teams.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      {credits?.is_premium 
-                        ? "You're not part of any teams yet."
-                        : "Upgrade to Premium to create and join teams."
-                      }
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {teams.slice(0, 3).map(team => (
-                        <div key={team.id} className="flex flex-col xs:flex-row xs:items-center justify-between p-3 rounded-lg bg-background border gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div className="h-6 w-6 rounded bg-muted flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-muted-foreground">{team.name.charAt(0)}</span>
-                            </div>
-                            <span className="text-sm font-medium truncate">{team.name}</span>
-                            <span className="text-xs text-muted-foreground capitalize shrink-0">({team.role})</span>
-                          </div>
-                          {(team.role === "owner" || team.role === "admin") && (
-                            <Link 
-                              to="/team/members" 
-                              className="text-xs text-primary hover:underline py-2 px-3 -mx-1 rounded-md hover:bg-primary/5 transition-colors min-h-[44px] xs:min-h-0 flex items-center justify-center xs:justify-start"
-                            >
-                              Manage
-                            </Link>
-                          )}
-                        </div>
-                      ))}
-                      {teams.length > 3 && (
-                        <p className="text-xs text-muted-foreground text-center pt-1">
-                          +{teams.length - 3} more teams
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
               <div className="pt-6 border-t border-border space-y-4">
                 <Button
                   onClick={handleSignOut}
@@ -305,42 +218,11 @@ const Profile = () => {
                   Sign Out
                 </Button>
 
-                {/* Team ownership warning */}
-                {ownedTeams.length > 0 && (
-                  <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                    <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-destructive">
-                          Workspace action required
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          You own the following workspaces. Before deleting your account, you must delete them first:
-                        </p>
-                        <ul className="space-y-2">
-                          {ownedTeams.map(team => (
-                            <li key={team.id} className="flex items-center gap-2 text-sm">
-                              <span className="font-medium">{team.name}</span>
-                              <Link 
-                                to="/team/settings" 
-                                className="ml-auto text-destructive text-xs hover:underline"
-                              >
-                                Delete Workspace
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
                       className="w-full"
-                      disabled={ownedTeams.length > 0}
                     >
                       Delete Account
                     </Button>

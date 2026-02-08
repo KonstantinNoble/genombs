@@ -1,12 +1,1 @@
-export const TEAM_LIMITS = {
-  MAX_TEAMS_PER_USER: 5,
-  MAX_MEMBERS_PER_TEAM: 5,
-  MAX_INVITES_PER_TEAM_PER_DAY: 10,
-  MAX_PENDING_INVITES_PER_EMAIL: 3,
-  INVITE_EXPIRY_DAYS: 7,
-} as const;
-
-export const VALIDATION_LIMITS = {
-  FREE_VALIDATIONS_PER_DAY: 2,
-  PREMIUM_VALIDATIONS_PER_DAY: 10,
-} as const;
+// App constants - add new feature constants here

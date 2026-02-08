@@ -60,81 +60,13 @@ serve(async (req) => {
 
     if (hashError) {
       console.error('Failed to store email hash:', hashError);
-      // Continue anyway - better to delete account than to block deletion
     }
 
     // GDPR-compliant: Explicitly delete ALL user data from public tables
-    
     const userId = userData.user.id;
     console.log('Starting GDPR-compliant account deletion for user:', userId);
 
-    // 0. Check if user is a team owner - MUST transfer ownership first
-    console.log('Checking team ownership for user:', userId);
-    const { data: ownedTeams, error: teamsError } = await adminClient
-      .from('team_members')
-      .select('team_id, teams(id, name)')
-      .eq('user_id', userId)
-      .eq('role', 'owner');
-
-    if (!teamsError && ownedTeams && ownedTeams.length > 0) {
-      console.log('User owns teams, cannot delete:', ownedTeams);
-      return new Response(JSON.stringify({ 
-        error: "DELETE_WORKSPACE_REQUIRED",
-        teams: ownedTeams.map(t => ({ 
-          id: (t.teams as any)?.id, 
-          name: (t.teams as any)?.name 
-        }))
-      }), {
-        status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    }
-
-    // 0.5 Remove user from all teams they're a member of (not owner)
-    console.log('Removing user from teams:', userId);
-    const { error: teamMemberError } = await adminClient
-      .from('team_members')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (teamMemberError) {
-      console.error('Failed to remove from teams:', teamMemberError);
-    }
-
-    // 1. Delete decision_records (decision_audit_log deleted via CASCADE)
-    console.log('Deleting decision_records for user:', userId);
-    const { error: decisionsError } = await adminClient
-      .from('decision_records')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (decisionsError) {
-      console.error('Failed to delete decision_records:', decisionsError);
-    }
-
-    // 2. Delete experiments (experiment_tasks and experiment_checkpoints are deleted via CASCADE)
-    console.log('Deleting experiments for user:', userId);
-    const { error: experimentsError } = await adminClient
-      .from('experiments')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (experimentsError) {
-      console.error('Failed to delete experiments:', experimentsError);
-    }
-
-    // 3. Delete validation_analyses
-    console.log('Deleting validation_analyses for user:', userId);
-    const { error: validationError } = await adminClient
-      .from('validation_analyses')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (validationError) {
-      console.error('Failed to delete validation_analyses:', validationError);
-    }
-
-    // 3. Delete user_roles
+    // 1. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     const { error: rolesError } = await adminClient
       .from('user_roles')
@@ -145,7 +77,7 @@ serve(async (req) => {
       console.error('Failed to delete user_roles:', rolesError);
     }
 
-    // 6. Delete user_credits
+    // 2. Delete user_credits
     console.log('Deleting user_credits for user:', userId);
     const { error: creditsError } = await adminClient
       .from('user_credits')
@@ -156,7 +88,7 @@ serve(async (req) => {
       console.error('Failed to delete user_credits:', creditsError);
     }
 
-    // 7. Delete profile
+    // 3. Delete profile
     console.log('Deleting profile for user:', userId);
     const { error: profileError } = await adminClient
       .from('profiles')
@@ -167,7 +99,7 @@ serve(async (req) => {
       console.error('Failed to delete profile:', profileError);
     }
 
-    // 8. Finally: Delete auth.users entry (invalidates login immediately)
+    // 4. Finally: Delete auth.users entry (invalidates login immediately)
     console.log('Deleting auth user:', userId);
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {

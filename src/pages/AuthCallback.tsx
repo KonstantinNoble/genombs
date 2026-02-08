@@ -12,10 +12,8 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get returnTo from URL query params (passed from Auth.tsx)
         const returnTo = searchParams.get("returnTo");
 
-        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) throw sessionError;
@@ -28,15 +26,13 @@ const AuthCallback = () => {
 
         const user = session.user;
         const accountAge = new Date().getTime() - new Date(user.created_at).getTime();
-        const isNewUser = accountAge < 10000; // Less than 10 seconds old
+        const isNewUser = accountAge < 10000;
 
-        // Run deletion block check and pending premium check in parallel for speed
+        // Run deletion block check and pending premium check in parallel
         const [deletionBlockResult, pendingPremiumResult] = await Promise.all([
-          // Only check deletion block for new users
           isNewUser 
             ? supabase.functions.invoke('check-deleted-account-block', { body: { email: user.email } })
             : Promise.resolve({ data: null, error: null }),
-          // Always check for pending premium
           supabase.from('pending_premium').select('*').ilike('email', user.email!).maybeSingle()
         ]);
 
@@ -44,7 +40,6 @@ const AuthCallback = () => {
         if (isNewUser && deletionBlockResult.data?.blocked) {
           console.log("Email blocked due to recent deletion, removing newly created account");
           
-          // Call edge function to delete the blocked account
           const { error: deleteError } = await supabase.functions.invoke('delete-blocked-account');
           
           if (deleteError) {
@@ -66,7 +61,6 @@ const AuthCallback = () => {
         if (!pendingError && pendingPremium) {
           console.log('Found pending premium for user, activating...');
           
-          // Activate premium in user_credits mit allen Subscription-Feldern
           const { error: activateError } = await supabase
             .from('user_credits')
             .upsert({
@@ -75,7 +69,6 @@ const AuthCallback = () => {
               premium_since: new Date().toISOString(),
               freemius_subscription_id: pendingPremium.freemius_subscription_id,
               freemius_customer_id: pendingPremium.freemius_customer_id,
-              // NEU: Übertrage alle Subscription-Felder aus pending_premium
               subscription_end_date: (pendingPremium as any).subscription_end_date || null,
               auto_renew: (pendingPremium as any).auto_renew ?? true,
               next_payment_date: (pendingPremium as any).next_payment_date || null,
@@ -84,7 +77,6 @@ const AuthCallback = () => {
           if (activateError) {
             console.error('Failed to activate premium:', activateError);
           } else {
-            // Delete from pending_premium
             await supabase
               .from('pending_premium')
               .delete()
@@ -94,9 +86,8 @@ const AuthCallback = () => {
           }
         }
 
-        // Priority 1: Check for returnTo URL parameter (team invitations, etc.)
+        // Priority 1: Check for returnTo URL parameter
         if (returnTo) {
-          console.log("[AuthCallback] Redirecting to returnTo:", returnTo);
           toast.success("Successfully signed in!");
           navigate(returnTo);
           return;
@@ -106,21 +97,15 @@ const AuthCallback = () => {
         const storedIntent = localStorage.getItem('auth_intent');
         localStorage.removeItem('auth_intent');
         
-        // Neue User direkt zum Validator leiten (außer bei Premium-Intent)
         if (isNewUser && storedIntent !== 'premium') {
-          toast.success("Welcome! Let's validate your first decision.");
-          navigate('/validate');
+          toast.success("Welcome to Synoptas!");
+          navigate('/');
         } else if (storedIntent === 'premium') {
-          // Premium-Intent (auch für neue User) -> Checkout öffnen
-          const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${user.email}&readonly_user=true`;
+          const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;
           window.open(checkoutUrl, '_blank');
           toast.success(isNewUser ? "Welcome! Your Premium checkout is ready." : "Successfully signed in!");
           navigate('/profile');
-        } else if (storedIntent === 'free') {
-          toast.success("Successfully signed in!");
-          navigate('/validate');
         } else {
-          // Existing user without intent - redirect to home
           toast.success("Successfully signed in!");
           navigate("/");
         }

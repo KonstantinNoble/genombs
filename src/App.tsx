@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
-import { TeamProvider } from "./contexts/TeamContext";
 
 // Eager load critical pages
 import Home from "./pages/Home";
@@ -17,8 +16,6 @@ import AuthCallback from "./pages/AuthCallback";
 
 // Lazy load authenticated and less critical pages
 const Profile = lazy(() => import("./pages/Profile"));
-const ValidationPlatform = lazy(() => import("./pages/ValidationPlatform"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PricingPage = lazy(() => import("./pages/Pricing"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -26,10 +23,6 @@ const Imprint = lazy(() => import("./pages/Imprint"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
-const TeamMembers = lazy(() => import("./pages/TeamMembers"));
-const TeamInvite = lazy(() => import("./pages/TeamInvite"));
-const TeamSettings = lazy(() => import("./pages/TeamSettings"));
-const Teams = lazy(() => import("./pages/Teams"));
 
 const queryClient = new QueryClient();
 
@@ -60,36 +53,28 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <TeamProvider>
-            <ScrollToTop />
-            <BackgroundWrapper>
-              <ErrorBoundary>
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/auth/callback" element={<AuthCallback />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/validate" element={<ValidationPlatform />} />
-                    <Route path="/pricing" element={<PricingPage />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/imprint" element={<Imprint />} />
-                    <Route path="/terms-of-service" element={<TermsOfService />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/update-password" element={<UpdatePassword />} />
-                    <Route path="/teams" element={<Teams />} />
-                    <Route path="/team/members" element={<TeamMembers />} />
-                    <Route path="/team/settings" element={<TeamSettings />} />
-                    <Route path="/team/invite/:token" element={<TeamInvite />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </ErrorBoundary>
-            </BackgroundWrapper>
-          </TeamProvider>
+          <ScrollToTop />
+          <BackgroundWrapper>
+            <ErrorBoundary>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/pricing" element={<PricingPage />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/imprint" element={<Imprint />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/update-password" element={<UpdatePassword />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+          </BackgroundWrapper>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

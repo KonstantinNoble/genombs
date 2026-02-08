@@ -1,12 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Check, X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Loader2, Check, X, Shield, CreditCard, RefreshCcw, Lock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
+import FeatureComparisonTable from "@/components/genome/FeatureComparisonTable";
+import FAQSection from "@/components/genome/FAQSection";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -57,6 +60,32 @@ const PricingPage = () => {
     { text: "Priority support", included: true },
   ];
 
+  const pricingFAQ = [
+    {
+      question: "Can I cancel anytime?",
+      answer: "Yes, you can cancel your Premium subscription at any time. Your access will remain active until the end of the current billing period. No cancellation fees, no questions asked.",
+    },
+    {
+      question: "What happens when I hit the free limit?",
+      answer: "When you've used all 3 free analyses in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing analyses and reports remain accessible.",
+    },
+    {
+      question: "Do you offer annual billing?",
+      answer: "We're working on annual billing with a discounted rate. Currently, Premium is available at $26.99/month. Sign up for our newsletter to be notified when annual plans launch.",
+    },
+    {
+      question: "Is there a refund policy?",
+      answer: "Yes, we offer a 14-day money-back guarantee for new Premium subscribers. If you're not satisfied, contact us within 14 days for a full refund.",
+    },
+  ];
+
+  const trustBadges = [
+    { icon: RefreshCcw, label: "Cancel anytime" },
+    { icon: CreditCard, label: "No credit card for free" },
+    { icon: Lock, label: "SSL encrypted" },
+    { icon: Shield, label: "GDPR compliant" },
+  ];
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
@@ -90,7 +119,7 @@ const PricingPage = () => {
         </section>
 
         {/* Pricing Cards */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
             {/* Free Plan */}
             <div className="border border-border rounded-2xl p-8 space-y-6">
@@ -167,8 +196,46 @@ const PricingPage = () => {
           </div>
         </section>
 
+        {/* Trust Badges */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              {trustBadges.map((badge) => (
+                <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <badge.icon className="w-4 h-4 text-primary" />
+                  <span>{badge.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Comparison Table */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 border-t border-border">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
+                Full Feature Comparison
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                See exactly what's included in each plan.
+              </p>
+            </div>
+            <Card className="border-border bg-card overflow-hidden">
+              <FeatureComparisonTable />
+            </Card>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 border-t border-border">
+          <div className="max-w-2xl mx-auto">
+            <FAQSection title="Pricing FAQ" items={pricingFAQ} />
+          </div>
+        </section>
+
         {/* CTA Section */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               {isPremium && isLoggedIn ? "You're all set" : "Ready to decode your market?"}

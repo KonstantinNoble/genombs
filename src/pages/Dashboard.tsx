@@ -211,7 +211,7 @@ const Dashboard = () => {
                     Completed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{completedScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="analyzing">
-                    In Progress <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{analyzingScans.length}</Badge>
+                    In Progress <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{analyzingScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="failed">
                     Failed <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{failedScans.length}</Badge>

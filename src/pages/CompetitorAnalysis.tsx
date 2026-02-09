@@ -128,20 +128,9 @@ const CompetitorAnalysis = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {isPremium ? (
-                  <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
-                    Analyze Competitors
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <Button onClick={() => navigate("/pricing")}>
-                      Upgrade to Premium
-                    </Button>
-                    <span className="text-base text-foreground/70">
-                      Competitor Analysis is a Premium feature
-                    </span>
-                  </div>
-                )}
+                <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
+                  Analyze Competitors
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

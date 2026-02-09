@@ -115,67 +115,35 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
         })}
       </div>
 
-      {/* Premium: Industry Benchmarks */}
+      {/* Industry Benchmarks — free for all */}
       {industryBenchmarks.length > 0 && (
-        isPremium ? (
-          <Card className="border-border bg-card">
-            <CardContent className="p-0">
-              <div className="px-5 py-3 border-b border-border">
-                 <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
-                  Industry Benchmarks
-                </h4>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
-                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
+        <Card className="border-border bg-card">
+          <CardContent className="p-0">
+            <div className="px-5 py-3 border-b border-border">
+               <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
+                Industry Benchmarks
+              </h4>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                     <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
+                     <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {industryBenchmarks.map((b) => (
+                    <tr key={b.metric} className="border-b border-border/50">
+                       <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
+                       <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {industryBenchmarks.map((b) => (
-                      <tr key={b.metric} className="border-b border-border/50">
-                         <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
-                         <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <PremiumLock title="Unlock Industry Benchmarks">
-            <Card className="border-border bg-card">
-              <CardContent className="p-0">
-                <div className="px-5 py-3 border-b border-border">
-                  <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
-                    Industry Benchmarks
-                  </h4>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
-                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {industryBenchmarks.map((b) => (
-                        <tr key={b.metric} className="border-b border-border/50">
-                           <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
-                           <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </PremiumLock>
-        )
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

@@ -201,7 +201,6 @@ const GenomeView = () => {
                   companyName={report.companyName}
                   scoreInsights={report.scoreInsights}
                   industryBenchmarks={report.industryBenchmarks}
-                  isPremium={isPremium}
                 />
               </GenomeCard>
             </div>

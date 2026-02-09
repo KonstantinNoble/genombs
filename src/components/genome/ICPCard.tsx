@@ -1,13 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import PremiumLock from "@/components/genome/PremiumLock";
 import type { ICPPersona } from "@/lib/demo-data";
 
 interface ICPCardProps {
   persona: ICPPersona;
   index: number;
+  isPremium?: boolean;
 }
 
-const ICPCard = ({ persona, index }: ICPCardProps) => {
+const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-5">
@@ -41,6 +43,7 @@ const ICPCard = ({ persona, index }: ICPCardProps) => {
         <p className="text-xs text-muted-foreground mb-4">{persona.demographics}</p>
 
         <div className="space-y-4">
+          {/* Free: Pain Points + Goals */}
           <div>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Pain Points</p>
             <ul className="space-y-1.5">
@@ -65,44 +68,82 @@ const ICPCard = ({ persona, index }: ICPCardProps) => {
             </ul>
           </div>
 
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
-            <ul className="space-y-1.5">
-              {persona.buyingTriggers.map((trigger, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
-                  {trigger}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Premium: Buying Triggers, Objections, Where to Find */}
+          {isPremium ? (
+            <>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+                <ul className="space-y-1.5">
+                  {persona.buyingTriggers.map((trigger, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
+                      {trigger}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
-            <ul className="space-y-1.5">
-              {persona.objections.map((objection, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
-                  {objection}
-                </li>
-              ))}
-            </ul>
-          </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
+                <ul className="space-y-1.5">
+                  {persona.objections.map((objection, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
+                      {objection}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
-            <div className="flex flex-wrap gap-1.5">
-              {persona.whereToFind.map((place, i) => (
-                <Badge
-                  key={i}
-                  variant="secondary"
-                  className="text-xs font-mono font-normal"
-                >
-                  {place}
-                </Badge>
-              ))}
-            </div>
-          </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {persona.whereToFind.map((place, i) => (
+                    <Badge key={i} variant="secondary" className="text-xs font-mono font-normal">
+                      {place}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <PremiumLock title="Unlock Buying Triggers, Objections & Where to Find">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+                  <ul className="space-y-1.5">
+                    {persona.buyingTriggers.map((trigger, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
+                        {trigger}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
+                  <ul className="space-y-1.5">
+                    {persona.objections.map((objection, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
+                        {objection}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {persona.whereToFind.map((place, i) => (
+                      <Badge key={i} variant="secondary" className="text-xs font-mono font-normal">
+                        {place}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PremiumLock>
+          )}
         </div>
       </CardContent>
     </Card>

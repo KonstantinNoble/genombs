@@ -114,6 +114,29 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Competitor Analysis CTA */}
+          <Card
+            className="border-border bg-card mb-4 cursor-pointer hover:border-primary/30 transition-colors"
+            onClick={() => navigate("/competitor-analysis")}
+          >
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-sm font-semibold text-foreground">Competitor Analysis</h3>
+                  {!isPremium && (
+                    <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">
+                      Premium
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Compare your business against up to 3 competitors across 6 growth dimensions.
+                </p>
+              </div>
+              <span className="text-muted-foreground text-sm">→</span>
+            </CardContent>
+          </Card>
+
           {/* URL Input */}
           <Card className="border-border bg-card mb-2">
             <CardContent className="p-5 sm:p-6">

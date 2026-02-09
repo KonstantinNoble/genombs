@@ -1,9 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import PremiumLock from "@/components/genome/PremiumLock";
 import type { Optimization } from "@/lib/demo-data";
 
 interface OptimizationCardProps {
   optimization: Optimization;
+  isPremium?: boolean;
 }
 
 const priorityConfig = {
@@ -18,7 +20,7 @@ const impactConfig = {
   low: "bg-muted text-muted-foreground border-border",
 };
 
-const OptimizationCard = ({ optimization }: OptimizationCardProps) => {
+const OptimizationCard = ({ optimization, isPremium = false }: OptimizationCardProps) => {
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-4">
@@ -36,15 +38,32 @@ const OptimizationCard = ({ optimization }: OptimizationCardProps) => {
         <p className="text-xs text-muted-foreground mb-2">
           Current: {optimization.currentState}
         </p>
-        <p className="text-xs text-muted-foreground mb-3">
-          Effort: {optimization.effort}
-        </p>
         <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
           {optimization.recommendation}
         </p>
-        <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
-          {optimization.expectedOutcome}
-        </p>
+
+        {/* Premium: Effort + Expected Outcome */}
+        {isPremium ? (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Effort: {optimization.effort}
+            </p>
+            <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
+              {optimization.expectedOutcome}
+            </p>
+          </div>
+        ) : (
+          <PremiumLock title="Unlock Effort & Expected Outcome">
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Effort: {optimization.effort}
+              </p>
+              <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
+                {optimization.expectedOutcome}
+              </p>
+            </div>
+          </PremiumLock>
+        )}
       </CardContent>
     </Card>
   );

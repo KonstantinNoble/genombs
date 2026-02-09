@@ -93,7 +93,7 @@ const CompetitorAnalysis = () => {
           <Card className="border-border bg-card mb-6">
             <CardContent className="p-5 sm:p-6 space-y-4">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
                 <Input
                   type="url"
                   placeholder="https://your-website.com"

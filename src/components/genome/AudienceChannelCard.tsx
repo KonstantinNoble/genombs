@@ -223,8 +223,8 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-foreground">{ch.platform}</span>
-                        <Badge variant="outline" className="text-[10px]">
+                        <span className="text-base font-medium text-foreground">{ch.platform}</span>
+                        <Badge variant="outline" className="text-xs">
                           {categoryLabels[ch.category] || ch.category}
                         </Badge>
                         {ch.budgetLevel && (

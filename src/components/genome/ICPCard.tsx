@@ -64,6 +64,45 @@ const ICPCard = ({ persona, index }: ICPCardProps) => {
               ))}
             </ul>
           </div>
+
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+            <ul className="space-y-1.5">
+              {persona.buyingTriggers.map((trigger, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                  <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
+                  {trigger}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
+            <ul className="space-y-1.5">
+              {persona.objections.map((objection, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                  <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
+                  {objection}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+            <div className="flex flex-wrap gap-1.5">
+              {persona.whereToFind.map((place, i) => (
+                <Badge
+                  key={i}
+                  variant="secondary"
+                  className="text-xs font-mono font-normal"
+                >
+                  {place}
+                </Badge>
+              ))}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

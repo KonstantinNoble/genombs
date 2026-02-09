@@ -11,7 +11,6 @@ import SectionNav from "@/components/genome/SectionNav";
 import ICPCard from "@/components/genome/ICPCard";
 import AudienceChannelCard from "@/components/genome/AudienceChannelCard";
 import OptimizationCard from "@/components/genome/OptimizationCard";
-import GrowthStrategySection from "@/components/genome/GrowthStrategySection";
 import PerformanceChart from "@/components/genome/PerformanceChart";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,8 +22,6 @@ const sections = [
   { id: "icp", label: "ICP" },
   { id: "audience-channels", label: "Channels" },
   { id: "optimization", label: "Optimization" },
-  { id: "organic-growth", label: "Organic Growth" },
-  { id: "paid-strategy", label: "Paid Strategy" },
 ];
 
 const GenomeView = () => {
@@ -155,15 +152,37 @@ const GenomeView = () => {
             {/* Business Snapshot */}
             <div className="lg:col-span-2">
               <GenomeCard title="Business Snapshot">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary">{report.businessModel.type}</Badge>
                     <Badge variant="outline">{report.segment}</Badge>
                     <Badge variant="outline">{report.businessModel.revenueModel}</Badge>
+                    <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30">
+                      {report.businessModel.growthLever}
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {report.businessModel.description}
                   </p>
+                  {/* Positioning */}
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
+                    <p className="text-sm text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                      {report.businessModel.positioning}
+                    </p>
+                  </div>
+                  {/* Differentiators */}
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Key Differentiators</p>
+                    <ul className="space-y-1.5">
+                      {report.businessModel.differentiators.map((d, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </GenomeCard>
             </div>
@@ -188,7 +207,7 @@ const GenomeView = () => {
             <div id="icp" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Ideal Customer Profile (ICP)">
                 <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  Identified target audiences based on website messaging and content analysis
+                  Identified target audiences with buying triggers, objections, and where to find them
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {report.icp.map((persona, i) => (
@@ -202,9 +221,16 @@ const GenomeView = () => {
             <div id="audience-channels" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Where Your Audience Lives">
                 <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  Platforms, communities, and keywords where your target audience is most active
+                  Organic and paid channels, SEO keywords, and targeting strategies
                 </p>
-                <AudienceChannelCard channels={report.audienceChannels} />
+                <AudienceChannelCard
+                  channels={report.audienceChannels}
+                  seoKeywords={report.seoKeywords}
+                  seoScore={report.seoScore}
+                  seoRecommendation={report.seoRecommendation}
+                  paidCompetitionLevel={report.paidCompetitionLevel}
+                  estimatedCPC={report.estimatedCPC}
+                />
               </GenomeCard>
             </div>
 
@@ -214,7 +240,7 @@ const GenomeView = () => {
                 <div>
                   <h2 className="text-lg font-semibold text-foreground">Website Optimization</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Concrete improvements to increase conversions, trust, and engagement.
+                    Concrete improvements with estimated effort and expected outcomes.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,26 +249,6 @@ const GenomeView = () => {
                   ))}
                 </div>
               </div>
-            </div>
-
-            {/* Organic Growth */}
-            <div id="organic-growth" className="lg:col-span-2 scroll-mt-28">
-              <GenomeCard title="Growth Strategy: Organic">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  SEO, content, social media, and community strategies
-                </p>
-                <GrowthStrategySection type="organic" organicStrategy={report.organicStrategy} />
-              </GenomeCard>
-            </div>
-
-            {/* Paid Strategy */}
-            <div id="paid-strategy" className="lg:col-span-2 scroll-mt-28">
-              <GenomeCard title="Growth Strategy: Paid Advertising">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  Recommended paid channels, budgets, and targeting strategies
-                </p>
-                <GrowthStrategySection type="paid" paidStrategy={report.paidStrategy} />
-              </GenomeCard>
             </div>
           </div>
         </div>

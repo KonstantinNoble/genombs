@@ -52,7 +52,6 @@ const CompetitorAnalysis = () => {
   };
 
   const handleAnalyze = () => {
-    if (!isPremium) return;
     console.log("Analyzing:", yourUrl, competitorUrls);
   };
 

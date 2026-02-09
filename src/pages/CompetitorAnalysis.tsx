@@ -280,7 +280,7 @@ const CompetitorAnalysis = () => {
                 </p>
                 <ol className="space-y-3">
                   {analysis.takeaways.map((takeaway, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-foreground leading-relaxed">
+                    <li key={i} className="flex items-start gap-3 text-base text-foreground leading-relaxed">
                       <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
                         {i + 1}
                       </span>

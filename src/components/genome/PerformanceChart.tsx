@@ -8,7 +8,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import PremiumLock from "@/components/genome/PremiumLock";
 import type { PerformanceScores, ScoreInsight, IndustryBenchmark } from "@/lib/demo-data";
 
 interface PerformanceChartProps {
@@ -17,7 +16,6 @@ interface PerformanceChartProps {
   companyName: string;
   scoreInsights: ScoreInsight[];
   industryBenchmarks: IndustryBenchmark[];
-  isPremium?: boolean;
 }
 
 const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [

@@ -161,7 +161,16 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                     <tbody>
                       {seoKeywords.slice(0, 3).map((kw) => (
                         <tr key={kw.keyword} className="border-b border-border/50">
-                           <td className="py-2 px-3 text-base font-mono text-foreground">{kw.keyword}</td>
+                           <td className="py-2 px-3">
+                             <a
+                               href={`https://www.google.com/search?q=${encodeURIComponent(kw.keyword)}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="text-base font-mono text-primary hover:underline"
+                             >
+                               {kw.keyword}
+                             </a>
+                           </td>
                            <td className="py-2 px-3 text-base font-mono text-foreground/70">{kw.volume}</td>
                           <td className="py-2 px-3">
                             <Badge variant="outline" className={`text-xs ${difficultyColors[kw.difficulty]}`}>

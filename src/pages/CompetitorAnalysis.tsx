@@ -166,11 +166,11 @@ const CompetitorAnalysis = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Dimension</th>
-                        <th className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-primary">{analysis.yourName}</th>
-                        {analysis.competitors.map((c) => (
-                          <th key={c.name} className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">{c.name}</th>
-                        ))}
+                         <th className="text-left py-3 px-4 text-xs uppercase tracking-wider text-muted-foreground">Dimension</th>
+                         <th className="text-center py-3 px-4 text-xs uppercase tracking-wider text-primary">{analysis.yourName}</th>
+                         {analysis.competitors.map((c) => (
+                           <th key={c.name} className="text-center py-3 px-4 text-xs uppercase tracking-wider text-muted-foreground">{c.name}</th>
+                         ))}
                       </tr>
                     </thead>
                     <tbody>

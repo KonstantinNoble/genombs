@@ -106,8 +106,8 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                   <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
                   {scoreInsight && (
                     <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-xs text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
+                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
                         {scoreInsight.nextStep}
                       </p>
                     </div>

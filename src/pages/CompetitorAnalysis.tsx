@@ -293,8 +293,8 @@ const CompetitorAnalysis = () => {
               {/* Battle Cards Section */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <h2 className="text-lg font-semibold text-foreground">Battle Cards</h2>
-                  <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
+                   <h2 className="text-xl font-semibold text-foreground">Battle Cards</h2>
+                   <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-xs">Premium</Badge>
                 </div>
                 <PremiumLock title="Unlock Battle Cards with Premium">
                   <BattleCardView cards={demoBattleCards} />

@@ -207,7 +207,7 @@ const CompetitorAnalysis = () => {
               </div>
 
               <GenomeCard title="Keyword Gaps">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                 <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Keywords your competitors rank for that you don't
                 </p>
                 <div className="overflow-x-auto">

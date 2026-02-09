@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Loader2, Check, X, Shield, CreditCard, RefreshCcw, Lock } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -38,25 +38,27 @@ const PricingPage = () => {
   }
 
   const freeFeatures = [
-    { text: "3 market research reports per month", included: true },
-    { text: "Business model detection", included: true },
-    { text: "Offer structure analysis", included: true },
-    { text: "Audience cluster identification", included: true },
-    { text: "Funnel type recognition", included: true },
+    { text: "3 growth reports per month", included: true },
+    { text: "ICP identification", included: true },
+    { text: "Audience channel analysis", included: true },
+    { text: "Website optimization tips", included: true },
+    { text: "Organic growth strategy", included: true },
+    { text: "Paid ad strategy", included: false },
+    { text: "Market size & opportunity data", included: false },
     { text: "Traffic data (SimilarWeb)", included: false },
     { text: "PDF export", included: false },
-    { text: "Competitive landscape view", included: false },
   ];
 
   const premiumFeatures = [
-    { text: "Unlimited market research", included: true },
-    { text: "Business model detection", included: true },
-    { text: "Offer structure analysis", included: true },
-    { text: "Audience cluster identification", included: true },
-    { text: "Funnel type recognition", included: true },
+    { text: "Unlimited growth reports", included: true },
+    { text: "ICP identification", included: true },
+    { text: "Audience channel analysis", included: true },
+    { text: "Website optimization tips", included: true },
+    { text: "Organic growth strategy", included: true },
+    { text: "Paid ad strategy", included: true },
+    { text: "Market size & opportunity data", included: true },
     { text: "Traffic data (SimilarWeb)", included: true },
     { text: "PDF export", included: true },
-    { text: "Competitive landscape view", included: true, comingSoon: true },
     { text: "Priority support", included: true },
   ];
 
@@ -67,7 +69,7 @@ const PricingPage = () => {
     },
     {
       question: "What happens when I hit the free limit?",
-      answer: "When you've used all 3 free research reports in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing research and reports remain accessible.",
+      answer: "When you've used all 3 free growth reports in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing reports remain accessible.",
     },
     {
       question: "Do you offer annual billing?",
@@ -80,24 +82,24 @@ const PricingPage = () => {
   ];
 
   const trustBadges = [
-    { icon: RefreshCcw, label: "Cancel anytime" },
-    { icon: CreditCard, label: "No credit card for free" },
-    { icon: Lock, label: "SSL encrypted" },
-    { icon: Shield, label: "GDPR compliant" },
+    { label: "Cancel anytime" },
+    { label: "No credit card for free" },
+    { label: "SSL encrypted" },
+    { label: "GDPR compliant" },
   ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing – Business Genome"
-        description="Simple, transparent pricing. Start free with 3 research reports per month. Upgrade for unlimited access."
+        description="Simple, transparent pricing. Start free with 3 growth reports per month. Upgrade for unlimited access."
         canonical="/pricing"
       />
 
       <Navbar />
 
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
             {isPremium && isLoggedIn ? (
@@ -113,7 +115,7 @@ const PricingPage = () => {
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
-                : "Start free with 3 research reports per month. Upgrade when you need more."}
+                : "Start free with 3 growth reports per month. Upgrade when you need more."}
             </p>
           </div>
         </section>
@@ -121,7 +123,7 @@ const PricingPage = () => {
         {/* Pricing Cards */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-            {/* Free Plan */}
+            {/* Free */}
             <div className="border border-border rounded-2xl p-8 space-y-6">
               <div>
                 <h3 className="text-2xl font-bold text-foreground">Free</h3>
@@ -133,11 +135,7 @@ const PricingPage = () => {
               <ul className="space-y-3">
                 {freeFeatures.map((feature) => (
                   <li key={feature.text} className="flex items-center gap-2 text-foreground">
-                    {feature.included ? (
-                      <Check className="w-4 h-4 text-primary shrink-0" />
-                    ) : (
-                      <X className="w-4 h-4 text-muted-foreground/50 shrink-0" />
-                    )}
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${feature.included ? "bg-primary" : "bg-muted-foreground/30"}`} />
                     <span className={feature.included ? "" : "text-muted-foreground/50"}>
                       {feature.text}
                     </span>
@@ -153,7 +151,7 @@ const PricingPage = () => {
               </Button>
             </div>
 
-            {/* Premium Plan */}
+            {/* Premium */}
             <div className="border-2 border-primary rounded-2xl p-8 space-y-6 relative">
               <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
                 Recommended
@@ -168,13 +166,8 @@ const PricingPage = () => {
               <ul className="space-y-3">
                 {premiumFeatures.map((feature) => (
                   <li key={feature.text} className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-primary shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     {feature.text}
-                    {"comingSoon" in feature && feature.comingSoon && (
-                      <Badge variant="outline" className="text-xs ml-1">
-                        Soon
-                      </Badge>
-                    )}
                   </li>
                 ))}
               </ul>
@@ -202,7 +195,7 @@ const PricingPage = () => {
             <div className="flex flex-wrap items-center justify-center gap-6">
               {trustBadges.map((badge) => (
                 <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <badge.icon className="w-4 h-4 text-primary" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                   <span>{badge.label}</span>
                 </div>
               ))}
@@ -210,7 +203,7 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* Feature Comparison Table */}
+        {/* Feature Comparison */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 border-t border-border">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
@@ -234,16 +227,16 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              {isPremium && isLoggedIn ? "You're all set" : "Ready to decode your market?"}
+              {isPremium && isLoggedIn ? "You're all set" : "Ready to grow your business?"}
             </h2>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn
-                ? "Head to your dashboard to start new research."
-                : "Start free with 3 research reports. No credit card required."}
+                ? "Head to your dashboard to start a new scan."
+                : "Start free with 3 growth reports. No credit card required."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button

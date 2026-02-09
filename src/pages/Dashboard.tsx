@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Globe, ArrowRight, BarChart3, CalendarDays, CreditCard, Crown, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,13 +22,11 @@ const Dashboard = () => {
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to auth if not logged in
   if (!user) {
     navigate("/auth");
     return null;
   }
 
-  // Demo: show all scans
   const scans = demoScans;
 
   const filteredScans = scans
@@ -48,8 +45,8 @@ const Dashboard = () => {
   const analyzingScans = filteredScans.filter((s) => s.status === "analyzing");
   const failedScans = filteredScans.filter((s) => s.status === "failed");
 
-  const handleAnalyze = () => {
-    console.log("Analyzing:", url);
+  const handleScan = () => {
+    console.log("Scanning:", url);
   };
 
   const recentDomains = scans
@@ -61,7 +58,7 @@ const Dashboard = () => {
     if (list.length === 0) {
       return (
         <div className="text-center py-10 text-sm text-muted-foreground">
-          No research results match this filter.
+          No scans match this filter.
         </div>
       );
     }
@@ -76,9 +73,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-       <SEOHead
-        title="Research Hub – Business Genome"
-        description="Research any company to decode its market position, strategy, and competitive playbook."
+      <SEOHead
+        title="Growth Hub – Business Genome"
+        description="Scan your website to get a complete growth playbook with ICP, audience channels, and growth strategies."
         canonical="/dashboard"
       />
       <Navbar />
@@ -88,66 +85,57 @@ const Dashboard = () => {
           {/* Welcome + Stats */}
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
-              Market Research Hub
+              Growth Hub
             </h1>
             <p className="text-muted-foreground mb-6">
-              Research any company — decode its market position, strategy, and playbook.
+              Scan your website to get growth insights — ICP, audience channels, optimization tips, and strategies.
             </p>
 
-            {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-              <StatCard label="Companies Researched" value={scans.length} icon={BarChart3} />
-              <StatCard label="This Month" value={2} icon={CalendarDays} />
-              <StatCard label="Research Credits" value={isPremium ? "∞" : 1} icon={CreditCard}>
+              <StatCard label="Websites Scanned" value={scans.length} />
+              <StatCard label="This Month" value={2} />
+              <StatCard label="Scan Credits" value={isPremium ? "∞" : 1}>
                 {!isPremium && (
                   <div className="mt-2">
                     <ScanLimitBar used={2} total={3} isPremium={false} />
                   </div>
                 )}
               </StatCard>
-              <StatCard
-                label="Current Plan"
-                value={isPremium ? "Premium" : "Free"}
-                icon={Crown}
-              >
+              <StatCard label="Current Plan" value={isPremium ? "Premium" : "Free"}>
                 {!isPremium && (
                   <button
                     onClick={() => navigate("/pricing")}
-                    className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                    className="mt-2 text-xs text-primary hover:underline"
                   >
-                    Upgrade <ArrowRight className="w-3 h-3" />
+                    Upgrade →
                   </button>
                 )}
               </StatCard>
             </div>
           </div>
 
-          {/* URL Input Section */}
+          {/* URL Input */}
           <Card className="border-border bg-card mb-2">
             <CardContent className="p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="url"
-                    placeholder="https://example.com"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    className="pl-10 h-12 text-base bg-background border-border"
-                  />
-                </div>
+                <Input
+                  type="url"
+                  placeholder="https://example.com"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-12 text-base bg-background border-border flex-1"
+                />
                 <Button
                   size="lg"
-                  onClick={handleAnalyze}
+                  onClick={handleScan}
                   disabled={!url.trim()}
                   className="h-12 px-8 text-base font-semibold"
                 >
-                   <Search className="w-4 h-4 mr-2" />
-                   Research
+                  Scan
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-3">
-                Enter any company website to generate a market intelligence report
+                Paste your website URL to generate a growth report
               </p>
             </CardContent>
           </Card>
@@ -155,7 +143,7 @@ const Dashboard = () => {
           {/* Recent URLs */}
           {recentDomains.length > 0 && (
             <div className="flex items-center gap-2 mb-8 flex-wrap">
-              <span className="text-xs text-muted-foreground">Recent Research:</span>
+              <span className="text-xs text-muted-foreground">Recent:</span>
               {recentDomains.map((domain) => (
                 <button
                   key={domain}
@@ -171,24 +159,20 @@ const Dashboard = () => {
           {/* Scan History */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="text-xl font-bold text-foreground">Research History</h2>
+              <h2 className="text-xl font-bold text-foreground">Scan History</h2>
               <div className="flex items-center gap-2">
-                <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                  <Input
-                    placeholder="Search domains..."
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                    className="pl-8 h-9 text-sm w-full sm:w-56 bg-background border-border"
-                  />
-                </div>
+                <Input
+                  placeholder="Search domains..."
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  className="h-9 text-sm w-full sm:w-56 bg-background border-border"
+                />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-                  className="h-9 gap-1 text-xs shrink-0"
+                  className="h-9 text-xs shrink-0"
                 >
-                  <SlidersHorizontal className="w-3.5 h-3.5" />
                   {sortOrder === "newest" ? "Newest" : "Oldest"}
                 </Button>
               </div>
@@ -217,9 +201,8 @@ const Dashboard = () => {
               </Tabs>
             ) : (
               <EmptyState
-                icon={Search}
-                title="No research yet"
-                description="Enter any company URL above to generate your first market intelligence report."
+                title="No scans yet"
+                description="Paste your website URL above to generate your first growth report."
                 showSteps
                 onTryExample={() => setUrl("https://stripe.com")}
               />

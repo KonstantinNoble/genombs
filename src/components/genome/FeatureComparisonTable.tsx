@@ -1,4 +1,3 @@
-import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Feature {
@@ -9,19 +8,17 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { name: "Analyses per month", free: "3", premium: "Unlimited" },
+  { name: "Scans per month", free: "3", premium: "Unlimited" },
   { name: "Business model detection", free: true, premium: true },
-  { name: "Offer structure analysis", free: true, premium: true },
-  { name: "Audience clusters", free: true, premium: true },
-  { name: "Funnel type recognition", free: true, premium: true },
-  { name: "Channel usage analysis", free: true, premium: true },
-  { name: "Content formats", free: true, premium: true },
-  { name: "Trust elements", free: true, premium: true },
-  { name: "Messaging & USPs", free: true, premium: true },
+  { name: "Ideal Customer Profile (ICP)", free: true, premium: true },
+  { name: "Audience channel analysis", free: true, premium: true },
+  { name: "Website optimization tips", free: true, premium: true },
+  { name: "Organic growth strategy", free: true, premium: true },
+  { name: "Paid ad strategy", free: false, premium: true },
+  { name: "Market size & opportunity", free: false, premium: true },
   { name: "Traffic data (SimilarWeb)", free: false, premium: true },
   { name: "PDF export", free: false, premium: true },
-  { name: "Recommendations", free: false, premium: true },
-  { name: "Competitor analysis", free: false, premium: true, comingSoon: true },
+  { name: "Quick Wins summary", free: true, premium: true },
   { name: "API access", free: false, premium: false, comingSoon: true },
   { name: "Priority support", free: false, premium: true },
 ];
@@ -34,13 +31,21 @@ const renderCell = (value: boolean | string, comingSoon?: boolean) => {
   }
   if (value) {
     return (
-      <div className="flex items-center gap-1">
-        <Check className="w-4 h-4 text-primary" />
+      <div className="flex items-center gap-1 justify-center">
+        <span className="text-sm font-medium text-primary">Yes</span>
         {comingSoon && <Badge variant="outline" className="text-[10px]">Soon</Badge>}
       </div>
     );
   }
-  return <X className="w-4 h-4 text-muted-foreground/40" />;
+  if (comingSoon) {
+    return (
+      <div className="flex items-center gap-1 justify-center">
+        <span className="text-sm text-muted-foreground/50">No</span>
+        <Badge variant="outline" className="text-[10px]">Soon</Badge>
+      </div>
+    );
+  }
+  return <span className="text-sm text-muted-foreground/40">No</span>;
 };
 
 const FeatureComparisonTable = () => {

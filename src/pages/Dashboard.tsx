@@ -129,7 +129,7 @@ const Dashboard = () => {
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   Compare your business against up to 3 competitors across 6 growth dimensions.
                 </p>
               </div>

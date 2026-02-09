@@ -147,12 +147,12 @@ const CompetitorAnalysis = () => {
           {showReport && (
             <div className="space-y-6">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-mono text-muted-foreground">{analysis.yourDomain}</span>
-                <span className="text-muted-foreground">vs</span>
-                {analysis.competitors.map((c) => (
-                  <span key={c.name} className="text-sm font-mono text-muted-foreground">{c.domain}</span>
-                ))}
-                <Badge variant="outline" className="text-[10px]">Demo</Badge>
+                 <span className="text-base font-mono text-foreground/70">{analysis.yourDomain}</span>
+                 <span className="text-foreground/70">vs</span>
+                 {analysis.competitors.map((c) => (
+                   <span key={c.name} className="text-base font-mono text-foreground/70">{c.domain}</span>
+                 ))}
+                 <Badge variant="outline" className="text-xs">Demo</Badge>
               </div>
 
               <CompetitorRadarChart

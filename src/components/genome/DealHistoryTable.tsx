@@ -59,12 +59,12 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Date</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Deal</th>
-              <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Result</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitor</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Reason</th>
-              <th className="text-right py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Date</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Deal</th>
+              <th className="text-center py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Result</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Competitor</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Reason</th>
+              <th className="text-right py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
             </tr>
           </thead>
           <tbody>

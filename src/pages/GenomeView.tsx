@@ -165,28 +165,26 @@ const GenomeView = () => {
                   <p className="text-base text-foreground/70 leading-relaxed">
                     {report.businessModel.description}
                   </p>
-                  {/* Premium: Positioning + Differentiators */}
-                  <PremiumLock title="Unlock Positioning & Differentiators">
-                    <div className="space-y-4">
-                      <div>
-                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
-                         <p className="text-base text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
-                          {report.businessModel.positioning}
-                        </p>
-                      </div>
-                      <div>
-                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Key Differentiators</p>
-                         <ul className="space-y-1.5">
-                           {report.businessModel.differentiators.map((d, i) => (
-                             <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                              {d}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                  {/* Positioning + Differentiators — free for all */}
+                  <div className="space-y-4">
+                    <div>
+                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
+                       <p className="text-base text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                        {report.businessModel.positioning}
+                      </p>
                     </div>
-                  </PremiumLock>
+                    <div>
+                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Key Differentiators</p>
+                       <ul className="space-y-1.5">
+                         {report.businessModel.differentiators.map((d, i) => (
+                           <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
+                            {d}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </GenomeCard>
             </div>

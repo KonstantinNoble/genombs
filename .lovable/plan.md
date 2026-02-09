@@ -1,69 +1,82 @@
 
+# Pruefung & Keywords klickbar machen
 
-# Premium-Gating Anpassungen: Growth Report + Competitor Analysis
+## Pruefung der PremiumLock-Banner
 
-## Zusammenfassung
+Alle PremiumLock-Texte wurden geprueft und sind aktuell korrekt:
 
-Zwei Bereiche werden angepasst:
-1. **Growth Report**: Business Snapshot und Performance Overview werden komplett frei
-2. **Competitor Analysis**: Analyse-Inhalte werden frei, nur Battle Cards und Win/Loss bleiben Premium
+| Komponente | PremiumLock-Titel | Status |
+|---|---|---|
+| ICPCard | "Unlock Buying Triggers, Objections & Where to Find" | Korrekt |
+| AudienceChannelCard (SEO) | "Unlock SEO Keyword Opportunities" | Korrekt |
+| AudienceChannelCard (Paid) | "Unlock Paid Channel Data" | Korrekt |
+| AudienceChannelCard (Details) | "Unlock Links, Keywords & Formats" | Korrekt |
+| OptimizationCard | "Unlock Effort & Expected Outcome" | Korrekt |
+| CompetitorAnalysis (Battle Cards) | "Unlock Battle Cards with Premium" | Korrekt |
+| CompetitorAnalysis (Win/Loss) | "Unlock Win/Loss Tracking with Premium" | Korrekt |
 
----
-
-## 1. Growth Report (GenomeView.tsx) -- Inhalte freigeben
-
-### Business Snapshot (Zeilen 168-189)
-- `PremiumLock` um "Positioning & Differentiators" wird entfernt
-- Positioning und Key Differentiators werden immer angezeigt -- fuer alle User
-
-### Performance Overview (PerformanceChart.tsx)
-- **Score Insights + Next Steps** (Zeilen 88-154): Die `isPremium`-Bedingung und `PremiumLock` werden entfernt. Die Score-Insight-Cards werden immer angezeigt.
-- **Industry Benchmarks** (Zeilen 157-217): Die `isPremium`-Bedingung und `PremiumLock` werden entfernt. Die Benchmark-Tabelle wird immer angezeigt.
-- Das `isPremium` Prop wird aus der Komponente entfernt (nicht mehr benoetigt).
-
-### GenomeView.tsx Anpassung
-- Der `isPremium` Import bleibt (wird noch fuer ICP, Channels, Optimization gebraucht)
-- `isPremium` wird nicht mehr an `PerformanceChart` uebergeben
-
-### Was Premium BLEIBT im Growth Report
-- ICP: Buying Triggers, Objections, Where to Find
-- Audience Channels: SEO Keywords, Paid Channel Details, Community Links
-- Optimization: Effort + Expected Outcome
+Kein Banner ist veraltet -- alle Texte beschreiben genau die Inhalte, die dahinter gesperrt sind.
 
 ---
 
-## 2. Competitor Analysis (CompetitorAnalysis.tsx) -- Granulares Gating
+## Keywords klickbar machen mit Google-Links
 
-### Aktuell
-- Die gesamte Seite ist als "Premium" markiert (Header-Badge)
-- Free User koennen nicht analysieren (nur "Upgrade to Premium" Button)
-- Battle Cards: komplett hinter PremiumLock
-- Win/Loss: komplett hinter PremiumLock
+Zwei Stellen in `AudienceChannelCard.tsx` wo Keywords als klickbare Google-Suchlinks gestaltet werden:
 
-### Neu
-- Das "Premium"-Badge im Header wird entfernt
-- Free User koennen auch analysieren (der "Analyze Competitors" Button wird fuer alle verfuegbar)
-- Die Analyse-Inhalte (Radar, Head-to-Head, SWOT, Keyword Gaps, Channel Gaps, Takeaways) sind fuer alle sichtbar
-- Battle Cards und Win/Loss behalten ihr PremiumLock und Premium-Badge
+### 1. SEO Keywords Tabelle (Zeile 113)
+- Die Keyword-Zelle in der SEO-Tabelle wird zu einem klickbaren Link
+- URL: `https://www.google.com/search?q={keyword}` (URL-encoded)
+- Styling: `text-primary hover:underline` mit externem Link-Icon
+- Oeffnet in neuem Tab
 
-### Technische Aenderungen
+### 2. Recommended Keywords in Kanal-Details (Zeile 276)
+- Die Keyword-Badges werden zu klickbaren Links
+- Gleiches URL-Schema: Google-Suche
+- Styling: bestehendes Badge-Design beibehalten, aber als `<a>` Tag mit hover-Effekt
 
-**Header (Zeilen 80-91)**
-- Premium Badge entfernen
+### Technische Details
 
-**URL Input / Buttons (Zeilen 134-148)**
-- Die `isPremium`-Bedingung entfernen
-- "Analyze Competitors" Button wird fuer alle User angezeigt
-- Der "Upgrade to Premium" Block mit Text wird entfernt
+**`src/components/genome/AudienceChannelCard.tsx`**
 
-**Battle Cards + Win/Loss (Zeilen 307-333)**
-- Bleiben unveraendert -- PremiumLock bleibt bestehen
+Aenderung 1 -- SEO Tabelle (Zeile 113, auch Zeile 155 fuer die Free-Preview):
+```tsx
+// Vorher:
+<td className="py-2 px-3 text-base font-mono text-foreground">{kw.keyword}</td>
 
----
+// Nachher:
+<td className="py-2 px-3">
+  <a
+    href={`https://www.google.com/search?q=${encodeURIComponent(kw.keyword)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-base font-mono text-primary hover:underline"
+  >
+    {kw.keyword}
+  </a>
+</td>
+```
 
-## Dateien die geaendert werden
+Aenderung 2 -- Recommended Keywords (Zeile 276):
+```tsx
+// Vorher:
+<Badge key={kw} variant="outline" className="...">
+  {kw}
+</Badge>
 
-1. `src/pages/GenomeView.tsx` -- PremiumLock von Business Snapshot entfernen, isPremium nicht mehr an PerformanceChart uebergeben
-2. `src/components/genome/PerformanceChart.tsx` -- isPremium Prop und alle bedingten Bloecke entfernen, alles immer anzeigen
-3. `src/pages/CompetitorAnalysis.tsx` -- Premium-Badge aus Header entfernen, Analyze-Button fuer alle freigeben
+// Nachher:
+<a
+  key={kw}
+  href={`https://www.google.com/search?q=${encodeURIComponent(kw)}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-xs font-mono font-normal text-primary hover:bg-primary/10 transition-colors"
+>
+  {kw}
+</a>
+```
 
+Beide Aenderungen gelten sowohl fuer die Premium-Ansicht als auch fuer die verschwommene Free-Preview (damit der HTML konsistent ist).
+
+### Dateien die geaendert werden
+
+1. **`src/components/genome/AudienceChannelCard.tsx`** -- 4 Stellen: SEO-Tabelle (Premium + Free-Preview) und Recommended Keywords (Premium + Free-Preview)

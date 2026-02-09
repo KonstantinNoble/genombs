@@ -101,10 +101,10 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Difficulty</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Opportunity</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Keyword</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Volume</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Opportunity</th>
                     </tr>
                   </thead>
                   <tbody>

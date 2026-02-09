@@ -4,7 +4,7 @@ interface GenomeScoreProps {
   label?: string;
 }
 
-const GenomeScore = ({ score, size = "md", label = "Intelligence Depth" }: GenomeScoreProps) => {
+const GenomeScore = ({ score, size = "md", label = "Growth Readiness" }: GenomeScoreProps) => {
   const dimensions = {
     sm: { width: 80, stroke: 6, fontSize: "text-lg", labelSize: "text-[10px]" },
     md: { width: 120, stroke: 8, fontSize: "text-3xl", labelSize: "text-xs" },
@@ -25,7 +25,6 @@ const GenomeScore = ({ score, size = "md", label = "Intelligence Depth" }: Genom
           viewBox={`0 0 ${d.width} ${d.width}`}
           className="transform -rotate-90"
         >
-          {/* Background circle */}
           <circle
             cx={d.width / 2}
             cy={d.width / 2}
@@ -34,7 +33,6 @@ const GenomeScore = ({ score, size = "md", label = "Intelligence Depth" }: Genom
             stroke="hsl(var(--muted))"
             strokeWidth={d.stroke}
           />
-          {/* Progress circle */}
           <circle
             cx={d.width / 2}
             cy={d.width / 2}
@@ -48,7 +46,6 @@ const GenomeScore = ({ score, size = "md", label = "Intelligence Depth" }: Genom
             className="transition-all duration-1000 ease-out"
           />
         </svg>
-        {/* Score text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className={`${d.fontSize} font-bold text-foreground`}>{score}</span>
           <span className={`${d.labelSize} text-muted-foreground`}>/100</span>

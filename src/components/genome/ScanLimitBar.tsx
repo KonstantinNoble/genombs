@@ -1,5 +1,4 @@
 import { Progress } from "@/components/ui/progress";
-import { Zap } from "lucide-react";
 
 interface ScanLimitBarProps {
   used: number;
@@ -11,8 +10,8 @@ const ScanLimitBar = ({ used, total, isPremium }: ScanLimitBarProps) => {
   if (isPremium) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Zap className="w-4 h-4 text-primary" />
-        <span className="text-foreground font-medium">Unlimited Analyses</span>
+        <span className="w-2 h-2 rounded-full bg-primary" />
+        <span className="text-foreground font-medium">Unlimited Scans</span>
         <span>– Premium Plan</span>
       </div>
     );
@@ -28,7 +27,7 @@ const ScanLimitBar = ({ used, total, isPremium }: ScanLimitBarProps) => {
           <span className={`font-medium ${isNearLimit ? "text-primary" : "text-foreground"}`}>
             {used}
           </span>{" "}
-          of {total} analyses this month
+          of {total} scans this month
         </span>
         {used >= total && (
           <span className="text-xs text-primary font-medium">Limit reached</span>

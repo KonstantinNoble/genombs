@@ -8,26 +8,6 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { WebPageSchema, OrganizationSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
-import {
-  ArrowRight,
-  Globe,
-  Target,
-  Lightbulb,
-  Search,
-  Cpu,
-  FileText,
-  Users,
-  TrendingUp,
-  Crosshair,
-  PenTool,
-  Check,
-  X,
-  Minus,
-  Quote,
-  BarChart3,
-  Zap,
-  Clock,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -81,97 +61,90 @@ const Home = () => {
 
   const features = [
     {
-      icon: Globe,
-      title: "Domain Intelligence",
+      num: "01",
+      title: "ICP Builder",
       description:
-        "Automatically detect business models, offer structures, pricing signals, and funnel types from any company website.",
+        "Automatically identify your ideal customer profile — demographics, pain points, and goals — from your website content.",
     },
     {
-      icon: Target,
-      title: "Competitive Intelligence",
+      num: "02",
+      title: "Audience Discovery",
       description:
-        "See how any company positions itself, who they target, and how they compare to others in their market.",
+        "Find out where your potential customers hang out online — from Reddit and LinkedIn to niche communities and forums.",
     },
     {
-      icon: Lightbulb,
-      title: "Market Insights",
+      num: "03",
+      title: "Growth Playbook",
       description:
-        "Discover market patterns, competitive gaps, entry barriers, and strategic signals across any segment.",
+        "Get a complete growth strategy — organic and paid — with concrete channel recommendations, budgets, and targeting tips.",
     },
   ];
 
   const steps = [
     {
-      icon: Search,
       step: "01",
-      title: "Enter a URL",
-      description: "Paste any company website to start your market research.",
+      title: "Paste your URL",
+      description: "Enter your website to start the scan.",
     },
     {
-      icon: Cpu,
       step: "02",
-      title: "AI decodes the company",
-      description: "Our engine crawls, extracts, and structures the business intelligence.",
+      title: "AI scans your website",
+      description: "Our engine analyzes your content, messaging, offers, and positioning.",
     },
     {
-      icon: FileText,
       step: "03",
-      title: "Get your Intelligence Report",
-      description: "Receive a structured market intelligence report with actionable insights.",
+      title: "Get your Growth Report",
+      description: "Receive a structured report with ICP, audience channels, optimizations, and strategies.",
     },
   ];
 
   const useCases = [
     {
-      icon: Crosshair,
-      title: "Competitor Research",
-      description: "Decode a competitor's entire playbook in seconds — from pricing to funnel strategy to channel usage.",
-      badge: "Most Popular",
+      title: "Launch Optimization",
+      description: "Preparing to launch? Scan your site to find messaging gaps, missing trust elements, and funnel weaknesses before you go live.",
+      badge: "Pre-Launch",
     },
     {
-      icon: TrendingUp,
-      title: "Market Entry",
-      description: "Research the key players before entering a new market. Understand what works and where the gaps are.",
-      badge: "Strategic",
+      title: "Customer Acquisition",
+      description: "Discover where your audience hangs out and which channels will drive the highest-quality traffic to your business.",
+      badge: "Growth",
     },
     {
-      icon: Users,
-      title: "Sales Intelligence",
-      description: "Research prospects before the first call. Know their business model, pain points, and tech stack.",
+      title: "Ad Strategy",
+      description: "Get concrete paid advertising recommendations — channels, budgets, formats, and targeting strategies tailored to your segment.",
       badge: "Revenue",
     },
     {
-      icon: PenTool,
-      title: "Content Strategy",
-      description: "Analyze what content works in any market segment. Find the gaps others miss.",
-      badge: "Growth",
+      title: "Content Planning",
+      description: "Understand what content formats and topics resonate with your audience. Find the gaps your competitors miss.",
+      badge: "Content",
     },
   ];
 
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
-    { feature: "Data Depth", genome: "9 structured sections", traditional: "Surface-level overview" },
-    { feature: "Cost per Research", genome: "Free / $26.99/mo unlimited", traditional: "$500+ per report" },
-    { feature: "Automation", genome: true, traditional: false },
-    { feature: "Structured Output", genome: true, traditional: "partial" },
-    { feature: "Real-time Data", genome: true, traditional: false },
+    { feature: "Data Depth", genome: "7 structured sections", traditional: "Surface-level overview" },
+    { feature: "Cost per Scan", genome: "Free / $26.99/mo unlimited", traditional: "$500+ per report" },
+    { feature: "Automation", genome: "Yes", traditional: "No" },
+    { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
+    { feature: "Actionable Strategies", genome: "Yes", traditional: "No" },
   ];
 
   const testimonials = [
     {
-      quote: "I can research any competitor's strategy in under a minute. Business Genome replaced hours of manual market research for our team.",
+      quote: "We scanned our site before our Series A pitch. The ICP analysis and market sizing data gave us the ammunition we needed.",
       name: "Sarah K.",
-      role: "Product Manager",
+      role: "Founder",
       company: "TechVentures Inc.",
     },
     {
-      quote: "Before every sales call, I research the prospect's company. I know their business model and positioning before they even speak.",
+      quote: "The audience channel recommendations alone were worth it. We found that our ICP is most active on communities we weren't even considering.",
       name: "Marcus L.",
-      role: "Account Executive",
+      role: "Head of Growth",
       company: "GrowthStack",
     },
     {
-      quote: "We use Business Genome for every market entry analysis. The market insights and channel intelligence are incredibly valuable.",
+      quote: "Business Genome replaced our quarterly agency reports. Faster, cheaper, and more actionable.",
       name: "Dr. Elena M.",
       role: "Strategy Lead",
       company: "Innovate Partners",
@@ -180,24 +153,24 @@ const Home = () => {
 
   const homeFAQ = [
     {
-      question: "What is a Business Genome?",
-      answer: "A Business Genome is a structured intelligence report generated from any website. It decodes the company's business model, offer structure, audience clusters, funnel strategy, channel usage, messaging patterns, trust elements, and traffic data into a standardized, actionable format.",
+      question: "What is a Growth Report?",
+      answer: "A Growth Report is a structured analysis generated from your website. It identifies your ideal customers, where to find them, how to optimize your site, and which growth strategies to pursue — all based on your actual content and positioning.",
     },
     {
       question: "How accurate is the analysis?",
-      answer: "Our AI engine combines web crawling, content extraction, and large language model analysis to achieve high accuracy. The system is designed to surface verifiable data points and clearly label inferences. Traffic data comes from SimilarWeb for premium users.",
+      answer: "Our AI engine combines web crawling, content extraction, and large language model analysis to achieve high accuracy. The system surfaces verifiable data points and clearly labels inferences. Traffic data comes from SimilarWeb for premium users.",
     },
     {
       question: "What data sources do you use?",
-      answer: "We crawl the target website's publicly available pages, extract structured data, and analyze content patterns using AI. For premium users, we also integrate SimilarWeb traffic data for visitor estimates, keywords, and traffic source breakdowns.",
+      answer: "We crawl your website's publicly available pages, extract structured data, and analyze content patterns using AI. For premium users, we also integrate SimilarWeb traffic data for visitor estimates, keywords, and traffic source breakdowns.",
     },
     {
-      question: "How long does an analysis take?",
-      answer: "Most analyses complete in under 60 seconds. Complex websites with many pages may take slightly longer. You'll see a real-time status update while the analysis is running.",
+      question: "How long does a scan take?",
+      answer: "Most scans complete in under 60 seconds. Complex websites with many pages may take slightly longer. You'll see a real-time status update while the scan is running.",
     },
     {
       question: "Can I export reports?",
-      answer: "Yes — premium users can export any Business Genome as a professionally formatted PDF report. This is useful for sharing with team members, clients, or stakeholders.",
+      answer: "Yes — premium users can export any Growth Report as a professionally formatted PDF. Useful for sharing with team members, clients, or stakeholders.",
     },
     {
       question: "Is my data secure?",
@@ -206,18 +179,18 @@ const Home = () => {
   ];
 
   const stats = [
-    { value: "500+", label: "Companies Researched", icon: BarChart3 },
-    { value: "12", label: "Market Segments", icon: Target },
-    { value: "<60s", label: "Per Research", icon: Clock },
-    { value: "9", label: "Intelligence Sections", icon: Zap },
+    { value: "500+", label: "Websites Scanned" },
+    { value: "12", label: "Market Segments" },
+    { value: "<60s", label: "Per Scan" },
+    { value: "7", label: "Report Sections" },
   ];
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col">
       <SEOHead
-        title="Business Genome – Market Intelligence from a single URL"
-        description="Turn any website into a structured market intelligence report. Understand business models, audiences, funnels, and competitive positioning instantly."
-        keywords="market intelligence, business analysis, competitor analysis, SaaS analytics, business genome"
+        title="Business Genome – Turn your website into a growth engine"
+        description="Scan your website and get a complete growth playbook — ICP, audience channels, optimization tips, and growth strategies in under 60 seconds."
+        keywords="business growth, website analysis, ICP builder, audience discovery, growth strategy, SaaS analytics"
         canonical="/"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -225,33 +198,32 @@ const Home = () => {
         name="Synoptas"
         url="https://synoptas.com"
         logo="https://synoptas.com/synoptas-favicon.png"
-        description="Business Genome – Market Intelligence Platform"
+        description="Business Genome – Business Growth Platform"
       />
       <WebPageSchema
-        name="Business Genome – Market Intelligence from a single URL"
-        description="Turn any website into a structured market intelligence report."
+        name="Business Genome – Turn your website into a growth engine"
+        description="Scan your website and get a complete growth playbook."
         url="https://synoptas.com/"
       />
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="flex-1 flex items-center justify-center py-20 sm:py-28">
         <div className="container mx-auto px-4 text-center space-y-8 max-w-3xl">
           <Badge variant="outline" className="mb-2 text-sm">
-            Market Intelligence Platform
+            Business Growth Platform
           </Badge>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-            Decode any market{" "}
-            <span className="text-primary">from a single URL</span>
+            Turn your website into{" "}
+            <span className="text-primary">a growth engine</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Research any company to understand its market, strategy, and competitive position — in under 60 seconds.
+            Scan your website and get a complete growth playbook — ICP, audience channels, optimization tips, and strategies in under 60 seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button size="lg" asChild className="text-base px-8 h-13">
               <Link to={isLoggedIn ? "/dashboard" : "/auth"}>
-                Start Researching
-                <ArrowRight className="ml-2 w-4 h-4" />
+                Scan Your Website
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="text-base px-8 h-13">
@@ -259,26 +231,24 @@ const Home = () => {
             </Button>
           </div>
 
-          {/* Mini-preview of genome */}
+          {/* Mini-preview */}
           <div className="pt-8 max-w-2xl mx-auto">
             <Card className="border-border bg-card text-left">
               <CardContent className="p-5 sm:p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <Globe className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm font-mono text-muted-foreground">stripe.com</span>
                   <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-xs">
                     Completed
                   </Badge>
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Stripe</h3>
+                <h3 className="text-lg font-bold text-foreground mb-2">Growth Report: Stripe</h3>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <Badge variant="secondary" className="text-xs">SaaS / API-Platform</Badge>
                   <Badge variant="outline" className="text-xs">Financial Infrastructure</Badge>
-                  <Badge variant="outline" className="text-xs">Product-Led Growth</Badge>
+                  <Badge variant="outline" className="text-xs">Growth Readiness: 92/100</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Payment processing infrastructure as a service. Revenue via transaction fees and
-                  subscription-based products...
+                  3 ICP segments identified · 7 audience channels · 5 optimization recommendations...
                 </p>
               </CardContent>
             </Card>
@@ -292,9 +262,6 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center space-y-2">
-                <div className="mx-auto w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
-                  <stat.icon className="w-5 h-5 text-primary" />
-                </div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{stat.value}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
               </div>
@@ -303,24 +270,22 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features */}
       <section className="py-20 sm:py-24 border-t border-border">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
-              Everything you need to decode a market
+              Everything you need to grow your business
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              One URL. One report. Complete market intelligence.
+              One URL. One scan. A complete growth playbook.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map((feature) => (
               <Card key={feature.title} className="border-border bg-card">
                 <CardContent className="p-6 space-y-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center">
-                    <feature.icon className="w-5 h-5 text-primary" />
-                  </div>
+                  <span className="text-3xl font-extrabold text-primary/30">{feature.num}</span>
                   <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {feature.description}
@@ -332,15 +297,15 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Use Cases Section */}
+      {/* Use Cases */}
       <section className="py-20 sm:py-24 border-t border-border">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
-              Built for every intelligence workflow
+              Built for every growth workflow
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Whether you're researching competitors, entering a new market, or qualifying leads — Business Genome has you covered.
+              Whether you're launching, scaling, or optimizing — Business Genome has you covered.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -348,9 +313,7 @@ const Home = () => {
               <Card key={uc.title} className="border-border bg-card">
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center">
-                      <uc.icon className="w-5 h-5 text-primary" />
-                    </div>
+                    <span className="w-2 h-2 rounded-full bg-primary mt-2" />
                     <Badge variant="outline" className="text-xs">{uc.badge}</Badge>
                   </div>
                   <h3 className="text-lg font-bold text-foreground">{uc.title}</h3>
@@ -362,7 +325,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* How it Works Section */}
+      {/* How it Works */}
       <section className="py-20 sm:py-24 border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-14">
@@ -370,18 +333,15 @@ const Home = () => {
               How it works
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              From URL to actionable intelligence in under 60 seconds.
+              From URL to growth playbook in under 60 seconds.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {steps.map((step) => (
               <div key={step.step} className="text-center space-y-4">
                 <div className="mx-auto w-14 h-14 rounded-2xl bg-muted flex items-center justify-center">
-                  <step.icon className="w-6 h-6 text-primary" />
+                  <span className="text-lg font-bold text-primary">{step.step}</span>
                 </div>
-                <span className="text-xs font-mono text-primary uppercase tracking-wider">
-                  Step {step.step}
-                </span>
                 <h3 className="text-lg font-bold text-foreground">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.description}</p>
               </div>
@@ -395,7 +355,7 @@ const Home = () => {
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
-              Business Genome vs. Traditional Research
+              Business Genome vs. Hiring a Consultant
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Replace hours of manual research with structured, AI-powered analysis.
@@ -408,7 +368,7 @@ const Home = () => {
                   <tr className="border-b border-border">
                     <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
                     <th className="text-center py-4 px-5 text-sm font-medium text-primary">Business Genome</th>
-                    <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Traditional Tools</th>
+                    <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Consultant</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -416,24 +376,14 @@ const Home = () => {
                     <tr key={row.feature} className="border-b border-border/50">
                       <td className="py-3 px-5 text-sm text-foreground">{row.feature}</td>
                       <td className="py-3 px-5 text-center">
-                        <div className="flex justify-center">
-                          {typeof row.genome === "boolean" ? (
-                            row.genome ? <Check className="w-4 h-4 text-primary" /> : <X className="w-4 h-4 text-muted-foreground/40" />
-                          ) : (
-                            <span className="text-sm font-medium text-primary">{row.genome}</span>
-                          )}
-                        </div>
+                        <span className={`text-sm font-medium ${row.genome === "Yes" ? "text-primary" : "text-foreground"}`}>
+                          {row.genome}
+                        </span>
                       </td>
                       <td className="py-3 px-5 text-center">
-                        <div className="flex justify-center">
-                          {typeof row.traditional === "boolean" ? (
-                            row.traditional ? <Check className="w-4 h-4 text-primary" /> : <X className="w-4 h-4 text-muted-foreground/40" />
-                          ) : row.traditional === "partial" ? (
-                            <Minus className="w-4 h-4 text-muted-foreground/60" />
-                          ) : (
-                            <span className="text-sm text-muted-foreground">{row.traditional}</span>
-                          )}
-                        </div>
+                        <span className={`text-sm ${row.traditional === "No" ? "text-muted-foreground/40" : "text-muted-foreground"}`}>
+                          {row.traditional}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -449,16 +399,16 @@ const Home = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
-              Trusted by researchers and strategists
+              Trusted by founders and growth teams
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
               <Card key={t.name} className="border-border bg-card">
                 <CardContent className="p-6 space-y-4">
-                  <Quote className="w-6 h-6 text-primary/40" />
+                  <span className="text-4xl font-serif text-primary/30">"</span>
                   <p className="text-sm text-muted-foreground leading-relaxed italic">
-                    "{t.quote}"
+                    {t.quote}
                   </p>
                   <div className="pt-2 border-t border-border">
                     <p className="text-sm font-medium text-foreground">{t.name}</p>
@@ -478,20 +428,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA */}
       <section className="py-20 sm:py-24 border-t border-border">
         <div className="container mx-auto px-4 text-center max-w-2xl space-y-6">
-           <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
-             Ready to decode your market?
-           </h2>
-           <p className="text-lg text-muted-foreground">
-             Start with 3 free research reports per month. No credit card required.
-           </p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+            Ready to grow your business?
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Start with 3 free scans per month. No credit card required.
+          </p>
           <div className="pt-4">
             <Button size="lg" asChild className="text-base px-8 h-13">
               <Link to={isLoggedIn ? "/dashboard" : "/auth"}>
                 Get Started Free
-                <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
           </div>

@@ -82,74 +82,38 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
         </CardContent>
       </Card>
 
-      {/* Premium: Score Insights + Next Steps */}
-      {isPremium ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {data.map((d) => {
-            const diff = d.score - d.industry;
-            const isAbove = diff >= 0;
-            const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
-            const scoreInsight = key ? insightMap[key] : undefined;
-            return (
-              <Card key={d.dimension} className="border-border bg-card">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {d.dimension}
-                    </p>
-                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
-                      {isAbove ? "+" : ""}{diff} vs avg
+      {/* Score Insights + Next Steps — free for all */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {data.map((d) => {
+          const diff = d.score - d.industry;
+          const isAbove = diff >= 0;
+          const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
+          const scoreInsight = key ? insightMap[key] : undefined;
+          return (
+            <Card key={d.dimension} className="border-border bg-card">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                    {d.dimension}
+                  </p>
+                  <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                    {isAbove ? "+" : ""}{diff} vs avg
+                  </p>
+                </div>
+                <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
+                {scoreInsight && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
+                    <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                      {scoreInsight.nextStep}
                     </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
-                  {scoreInsight && (
-                    <div className="space-y-2">
-                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
-                        {scoreInsight.nextStep}
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <PremiumLock title="Unlock Score Insights & Next Steps">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.map((d) => {
-              const diff = d.score - d.industry;
-              const isAbove = diff >= 0;
-              const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
-              const scoreInsight = key ? insightMap[key] : undefined;
-              return (
-                <Card key={d.dimension} className="border-border bg-card">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {d.dimension}
-                    </p>
-                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
-                      {isAbove ? "+" : ""}{diff} vs avg
-                      </p>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
-                    {scoreInsight && (
-                      <div className="space-y-2">
-                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
-                        {scoreInsight.nextStep}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </PremiumLock>
-      )}
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
       {/* Premium: Industry Benchmarks */}
       {industryBenchmarks.length > 0 && (

@@ -111,7 +111,6 @@ const CompetitorAnalysis = () => {
                     size="sm"
                     disabled={!yourUrl.trim()}
                     onClick={() => {
-                      const { toast } = await import("@/hooks/use-toast");
                       toast({ title: "Coming soon", description: "AI competitor suggestions coming soon." });
                     }}
                     className="h-7 text-xs"

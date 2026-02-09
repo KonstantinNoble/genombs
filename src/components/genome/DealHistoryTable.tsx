@@ -86,8 +86,8 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
                     variant="outline"
                     className={
                       deal.outcome === "won"
-                        ? "bg-chart-4/15 text-chart-4 border-chart-4/30 text-[10px]"
-                        : "bg-destructive/15 text-destructive border-destructive/30 text-[10px]"
+                        ? "bg-chart-4/15 text-chart-4 border-chart-4/30 text-xs"
+                        : "bg-destructive/15 text-destructive border-destructive/30 text-xs"
                     }
                   >
                     {deal.outcome === "won" ? "Won" : "Lost"}

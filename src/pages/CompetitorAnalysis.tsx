@@ -262,7 +262,7 @@ const CompetitorAnalysis = () => {
                         </div>
                         <div className="flex gap-1">
                           {gap.competitorUsing.map((c) => (
-                            <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+                            <Badge key={c} variant="secondary" className="text-xs">{c}</Badge>
                           ))}
                         </div>
                       </div>

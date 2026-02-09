@@ -287,7 +287,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
 
                       {ch.bestFormats.length > 0 && (
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                             Best Content Formats
                           </p>
                           <div className="flex flex-wrap gap-1.5">

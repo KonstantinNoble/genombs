@@ -1,221 +1,282 @@
 
 
-# Perspektivwechsel: Von Website-Audit zu Market Intelligence
+# Neuausrichtung: Business Growth & Performance Platform (ohne Icons)
 
-## Das Problem
+## Ueberblick
 
-Das aktuelle UI ist aus der Perspektive einer **Selbst-Analyse** aufgebaut -- als wuerde der User seine eigene Website analysieren (wie ein SEO-Audit-Tool). Aber das Produkt ist **Market Intelligence**: Man analysiert FREMDE Unternehmen, um den MARKT zu verstehen.
-
-Konkrete Beispiele, was aktuell falsch ist:
-
-```text
-AKTUELL (falsch)                              RICHTIG (Market Intelligence)
---------------------------------------------- -----------------------------------------------
-"Enter a URL to generate a Business Genome"   "Research any company to decode its market"
-Recommendations: "Add a free trial to         Market Insight: "72% of competitors in this
-your funnel"                                  segment offer free trials -- this is a
-                                              standard market pattern"
-"Genome Completeness" Score                   "Intelligence Depth" Score
-"Credits Remaining" (eigene Scans)            "Research Credits" (Markt-Recherchen)
-"Your Business Genome"                        "Market Intelligence Report"
-Traffic Data als Self-Check                   Traffic Data als Wettbewerbs-Intelligence
-"Analyze" Button                              "Research" Button
-```
+Kompletter Umbau des Frontends von "Market Intelligence / Competitor Research" zu einer **Business Growth Platform**: Nutzer scannen ihre eigene Website und erhalten einen strukturierten Wachstumsplan mit ICP, Audience Channels, Optimierungen, Werbestrategien und Marktdaten. Alle Lucide-Icons werden entfernt -- stattdessen werden typografische Elemente, Nummern, farbcodierte Balken und strukturierte Tabellen verwendet, um ein technisches, sauberes Erscheinungsbild zu erzeugen.
 
 ---
 
-## Was sich aendert (Seite fuer Seite)
+## Design-Prinzip: Keine Icons, keine Emojis
 
-### 1. Dashboard -- Von "Analyse-Cockpit" zu "Research Hub"
+Statt Icons werden folgende Alternativen eingesetzt:
+- **Nummerierte Kreise** (1, 2, 3...) fuer Schritte und Listen
+- **Farbige Punkte/Striche** als visuelle Marker (z.B. kleine `w-2 h-2 rounded-full bg-primary` Elemente)
+- **Typografische Hierarchie** -- grosse Zahlen, fette Headlines, Uppercase-Labels
+- **Farbige Badges** statt Icon+Text Kombination
+- **Linke Farbbalken** (`border-l-2 border-primary`) fuer Hervorhebungen
+- Die `GenomeCard` Komponente verliert ihren `icon` Prop und zeigt nur noch Titel
+- `StatCard` verliert den `icon` Prop -- grosse Zahl oben, Label darunter, kein Icon-Container
 
-**Aktuell:** "Enter a URL to generate a Business Genome"
-**Neu:** "Research any company -- decode its market position, strategy, and playbook"
+---
 
-Aenderungen:
-- Headline: "Market Research Hub" statt "Welcome back"
-- URL-Input Label: "Which company do you want to research?" statt "Enter URL"
-- Button: "Research" statt "Analyze"
-- Supported-Text: "Enter any company website to generate a market intelligence report"
-- Stats: "Companies Researched" statt "Total Analyses"
-- Stats: "Research Credits" statt "Credits Remaining"
-- Recent URLs: "Recent Research" statt "Recent"
-- Tab-Sektion: "Research History" statt "Analyses"
-- ScanCard: Framing als "researched company" nicht als "analysierte eigene Seite"
+## 1. Datenmodell (`src/lib/demo-data.ts`) -- Komplett neu
 
-### 2. Genome View -- Von "Self-Audit" zu "Intelligence Dossier"
+### Neues Interface `GrowthReport` (ersetzt `BusinessGenome`):
 
-Dies ist die groesste Aenderung. Jede Sektion muss aus der Perspektive eines EXTERNEN BETRACHTERS formuliert sein.
+```text
+GrowthReport {
+  id, domain, companyName, segment, status, createdAt
+  businessModel: { type, description, revenueModel }
+  growthScore: number (0-100)
+  summary: string (2-3 Saetze)
+
+  icp: Array<{
+    name: string              // "Tech-Savvy Startup Founder"
+    role: string              // "CTO / Technical Co-Founder"
+    demographics: string      // "25-40, urban, US/EU"
+    painPoints: string[]      // 3-4 Schmerzpunkte
+    goals: string[]           // 2-3 Ziele
+    size: "small"|"medium"|"large"
+    priority: "primary"|"secondary"
+  }>
+
+  audienceChannels: Array<{
+    platform: string          // "Reddit", "LinkedIn", etc.
+    relevance: number         // 0-100
+    tip: string               // Konkreter Tipp
+    category: "social"|"community"|"search"|"content"|"paid"
+  }>
+
+  optimizations: Array<{
+    area: string              // "CTA Clarity", "Trust Elements"
+    currentState: string      // "Weak / Missing"
+    recommendation: string    // Konkreter Vorschlag
+    priority: "high"|"medium"|"low"
+    impact: "high"|"medium"|"low"
+  }>
+
+  organicStrategy: {
+    seo: { score: number, keywords: string[], recommendation: string }
+    content: { formats: string[], topics: string[], frequency: string }
+    social: { platforms: string[], contentTypes: string[], cadence: string }
+    community: { channels: string[], approach: string }
+  }
+
+  paidStrategy: {
+    recommendedChannels: Array<{
+      channel: string
+      budgetLevel: "low"|"medium"|"high"
+      format: string
+      targetingTip: string
+    }>
+    competitionLevel: "low"|"medium"|"high"
+    estimatedCPC: string
+  }
+
+  marketSize: {
+    tam: string               // "$120B globally"
+    sam: string               // "$15B in API payments"
+    som: string               // "$2B addressable"
+    competitionIntensity: "low"|"medium"|"high"
+    growthTrend: "declining"|"stable"|"growing"|"booming"
+    benchmarks: Array<{ metric: string, value: string }>
+  }
+
+  trafficData: { ... }        // bleibt wie bisher (SimilarWeb-Platzhalter)
+}
+```
+
+Demo-Daten fuer Stripe, Notion und Linear werden komplett neu geschrieben -- aus der Perspektive "So verbesserst du dieses Business".
+
+### `demoScans` Array wird angepasst mit neuen Feldern (`segment`, `growthScore`, `sectionsComplete`).
+
+---
+
+## 2. Komponenten-Aenderungen
+
+### Geaenderte Komponenten (Icon-Props entfernen):
+
+**`GenomeCard.tsx`**: `icon` Prop wird entfernt. Nur Titel als `h3` mit Border-Bottom.
+
+**`StatCard.tsx`**: `icon` Prop wird entfernt. Grosse Zahl oben, Label darunter. Optional kleiner farbiger Punkt als Marker.
+
+**`ScanCard.tsx`**: Alle Lucide-Icons entfernt. Status wird durch farbige Text-Badges dargestellt. Fortschrittsbalken fuer "Sections Complete" bleibt. Quick-Actions als Textlinks.
+
+**`EmptyState.tsx`**: Icon wird durch einen gestrichelten Rahmen mit Text ersetzt. `icon` Prop entfaellt.
+
+**`ScanLimitBar.tsx`**: Bleibt (hat keine Icons).
+
+**`GenomeScore.tsx`**: Label aendert sich zu "Growth Readiness". Bleibt als SVG-Kreis (kein Icon, nur Zahl).
+
+**`SectionNav.tsx`**: Labels aendern sich zu den neuen 7 Sektionen.
+
+**`RecommendationCard.tsx`** wird zu **`OptimizationCard.tsx`**: Zeigt Priority + Impact als farbige Badges, Area als Titel, aktuellen Zustand, Empfehlung. Keine Icons.
+
+**`ChannelStrengthBar.tsx`**: Bleibt (zeigt bereits Balken ohne Icons). Wird fuer Audience Channels wiederverwendet.
+
+**`CompetitorPreview.tsx`** wird zu **`MarketSizeCard.tsx`**: Zeigt TAM/SAM/SOM, Wettbewerbsintensitaet, Wachstumstrend. Keine Icons.
+
+**`KeyTakeaways.tsx`** wird zu **`QuickWins.tsx`**: 3-4 priorisierte Sofort-Massnahmen. Nummerierte Liste ohne Icons.
+
+**`FAQSection.tsx`**: Bleibt (keine Icons verwendet).
+
+**`FeatureComparisonTable.tsx`**: Check/X Icons werden durch Text ("Yes"/"No"/"-") ersetzt.
+
+### Neue Komponenten:
+
+**`ICPCard.tsx`**: Persona-Darstellung. Kein Avatar-Bild/Icon. Stattdessen: Name als grosse Headline, Role als Badge, Demographics als Text, Pain Points als nummerierte Liste, Goals als nummerierte Liste. Size/Priority als farbige Badges.
+
+**`AudienceChannelCard.tsx`**: Plattform-Name links, Relevanz als horizontaler Balken (0-100%), Tipp als kursiver Text. Category als kleiner Text-Tag.
+
+**`GrowthStrategySection.tsx`**: Kombinierte Darstellung fuer Organic + Paid. Zwei Spalten. Organic links (SEO, Content, Social, Community als Sub-Sektionen mit Titel + Text). Paid rechts (Channel-Tabelle mit Budget/Format/Targeting).
+
+---
+
+## 3. Seiten-Aenderungen
+
+### Homepage (`/`) -- "Grow your business"
+
+**Alle Icons werden entfernt.** Stattdessen:
+
+- Hero: Nur Text. Headline "Turn your website into a growth engine". Sub: "Scan your website and get a complete growth playbook -- ICP, audience channels, optimization tips, and growth strategies." CTA-Buttons bleiben (ohne Arrow-Icon).
+- Social Proof: 4 Zahlen in einer Reihe -- nur grosse Zahl + Label, kein Icon-Container.
+- Features: 3 Karten mit Titel + Beschreibung. Kein Icon. Stattdessen grosse Nummer ("01", "02", "03") als visuelles Element.
+- Use Cases: 4 Karten -- Titel + Text + Badge. Kein Icon.
+- How it Works: 3 Schritte mit Nummer-Kreisen (rein typografisch). Kein Step-Icon.
+- Comparison Table: Check/X werden durch "Yes"/"No"/"Partial" Text ersetzt.
+- Testimonials: Anfuehrungszeichen als typografisches Element (grosses " Zeichen), kein Quote-Icon.
+- FAQ: Bleibt (Accordion hat keine Icons).
+- CTA: Nur Text + Button.
+
+**Copy-Aenderungen:**
+- "Decode any market" wird zu "Turn your website into a growth engine"
+- "Market Intelligence Platform" wird zu "Business Growth Platform"
+- "Research any company" wird zu "Scan your website"
+- Features werden: "ICP Builder", "Audience Discovery", "Growth Playbook"
+- Use Cases: "Launch Optimization", "Customer Acquisition", "Ad Strategy", "Content Planning"
+- Comparison: "Business Genome vs. Hiring a Consultant"
+
+### Dashboard (`/dashboard`) -- "Growth Hub"
+
+**Alle Icons entfernt:**
+- StatCards: Nur Zahl + Label, kein Icon-Container
+- URL-Input: Kein Globe-Icon im Input. Kein Search-Icon im Button. Button sagt nur "Scan".
+- Tabs: Kein Badge-Icon, nur Text + Anzahl
+- Search Input: Kein Search-Icon, nur Placeholder-Text
+- Sort Button: Kein SlidersHorizontal-Icon, nur Text "Newest"/"Oldest"
+
+**Copy-Aenderungen:**
+- "Market Research Hub" wird zu "Growth Hub"
+- "Research any company" wird zu "Scan your website to get growth insights"
+- "Companies Researched" wird zu "Websites Scanned"
+- "Research Credits" wird zu "Scan Credits"
+- "Research History" wird zu "Scan History"
+- Button: "Research" wird zu "Scan"
+
+### Genome View (`/genome/:id`) -- "Growth Report"
+
+**Groesster Umbau. Alle Icons entfernt. Neue Sektionsstruktur:**
 
 **Header:**
-- Aktuell: "Stripe" mit Badges
-- Neu: "Intelligence Report: Stripe" -- klar als Forschungsobjekt markiert
-- Untertitel: "Market position analysis for Financial Infrastructure / Payments"
+- Kein Globe-Icon. Domain als `font-mono` Text.
+- "Growth Report: Stripe" statt "Intelligence Report"
+- Kein Download-Icon, kein Plus-Icon. Buttons nur mit Text.
 
 **Executive Summary:**
-- Aktuell: Zusammenfassung der Firma
-- Neu: Zusammenfassung MIT Markt-Kontext: "Stripe dominates the API-first payment infrastructure segment. Key takeaway for market researchers: Their PLG motion and developer-first positioning create high barriers to entry."
-- Score umbenennen: "Intelligence Depth" statt "Genome Completeness"
-- Mini-Stats umbenennen: "Offers Detected" bleibt, "Channels Active" bleibt -- das sind externe Beobachtungen, das passt
+- Kein Sparkles-Icon. Nur "Executive Summary" als Headline.
+- GenomeScore Label: "Growth Readiness" statt "Intelligence Depth"
+- Mini-Stats: Nur Zahl + Label, keine Icon-Container
 
-**Section Navigation:**
-- Aktuell: Overview | Offers | Audience | Funnel | etc.
-- Neu: Overview | Market Position | Offers | Audience | Growth Strategy | Channels | Content | Trust | Traffic | Market Insights
+**Section Navigation (7 Sektionen statt 11):**
+Overview | ICP | Audience Channels | Optimization | Organic Growth | Paid Strategy | Market Size
 
-**Business Model Card:**
-- Framing aendern: "How this company makes money" statt nur Badges
-- Untertitel: "Observed business model and revenue structure"
+**Sektions-Karten (alle ohne Icons in GenomeCard):**
 
-**Offer Structure Card:**
-- Framing: "Products & Services detected" -- als externe Beobachtung
-- Untertitel: "What this company sells and at what price points"
+1. **Business Snapshot** (ersetzt "How This Company Makes Money"): Titel + Badges + Beschreibung. GenomeCard ohne Icon.
 
-**Audience Clusters Card:**
-- Framing: "Who they target" -- nicht "Deine Zielgruppen"
-- Untertitel: "Identified target audiences based on messaging and content analysis"
+2. **Ideal Customer Profile** (NEU, ersetzt Audience Clusters): 2-3 `ICPCard` Komponenten. Jede zeigt: Name, Role, Demographics, Pain Points (nummeriert), Goals (nummeriert), Size/Priority Badges.
 
-**Funnel Analysis Card:**
-- Framing: "Their growth playbook" statt "Your funnel"
-- Untertitel: "How this company acquires and converts customers"
+3. **Where Your Audience Lives** (NEU, ersetzt Channel Usage): `AudienceChannelCard` Liste. Pro Plattform: Name, Relevanz-Balken, Tipp, Category-Tag.
 
-**Messaging Card:**
-- Framing: "Their positioning & value props"
-- Untertitel: "Key messages and unique selling propositions detected"
+4. **Website Optimization** (NEU, ersetzt Recommendations): `OptimizationCard` Grid. Pro Item: Area, Current State, Recommendation, Priority/Impact Badges.
 
-**Channels Card:**
-- Framing: "Where they reach their audience"
-- Untertitel: "Distribution channels and their relative strength"
+5. **Growth Strategy: Organic** (NEU, ersetzt Funnel + Content): Sub-Sektionen fuer SEO, Content, Social, Community. Jeweils Titel + Text/Liste.
 
-**Traffic Data Card:**
-- Das ist bereits korrekt -- externe Traffic-Daten sind Market Intelligence
+6. **Growth Strategy: Paid** (NEU): Channel-Tabelle mit Budget/Format/Targeting. Competition Level + geschaetzter CPC.
 
-**Recommendations Section -- KOMPLETT UMBAUEN:**
-- Aktuell: Ratschlaege fuer die analysierte Firma ("Add a free trial...")
-- Neu: **"Market Insights"** -- Was der RESEARCHER aus dieser Analyse lernen kann
+7. **Market Opportunity** (NEU, ersetzt Competitor/KeyTakeaways): TAM/SAM/SOM als grosse Zahlen. Wettbewerbsintensitaet. Wachstumstrend. Benchmarks als kleine Tabelle.
 
-Neue Empfehlungs-Kategorien:
-- **Market Pattern**: "72% of companies in this segment use PLG -- this is the dominant go-to-market strategy"
-- **Competitive Gap**: "Content marketing (case studies) is underutilized in this segment -- potential opportunity"
-- **Entry Barrier**: "Developer documentation quality is a key differentiator -- new entrants need to match this"
-- **Market Signal**: "Transaction-based pricing is standard in this segment -- subscription models are rare"
+**Entfernte Sektionen:**
+- "Their Positioning & Value Props" (Messaging) -- wird in Business Snapshot integriert
+- "Content Formats" -- wird in Organic Growth integriert
+- "Trust Elements" -- wird in Website Optimization integriert
+- "Traffic Data" -- bleibt als optionaler Premium-Bereich am Ende
+- "Market Insights" -- ersetzt durch Optimization
+- "Key Takeaways" -- ersetzt durch Quick Wins (oben in Summary integriert)
+- "Market Landscape" -- ersetzt durch Market Opportunity
 
-Jede Empfehlung wird zu einem "Market Insight" mit:
-- Insight-Typ (Pattern, Gap, Barrier, Signal) statt Priority
-- Beschreibung aus Markt-Perspektive
-- "What this means" Erklaerung (warum das relevant ist)
+### Pricing (`/pricing`) -- Kleine Aenderungen
 
-**Competitor Snapshot:**
-- Aktuell: "3 competitors detected" mit Lock
-- Neu: "Market Landscape" -- "3 major players in this segment detected"
-- Framing: "Other companies operating in this market space"
-
-**Neuer Bereich: "Key Takeaways"**
-- 3-4 Bullet Points am Ende der Seite
-- Zusammenfassung der wichtigsten Markt-Erkenntnisse
-- z.B. "This segment is dominated by PLG companies with developer-first positioning"
-- z.B. "Average pricing transparency is high -- public pricing is expected"
-- z.B. "SEO and developer documentation are the primary acquisition channels"
-
-### 3. Homepage -- Messaging anpassen
-
-**Hero:**
-- Aktuell: "Understand any business from a single URL"
-- Neu: "Decode any market from a single URL" -- Fokus auf MARKT, nicht auf einzelnes Business
-
-**Sub-Headline:**
-- Aktuell: "Turn any website into a structured market intelligence report"
-- Neu: "Research any company to understand its market, strategy, and competitive position -- in under 60 seconds"
-
-**Features:**
-- "Domain Intelligence" bleibt (passt schon)
-- "Market Positioning" wird zu "Competitive Intelligence" -- "See how any company positions itself and who they compete with"
-- "Actionable Insights" wird zu "Market Insights" -- "Discover market patterns, competitive gaps, and strategic opportunities"
-
-**Use Cases -- Texte anpassen:**
-- "Competitor Research": "Decode a competitor's entire playbook in seconds -- from pricing to funnel strategy"
-- "Market Entry": "Research the key players before entering a new market. Understand what works."
-- "Sales Intelligence": "Research prospects before the first call. Know their business model, pain points, and tech stack."
-- "Content Strategy": "Analyze what content works in any market segment. Find the gaps others miss."
-
-**Comparison Table:**
-- "Cost per Analysis" wird zu "Cost per Research"
-
-**Testimonials -- Texte anpassen:**
-- Aus "I can now analyze any company" wird "I can research any competitor's strategy in under a minute"
-
-### 4. Pricing -- Kleine Anpassungen
-
-- "3 Analyses per month" wird zu "3 Market Research Reports per month"
-- "Unlimited Analyses" wird zu "Unlimited Market Research"
-- Feature-Liste: "Competitor Analysis" wird zu "Competitive Landscape View"
-
-### 5. Demo-Daten (`demo-data.ts`) -- Recommendations umschreiben
-
-Die gesamte `recommendations` Struktur aendert sich:
-
-Alte Struktur:
-```text
-priority: "high" | "medium" | "low"
-category: "Content" | "Channel" | "Funnel" | "Positioning"
-description: "Advice for the company"
-```
-
-Neue Struktur:
-```text
-insightType: "pattern" | "gap" | "barrier" | "signal"
-category: "Market" | "Channel" | "Content" | "Positioning"
-description: "Market observation"
-implication: "What this means for researchers"
-```
-
-Beispiele fuer Stripe:
-- Pattern: "Developer documentation is the primary acquisition channel in the payment infrastructure segment. 4 out of 5 top players invest heavily in docs."
-  - Implication: "Any new entrant needs best-in-class developer docs to compete."
-- Gap: "Case studies and social proof content are surprisingly underutilized in this segment despite high enterprise deal values."
-  - Implication: "Content marketing focused on case studies could be a differentiation opportunity."
-- Barrier: "Transaction-based pricing with free sandbox access creates high switching costs once integrated."
-  - Implication: "Competing on price alone is insufficient -- developer experience is the moat."
-- Signal: "All top players in this segment are expanding into financial services beyond payments (lending, incorporation, treasury)."
-  - Implication: "The segment is expanding from pure payments to full financial infrastructure."
+- Alle Icons in Feature-Listen entfernt (Check/X werden zu "Yes"/"No")
+- Trust-Badges: Kein Icon, nur Text mit farbigem Punkt davor
+- "market research reports" wird zu "growth reports"
+- "Competitive landscape view" wird zu "Market opportunity data"
+- FeatureComparisonTable: Text statt Icons
+- FAQ bleibt
 
 ---
 
-## Technische Aenderungen
+## 4. Dateien-Uebersicht
 
-### Dateien die GEAENDERT werden:
-- `src/lib/demo-data.ts` -- Recommendation-Interface + alle Demo-Empfehlungen umschreiben
-- `src/pages/Dashboard.tsx` -- Copy/Labels/Framing
-- `src/pages/GenomeView.tsx` -- Alle Section-Titel, Executive Summary, Market Insights statt Recommendations
-- `src/pages/Home.tsx` -- Hero, Features, Use Cases, Testimonials Copy
-- `src/pages/Pricing.tsx` -- Labels anpassen
-- `src/components/genome/RecommendationCard.tsx` -- Wird zu MarketInsightCard (neues Design mit insightType)
-- `src/components/genome/CompetitorPreview.tsx` -- "Market Landscape" statt "Competitor Snapshot"
-- `src/components/genome/EmptyState.tsx` -- "Research" statt "Analyze"
-- `src/components/genome/ScanCard.tsx` -- "Researched" Framing
-- `src/components/genome/GenomeScore.tsx` -- "Intelligence Depth" Label
+### Neue Dateien:
+- `src/components/genome/ICPCard.tsx`
+- `src/components/genome/AudienceChannelCard.tsx`
+- `src/components/genome/GrowthStrategySection.tsx`
+- `src/components/genome/OptimizationCard.tsx`
+- `src/components/genome/MarketSizeCard.tsx`
+- `src/components/genome/QuickWins.tsx`
 
-### Dateien die NEU erstellt werden:
-- `src/components/genome/KeyTakeaways.tsx` -- Neuer Bereich am Ende der Genome View mit 3-4 zusammenfassenden Markt-Erkenntnissen
+### Geaenderte Dateien:
+- `src/lib/demo-data.ts` -- Komplett neues Interface + Demo-Daten
+- `src/pages/Home.tsx` -- Alle Icons entfernt, neuer Copy
+- `src/pages/Dashboard.tsx` -- Icons entfernt, neuer Copy
+- `src/pages/GenomeView.tsx` -- Kompletter Umbau: neue Sektionen, keine Icons
+- `src/pages/Pricing.tsx` -- Icons durch Text ersetzt, neuer Copy
+- `src/components/genome/GenomeCard.tsx` -- `icon` Prop entfernt
+- `src/components/genome/StatCard.tsx` -- `icon` Prop entfernt
+- `src/components/genome/ScanCard.tsx` -- Icons entfernt
+- `src/components/genome/EmptyState.tsx` -- `icon` Prop entfernt
+- `src/components/genome/GenomeScore.tsx` -- Label-Aenderung
+- `src/components/genome/SectionNav.tsx` -- Neue Sektions-Labels
+- `src/components/genome/FeatureComparisonTable.tsx` -- Text statt Icons
+- `src/components/genome/ChannelStrengthBar.tsx` -- wird fuer Audience Channels wiederverwendet
 
-### Design:
-- Keine visuellen/Farb-Aenderungen -- nur Text und Perspektive
-- Schwarz-Orange Farbschema bleibt unveraendert
-- Alle bestehenden Komponenten und Layouts bleiben
-- insightType-Badges bekommen eigene Farben (pattern=blau, gap=orange, barrier=rot, signal=gruen)
+### Geloeschte/Ersetzte Dateien:
+- `src/components/genome/RecommendationCard.tsx` -- ersetzt durch `OptimizationCard.tsx`
+- `src/components/genome/CompetitorPreview.tsx` -- ersetzt durch `MarketSizeCard.tsx`
+- `src/components/genome/KeyTakeaways.tsx` -- ersetzt durch `QuickWins.tsx`
 
 ---
 
-## Zusammenfassung der Perspektiv-Verschiebung
+## 5. Design-Regeln (erweitert)
 
-```text
-VORHER (Self-Audit)              NACHHER (Market Intelligence)
--------------------------------  --------------------------------
-"Analyze your website"           "Research any company"
-"Your Business Genome"           "Intelligence Report"
-"Improve your funnel"            "This is how the market works"
-"Add a free trial"               "Free trials are standard here"
-"Your competitors"               "Market landscape"
-"Genome Completeness"            "Intelligence Depth"
-User = analysiertes Unternehmen  User = externer Researcher
-```
+- Schwarz-Orange (#0A0A0A + #F97316) -- unveraendert
+- Keine Icons, keine Emojis -- ueberall
+- Keine Gradients -- nur flache Farben
+- Typografische Hierarchie: Grosse Zahlen (text-3xl font-bold), Uppercase-Labels (text-xs uppercase tracking-wide), farbige Badges
+- Farbige Marker: Kleine Punkte (`w-2 h-2 rounded-full`) oder linke Borders (`border-l-2`) statt Icons
+- Priority/Impact Farben: high=primary (orange), medium=chart-3, low=muted
+- Responsive: 1 Spalte mobil, 2 Spalten Desktop
 
-Das Produkt wird damit klar zu dem, was es sein soll: Ein Tool, mit dem man JEDEN Markt von aussen verstehen kann -- nicht ein Audit-Tool fuer die eigene Webseite.
+---
+
+## Was NICHT gebaut wird
+
+- Kein Backend / keine API-Anbindung
+- Keine echte Scan-Funktion
+- Kein echter PDF-Export
+- Alle Daten statisch aus demo-data.ts
+- Recharts-Diagramme bleiben nur fuer Traffic Data (Premium)
+

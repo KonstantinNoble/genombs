@@ -38,7 +38,7 @@ const OptimizationCard = ({ optimization, isPremium = false }: OptimizationCardP
         <p className="text-sm text-foreground/70 mb-2">
           Current: {optimization.currentState}
         </p>
-        <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
+        <p className="text-base text-foreground/80 leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
           {optimization.recommendation}
         </p>
 

@@ -198,7 +198,7 @@ const CompetitorAnalysis = () => {
               </GenomeCard>
 
               <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">SWOT Analysis</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-4">SWOT Analysis</h2>
                 <div className="grid grid-cols-1 gap-4">
                   {analysis.swotAnalyses.map((swot) => (
                     <CompetitorSWOT key={swot.competitor} swot={swot} />

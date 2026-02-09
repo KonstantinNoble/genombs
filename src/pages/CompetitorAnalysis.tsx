@@ -184,8 +184,8 @@ const CompetitorAnalysis = () => {
                              <td className={`py-3 px-4 text-center text-base font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
                               {yourScore}
                             </td>
-                            {analysis.competitors.map((c) => (
-                              <td key={c.name} className={`py-3 px-4 text-center text-sm font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-muted-foreground"}`}>
+                             {analysis.competitors.map((c) => (
+                               <td key={c.name} className={`py-3 px-4 text-center text-base font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-foreground/70"}`}>
                                 {c.scores[d.key]}
                               </td>
                             ))}

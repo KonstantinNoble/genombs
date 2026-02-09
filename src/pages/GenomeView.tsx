@@ -211,7 +211,7 @@ const GenomeView = () => {
             {/* ICP */}
             <div id="icp" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Ideal Customer Profile (ICP)">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                 <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Identified target audiences with buying triggers, objections, and where to find them
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

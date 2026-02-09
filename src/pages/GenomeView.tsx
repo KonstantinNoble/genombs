@@ -116,8 +116,8 @@ const GenomeView = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row gap-6">
                   <div className="flex-1 space-y-4">
-                    <h2 className="text-lg font-semibold text-foreground">Executive Summary</h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                     <h2 className="text-xl font-semibold text-foreground">Executive Summary</h2>
+                     <p className="text-base text-foreground/70 leading-relaxed">
                       {report.summary}
                     </p>
                     {/* Top 3 Priorities */}

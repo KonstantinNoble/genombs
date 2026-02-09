@@ -27,7 +27,7 @@ const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [
   { key: "funnel", label: "Funnel" },
 ];
 
-const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights, industryBenchmarks, isPremium = false }: PerformanceChartProps) => {
+const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights, industryBenchmarks }: PerformanceChartProps) => {
   const data = dimensions.map((d) => ({
     dimension: d.label,
     score: scores[d.key],

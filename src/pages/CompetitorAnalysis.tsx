@@ -180,8 +180,8 @@ const CompetitorAnalysis = () => {
                         const maxScore = Math.max(...allScores);
                         return (
                           <tr key={d.key} className="border-b border-border/50">
-                            <td className="py-3 px-4 text-sm text-foreground">{d.label}</td>
-                            <td className={`py-3 px-4 text-center text-sm font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
+                             <td className="py-3 px-4 text-base text-foreground">{d.label}</td>
+                             <td className={`py-3 px-4 text-center text-base font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
                               {yourScore}
                             </td>
                             {analysis.competitors.map((c) => (

@@ -96,10 +96,10 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
               <Card key={d.dimension} className="border-border bg-card">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
                       {d.dimension}
                     </p>
-                    <p className={`text-xs font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
                       {isAbove ? "+" : ""}{diff} vs avg
                     </p>
                   </div>

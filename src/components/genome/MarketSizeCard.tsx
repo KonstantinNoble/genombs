@@ -27,28 +27,36 @@ const competitionColors = {
 };
 
 const MarketSizeCard = ({ marketSize }: MarketSizeCardProps) => {
+  const maxValue = marketSize.tam.value;
+
   return (
     <div className="space-y-6">
-      {/* TAM / SAM / SOM */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-border bg-card">
-          <CardContent className="p-4 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">TAM</p>
-            <p className="text-lg font-bold text-foreground">{marketSize.tam}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-border bg-card">
-          <CardContent className="p-4 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">SAM</p>
-            <p className="text-lg font-bold text-foreground">{marketSize.sam}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-border bg-card">
-          <CardContent className="p-4 text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">SOM</p>
-            <p className="text-lg font-bold text-foreground">{marketSize.som}</p>
-          </CardContent>
-        </Card>
+      {/* TAM / SAM / SOM Visual Bars */}
+      <div className="space-y-4">
+        {[
+          { label: "TAM", sub: "Total Addressable Market", data: marketSize.tam },
+          { label: "SAM", sub: "Serviceable Addressable Market", data: marketSize.sam },
+          { label: "SOM", sub: "Serviceable Obtainable Market", data: marketSize.som },
+        ].map((item) => {
+          const widthPercent = maxValue > 0 ? (item.data.value / maxValue) * 100 : 0;
+          return (
+            <div key={item.label}>
+              <div className="flex items-baseline justify-between mb-1.5">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{item.label}</span>
+                  <span className="text-[10px] text-muted-foreground hidden sm:inline">— {item.sub}</span>
+                </div>
+                <span className="text-lg font-bold text-foreground">{item.data.label}</span>
+              </div>
+              <div className="h-3 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-all duration-700"
+                  style={{ width: `${Math.max(widthPercent, 3)}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Meta */}

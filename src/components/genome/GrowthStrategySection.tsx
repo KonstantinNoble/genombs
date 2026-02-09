@@ -14,26 +14,63 @@ const budgetColors = {
   high: "bg-primary/15 text-primary border-primary/30",
 };
 
+const difficultyColors = {
+  low: "bg-chart-4/15 text-chart-4 border-chart-4/30",
+  medium: "bg-chart-3/15 text-chart-3 border-chart-3/30",
+  high: "bg-destructive/15 text-destructive border-destructive/30",
+};
+
+const opportunityColors = {
+  low: "bg-muted text-muted-foreground border-border",
+  medium: "bg-chart-3/15 text-chart-3 border-chart-3/30",
+  high: "bg-primary/15 text-primary border-primary/30",
+};
+
 const GrowthStrategySection = ({ type, organicStrategy, paidStrategy }: GrowthStrategySectionProps) => {
   if (type === "organic" && organicStrategy) {
     return (
       <div className="space-y-5">
-        {/* SEO */}
+        {/* SEO with Keyword Table */}
         <Card className="border-border bg-card">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">SEO</h4>
               <span className="text-sm font-mono text-primary">{organicStrategy.seo.score}/100</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               {organicStrategy.seo.recommendation}
             </p>
-            <div className="flex flex-wrap gap-1.5">
-              {organicStrategy.seo.keywords.map((kw) => (
-                <Badge key={kw} variant="secondary" className="text-xs font-normal font-mono">
-                  {kw}
-                </Badge>
-              ))}
+
+            {/* Keyword Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Opportunity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {organicStrategy.seo.keywords.map((kw) => (
+                    <tr key={kw.keyword} className="border-b border-border/50">
+                      <td className="py-2 px-3 text-sm font-mono text-foreground">{kw.keyword}</td>
+                      <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{kw.volume}</td>
+                      <td className="py-2 px-3">
+                        <Badge variant="outline" className={`text-[10px] ${difficultyColors[kw.difficulty]}`}>
+                          {kw.difficulty}
+                        </Badge>
+                      </td>
+                      <td className="py-2 px-3">
+                        <Badge variant="outline" className={`text-[10px] ${opportunityColors[kw.opportunity]}`}>
+                          {kw.opportunity}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>

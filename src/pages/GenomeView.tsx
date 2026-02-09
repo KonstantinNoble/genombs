@@ -6,7 +6,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GenomeCard from "@/components/genome/GenomeCard";
-import TagList from "@/components/genome/TagList";
 import GenomeScore from "@/components/genome/GenomeScore";
 import SectionNav from "@/components/genome/SectionNav";
 import ICPCard from "@/components/genome/ICPCard";
@@ -15,32 +14,14 @@ import OptimizationCard from "@/components/genome/OptimizationCard";
 import GrowthStrategySection from "@/components/genome/GrowthStrategySection";
 import MarketSizeCard from "@/components/genome/MarketSizeCard";
 import QuickWins from "@/components/genome/QuickWins";
+import PerformanceChart from "@/components/genome/PerformanceChart";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { demoReports } from "@/lib/demo-data";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Cell,
-  PieChart,
-  Pie,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-} from "recharts";
-
-const CHART_COLORS = [
-  "hsl(25, 95%, 53%)",
-  "hsl(30, 90%, 45%)",
-  "hsl(20, 85%, 60%)",
-  "hsl(35, 80%, 50%)",
-  "hsl(15, 75%, 55%)",
-  "hsl(0, 0%, 70%)",
-];
 
 const sections = [
   { id: "overview", label: "Overview" },
+  { id: "performance", label: "Performance" },
   { id: "icp", label: "ICP" },
   { id: "audience-channels", label: "Audience Channels" },
   { id: "optimization", label: "Optimization" },
@@ -188,6 +169,20 @@ const GenomeView = () => {
               </GenomeCard>
             </div>
 
+            {/* Performance Chart */}
+            <div id="performance" className="lg:col-span-2 scroll-mt-28">
+              <GenomeCard title="Performance Overview">
+                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                  Growth performance across 6 dimensions vs industry average
+                </p>
+                <PerformanceChart
+                  scores={report.performanceScores}
+                  industryAverage={report.industryAverage}
+                  companyName={report.companyName}
+                />
+              </GenomeCard>
+            </div>
+
             {/* ICP */}
             <div id="icp" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Ideal Customer Profile (ICP)">
@@ -206,7 +201,7 @@ const GenomeView = () => {
             <div id="audience-channels" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Where Your Audience Lives">
                 <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  Platforms and communities where your target audience is most active
+                  Platforms, communities, and keywords where your target audience is most active
                 </p>
                 <AudienceChannelCard channels={report.audienceChannels} />
               </GenomeCard>
@@ -258,98 +253,6 @@ const GenomeView = () => {
                 <MarketSizeCard marketSize={report.marketSize} />
               </GenomeCard>
             </div>
-
-            {/* Traffic Data */}
-            {report.trafficData && (
-              <div className="lg:col-span-2">
-                <GenomeCard title="Traffic Data">
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                        Monthly Visits
-                      </p>
-                      <p className="text-3xl font-bold text-foreground">{report.trafficData.monthlyVisits}</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">
-                          Traffic Sources
-                        </p>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <BarChart data={report.trafficData.trafficSources} layout="vertical">
-                            <XAxis type="number" domain={[0, 100]} tick={{ fill: "hsl(0, 0%, 85%)", fontSize: 11 }} tickLine={false} axisLine={false} />
-                            <YAxis type="category" dataKey="source" width={100} tick={{ fill: "hsl(0, 0%, 85%)", fontSize: 11 }} tickLine={false} axisLine={false} />
-                            <RechartsTooltip
-                              contentStyle={{ background: "hsl(0, 0%, 8%)", border: "1px solid hsl(0, 0%, 15%)", borderRadius: 8, color: "hsl(0, 0%, 98%)" }}
-                              formatter={(value: number) => [`${value}%`, "Share"]}
-                            />
-                            <Bar dataKey="percentage" radius={[0, 4, 4, 0]}>
-                              {report.trafficData.trafficSources.map((_, index) => (
-                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">
-                          Traffic Distribution
-                        </p>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <PieChart>
-                            <Pie
-                              data={report.trafficData.trafficSources}
-                              dataKey="percentage"
-                              nameKey="source"
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={50}
-                              outerRadius={80}
-                              paddingAngle={2}
-                            >
-                              {report.trafficData.trafficSources.map((_, index) => (
-                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <RechartsTooltip
-                              contentStyle={{ background: "hsl(0, 0%, 8%)", border: "1px solid hsl(0, 0%, 15%)", borderRadius: 8, color: "hsl(0, 0%, 98%)" }}
-                              formatter={(value: number) => [`${value}%`, "Share"]}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                        Top Keywords
-                      </p>
-                      <TagList tags={report.trafficData.topKeywords} variant="outline" />
-                    </div>
-                  </div>
-                </GenomeCard>
-              </div>
-            )}
-
-            {!report.trafficData && (
-              <div className="lg:col-span-2">
-                <GenomeCard title="Traffic Data">
-                  <div className="text-center py-8 space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      Traffic data not available for free accounts.
-                    </p>
-                    <button
-                      onClick={() => navigate("/pricing")}
-                      className="text-sm text-primary hover:underline font-medium"
-                    >
-                      Upgrade to Premium for SimilarWeb integration →
-                    </button>
-                  </div>
-                </GenomeCard>
-              </div>
-            )}
 
             {/* Quick Wins */}
             <div className="lg:col-span-2">

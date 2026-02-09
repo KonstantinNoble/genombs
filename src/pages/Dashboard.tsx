@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,10 +14,19 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { demoScans } from "@/lib/demo-data";
 
+type FilterMode = "newest" | "oldest" | "favorites";
+
 const Dashboard = () => {
   const [url, setUrl] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [activeFilter, setActiveFilter] = useState<FilterMode>("newest");
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    demoScans.forEach((s) => {
+      if (s.isFavorite) initial.add(s.id);
+    });
+    return initial;
+  });
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
 
@@ -29,21 +37,30 @@ const Dashboard = () => {
 
   const scans = demoScans;
 
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const filteredScans = scans
     .filter((s) => {
       if (!searchFilter) return true;
       const q = searchFilter.toLowerCase();
       return s.domain.toLowerCase().includes(q) || s.companyName.toLowerCase().includes(q);
     })
+    .filter((s) => {
+      if (activeFilter === "favorites") return favorites.has(s.id);
+      return true;
+    })
     .sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      return activeFilter === "oldest" ? dateA - dateB : dateB - dateA;
     });
-
-  const completedScans = filteredScans.filter((s) => s.status === "completed");
-  const analyzingScans = filteredScans.filter((s) => s.status === "analyzing");
-  const failedScans = filteredScans.filter((s) => s.status === "failed");
 
   const handleScan = () => {
     console.log("Scanning:", url);
@@ -58,18 +75,29 @@ const Dashboard = () => {
     if (list.length === 0) {
       return (
         <div className="text-center py-10 text-sm text-muted-foreground">
-          No scans match this filter.
+          {activeFilter === "favorites" ? "No favorites yet. Click the star on a scan to add it." : "No scans match this filter."}
         </div>
       );
     }
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {list.map((scan) => (
-          <ScanCard key={scan.id} {...scan} />
+          <ScanCard
+            key={scan.id}
+            {...scan}
+            isFavorite={favorites.has(scan.id)}
+            onToggleFavorite={toggleFavorite}
+          />
         ))}
       </div>
     );
   };
+
+  const filterButtons: { key: FilterMode; label: string }[] = [
+    { key: "newest", label: "Newest" },
+    { key: "oldest", label: "Oldest" },
+    { key: "favorites", label: "Favorites" },
+  ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -190,38 +218,29 @@ const Dashboard = () => {
                   onChange={(e) => setSearchFilter(e.target.value)}
                   className="h-9 text-sm w-full sm:w-56 bg-background border-border"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-                  className="h-9 text-xs shrink-0"
-                >
-                  {sortOrder === "newest" ? "Newest" : "Oldest"}
-                </Button>
               </div>
             </div>
 
             {scans.length > 0 ? (
-              <Tabs defaultValue="all" className="w-full">
-                <TabsList className="mb-4 bg-muted">
-                  <TabsTrigger value="all">
-                    All <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{filteredScans.length}</Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="completed">
-                    Completed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{completedScans.length}</Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="analyzing">
-                    In Progress <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{analyzingScans.length}</Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="failed">
-                    Failed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{failedScans.length}</Badge>
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="all">{renderScanList(filteredScans)}</TabsContent>
-                <TabsContent value="completed">{renderScanList(completedScans)}</TabsContent>
-                <TabsContent value="analyzing">{renderScanList(analyzingScans)}</TabsContent>
-                <TabsContent value="failed">{renderScanList(failedScans)}</TabsContent>
-              </Tabs>
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  {filterButtons.map((f) => (
+                    <Button
+                      key={f.key}
+                      variant={activeFilter === f.key ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActiveFilter(f.key)}
+                      className="h-8 text-xs"
+                    >
+                      {f.label}
+                      {f.key === "favorites" && favorites.size > 0 && (
+                        <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{favorites.size}</Badge>
+                      )}
+                    </Button>
+                  ))}
+                </div>
+                {renderScanList(filteredScans)}
+              </div>
             ) : (
               <EmptyState
                 title="No scans yet"

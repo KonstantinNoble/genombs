@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Star } from "lucide-react";
 
 interface ScanCardProps {
   id: string;
@@ -14,6 +15,8 @@ interface ScanCardProps {
   totalSections?: number;
   status: "completed" | "analyzing" | "pending" | "failed";
   createdAt: string;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id: string) => void;
 }
 
 const statusConfig = {
@@ -34,6 +37,8 @@ const ScanCard = ({
   totalSections = 7,
   status,
   createdAt,
+  isFavorite = false,
+  onToggleFavorite,
 }: ScanCardProps) => {
   const config = statusConfig[status];
   const date = new Date(createdAt).toLocaleDateString("de-DE", {
@@ -49,9 +54,27 @@ const ScanCard = ({
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
           <span className="text-base font-mono text-foreground/70">{domain}</span>
-          <Badge variant="outline" className={config.className}>
-            {config.label}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            {onToggleFavorite && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleFavorite(id);
+                }}
+                className="p-1 rounded-md hover:bg-muted transition-colors"
+                aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Star
+                  size={16}
+                  className={isFavorite ? "fill-primary text-primary" : "text-muted-foreground"}
+                />
+              </button>
+            )}
+            <Badge variant="outline" className={config.className}>
+              {config.label}
+            </Badge>
+          </div>
         </div>
 
         <h3 className="text-xl font-semibold text-foreground mb-1">{companyName}</h3>

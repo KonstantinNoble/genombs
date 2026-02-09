@@ -852,7 +852,7 @@ export const demoReports: GrowthReport[] = [
   },
 ];
 
-export const demoScans = demoReports.map((g) => ({
+export const demoScans = demoReports.map((g, i) => ({
   id: g.id,
   domain: g.domain,
   companyName: g.companyName,
@@ -863,4 +863,5 @@ export const demoScans = demoReports.map((g) => ({
   totalSections: 6,
   status: g.status,
   createdAt: g.createdAt,
+  isFavorite: i < 2,
 }));

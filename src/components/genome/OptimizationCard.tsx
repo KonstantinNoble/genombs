@@ -45,7 +45,7 @@ const OptimizationCard = ({ optimization, isPremium = false }: OptimizationCardP
         {/* Premium: Effort + Expected Outcome */}
         {isPremium ? (
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-foreground/70">
               Effort: {optimization.effort}
             </p>
             <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">

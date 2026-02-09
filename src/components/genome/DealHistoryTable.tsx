@@ -70,7 +70,7 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
           <tbody>
             {filtered.map((deal) => (
               <tr key={deal.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <td className="py-2 px-3 text-sm font-mono text-muted-foreground">
+                <td className="py-2 px-3 text-base font-mono text-foreground/70">
                   {new Date(deal.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </td>
                 <td className="py-2 px-3 text-sm text-foreground">

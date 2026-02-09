@@ -225,7 +225,7 @@ const GenomeView = () => {
             {/* Audience Channels */}
             <div id="audience-channels" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Where Your Audience Lives">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Organic and paid channels, SEO keywords, and targeting strategies
                 </p>
                 <AudienceChannelCard

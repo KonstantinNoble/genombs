@@ -1,101 +1,128 @@
 
+# Battle Cards + Win/Loss Tracking fuer Competitor Analysis
 
-# Competitor Analysis Feature + Premium-Struktur
+## Uebersicht
 
-## Teil 1: Competitor Analysis als eigene Seite
+Zwei neue Features die die Competitor Analysis Seite von einer reinen Analyse zu einem aktiven Sales- und Strategy-Tool machen. Beide werden als neue Tabs auf der bestehenden `/competitor-analysis` Seite integriert.
+
+```text
+Aktuelle Seite:
+  [URL-Eingabe + Demo-Report (alles auf einer Seite)]
+
+Neue Seite mit Tabs:
+  [Analysis]  [Battle Cards]  [Win/Loss]
+```
+
+---
+
+## Feature 1: AI-generierte Battle Cards
+
+### Was sind Battle Cards?
+
+Battle Cards sind kompakte "Spickzettel" fuer Verkaufsgespraeche. Wenn ein Kunde sagt "Warum soll ich euch nehmen statt PayPal?", hat der User sofort die passenden Argumente parat.
+
+### User Flow
+
+```text
+1. User fuehrt Competitor-Analyse durch (oder nutzt Demo)
+2. Klickt auf Tab "Battle Cards"
+3. Sieht pro Wettbewerber eine fertige Battle Card mit:
+   - "How We Win" -- 3-4 Argumente warum man besser ist
+   - "Their Pitch" -- Was der Wettbewerber typischerweise sagt
+   - "Counter Arguments" -- Wie man auf deren Staerken reagiert
+   - "Trigger Phrases" -- Saetze die der User im Gespraech nutzen kann
+   - "When We Lose" -- Ehrliche Einschaetzung wann der Wettbewerber gewinnt
+4. Cards sind exportierbar (Copy-to-Clipboard pro Card)
+```
+
+### Inhalt pro Battle Card
+
+Jede Card hat 5 Abschnitte:
+
+**How We Win (3-4 Punkte)**
+Konkrete Vorteile gegenueber diesem spezifischen Wettbewerber. Nicht generisch, sondern auf Basis der SWOT-Analyse und Score-Vergleiche abgeleitet.
+
+**Their Pitch (2-3 Punkte)**
+Was dieser Wettbewerber typischerweise als Argument bringt. Damit ist der User vorbereitet.
+
+**Counter Arguments (2-3 Punkte)**
+Direkte Antworten auf die Staerken des Wettbewerbers. Format: "Wenn sie sagen X, antworte mit Y".
+
+**Trigger Phrases (2-3 Saetze)**
+Fertige Saetze die der User copy-pasten oder im Gespraech nutzen kann. Z.B. "Unlike [Competitor], we offer X which means Y for your team."
+
+**When We Lose (1-2 Punkte)**
+Ehrliche Einschaetzung: In welchen Situationen ist der Wettbewerber tatsaechlich die bessere Wahl? Das schafft Vertrauen und hilft dem User, seine Zeit auf die richtigen Deals zu fokussieren.
+
+### Premium-Gating
+
+- Komplett Premium-gated (PremiumLock um den gesamten Tab-Inhalt)
+- Free User sieht den Tab, klickt drauf, sieht eine geblurrte Vorschau mit Upgrade-CTA
+
+---
+
+## Feature 2: Win/Loss Tracking
 
 ### Konzept
 
-Eine neue Seite `/competitor-analysis` die vom Dashboard aus erreichbar ist. Der User gibt seine eigene URL und bis zu 3 Konkurrenz-URLs ein. Das System generiert einen Vergleichsreport mit Score-Vergleichen, Staerken/Schwaechen und konkreten Empfehlungen.
+Der User kann gewonnene und verlorene Deals gegen Wettbewerber erfassen. Ueber Zeit entsteht ein Muster-Dashboard das zeigt: Gegen wen gewinnt man? Warum verliert man? Wo sollte man investieren?
 
-### Seitenstruktur
+### User Flow
 
 ```text
-/competitor-analysis
-  - URL-Eingabe: Eigene URL + 2-3 Wettbewerber-URLs
-  - Vergleichs-Dashboard:
-    1. Score Comparison (Radar-Chart: alle Unternehmen ueberlagert)
-    2. Head-to-Head Tabelle (6 Dimensionen nebeneinander)
-    3. SWOT-Analyse (pro Wettbewerber)
-    4. Keyword Gaps (Keywords die Wettbewerber haben, du nicht)
-    5. Channel Gaps (Kanaele die Wettbewerber nutzen, du nicht)
-    6. Actionable Takeaways (3-5 konkrete Massnahmen basierend auf Gaps)
+1. User navigiert zum "Win/Loss" Tab
+2. Sieht Dashboard mit aktuellen Statistiken
+3. Klickt "Log Deal" -- Sheet oeffnet sich von rechts
+4. Fuellt aus: Deal-Name, Won/Lost, Wettbewerber, Grund, optionaler Wert + Notizen
+5. Deal wird gespeichert und Dashboard aktualisiert
+6. Ueber Zeit erkennt der User Muster (z.B. "Gegen PayPal verlieren wir meistens wegen Preis")
 ```
 
-### Premium-Gating auf der Competitor-Seite
+### Dashboard-Bereich
 
-- **Free User**: Kann die Seite oeffnen, sieht den URL-Eingabebereich. Beim Klick auf "Analyze" erscheint ein Upgrade-Hinweis ("Competitor Analysis is a Premium feature").
-- **Premium User**: Voller Zugriff, kann Analysen durchfuehren und speichern.
+**Zusammenfassungs-Karten (oben)**
+- Win Rate als grosse Zahl (z.B. "68%")
+- Total Deals (z.B. "18 Deals logged")
+- Total Won / Total Lost
+- Gesamt-Dealwert (wenn erfasst)
 
-### Demo-Daten
-
-Es werden Demo-Competitor-Analysen erstellt (z.B. Stripe vs PayPal vs Square), damit die Seite sofort testbar ist. Ein Demo-Link wird im Dashboard fuer Premium-User angezeigt.
-
----
-
-## Teil 2: Premium-Struktur im bestehenden Dashboard/Report
-
-### Was wird Premium-gated im Growth Report
-
-Aktuell sieht jeder User alles. Neu wird der Report in Free und Premium Bereiche aufgeteilt:
-
-**Free (immer sichtbar):**
-- Executive Summary + Top 3 Priorities
-- Business Snapshot (Badges + Beschreibung, OHNE Positioning/Differentiators)
-- Performance Overview: Nur Radar-Chart, KEINE Score-Insights, KEINE Benchmarks
-- ICP: Nur Name, Role, Demographics, Pain Points -- OHNE Buying Triggers, Objections, Where to Find
-- Audience Channels: Nur Plattform-Name + Relevanz + Tip -- OHNE spezifische Links, Keywords, Formate, SEO-Tabelle
-- Optimization: Nur Area + Recommendation -- OHNE Effort, Expected Outcome
-
-**Premium (mit Blur/Lock-Overlay):**
-- Business Snapshot: Positioning Statement + Key Differentiators + Growth Lever
-- Performance Overview: Score-Insights mit Next Steps + Industry Benchmarks Tabelle
-- ICP: Buying Triggers, Objections, Where to Find Them
-- Audience Channels: Spezifische Links, Keywords, Formate, Frequency, SEO-Keyword-Tabelle, Paid-Channel-Daten
-- Optimization: Effort + Expected Outcome
-
-### Visuelles Premium-Gating
-
-Die Premium-Inhalte werden NICHT versteckt, sondern mit einem **Blur-Overlay** angezeigt:
-- Der Premium-Content wird gerendert, aber mit `blur-sm` CSS und einem halbtransparenten Overlay
-- Auf dem Overlay steht: "Unlock with Premium" + ein Button der zur Pricing-Seite fuehrt
-- So sieht der Free-User, DASS es mehr gibt, und bekommt Appetit auf den vollen Report
-
-### Premium-Lock Komponente
-
-Eine wiederverwendbare `PremiumLock` Wrapper-Komponente:
+**Win/Loss nach Wettbewerber (horizontale Balken)**
 ```text
-<PremiumLock>
-  <Buying Triggers Content />
-</PremiumLock>
+vs PayPal:   ████████░░░░  5W / 3L  (63%)
+vs Square:   ██████████░░  7W / 2L  (78%)
+vs Adyen:    ████░░░░░░░░  2W / 4L  (33%)
 ```
-- Wenn `isPremium = true`: Zeigt den Content normal
-- Wenn `isPremium = false`: Zeigt den Content mit Blur + Upgrade-CTA
 
----
+**Haeufigste Gruende (zwei Spalten)**
+- Top Win-Gruende: Sortierte Liste der meistgenannten Gewinn-Gruende
+- Top Loss-Gruende: Sortierte Liste der meistgenannten Verlust-Gruende
 
-## Teil 3: Pricing-Seite und Feature-Tabelle aktualisieren
+**Deal-Historie Tabelle**
+- Alle Deals sortiert nach Datum
+- Spalten: Datum, Deal-Name, Ergebnis (Won/Lost Badge), Wettbewerber, Grund, Wert
+- Filterbar nach Won/Lost und nach Wettbewerber
 
-Die Pricing-Seite hat noch veraltete Features (Market Size, Traffic Data, Quick Wins, Organic/Paid Strategy). Diese werden aktualisiert:
+### Deal-Erfassungs-Formular (Sheet von rechts)
 
-**Neue Free Features:**
-- 3 Growth Reports/Monat
-- Business Snapshot (Basis)
-- Performance Radar-Chart
-- ICP Profiles (Basis)
-- Channel Overview (Basis)
-- Optimization Empfehlungen (Basis)
+Felder:
+- Deal Name (Pflicht, z.B. "Enterprise Kunde ABC")
+- Ergebnis: Won / Lost (Toggle-Buttons)
+- Wettbewerber (Dropdown mit Freitextoption)
+- Hauptgrund (Auswahlliste, je nach Won/Lost unterschiedlich):
+  - Won-Gruende: "Better product fit", "Price advantage", "Stronger relationship", "Technical superiority", "Better support", "Other"
+  - Lost-Gruende: "Price too high", "Missing feature", "Competitor relationship", "Slow sales process", "Technical limitations", "Other"
+- Deal-Wert (optional, Zahl)
+- Notizen (optional, Freitext)
+- Datum (Date-Picker, Standard: heute)
 
-**Neue Premium Features:**
-- Unlimited Growth Reports
-- Competitor Analysis (NEU)
-- Detailed Score Insights + Next Steps
-- Industry Benchmarks
-- ICP Buying Triggers + Objections
-- Specific Channel Links + Keywords + SEO-Tabelle
-- Optimization Effort + Expected Outcomes
-- PDF Export
-- Priority Support
+### Premium-Gating
+
+- Komplett Premium-gated (PremiumLock um den gesamten Tab-Inhalt)
+- Demo-Daten werden im geblurrten Zustand angezeigt, damit der Free-User sieht was moeglich waere
+
+### Daten-Handling
+
+Aktuell nur mit Demo-Daten und lokalem State (useState). In Zukunft kann dies an die Datenbank angebunden werden. Neue Deals werden zur lokalen Liste hinzugefuegt und das Dashboard berechnet sich daraus.
 
 ---
 
@@ -103,63 +130,67 @@ Die Pricing-Seite hat noch veraltete Features (Market Size, Traffic Data, Quick 
 
 ### Neue Dateien
 
-**`src/pages/CompetitorAnalysis.tsx`:**
-- Neue Seite mit URL-Eingabe (eigene URL + bis zu 3 Wettbewerber)
-- Premium-Gate: Free User sieht Eingabe + Upgrade-CTA, Premium User sieht Demo-Report
-- Sections: Score Comparison (Radar), Head-to-Head Tabelle, SWOT, Keyword Gaps, Channel Gaps, Takeaways
-- Nutzt `useAuth()` fuer `isPremium` Check
+**`src/lib/demo-battlecard-data.ts`**
+- Interface `BattleCard`: `{ competitor: string; domain: string; howWeWin: string[]; theirPitch: string[]; counterArguments: string[]; triggerPhrases: string[]; whenWeLose: string[] }`
+- Demo-Daten: 3 Battle Cards fuer Stripe vs PayPal, Square, Adyen (abgeleitet aus den bestehenden SWOT-Daten)
 
-**`src/components/genome/PremiumLock.tsx`:**
-- Wiederverwendbare Wrapper-Komponente
-- Props: `children`, optional `title` fuer den CTA-Text
-- Liest `isPremium` aus `useAuth()`
-- Premium: rendert `children` normal
-- Free: rendert `children` mit `blur-sm opacity-60 pointer-events-none` + absolut positioniertes Overlay mit "Unlock Premium" Button
+**`src/lib/demo-winloss-data.ts`**
+- Interface `Deal`: `{ id: string; name: string; outcome: "won" | "lost"; competitor: string; value?: number; reason: string; notes?: string; date: string }`
+- `winReasonOptions` und `lossReasonOptions` als vordefinierte Auswahllisten
+- Demo-Daten: 18 Deals ueber 6 Monate verteilt
 
-**`src/components/genome/CompetitorRadarChart.tsx`:**
-- Recharts Radar-Chart der mehrere Unternehmen ueberlagert (verschiedene Farben)
-- Nutzt die gleichen 6 Dimensionen wie PerformanceChart
+**`src/components/genome/BattleCardView.tsx`**
+- Rendert alle Battle Cards in einer Liste
+- Pro Card eine GenomeCard mit den 5 Abschnitten
+- Copy-to-Clipboard Button pro Card (kopiert den Text als formatierten String)
+- Abschnitte nutzen `border-l-2` Markierungen:
+  - How We Win: `border-chart-4` (gruen)
+  - Their Pitch: `border-muted-foreground`
+  - Counter Arguments: `border-primary` (orange)
+  - Trigger Phrases: `border-primary` mit `font-mono bg-muted/50` Styling
+  - When We Lose: `border-destructive` (rot)
 
-**`src/components/genome/CompetitorSWOT.tsx`:**
-- SWOT-Grid (Strengths, Weaknesses, Opportunities, Threats) pro Wettbewerber
-- Einfache 2x2 Grid-Karten mit farbcodierten Headern
+**`src/components/genome/WinLossChart.tsx`**
+- Dashboard-Bereich: Summary Cards + horizontale Balken pro Wettbewerber + Gruende-Listen
+- Nutzt Recharts BarChart fuer die horizontalen Win/Loss Balken
+- Win-Farbe: `bg-chart-4` / Recharts `hsl(142, 71%, 45%)`
+- Loss-Farbe: `bg-destructive` / Recharts `hsl(0, 84%, 60%)`
 
-**`src/lib/demo-competitor-data.ts`:**
-- Demo-Daten fuer eine Competitor-Analyse (Stripe vs PayPal vs Square)
-- Interfaces: `CompetitorAnalysis`, `CompetitorProfile`, `KeywordGap`, `ChannelGap`
+**`src/components/genome/DealForm.tsx`**
+- Sheet-Komponente (von rechts) mit React Hook Form
+- Conditional: Won zeigt winReasonOptions, Lost zeigt lossReasonOptions
+- Zod-Validierung fuer Pflichtfelder
+- onSubmit Callback der den neuen Deal zurueckgibt
+
+**`src/components/genome/DealHistoryTable.tsx`**
+- Tabelle mit Sortierung nach Datum
+- Filter-Dropdown fuer Won/Lost und Wettbewerber
+- Won = gruener Badge, Lost = roter Badge
+- Wert wird als formatierte Zahl angezeigt
 
 ### Geaenderte Dateien
 
-**`src/App.tsx`:**
-- Neue Route `/competitor-analysis` hinzufuegen (lazy loaded)
+**`src/pages/CompetitorAnalysis.tsx`**
+- Umstrukturierung zu 3 Tabs: "Analysis", "Battle Cards", "Win/Loss"
+- Tab "Analysis" = bisheriger Seiteninhalt (URL-Eingabe + Demo-Report)
+- Tab "Battle Cards" = BattleCardView, umgeben von PremiumLock
+- Tab "Win/Loss" = WinLossChart + DealForm + DealHistoryTable, umgeben von PremiumLock
+- Lokaler State fuer Deals (useState, initialisiert mit Demo-Daten)
+- "Log Deal" Button oeffnet DealForm Sheet
 
-**`src/pages/Dashboard.tsx`:**
-- Neuen "Competitor Analysis" Button/Link im Dashboard Header-Bereich (neben dem URL-Eingabefeld oder als eigene Karte)
-- Premium Badge am Button wenn User nicht Premium ist
+### Design-Regeln
 
-**`src/pages/GenomeView.tsx`:**
-- `PremiumLock` Wrapper um die Premium-Bereiche der einzelnen Sektionen:
-  - Business Snapshot: Positioning + Differentiators
-  - Performance: Score Insights + Benchmarks
-  - ICP: Buying Triggers + Objections + Where to Find
-  - Audience Channels: Specific Links + Keywords + Formats + SEO-Tabelle + Paid-Info
-  - Optimization: Effort + Expected Outcome
+- Keine neuen Icons oder Emojis
+- Schwarz-Orange Farbschema beibehalten
+- Alle neuen Abschnitte nutzen GenomeCard als Container
+- Typographie: `text-[10px] uppercase tracking-wide` fuer Labels
+- Nummerierte Listen fuer Argumente, `font-mono` fuer Trigger Phrases
+- Tabs nutzen die bestehende `Tabs/TabsList/TabsTrigger` UI-Komponente
 
-**`src/pages/Pricing.tsx`:**
-- Feature-Listen aktualisieren (veraltete Features entfernen, neue hinzufuegen)
-- "Competitor Analysis" als Premium-Feature hervorheben
+### Reihenfolge
 
-**`src/components/genome/FeatureComparisonTable.tsx`:**
-- Feature-Liste aktualisieren mit den neuen Free/Premium Aufteilungen
-
-**`src/components/Navbar.tsx`:**
-- "Competitor Analysis" Link in die Navigation aufnehmen (nur sichtbar wenn eingeloggt)
-
-### Design
-
-- Gleicher Schwarz-Orange Stil wie bestehende Seiten
-- Premium-Lock: Halbtransparentes schwarzes Overlay mit weissem Text und orangem Button
-- Competitor-Seite: Gleiche Card/GenomeCard Komponenten, gleiche Typographie
-- Radar-Chart: Orange fuer eigenes Unternehmen, verschiedene Grautoene fuer Wettbewerber
-- SWOT: Gruene (Strengths), Rote (Weaknesses), Blaue (Opportunities), Gelbe (Threats) Border-Left Markierungen
-
+1. Demo-Daten erstellen (Battle Cards + Win/Loss)
+2. BattleCardView Komponente
+3. WinLossChart + DealForm + DealHistoryTable Komponenten
+4. CompetitorAnalysis.tsx zu Tabs umbauen und alles integrieren
+5. PremiumLock auf Battle Cards und Win/Loss Tabs anwenden

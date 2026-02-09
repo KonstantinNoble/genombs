@@ -233,7 +233,7 @@ const CompetitorAnalysis = () => {
                             </div>
                           </td>
                           <td className="py-2 px-3 text-center">
-                            <span className={`text-sm font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
+                            <span className={`text-base font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
                               {gap.youHave ? "Yes" : "No"}
                             </span>
                           </td>

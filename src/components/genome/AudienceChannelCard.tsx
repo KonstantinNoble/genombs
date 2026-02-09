@@ -95,7 +95,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                 )}
               </div>
               {seoRecommendation && (
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{seoRecommendation}</p>
+                <p className="text-base text-foreground/70 leading-relaxed mb-4">{seoRecommendation}</p>
               )}
               <div className="overflow-x-auto">
                 <table className="w-full">

@@ -4,6 +4,9 @@ export interface ICPPersona {
   demographics: string;
   painPoints: string[];
   goals: string[];
+  buyingTriggers: string[];
+  objections: string[];
+  whereToFind: string[];
   size: "small" | "medium" | "large";
   priority: "primary" | "secondary";
 }
@@ -17,6 +20,8 @@ export interface AudienceChannel {
   recommendedKeywords: string[];
   bestFormats: string[];
   postingFrequency: string;
+  budgetLevel?: "low" | "medium" | "high";
+  estimatedCPC?: string;
 }
 
 export interface Optimization {
@@ -25,6 +30,8 @@ export interface Optimization {
   recommendation: string;
   priority: "high" | "medium" | "low";
   impact: "high" | "medium" | "low";
+  effort: string;
+  expectedOutcome: string;
 }
 
 export interface SEOKeyword {
@@ -32,26 +39,6 @@ export interface SEOKeyword {
   volume: string;
   difficulty: "low" | "medium" | "high";
   opportunity: "low" | "medium" | "high";
-}
-
-export interface OrganicStrategy {
-  seo: { score: number; keywords: SEOKeyword[]; recommendation: string };
-  content: { formats: string[]; topics: string[]; frequency: string };
-  social: { platforms: string[]; contentTypes: string[]; cadence: string };
-  community: { channels: string[]; approach: string };
-}
-
-export interface PaidChannel {
-  channel: string;
-  budgetLevel: "low" | "medium" | "high";
-  format: string;
-  targetingTip: string;
-}
-
-export interface PaidStrategy {
-  recommendedChannels: PaidChannel[];
-  competitionLevel: "low" | "medium" | "high";
-  estimatedCPC: string;
 }
 
 export interface PerformanceScores {
@@ -71,6 +58,7 @@ export interface IndustryBenchmark {
 export interface ScoreInsight {
   key: keyof PerformanceScores;
   insight: string;
+  nextStep: string;
 }
 
 export interface GrowthReport {
@@ -78,15 +66,25 @@ export interface GrowthReport {
   domain: string;
   companyName: string;
   segment: string;
-  businessModel: { type: string; description: string; revenueModel: string };
+  businessModel: {
+    type: string;
+    description: string;
+    revenueModel: string;
+    positioning: string;
+    differentiators: string[];
+    growthLever: string;
+  };
   growthScore: number;
   summary: string;
   topPriorities: string[];
   icp: ICPPersona[];
   audienceChannels: AudienceChannel[];
   optimizations: Optimization[];
-  organicStrategy: OrganicStrategy;
-  paidStrategy: PaidStrategy;
+  seoKeywords: SEOKeyword[];
+  seoScore: number;
+  seoRecommendation: string;
+  paidCompetitionLevel: "low" | "medium" | "high";
+  estimatedCPC: string;
   performanceScores: PerformanceScores;
   industryAverage: PerformanceScores;
   industryBenchmarks: IndustryBenchmark[];
@@ -105,6 +103,14 @@ export const demoReports: GrowthReport[] = [
       type: "SaaS / API-Platform",
       description: "Stripe provides payment processing infrastructure as a service. Revenue is generated through transaction fees (2.9% + 30¢ per successful charge) and subscription-based products for advanced features like Billing, Connect, and Atlas.",
       revenueModel: "Transaction-based",
+      positioning: "The developer-first payments platform that scales from startup to enterprise — replacing legacy payment providers with a single API.",
+      differentiators: [
+        "Best-in-class developer documentation and API design",
+        "Full-stack financial infrastructure (payments, billing, treasury, identity)",
+        "Global coverage with 135+ currencies and local payment methods",
+        "Product-led growth through self-serve onboarding",
+      ],
+      growthLever: "Product-Led Growth",
     },
     growthScore: 92,
     summary: "Stripe has built a dominant position in API-first payment infrastructure through developer-first positioning and product-led growth. The website effectively communicates technical value propositions but underutilizes case study content relative to enterprise deal values.",
@@ -122,13 +128,26 @@ export const demoReports: GrowthReport[] = [
       { metric: "Avg. monthly traffic (top 5)", value: "30M–80M visits" },
     ],
     scoreInsights: [
-      { key: "seo", insight: "Strong — dominant in branded and head terms. Opportunity in long-tail comparison queries." },
-      { key: "content", insight: "Below potential — docs are excellent but blog cadence is too low for the market." },
-      { key: "social", insight: "Developer Twitter engagement is solid but LinkedIn enterprise content is weak." },
-      { key: "paid", insight: "Well-optimized search ads. LinkedIn and YouTube campaigns could scale enterprise pipeline." },
-      { key: "trust", insight: "Strong technical reputation. Formalizing compliance page would close enterprise gaps." },
-      { key: "funnel", insight: "Excellent self-serve funnel. Adding a pricing calculator would reduce mid-market friction." },
+      { key: "seo", insight: "Strong — dominant in branded and head terms. Opportunity in long-tail comparison queries.", nextStep: "Create comparison landing pages for 'Stripe vs PayPal' and 'Stripe vs Square' to capture high-intent traffic." },
+      { key: "content", insight: "Below potential — docs are excellent but blog cadence is too low for the market.", nextStep: "Increase blog output to 2x/week focusing on use-case-driven content and integration tutorials." },
+      { key: "social", insight: "Developer Twitter engagement is solid but LinkedIn enterprise content is weak.", nextStep: "Launch a LinkedIn content series targeting CTOs and VP Engineering with enterprise case studies." },
+      { key: "paid", insight: "Well-optimized search ads. LinkedIn and YouTube campaigns could scale enterprise pipeline.", nextStep: "Test LinkedIn sponsored content with enterprise case studies — target $10M+ ARR SaaS companies." },
+      { key: "trust", insight: "Strong technical reputation. Formalizing compliance page would close enterprise gaps.", nextStep: "Build a dedicated /security page with downloadable SOC 2 Type II reports and compliance certifications." },
+      { key: "funnel", insight: "Excellent self-serve funnel. Adding a pricing calculator would reduce mid-market friction.", nextStep: "Add an interactive pricing calculator on the pricing page for transparent cost estimation." },
     ],
+    seoKeywords: [
+      { keyword: "payment API", volume: "18,000/mo", difficulty: "high", opportunity: "medium" },
+      { keyword: "online payments", volume: "45,000/mo", difficulty: "high", opportunity: "low" },
+      { keyword: "accept payments online", volume: "12,000/mo", difficulty: "medium", opportunity: "high" },
+      { keyword: "payment processing", volume: "33,000/mo", difficulty: "high", opportunity: "low" },
+      { keyword: "Stripe alternatives", volume: "8,500/mo", difficulty: "medium", opportunity: "high" },
+      { keyword: "best payment gateway for SaaS", volume: "3,200/mo", difficulty: "low", opportunity: "high" },
+      { keyword: "Stripe vs Square", volume: "6,800/mo", difficulty: "medium", opportunity: "high" },
+    ],
+    seoScore: 88,
+    seoRecommendation: "Already strong in branded and head terms. Opportunity in long-tail queries: 'best payment gateway for SaaS', 'how to accept crypto payments', 'Stripe vs Square for marketplaces'.",
+    paidCompetitionLevel: "high",
+    estimatedCPC: "$4.50–$12.00 for payment-related keywords",
     icp: [
       {
         name: "Tech-Savvy Startup Founder",
@@ -144,6 +163,21 @@ export const demoReports: GrowthReport[] = [
           "Launch payment acceptance within a day",
           "Scale from MVP to millions of transactions without re-platforming",
           "Access detailed financial analytics and reporting",
+        ],
+        buyingTriggers: [
+          "Series A funding secured — need to professionalize payment stack",
+          "Launching in new international markets requiring local payment methods",
+          "Current payment provider fails during traffic spikes",
+        ],
+        objections: [
+          "Transaction fees are higher than some competitors (2.9% + 30¢)",
+          "Concerned about vendor lock-in with proprietary APIs",
+          "Support response times for non-enterprise tiers",
+        ],
+        whereToFind: [
+          "Hacker News (Show HN launches, payment discussions)",
+          "GitHub (searching for payment SDKs and starter templates)",
+          "Dev Twitter (@stripe, #fintech, payment API threads)",
         ],
         size: "large",
         priority: "primary",
@@ -161,6 +195,21 @@ export const demoReports: GrowthReport[] = [
           "Consolidate payment infrastructure under one provider",
           "Reduce PCI compliance burden",
         ],
+        buyingTriggers: [
+          "Board mandate to consolidate payment vendors for cost reduction",
+          "Expanding into EU/APAC markets requiring local compliance",
+          "Current provider contract renewal approaching",
+        ],
+        objections: [
+          "Migration complexity from existing payment infrastructure",
+          "Need dedicated enterprise support SLAs before committing",
+          "Concerns about custom feature requests and roadmap influence",
+        ],
+        whereToFind: [
+          "LinkedIn (VP Engineering groups, Fintech Professionals)",
+          "Industry conferences (Money 20/20, SaaStr Annual)",
+          "Gartner/Forrester reports on payment infrastructure",
+        ],
         size: "medium",
         priority: "primary",
       },
@@ -176,6 +225,21 @@ export const demoReports: GrowthReport[] = [
         goals: [
           "Maximize checkout conversion rates",
           "Offer flexible payment options (BNPL, Apple Pay, etc.)",
+        ],
+        buyingTriggers: [
+          "Checkout abandonment rate exceeds 70% — need better payment UX",
+          "Launching subscription/recurring billing for the first time",
+          "Shopify Payments limitations blocking international sales",
+        ],
+        objections: [
+          "Already invested in Shopify Payments ecosystem",
+          "Technical integration seems complex for non-developer teams",
+          "Unclear pricing for high-volume transaction discounts",
+        ],
+        whereToFind: [
+          "Shopify community forums and r/shopify",
+          "E-commerce Twitter (#DTC, #ecommerce, Shopify creators)",
+          "Product Hunt (searching for checkout optimization tools)",
         ],
         size: "large",
         priority: "secondary",
@@ -252,6 +316,30 @@ export const demoReports: GrowthReport[] = [
         bestFormats: ["Step-by-step tutorials", "Integration comparison articles", "Troubleshooting guides"],
         postingFrequency: "1–2x/week",
       },
+      {
+        platform: "Google Ads",
+        relevance: 80,
+        tip: "Target high-intent keywords. Exclude branded queries to avoid wasted spend.",
+        category: "paid",
+        specificLinks: ["Google Ads Search Network", "Performance Max for SaaS"],
+        recommendedKeywords: ["payment API", "accept payments", "Stripe alternative"],
+        bestFormats: ["Search ads on high-intent keywords"],
+        postingFrequency: "Always-on",
+        budgetLevel: "high",
+        estimatedCPC: "$8–$12",
+      },
+      {
+        platform: "LinkedIn Ads",
+        relevance: 70,
+        tip: "Target CTOs and VP Eng at $10M+ ARR SaaS companies. Use case study content.",
+        category: "paid",
+        specificLinks: ["LinkedIn Campaign Manager", "Sponsored InMail"],
+        recommendedKeywords: ["enterprise payments", "payment infrastructure", "SaaS billing"],
+        bestFormats: ["Sponsored content + InMail"],
+        postingFrequency: "Ongoing campaigns",
+        budgetLevel: "medium",
+        estimatedCPC: "$6–$10",
+      },
     ],
     optimizations: [
       {
@@ -260,6 +348,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Add a secondary CTA for 'See a demo' on the enterprise page. Many enterprise buyers want to see the product before engaging sales.",
         priority: "medium",
         impact: "medium",
+        effort: "2–4 hours",
+        expectedOutcome: "+10–15% enterprise page engagement and demo requests",
       },
       {
         area: "Social Proof",
@@ -267,6 +357,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Add 3–5 detailed customer success stories with specific metrics (e.g., '40% checkout conversion increase'). Enterprise buyers need quantified ROI.",
         priority: "high",
         impact: "high",
+        effort: "1–2 weeks (content creation)",
+        expectedOutcome: "+20–30% enterprise lead conversion from website",
       },
       {
         area: "Content Gaps",
@@ -274,6 +366,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Increase blog publishing cadence to 2x/week. Focus on use-case-driven content: 'How to build a marketplace with Stripe Connect', 'Subscription billing best practices'.",
         priority: "medium",
         impact: "high",
+        effort: "Ongoing (hire content writer or agency)",
+        expectedOutcome: "+30–50% organic traffic growth within 6 months",
       },
       {
         area: "Trust Elements",
@@ -281,6 +375,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Add a dedicated security/compliance page with downloadable SOC reports. Enterprise buyers actively look for this during evaluation.",
         priority: "high",
         impact: "medium",
+        effort: "1–2 days (page creation + asset upload)",
+        expectedOutcome: "Reduced enterprise sales cycle by 1–2 weeks",
       },
       {
         area: "Funnel Optimization",
@@ -288,47 +384,10 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Add an interactive pricing calculator on the pricing page. Transparency reduces friction for mid-market buyers comparing options.",
         priority: "low",
         impact: "medium",
+        effort: "1 week (calculator development)",
+        expectedOutcome: "+15–20% pricing page conversion to signup",
       },
     ],
-    organicStrategy: {
-      seo: {
-        score: 88,
-        keywords: [
-          { keyword: "payment API", volume: "18,000/mo", difficulty: "high", opportunity: "medium" },
-          { keyword: "online payments", volume: "45,000/mo", difficulty: "high", opportunity: "low" },
-          { keyword: "accept payments online", volume: "12,000/mo", difficulty: "medium", opportunity: "high" },
-          { keyword: "payment processing", volume: "33,000/mo", difficulty: "high", opportunity: "low" },
-          { keyword: "Stripe alternatives", volume: "8,500/mo", difficulty: "medium", opportunity: "high" },
-          { keyword: "best payment gateway for SaaS", volume: "3,200/mo", difficulty: "low", opportunity: "high" },
-          { keyword: "Stripe vs Square", volume: "6,800/mo", difficulty: "medium", opportunity: "high" },
-        ],
-        recommendation: "Already strong in branded and head terms. Opportunity in long-tail queries: 'best payment gateway for SaaS', 'how to accept crypto payments', 'Stripe vs Square for marketplaces'.",
-      },
-      content: {
-        formats: ["Technical Documentation", "Blog Articles", "Case Studies", "API Reference", "Video Tutorials"],
-        topics: ["Payment integration guides", "Compliance and security", "Marketplace payment flows", "Subscription billing", "International expansion"],
-        frequency: "Current: ~1x/week blog posts. Recommended: 2–3x/week with a mix of technical and business content.",
-      },
-      social: {
-        platforms: ["Twitter/X", "LinkedIn", "YouTube"],
-        contentTypes: ["Changelog updates", "Technical threads", "Customer stories", "Product announcements"],
-        cadence: "Twitter: daily. LinkedIn: 2–3x/week. YouTube: bi-weekly tutorials.",
-      },
-      community: {
-        channels: ["Discord (developer community)", "GitHub Discussions", "Stack Overflow"],
-        approach: "Maintain official presence with fast response times. Sponsor developer events and hackathons. Build a developer advocacy program.",
-      },
-    },
-    paidStrategy: {
-      recommendedChannels: [
-        { channel: "Google Ads", budgetLevel: "high", format: "Search ads on high-intent keywords", targetingTip: "Target 'payment API', 'accept payments', 'Stripe alternative'. Exclude branded queries." },
-        { channel: "LinkedIn Ads", budgetLevel: "medium", format: "Sponsored content + InMail", targetingTip: "Target CTOs and VP Eng at $10M+ ARR SaaS companies. Use case study content." },
-        { channel: "Twitter/X Ads", budgetLevel: "low", format: "Promoted tweets", targetingTip: "Target developer accounts. Promote new features and integration guides." },
-        { channel: "YouTube Ads", budgetLevel: "medium", format: "Pre-roll on tech channels", targetingTip: "Target viewers of coding tutorials and SaaS review channels." },
-      ],
-      competitionLevel: "high",
-      estimatedCPC: "$4.50–$12.00 for payment-related keywords",
-    },
     createdAt: "2025-02-05T14:30:00Z",
     status: "completed",
   },
@@ -341,6 +400,14 @@ export const demoReports: GrowthReport[] = [
       type: "Freemium SaaS",
       description: "Notion offers a free personal plan with limited features. Revenue comes from team and business subscriptions with per-user pricing. The product combines notes, docs, wikis, and project management into one workspace.",
       revenueModel: "Subscription (per-user)",
+      positioning: "The all-in-one workspace that replaces Docs, Wikis, Trello, and Confluence — customizable to any team's workflow.",
+      differentiators: [
+        "Infinitely flexible block-based editor that adapts to any use case",
+        "Massive template marketplace creating a self-sustaining content ecosystem",
+        "Bottom-up adoption model — individuals bring Notion to their teams",
+        "Cross-platform sync with offline mode and real-time collaboration",
+      ],
+      growthLever: "Community-Driven / Bottom-Up Adoption",
     },
     growthScore: 87,
     summary: "Notion dominates the workspace consolidation trend through bottom-up adoption. The template marketplace is an underutilized but high-impact organic channel. Comparison content targeting frustrated users of competing tools represents a significant SEO opportunity.",
@@ -358,13 +425,25 @@ export const demoReports: GrowthReport[] = [
       { metric: "Avg. monthly traffic (top 5)", value: "50M–200M visits" },
     ],
     scoreInsights: [
-      { key: "seo", insight: "Good branded search but missing comparison pages — 'Notion vs Confluence' has no dedicated landing." },
-      { key: "content", insight: "Strong template ecosystem. Blog content could be more frequent and SEO-focused." },
-      { key: "social", insight: "Viral template sharing on Twitter and TikTok. Community-driven growth is a major strength." },
-      { key: "paid", insight: "Below average — underinvesting in paid channels relative to market opportunity." },
-      { key: "trust", insight: "Trusted by individuals. Enterprise trust signals (SOC 2, SSO) need more visibility." },
-      { key: "funnel", insight: "Excellent free-to-paid conversion for individuals. Team onboarding flow needs work." },
+      { key: "seo", insight: "Good branded search but missing comparison pages — 'Notion vs Confluence' has no dedicated landing.", nextStep: "Create 5 comparison landing pages targeting Confluence, Coda, Obsidian, Monday.com, and ClickUp." },
+      { key: "content", insight: "Strong template ecosystem. Blog content could be more frequent and SEO-focused.", nextStep: "Publish 3x/week blog posts with SEO-optimized titles targeting 'best template for X' queries." },
+      { key: "social", insight: "Viral template sharing on Twitter and TikTok. Community-driven growth is a major strength.", nextStep: "Double down on TikTok with 3x/week short-form template showcase videos." },
+      { key: "paid", insight: "Below average — underinvesting in paid channels relative to market opportunity.", nextStep: "Test Google Ads on 'Confluence alternative' and 'team wiki' keywords with $5K/month budget." },
+      { key: "trust", insight: "Trusted by individuals. Enterprise trust signals (SOC 2, SSO) need more visibility.", nextStep: "Add a dedicated /enterprise page highlighting security certifications and admin controls." },
+      { key: "funnel", insight: "Excellent free-to-paid conversion for individuals. Team onboarding flow needs work.", nextStep: "Build team-specific onboarding templates that auto-populate on team signup." },
     ],
+    seoKeywords: [
+      { keyword: "notion", volume: "1,200,000/mo", difficulty: "high", opportunity: "low" },
+      { keyword: "project management tool", volume: "40,000/mo", difficulty: "high", opportunity: "medium" },
+      { keyword: "note taking app", volume: "28,000/mo", difficulty: "medium", opportunity: "high" },
+      { keyword: "team wiki", volume: "9,500/mo", difficulty: "low", opportunity: "high" },
+      { keyword: "Notion vs Confluence", volume: "6,200/mo", difficulty: "low", opportunity: "high" },
+      { keyword: "notion templates", volume: "55,000/mo", difficulty: "medium", opportunity: "medium" },
+    ],
+    seoScore: 78,
+    seoRecommendation: "Strong branded search but weak in comparative queries. Create 'Notion vs X' content for Confluence, Coda, Obsidian, and Monday.com.",
+    paidCompetitionLevel: "medium",
+    estimatedCPC: "$2.00–$6.00 for productivity tool keywords",
     icp: [
       {
         name: "Knowledge Worker / Freelancer",
@@ -378,6 +457,21 @@ export const demoReports: GrowthReport[] = [
         goals: [
           "Consolidate all work into a single, customizable workspace",
           "Build reusable templates for recurring workflows",
+        ],
+        buyingTriggers: [
+          "Starting a new freelance project and needing a structured system",
+          "Hitting the free tier limit after heavy personal use",
+          "Colleague or influencer recommendation on social media",
+        ],
+        objections: [
+          "Free tier might be enough — hard to justify paying as an individual",
+          "Learning curve for advanced features like databases and relations",
+          "Performance can feel slow with large workspaces",
+        ],
+        whereToFind: [
+          "Reddit r/Notion and r/productivity",
+          "YouTube (productivity YouTubers, template walkthroughs)",
+          "Twitter/TikTok (#NotionTips, productivity creator community)",
         ],
         size: "large",
         priority: "primary",
@@ -394,6 +488,21 @@ export const demoReports: GrowthReport[] = [
         goals: [
           "Create a single source of truth for team documentation",
           "Streamline sprint planning, roadmaps, and standup notes",
+        ],
+        buyingTriggers: [
+          "New hire wave — need to onboard 5+ people simultaneously",
+          "Confluence license renewal triggering 'is there something better?' search",
+          "Team member champions Notion and requests team upgrade",
+        ],
+        objections: [
+          "Concern about Notion's scalability for 50+ person teams",
+          "Missing granular permissions compared to enterprise wikis",
+          "Data export and backup options feel limited",
+        ],
+        whereToFind: [
+          "Product Hunt (searching for team collaboration tools)",
+          "LinkedIn (Head of Product groups, startup founder communities)",
+          "SaaS review sites (G2, Capterra — comparing wiki tools)",
         ],
         size: "medium",
         priority: "primary",
@@ -460,6 +569,30 @@ export const demoReports: GrowthReport[] = [
         bestFormats: ["Major feature launches", "Year-end roundups"],
         postingFrequency: "2–3x/year for big launches",
       },
+      {
+        platform: "Google Ads",
+        relevance: 65,
+        tip: "Target 'Confluence alternative' and 'team wiki software' for high-intent team signups.",
+        category: "paid",
+        specificLinks: ["Google Ads Search Network"],
+        recommendedKeywords: ["best project management tool", "Confluence alternative", "team wiki software"],
+        bestFormats: ["Search ads"],
+        postingFrequency: "Always-on",
+        budgetLevel: "high",
+        estimatedCPC: "$3–$6",
+      },
+      {
+        platform: "YouTube Ads",
+        relevance: 55,
+        tip: "Pre-roll on productivity channels. Target viewers of remote work and productivity content.",
+        category: "paid",
+        specificLinks: ["YouTube Ads (pre-roll)"],
+        recommendedKeywords: ["productivity tool", "workspace app", "team collaboration"],
+        bestFormats: ["Pre-roll on productivity channels"],
+        postingFrequency: "Ongoing campaigns",
+        budgetLevel: "medium",
+        estimatedCPC: "$2–$4",
+      },
     ],
     optimizations: [
       {
@@ -468,6 +601,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Create SEO-optimized comparison landing pages targeting high-intent switching queries. Include feature-by-feature tables and migration guides.",
         priority: "high",
         impact: "high",
+        effort: "3–5 days per page",
+        expectedOutcome: "+25–40% organic traffic from comparison keywords within 3 months",
       },
       {
         area: "Enterprise Messaging",
@@ -475,6 +610,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Add dedicated enterprise landing pages with security certifications, SSO details, and admin control features prominently displayed.",
         priority: "high",
         impact: "medium",
+        effort: "1 week (design + copy)",
+        expectedOutcome: "+15–20% enterprise demo requests from website",
       },
       {
         area: "Onboarding Flow",
@@ -482,45 +619,10 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Create team-specific onboarding templates that auto-populate when a team signs up. Reduce time-to-value for team accounts.",
         priority: "medium",
         impact: "high",
+        effort: "2–3 weeks (product + design)",
+        expectedOutcome: "+20% team activation rate within first week",
       },
     ],
-    organicStrategy: {
-      seo: {
-        score: 78,
-        keywords: [
-          { keyword: "notion", volume: "1,200,000/mo", difficulty: "high", opportunity: "low" },
-          { keyword: "project management tool", volume: "40,000/mo", difficulty: "high", opportunity: "medium" },
-          { keyword: "note taking app", volume: "28,000/mo", difficulty: "medium", opportunity: "high" },
-          { keyword: "team wiki", volume: "9,500/mo", difficulty: "low", opportunity: "high" },
-          { keyword: "Notion vs Confluence", volume: "6,200/mo", difficulty: "low", opportunity: "high" },
-          { keyword: "notion templates", volume: "55,000/mo", difficulty: "medium", opportunity: "medium" },
-        ],
-        recommendation: "Strong branded search but weak in comparative queries. Create 'Notion vs X' content for Confluence, Coda, Obsidian, and Monday.com.",
-      },
-      content: {
-        formats: ["Templates", "Blog", "YouTube Videos", "Community Forums", "Webinars"],
-        topics: ["Productivity workflows", "Team collaboration", "Personal knowledge management", "Template showcases"],
-        frequency: "Current: 1x/week. Recommended: 3x/week with template-focused and comparison content.",
-      },
-      social: {
-        platforms: ["Twitter/X", "YouTube", "TikTok"],
-        contentTypes: ["Template showcases", "Productivity tips", "User stories", "Feature updates"],
-        cadence: "Twitter: daily. YouTube: weekly. TikTok: 2–3x/week short-form.",
-      },
-      community: {
-        channels: ["Reddit r/Notion", "Discord", "Notion Ambassador Program"],
-        approach: "Empower creator community. Feature top template makers. Run monthly challenges.",
-      },
-    },
-    paidStrategy: {
-      recommendedChannels: [
-        { channel: "Google Ads", budgetLevel: "high", format: "Search ads", targetingTip: "Target 'best project management tool', 'Confluence alternative', 'team wiki software'." },
-        { channel: "YouTube Ads", budgetLevel: "medium", format: "Pre-roll on productivity channels", targetingTip: "Target viewers of productivity and remote work content." },
-        { channel: "Instagram/TikTok", budgetLevel: "low", format: "Short-form video ads", targetingTip: "Target 22–30 knowledge workers with aesthetic workspace content." },
-      ],
-      competitionLevel: "medium",
-      estimatedCPC: "$2.00–$6.00 for productivity tool keywords",
-    },
     createdAt: "2025-02-04T09:15:00Z",
     status: "completed",
   },
@@ -533,6 +635,14 @@ export const demoReports: GrowthReport[] = [
       type: "Freemium SaaS",
       description: "Linear offers a free tier for small teams and charges per-user for larger teams. Focus on speed and developer experience for issue tracking and project management.",
       revenueModel: "Subscription (per-user)",
+      positioning: "The issue tracker built for speed — replacing Jira's complexity with a keyboard-first, opinionated workflow for modern engineering teams.",
+      differentiators: [
+        "Fastest UI in the category — native-app feel with keyboard shortcuts",
+        "Opinionated workflows that reduce process overhead for dev teams",
+        "Seamless GitHub, Slack, and Figma integrations",
+        "Built by engineers for engineers — strong product-market fit in dev community",
+      ],
+      growthLever: "Word-of-Mouth / Developer Community",
     },
     growthScore: 81,
     summary: "Linear has carved out a strong niche by positioning against legacy tools through speed and UX. Word-of-mouth in the dev community is the primary growth driver. Video content (YouTube) is a largely untapped channel across the entire segment.",
@@ -550,13 +660,24 @@ export const demoReports: GrowthReport[] = [
       { metric: "Avg. team size at conversion", value: "8–15 members" },
     ],
     scoreInsights: [
-      { key: "seo", insight: "Weak in non-branded queries. No comparison pages exist — major missed opportunity." },
-      { key: "content", insight: "Minimal blog presence. Changelog is good but insufficient for organic growth." },
-      { key: "social", insight: "Exceptional Dev Twitter presence. Word-of-mouth is the primary growth engine." },
-      { key: "paid", insight: "Underinvesting — but brand-driven growth may justify lower paid spend." },
-      { key: "trust", insight: "Strong among developers. Enterprise trust signals (SOC 2, compliance) need dedicated page." },
-      { key: "funnel", insight: "Excellent product-led funnel. Free tier converts well once teams experience the speed." },
+      { key: "seo", insight: "Weak in non-branded queries. No comparison pages exist — major missed opportunity.", nextStep: "Build 'Linear vs Jira' and 'Linear vs Shortcut' pages with feature comparison tables and migration guides." },
+      { key: "content", insight: "Minimal blog presence. Changelog is good but insufficient for organic growth.", nextStep: "Publish weekly blog posts on engineering velocity, sprint planning, and developer workflow best practices." },
+      { key: "social", insight: "Exceptional Dev Twitter presence. Word-of-mouth is the primary growth engine.", nextStep: "Amplify user testimonials and create a formal 'invite your team' referral flow." },
+      { key: "paid", insight: "Underinvesting — but brand-driven growth may justify lower paid spend.", nextStep: "Test a small Google Ads budget ($3K/month) on 'Jira alternative' and 'fast issue tracker' keywords." },
+      { key: "trust", insight: "Strong among developers. Enterprise trust signals (SOC 2, compliance) need dedicated page.", nextStep: "Create a /security page with SOC 2 Type II badge, audit logs documentation, and enterprise customer logos." },
+      { key: "funnel", insight: "Excellent product-led funnel. Free tier converts well once teams experience the speed.", nextStep: "Add an in-app 'invite teammates' prompt after 7 days of active solo usage." },
     ],
+    seoKeywords: [
+      { keyword: "issue tracker", volume: "22,000/mo", difficulty: "high", opportunity: "medium" },
+      { keyword: "Jira alternative", volume: "14,000/mo", difficulty: "medium", opportunity: "high" },
+      { keyword: "linear app", volume: "18,000/mo", difficulty: "low", opportunity: "low" },
+      { keyword: "project management for developers", volume: "5,400/mo", difficulty: "low", opportunity: "high" },
+      { keyword: "best issue tracker for developers", volume: "3,800/mo", difficulty: "low", opportunity: "high" },
+    ],
+    seoScore: 62,
+    seoRecommendation: "Weak in non-branded queries. Build content around 'best issue tracker for developers', 'Jira alternatives 2025', and workflow-specific tutorials.",
+    paidCompetitionLevel: "medium",
+    estimatedCPC: "$3.00–$8.00 for developer tool keywords",
     icp: [
       {
         name: "Engineering Team Lead",
@@ -572,6 +693,21 @@ export const demoReports: GrowthReport[] = [
           "Give developers a tool they actually enjoy using",
           "Track velocity and project progress without micromanagement",
         ],
+        buyingTriggers: [
+          "Team grows past 10 engineers — Jira becomes unmanageable",
+          "New engineering manager joins and wants to modernize tooling",
+          "Quarter-end velocity review reveals process bottlenecks",
+        ],
+        objections: [
+          "Switching cost from Jira — years of data and established workflows",
+          "Concern about feature parity for non-engineering stakeholders (PM, design)",
+          "Small company — will Linear still be around in 5 years?",
+        ],
+        whereToFind: [
+          "Dev Twitter (@linear, #buildinpublic, engineering manager threads)",
+          "Hacker News (Jira frustration threads, tool recommendation posts)",
+          "Engineering Slack communities (Rands Leadership, CTO Craft)",
+        ],
         size: "medium",
         priority: "primary",
       },
@@ -586,6 +722,21 @@ export const demoReports: GrowthReport[] = [
         goals: [
           "Manage roadmaps and backlogs in one keyboard-driven interface",
           "Create visibility across product and engineering without extra meetings",
+        ],
+        buyingTriggers: [
+          "Product team doubles in size and needs better cross-team visibility",
+          "CEO asks for a real-time roadmap view for board reporting",
+          "Engineering team is already using Linear and PM needs to join",
+        ],
+        objections: [
+          "Linear feels engineering-centric — missing PM-specific features",
+          "No built-in customer feedback or feature request tracking",
+          "Reporting capabilities are less mature than alternatives",
+        ],
+        whereToFind: [
+          "LinkedIn (Product Manager groups, startup communities)",
+          "Product Hunt (searching for roadmap and project tools)",
+          "Twitter (product management discussions, #prodmgmt)",
         ],
         size: "small",
         priority: "secondary",
@@ -642,6 +793,30 @@ export const demoReports: GrowthReport[] = [
         bestFormats: ["Workflow demo videos", "Comparison videos", "Sprint planning walkthroughs"],
         postingFrequency: "Bi-weekly (recommended, currently inactive)",
       },
+      {
+        platform: "Google Ads",
+        relevance: 55,
+        tip: "Test small budget on high-intent 'Jira alternative' keywords. Brand-driven growth may justify lower paid spend.",
+        category: "paid",
+        specificLinks: ["Google Ads Search Network"],
+        recommendedKeywords: ["Jira alternative", "fast issue tracker", "project management for engineering teams"],
+        bestFormats: ["Search ads"],
+        postingFrequency: "Test campaign",
+        budgetLevel: "medium",
+        estimatedCPC: "$5–$8",
+      },
+      {
+        platform: "Twitter/X Ads",
+        relevance: 40,
+        tip: "Target followers of competing tools and developer influencers.",
+        category: "paid",
+        specificLinks: ["Twitter Ads Manager"],
+        recommendedKeywords: ["developer tools", "project management", "issue tracking"],
+        bestFormats: ["Promoted tweets"],
+        postingFrequency: "Test campaign",
+        budgetLevel: "low",
+        estimatedCPC: "$3–$5",
+      },
     ],
     optimizations: [
       {
@@ -650,6 +825,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Create detailed comparison pages targeting developers actively searching for Jira alternatives. Include migration guides and feature tables.",
         priority: "high",
         impact: "high",
+        effort: "3–5 days per page",
+        expectedOutcome: "+40–60% organic traffic from comparison keywords within 3 months",
       },
       {
         area: "Video Content",
@@ -657,6 +834,8 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Produce bi-weekly developer workflow videos: 'How we use Linear at [Company]', sprint planning demos, and keyboard shortcut deep-dives.",
         priority: "medium",
         impact: "high",
+        effort: "Ongoing (1 video editor + 4h/week founder time)",
+        expectedOutcome: "New acquisition channel reaching 5K–10K views/video within 6 months",
       },
       {
         area: "Enterprise Landing Page",
@@ -664,43 +843,10 @@ export const demoReports: GrowthReport[] = [
         recommendation: "Create an enterprise-focused page with SOC 2 compliance, SSO, audit logs, and customer logos from 100+ employee companies.",
         priority: "medium",
         impact: "medium",
+        effort: "1 week (design + copy + compliance docs)",
+        expectedOutcome: "+20–30% enterprise inbound inquiries from website",
       },
     ],
-    organicStrategy: {
-      seo: {
-        score: 62,
-        keywords: [
-          { keyword: "issue tracker", volume: "22,000/mo", difficulty: "high", opportunity: "medium" },
-          { keyword: "Jira alternative", volume: "14,000/mo", difficulty: "medium", opportunity: "high" },
-          { keyword: "linear app", volume: "18,000/mo", difficulty: "low", opportunity: "low" },
-          { keyword: "project management for developers", volume: "5,400/mo", difficulty: "low", opportunity: "high" },
-          { keyword: "best issue tracker for developers", volume: "3,800/mo", difficulty: "low", opportunity: "high" },
-        ],
-        recommendation: "Weak in non-branded queries. Build content around 'best issue tracker for developers', 'Jira alternatives 2025', and workflow-specific tutorials.",
-      },
-      content: {
-        formats: ["Blog", "Changelog", "Product Updates", "Twitter Threads"],
-        topics: ["Engineering velocity", "Sprint planning best practices", "Developer experience", "Product management workflows"],
-        frequency: "Current: bi-weekly. Recommended: weekly blog + weekly video content.",
-      },
-      social: {
-        platforms: ["Twitter/X", "LinkedIn"],
-        contentTypes: ["Product updates", "Engineering culture posts", "User testimonials", "Technical insights"],
-        cadence: "Twitter: daily. LinkedIn: 2x/week targeting engineering managers.",
-      },
-      community: {
-        channels: ["Hacker News", "Discord (private beta)", "Dev conferences"],
-        approach: "Maintain authentic, developer-first voice. Sponsor relevant conferences (React Summit, GitHub Universe). Build a developer advocate program.",
-      },
-    },
-    paidStrategy: {
-      recommendedChannels: [
-        { channel: "Google Ads", budgetLevel: "medium", format: "Search ads", targetingTip: "Target 'Jira alternative', 'fast issue tracker', 'project management for engineering teams'." },
-        { channel: "Twitter/X Ads", budgetLevel: "low", format: "Promoted tweets", targetingTip: "Target followers of competing tools and developer influencers." },
-      ],
-      competitionLevel: "medium",
-      estimatedCPC: "$3.00–$8.00 for developer tool keywords",
-    },
     createdAt: "2025-02-03T16:45:00Z",
     status: "completed",
   },
@@ -713,8 +859,8 @@ export const demoScans = demoReports.map((g) => ({
   segment: g.segment,
   businessModel: g.businessModel.type,
   growthScore: g.growthScore,
-  sectionsCompleted: g.status === "completed" ? 7 : g.status === "analyzing" ? 4 : 0,
-  totalSections: 7,
+  sectionsCompleted: g.status === "completed" ? 6 : g.status === "analyzing" ? 4 : 0,
+  totalSections: 6,
   status: g.status,
   createdAt: g.createdAt,
 }));

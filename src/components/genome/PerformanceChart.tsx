@@ -34,7 +34,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
     industry: industryAverage[d.key],
   }));
 
-  const insightMap = Object.fromEntries(scoreInsights.map((s) => [s.key, s.insight]));
+  const insightMap = Object.fromEntries(scoreInsights.map((s) => [s.key, s]));
 
   return (
     <div className="space-y-5">
@@ -82,13 +82,13 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
         </CardContent>
       </Card>
 
-      {/* Score Breakdown with Insights */}
+      {/* Score Breakdown with Insights + Next Step */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {data.map((d) => {
           const diff = d.score - d.industry;
           const isAbove = diff >= 0;
           const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
-          const insight = key ? insightMap[key] : undefined;
+          const scoreInsight = key ? insightMap[key] : undefined;
           return (
             <Card key={d.dimension} className="border-border bg-card">
               <CardContent className="p-4">
@@ -101,8 +101,13 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                   </p>
                 </div>
                 <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
-                {insight && (
-                  <p className="text-xs text-muted-foreground leading-relaxed">{insight}</p>
+                {scoreInsight && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground leading-relaxed">{scoreInsight.insight}</p>
+                    <p className="text-xs text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                      {scoreInsight.nextStep}
+                    </p>
+                  </div>
                 )}
               </CardContent>
             </Card>

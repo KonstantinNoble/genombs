@@ -1,10 +1,16 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
-import type { AudienceChannel } from "@/lib/demo-data";
+import type { AudienceChannel, SEOKeyword } from "@/lib/demo-data";
 
 interface AudienceChannelCardProps {
   channels: AudienceChannel[];
+  seoKeywords?: SEOKeyword[];
+  seoScore?: number;
+  seoRecommendation?: string;
+  paidCompetitionLevel?: "low" | "medium" | "high";
+  estimatedCPC?: string;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -15,23 +21,36 @@ const categoryLabels: Record<string, string> = {
   paid: "Paid",
 };
 
+const difficultyColors = {
+  low: "bg-chart-4/15 text-chart-4 border-chart-4/30",
+  medium: "bg-chart-3/15 text-chart-3 border-chart-3/30",
+  high: "bg-destructive/15 text-destructive border-destructive/30",
+};
+
+const opportunityColors = {
+  low: "bg-muted text-muted-foreground border-border",
+  medium: "bg-chart-3/15 text-chart-3 border-chart-3/30",
+  high: "bg-primary/15 text-primary border-primary/30",
+};
+
+const budgetColors = {
+  low: "bg-muted text-muted-foreground border-border",
+  medium: "bg-chart-3/15 text-chart-3 border-chart-3/30",
+  high: "bg-primary/15 text-primary border-primary/30",
+};
+
 /** Try to turn a link string into a clickable URL */
 const toLinkUrl = (link: string): string | null => {
-  // Already a URL
   if (link.startsWith("http://") || link.startsWith("https://")) return link;
-  // Subreddit pattern
   const subredditMatch = link.match(/^r\/(\w+)/);
   if (subredditMatch) return `https://reddit.com/r/${subredditMatch[1]}`;
-  // Domain-like patterns (e.g. "github.com/stripe")
   if (/^[\w-]+\.\w{2,}/.test(link.split(" ")[0])) return `https://${link.split(" ")[0]}`;
-  // @handle patterns for Twitter
   if (link.startsWith("@") && !link.includes(" ")) return `https://x.com/${link.slice(1)}`;
   return null;
 };
 
 const LinkOrBadge = ({ link }: { link: string }) => {
   const url = toLinkUrl(link);
-  // Strip parenthetical descriptions for display
   const displayText = link.replace(/\s*\(.*?\)\s*$/, "").trim();
 
   if (url) {
@@ -53,7 +72,7 @@ const LinkOrBadge = ({ link }: { link: string }) => {
   );
 };
 
-const AudienceChannelCard = ({ channels }: AudienceChannelCardProps) => {
+const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendation, paidCompetitionLevel, estimatedCPC }: AudienceChannelCardProps) => {
   const sorted = [...channels].sort((a, b) => b.relevance - a.relevance);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
@@ -62,128 +81,199 @@ const AudienceChannelCard = ({ channels }: AudienceChannelCardProps) => {
   };
 
   return (
-    <div className="space-y-3">
-      {sorted.map((ch) => {
-        const isOpen = openItems[ch.platform] || false;
-        return (
-          <Collapsible
-            key={ch.platform}
-            open={isOpen}
-            onOpenChange={() => toggle(ch.platform)}
-          >
-            <div className="border border-border rounded-lg p-4 bg-card">
-              <CollapsibleTrigger className="w-full text-left">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">{ch.platform}</span>
-                      <Badge variant="outline" className="text-[10px]">
-                        {categoryLabels[ch.category] || ch.category}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono text-primary">{ch.relevance}%</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {isOpen ? "▲" : "▼"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-500"
-                      style={{ width: `${ch.relevance}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground italic leading-relaxed">{ch.tip}</p>
-
-                  {/* Preview when collapsed: show top links + keywords */}
-                  {!isOpen && (ch.specificLinks.length > 0 || ch.recommendedKeywords.length > 0) && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {ch.specificLinks.slice(0, 2).map((link) => (
-                        <LinkOrBadge key={link} link={link} />
-                      ))}
-                      {ch.recommendedKeywords.slice(0, 2).map((kw) => (
-                        <Badge
-                          key={kw}
-                          variant="outline"
-                          className="text-[10px] font-mono font-normal bg-primary/5 text-primary border-primary/20"
-                        >
-                          {kw}
+    <div className="space-y-5">
+      {/* SEO Keyword Opportunities */}
+      {seoKeywords && seoKeywords.length > 0 && (
+        <Card className="border-border bg-card">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
+              {seoScore !== undefined && (
+                <span className="text-sm font-mono text-primary">{seoScore}/100</span>
+              )}
+            </div>
+            {seoRecommendation && (
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">{seoRecommendation}</p>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                    <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Opportunity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {seoKeywords.map((kw) => (
+                    <tr key={kw.keyword} className="border-b border-border/50">
+                      <td className="py-2 px-3 text-sm font-mono text-foreground">{kw.keyword}</td>
+                      <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{kw.volume}</td>
+                      <td className="py-2 px-3">
+                        <Badge variant="outline" className={`text-[10px] ${difficultyColors[kw.difficulty]}`}>
+                          {kw.difficulty}
                         </Badge>
-                      ))}
-                      <span className="text-[10px] text-muted-foreground self-center">
-                        + more ▼
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CollapsibleTrigger>
+                      </td>
+                      <td className="py-2 px-3">
+                        <Badge variant="outline" className={`text-[10px] ${opportunityColors[kw.opportunity]}`}>
+                          {kw.opportunity}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-              <CollapsibleContent>
-                <div className="mt-4 pt-4 border-t border-border space-y-4">
-                  {/* Specific Links */}
-                  {ch.specificLinks.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
-                        Communities & Links
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ch.specificLinks.map((link) => (
-                          <LinkOrBadge key={link} link={link} />
-                        ))}
+      {/* Paid Advertising Info Bar */}
+      {paidCompetitionLevel && estimatedCPC && (
+        <div className="flex items-center gap-6 px-1">
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Paid Competition</p>
+            <Badge variant="outline" className={`mt-1 ${budgetColors[paidCompetitionLevel]}`}>
+              {paidCompetitionLevel}
+            </Badge>
+          </div>
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
+            <p className="text-sm font-mono text-foreground mt-1">{estimatedCPC}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Channel List */}
+      <div className="space-y-3">
+        {sorted.map((ch) => {
+          const isOpen = openItems[ch.platform] || false;
+          return (
+            <Collapsible
+              key={ch.platform}
+              open={isOpen}
+              onOpenChange={() => toggle(ch.platform)}
+            >
+              <div className="border border-border rounded-lg p-4 bg-card">
+                <CollapsibleTrigger className="w-full text-left">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground">{ch.platform}</span>
+                        <Badge variant="outline" className="text-[10px]">
+                          {categoryLabels[ch.category] || ch.category}
+                        </Badge>
+                        {ch.budgetLevel && (
+                          <Badge variant="outline" className={`text-[10px] ${budgetColors[ch.budgetLevel]}`}>
+                            {ch.budgetLevel} budget
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-mono text-primary">{ch.relevance}%</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {isOpen ? "▲" : "▼"}
+                        </span>
                       </div>
                     </div>
-                  )}
+                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-500"
+                        style={{ width: `${ch.relevance}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground italic leading-relaxed">{ch.tip}</p>
 
-                  {/* Keywords */}
-                  {ch.recommendedKeywords.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
-                        Recommended Keywords
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ch.recommendedKeywords.map((kw) => (
+                    {ch.estimatedCPC && (
+                      <p className="text-xs font-mono text-muted-foreground">CPC: {ch.estimatedCPC}</p>
+                    )}
+
+                    {/* Preview when collapsed */}
+                    {!isOpen && (ch.specificLinks.length > 0 || ch.recommendedKeywords.length > 0) && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {ch.specificLinks.slice(0, 2).map((link) => (
+                          <LinkOrBadge key={link} link={link} />
+                        ))}
+                        {ch.recommendedKeywords.slice(0, 2).map((kw) => (
                           <Badge
                             key={kw}
                             variant="outline"
-                            className="text-xs font-mono font-normal bg-primary/5 text-primary border-primary/20"
+                            className="text-[10px] font-mono font-normal bg-primary/5 text-primary border-primary/20"
                           >
                             {kw}
                           </Badge>
                         ))}
+                        <span className="text-[10px] text-muted-foreground self-center">
+                          + more ▼
+                        </span>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Best Formats */}
-                  {ch.bestFormats.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
-                        Best Content Formats
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ch.bestFormats.map((f) => (
-                          <Badge key={f} variant="outline" className="text-xs font-normal">
-                            {f}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Posting Frequency */}
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">
-                      Recommended Frequency
-                    </p>
-                    <p className="text-sm text-foreground">{ch.postingFrequency}</p>
+                    )}
                   </div>
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
-        );
-      })}
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                  <div className="mt-4 pt-4 border-t border-border space-y-4">
+                    {ch.specificLinks.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          Communities & Links
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ch.specificLinks.map((link) => (
+                            <LinkOrBadge key={link} link={link} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {ch.recommendedKeywords.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          Recommended Keywords
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ch.recommendedKeywords.map((kw) => (
+                            <Badge
+                              key={kw}
+                              variant="outline"
+                              className="text-xs font-mono font-normal bg-primary/5 text-primary border-primary/20"
+                            >
+                              {kw}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {ch.bestFormats.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          Best Content Formats
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ch.bestFormats.map((f) => (
+                            <Badge key={f} variant="outline" className="text-xs font-normal">
+                              {f}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">
+                        Recommended Frequency
+                      </p>
+                      <p className="text-sm text-foreground">{ch.postingFrequency}</p>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+          );
+        })}
+      </div>
     </div>
   );
 };

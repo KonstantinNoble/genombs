@@ -36,8 +36,14 @@ const OptimizationCard = ({ optimization }: OptimizationCardProps) => {
         <p className="text-xs text-muted-foreground mb-2">
           Current: {optimization.currentState}
         </p>
-        <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+        <p className="text-xs text-muted-foreground mb-3">
+          Effort: {optimization.effort}
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
           {optimization.recommendation}
+        </p>
+        <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
+          {optimization.expectedOutcome}
         </p>
       </CardContent>
     </Card>

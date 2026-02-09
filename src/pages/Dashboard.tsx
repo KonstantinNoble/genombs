@@ -122,7 +122,7 @@ const Dashboard = () => {
             <CardContent className="p-4 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-semibold text-foreground">Competitor Analysis</h3>
+                  <h3 className="text-base font-semibold text-foreground">Competitor Analysis</h3>
                   {!isPremium && (
                     <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">
                       Premium

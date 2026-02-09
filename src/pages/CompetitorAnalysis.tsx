@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,7 +104,20 @@ const CompetitorAnalysis = () => {
                 />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Competitors (up to 3)</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!yourUrl.trim()}
+                    onClick={() => {
+                      toast({ title: "Coming soon", description: "AI competitor suggestions coming soon." });
+                    }}
+                    className="h-7 text-xs"
+                  >
+                    Suggest Competitors
+                  </Button>
+                </div>
                 <div className="space-y-2">
                   {competitorUrls.map((url, i) => (
                     <Input

@@ -21,7 +21,7 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               </span>
               <h4 className="text-base font-semibold text-foreground">{persona.name}</h4>
             </div>
-            <p className="text-sm text-muted-foreground">{persona.role}</p>
+            <p className="text-base text-foreground/70">{persona.role}</p>
           </div>
           <div className="flex items-center gap-1.5">
             <Badge

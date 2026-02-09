@@ -127,7 +127,7 @@ const CompetitorAnalysis = () => {
                     <Button onClick={() => navigate("/pricing")}>
                       Upgrade to Premium
                     </Button>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-base text-foreground/70">
                       Competitor Analysis is a Premium feature
                     </span>
                   </div>

@@ -194,7 +194,7 @@ const GenomeView = () => {
             {/* Performance Chart */}
             <div id="performance" className="lg:col-span-2 scroll-mt-28">
               <GenomeCard title="Performance Overview">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                 <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Growth performance across 6 dimensions vs industry average
                 </p>
                 <PerformanceChart

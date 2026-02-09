@@ -40,7 +40,7 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground mb-4">{persona.demographics}</p>
+        <p className="text-sm text-foreground/70 mb-4">{persona.demographics}</p>
 
         <div className="space-y-4">
           {/* Free: Pain Points + Goals */}

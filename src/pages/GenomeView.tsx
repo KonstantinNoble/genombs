@@ -127,7 +127,7 @@ const GenomeView = () => {
                       </p>
                       <ol className="space-y-2">
                         {report.topPriorities.map((priority, i) => (
-                          <li key={i} className="flex items-start gap-3 text-sm text-foreground">
+                          <li key={i} className="flex items-start gap-3 text-base text-foreground">
                             <span className="shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
                               {i + 1}
                             </span>

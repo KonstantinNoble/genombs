@@ -62,19 +62,19 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Win Rate</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Win Rate</p>
           <p className="text-3xl font-extrabold text-primary">{stats.winRate}%</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Total Deals</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Total Deals</p>
           <p className="text-3xl font-extrabold text-foreground">{deals.length}</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Won</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Won</p>
           <p className="text-3xl font-extrabold text-chart-4">{stats.totalWon}</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Lost</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Lost</p>
           <p className="text-3xl font-extrabold text-destructive">{stats.totalLost}</p>
         </div>
       </div>

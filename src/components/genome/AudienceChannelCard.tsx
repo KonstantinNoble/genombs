@@ -118,7 +118,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                           </Badge>
                         </td>
                         <td className="py-2 px-3">
-                          <Badge variant="outline" className={`text-[10px] ${opportunityColors[kw.opportunity]}`}>
+                           <Badge variant="outline" className={`text-xs ${opportunityColors[kw.opportunity]}`}>
                             {kw.opportunity}
                           </Badge>
                         </td>

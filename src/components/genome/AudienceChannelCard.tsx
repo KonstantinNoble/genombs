@@ -255,7 +255,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                     <div className="mt-4 pt-4 border-t border-border space-y-4">
                       {ch.specificLinks.length > 0 && (
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                             Communities & Links
                           </p>
                           <div className="flex flex-wrap gap-1.5">

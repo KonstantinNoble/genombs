@@ -167,8 +167,8 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Metric</th>
-                      <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
+                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
                     </tr>
                   </thead>
                   <tbody>

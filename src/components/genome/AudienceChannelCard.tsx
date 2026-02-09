@@ -234,8 +234,8 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono text-primary">{ch.relevance}%</span>
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-base font-mono text-primary">{ch.relevance}%</span>
+                        <span className="text-xs text-muted-foreground">
                           {isOpen ? "▲" : "▼"}
                         </span>
                       </div>

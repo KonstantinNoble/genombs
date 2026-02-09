@@ -45,10 +45,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
         <div className="space-y-4">
           {/* Free: Pain Points + Goals */}
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Pain Points</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Pain Points</p>
             <ul className="space-y-1.5">
               {persona.painPoints.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                   <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
                   {point}
                 </li>

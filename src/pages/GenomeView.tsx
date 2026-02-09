@@ -87,7 +87,7 @@ const GenomeView = () => {
               <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
                 Growth Report: {report.companyName}
               </h1>
-              <p className="text-muted-foreground">{report.segment} · {date}</p>
+              <p className="text-foreground/70">{report.segment} · {date}</p>
             </div>
             <div className="flex gap-2">
               <TooltipProvider>

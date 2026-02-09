@@ -205,7 +205,7 @@ const Dashboard = () => {
               <Tabs defaultValue="all" className="w-full">
                 <TabsList className="mb-4 bg-muted">
                   <TabsTrigger value="all">
-                    All <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{filteredScans.length}</Badge>
+                    All <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{filteredScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="completed">
                     Completed <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{completedScans.length}</Badge>

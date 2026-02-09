@@ -275,7 +275,7 @@ const CompetitorAnalysis = () => {
               </GenomeCard>
 
               <GenomeCard title="Actionable Takeaways">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Concrete actions based on competitive gaps
                 </p>
                 <ol className="space-y-3">

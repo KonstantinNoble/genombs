@@ -73,10 +73,10 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
                 <td className="py-2 px-3 text-base font-mono text-foreground/70">
                   {new Date(deal.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </td>
-                <td className="py-2 px-3 text-sm text-foreground">
+                <td className="py-2 px-3 text-base text-foreground">
                   {deal.name}
                   {deal.notes && (
-                    <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[200px]">
+                    <p className="text-sm text-muted-foreground mt-0.5 truncate max-w-[200px]">
                       {deal.notes}
                     </p>
                   )}

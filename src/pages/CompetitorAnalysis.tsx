@@ -103,7 +103,7 @@ const CompetitorAnalysis = () => {
                 />
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
                 <div className="space-y-2">
                   {competitorUrls.map((url, i) => (
                     <Input

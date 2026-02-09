@@ -188,7 +188,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
             <Card className="border-border bg-card">
               <CardContent className="p-0">
                 <div className="px-5 py-3 border-b border-border">
-                  <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                  <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
                     Industry Benchmarks
                   </h4>
                 </div>

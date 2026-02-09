@@ -110,8 +110,8 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
           {stats.competitorStats.map((c) => (
             <div key={c.name}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-foreground">vs {c.name}</span>
-                <span className="text-xs font-mono text-muted-foreground">
+                <span className="text-base text-foreground">vs {c.name}</span>
+                <span className="text-sm font-mono text-foreground/70">
                   {c.won}W / {c.lost}L ({c.winRate}%)
                 </span>
               </div>

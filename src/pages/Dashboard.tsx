@@ -157,7 +157,7 @@ const Dashboard = () => {
                   Scan
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">
+              <p className="text-sm text-foreground/70 mt-3">
                 Paste your website URL to generate a growth report
               </p>
             </CardContent>

@@ -223,8 +223,8 @@ const CompetitorAnalysis = () => {
                     <tbody>
                       {analysis.keywordGaps.map((gap) => (
                         <tr key={gap.keyword} className="border-b border-border/50">
-                          <td className="py-2 px-3 text-sm font-mono text-foreground">{gap.keyword}</td>
-                          <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{gap.volume}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground">{gap.keyword}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground/70">{gap.volume}</td>
                           <td className="py-2 px-3">
                             <div className="flex flex-wrap gap-1">
                               {gap.competitorHas.map((c) => (

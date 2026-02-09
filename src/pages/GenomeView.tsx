@@ -244,9 +244,9 @@ const GenomeView = () => {
             <div id="optimization" className="lg:col-span-2 scroll-mt-28">
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">Website Optimization</h2>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Concrete improvements with estimated effort and expected outcomes.
+                   <h2 className="text-xl font-semibold text-foreground">Website Optimization</h2>
+                   <p className="text-base text-foreground/70 mt-1">
+                     Concrete improvements with estimated effort and expected outcomes.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

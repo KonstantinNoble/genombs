@@ -305,8 +305,8 @@ const CompetitorAnalysis = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-semibold text-foreground">Win/Loss Tracking</h2>
-                    <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
+                     <h2 className="text-xl font-semibold text-foreground">Win/Loss Tracking</h2>
+                     <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-xs">Premium</Badge>
                   </div>
                   {isPremium && <DealForm competitors={competitors} onSubmit={handleAddDeal} />}
                 </div>

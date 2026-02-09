@@ -12,8 +12,6 @@ import ICPCard from "@/components/genome/ICPCard";
 import AudienceChannelCard from "@/components/genome/AudienceChannelCard";
 import OptimizationCard from "@/components/genome/OptimizationCard";
 import GrowthStrategySection from "@/components/genome/GrowthStrategySection";
-import MarketSizeCard from "@/components/genome/MarketSizeCard";
-import QuickWins from "@/components/genome/QuickWins";
 import PerformanceChart from "@/components/genome/PerformanceChart";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,11 +21,10 @@ const sections = [
   { id: "overview", label: "Overview" },
   { id: "performance", label: "Performance" },
   { id: "icp", label: "ICP" },
-  { id: "audience-channels", label: "Audience Channels" },
+  { id: "audience-channels", label: "Channels" },
   { id: "optimization", label: "Optimization" },
   { id: "organic-growth", label: "Organic Growth" },
   { id: "paid-strategy", label: "Paid Strategy" },
-  { id: "market-size", label: "Market Size" },
 ];
 
 const GenomeView = () => {
@@ -125,19 +122,21 @@ const GenomeView = () => {
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {report.summary}
                     </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                      <div className="text-center p-3 rounded-lg bg-muted/50 border border-border">
-                        <p className="text-xl font-bold text-foreground">{report.icp.length}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">ICP Segments</p>
-                      </div>
-                      <div className="text-center p-3 rounded-lg bg-muted/50 border border-border">
-                        <p className="text-xl font-bold text-foreground">{report.audienceChannels.length}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Channels</p>
-                      </div>
-                      <div className="text-center p-3 rounded-lg bg-muted/50 border border-border">
-                        <p className="text-xl font-bold text-foreground">{report.optimizations.length}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Optimizations</p>
-                      </div>
+                    {/* Top 3 Priorities */}
+                    <div className="pt-2">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                        Top Priorities
+                      </p>
+                      <ol className="space-y-2">
+                        {report.topPriorities.map((priority, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm text-foreground">
+                            <span className="shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
+                              {i + 1}
+                            </span>
+                            <span className="leading-relaxed">{priority}</span>
+                          </li>
+                        ))}
+                      </ol>
                     </div>
                   </div>
                   <div className="flex items-center justify-center lg:border-l lg:border-border lg:pl-6">
@@ -179,6 +178,8 @@ const GenomeView = () => {
                   scores={report.performanceScores}
                   industryAverage={report.industryAverage}
                   companyName={report.companyName}
+                  scoreInsights={report.scoreInsights}
+                  industryBenchmarks={report.industryBenchmarks}
                 />
               </GenomeCard>
             </div>
@@ -242,21 +243,6 @@ const GenomeView = () => {
                 </p>
                 <GrowthStrategySection type="paid" paidStrategy={report.paidStrategy} />
               </GenomeCard>
-            </div>
-
-            {/* Market Size */}
-            <div id="market-size" className="lg:col-span-2 scroll-mt-28">
-              <GenomeCard title="Market Opportunity">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                  Total addressable market, competition, and industry benchmarks
-                </p>
-                <MarketSizeCard marketSize={report.marketSize} />
-              </GenomeCard>
-            </div>
-
-            {/* Quick Wins */}
-            <div className="lg:col-span-2">
-              <QuickWins wins={report.quickWins} />
             </div>
           </div>
         </div>

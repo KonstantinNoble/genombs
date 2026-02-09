@@ -8,12 +8,14 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import type { PerformanceScores } from "@/lib/demo-data";
+import type { PerformanceScores, ScoreInsight, IndustryBenchmark } from "@/lib/demo-data";
 
 interface PerformanceChartProps {
   scores: PerformanceScores;
   industryAverage: PerformanceScores;
   companyName: string;
+  scoreInsights: ScoreInsight[];
+  industryBenchmarks: IndustryBenchmark[];
 }
 
 const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [
@@ -25,12 +27,14 @@ const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [
   { key: "funnel", label: "Funnel" },
 ];
 
-const PerformanceChart = ({ scores, industryAverage, companyName }: PerformanceChartProps) => {
+const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights, industryBenchmarks }: PerformanceChartProps) => {
   const data = dimensions.map((d) => ({
     dimension: d.label,
     score: scores[d.key],
     industry: industryAverage[d.key],
   }));
+
+  const insightMap = Object.fromEntries(scoreInsights.map((s) => [s.key, s.insight]));
 
   return (
     <div className="space-y-5">
@@ -78,26 +82,64 @@ const PerformanceChart = ({ scores, industryAverage, companyName }: PerformanceC
         </CardContent>
       </Card>
 
-      {/* Score Breakdown */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {/* Score Breakdown with Insights */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {data.map((d) => {
           const diff = d.score - d.industry;
           const isAbove = diff >= 0;
+          const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
+          const insight = key ? insightMap[key] : undefined;
           return (
             <Card key={d.dimension} className="border-border bg-card">
-              <CardContent className="p-4 text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
-                  {d.dimension}
-                </p>
-                <p className="text-2xl font-bold text-foreground">{d.score}</p>
-                <p className={`text-xs font-mono mt-1 ${isAbove ? "text-primary" : "text-destructive"}`}>
-                  {isAbove ? "+" : ""}{diff} vs avg
-                </p>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                    {d.dimension}
+                  </p>
+                  <p className={`text-xs font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                    {isAbove ? "+" : ""}{diff} vs avg
+                  </p>
+                </div>
+                <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
+                {insight && (
+                  <p className="text-xs text-muted-foreground leading-relaxed">{insight}</p>
+                )}
               </CardContent>
             </Card>
           );
         })}
       </div>
+
+      {/* Industry Benchmarks */}
+      {industryBenchmarks.length > 0 && (
+        <Card className="border-border bg-card">
+          <CardContent className="p-0">
+            <div className="px-5 py-3 border-b border-border">
+              <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                Industry Benchmarks
+              </h4>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Metric</th>
+                    <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {industryBenchmarks.map((b) => (
+                    <tr key={b.metric} className="border-b border-border/50">
+                      <td className="py-3 px-5 text-sm text-foreground">{b.metric}</td>
+                      <td className="py-3 px-5 text-sm font-mono text-muted-foreground">{b.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

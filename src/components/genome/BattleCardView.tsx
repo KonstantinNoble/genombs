@@ -70,7 +70,7 @@ const BattleCardView = ({ cards }: BattleCardViewProps) => {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+      <p className="text-sm text-muted-foreground uppercase tracking-wide">
         Sales enablement cards generated from your competitive analysis
       </p>
 

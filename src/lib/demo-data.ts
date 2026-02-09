@@ -13,6 +13,10 @@ export interface AudienceChannel {
   relevance: number;
   tip: string;
   category: "social" | "community" | "search" | "content" | "paid";
+  specificLinks: string[];
+  recommendedKeywords: string[];
+  bestFormats: string[];
+  postingFrequency: string;
 }
 
 export interface Optimization {
@@ -23,8 +27,15 @@ export interface Optimization {
   impact: "high" | "medium" | "low";
 }
 
+export interface SEOKeyword {
+  keyword: string;
+  volume: string;
+  difficulty: "low" | "medium" | "high";
+  opportunity: "low" | "medium" | "high";
+}
+
 export interface OrganicStrategy {
-  seo: { score: number; keywords: string[]; recommendation: string };
+  seo: { score: number; keywords: SEOKeyword[]; recommendation: string };
   content: { formats: string[]; topics: string[]; frequency: string };
   social: { platforms: string[]; contentTypes: string[]; cadence: string };
   community: { channels: string[]; approach: string };
@@ -44,12 +55,27 @@ export interface PaidStrategy {
 }
 
 export interface MarketSize {
-  tam: string;
-  sam: string;
-  som: string;
+  tam: { label: string; value: number };
+  sam: { label: string; value: number };
+  som: { label: string; value: number };
   competitionIntensity: "low" | "medium" | "high";
   growthTrend: "declining" | "stable" | "growing" | "booming";
   benchmarks: Array<{ metric: string; value: string }>;
+}
+
+export interface PerformanceScores {
+  seo: number;
+  content: number;
+  social: number;
+  paid: number;
+  trust: number;
+  funnel: number;
+}
+
+export interface QuickWin {
+  action: string;
+  effort: "low" | "medium" | "high";
+  timeframe: string;
 }
 
 export interface GrowthReport {
@@ -66,12 +92,9 @@ export interface GrowthReport {
   organicStrategy: OrganicStrategy;
   paidStrategy: PaidStrategy;
   marketSize: MarketSize;
-  trafficData: {
-    monthlyVisits: string;
-    topKeywords: string[];
-    trafficSources: Array<{ source: string; percentage: number }>;
-  } | null;
-  quickWins: string[];
+  performanceScores: PerformanceScores;
+  industryAverage: PerformanceScores;
+  quickWins: QuickWin[];
   createdAt: string;
   status: "completed" | "analyzing" | "pending" | "failed";
 }
@@ -89,6 +112,8 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 92,
     summary: "Stripe has built a dominant position in API-first payment infrastructure through developer-first positioning and product-led growth. The website effectively communicates technical value propositions but underutilizes case study content relative to enterprise deal values.",
+    performanceScores: { seo: 88, content: 72, social: 65, paid: 78, trust: 85, funnel: 90 },
+    industryAverage: { seo: 65, content: 55, social: 50, paid: 60, trust: 70, funnel: 68 },
     icp: [
       {
         name: "Tech-Savvy Startup Founder",
@@ -142,13 +167,76 @@ export const demoReports: GrowthReport[] = [
       },
     ],
     audienceChannels: [
-      { platform: "Hacker News", relevance: 92, tip: "Post technical deep-dives on payment infrastructure. Developer audience overlaps heavily with Stripe's ICP.", category: "community" },
-      { platform: "GitHub", relevance: 88, tip: "Open-source SDKs and example integrations drive discovery. Maintain active repos with quick issue response.", category: "community" },
-      { platform: "Twitter/X", relevance: 78, tip: "Developer Twitter is a key channel. Share changelog updates, technical insights, and engage with dev influencers.", category: "social" },
-      { platform: "Stack Overflow", relevance: 85, tip: "High-intent developers search for payment integration help. Official answers build trust and visibility.", category: "community" },
-      { platform: "LinkedIn", relevance: 65, tip: "Target enterprise decision-makers with case studies and ROI content. Less relevant for developer acquisition.", category: "social" },
-      { platform: "Google Search", relevance: 95, tip: "Dominate 'payment API' and 'accept payments online' queries. Technical documentation ranks organically.", category: "search" },
-      { platform: "Dev.to / Medium", relevance: 60, tip: "Publish integration tutorials and comparison articles. Lower priority but builds long-tail SEO.", category: "content" },
+      {
+        platform: "Hacker News",
+        relevance: 92,
+        tip: "Post technical deep-dives on payment infrastructure. Developer audience overlaps heavily with Stripe's ICP.",
+        category: "community",
+        specificLinks: ["news.ycombinator.com (Show HN posts)", "Hacker News: Who is hiring?", "HN: Ask – Payment integrations"],
+        recommendedKeywords: ["payment API", "Stripe SDK", "fintech infrastructure", "PCI DSS"],
+        bestFormats: ["Technical deep-dives", "Show HN launches", "Architecture breakdowns"],
+        postingFrequency: "2–3x/week",
+      },
+      {
+        platform: "GitHub",
+        relevance: 88,
+        tip: "Open-source SDKs and example integrations drive discovery. Maintain active repos with quick issue response.",
+        category: "community",
+        specificLinks: ["github.com/stripe", "github.com/stripe-samples", "github.com/stripe/stripe-node"],
+        recommendedKeywords: ["stripe-node", "payment integration example", "checkout session"],
+        bestFormats: ["Example repos", "Integration templates", "Issue responses within 24h"],
+        postingFrequency: "Daily (issue triage), weekly (new examples)",
+      },
+      {
+        platform: "Twitter/X",
+        relevance: 78,
+        tip: "Developer Twitter is a key channel. Share changelog updates, technical insights, and engage with dev influencers.",
+        category: "social",
+        specificLinks: ["@stripe", "@stripeDev", "Dev Twitter community", "#fintech hashtag"],
+        recommendedKeywords: ["payment API launch", "Stripe checkout", "developer tools"],
+        bestFormats: ["Changelog threads", "Technical insight threads", "Customer win retweets"],
+        postingFrequency: "Daily",
+      },
+      {
+        platform: "Stack Overflow",
+        relevance: 85,
+        tip: "High-intent developers search for payment integration help. Official answers build trust and visibility.",
+        category: "community",
+        specificLinks: ["stackoverflow.com/questions/tagged/stripe-payments", "stackoverflow.com/questions/tagged/stripe-api"],
+        recommendedKeywords: ["stripe webhook", "stripe checkout session", "stripe subscription"],
+        bestFormats: ["Official verified answers", "Code snippets with context", "Migration guides"],
+        postingFrequency: "Daily monitoring, 5–10 answers/week",
+      },
+      {
+        platform: "LinkedIn",
+        relevance: 65,
+        tip: "Target enterprise decision-makers with case studies and ROI content. Less relevant for developer acquisition.",
+        category: "social",
+        specificLinks: ["LinkedIn Groups: Fintech Professionals", "LinkedIn Groups: SaaS Founders", "Stripe company page"],
+        recommendedKeywords: ["payment infrastructure ROI", "enterprise payments", "marketplace payments"],
+        bestFormats: ["Case study posts", "ROI calculators", "Enterprise feature announcements"],
+        postingFrequency: "2–3x/week",
+      },
+      {
+        platform: "Google Search",
+        relevance: 95,
+        tip: "Dominate 'payment API' and 'accept payments online' queries. Technical documentation ranks organically.",
+        category: "search",
+        specificLinks: ["stripe.com/docs (primary landing)", "stripe.com/use-cases", "stripe.com/customers"],
+        recommendedKeywords: ["accept payments online", "payment gateway API", "best payment processor", "Stripe vs PayPal"],
+        bestFormats: ["Long-form docs", "Comparison pages", "Use-case landing pages"],
+        postingFrequency: "Continuous SEO optimization",
+      },
+      {
+        platform: "Dev.to / Medium",
+        relevance: 60,
+        tip: "Publish integration tutorials and comparison articles. Lower priority but builds long-tail SEO.",
+        category: "content",
+        specificLinks: ["dev.to/stripe", "Medium: Stripe Engineering Blog", "dev.to/t/payments"],
+        recommendedKeywords: ["Stripe tutorial", "payment integration guide", "webhook setup"],
+        bestFormats: ["Step-by-step tutorials", "Integration comparison articles", "Troubleshooting guides"],
+        postingFrequency: "1–2x/week",
+      },
     ],
     optimizations: [
       {
@@ -190,7 +278,15 @@ export const demoReports: GrowthReport[] = [
     organicStrategy: {
       seo: {
         score: 88,
-        keywords: ["payment API", "online payments", "accept payments online", "payment processing", "Stripe alternatives"],
+        keywords: [
+          { keyword: "payment API", volume: "18,000/mo", difficulty: "high", opportunity: "medium" },
+          { keyword: "online payments", volume: "45,000/mo", difficulty: "high", opportunity: "low" },
+          { keyword: "accept payments online", volume: "12,000/mo", difficulty: "medium", opportunity: "high" },
+          { keyword: "payment processing", volume: "33,000/mo", difficulty: "high", opportunity: "low" },
+          { keyword: "Stripe alternatives", volume: "8,500/mo", difficulty: "medium", opportunity: "high" },
+          { keyword: "best payment gateway for SaaS", volume: "3,200/mo", difficulty: "low", opportunity: "high" },
+          { keyword: "Stripe vs Square", volume: "6,800/mo", difficulty: "medium", opportunity: "high" },
+        ],
         recommendation: "Already strong in branded and head terms. Opportunity in long-tail queries: 'best payment gateway for SaaS', 'how to accept crypto payments', 'Stripe vs Square for marketplaces'.",
       },
       content: {
@@ -219,9 +315,9 @@ export const demoReports: GrowthReport[] = [
       estimatedCPC: "$4.50–$12.00 for payment-related keywords",
     },
     marketSize: {
-      tam: "$120B global payment processing market",
-      sam: "$15B API-first payment infrastructure",
-      som: "$2.5B developer-focused payment platforms",
+      tam: { label: "$120B", value: 120 },
+      sam: { label: "$15B", value: 15 },
+      som: { label: "$2.5B", value: 2.5 },
       competitionIntensity: "high",
       growthTrend: "growing",
       benchmarks: [
@@ -231,22 +327,11 @@ export const demoReports: GrowthReport[] = [
         { metric: "Content publishing frequency", value: "1–3x/week among leaders" },
       ],
     },
-    trafficData: {
-      monthlyVisits: "~45M",
-      topKeywords: ["payment api", "online payments", "stripe", "payment processing", "accept payments online"],
-      trafficSources: [
-        { source: "Direct", percentage: 52 },
-        { source: "Organic Search", percentage: 28 },
-        { source: "Referral", percentage: 12 },
-        { source: "Social", percentage: 5 },
-        { source: "Paid", percentage: 3 },
-      ],
-    },
     quickWins: [
-      "Add 3–5 detailed case studies with quantified metrics to improve enterprise conversion.",
-      "Create a dedicated security and compliance page with downloadable SOC 2 reports.",
-      "Increase blog publishing to 2x/week with use-case-driven content for long-tail SEO.",
-      "Build an interactive pricing calculator to reduce friction for mid-market buyers.",
+      { action: "Add 3–5 detailed case studies with quantified metrics to improve enterprise conversion.", effort: "medium", timeframe: "2–4 weeks" },
+      { action: "Create a dedicated security and compliance page with downloadable SOC 2 reports.", effort: "low", timeframe: "1 week" },
+      { action: "Increase blog publishing to 2x/week with use-case-driven content for long-tail SEO.", effort: "medium", timeframe: "Ongoing" },
+      { action: "Build an interactive pricing calculator to reduce friction for mid-market buyers.", effort: "high", timeframe: "4–6 weeks" },
     ],
     createdAt: "2025-02-05T14:30:00Z",
     status: "completed",
@@ -263,6 +348,8 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 87,
     summary: "Notion dominates the workspace consolidation trend through bottom-up adoption. The template marketplace is an underutilized but high-impact organic channel. Comparison content targeting frustrated users of competing tools represents a significant SEO opportunity.",
+    performanceScores: { seo: 78, content: 85, social: 82, paid: 55, trust: 75, funnel: 80 },
+    industryAverage: { seo: 60, content: 58, social: 55, paid: 50, trust: 62, funnel: 60 },
     icp: [
       {
         name: "Knowledge Worker / Freelancer",
@@ -298,12 +385,66 @@ export const demoReports: GrowthReport[] = [
       },
     ],
     audienceChannels: [
-      { platform: "YouTube", relevance: 90, tip: "Template walkthroughs and 'How I use Notion' videos drive massive organic reach. Partner with productivity creators.", category: "content" },
-      { platform: "Twitter/X", relevance: 80, tip: "Notion tips and template threads go viral. Engage with the creator community and reshare user content.", category: "social" },
-      { platform: "Reddit (r/Notion)", relevance: 85, tip: "Active community sharing templates and workflows. Official presence here builds trust and drives feature discovery.", category: "community" },
-      { platform: "Template Marketplace", relevance: 88, tip: "Community-created templates are a primary discovery channel. Invest in featuring top creators and curating collections.", category: "content" },
-      { platform: "Google Search", relevance: 82, tip: "Target 'best note-taking app', 'Notion vs Confluence', and workflow-specific queries.", category: "search" },
-      { platform: "Product Hunt", relevance: 55, tip: "Good for major feature launches but limited ongoing impact.", category: "community" },
+      {
+        platform: "YouTube",
+        relevance: 90,
+        tip: "Template walkthroughs and 'How I use Notion' videos drive massive organic reach. Partner with productivity creators.",
+        category: "content",
+        specificLinks: ["Thomas Frank channel", "Notion YouTube channel", "Keep Productive", "Marie Poulin – Notion Mastery"],
+        recommendedKeywords: ["Notion tutorial", "Notion setup", "Notion template walkthrough", "Notion vs Obsidian"],
+        bestFormats: ["Template walkthroughs (10–15 min)", "Workspace tours", "'How I use Notion' vlogs"],
+        postingFrequency: "Weekly",
+      },
+      {
+        platform: "Twitter/X",
+        relevance: 80,
+        tip: "Notion tips and template threads go viral. Engage with the creator community and reshare user content.",
+        category: "social",
+        specificLinks: ["@NotionHQ", "#NotionTips hashtag", "Notion Creators community", "@NotionAmo"],
+        recommendedKeywords: ["Notion tips", "Notion template", "productivity workspace"],
+        bestFormats: ["Tip threads (5–7 tweets)", "Template screenshot carousels", "Before/after workspace transformations"],
+        postingFrequency: "Daily",
+      },
+      {
+        platform: "Reddit",
+        relevance: 85,
+        tip: "Active community sharing templates and workflows. Official presence here builds trust and drives feature discovery.",
+        category: "community",
+        specificLinks: ["r/Notion (500K+ members)", "r/productivity", "r/DigitalPlanning", "r/selfimprovement"],
+        recommendedKeywords: ["Notion template share", "Notion workflow", "Notion database"],
+        bestFormats: ["Template shares with screenshots", "Workflow breakdowns", "Use-case-specific guides"],
+        postingFrequency: "3–4x/week",
+      },
+      {
+        platform: "Template Marketplace",
+        relevance: 88,
+        tip: "Community-created templates are a primary discovery channel. Invest in featuring top creators and curating collections.",
+        category: "content",
+        specificLinks: ["notion.so/templates", "Gumroad Notion templates", "Etsy Notion templates", "Notion Creator ecosystem"],
+        recommendedKeywords: ["Notion template", "project management template", "habit tracker Notion"],
+        bestFormats: ["Curated collections", "Creator spotlights", "Seasonal template drops"],
+        postingFrequency: "Continuous curation",
+      },
+      {
+        platform: "Google Search",
+        relevance: 82,
+        tip: "Target 'best note-taking app', 'Notion vs Confluence', and workflow-specific queries.",
+        category: "search",
+        specificLinks: ["notion.so/product (landing)", "notion.so/teams", "notion.so/enterprise"],
+        recommendedKeywords: ["best note-taking app", "Notion vs Confluence", "team wiki software", "project management tool"],
+        bestFormats: ["Comparison pages", "Use-case landing pages", "SEO-optimized blog posts"],
+        postingFrequency: "Continuous SEO optimization",
+      },
+      {
+        platform: "Product Hunt",
+        relevance: 55,
+        tip: "Good for major feature launches but limited ongoing impact.",
+        category: "community",
+        specificLinks: ["producthunt.com/products/notion", "Product Hunt Collections: Productivity"],
+        recommendedKeywords: ["Notion launch", "all-in-one workspace", "productivity tool"],
+        bestFormats: ["Major feature launches", "Year-end roundups"],
+        postingFrequency: "2–3x/year for big launches",
+      },
     ],
     optimizations: [
       {
@@ -331,7 +472,14 @@ export const demoReports: GrowthReport[] = [
     organicStrategy: {
       seo: {
         score: 78,
-        keywords: ["notion", "project management", "note taking app", "team wiki", "notion templates"],
+        keywords: [
+          { keyword: "notion", volume: "1,200,000/mo", difficulty: "high", opportunity: "low" },
+          { keyword: "project management tool", volume: "40,000/mo", difficulty: "high", opportunity: "medium" },
+          { keyword: "note taking app", volume: "28,000/mo", difficulty: "medium", opportunity: "high" },
+          { keyword: "team wiki", volume: "9,500/mo", difficulty: "low", opportunity: "high" },
+          { keyword: "Notion vs Confluence", volume: "6,200/mo", difficulty: "low", opportunity: "high" },
+          { keyword: "notion templates", volume: "55,000/mo", difficulty: "medium", opportunity: "medium" },
+        ],
         recommendation: "Strong branded search but weak in comparative queries. Create 'Notion vs X' content for Confluence, Coda, Obsidian, and Monday.com.",
       },
       content: {
@@ -359,9 +507,9 @@ export const demoReports: GrowthReport[] = [
       estimatedCPC: "$2.00–$6.00 for productivity tool keywords",
     },
     marketSize: {
-      tam: "$45B global productivity software market",
-      sam: "$12B collaborative workspace tools",
-      som: "$3B all-in-one workspace platforms",
+      tam: { label: "$45B", value: 45 },
+      sam: { label: "$12B", value: 12 },
+      som: { label: "$3B", value: 3 },
       competitionIntensity: "medium",
       growthTrend: "booming",
       benchmarks: [
@@ -371,21 +519,10 @@ export const demoReports: GrowthReport[] = [
         { metric: "Template marketplace impact", value: "15–25% of new user acquisition" },
       ],
     },
-    trafficData: {
-      monthlyVisits: "~180M",
-      topKeywords: ["notion", "project management", "note taking app", "team wiki", "notion templates"],
-      trafficSources: [
-        { source: "Direct", percentage: 65 },
-        { source: "Organic Search", percentage: 20 },
-        { source: "Referral", percentage: 8 },
-        { source: "Social", percentage: 5 },
-        { source: "Paid", percentage: 2 },
-      ],
-    },
     quickWins: [
-      "Create 'Notion vs X' comparison pages for top 5 competitors — high-intent SEO opportunity.",
-      "Launch team-specific onboarding templates to reduce time-to-value for new team signups.",
-      "Invest in short-form video content (TikTok, YouTube Shorts) — productivity tips and template showcases.",
+      { action: "Create 'Notion vs X' comparison pages for top 5 competitors — high-intent SEO opportunity.", effort: "low", timeframe: "1–2 weeks" },
+      { action: "Launch team-specific onboarding templates to reduce time-to-value for new team signups.", effort: "medium", timeframe: "2–3 weeks" },
+      { action: "Invest in short-form video content (TikTok, YouTube Shorts) — productivity tips and template showcases.", effort: "medium", timeframe: "Ongoing" },
     ],
     createdAt: "2025-02-04T09:15:00Z",
     status: "completed",
@@ -402,6 +539,8 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 81,
     summary: "Linear has carved out a strong niche by positioning against legacy tools through speed and UX. Word-of-mouth in the dev community is the primary growth driver. Video content (YouTube) is a largely untapped channel across the entire segment.",
+    performanceScores: { seo: 62, content: 55, social: 80, paid: 40, trust: 72, funnel: 85 },
+    industryAverage: { seo: 58, content: 50, social: 48, paid: 45, trust: 60, funnel: 62 },
     icp: [
       {
         name: "Engineering Team Lead",
@@ -437,11 +576,56 @@ export const demoReports: GrowthReport[] = [
       },
     ],
     audienceChannels: [
-      { platform: "Twitter/X", relevance: 92, tip: "Dev Twitter is where Linear's reputation was built. Continue engaging with developers, sharing product updates, and amplifying user praise.", category: "social" },
-      { platform: "Hacker News", relevance: 88, tip: "Launch posts, changelogs, and opinionated product posts perform well. Authentic voice matters more than marketing polish here.", category: "community" },
-      { platform: "Word of Mouth", relevance: 95, tip: "Developers recommend Linear to their peers. Amplify this with a referral program or 'invite your team' flow.", category: "community" },
-      { platform: "GitHub", relevance: 72, tip: "Integrations and open-source tooling around Linear. Maintain active presence.", category: "community" },
-      { platform: "YouTube", relevance: 45, tip: "Largely untapped. Developer workflow videos and 'Linear vs Jira' comparisons could capture high-intent search traffic.", category: "content" },
+      {
+        platform: "Twitter/X",
+        relevance: 92,
+        tip: "Dev Twitter is where Linear's reputation was built. Continue engaging with developers, sharing product updates, and amplifying user praise.",
+        category: "social",
+        specificLinks: ["@linear", "Dev Twitter community", "#buildinpublic hashtag", "@karrisaarinen"],
+        recommendedKeywords: ["Linear app", "fast issue tracker", "Jira alternative", "developer workflow"],
+        bestFormats: ["Product update threads", "Speed comparison GIFs", "User testimonial retweets"],
+        postingFrequency: "Daily",
+      },
+      {
+        platform: "Hacker News",
+        relevance: 88,
+        tip: "Launch posts, changelogs, and opinionated product posts perform well. Authentic voice matters more than marketing polish here.",
+        category: "community",
+        specificLinks: ["Show HN: Linear launches", "HN: Ask – Project management tools", "HN: Who is hiring?"],
+        recommendedKeywords: ["issue tracker", "Jira alternative", "project management speed", "developer tools"],
+        bestFormats: ["Show HN launches", "Opinionated blog posts", "Technical architecture posts"],
+        postingFrequency: "1–2x/week",
+      },
+      {
+        platform: "Word of Mouth",
+        relevance: 95,
+        tip: "Developers recommend Linear to their peers. Amplify this with a referral program or 'invite your team' flow.",
+        category: "community",
+        specificLinks: ["linear.app/invite (team invites)", "Dev conference hallway conversations", "Engineering Slack communities"],
+        recommendedKeywords: ["Linear recommendation", "best dev tool", "team productivity"],
+        bestFormats: ["Team invite flows", "Referral incentives", "Conference sponsorships"],
+        postingFrequency: "Always-on (product-driven)",
+      },
+      {
+        platform: "GitHub",
+        relevance: 72,
+        tip: "Integrations and open-source tooling around Linear. Maintain active presence.",
+        category: "community",
+        specificLinks: ["github.com/linear", "Linear API documentation", "Linear GitHub integration"],
+        recommendedKeywords: ["linear-api", "issue tracker integration", "GitHub Linear sync"],
+        bestFormats: ["Integration repos", "SDK examples", "API documentation"],
+        postingFrequency: "Weekly updates",
+      },
+      {
+        platform: "YouTube",
+        relevance: 45,
+        tip: "Largely untapped. Developer workflow videos and 'Linear vs Jira' comparisons could capture high-intent search traffic.",
+        category: "content",
+        specificLinks: ["YouTube: Linear app (minimal presence)", "Dev workflow channels", "SaaS review channels"],
+        recommendedKeywords: ["Linear vs Jira", "Linear tutorial", "sprint planning Linear", "issue tracking demo"],
+        bestFormats: ["Workflow demo videos", "Comparison videos", "Sprint planning walkthroughs"],
+        postingFrequency: "Bi-weekly (recommended, currently inactive)",
+      },
     ],
     optimizations: [
       {
@@ -469,7 +653,13 @@ export const demoReports: GrowthReport[] = [
     organicStrategy: {
       seo: {
         score: 62,
-        keywords: ["issue tracker", "Jira alternative", "linear app", "project management for developers"],
+        keywords: [
+          { keyword: "issue tracker", volume: "22,000/mo", difficulty: "high", opportunity: "medium" },
+          { keyword: "Jira alternative", volume: "14,000/mo", difficulty: "medium", opportunity: "high" },
+          { keyword: "linear app", volume: "18,000/mo", difficulty: "low", opportunity: "low" },
+          { keyword: "project management for developers", volume: "5,400/mo", difficulty: "low", opportunity: "high" },
+          { keyword: "best issue tracker for developers", volume: "3,800/mo", difficulty: "low", opportunity: "high" },
+        ],
         recommendation: "Weak in non-branded queries. Build content around 'best issue tracker for developers', 'Jira alternatives 2025', and workflow-specific tutorials.",
       },
       content: {
@@ -496,9 +686,9 @@ export const demoReports: GrowthReport[] = [
       estimatedCPC: "$3.00–$8.00 for developer tool keywords",
     },
     marketSize: {
-      tam: "$18B project management software market",
-      sam: "$4B developer-focused PM tools",
-      som: "$800M keyboard-driven issue trackers",
+      tam: { label: "$18B", value: 18 },
+      sam: { label: "$4B", value: 4 },
+      som: { label: "$800M", value: 0.8 },
       competitionIntensity: "medium",
       growthTrend: "growing",
       benchmarks: [
@@ -508,11 +698,10 @@ export const demoReports: GrowthReport[] = [
         { metric: "Avg. team size at conversion", value: "8–15 members" },
       ],
     },
-    trafficData: null,
     quickWins: [
-      "Create 'Linear vs Jira' and 'Linear vs Shortcut' comparison pages for high-intent SEO traffic.",
-      "Launch a YouTube channel with bi-weekly developer workflow videos.",
-      "Add a 'Jira migration' one-click import tool prominently on the homepage.",
+      { action: "Create 'Linear vs Jira' and 'Linear vs Shortcut' comparison pages for high-intent SEO traffic.", effort: "low", timeframe: "1–2 weeks" },
+      { action: "Launch a YouTube channel with bi-weekly developer workflow videos.", effort: "medium", timeframe: "2–4 weeks" },
+      { action: "Add a 'Jira migration' one-click import tool prominently on the homepage.", effort: "high", timeframe: "4–6 weeks" },
     ],
     createdAt: "2025-02-03T16:45:00Z",
     status: "completed",

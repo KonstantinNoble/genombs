@@ -8,7 +8,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import PremiumLock from "@/components/genome/PremiumLock";
 import type { PerformanceScores, ScoreInsight, IndustryBenchmark } from "@/lib/demo-data";
 
 interface PerformanceChartProps {
@@ -17,7 +16,6 @@ interface PerformanceChartProps {
   companyName: string;
   scoreInsights: ScoreInsight[];
   industryBenchmarks: IndustryBenchmark[];
-  isPremium?: boolean;
 }
 
 const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [
@@ -29,7 +27,7 @@ const dimensions: Array<{ key: keyof PerformanceScores; label: string }> = [
   { key: "funnel", label: "Funnel" },
 ];
 
-const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights, industryBenchmarks, isPremium = false }: PerformanceChartProps) => {
+const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights, industryBenchmarks }: PerformanceChartProps) => {
   const data = dimensions.map((d) => ({
     dimension: d.label,
     score: scores[d.key],
@@ -84,136 +82,68 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
         </CardContent>
       </Card>
 
-      {/* Premium: Score Insights + Next Steps */}
-      {isPremium ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {data.map((d) => {
-            const diff = d.score - d.industry;
-            const isAbove = diff >= 0;
-            const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
-            const scoreInsight = key ? insightMap[key] : undefined;
-            return (
-              <Card key={d.dimension} className="border-border bg-card">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {d.dimension}
-                    </p>
-                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
-                      {isAbove ? "+" : ""}{diff} vs avg
+      {/* Score Insights + Next Steps — free for all */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {data.map((d) => {
+          const diff = d.score - d.industry;
+          const isAbove = diff >= 0;
+          const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
+          const scoreInsight = key ? insightMap[key] : undefined;
+          return (
+            <Card key={d.dimension} className="border-border bg-card">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                    {d.dimension}
+                  </p>
+                  <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                    {isAbove ? "+" : ""}{diff} vs avg
+                  </p>
+                </div>
+                <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
+                {scoreInsight && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
+                    <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                      {scoreInsight.nextStep}
                     </p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
-                  {scoreInsight && (
-                    <div className="space-y-2">
-                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
-                        {scoreInsight.nextStep}
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <PremiumLock title="Unlock Score Insights & Next Steps">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.map((d) => {
-              const diff = d.score - d.industry;
-              const isAbove = diff >= 0;
-              const key = dimensions.find((dim) => dim.label === d.dimension)?.key;
-              const scoreInsight = key ? insightMap[key] : undefined;
-              return (
-                <Card key={d.dimension} className="border-border bg-card">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {d.dimension}
-                    </p>
-                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
-                      {isAbove ? "+" : ""}{diff} vs avg
-                      </p>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
-                    {scoreInsight && (
-                      <div className="space-y-2">
-                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
-                        {scoreInsight.nextStep}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </PremiumLock>
-      )}
-
-      {/* Premium: Industry Benchmarks */}
-      {industryBenchmarks.length > 0 && (
-        isPremium ? (
-          <Card className="border-border bg-card">
-            <CardContent className="p-0">
-              <div className="px-5 py-3 border-b border-border">
-                 <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
-                  Industry Benchmarks
-                </h4>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
-                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {industryBenchmarks.map((b) => (
-                      <tr key={b.metric} className="border-b border-border/50">
-                         <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
-                         <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <PremiumLock title="Unlock Industry Benchmarks">
-            <Card className="border-border bg-card">
-              <CardContent className="p-0">
-                <div className="px-5 py-3 border-b border-border">
-                  <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
-                    Industry Benchmarks
-                  </h4>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
-                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {industryBenchmarks.map((b) => (
-                        <tr key={b.metric} className="border-b border-border/50">
-                           <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
-                           <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                )}
               </CardContent>
             </Card>
-          </PremiumLock>
-        )
+          );
+        })}
+      </div>
+
+      {/* Industry Benchmarks — free for all */}
+      {industryBenchmarks.length > 0 && (
+        <Card className="border-border bg-card">
+          <CardContent className="p-0">
+            <div className="px-5 py-3 border-b border-border">
+               <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
+                Industry Benchmarks
+              </h4>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                     <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
+                     <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {industryBenchmarks.map((b) => (
+                    <tr key={b.metric} className="border-b border-border/50">
+                       <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
+                       <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

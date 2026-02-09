@@ -52,7 +52,6 @@ const CompetitorAnalysis = () => {
   };
 
   const handleAnalyze = () => {
-    if (!isPremium) return;
     console.log("Analyzing:", yourUrl, competitorUrls);
   };
 
@@ -77,13 +76,10 @@ const CompetitorAnalysis = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 max-w-5xl">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2">
+             <div className="flex items-center gap-2 mb-2">
               <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground">
                 Competitor Analysis
               </h1>
-              <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30">
-                Premium
-              </Badge>
             </div>
              <p className="text-foreground/70">
                Compare your business against up to 3 competitors across 6 growth dimensions.
@@ -132,20 +128,9 @@ const CompetitorAnalysis = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {isPremium ? (
-                  <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
-                    Analyze Competitors
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <Button onClick={() => navigate("/pricing")}>
-                      Upgrade to Premium
-                    </Button>
-                    <span className="text-base text-foreground/70">
-                      Competitor Analysis is a Premium feature
-                    </span>
-                  </div>
-                )}
+                <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
+                  Analyze Competitors
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

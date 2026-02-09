@@ -1,136 +1,165 @@
 
 
-# Growth Strategy entfernen und verbleibende Sektionen erweitern
+# Competitor Analysis Feature + Premium-Struktur
 
-## Was passiert
+## Teil 1: Competitor Analysis als eigene Seite
 
-Die beiden "Growth Strategy" Sektionen (Organic + Paid) werden entfernt. Deren nuetzliche Inhalte (SEO-Keyword-Tabelle, Paid-Channel-Tabelle) werden in die verbleibenden Sektionen integriert und diese werden deutlich ausfuehrlicher gestaltet.
+### Konzept
 
----
+Eine neue Seite `/competitor-analysis` die vom Dashboard aus erreichbar ist. Der User gibt seine eigene URL und bis zu 3 Konkurrenz-URLs ein. Das System generiert einen Vergleichsreport mit Score-Vergleichen, Staerken/Schwaechen und konkreten Empfehlungen.
 
-## Neue Sektionsstruktur (6 statt 8)
+### Seitenstruktur
 
 ```text
-1. Overview (Executive Summary + Top-3 Priorities)
-2. Business Snapshot (erweitert)
-3. Performance Overview (erweitert)
-4. ICP (deutlich erweitert)
-5. Audience Channels (erweitert, absorbiert Paid Channels)
-6. Optimization (erweitert)
+/competitor-analysis
+  - URL-Eingabe: Eigene URL + 2-3 Wettbewerber-URLs
+  - Vergleichs-Dashboard:
+    1. Score Comparison (Radar-Chart: alle Unternehmen ueberlagert)
+    2. Head-to-Head Tabelle (6 Dimensionen nebeneinander)
+    3. SWOT-Analyse (pro Wettbewerber)
+    4. Keyword Gaps (Keywords die Wettbewerber haben, du nicht)
+    5. Channel Gaps (Kanaele die Wettbewerber nutzen, du nicht)
+    6. Actionable Takeaways (3-5 konkrete Massnahmen basierend auf Gaps)
 ```
+
+### Premium-Gating auf der Competitor-Seite
+
+- **Free User**: Kann die Seite oeffnen, sieht den URL-Eingabebereich. Beim Klick auf "Analyze" erscheint ein Upgrade-Hinweis ("Competitor Analysis is a Premium feature").
+- **Premium User**: Voller Zugriff, kann Analysen durchfuehren und speichern.
+
+### Demo-Daten
+
+Es werden Demo-Competitor-Analysen erstellt (z.B. Stripe vs PayPal vs Square), damit die Seite sofort testbar ist. Ein Demo-Link wird im Dashboard fuer Premium-User angezeigt.
 
 ---
 
-## Aenderungen pro Sektion
+## Teil 2: Premium-Struktur im bestehenden Dashboard/Report
 
-### 1. Business Snapshot -- Erweitert um Wettbewerbspositionierung
+### Was wird Premium-gated im Growth Report
 
-Aktuell: Nur 3 Badges + 1 Beschreibungssatz.
+Aktuell sieht jeder User alles. Neu wird der Report in Free und Premium Bereiche aufgeteilt:
 
-Neu hinzufuegen:
-- **Positioning Statement**: Ein Satz der beschreibt wie sich das Unternehmen vom Wettbewerb abhebt (neues Feld `positioning: string`)
-- **Key Differentiators**: 3-4 kurze Stichpunkte was das Business einzigartig macht (neues Feld `differentiators: string[]`)
-- **Primary Growth Lever**: Was ist der Hauptwachstumshebel? z.B. "Product-Led Growth", "Sales-Led", "Community-Driven" (neues Feld `growthLever: string`)
+**Free (immer sichtbar):**
+- Executive Summary + Top 3 Priorities
+- Business Snapshot (Badges + Beschreibung, OHNE Positioning/Differentiators)
+- Performance Overview: Nur Radar-Chart, KEINE Score-Insights, KEINE Benchmarks
+- ICP: Nur Name, Role, Demographics, Pain Points -- OHNE Buying Triggers, Objections, Where to Find
+- Audience Channels: Nur Plattform-Name + Relevanz + Tip -- OHNE spezifische Links, Keywords, Formate, SEO-Tabelle
+- Optimization: Nur Area + Recommendation -- OHNE Effort, Expected Outcome
 
-### 2. Performance Overview -- Erweitert um Score-Empfehlungen
+**Premium (mit Blur/Lock-Overlay):**
+- Business Snapshot: Positioning Statement + Key Differentiators + Growth Lever
+- Performance Overview: Score-Insights mit Next Steps + Industry Benchmarks Tabelle
+- ICP: Buying Triggers, Objections, Where to Find Them
+- Audience Channels: Spezifische Links, Keywords, Formate, Frequency, SEO-Keyword-Tabelle, Paid-Channel-Daten
+- Optimization: Effort + Expected Outcome
 
-Aktuell: Radar-Chart + Score-Karten mit Insight + Benchmarks-Tabelle.
+### Visuelles Premium-Gating
 
-Neu:
-- Jeder Score bekommt zusaetzlich einen **konkreten naechsten Schritt** (neues Feld `nextStep: string` in `ScoreInsight`)
-- So sieht der User nicht nur "Below average" sondern auch "Do X to improve"
+Die Premium-Inhalte werden NICHT versteckt, sondern mit einem **Blur-Overlay** angezeigt:
+- Der Premium-Content wird gerendert, aber mit `blur-sm` CSS und einem halbtransparenten Overlay
+- Auf dem Overlay steht: "Unlock with Premium" + ein Button der zur Pricing-Seite fuehrt
+- So sieht der Free-User, DASS es mehr gibt, und bekommt Appetit auf den vollen Report
 
-### 3. ICP -- Deutlich erweitert
+### Premium-Lock Komponente
 
-Aktuell: Name, Role, Demographics, Pain Points, Goals, Size/Priority.
+Eine wiederverwendbare `PremiumLock` Wrapper-Komponente:
+```text
+<PremiumLock>
+  <Buying Triggers Content />
+</PremiumLock>
+```
+- Wenn `isPremium = true`: Zeigt den Content normal
+- Wenn `isPremium = false`: Zeigt den Content mit Blur + Upgrade-CTA
 
-Neu pro Persona hinzufuegen:
-- **Buying Triggers**: Was loest den Kauf aus? z.B. "Series A funding secured", "Current tool contract expires" (neues Feld `buyingTriggers: string[]`)
-- **Common Objections**: Welche Einwaende hat diese Persona? z.B. "Too expensive for our stage", "Migration too complex" (neues Feld `objections: string[]`)
-- **Where to Find Them**: 2-3 konkrete Orte/Plattformen wo man diese Persona erreicht (neues Feld `whereToFind: string[]`)
+---
 
-Das macht den ICP von einem theoretischen Profil zu einem **Sales-Tool**: Der Unternehmer weiss nicht nur WER sein Kunde ist, sondern auch WANN er kaufbereit ist, WAS ihn zurueckhaelt, und WO er ihn findet.
+## Teil 3: Pricing-Seite und Feature-Tabelle aktualisieren
 
-### 4. Audience Channels -- Absorbiert Paid Strategy
+Die Pricing-Seite hat noch veraltete Features (Market Size, Traffic Data, Quick Wins, Organic/Paid Strategy). Diese werden aktualisiert:
 
-Aktuell: Organic Channels mit Links, Keywords, Formats, Frequency.
+**Neue Free Features:**
+- 3 Growth Reports/Monat
+- Business Snapshot (Basis)
+- Performance Radar-Chart
+- ICP Profiles (Basis)
+- Channel Overview (Basis)
+- Optimization Empfehlungen (Basis)
 
-Neu:
-- Die **Paid Channels** aus der Paid Strategy werden als eigene Eintraege in die Audience Channels Liste integriert, mit category="paid"
-- Jeder Paid Channel bekommt die gleiche Struktur wie Organic Channels (Links, Keywords, Formats, Frequency) plus zusaetzlich:
-  - **Budget Level** Badge (low/medium/high)
-  - **Estimated CPC** als Info-Zeile
-  - **Targeting Tip** wird zum `tip` Feld
-- Am Anfang der Sektion: **Competition Level** und **Estimated CPC** als kompakte Info-Leiste (aus der alten Paid Strategy uebernommen)
-- Die SEO-Keyword-Tabelle aus Organic Growth wird als eigenstaendiger Block **oberhalb** der Channel-Liste eingefuegt mit dem Titel "SEO Keyword Opportunities"
-
-### 5. Optimization -- Erweitert um Aufwand und erwartetes Ergebnis
-
-Aktuell: Area, Current State, Recommendation, Priority/Impact.
-
-Neu pro Optimization hinzufuegen:
-- **Estimated Effort**: "1-2 hours", "1 week", "ongoing" (neues Feld `effort: string`)
-- **Expected Outcome**: Was passiert wenn man es umsetzt? z.B. "+15-25% more enterprise leads", "Reduced bounce rate" (neues Feld `expectedOutcome: string`)
-
-So sieht der Unternehmer nicht nur "Tu das" sondern auch "So viel Aufwand kostet es" und "Das bringt es dir".
+**Neue Premium Features:**
+- Unlimited Growth Reports
+- Competitor Analysis (NEU)
+- Detailed Score Insights + Next Steps
+- Industry Benchmarks
+- ICP Buying Triggers + Objections
+- Specific Channel Links + Keywords + SEO-Tabelle
+- Optimization Effort + Expected Outcomes
+- PDF Export
+- Priority Support
 
 ---
 
 ## Technische Umsetzung
 
-### Dateien die GEAENDERT werden
+### Neue Dateien
 
-**`src/lib/demo-data.ts`:**
-- `GrowthReport` Interface: `organicStrategy` und `paidStrategy` Felder entfernen
-- `OrganicStrategy`, `PaidStrategy`, `PaidChannel`, `SEOKeyword` Interfaces: `SEOKeyword` bleibt (wird in Audience Channels gebraucht), Rest wird entfernt oder umgebaut
-- `GrowthReport` bekommt neue Felder:
-  - `businessModel` erweitert um `positioning`, `differentiators`, `growthLever`
-  - `seoKeywords: SEOKeyword[]` (aus organicStrategy extrahiert, direkt auf Report-Ebene)
-  - `seoScore: number` und `seoRecommendation: string`
-  - `paidCompetitionLevel` und `estimatedCPC` auf Report-Ebene
-- `ICPPersona` Interface erweitert um `buyingTriggers`, `objections`, `whereToFind`
-- `AudienceChannel` Interface erweitert um optionale Felder `budgetLevel` und `estimatedCPC` (fuer Paid Channels)
-- `Optimization` Interface erweitert um `effort` und `expectedOutcome`
-- `ScoreInsight` Interface erweitert um `nextStep`
-- Alle 3 Demo-Datensaetze (Stripe, Notion, Linear) komplett aktualisieren mit neuen Feldern
-- Paid Channels werden in die `audienceChannels` Arrays der Demo-Daten integriert
+**`src/pages/CompetitorAnalysis.tsx`:**
+- Neue Seite mit URL-Eingabe (eigene URL + bis zu 3 Wettbewerber)
+- Premium-Gate: Free User sieht Eingabe + Upgrade-CTA, Premium User sieht Demo-Report
+- Sections: Score Comparison (Radar), Head-to-Head Tabelle, SWOT, Keyword Gaps, Channel Gaps, Takeaways
+- Nutzt `useAuth()` fuer `isPremium` Check
+
+**`src/components/genome/PremiumLock.tsx`:**
+- Wiederverwendbare Wrapper-Komponente
+- Props: `children`, optional `title` fuer den CTA-Text
+- Liest `isPremium` aus `useAuth()`
+- Premium: rendert `children` normal
+- Free: rendert `children` mit `blur-sm opacity-60 pointer-events-none` + absolut positioniertes Overlay mit "Unlock Premium" Button
+
+**`src/components/genome/CompetitorRadarChart.tsx`:**
+- Recharts Radar-Chart der mehrere Unternehmen ueberlagert (verschiedene Farben)
+- Nutzt die gleichen 6 Dimensionen wie PerformanceChart
+
+**`src/components/genome/CompetitorSWOT.tsx`:**
+- SWOT-Grid (Strengths, Weaknesses, Opportunities, Threats) pro Wettbewerber
+- Einfache 2x2 Grid-Karten mit farbcodierten Headern
+
+**`src/lib/demo-competitor-data.ts`:**
+- Demo-Daten fuer eine Competitor-Analyse (Stripe vs PayPal vs Square)
+- Interfaces: `CompetitorAnalysis`, `CompetitorProfile`, `KeywordGap`, `ChannelGap`
+
+### Geaenderte Dateien
+
+**`src/App.tsx`:**
+- Neue Route `/competitor-analysis` hinzufuegen (lazy loaded)
+
+**`src/pages/Dashboard.tsx`:**
+- Neuen "Competitor Analysis" Button/Link im Dashboard Header-Bereich (neben dem URL-Eingabefeld oder als eigene Karte)
+- Premium Badge am Button wenn User nicht Premium ist
 
 **`src/pages/GenomeView.tsx`:**
-- Organic Growth und Paid Strategy Sektionen entfernen
-- `GrowthStrategySection` Import entfernen
-- Business Snapshot erweitern (Positioning, Differentiators, Growth Lever anzeigen)
-- Audience Channels Sektion: SEO-Keyword-Tabelle und Paid-Info-Leiste hinzufuegen
-- SectionNav: "Organic Growth" und "Paid Strategy" entfernen
+- `PremiumLock` Wrapper um die Premium-Bereiche der einzelnen Sektionen:
+  - Business Snapshot: Positioning + Differentiators
+  - Performance: Score Insights + Benchmarks
+  - ICP: Buying Triggers + Objections + Where to Find
+  - Audience Channels: Specific Links + Keywords + Formats + SEO-Tabelle + Paid-Info
+  - Optimization: Effort + Expected Outcome
 
-**`src/components/genome/ICPCard.tsx`:**
-- Drei neue Abschnitte: Buying Triggers, Common Objections, Where to Find Them
-- Buying Triggers als nummerierte Liste mit eigenem Marker-Stil
-- Objections als Liste mit einem neutralen Marker
-- Where to Find als Badges (aehnlich wie Audience Channel Links)
+**`src/pages/Pricing.tsx`:**
+- Feature-Listen aktualisieren (veraltete Features entfernen, neue hinzufuegen)
+- "Competitor Analysis" als Premium-Feature hervorheben
 
-**`src/components/genome/AudienceChannelCard.tsx`:**
-- Oben: SEO-Keyword-Tabelle als eigenen Block rendern (bekommt `seoKeywords` als neuen Prop)
-- Paid-Info-Leiste (Competition Level + CPC) als kompakten Header-Block
-- Paid Channels bekommen ein "Budget Level" Badge in der Kanal-Ansicht
-- Optionaler CPC-Text fuer Paid Channels
+**`src/components/genome/FeatureComparisonTable.tsx`:**
+- Feature-Liste aktualisieren mit den neuen Free/Premium Aufteilungen
 
-**`src/components/genome/OptimizationCard.tsx`:**
-- Effort als kompakter Text unter dem Current State (z.B. "Effort: ~2 hours")
-- Expected Outcome als hervorgehobener Text am Ende (z.B. mit border-l-2 border-chart-4)
-
-**`src/components/genome/PerformanceChart.tsx`:**
-- Score-Karten: zusaetzliche Zeile "Next Step:" unter dem Insight-Text
-
-### Dateien die GELOESCHT werden
-
-- `src/components/genome/GrowthStrategySection.tsx` -- Inhalte werden in andere Sektionen integriert
+**`src/components/Navbar.tsx`:**
+- "Competitor Analysis" Link in die Navigation aufnehmen (nur sichtbar wenn eingeloggt)
 
 ### Design
 
-- Keine neuen Icons, kein Emoji
-- Schwarz-Orange bleibt
-- Neue Abschnitte nutzen dieselben Muster: `text-[10px] uppercase tracking-wide` Labels, `border-l-2` Hervorhebungen, farbige Badges
-- Buying Triggers: gruener Marker-Punkt (`bg-chart-4`)
-- Objections: roter Marker-Punkt (`bg-destructive`)
-- Where to Find: Font-Mono Badges (wie bei Audience Channel Links)
+- Gleicher Schwarz-Orange Stil wie bestehende Seiten
+- Premium-Lock: Halbtransparentes schwarzes Overlay mit weissem Text und orangem Button
+- Competitor-Seite: Gleiche Card/GenomeCard Komponenten, gleiche Typographie
+- Radar-Chart: Orange fuer eigenes Unternehmen, verschiedene Grautoene fuer Wettbewerber
+- SWOT: Gruene (Strengths), Rote (Weaknesses), Blaue (Opportunities), Gelbe (Threats) Border-Left Markierungen
 

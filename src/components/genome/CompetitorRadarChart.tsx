@@ -47,7 +47,7 @@ const CompetitorRadarChart = ({ yourName, yourScores, competitors }: CompetitorR
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-5">
-        <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-4">
+        <h4 className="text-base font-semibold text-foreground uppercase tracking-wide mb-4">
           Score Comparison
         </h4>
         <ResponsiveContainer width="100%" height={360}>

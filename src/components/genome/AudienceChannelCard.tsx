@@ -342,8 +342,8 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                             </div>
                           )}
                           <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Frequency</p>
-                            <p className="text-sm text-foreground">{ch.postingFrequency}</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Frequency</p>
+                            <p className="text-base text-foreground">{ch.postingFrequency}</p>
                           </div>
                         </div>
                       </PremiumLock>

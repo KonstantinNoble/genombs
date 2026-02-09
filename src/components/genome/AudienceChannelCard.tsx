@@ -246,7 +246,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                         style={{ width: `${ch.relevance}%` }}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground italic leading-relaxed">{ch.tip}</p>
+                    <p className="text-sm text-foreground/70 italic leading-relaxed">{ch.tip}</p>
                   </div>
                 </CollapsibleTrigger>
 

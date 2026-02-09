@@ -122,7 +122,7 @@ const GenomeView = () => {
                     </p>
                     {/* Top 3 Priorities */}
                     <div className="pt-2">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                         Top Priorities
                       </p>
                       <ol className="space-y-2">

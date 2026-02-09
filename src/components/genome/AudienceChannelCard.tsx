@@ -113,7 +113,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                          <td className="py-2 px-3 text-base font-mono text-foreground">{kw.keyword}</td>
                          <td className="py-2 px-3 text-base font-mono text-foreground/70">{kw.volume}</td>
                         <td className="py-2 px-3">
-                          <Badge variant="outline" className={`text-[10px] ${difficultyColors[kw.difficulty]}`}>
+                           <Badge variant="outline" className={`text-xs ${difficultyColors[kw.difficulty]}`}>
                             {kw.difficulty}
                           </Badge>
                         </td>

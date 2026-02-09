@@ -54,8 +54,8 @@ const ScanCard = ({
           </Badge>
         </div>
 
-        <h3 className="text-lg font-semibold text-foreground mb-1">{companyName}</h3>
-        <p className="text-sm text-muted-foreground mb-3">{segment}</p>
+        <h3 className="text-xl font-semibold text-foreground mb-1">{companyName}</h3>
+        <p className="text-base text-muted-foreground mb-3">{segment}</p>
 
         {(businessModel || growthScore) && (
           <div className="flex items-center gap-2 flex-wrap mb-3">

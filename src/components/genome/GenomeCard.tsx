@@ -10,7 +10,7 @@ const GenomeCard = ({ title, children, className = "" }: GenomeCardProps) => {
   return (
     <Card className={`border-border bg-card ${className}`}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold text-foreground">
+        <CardTitle className="text-xl font-semibold text-foreground">
           {title}
         </CardTitle>
       </CardHeader>

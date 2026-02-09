@@ -16,16 +16,16 @@ const CompetitorSWOT = ({ swot }: CompetitorSWOTProps) => {
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-5">
-        <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-4">
+        <h4 className="text-base font-semibold text-foreground uppercase tracking-wide mb-4">
           SWOT — {swot.competitor}
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {quadrants.map((q) => (
             <div key={q.key} className={`border-l-2 ${q.borderColor} pl-3 space-y-1.5`}>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{q.label}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">{q.label}</p>
               <ul className="space-y-1">
                 {swot[q.key].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
+                  <li key={i} className="flex items-start gap-2 text-sm text-foreground/70 leading-relaxed">
                     <span className={`w-1 h-1 rounded-full ${q.dotColor} shrink-0 mt-1.5`} />
                     {item}
                   </li>

@@ -51,7 +51,7 @@ const GenomeScore = ({ score, size = "md", label = "Growth Readiness" }: GenomeS
           <span className={`${d.labelSize} text-muted-foreground`}>/100</span>
         </div>
       </div>
-      <span className="text-xs text-muted-foreground font-medium">{label}</span>
+      <span className="text-sm text-muted-foreground font-medium">{label}</span>
     </div>
   );
 };

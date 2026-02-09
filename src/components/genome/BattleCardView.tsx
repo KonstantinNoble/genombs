@@ -133,10 +133,10 @@ const BattleCardView = ({ cards }: BattleCardViewProps) => {
               onClick={() => setExpandedIndex(idx)}
               className="w-full text-left"
             >
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-foreground/70">
                 {card.howWeWin[0]?.slice(0, 120)}...
               </p>
-              <p className="text-xs text-primary mt-2">Click to expand</p>
+              <p className="text-sm text-primary mt-2">Click to expand</p>
             </button>
           )}
         </GenomeCard>

@@ -93,9 +93,9 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
                     {deal.outcome === "won" ? "Won" : "Lost"}
                   </Badge>
                 </td>
-                <td className="py-2 px-3 text-sm text-foreground">{deal.competitor}</td>
-                <td className="py-2 px-3 text-sm text-muted-foreground">{deal.reason}</td>
-                <td className="py-2 px-3 text-sm font-mono text-foreground text-right">
+                <td className="py-2 px-3 text-base text-foreground">{deal.competitor}</td>
+                <td className="py-2 px-3 text-base text-foreground/70">{deal.reason}</td>
+                <td className="py-2 px-3 text-base font-mono text-foreground text-right">
                   {formatValue(deal.value)}
                 </td>
               </tr>

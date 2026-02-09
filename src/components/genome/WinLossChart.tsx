@@ -148,12 +148,12 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
         <GenomeCard title="Top Loss Reasons">
           <ol className="space-y-2">
             {stats.topLossReasons.map(([reason, count], i) => (
-              <li key={reason} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">
+              <li key={reason} className="flex items-center justify-between text-base">
+                <span className="text-foreground/80">
                   <span className="text-muted-foreground mr-2">{i + 1}.</span>
                   {reason}
                 </span>
-                <span className="text-xs font-mono text-destructive">{count} deals</span>
+                <span className="text-sm font-mono text-destructive">{count} deals</span>
               </li>
             ))}
           </ol>

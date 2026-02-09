@@ -96,7 +96,7 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               </div>
 
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
                 <div className="flex flex-wrap gap-1.5">
                   {persona.whereToFind.map((place, i) => (
                     <Badge key={i} variant="secondary" className="text-xs font-mono font-normal">

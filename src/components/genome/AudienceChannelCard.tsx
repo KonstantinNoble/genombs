@@ -308,7 +308,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                       </div>
 
                       {ch.estimatedCPC && (
-                        <p className="text-xs font-mono text-muted-foreground">CPC: {ch.estimatedCPC}</p>
+                        <p className="text-sm font-mono text-foreground/70">CPC: {ch.estimatedCPC}</p>
                       )}
                     </div>
                   ) : (

@@ -87,8 +87,8 @@ const Dashboard = () => {
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
               Growth Hub
             </h1>
-            <p className="text-muted-foreground mb-6">
-              Scan your website to get growth insights — ICP, audience channels, optimization tips, and strategies.
+             <p className="text-foreground/70 mb-6">
+               Scan your website to get growth insights — ICP, audience channels, optimization tips, and strategies.
             </p>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
@@ -122,14 +122,14 @@ const Dashboard = () => {
             <CardContent className="p-4 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-semibold text-foreground">Competitor Analysis</h3>
+                  <h3 className="text-base font-semibold text-foreground">Competitor Analysis</h3>
                   {!isPremium && (
-                    <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">
+                    <Badge variant="outline" className="text-xs bg-primary/15 text-primary border-primary/30">
                       Premium
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   Compare your business against up to 3 competitors across 6 growth dimensions.
                 </p>
               </div>
@@ -157,7 +157,7 @@ const Dashboard = () => {
                   Scan
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">
+              <p className="text-sm text-foreground/70 mt-3">
                 Paste your website URL to generate a growth report
               </p>
             </CardContent>
@@ -205,16 +205,16 @@ const Dashboard = () => {
               <Tabs defaultValue="all" className="w-full">
                 <TabsList className="mb-4 bg-muted">
                   <TabsTrigger value="all">
-                    All <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{filteredScans.length}</Badge>
+                    All <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{filteredScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="completed">
-                    Completed <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{completedScans.length}</Badge>
+                    Completed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{completedScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="analyzing">
-                    In Progress <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{analyzingScans.length}</Badge>
+                    In Progress <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{analyzingScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="failed">
-                    Failed <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{failedScans.length}</Badge>
+                    Failed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{failedScans.length}</Badge>
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="all">{renderScanList(filteredScans)}</TabsContent>

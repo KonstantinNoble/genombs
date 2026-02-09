@@ -21,34 +21,34 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               </span>
               <h4 className="text-base font-semibold text-foreground">{persona.name}</h4>
             </div>
-            <p className="text-sm text-muted-foreground">{persona.role}</p>
+            <p className="text-base text-foreground/70">{persona.role}</p>
           </div>
           <div className="flex items-center gap-1.5">
             <Badge
               variant="outline"
               className={
                 persona.priority === "primary"
-                  ? "bg-primary/15 text-primary border-primary/30 text-[10px]"
-                  : "text-[10px]"
+                  ? "bg-primary/15 text-primary border-primary/30 text-xs"
+                  : "text-xs"
               }
             >
               {persona.priority}
             </Badge>
-            <Badge variant="outline" className="text-[10px]">
+            <Badge variant="outline" className="text-xs">
               {persona.size}
             </Badge>
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground mb-4">{persona.demographics}</p>
+        <p className="text-sm text-foreground/70 mb-4">{persona.demographics}</p>
 
         <div className="space-y-4">
           {/* Free: Pain Points + Goals */}
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Pain Points</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Pain Points</p>
             <ul className="space-y-1.5">
               {persona.painPoints.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                   <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
                   {point}
                 </li>
@@ -57,10 +57,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
           </div>
 
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Goals</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Goals</p>
             <ul className="space-y-1.5">
               {persona.goals.map((goal, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
                   {goal}
                 </li>
@@ -72,10 +72,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
           {isPremium ? (
             <>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
                 <ul className="space-y-1.5">
                   {persona.buyingTriggers.map((trigger, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                    <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                       <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
                       {trigger}
                     </li>
@@ -84,10 +84,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               </div>
 
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
                 <ul className="space-y-1.5">
                   {persona.objections.map((objection, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                    <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                       <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
                       {objection}
                     </li>
@@ -96,7 +96,7 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               </div>
 
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
                 <div className="flex flex-wrap gap-1.5">
                   {persona.whereToFind.map((place, i) => (
                     <Badge key={i} variant="secondary" className="text-xs font-mono font-normal">
@@ -110,10 +110,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
             <PremiumLock title="Unlock Buying Triggers, Objections & Where to Find">
               <div className="space-y-4">
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
                   <ul className="space-y-1.5">
                     {persona.buyingTriggers.map((trigger, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                      <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                         <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
                         {trigger}
                       </li>
@@ -121,10 +121,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
                   </ul>
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Common Objections</p>
                   <ul className="space-y-1.5">
                     {persona.objections.map((objection, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                      <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                         <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0 mt-2" />
                         {objection}
                       </li>
@@ -132,7 +132,7 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
                   </ul>
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Where to Find Them</p>
                   <div className="flex flex-wrap gap-1.5">
                     {persona.whereToFind.map((place, i) => (
                       <Badge key={i} variant="secondary" className="text-xs font-mono font-normal">

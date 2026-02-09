@@ -48,14 +48,14 @@ const ScanCard = ({
     <Card className="border-border bg-card group transition-all duration-300 hover:border-primary/25 hover:shadow-lg cursor-pointer">
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
-          <span className="text-sm font-mono text-muted-foreground">{domain}</span>
+          <span className="text-base font-mono text-foreground/70">{domain}</span>
           <Badge variant="outline" className={config.className}>
             {config.label}
           </Badge>
         </div>
 
-        <h3 className="text-lg font-semibold text-foreground mb-1">{companyName}</h3>
-        <p className="text-sm text-muted-foreground mb-3">{segment}</p>
+        <h3 className="text-xl font-semibold text-foreground mb-1">{companyName}</h3>
+        <p className="text-base text-muted-foreground mb-3">{segment}</p>
 
         {(businessModel || growthScore) && (
           <div className="flex items-center gap-2 flex-wrap mb-3">

@@ -89,36 +89,36 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
           <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
+                <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
                 {seoScore !== undefined && (
                   <span className="text-sm font-mono text-primary">{seoScore}/100</span>
                 )}
               </div>
               {seoRecommendation && (
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{seoRecommendation}</p>
+                <p className="text-base text-foreground/70 leading-relaxed mb-4">{seoRecommendation}</p>
               )}
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Difficulty</th>
-                      <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Opportunity</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Keyword</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Volume</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                       <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Opportunity</th>
                     </tr>
                   </thead>
                   <tbody>
                     {seoKeywords.map((kw) => (
                       <tr key={kw.keyword} className="border-b border-border/50">
-                        <td className="py-2 px-3 text-sm font-mono text-foreground">{kw.keyword}</td>
-                        <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{kw.volume}</td>
+                         <td className="py-2 px-3 text-base font-mono text-foreground">{kw.keyword}</td>
+                         <td className="py-2 px-3 text-base font-mono text-foreground/70">{kw.volume}</td>
                         <td className="py-2 px-3">
-                          <Badge variant="outline" className={`text-[10px] ${difficultyColors[kw.difficulty]}`}>
+                           <Badge variant="outline" className={`text-xs ${difficultyColors[kw.difficulty]}`}>
                             {kw.difficulty}
                           </Badge>
                         </td>
                         <td className="py-2 px-3">
-                          <Badge variant="outline" className={`text-[10px] ${opportunityColors[kw.opportunity]}`}>
+                           <Badge variant="outline" className={`text-xs ${opportunityColors[kw.opportunity]}`}>
                             {kw.opportunity}
                           </Badge>
                         </td>
@@ -134,7 +134,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
             <Card className="border-border bg-card">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
+                  <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
                   {seoScore !== undefined && (
                     <span className="text-sm font-mono text-primary">{seoScore}/100</span>
                   )}
@@ -143,24 +143,24 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Difficulty</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Opportunity</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Keyword</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Volume</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Opportunity</th>
                       </tr>
                     </thead>
                     <tbody>
                       {seoKeywords.slice(0, 3).map((kw) => (
                         <tr key={kw.keyword} className="border-b border-border/50">
-                          <td className="py-2 px-3 text-sm font-mono text-foreground">{kw.keyword}</td>
-                          <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{kw.volume}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground">{kw.keyword}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground/70">{kw.volume}</td>
                           <td className="py-2 px-3">
-                            <Badge variant="outline" className={`text-[10px] ${difficultyColors[kw.difficulty]}`}>
+                            <Badge variant="outline" className={`text-xs ${difficultyColors[kw.difficulty]}`}>
                               {kw.difficulty}
                             </Badge>
                           </td>
                           <td className="py-2 px-3">
-                            <Badge variant="outline" className={`text-[10px] ${opportunityColors[kw.opportunity]}`}>
+                            <Badge variant="outline" className={`text-xs ${opportunityColors[kw.opportunity]}`}>
                               {kw.opportunity}
                             </Badge>
                           </td>
@@ -180,28 +180,28 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
         isPremium ? (
           <div className="flex items-center gap-6 px-1">
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Paid Competition</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Paid Competition</p>
               <Badge variant="outline" className={`mt-1 ${budgetColors[paidCompetitionLevel]}`}>
                 {paidCompetitionLevel}
               </Badge>
             </div>
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
-              <p className="text-sm font-mono text-foreground mt-1">{estimatedCPC}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
+              <p className="text-base font-mono text-foreground mt-1">{estimatedCPC}</p>
             </div>
           </div>
         ) : (
           <PremiumLock title="Unlock Paid Channel Data">
             <div className="flex items-center gap-6 px-1">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Paid Competition</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Paid Competition</p>
                 <Badge variant="outline" className={`mt-1 ${budgetColors[paidCompetitionLevel]}`}>
                   {paidCompetitionLevel}
                 </Badge>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
-                <p className="text-sm font-mono text-foreground mt-1">{estimatedCPC}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
+                <p className="text-base font-mono text-foreground mt-1">{estimatedCPC}</p>
               </div>
             </div>
           </PremiumLock>
@@ -223,19 +223,19 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-foreground">{ch.platform}</span>
-                        <Badge variant="outline" className="text-[10px]">
+                        <span className="text-base font-medium text-foreground">{ch.platform}</span>
+                        <Badge variant="outline" className="text-xs">
                           {categoryLabels[ch.category] || ch.category}
                         </Badge>
                         {ch.budgetLevel && (
-                          <Badge variant="outline" className={`text-[10px] ${budgetColors[ch.budgetLevel]}`}>
+                          <Badge variant="outline" className={`text-xs ${budgetColors[ch.budgetLevel]}`}>
                             {ch.budgetLevel} budget
                           </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono text-primary">{ch.relevance}%</span>
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-base font-mono text-primary">{ch.relevance}%</span>
+                        <span className="text-xs text-muted-foreground">
                           {isOpen ? "▲" : "▼"}
                         </span>
                       </div>
@@ -246,7 +246,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                         style={{ width: `${ch.relevance}%` }}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground italic leading-relaxed">{ch.tip}</p>
+                    <p className="text-sm text-foreground/70 italic leading-relaxed">{ch.tip}</p>
                   </div>
                 </CollapsibleTrigger>
 
@@ -255,7 +255,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                     <div className="mt-4 pt-4 border-t border-border space-y-4">
                       {ch.specificLinks.length > 0 && (
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                             Communities & Links
                           </p>
                           <div className="flex flex-wrap gap-1.5">
@@ -268,7 +268,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
 
                       {ch.recommendedKeywords.length > 0 && (
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                             Recommended Keywords
                           </p>
                           <div className="flex flex-wrap gap-1.5">
@@ -287,7 +287,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
 
                       {ch.bestFormats.length > 0 && (
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                             Best Content Formats
                           </p>
                           <div className="flex flex-wrap gap-1.5">
@@ -301,14 +301,14 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                       )}
 
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                           Recommended Frequency
                         </p>
-                        <p className="text-sm text-foreground">{ch.postingFrequency}</p>
+                        <p className="text-base text-foreground">{ch.postingFrequency}</p>
                       </div>
 
                       {ch.estimatedCPC && (
-                        <p className="text-xs font-mono text-muted-foreground">CPC: {ch.estimatedCPC}</p>
+                        <p className="text-sm font-mono text-foreground/70">CPC: {ch.estimatedCPC}</p>
                       )}
                     </div>
                   ) : (
@@ -317,7 +317,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                         <div className="space-y-4">
                           {ch.specificLinks.length > 0 && (
                             <div>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                                 Communities & Links
                               </p>
                               <div className="flex flex-wrap gap-1.5">
@@ -329,7 +329,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                           )}
                           {ch.recommendedKeywords.length > 0 && (
                             <div>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">
+                              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                                 Recommended Keywords
                               </p>
                               <div className="flex flex-wrap gap-1.5">
@@ -342,8 +342,8 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                             </div>
                           )}
                           <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Frequency</p>
-                            <p className="text-sm text-foreground">{ch.postingFrequency}</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Frequency</p>
+                            <p className="text-base text-foreground">{ch.postingFrequency}</p>
                           </div>
                         </div>
                       </PremiumLock>

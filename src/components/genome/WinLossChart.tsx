@@ -62,19 +62,19 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Win Rate</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Win Rate</p>
           <p className="text-3xl font-extrabold text-primary">{stats.winRate}%</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Total Deals</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Total Deals</p>
           <p className="text-3xl font-extrabold text-foreground">{deals.length}</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Won</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Won</p>
           <p className="text-3xl font-extrabold text-chart-4">{stats.totalWon}</p>
         </div>
         <div className="border border-border rounded-lg p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Lost</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Lost</p>
           <p className="text-3xl font-extrabold text-destructive">{stats.totalLost}</p>
         </div>
       </div>
@@ -110,8 +110,8 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
           {stats.competitorStats.map((c) => (
             <div key={c.name}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-foreground">vs {c.name}</span>
-                <span className="text-xs font-mono text-muted-foreground">
+                <span className="text-base text-foreground">vs {c.name}</span>
+                <span className="text-sm font-mono text-foreground/70">
                   {c.won}W / {c.lost}L ({c.winRate}%)
                 </span>
               </div>
@@ -135,12 +135,12 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
         <GenomeCard title="Top Win Reasons">
           <ol className="space-y-2">
             {stats.topWinReasons.map(([reason, count], i) => (
-              <li key={reason} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">
+              <li key={reason} className="flex items-center justify-between text-base">
+                <span className="text-foreground/80">
                   <span className="text-muted-foreground mr-2">{i + 1}.</span>
                   {reason}
                 </span>
-                <span className="text-xs font-mono text-chart-4">{count} deals</span>
+                <span className="text-sm font-mono text-chart-4">{count} deals</span>
               </li>
             ))}
           </ol>
@@ -148,12 +148,12 @@ const WinLossChart = ({ deals }: WinLossChartProps) => {
         <GenomeCard title="Top Loss Reasons">
           <ol className="space-y-2">
             {stats.topLossReasons.map(([reason, count], i) => (
-              <li key={reason} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">
+              <li key={reason} className="flex items-center justify-between text-base">
+                <span className="text-foreground/80">
                   <span className="text-muted-foreground mr-2">{i + 1}.</span>
                   {reason}
                 </span>
-                <span className="text-xs font-mono text-destructive">{count} deals</span>
+                <span className="text-sm font-mono text-destructive">{count} deals</span>
               </li>
             ))}
           </ol>

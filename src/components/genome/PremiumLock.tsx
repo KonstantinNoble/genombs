@@ -21,7 +21,7 @@ const PremiumLock = ({ children, title = "Unlock with Premium" }: PremiumLockPro
         {children}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 rounded-lg">
-        <p className="text-sm font-semibold text-foreground mb-3">{title}</p>
+        <p className="text-base font-semibold text-foreground mb-3">{title}</p>
         <Button size="sm" onClick={() => navigate("/pricing")}>
           Upgrade to Premium
         </Button>

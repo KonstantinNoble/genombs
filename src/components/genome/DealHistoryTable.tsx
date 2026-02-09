@@ -59,24 +59,24 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Date</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Deal</th>
-              <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Result</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitor</th>
-              <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Reason</th>
-              <th className="text-right py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Date</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Deal</th>
+              <th className="text-center py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Result</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Competitor</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Reason</th>
+              <th className="text-right py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((deal) => (
               <tr key={deal.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <td className="py-2 px-3 text-sm font-mono text-muted-foreground">
+                <td className="py-2 px-3 text-base font-mono text-foreground/70">
                   {new Date(deal.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </td>
-                <td className="py-2 px-3 text-sm text-foreground">
+                <td className="py-2 px-3 text-base text-foreground">
                   {deal.name}
                   {deal.notes && (
-                    <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[200px]">
+                    <p className="text-sm text-muted-foreground mt-0.5 truncate max-w-[200px]">
                       {deal.notes}
                     </p>
                   )}
@@ -86,16 +86,16 @@ const DealHistoryTable = ({ deals }: DealHistoryTableProps) => {
                     variant="outline"
                     className={
                       deal.outcome === "won"
-                        ? "bg-chart-4/15 text-chart-4 border-chart-4/30 text-[10px]"
-                        : "bg-destructive/15 text-destructive border-destructive/30 text-[10px]"
+                        ? "bg-chart-4/15 text-chart-4 border-chart-4/30 text-xs"
+                        : "bg-destructive/15 text-destructive border-destructive/30 text-xs"
                     }
                   >
                     {deal.outcome === "won" ? "Won" : "Lost"}
                   </Badge>
                 </td>
-                <td className="py-2 px-3 text-sm text-foreground">{deal.competitor}</td>
-                <td className="py-2 px-3 text-sm text-muted-foreground">{deal.reason}</td>
-                <td className="py-2 px-3 text-sm font-mono text-foreground text-right">
+                <td className="py-2 px-3 text-base text-foreground">{deal.competitor}</td>
+                <td className="py-2 px-3 text-base text-foreground/70">{deal.reason}</td>
+                <td className="py-2 px-3 text-base font-mono text-foreground text-right">
                   {formatValue(deal.value)}
                 </td>
               </tr>

@@ -25,27 +25,27 @@ const OptimizationCard = ({ optimization, isPremium = false }: OptimizationCardP
     <Card className="border-border bg-card">
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h4 className="text-sm font-semibold text-foreground">{optimization.area}</h4>
+          <h4 className="text-base font-semibold text-foreground">{optimization.area}</h4>
           <div className="flex items-center gap-1.5 shrink-0">
-            <Badge variant="outline" className={`text-[10px] ${priorityConfig[optimization.priority]}`}>
+            <Badge variant="outline" className={`text-xs ${priorityConfig[optimization.priority]}`}>
               {optimization.priority} priority
             </Badge>
-            <Badge variant="outline" className={`text-[10px] ${impactConfig[optimization.impact]}`}>
+            <Badge variant="outline" className={`text-xs ${impactConfig[optimization.impact]}`}>
               {optimization.impact} impact
             </Badge>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground mb-2">
+        <p className="text-sm text-foreground/70 mb-2">
           Current: {optimization.currentState}
         </p>
-        <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
+        <p className="text-base text-foreground/80 leading-relaxed border-l-2 border-primary/30 pl-3 mb-3">
           {optimization.recommendation}
         </p>
 
         {/* Premium: Effort + Expected Outcome */}
         {isPremium ? (
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-foreground/70">
               Effort: {optimization.effort}
             </p>
             <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
@@ -55,8 +55,8 @@ const OptimizationCard = ({ optimization, isPremium = false }: OptimizationCardP
         ) : (
           <PremiumLock title="Unlock Effort & Expected Outcome">
             <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">
-                Effort: {optimization.effort}
+            <p className="text-sm text-foreground/70">
+              Effort: {optimization.effort}
               </p>
               <p className="text-sm leading-relaxed border-l-2 border-chart-4/50 pl-3 text-chart-4">
                 {optimization.expectedOutcome}

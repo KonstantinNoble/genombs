@@ -43,7 +43,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
       {/* Radar Chart — always free */}
       <Card className="border-border bg-card">
         <CardContent className="p-5">
-          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-4">
+          <h4 className="text-base font-semibold text-foreground uppercase tracking-wide mb-4">
             Performance vs Industry Average
           </h4>
           <ResponsiveContainer width="100%" height={320}>
@@ -96,18 +96,18 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
               <Card key={d.dimension} className="border-border bg-card">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
                       {d.dimension}
                     </p>
-                    <p className={`text-xs font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
                       {isAbove ? "+" : ""}{diff} vs avg
                     </p>
                   </div>
                   <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
                   {scoreInsight && (
                     <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground leading-relaxed">{scoreInsight.insight}</p>
-                      <p className="text-xs text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
+                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
                         {scoreInsight.nextStep}
                       </p>
                     </div>
@@ -129,19 +129,19 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                 <Card key={d.dimension} className="border-border bg-card">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
-                        {d.dimension}
-                      </p>
-                      <p className={`text-xs font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
-                        {isAbove ? "+" : ""}{diff} vs avg
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                      {d.dimension}
+                    </p>
+                    <p className={`text-sm font-mono ${isAbove ? "text-primary" : "text-destructive"}`}>
+                      {isAbove ? "+" : ""}{diff} vs avg
                       </p>
                     </div>
                     <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
                     {scoreInsight && (
                       <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground leading-relaxed">{scoreInsight.insight}</p>
-                        <p className="text-xs text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
-                          {scoreInsight.nextStep}
+                      <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>
+                      <p className="text-sm text-primary leading-relaxed border-l-2 border-primary/30 pl-2">
+                        {scoreInsight.nextStep}
                         </p>
                       </div>
                     )}
@@ -159,7 +159,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
           <Card className="border-border bg-card">
             <CardContent className="p-0">
               <div className="px-5 py-3 border-b border-border">
-                <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                 <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
                   Industry Benchmarks
                 </h4>
               </div>
@@ -167,15 +167,15 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Metric</th>
-                      <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
+                       <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
                     </tr>
                   </thead>
                   <tbody>
                     {industryBenchmarks.map((b) => (
                       <tr key={b.metric} className="border-b border-border/50">
-                        <td className="py-3 px-5 text-sm text-foreground">{b.metric}</td>
-                        <td className="py-3 px-5 text-sm font-mono text-muted-foreground">{b.value}</td>
+                         <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
+                         <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -188,7 +188,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
             <Card className="border-border bg-card">
               <CardContent className="p-0">
                 <div className="px-5 py-3 border-b border-border">
-                  <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                  <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">
                     Industry Benchmarks
                   </h4>
                 </div>
@@ -196,15 +196,15 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Metric</th>
-                        <th className="text-left py-3 px-5 text-[10px] uppercase tracking-wider text-muted-foreground">Value</th>
+                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Metric</th>
+                         <th className="text-left py-3 px-5 text-xs uppercase tracking-wider text-muted-foreground">Value</th>
                       </tr>
                     </thead>
                     <tbody>
                       {industryBenchmarks.map((b) => (
                         <tr key={b.metric} className="border-b border-border/50">
-                          <td className="py-3 px-5 text-sm text-foreground">{b.metric}</td>
-                          <td className="py-3 px-5 text-sm font-mono text-muted-foreground">{b.value}</td>
+                           <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
+                           <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
                         </tr>
                       ))}
                     </tbody>

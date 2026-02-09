@@ -47,7 +47,7 @@ const SectionNav = ({ sections }: SectionNavProps) => {
           <button
             key={section.id}
             onClick={() => scrollTo(section.id)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`whitespace-nowrap px-3 py-1.5 rounded-md text-base font-medium transition-colors ${
               activeSection === section.id
                 ? "bg-primary/15 text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"

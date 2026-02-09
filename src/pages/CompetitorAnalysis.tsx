@@ -84,8 +84,8 @@ const CompetitorAnalysis = () => {
                 Premium
               </Badge>
             </div>
-            <p className="text-muted-foreground">
-              Compare your business against up to 3 competitors across 6 growth dimensions.
+             <p className="text-foreground/70">
+               Compare your business against up to 3 competitors across 6 growth dimensions.
             </p>
           </div>
 
@@ -93,7 +93,7 @@ const CompetitorAnalysis = () => {
           <Card className="border-border bg-card mb-6">
             <CardContent className="p-5 sm:p-6 space-y-4">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
                 <Input
                   type="url"
                   placeholder="https://your-website.com"
@@ -103,7 +103,7 @@ const CompetitorAnalysis = () => {
                 />
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
                 <div className="space-y-2">
                   {competitorUrls.map((url, i) => (
                     <Input
@@ -127,7 +127,7 @@ const CompetitorAnalysis = () => {
                     <Button onClick={() => navigate("/pricing")}>
                       Upgrade to Premium
                     </Button>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-base text-foreground/70">
                       Competitor Analysis is a Premium feature
                     </span>
                   </div>
@@ -147,12 +147,12 @@ const CompetitorAnalysis = () => {
           {showReport && (
             <div className="space-y-6">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-mono text-muted-foreground">{analysis.yourDomain}</span>
-                <span className="text-muted-foreground">vs</span>
-                {analysis.competitors.map((c) => (
-                  <span key={c.name} className="text-sm font-mono text-muted-foreground">{c.domain}</span>
-                ))}
-                <Badge variant="outline" className="text-[10px]">Demo</Badge>
+                 <span className="text-base font-mono text-foreground/70">{analysis.yourDomain}</span>
+                 <span className="text-foreground/70">vs</span>
+                 {analysis.competitors.map((c) => (
+                   <span key={c.name} className="text-base font-mono text-foreground/70">{c.domain}</span>
+                 ))}
+                 <Badge variant="outline" className="text-xs">Demo</Badge>
               </div>
 
               <CompetitorRadarChart
@@ -166,11 +166,11 @@ const CompetitorAnalysis = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Dimension</th>
-                        <th className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-primary">{analysis.yourName}</th>
-                        {analysis.competitors.map((c) => (
-                          <th key={c.name} className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">{c.name}</th>
-                        ))}
+                         <th className="text-left py-3 px-4 text-xs uppercase tracking-wider text-muted-foreground">Dimension</th>
+                         <th className="text-center py-3 px-4 text-xs uppercase tracking-wider text-primary">{analysis.yourName}</th>
+                         {analysis.competitors.map((c) => (
+                           <th key={c.name} className="text-center py-3 px-4 text-xs uppercase tracking-wider text-muted-foreground">{c.name}</th>
+                         ))}
                       </tr>
                     </thead>
                     <tbody>
@@ -180,12 +180,12 @@ const CompetitorAnalysis = () => {
                         const maxScore = Math.max(...allScores);
                         return (
                           <tr key={d.key} className="border-b border-border/50">
-                            <td className="py-3 px-4 text-sm text-foreground">{d.label}</td>
-                            <td className={`py-3 px-4 text-center text-sm font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
+                             <td className="py-3 px-4 text-base text-foreground">{d.label}</td>
+                             <td className={`py-3 px-4 text-center text-base font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
                               {yourScore}
                             </td>
-                            {analysis.competitors.map((c) => (
-                              <td key={c.name} className={`py-3 px-4 text-center text-sm font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-muted-foreground"}`}>
+                             {analysis.competitors.map((c) => (
+                               <td key={c.name} className={`py-3 px-4 text-center text-base font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-foreground/70"}`}>
                                 {c.scores[d.key]}
                               </td>
                             ))}
@@ -198,7 +198,7 @@ const CompetitorAnalysis = () => {
               </GenomeCard>
 
               <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">SWOT Analysis</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-4">SWOT Analysis</h2>
                 <div className="grid grid-cols-1 gap-4">
                   {analysis.swotAnalyses.map((swot) => (
                     <CompetitorSWOT key={swot.competitor} swot={swot} />
@@ -207,33 +207,33 @@ const CompetitorAnalysis = () => {
               </div>
 
               <GenomeCard title="Keyword Gaps">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                 <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Keywords your competitors rank for that you don't
                 </p>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitors</th>
-                        <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">You</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Keyword</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Volume</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Competitors</th>
+                         <th className="text-center py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">You</th>
                       </tr>
                     </thead>
                     <tbody>
                       {analysis.keywordGaps.map((gap) => (
                         <tr key={gap.keyword} className="border-b border-border/50">
-                          <td className="py-2 px-3 text-sm font-mono text-foreground">{gap.keyword}</td>
-                          <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{gap.volume}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground">{gap.keyword}</td>
+                           <td className="py-2 px-3 text-base font-mono text-foreground/70">{gap.volume}</td>
                           <td className="py-2 px-3">
                             <div className="flex flex-wrap gap-1">
                               {gap.competitorHas.map((c) => (
-                                <Badge key={c} variant="outline" className="text-[10px]">{c}</Badge>
+                                <Badge key={c} variant="outline" className="text-xs">{c}</Badge>
                               ))}
                             </div>
                           </td>
                           <td className="py-2 px-3 text-center">
-                            <span className={`text-sm font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
+                            <span className={`text-base font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
                               {gap.youHave ? "Yes" : "No"}
                             </span>
                           </td>
@@ -245,7 +245,7 @@ const CompetitorAnalysis = () => {
               </GenomeCard>
 
               <GenomeCard title="Channel Gaps">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                 <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Channels your competitors use that you're missing
                 </p>
                 <div className="space-y-3">
@@ -253,20 +253,20 @@ const CompetitorAnalysis = () => {
                     <div key={gap.channel} className="border border-border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">{gap.channel}</span>
+                          <span className="text-base font-medium text-foreground">{gap.channel}</span>
                           {gap.youUsing ? (
-                            <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">Active</Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
-                          )}
+                             <Badge variant="outline" className="text-xs bg-primary/15 text-primary border-primary/30">Active</Badge>
+                           ) : (
+                             <Badge variant="outline" className="text-xs bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
+                           )}
                         </div>
                         <div className="flex gap-1">
                           {gap.competitorUsing.map((c) => (
-                            <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+                            <Badge key={c} variant="secondary" className="text-xs">{c}</Badge>
                           ))}
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                      <p className="text-sm text-foreground/70 leading-relaxed border-l-2 border-primary/30 pl-3">
                         {gap.recommendation}
                       </p>
                     </div>
@@ -275,12 +275,12 @@ const CompetitorAnalysis = () => {
               </GenomeCard>
 
               <GenomeCard title="Actionable Takeaways">
-                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                <p className="text-sm text-foreground/70 mb-4 uppercase tracking-wide">
                   Concrete actions based on competitive gaps
                 </p>
                 <ol className="space-y-3">
                   {analysis.takeaways.map((takeaway, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-foreground leading-relaxed">
+                    <li key={i} className="flex items-start gap-3 text-base text-foreground leading-relaxed">
                       <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
                         {i + 1}
                       </span>
@@ -293,8 +293,8 @@ const CompetitorAnalysis = () => {
               {/* Battle Cards Section */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <h2 className="text-lg font-semibold text-foreground">Battle Cards</h2>
-                  <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
+                   <h2 className="text-xl font-semibold text-foreground">Battle Cards</h2>
+                   <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-xs">Premium</Badge>
                 </div>
                 <PremiumLock title="Unlock Battle Cards with Premium">
                   <BattleCardView cards={demoBattleCards} />
@@ -305,8 +305,8 @@ const CompetitorAnalysis = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-semibold text-foreground">Win/Loss Tracking</h2>
-                    <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
+                     <h2 className="text-xl font-semibold text-foreground">Win/Loss Tracking</h2>
+                     <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-xs">Premium</Badge>
                   </div>
                   {isPremium && <DealForm competitors={competitors} onSubmit={handleAddDeal} />}
                 </div>

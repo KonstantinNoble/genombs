@@ -20,16 +20,16 @@ const SectionBlock = ({
   mono?: boolean;
 }) => (
   <div className={`border-l-2 ${borderColor} pl-4 mb-5`}>
-    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2">
+    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
       {label}
     </p>
     <ol className="space-y-2">
       {items.map((item, i) => (
         <li
           key={i}
-          className={`text-sm leading-relaxed ${mono ? "font-mono text-primary bg-muted/50 p-2 rounded" : "text-foreground"}`}
+          className={`text-base leading-relaxed ${mono ? "font-mono text-primary bg-muted/50 p-2 rounded" : "text-foreground/80"}`}
         >
-          <span className="text-muted-foreground mr-2 text-xs">{i + 1}.</span>
+          <span className="text-muted-foreground mr-2 text-sm">{i + 1}.</span>
           {item}
         </li>
       ))}
@@ -70,7 +70,7 @@ const BattleCardView = ({ cards }: BattleCardViewProps) => {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+      <p className="text-sm text-muted-foreground uppercase tracking-wide">
         Sales enablement cards generated from your competitive analysis
       </p>
 
@@ -133,10 +133,10 @@ const BattleCardView = ({ cards }: BattleCardViewProps) => {
               onClick={() => setExpandedIndex(idx)}
               className="w-full text-left"
             >
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-foreground/70">
                 {card.howWeWin[0]?.slice(0, 120)}...
               </p>
-              <p className="text-xs text-primary mt-2">Click to expand</p>
+              <p className="text-sm text-primary mt-2">Click to expand</p>
             </button>
           )}
         </GenomeCard>

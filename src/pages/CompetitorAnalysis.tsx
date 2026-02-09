@@ -84,8 +84,8 @@ const CompetitorAnalysis = () => {
                 Premium
               </Badge>
             </div>
-            <p className="text-muted-foreground">
-              Compare your business against up to 3 competitors across 6 growth dimensions.
+             <p className="text-foreground/70">
+               Compare your business against up to 3 competitors across 6 growth dimensions.
             </p>
           </div>
 

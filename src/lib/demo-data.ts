@@ -54,15 +54,6 @@ export interface PaidStrategy {
   estimatedCPC: string;
 }
 
-export interface MarketSize {
-  tam: { label: string; value: number };
-  sam: { label: string; value: number };
-  som: { label: string; value: number };
-  competitionIntensity: "low" | "medium" | "high";
-  growthTrend: "declining" | "stable" | "growing" | "booming";
-  benchmarks: Array<{ metric: string; value: string }>;
-}
-
 export interface PerformanceScores {
   seo: number;
   content: number;
@@ -72,10 +63,14 @@ export interface PerformanceScores {
   funnel: number;
 }
 
-export interface QuickWin {
-  action: string;
-  effort: "low" | "medium" | "high";
-  timeframe: string;
+export interface IndustryBenchmark {
+  metric: string;
+  value: string;
+}
+
+export interface ScoreInsight {
+  key: keyof PerformanceScores;
+  insight: string;
 }
 
 export interface GrowthReport {
@@ -86,15 +81,16 @@ export interface GrowthReport {
   businessModel: { type: string; description: string; revenueModel: string };
   growthScore: number;
   summary: string;
+  topPriorities: string[];
   icp: ICPPersona[];
   audienceChannels: AudienceChannel[];
   optimizations: Optimization[];
   organicStrategy: OrganicStrategy;
   paidStrategy: PaidStrategy;
-  marketSize: MarketSize;
   performanceScores: PerformanceScores;
   industryAverage: PerformanceScores;
-  quickWins: QuickWin[];
+  industryBenchmarks: IndustryBenchmark[];
+  scoreInsights: ScoreInsight[];
   createdAt: string;
   status: "completed" | "analyzing" | "pending" | "failed";
 }
@@ -112,8 +108,27 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 92,
     summary: "Stripe has built a dominant position in API-first payment infrastructure through developer-first positioning and product-led growth. The website effectively communicates technical value propositions but underutilizes case study content relative to enterprise deal values.",
+    topPriorities: [
+      "Add 3–5 detailed customer case studies with quantified ROI metrics to convert enterprise buyers.",
+      "Create a dedicated security/compliance page with downloadable SOC 2 reports — enterprise buyers actively look for this.",
+      "Increase blog cadence to 2x/week with use-case-driven content for long-tail SEO growth.",
+    ],
     performanceScores: { seo: 88, content: 72, social: 65, paid: 78, trust: 85, funnel: 90 },
     industryAverage: { seo: 65, content: 55, social: 50, paid: 60, trust: 70, funnel: 68 },
+    industryBenchmarks: [
+      { metric: "Average conversion rate", value: "2.5–4.0% for payment pages" },
+      { metric: "Industry CAC", value: "$150–$400 (SMB), $2,000–$8,000 (Enterprise)" },
+      { metric: "Content publishing frequency", value: "1–3x/week among leaders" },
+      { metric: "Avg. monthly traffic (top 5)", value: "30M–80M visits" },
+    ],
+    scoreInsights: [
+      { key: "seo", insight: "Strong — dominant in branded and head terms. Opportunity in long-tail comparison queries." },
+      { key: "content", insight: "Below potential — docs are excellent but blog cadence is too low for the market." },
+      { key: "social", insight: "Developer Twitter engagement is solid but LinkedIn enterprise content is weak." },
+      { key: "paid", insight: "Well-optimized search ads. LinkedIn and YouTube campaigns could scale enterprise pipeline." },
+      { key: "trust", insight: "Strong technical reputation. Formalizing compliance page would close enterprise gaps." },
+      { key: "funnel", insight: "Excellent self-serve funnel. Adding a pricing calculator would reduce mid-market friction." },
+    ],
     icp: [
       {
         name: "Tech-Savvy Startup Founder",
@@ -314,25 +329,6 @@ export const demoReports: GrowthReport[] = [
       competitionLevel: "high",
       estimatedCPC: "$4.50–$12.00 for payment-related keywords",
     },
-    marketSize: {
-      tam: { label: "$120B", value: 120 },
-      sam: { label: "$15B", value: 15 },
-      som: { label: "$2.5B", value: 2.5 },
-      competitionIntensity: "high",
-      growthTrend: "growing",
-      benchmarks: [
-        { metric: "Average conversion rate", value: "2.5–4.0% for payment pages" },
-        { metric: "Industry CAC", value: "$150–$400 for SMB, $2,000–$8,000 for enterprise" },
-        { metric: "Avg. monthly traffic (top 5)", value: "30M–80M visits" },
-        { metric: "Content publishing frequency", value: "1–3x/week among leaders" },
-      ],
-    },
-    quickWins: [
-      { action: "Add 3–5 detailed case studies with quantified metrics to improve enterprise conversion.", effort: "medium", timeframe: "2–4 weeks" },
-      { action: "Create a dedicated security and compliance page with downloadable SOC 2 reports.", effort: "low", timeframe: "1 week" },
-      { action: "Increase blog publishing to 2x/week with use-case-driven content for long-tail SEO.", effort: "medium", timeframe: "Ongoing" },
-      { action: "Build an interactive pricing calculator to reduce friction for mid-market buyers.", effort: "high", timeframe: "4–6 weeks" },
-    ],
     createdAt: "2025-02-05T14:30:00Z",
     status: "completed",
   },
@@ -348,8 +344,27 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 87,
     summary: "Notion dominates the workspace consolidation trend through bottom-up adoption. The template marketplace is an underutilized but high-impact organic channel. Comparison content targeting frustrated users of competing tools represents a significant SEO opportunity.",
+    topPriorities: [
+      "Create 'Notion vs X' comparison pages for top 5 competitors — high-intent SEO opportunity with fast results.",
+      "Launch team-specific onboarding templates to reduce time-to-value for new team signups.",
+      "Invest in short-form video content (TikTok, YouTube Shorts) for template showcases and productivity tips.",
+    ],
     performanceScores: { seo: 78, content: 85, social: 82, paid: 55, trust: 75, funnel: 80 },
     industryAverage: { seo: 60, content: 58, social: 55, paid: 50, trust: 62, funnel: 60 },
+    industryBenchmarks: [
+      { metric: "Average conversion rate", value: "3–5% free-to-paid" },
+      { metric: "Industry CAC", value: "$80–$200 for SMB" },
+      { metric: "Template marketplace impact", value: "15–25% of new user acquisition" },
+      { metric: "Avg. monthly traffic (top 5)", value: "50M–200M visits" },
+    ],
+    scoreInsights: [
+      { key: "seo", insight: "Good branded search but missing comparison pages — 'Notion vs Confluence' has no dedicated landing." },
+      { key: "content", insight: "Strong template ecosystem. Blog content could be more frequent and SEO-focused." },
+      { key: "social", insight: "Viral template sharing on Twitter and TikTok. Community-driven growth is a major strength." },
+      { key: "paid", insight: "Below average — underinvesting in paid channels relative to market opportunity." },
+      { key: "trust", insight: "Trusted by individuals. Enterprise trust signals (SOC 2, SSO) need more visibility." },
+      { key: "funnel", insight: "Excellent free-to-paid conversion for individuals. Team onboarding flow needs work." },
+    ],
     icp: [
       {
         name: "Knowledge Worker / Freelancer",
@@ -506,24 +521,6 @@ export const demoReports: GrowthReport[] = [
       competitionLevel: "medium",
       estimatedCPC: "$2.00–$6.00 for productivity tool keywords",
     },
-    marketSize: {
-      tam: { label: "$45B", value: 45 },
-      sam: { label: "$12B", value: 12 },
-      som: { label: "$3B", value: 3 },
-      competitionIntensity: "medium",
-      growthTrend: "booming",
-      benchmarks: [
-        { metric: "Average conversion rate", value: "3–5% free-to-paid" },
-        { metric: "Industry CAC", value: "$80–$200 for SMB" },
-        { metric: "Avg. monthly traffic (top 5)", value: "50M–200M visits" },
-        { metric: "Template marketplace impact", value: "15–25% of new user acquisition" },
-      ],
-    },
-    quickWins: [
-      { action: "Create 'Notion vs X' comparison pages for top 5 competitors — high-intent SEO opportunity.", effort: "low", timeframe: "1–2 weeks" },
-      { action: "Launch team-specific onboarding templates to reduce time-to-value for new team signups.", effort: "medium", timeframe: "2–3 weeks" },
-      { action: "Invest in short-form video content (TikTok, YouTube Shorts) — productivity tips and template showcases.", effort: "medium", timeframe: "Ongoing" },
-    ],
     createdAt: "2025-02-04T09:15:00Z",
     status: "completed",
   },
@@ -539,8 +536,27 @@ export const demoReports: GrowthReport[] = [
     },
     growthScore: 81,
     summary: "Linear has carved out a strong niche by positioning against legacy tools through speed and UX. Word-of-mouth in the dev community is the primary growth driver. Video content (YouTube) is a largely untapped channel across the entire segment.",
+    topPriorities: [
+      "Create 'Linear vs Jira' and 'Linear vs Shortcut' comparison pages — highest ROI SEO opportunity.",
+      "Launch a YouTube channel with bi-weekly developer workflow videos to capture untapped video search traffic.",
+      "Add a prominent 'Jira migration' one-click import tool to convert competitor users.",
+    ],
     performanceScores: { seo: 62, content: 55, social: 80, paid: 40, trust: 72, funnel: 85 },
     industryAverage: { seo: 58, content: 50, social: 48, paid: 45, trust: 60, funnel: 62 },
+    industryBenchmarks: [
+      { metric: "Average conversion rate", value: "5–8% free-to-paid (dev tools)" },
+      { metric: "Industry CAC", value: "$50–$150 for SMB dev teams" },
+      { metric: "Word-of-mouth impact", value: "60–70% of new signups" },
+      { metric: "Avg. team size at conversion", value: "8–15 members" },
+    ],
+    scoreInsights: [
+      { key: "seo", insight: "Weak in non-branded queries. No comparison pages exist — major missed opportunity." },
+      { key: "content", insight: "Minimal blog presence. Changelog is good but insufficient for organic growth." },
+      { key: "social", insight: "Exceptional Dev Twitter presence. Word-of-mouth is the primary growth engine." },
+      { key: "paid", insight: "Underinvesting — but brand-driven growth may justify lower paid spend." },
+      { key: "trust", insight: "Strong among developers. Enterprise trust signals (SOC 2, compliance) need dedicated page." },
+      { key: "funnel", insight: "Excellent product-led funnel. Free tier converts well once teams experience the speed." },
+    ],
     icp: [
       {
         name: "Engineering Team Lead",
@@ -685,24 +701,6 @@ export const demoReports: GrowthReport[] = [
       competitionLevel: "medium",
       estimatedCPC: "$3.00–$8.00 for developer tool keywords",
     },
-    marketSize: {
-      tam: { label: "$18B", value: 18 },
-      sam: { label: "$4B", value: 4 },
-      som: { label: "$800M", value: 0.8 },
-      competitionIntensity: "medium",
-      growthTrend: "growing",
-      benchmarks: [
-        { metric: "Average conversion rate", value: "5–8% free-to-paid (dev tools)" },
-        { metric: "Industry CAC", value: "$50–$150 for SMB dev teams" },
-        { metric: "Word-of-mouth impact", value: "60–70% of new signups in this segment" },
-        { metric: "Avg. team size at conversion", value: "8–15 members" },
-      ],
-    },
-    quickWins: [
-      { action: "Create 'Linear vs Jira' and 'Linear vs Shortcut' comparison pages for high-intent SEO traffic.", effort: "low", timeframe: "1–2 weeks" },
-      { action: "Launch a YouTube channel with bi-weekly developer workflow videos.", effort: "medium", timeframe: "2–4 weeks" },
-      { action: "Add a 'Jira migration' one-click import tool prominently on the homepage.", effort: "high", timeframe: "4–6 weeks" },
-    ],
     createdAt: "2025-02-03T16:45:00Z",
     status: "completed",
   },

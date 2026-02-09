@@ -28,6 +28,28 @@ const opportunityColors = {
 
 const GrowthStrategySection = ({ type, organicStrategy, paidStrategy }: GrowthStrategySectionProps) => {
   if (type === "organic" && organicStrategy) {
+    // Build compact channel strategy rows from content, social, community
+    const channelRows = [
+      ...organicStrategy.content.formats.slice(0, 2).map((f) => ({
+        channel: "Content",
+        format: f,
+        frequency: organicStrategy.content.frequency.split(". ").pop() || organicStrategy.content.frequency,
+        focus: organicStrategy.content.topics[0] || "",
+      })),
+      ...organicStrategy.social.platforms.map((p, i) => ({
+        channel: p,
+        format: organicStrategy.social.contentTypes[i] || organicStrategy.social.contentTypes[0],
+        frequency: organicStrategy.social.cadence,
+        focus: organicStrategy.social.contentTypes.slice(0, 2).join(", "),
+      })),
+      {
+        channel: "Community",
+        format: organicStrategy.community.channels.join(", "),
+        frequency: "Ongoing",
+        focus: organicStrategy.community.approach.split(". ")[0],
+      },
+    ];
+
     return (
       <div className="space-y-5">
         {/* SEO with Keyword Table */}
@@ -75,65 +97,36 @@ const GrowthStrategySection = ({ type, organicStrategy, paidStrategy }: GrowthSt
           </CardContent>
         </Card>
 
-        {/* Content */}
+        {/* Content, Social & Community — Compact Table */}
         <Card className="border-border bg-card">
-          <CardContent className="p-5">
-            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Content Strategy</h4>
-            <div className="space-y-3">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Formats</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {organicStrategy.content.formats.map((f) => (
-                    <Badge key={f} variant="outline" className="text-xs font-normal">{f}</Badge>
+          <CardContent className="p-0">
+            <div className="px-5 py-3 border-b border-border">
+              <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                Content, Social & Community
+              </h4>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Channel</th>
+                    <th className="text-left py-2 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Format</th>
+                    <th className="text-left py-2 px-4 text-[10px] uppercase tracking-wider text-muted-foreground hidden sm:table-cell">Frequency</th>
+                    <th className="text-left py-2 px-4 text-[10px] uppercase tracking-wider text-muted-foreground hidden md:table-cell">Focus</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {channelRows.map((row, i) => (
+                    <tr key={i} className="border-b border-border/50">
+                      <td className="py-2 px-4 text-sm font-medium text-foreground whitespace-nowrap">{row.channel}</td>
+                      <td className="py-2 px-4 text-xs text-muted-foreground">{row.format}</td>
+                      <td className="py-2 px-4 text-xs text-muted-foreground hidden sm:table-cell">{row.frequency}</td>
+                      <td className="py-2 px-4 text-xs text-muted-foreground hidden md:table-cell">{row.focus}</td>
+                    </tr>
                   ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Topics</p>
-                <ul className="space-y-1">
-                  {organicStrategy.content.topics.map((t, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <p className="text-xs text-muted-foreground italic">{organicStrategy.content.frequency}</p>
+                </tbody>
+              </table>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Social */}
-        <Card className="border-border bg-card">
-          <CardContent className="p-5">
-            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Social Media</h4>
-            <div className="space-y-2">
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {organicStrategy.social.platforms.map((p) => (
-                  <Badge key={p} variant="secondary" className="text-xs font-normal">{p}</Badge>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {organicStrategy.social.contentTypes.map((ct) => (
-                  <Badge key={ct} variant="outline" className="text-xs font-normal">{ct}</Badge>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground italic">{organicStrategy.social.cadence}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Community */}
-        <Card className="border-border bg-card">
-          <CardContent className="p-5">
-            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Community</h4>
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {organicStrategy.community.channels.map((ch) => (
-                <Badge key={ch} variant="secondary" className="text-xs font-normal">{ch}</Badge>
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{organicStrategy.community.approach}</p>
           </CardContent>
         </Card>
       </div>

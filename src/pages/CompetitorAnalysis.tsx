@@ -266,7 +266,7 @@ const CompetitorAnalysis = () => {
                           ))}
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                      <p className="text-sm text-foreground/70 leading-relaxed border-l-2 border-primary/30 pl-3">
                         {gap.recommendation}
                       </p>
                     </div>

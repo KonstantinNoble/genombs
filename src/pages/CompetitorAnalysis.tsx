@@ -90,243 +90,236 @@ const CompetitorAnalysis = () => {
             </p>
           </div>
 
-          {/* Tabs */}
-          <Tabs defaultValue="analysis" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="analysis">Analysis</TabsTrigger>
-              <TabsTrigger value="battlecards">Battle Cards</TabsTrigger>
-              <TabsTrigger value="winloss">Win/Loss</TabsTrigger>
-            </TabsList>
-
-            {/* Analysis Tab */}
-            <TabsContent value="analysis">
-              {/* URL Input */}
-              <Card className="border-border bg-card mb-6">
-                <CardContent className="p-5 sm:p-6 space-y-4">
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
+          {/* URL Input */}
+          <Card className="border-border bg-card mb-6">
+            <CardContent className="p-5 sm:p-6 space-y-4">
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Your Website</p>
+                <Input
+                  type="url"
+                  placeholder="https://your-website.com"
+                  value={yourUrl}
+                  onChange={(e) => setYourUrl(e.target.value)}
+                  className="h-11 text-base bg-background border-border"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
+                <div className="space-y-2">
+                  {competitorUrls.map((url, i) => (
                     <Input
+                      key={i}
                       type="url"
-                      placeholder="https://your-website.com"
-                      value={yourUrl}
-                      onChange={(e) => setYourUrl(e.target.value)}
-                      className="h-11 text-base bg-background border-border"
+                      placeholder={`https://competitor-${i + 1}.com`}
+                      value={url}
+                      onChange={(e) => updateCompetitor(i, e.target.value)}
+                      className="h-10 text-sm bg-background border-border"
                     />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Competitors (up to 3)</p>
-                    <div className="space-y-2">
-                      {competitorUrls.map((url, i) => (
-                        <Input
-                          key={i}
-                          type="url"
-                          placeholder={`https://competitor-${i + 1}.com`}
-                          value={url}
-                          onChange={(e) => updateCompetitor(i, e.target.value)}
-                          className="h-10 text-sm bg-background border-border"
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {isPremium ? (
+                  <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
+                    Analyze Competitors
+                  </Button>
+                ) : (
                   <div className="flex items-center gap-3">
-                    {isPremium ? (
-                      <Button onClick={handleAnalyze} disabled={!yourUrl.trim()}>
-                        Analyze Competitors
-                      </Button>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <Button onClick={() => navigate("/pricing")}>
-                          Upgrade to Premium
-                        </Button>
-                        <span className="text-sm text-muted-foreground">
-                          Competitor Analysis is a Premium feature
-                        </span>
-                      </div>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowDemo(!showDemo)}
-                    >
-                      {showDemo ? "Hide Demo" : "View Demo Report"}
+                    <Button onClick={() => navigate("/pricing")}>
+                      Upgrade to Premium
                     </Button>
+                    <span className="text-sm text-muted-foreground">
+                      Competitor Analysis is a Premium feature
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDemo(!showDemo)}
+                >
+                  {showDemo ? "Hide Demo" : "View Demo Report"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-              {/* Demo Report */}
-              {showReport && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-mono text-muted-foreground">{analysis.yourDomain}</span>
-                    <span className="text-muted-foreground">vs</span>
-                    {analysis.competitors.map((c) => (
-                      <span key={c.name} className="text-sm font-mono text-muted-foreground">{c.domain}</span>
-                    ))}
-                    <Badge variant="outline" className="text-[10px]">Demo</Badge>
-                  </div>
+          {/* Demo Report */}
+          {showReport && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-mono text-muted-foreground">{analysis.yourDomain}</span>
+                <span className="text-muted-foreground">vs</span>
+                {analysis.competitors.map((c) => (
+                  <span key={c.name} className="text-sm font-mono text-muted-foreground">{c.domain}</span>
+                ))}
+                <Badge variant="outline" className="text-[10px]">Demo</Badge>
+              </div>
 
-                  <CompetitorRadarChart
-                    yourName={analysis.yourName}
-                    yourScores={analysis.yourScores}
-                    competitors={analysis.competitors}
-                  />
+              <CompetitorRadarChart
+                yourName={analysis.yourName}
+                yourScores={analysis.yourScores}
+                competitors={analysis.competitors}
+              />
 
-                  <GenomeCard title="Head-to-Head Comparison">
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-border">
-                            <th className="text-left py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Dimension</th>
-                            <th className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-primary">{analysis.yourName}</th>
+              <GenomeCard title="Head-to-Head Comparison">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">Dimension</th>
+                        <th className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-primary">{analysis.yourName}</th>
+                        {analysis.competitors.map((c) => (
+                          <th key={c.name} className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">{c.name}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dimensions.map((d) => {
+                        const yourScore = analysis.yourScores[d.key];
+                        const allScores = [yourScore, ...analysis.competitors.map((c) => c.scores[d.key])];
+                        const maxScore = Math.max(...allScores);
+                        return (
+                          <tr key={d.key} className="border-b border-border/50">
+                            <td className="py-3 px-4 text-sm text-foreground">{d.label}</td>
+                            <td className={`py-3 px-4 text-center text-sm font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
+                              {yourScore}
+                            </td>
                             {analysis.competitors.map((c) => (
-                              <th key={c.name} className="text-center py-3 px-4 text-[10px] uppercase tracking-wider text-muted-foreground">{c.name}</th>
+                              <td key={c.name} className={`py-3 px-4 text-center text-sm font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-muted-foreground"}`}>
+                                {c.scores[d.key]}
+                              </td>
                             ))}
                           </tr>
-                        </thead>
-                        <tbody>
-                          {dimensions.map((d) => {
-                            const yourScore = analysis.yourScores[d.key];
-                            const allScores = [yourScore, ...analysis.competitors.map((c) => c.scores[d.key])];
-                            const maxScore = Math.max(...allScores);
-                            return (
-                              <tr key={d.key} className="border-b border-border/50">
-                                <td className="py-3 px-4 text-sm text-foreground">{d.label}</td>
-                                <td className={`py-3 px-4 text-center text-sm font-mono ${yourScore === maxScore ? "text-primary font-bold" : "text-foreground"}`}>
-                                  {yourScore}
-                                </td>
-                                {analysis.competitors.map((c) => (
-                                  <td key={c.name} className={`py-3 px-4 text-center text-sm font-mono ${c.scores[d.key] === maxScore ? "text-primary font-bold" : "text-muted-foreground"}`}>
-                                    {c.scores[d.key]}
-                                  </td>
-                                ))}
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </GenomeCard>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </GenomeCard>
 
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground mb-4">SWOT Analysis</h2>
-                    <div className="grid grid-cols-1 gap-4">
-                      {analysis.swotAnalyses.map((swot) => (
-                        <CompetitorSWOT key={swot.competitor} swot={swot} />
-                      ))}
-                    </div>
-                  </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground mb-4">SWOT Analysis</h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {analysis.swotAnalyses.map((swot) => (
+                    <CompetitorSWOT key={swot.competitor} swot={swot} />
+                  ))}
+                </div>
+              </div>
 
-                  <GenomeCard title="Keyword Gaps">
-                    <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                      Keywords your competitors rank for that you don't
-                    </p>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-border">
-                            <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                            <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                            <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitors</th>
-                            <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">You</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {analysis.keywordGaps.map((gap) => (
-                            <tr key={gap.keyword} className="border-b border-border/50">
-                              <td className="py-2 px-3 text-sm font-mono text-foreground">{gap.keyword}</td>
-                              <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{gap.volume}</td>
-                              <td className="py-2 px-3">
-                                <div className="flex flex-wrap gap-1">
-                                  {gap.competitorHas.map((c) => (
-                                    <Badge key={c} variant="outline" className="text-[10px]">{c}</Badge>
-                                  ))}
-                                </div>
-                              </td>
-                              <td className="py-2 px-3 text-center">
-                                <span className={`text-sm font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
-                                  {gap.youHave ? "Yes" : "No"}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </GenomeCard>
-
-                  <GenomeCard title="Channel Gaps">
-                    <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                      Channels your competitors use that you're missing
-                    </p>
-                    <div className="space-y-3">
-                      {analysis.channelGaps.map((gap) => (
-                        <div key={gap.channel} className="border border-border rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-foreground">{gap.channel}</span>
-                              {gap.youUsing ? (
-                                <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">Active</Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-[10px] bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
-                              )}
-                            </div>
-                            <div className="flex gap-1">
-                              {gap.competitorUsing.map((c) => (
-                                <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+              <GenomeCard title="Keyword Gaps">
+                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                  Keywords your competitors rank for that you don't
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
+                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
+                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitors</th>
+                        <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">You</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analysis.keywordGaps.map((gap) => (
+                        <tr key={gap.keyword} className="border-b border-border/50">
+                          <td className="py-2 px-3 text-sm font-mono text-foreground">{gap.keyword}</td>
+                          <td className="py-2 px-3 text-sm font-mono text-muted-foreground">{gap.volume}</td>
+                          <td className="py-2 px-3">
+                            <div className="flex flex-wrap gap-1">
+                              {gap.competitorHas.map((c) => (
+                                <Badge key={c} variant="outline" className="text-[10px]">{c}</Badge>
                               ))}
                             </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
-                            {gap.recommendation}
-                          </p>
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <span className={`text-sm font-mono ${gap.youHave ? "text-primary" : "text-destructive"}`}>
+                              {gap.youHave ? "Yes" : "No"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </GenomeCard>
+
+              <GenomeCard title="Channel Gaps">
+                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                  Channels your competitors use that you're missing
+                </p>
+                <div className="space-y-3">
+                  {analysis.channelGaps.map((gap) => (
+                    <div key={gap.channel} className="border border-border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-foreground">{gap.channel}</span>
+                          {gap.youUsing ? (
+                            <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">Active</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
+                          )}
                         </div>
-                      ))}
+                        <div className="flex gap-1">
+                          {gap.competitorUsing.map((c) => (
+                            <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                        {gap.recommendation}
+                      </p>
                     </div>
-                  </GenomeCard>
-
-                  <GenomeCard title="Actionable Takeaways">
-                    <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                      Concrete actions based on competitive gaps
-                    </p>
-                    <ol className="space-y-3">
-                      {analysis.takeaways.map((takeaway, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-foreground leading-relaxed">
-                          <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
-                            {i + 1}
-                          </span>
-                          {takeaway}
-                        </li>
-                      ))}
-                    </ol>
-                  </GenomeCard>
+                  ))}
                 </div>
-              )}
-            </TabsContent>
+              </GenomeCard>
 
-            {/* Battle Cards Tab */}
-            <TabsContent value="battlecards">
-              <PremiumLock title="Unlock Battle Cards with Premium">
-                <BattleCardView cards={demoBattleCards} />
-              </PremiumLock>
-            </TabsContent>
+              <GenomeCard title="Actionable Takeaways">
+                <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
+                  Concrete actions based on competitive gaps
+                </p>
+                <ol className="space-y-3">
+                  {analysis.takeaways.map((takeaway, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-foreground leading-relaxed">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
+                        {i + 1}
+                      </span>
+                      {takeaway}
+                    </li>
+                  ))}
+                </ol>
+              </GenomeCard>
 
-            {/* Win/Loss Tab */}
-            <TabsContent value="winloss">
-              <PremiumLock title="Unlock Win/Loss Tracking with Premium">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                      Track deal outcomes against competitors to identify patterns
-                    </p>
-                    <DealForm competitors={competitors} onSubmit={handleAddDeal} />
+              {/* Battle Cards Section */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <h2 className="text-lg font-semibold text-foreground">Battle Cards</h2>
+                  <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
+                </div>
+                <PremiumLock title="Unlock Battle Cards with Premium">
+                  <BattleCardView cards={demoBattleCards} />
+                </PremiumLock>
+              </div>
+
+              {/* Win/Loss Section */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-foreground">Win/Loss Tracking</h2>
+                    <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30 text-[10px]">Premium</Badge>
                   </div>
-                  <WinLossChart deals={deals} />
-                  <DealHistoryTable deals={deals} />
+                  {isPremium && <DealForm competitors={competitors} onSubmit={handleAddDeal} />}
                 </div>
-              </PremiumLock>
-            </TabsContent>
-          </Tabs>
+                <PremiumLock title="Unlock Win/Loss Tracking with Premium">
+                  <div className="space-y-4">
+                    <WinLossChart deals={deals} />
+                    <DealHistoryTable deals={deals} />
+                  </div>
+                </PremiumLock>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 

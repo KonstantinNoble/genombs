@@ -89,7 +89,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
           <Card className="border-border bg-card">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
+                <h4 className="text-base font-semibold text-foreground uppercase tracking-wide">SEO Keyword Opportunities</h4>
                 {seoScore !== undefined && (
                   <span className="text-sm font-mono text-primary">{seoScore}/100</span>
                 )}

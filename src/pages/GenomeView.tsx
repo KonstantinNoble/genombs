@@ -12,6 +12,7 @@ import ICPCard from "@/components/genome/ICPCard";
 import AudienceChannelCard from "@/components/genome/AudienceChannelCard";
 import OptimizationCard from "@/components/genome/OptimizationCard";
 import PerformanceChart from "@/components/genome/PerformanceChart";
+import PremiumLock from "@/components/genome/PremiumLock";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { demoReports } from "@/lib/demo-data";
@@ -164,25 +165,28 @@ const GenomeView = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {report.businessModel.description}
                   </p>
-                  {/* Positioning */}
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
-                    <p className="text-sm text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
-                      {report.businessModel.positioning}
-                    </p>
-                  </div>
-                  {/* Differentiators */}
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Key Differentiators</p>
-                    <ul className="space-y-1.5">
-                      {report.businessModel.differentiators.map((d, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {/* Premium: Positioning + Differentiators */}
+                  <PremiumLock title="Unlock Positioning & Differentiators">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
+                        <p className="text-sm text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                          {report.businessModel.positioning}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Key Differentiators</p>
+                        <ul className="space-y-1.5">
+                          {report.businessModel.differentiators.map((d, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
+                              {d}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </PremiumLock>
                 </div>
               </GenomeCard>
             </div>
@@ -199,6 +203,7 @@ const GenomeView = () => {
                   companyName={report.companyName}
                   scoreInsights={report.scoreInsights}
                   industryBenchmarks={report.industryBenchmarks}
+                  isPremium={isPremium}
                 />
               </GenomeCard>
             </div>
@@ -211,7 +216,7 @@ const GenomeView = () => {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {report.icp.map((persona, i) => (
-                    <ICPCard key={persona.name} persona={persona} index={i} />
+                    <ICPCard key={persona.name} persona={persona} index={i} isPremium={isPremium} />
                   ))}
                 </div>
               </GenomeCard>
@@ -230,6 +235,7 @@ const GenomeView = () => {
                   seoRecommendation={report.seoRecommendation}
                   paidCompetitionLevel={report.paidCompetitionLevel}
                   estimatedCPC={report.estimatedCPC}
+                  isPremium={isPremium}
                 />
               </GenomeCard>
             </div>
@@ -245,7 +251,7 @@ const GenomeView = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {report.optimizations.map((opt, i) => (
-                    <OptimizationCard key={i} optimization={opt} />
+                    <OptimizationCard key={i} optimization={opt} isPremium={isPremium} />
                   ))}
                 </div>
               </div>

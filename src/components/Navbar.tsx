@@ -138,6 +138,7 @@ const Navbar = () => {
           <div className="hidden md:flex flex-1 items-center justify-center gap-7">
             <NavLink to="/">Home</NavLink>
             {user && <NavLink to="/dashboard">Dashboard</NavLink>}
+            {user && <NavLink to="/competitor-analysis">Competitors</NavLink>}
             <NavLink to="/pricing">Pricing</NavLink>
             <NavLink to="/contact">Contact</NavLink>
           </div>
@@ -227,7 +228,12 @@ const Navbar = () => {
                   Dashboard
                 </MobileNavLink>
               )}
-              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={user ? 2 : 1}>
+              {user && (
+                <MobileNavLink to="/competitor-analysis" onClick={() => setIsOpen(false)} delay={2}>
+                  Competitors
+                </MobileNavLink>
+              )}
+              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={user ? 3 : 1}>
                 Pricing
               </MobileNavLink>
               <MobileNavLink to="/contact" onClick={() => setIsOpen(false)} delay={user ? 3 : 2}>

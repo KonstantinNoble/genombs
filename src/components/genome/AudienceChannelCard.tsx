@@ -180,7 +180,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
         isPremium ? (
           <div className="flex items-center gap-6 px-1">
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Paid Competition</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Paid Competition</p>
               <Badge variant="outline" className={`mt-1 ${budgetColors[paidCompetitionLevel]}`}>
                 {paidCompetitionLevel}
               </Badge>

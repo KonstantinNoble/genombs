@@ -255,10 +255,10 @@ const CompetitorAnalysis = () => {
                         <div className="flex items-center gap-2">
                           <span className="text-base font-medium text-foreground">{gap.channel}</span>
                           {gap.youUsing ? (
-                            <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">Active</Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
-                          )}
+                             <Badge variant="outline" className="text-xs bg-primary/15 text-primary border-primary/30">Active</Badge>
+                           ) : (
+                             <Badge variant="outline" className="text-xs bg-destructive/15 text-destructive border-destructive/30">Missing</Badge>
+                           )}
                         </div>
                         <div className="flex gap-1">
                           {gap.competitorUsing.map((c) => (

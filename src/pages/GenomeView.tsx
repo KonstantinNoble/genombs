@@ -169,8 +169,8 @@ const GenomeView = () => {
                   <PremiumLock title="Unlock Positioning & Differentiators">
                     <div className="space-y-4">
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
-                        <p className="text-sm text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
+                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Positioning</p>
+                         <p className="text-base text-foreground leading-relaxed border-l-2 border-primary/30 pl-3">
                           {report.businessModel.positioning}
                         </p>
                       </div>

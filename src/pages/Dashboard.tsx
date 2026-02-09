@@ -87,8 +87,8 @@ const Dashboard = () => {
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">
               Growth Hub
             </h1>
-            <p className="text-muted-foreground mb-6">
-              Scan your website to get growth insights — ICP, audience channels, optimization tips, and strategies.
+             <p className="text-foreground/70 mb-6">
+               Scan your website to get growth insights — ICP, audience channels, optimization tips, and strategies.
             </p>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">

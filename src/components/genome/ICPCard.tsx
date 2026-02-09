@@ -28,13 +28,13 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
               variant="outline"
               className={
                 persona.priority === "primary"
-                  ? "bg-primary/15 text-primary border-primary/30 text-[10px]"
-                  : "text-[10px]"
+                  ? "bg-primary/15 text-primary border-primary/30 text-xs"
+                  : "text-xs"
               }
             >
               {persona.priority}
             </Badge>
-            <Badge variant="outline" className="text-[10px]">
+            <Badge variant="outline" className="text-xs">
               {persona.size}
             </Badge>
           </div>

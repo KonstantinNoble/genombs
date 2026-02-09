@@ -253,7 +253,7 @@ const CompetitorAnalysis = () => {
                     <div key={gap.channel} className="border border-border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">{gap.channel}</span>
+                          <span className="text-base font-medium text-foreground">{gap.channel}</span>
                           {gap.youUsing ? (
                             <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">Active</Badge>
                           ) : (

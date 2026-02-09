@@ -228,7 +228,7 @@ const CompetitorAnalysis = () => {
                           <td className="py-2 px-3">
                             <div className="flex flex-wrap gap-1">
                               {gap.competitorHas.map((c) => (
-                                <Badge key={c} variant="outline" className="text-[10px]">{c}</Badge>
+                                <Badge key={c} variant="outline" className="text-xs">{c}</Badge>
                               ))}
                             </div>
                           </td>

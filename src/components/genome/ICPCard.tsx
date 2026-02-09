@@ -72,10 +72,10 @@ const ICPCard = ({ persona, index, isPremium = false }: ICPCardProps) => {
           {isPremium ? (
             <>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Buying Triggers</p>
                 <ul className="space-y-1.5">
                   {persona.buyingTriggers.map((trigger, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+                    <li key={i} className="flex items-start gap-2 text-base text-foreground/70 leading-relaxed">
                       <span className="w-1.5 h-1.5 rounded-full bg-chart-4 shrink-0 mt-2" />
                       {trigger}
                     </li>

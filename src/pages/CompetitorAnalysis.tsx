@@ -214,10 +214,10 @@ const CompetitorAnalysis = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Keyword</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Volume</th>
-                        <th className="text-left py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">Competitors</th>
-                        <th className="text-center py-2 px-3 text-[10px] uppercase tracking-wider text-muted-foreground">You</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Keyword</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Volume</th>
+                         <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">Competitors</th>
+                         <th className="text-center py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">You</th>
                       </tr>
                     </thead>
                     <tbody>

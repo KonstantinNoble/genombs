@@ -208,7 +208,7 @@ const Dashboard = () => {
                     All <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{filteredScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="completed">
-                    Completed <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{completedScans.length}</Badge>
+                    Completed <Badge variant="secondary" className="ml-1.5 text-xs px-1.5">{completedScans.length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="analyzing">
                     In Progress <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{analyzingScans.length}</Badge>

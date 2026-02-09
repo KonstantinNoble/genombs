@@ -1,61 +1,69 @@
 
+# Frontend-Aenderungen: Dashboard Scan History + Competitor Suggest-Button
 
-# Schriften lesbarer machen -- Dashboard + Competitor Analysis
+Nur Frontend-Aenderungen -- keine Edge Function, kein Backend.
 
-## Problem
+---
 
-Die Schriftgroessen sind durchgehend zu klein und die Farben zu gedaempft. Besonders betroffen:
-- Labels nutzen `text-[10px]` (10px) -- kaum lesbar
-- Body-Text nutzt `text-sm` (14px) mit `text-muted-foreground` -- blass und klein
-- Tabellenkoepfe nutzen `text-[10px]` -- winzig
-- Section-Header nutzen `text-lg` (18px) -- koennte prominenter sein
+## 1. Dashboard: Tabs ersetzen durch Newest / Oldest / Favorites
 
-## Loesung
+### Was sich aendert
 
-Systematische Groessen-Erhoehung in allen Genome-Komponenten und beiden Seiten:
+Die Tabs "All / Completed / In Progress / Failed" werden entfernt und durch drei Toggle-Buttons ersetzt:
 
-### Schriftgroessen-Aenderungen
+```text
+Vorher:  [All]  [Completed]  [In Progress]  [Failed]
+Nachher: [Newest]  [Oldest]  [Favorites]
+```
 
-| Element | Vorher | Nachher |
-|---|---|---|
-| Section Labels (uppercase) | `text-[10px]` | `text-xs` (12px) |
-| Body Text | `text-sm` (14px) | `text-base` (16px) |
-| Body Text (secondary) | `text-xs` (12px) | `text-sm` (14px) |
-| Section Headers | `text-lg` (18px) | `text-xl` (20px) |
-| Card Titles (GenomeCard) | `text-lg` | `text-xl` |
-| Table Headers | `text-[10px]` | `text-xs` |
-| Table Cells | `text-sm` | `text-base` |
-| Descriptions | `text-xs text-muted-foreground` | `text-sm text-muted-foreground` |
-| Badge Text | `text-[10px]` | `text-xs` |
-| List Items | `text-sm` | `text-base` |
+### Favoriten-System
 
-### Farb-Verstaerkungen
+- Jede ScanCard bekommt einen klickbaren Stern (oben rechts, neben dem Status-Badge)
+- Ausgefuellter Stern = Favorit, Outline = kein Favorit
+- Favoriten-State wird lokal mit `useState<Set<string>>` verwaltet
+- 2 Demo-Scans werden als Favoriten vormarkiert
 
-- `text-muted-foreground` bei wichtigem Body-Text ersetzen durch `text-foreground/80` (leicht gedaempft, aber deutlich lesbarer)
-- Section Labels bleiben `text-muted-foreground` (bewusst dezent)
-- Tabelleninhalte: `text-muted-foreground` zu `text-foreground/70` (besserer Kontrast)
+### Technische Aenderungen
 
-### Betroffene Dateien
+**`src/lib/demo-data.ts`**
+- `demoScans` Mapping erhaelt ein neues Feld `isFavorite?: boolean`
+- Die ersten 2 Demo-Scans (Stripe, Notion) bekommen `isFavorite: true`
 
-1. **`src/components/genome/GenomeCard.tsx`** -- CardTitle von `text-lg` zu `text-xl`
-2. **`src/components/genome/BattleCardView.tsx`** -- Labels, Items, Beschreibung
-3. **`src/components/genome/WinLossChart.tsx`** -- Summary Cards Labels, Reasons, Bars
-4. **`src/components/genome/DealHistoryTable.tsx`** -- Tabellenkoepfe, Zellen, Badges
-5. **`src/components/genome/CompetitorSWOT.tsx`** -- SWOT Labels, Items
-6. **`src/components/genome/ICPCard.tsx`** -- Labels, Pain Points, Goals, Premium Sections
-7. **`src/components/genome/OptimizationCard.tsx`** -- Area Title, Recommendation, Labels
-8. **`src/components/genome/AudienceChannelCard.tsx`** -- SEO Tabelle, Channel Labels, Links
-9. **`src/components/genome/PerformanceChart.tsx`** -- Score Insights, Benchmark Tabelle
-10. **`src/components/genome/StatCard.tsx`** -- Label
-11. **`src/components/genome/ScanCard.tsx`** -- Domain, Segment, Sections-Text
-12. **`src/components/genome/GenomeScore.tsx`** -- Label
-13. **`src/components/genome/SectionNav.tsx`** -- Nav-Buttons
-14. **`src/components/genome/PremiumLock.tsx`** -- Overlay-Text
-15. **`src/pages/CompetitorAnalysis.tsx`** -- Seitentext, Tabellen, Descriptions
-16. **`src/pages/GenomeView.tsx`** -- Executive Summary, Section Headers, Descriptions
-17. **`src/pages/Dashboard.tsx`** -- Competitor CTA, Descriptions, URL Hint
+**`src/components/genome/ScanCard.tsx`**
+- Neue Props: `isFavorite: boolean` und `onToggleFavorite?: (id: string) => void`
+- Stern-Icon (lucide `Star`) neben dem Status-Badge
+- Klick-Handler mit `e.preventDefault()` und `e.stopPropagation()` (damit der Link nicht ausgeloest wird)
+- Stern-Styling: Favorit = `fill-primary text-primary`, Nicht-Favorit = `text-muted-foreground`
 
-### Design-Prinzip
+**`src/pages/Dashboard.tsx`**
+- `Tabs/TabsList/TabsTrigger/TabsContent` komplett entfernen
+- Neuer State: `activeFilter: "newest" | "oldest" | "favorites"` (Standard: "newest")
+- Neuer State: `favorites: Set<string>` (initialisiert aus Demo-Daten mit `isFavorite: true`)
+- Der bestehende `sortOrder`-Toggle-Button wird entfernt (durch die neuen Filter-Buttons ersetzt)
+- 3 Filter-Buttons im gleichen Bereich wie vorher die Tabs:
+  - Aktiver Button: `bg-primary text-primary-foreground`
+  - Inaktiver Button: `variant="outline"`
+- Filter-Logik:
+  - "newest": alle Scans, neueste zuerst
+  - "oldest": alle Scans, aelteste zuerst
+  - "favorites": nur `favorites.has(id)`, neueste zuerst
+- `completedScans`, `analyzingScans`, `failedScans` Variablen werden entfernt
+- `renderScanList` gibt `isFavorite` und `onToggleFavorite` an jede ScanCard weiter
 
-Die Erhoehung ist moderat (jeweils eine Stufe hoch), damit das minimalistische Design erhalten bleibt, aber die Lesbarkeit deutlich steigt. Die visuelle Hierarchie bleibt intakt -- Labels sind weiterhin kleiner als Body-Text, Headers dominieren.
+---
+
+## 2. Competitor Analysis: "Suggest Competitors" Button (nur UI)
+
+### Was sich aendert
+
+Ein "Suggest Competitors" Button wird neben der "Competitors (up to 3)" Ueberschrift eingefuegt. Da wir nur Frontend machen, zeigt der Button vorerst einen Toast "Coming soon" an.
+
+### Technische Aenderungen
+
+**`src/pages/CompetitorAnalysis.tsx`**
+- Button "Suggest Competitors" neben dem Label "Competitors (up to 3)"
+- `variant="outline" size="sm"`
+- Disabled wenn `yourUrl` leer ist
+- onClick: Toast mit "AI competitor suggestions coming soon"
+- Spaeter wird hier die Edge Function angebunden
 

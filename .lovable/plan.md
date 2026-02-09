@@ -1,105 +1,136 @@
 
-# Growth Report -- Ueberarbeitung fuer maximalen Nutzernutzen
 
-## Analyse aus Unternehmersicht
+# Growth Strategy entfernen und verbleibende Sektionen erweitern
 
-Als Unternehmer, der seine Website gescannt hat, will ich **sofort wissen: Was muss ich JETZT tun, um zu wachsen?** Die aktuelle Seite hat einige Schwaechen:
+## Was passiert
 
-### Was ENTFERNT wird
-
-**1. Quick Wins (komplett entfernen)**
-- Redundant: Die gleichen Informationen stehen bereits in den Optimization- und Strategy-Sektionen
-- Ein Unternehmer liest den Report von oben nach unten -- die Quick Wins am Ende wiederholen nur, was er schon gelesen hat
-- Wirkt wie kuenstliches Auffuellen
-
-**2. Market Opportunity / TAM-SAM-SOM (komplett entfernen)**
-- Ein Entrepreneur mit einer Website will wissen "Wie bekomme ich mehr Kunden", nicht "Wie gross ist der Gesamtmarkt"
-- TAM/SAM/SOM sind VC-Pitch-Zahlen, keine actionable Insights
-- Die Benchmarks-Tabelle darunter (CAC, Conversion Rate) ist jedoch nuetzlich -- diese wird in die Performance-Sektion verschoben
-- Kein Unternehmer hat je seine Website verbessert, weil er wusste, dass der TAM $120B ist
-
-### Was VERBESSERT wird
-
-**3. Performance Overview aufwerten**
-- Der Radar-Chart ist gut, aber die Score-Karten darunter sind zu abstrakt (was bedeutet "Content: 55"?)
-- NEU: Unter jedem Score eine **einzeilige Erklaerung** was der Score bedeutet und was der naechste Schritt ist
-- Die bisher in Market Opportunity liegenden **Benchmarks** (CAC, Conversion Rates etc.) werden hierher verschoben als "Industry Benchmarks" Sub-Sektion
-- So hat der User alles an einem Ort: "Wo stehe ich?" + "Was ist normal in meiner Branche?"
-
-**4. Audience Channels: Konkretere Darstellung**
-- Aktuell werden Links als Badges angezeigt, die nicht klickbar sind -- das ist frustrierend
-- NEU: Links werden als echte klickbare Links dargestellt (soweit sie URLs sind)
-- Fuer nicht-URL-Links (z.B. "r/SaaS") wird ein Such-Link generiert (z.B. `reddit.com/r/SaaS`)
-- Die Collapsible-Struktur bleibt, aber die **geschlossene Ansicht** zeigt bereits 2-3 der wichtigsten Links und Keywords als Preview -- damit der User sofort Wert sieht, ohne aufklappen zu muessen
-
-**5. Organic Growth: Content Strategy kompakter**
-- Die Content-/Social-/Community-Sub-Karten sind aktuell einzelne Cards mit nur wenig Inhalt (3-4 Badges + 1 Satz)
-- NEU: Diese drei werden in **eine** kompakte Karte zusammengefasst als Tabelle/Grid: Kanal | Format | Frequenz | Fokus
-- Spart Platz, wirkt professioneller, ist schneller erfassbar
-- Die SEO-Keyword-Tabelle bleibt unveraendert (die ist gut)
-
-**6. Executive Summary: Actionable machen**
-- Die Mini-Stats (ICP Segments: 3, Channels: 7, Optimizations: 5) sind nur Zaehler -- das sagt einem Unternehmer wenig
-- NEU: Ersetzen durch die **3 wichtigsten Handlungsempfehlungen** (1-Satz Zusammenfassung der Top-3 Prioritaeten aus den Optimizations, als nummerierte Liste)
-- Der Unternehmer sieht sofort: "Das sind die 3 wichtigsten Dinge die ich tun muss"
-
-### Neue Sektionsreihenfolge
-
-Die Reihenfolge wird nach der Logik eines Unternehmers sortiert: **Verstehen -> Finden -> Verbessern -> Wachsen**
-
-```text
-1. Overview (Executive Summary + Top-3 Prioritaeten)
-2. Business Snapshot (kurz, wie gehabt)
-3. Performance Overview (Radar + Score-Erklaerungen + Industry Benchmarks)
-4. ICP (Wer ist mein Kunde?)
-5. Audience Channels (Wo finde ich die?)
-6. Optimization (Was muss ich an meiner Website verbessern?)
-7. Growth Strategy: Organic (SEO-Tabelle + Content/Social/Community kompakt)
-8. Growth Strategy: Paid (wie gehabt, ist gut)
-```
-
-Entfernt: Quick Wins, Market Opportunity
+Die beiden "Growth Strategy" Sektionen (Organic + Paid) werden entfernt. Deren nuetzliche Inhalte (SEO-Keyword-Tabelle, Paid-Channel-Tabelle) werden in die verbleibenden Sektionen integriert und diese werden deutlich ausfuehrlicher gestaltet.
 
 ---
 
-## Technische Aenderungen
+## Neue Sektionsstruktur (6 statt 8)
 
-### Dateien die GEAENDERT werden:
+```text
+1. Overview (Executive Summary + Top-3 Priorities)
+2. Business Snapshot (erweitert)
+3. Performance Overview (erweitert)
+4. ICP (deutlich erweitert)
+5. Audience Channels (erweitert, absorbiert Paid Channels)
+6. Optimization (erweitert)
+```
 
-**`src/pages/GenomeView.tsx`:**
-- Quick Wins Sektion entfernen (Zeilen 257-260)
-- Market Size Sektion entfernen (Zeilen 248-255)
-- Executive Summary: Mini-Stats durch Top-3 Priorities ersetzen
-- Performance Overview: Score-Karten mit Erklaerungstexten erweitern + Benchmarks-Tabelle hinzufuegen
-- SectionNav: "Market Size" entfernen
-- Import von QuickWins und MarketSizeCard entfernen
+---
+
+## Aenderungen pro Sektion
+
+### 1. Business Snapshot -- Erweitert um Wettbewerbspositionierung
+
+Aktuell: Nur 3 Badges + 1 Beschreibungssatz.
+
+Neu hinzufuegen:
+- **Positioning Statement**: Ein Satz der beschreibt wie sich das Unternehmen vom Wettbewerb abhebt (neues Feld `positioning: string`)
+- **Key Differentiators**: 3-4 kurze Stichpunkte was das Business einzigartig macht (neues Feld `differentiators: string[]`)
+- **Primary Growth Lever**: Was ist der Hauptwachstumshebel? z.B. "Product-Led Growth", "Sales-Led", "Community-Driven" (neues Feld `growthLever: string`)
+
+### 2. Performance Overview -- Erweitert um Score-Empfehlungen
+
+Aktuell: Radar-Chart + Score-Karten mit Insight + Benchmarks-Tabelle.
+
+Neu:
+- Jeder Score bekommt zusaetzlich einen **konkreten naechsten Schritt** (neues Feld `nextStep: string` in `ScoreInsight`)
+- So sieht der User nicht nur "Below average" sondern auch "Do X to improve"
+
+### 3. ICP -- Deutlich erweitert
+
+Aktuell: Name, Role, Demographics, Pain Points, Goals, Size/Priority.
+
+Neu pro Persona hinzufuegen:
+- **Buying Triggers**: Was loest den Kauf aus? z.B. "Series A funding secured", "Current tool contract expires" (neues Feld `buyingTriggers: string[]`)
+- **Common Objections**: Welche Einwaende hat diese Persona? z.B. "Too expensive for our stage", "Migration too complex" (neues Feld `objections: string[]`)
+- **Where to Find Them**: 2-3 konkrete Orte/Plattformen wo man diese Persona erreicht (neues Feld `whereToFind: string[]`)
+
+Das macht den ICP von einem theoretischen Profil zu einem **Sales-Tool**: Der Unternehmer weiss nicht nur WER sein Kunde ist, sondern auch WANN er kaufbereit ist, WAS ihn zurueckhaelt, und WO er ihn findet.
+
+### 4. Audience Channels -- Absorbiert Paid Strategy
+
+Aktuell: Organic Channels mit Links, Keywords, Formats, Frequency.
+
+Neu:
+- Die **Paid Channels** aus der Paid Strategy werden als eigene Eintraege in die Audience Channels Liste integriert, mit category="paid"
+- Jeder Paid Channel bekommt die gleiche Struktur wie Organic Channels (Links, Keywords, Formats, Frequency) plus zusaetzlich:
+  - **Budget Level** Badge (low/medium/high)
+  - **Estimated CPC** als Info-Zeile
+  - **Targeting Tip** wird zum `tip` Feld
+- Am Anfang der Sektion: **Competition Level** und **Estimated CPC** als kompakte Info-Leiste (aus der alten Paid Strategy uebernommen)
+- Die SEO-Keyword-Tabelle aus Organic Growth wird als eigenstaendiger Block **oberhalb** der Channel-Liste eingefuegt mit dem Titel "SEO Keyword Opportunities"
+
+### 5. Optimization -- Erweitert um Aufwand und erwartetes Ergebnis
+
+Aktuell: Area, Current State, Recommendation, Priority/Impact.
+
+Neu pro Optimization hinzufuegen:
+- **Estimated Effort**: "1-2 hours", "1 week", "ongoing" (neues Feld `effort: string`)
+- **Expected Outcome**: Was passiert wenn man es umsetzt? z.B. "+15-25% more enterprise leads", "Reduced bounce rate" (neues Feld `expectedOutcome: string`)
+
+So sieht der Unternehmer nicht nur "Tu das" sondern auch "So viel Aufwand kostet es" und "Das bringt es dir".
+
+---
+
+## Technische Umsetzung
+
+### Dateien die GEAENDERT werden
 
 **`src/lib/demo-data.ts`:**
-- `quickWins` Feld aus `GrowthReport` Interface entfernen
-- `marketSize` Feld aus `GrowthReport` Interface entfernen
-- `MarketSize` und `QuickWin` Interfaces entfernen
-- Benchmarks-Daten in `industryBenchmarks` Feld verschieben (als Teil des Performance-Bereichs)
-- Neues Feld `topPriorities: string[]` hinzufuegen (3 Saetze, abgeleitet aus den Optimizations)
-- Alle Demo-Daten aktualisieren
+- `GrowthReport` Interface: `organicStrategy` und `paidStrategy` Felder entfernen
+- `OrganicStrategy`, `PaidStrategy`, `PaidChannel`, `SEOKeyword` Interfaces: `SEOKeyword` bleibt (wird in Audience Channels gebraucht), Rest wird entfernt oder umgebaut
+- `GrowthReport` bekommt neue Felder:
+  - `businessModel` erweitert um `positioning`, `differentiators`, `growthLever`
+  - `seoKeywords: SEOKeyword[]` (aus organicStrategy extrahiert, direkt auf Report-Ebene)
+  - `seoScore: number` und `seoRecommendation: string`
+  - `paidCompetitionLevel` und `estimatedCPC` auf Report-Ebene
+- `ICPPersona` Interface erweitert um `buyingTriggers`, `objections`, `whereToFind`
+- `AudienceChannel` Interface erweitert um optionale Felder `budgetLevel` und `estimatedCPC` (fuer Paid Channels)
+- `Optimization` Interface erweitert um `effort` und `expectedOutcome`
+- `ScoreInsight` Interface erweitert um `nextStep`
+- Alle 3 Demo-Datensaetze (Stripe, Notion, Linear) komplett aktualisieren mit neuen Feldern
+- Paid Channels werden in die `audienceChannels` Arrays der Demo-Daten integriert
 
-**`src/components/genome/PerformanceChart.tsx`:**
-- Score-Karten erweitern: Unter jeder Zahl eine einzeilige Erklaerung (z.B. SEO: 62 -> "Below average -- focus on comparison content and long-tail keywords")
-- Industry Benchmarks Tabelle am Ende hinzufuegen (Daten kommen aus dem neuen `industryBenchmarks` Feld)
+**`src/pages/GenomeView.tsx`:**
+- Organic Growth und Paid Strategy Sektionen entfernen
+- `GrowthStrategySection` Import entfernen
+- Business Snapshot erweitern (Positioning, Differentiators, Growth Lever anzeigen)
+- Audience Channels Sektion: SEO-Keyword-Tabelle und Paid-Info-Leiste hinzufuegen
+- SectionNav: "Organic Growth" und "Paid Strategy" entfernen
+
+**`src/components/genome/ICPCard.tsx`:**
+- Drei neue Abschnitte: Buying Triggers, Common Objections, Where to Find Them
+- Buying Triggers als nummerierte Liste mit eigenem Marker-Stil
+- Objections als Liste mit einem neutralen Marker
+- Where to Find als Badges (aehnlich wie Audience Channel Links)
 
 **`src/components/genome/AudienceChannelCard.tsx`:**
-- Links als echte `<a>` Tags rendern wo moeglich (URLs erkennen, Subreddits zu reddit.com/r/X verlinken)
-- Geschlossene Ansicht: 2-3 Top-Links und Keywords als Preview-Badges unterhalb des Tip-Texts anzeigen
+- Oben: SEO-Keyword-Tabelle als eigenen Block rendern (bekommt `seoKeywords` als neuen Prop)
+- Paid-Info-Leiste (Competition Level + CPC) als kompakten Header-Block
+- Paid Channels bekommen ein "Budget Level" Badge in der Kanal-Ansicht
+- Optionaler CPC-Text fuer Paid Channels
 
-**`src/components/genome/GrowthStrategySection.tsx`:**
-- Content + Social + Community Sub-Karten zu einer kompakten Tabelle/Grid zusammenfassen
-- SEO bleibt als eigene Karte mit Keyword-Tabelle
+**`src/components/genome/OptimizationCard.tsx`:**
+- Effort als kompakter Text unter dem Current State (z.B. "Effort: ~2 hours")
+- Expected Outcome als hervorgehobener Text am Ende (z.B. mit border-l-2 border-chart-4)
 
-### Dateien die GELOESCHT werden:
-- `src/components/genome/QuickWins.tsx`
-- `src/components/genome/MarketSizeCard.tsx`
+**`src/components/genome/PerformanceChart.tsx`:**
+- Score-Karten: zusaetzliche Zeile "Next Step:" unter dem Insight-Text
 
-### Design:
-- Keine Farb- oder Stil-Aenderungen
-- Schwarz-Orange Schema bleibt
-- Keine Icons
-- Responsive bleibt (1 Spalte mobil, 2 Spalten Desktop)
+### Dateien die GELOESCHT werden
+
+- `src/components/genome/GrowthStrategySection.tsx` -- Inhalte werden in andere Sektionen integriert
+
+### Design
+
+- Keine neuen Icons, kein Emoji
+- Schwarz-Orange bleibt
+- Neue Abschnitte nutzen dieselben Muster: `text-[10px] uppercase tracking-wide` Labels, `border-l-2` Hervorhebungen, farbige Badges
+- Buying Triggers: gruener Marker-Punkt (`bg-chart-4`)
+- Objections: roter Marker-Punkt (`bg-destructive`)
+- Where to Find: Font-Mono Badges (wie bei Audience Channel Links)
+

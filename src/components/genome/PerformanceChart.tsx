@@ -203,8 +203,8 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                     <tbody>
                       {industryBenchmarks.map((b) => (
                         <tr key={b.metric} className="border-b border-border/50">
-                          <td className="py-3 px-5 text-sm text-foreground">{b.metric}</td>
-                          <td className="py-3 px-5 text-sm font-mono text-muted-foreground">{b.value}</td>
+                           <td className="py-3 px-5 text-base text-foreground">{b.metric}</td>
+                           <td className="py-3 px-5 text-base font-mono text-foreground/70">{b.value}</td>
                         </tr>
                       ))}
                     </tbody>

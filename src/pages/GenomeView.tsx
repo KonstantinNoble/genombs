@@ -162,7 +162,7 @@ const GenomeView = () => {
                       {report.businessModel.growthLever}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-base text-foreground/70 leading-relaxed">
                     {report.businessModel.description}
                   </p>
                   {/* Premium: Positioning + Differentiators */}

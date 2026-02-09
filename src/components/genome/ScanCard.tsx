@@ -48,7 +48,7 @@ const ScanCard = ({
     <Card className="border-border bg-card group transition-all duration-300 hover:border-primary/25 hover:shadow-lg cursor-pointer">
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
-          <span className="text-sm font-mono text-muted-foreground">{domain}</span>
+          <span className="text-base font-mono text-foreground/70">{domain}</span>
           <Badge variant="outline" className={config.className}>
             {config.label}
           </Badge>

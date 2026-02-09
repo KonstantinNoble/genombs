@@ -228,7 +228,7 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
                           {categoryLabels[ch.category] || ch.category}
                         </Badge>
                         {ch.budgetLevel && (
-                          <Badge variant="outline" className={`text-[10px] ${budgetColors[ch.budgetLevel]}`}>
+                          <Badge variant="outline" className={`text-xs ${budgetColors[ch.budgetLevel]}`}>
                             {ch.budgetLevel} budget
                           </Badge>
                         )}

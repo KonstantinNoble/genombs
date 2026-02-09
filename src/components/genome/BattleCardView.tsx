@@ -20,16 +20,16 @@ const SectionBlock = ({
   mono?: boolean;
 }) => (
   <div className={`border-l-2 ${borderColor} pl-4 mb-5`}>
-    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2">
+    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
       {label}
     </p>
     <ol className="space-y-2">
       {items.map((item, i) => (
         <li
           key={i}
-          className={`text-sm leading-relaxed ${mono ? "font-mono text-primary bg-muted/50 p-2 rounded" : "text-foreground"}`}
+          className={`text-base leading-relaxed ${mono ? "font-mono text-primary bg-muted/50 p-2 rounded" : "text-foreground/80"}`}
         >
-          <span className="text-muted-foreground mr-2 text-xs">{i + 1}.</span>
+          <span className="text-muted-foreground mr-2 text-sm">{i + 1}.</span>
           {item}
         </li>
       ))}

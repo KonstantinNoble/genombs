@@ -186,8 +186,8 @@ const AudienceChannelCard = ({ channels, seoKeywords, seoScore, seoRecommendatio
               </Badge>
             </div>
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
-              <p className="text-sm font-mono text-foreground mt-1">{estimatedCPC}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Estimated CPC</p>
+              <p className="text-base font-mono text-foreground mt-1">{estimatedCPC}</p>
             </div>
           </div>
         ) : (

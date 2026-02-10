@@ -257,7 +257,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Integrate WhatsApp button",
     description: "Add floating WhatsApp button on all pages for quick contact.",
-    category: "UX",
+    category: "Mobile Usability",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",

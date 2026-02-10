@@ -221,16 +221,6 @@ const Navbar = () => {
               <MobileNavLink to="/" onClick={() => setIsOpen(false)} delay={0}>
                 Home
               </MobileNavLink>
-              {user && (
-                <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={1}>
-                  Dashboard
-                </MobileNavLink>
-              )}
-              {user && (
-                <MobileNavLink to="/competitor-analysis" onClick={() => setIsOpen(false)} delay={2}>
-                  Competitors
-                </MobileNavLink>
-              )}
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={user ? 3 : 1}>
                 Pricing
               </MobileNavLink>

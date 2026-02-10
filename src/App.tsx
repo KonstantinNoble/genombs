@@ -23,7 +23,7 @@ const Imprint = lazy(() => import("./pages/Imprint"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
-const CompetitorAnalysis = lazy(() => import("./pages/CompetitorAnalysis"));
+
 
 const queryClient = new QueryClient();
 

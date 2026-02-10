@@ -13,7 +13,7 @@ const ScoreRing = ({ score, size = 56 }: { score: number; size?: number }) => {
   const offset = circumference - (score / 100) * circumference;
   const color =
     score >= 80
-      ? "hsl(142 71% 45%)"
+      ? "hsl(var(--chart-6))"
       : score >= 60
         ? "hsl(var(--primary))"
         : "hsl(var(--destructive))";

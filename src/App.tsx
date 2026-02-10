@@ -23,6 +23,8 @@ const Imprint = lazy(() => import("./pages/Imprint"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 
 const queryClient = new QueryClient();
@@ -70,6 +72,8 @@ const App = () => (
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/update-password" element={<UpdatePassword />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

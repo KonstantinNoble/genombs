@@ -4,11 +4,11 @@ export interface WebsiteProfile {
   isOwnWebsite: boolean;
   overallScore: number;
   categoryScores: {
-    seo: number;
-    ux: number;
-    content: number;
-    trust: number;
-    speed: number;
+    findability: number;
+    mobileUsability: number;
+    offerClarity: number;
+    trustProof: number;
+    conversionReadiness: number;
   };
   profileData: {
     name: string;

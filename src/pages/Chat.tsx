@@ -120,9 +120,8 @@ const Chat = () => {
         </div>
       </ScrollArea>
       <div className="max-w-3xl mx-auto w-full">
-      <ChatInput onSend={handleSend} onScan={(url, type) => {
-          const label = type === "own" ? "your site" : "a competitor";
-          handleSend(`Scan ${url} as ${label}`);
+      <ChatInput onSend={handleSend} onScan={(ownUrl, competitorUrls) => {
+          handleSend(`Analyze my site ${ownUrl} vs competitors: ${competitorUrls.join(", ")}`);
         }} disabled={!activeId} />
       </div>
     </div>

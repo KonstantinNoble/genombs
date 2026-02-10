@@ -137,8 +137,6 @@ const Navbar = () => {
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center gap-7">
             <NavLink to="/">Home</NavLink>
-            {user && <NavLink to="/dashboard">Dashboard</NavLink>}
-            {user && <NavLink to="/competitor-analysis">Competitors</NavLink>}
             <NavLink to="/pricing">Pricing</NavLink>
             <NavLink to="/contact">Contact</NavLink>
           </div>

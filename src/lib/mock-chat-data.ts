@@ -237,7 +237,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Compress images",
     description: "Compress all website images to under 200 KB. Tools: TinyPNG, Squoosh.",
-    category: "Speed",
+    category: "Conversion Readiness",
     status: "done",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",

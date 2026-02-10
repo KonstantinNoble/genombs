@@ -2,6 +2,14 @@ export interface WebsiteProfile {
   id: string;
   url: string;
   isOwnWebsite: boolean;
+  overallScore: number;
+  categoryScores: {
+    seo: number;
+    ux: number;
+    content: number;
+    trust: number;
+    speed: number;
+  };
   profileData: {
     name: string;
     targetAudience: string;
@@ -33,6 +41,7 @@ export interface ImprovementTask {
   websiteProfileId: string;
   title: string;
   description: string;
+  category: string;
   status: "todo" | "in_progress" | "done";
   priority: "low" | "medium" | "high";
   createdAt: string;
@@ -41,71 +50,75 @@ export interface ImprovementTask {
 export const mockWebsiteProfiles: WebsiteProfile[] = [
   {
     id: "wp-1",
-    url: "https://mein-handwerk.de",
+    url: "https://my-craft.com",
     isOwnWebsite: true,
+    overallScore: 68,
+    categoryScores: { seo: 55, ux: 62, content: 70, trust: 82, speed: 45 },
     profileData: {
-      name: "Mein Handwerk",
-      targetAudience: "Hausbesitzer und Mieter in der Region München, die Renovierungs- oder Reparaturarbeiten benötigen. Alter 30–60, mittleres bis hohes Einkommen.",
-      usp: "Meisterbetrieb mit 20 Jahren Erfahrung, kostenlose Erstberatung, Festpreisgarantie.",
-      ctas: ["Jetzt Angebot anfordern", "Kostenlose Beratung buchen"],
-      siteStructure: ["Startseite", "Leistungen", "Über uns", "Referenzen", "Kontakt"],
+      name: "My Craft",
+      targetAudience: "Homeowners and tenants in Munich area, 30–60, mid to high income.",
+      usp: "Master craftsmen with 20 years of experience, free initial consultation, fixed-price guarantee.",
+      ctas: ["Request a Quote", "Book Free Consultation"],
+      siteStructure: ["Home", "Services", "About", "References", "Contact"],
       strengths: [
-        "Klare Positionierung als regionaler Meisterbetrieb",
-        "Vertrauenselemente: Bewertungen, Zertifikate",
-        "Festpreisgarantie als Differenzierungsmerkmal",
+        "Clear regional positioning",
+        "Trust signals: reviews, certifications",
+        "Fixed-price guarantee differentiator",
       ],
       weaknesses: [
-        "Keine Online-Terminbuchung",
-        "Keine Fallstudien oder Vorher/Nachher-Bilder",
-        "Mobile Version langsam und unübersichtlich",
-        "Kein Blog oder Ratgeber-Content",
+        "No online booking system",
+        "No case studies or before/after visuals",
+        "Slow and cluttered mobile experience",
       ],
     },
     createdAt: "2026-02-08T10:00:00Z",
   },
   {
     id: "wp-2",
-    url: "https://schnell-reparatur.de",
+    url: "https://quick-repair.com",
     isOwnWebsite: false,
+    overallScore: 74,
+    categoryScores: { seo: 70, ux: 80, content: 60, trust: 72, speed: 78 },
     profileData: {
-      name: "Schnell Reparatur",
-      targetAudience: "Eilige Kunden mit akuten Reparaturproblemen (Rohrbruch, Heizungsausfall). Breites Altersspektrum, lokaler Fokus.",
-      usp: "24/7 Notdienst, Anfahrt in 30 Minuten, transparente Preise.",
-      ctas: ["Notdienst rufen", "WhatsApp-Kontakt"],
-      siteStructure: ["Home", "Notdienst", "Preise", "Bewertungen", "Kontakt"],
+      name: "Quick Repair",
+      targetAudience: "Customers with urgent repair needs. Broad age range, local focus.",
+      usp: "24/7 emergency service, 30-minute arrival, transparent pricing.",
+      ctas: ["Call Emergency", "WhatsApp Contact"],
+      siteStructure: ["Home", "Emergency", "Pricing", "Reviews", "Contact"],
       strengths: [
-        "Starke Notdienst-Positionierung",
-        "WhatsApp-Integration für schnellen Kontakt",
-        "Prominente Google-Bewertungen",
+        "Strong emergency positioning",
+        "WhatsApp integration for fast contact",
+        "Prominent Google reviews",
       ],
       weaknesses: [
-        "Kein Angebot für geplante Renovierungen",
-        "Website wirkt unseriös durch zu viele Farben",
-        "Keine Zertifikate oder Qualifikationen sichtbar",
+        "No planned renovation services",
+        "Unprofessional design with too many colors",
+        "No certifications visible",
       ],
     },
     createdAt: "2026-02-08T10:30:00Z",
   },
   {
     id: "wp-3",
-    url: "https://bau-meister-mueller.de",
+    url: "https://builder-mueller.com",
     isOwnWebsite: false,
+    overallScore: 81,
+    categoryScores: { seo: 78, ux: 85, content: 88, trust: 80, speed: 55 },
     profileData: {
-      name: "Baumeister Müller",
-      targetAudience: "Bauherren und Architekten für Neubauten und größere Umbauten. Gewerblich und privat.",
-      usp: "Komplettservice von Planung bis Fertigstellung, BIM-Planung, energieeffizientes Bauen.",
-      ctas: ["Projekt anfragen", "Referenzen ansehen"],
-      siteStructure: ["Start", "Leistungen", "Projekte", "Team", "Nachhaltigkeit", "Kontakt"],
+      name: "Builder Mueller",
+      targetAudience: "Builders and architects for new construction and major renovations.",
+      usp: "Full service from planning to completion, BIM planning, energy-efficient building.",
+      ctas: ["Request Project", "View References"],
+      siteStructure: ["Home", "Services", "Projects", "Team", "Sustainability", "Contact"],
       strengths: [
-        "Professioneller Webauftritt",
-        "Beeindruckende Projektgalerie",
-        "Nachhaltigkeits-Positionierung",
-        "Umfangreiche Teamvorstellung",
+        "Professional web presence",
+        "Impressive project gallery",
+        "Sustainability positioning",
       ],
       weaknesses: [
-        "Lange Ladezeiten durch große Bilder",
-        "Keine Preistransparenz",
-        "Kontaktformular zu komplex",
+        "Slow load times from large images",
+        "No price transparency",
+        "Contact form too complex",
       ],
     },
     createdAt: "2026-02-09T14:00:00Z",
@@ -115,103 +128,103 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
 export const mockConversations: ChatConversation[] = [
   {
     id: "conv-1",
-    title: "Website-Analyse: Mein Handwerk",
+    title: "Website Analysis: My Craft",
     createdAt: "2026-02-08T10:00:00Z",
     messages: [
       {
         id: "msg-1",
         role: "user",
-        content: "Analysiere bitte meine Website https://mein-handwerk.de",
+        content: "Analyze my website https://my-craft.com",
         createdAt: "2026-02-08T10:00:00Z",
       },
       {
         id: "msg-2",
         role: "assistant",
-        content: `Ich habe **mein-handwerk.de** analysiert und ein strukturiertes Profil erstellt.
+        content: `I've analyzed **my-craft.com** and created a structured profile.
 
-## Zusammenfassung
+## Summary
 
-**Zielgruppe:** Hausbesitzer und Mieter in der Region München (30–60 Jahre), die Renovierungs- oder Reparaturarbeiten benötigen.
+**Target Audience:** Homeowners and tenants in the Munich area (30–60 years), needing renovation or repair work.
 
-**Nutzenversprechen:** Meisterbetrieb mit 20 Jahren Erfahrung, kostenlose Erstberatung, Festpreisgarantie.
+**Value Proposition:** Master craftsmen with 20 years of experience, free initial consultation, fixed-price guarantee.
 
-## Stärken
-- Klare Positionierung als regionaler Meisterbetrieb
-- Vertrauenselemente wie Bewertungen und Zertifikate
-- Festpreisgarantie als Differenzierungsmerkmal
+## Strengths
+- Clear positioning as a regional master craftsman business
+- Trust elements like reviews and certifications
+- Fixed-price guarantee as a differentiator
 
-## Schwächen
-- **Keine Online-Terminbuchung** — Kunden müssen anrufen
-- **Keine Fallstudien** oder Vorher/Nachher-Bilder
-- **Mobile Version** langsam und unübersichtlich
-- **Kein Content-Marketing** (Blog/Ratgeber)
+## Weaknesses
+- **No online booking** — customers must call
+- **No case studies** or before/after visuals
+- **Mobile version** slow and cluttered
+- **No content marketing** (blog/guides)
 
-Soll ich einen Verbesserungsplan erstellen oder mit einem Konkurrenten vergleichen?`,
+Should I create an improvement plan or compare with a competitor?`,
         createdAt: "2026-02-08T10:01:00Z",
       },
       {
         id: "msg-3",
         role: "user",
-        content: "Vergleiche mich mit https://schnell-reparatur.de — was machen die besser?",
+        content: "Compare me with https://quick-repair.com — what do they do better?",
         createdAt: "2026-02-08T10:05:00Z",
       },
       {
         id: "msg-4",
         role: "assistant",
-        content: `Ich habe **schnell-reparatur.de** analysiert. Hier der Vergleich:
+        content: `I've analyzed **quick-repair.com**. Here's the comparison:
 
-## Was Schnell Reparatur besser macht
+## What Quick Repair Does Better
 
-| Kriterium | Mein Handwerk | Schnell Reparatur |
-|-----------|--------------|-------------------|
-| Kontaktweg | Nur Telefon & Formular | **WhatsApp + Telefon** |
-| Erreichbarkeit | Geschäftszeiten | **24/7 Notdienst** |
-| Bewertungen | Vorhanden, aber versteckt | **Prominent auf Startseite** |
-| Reaktionszeit | Nicht kommuniziert | **"30 Min Anfahrt" versprochen** |
+| Criterion | My Craft | Quick Repair |
+|-----------|----------|--------------|
+| Contact | Phone & form only | **WhatsApp + Phone** |
+| Availability | Business hours | **24/7 emergency** |
+| Reviews | Present but hidden | **Prominent on homepage** |
+| Response time | Not communicated | **"30 min arrival" promised** |
 
-## Was du besser machst
+## What You Do Better
 
-- **Festpreisgarantie** — Schnell Reparatur hat keine Preisgarantie
-- **Meister-Qualifikation** sichtbar — beim Konkurrenten fehlen Zertifikate
-- **Breiteres Angebot** — nicht nur Notfälle, sondern auch Renovierung
+- **Fixed-price guarantee** — Quick Repair has no price guarantee
+- **Master certification** visible — competitor lacks certifications
+- **Broader offering** — not just emergencies, also renovation
 
-## Empfehlung
-Übernimm die **WhatsApp-Integration** und mache deine **Bewertungen prominenter**. Deine Festpreisgarantie ist ein starkes Alleinstellungsmerkmal — hebe das noch deutlicher hervor.`,
+## Recommendation
+Adopt **WhatsApp integration** and make your **reviews more prominent**. Your fixed-price guarantee is a strong differentiator — highlight it even more.`,
         createdAt: "2026-02-08T10:06:00Z",
       },
     ],
   },
   {
     id: "conv-2",
-    title: "Verbesserungsplan Mobile",
+    title: "Mobile Improvement Plan",
     createdAt: "2026-02-09T14:00:00Z",
     messages: [
       {
         id: "msg-5",
         role: "user",
-        content: "Erstelle mir einen konkreten Plan, um meine mobile Website zu verbessern.",
+        content: "Create a concrete plan to improve my mobile website.",
         createdAt: "2026-02-09T14:00:00Z",
       },
       {
         id: "msg-6",
         role: "assistant",
-        content: `Hier ist dein **Mobile-Optimierungsplan** basierend auf der Analyse von mein-handwerk.de:
+        content: `Here's your **Mobile Optimization Plan** based on the analysis of my-craft.com:
 
-## Phase 1: Quick Wins (diese Woche)
-1. **Bilder komprimieren** — Aktuelle Bilder sind unkomprimiert (3-5 MB). Ziel: unter 200 KB pro Bild
-2. **Click-to-Call Button** — Große, gut sichtbare Telefon-Schaltfläche im Header
-3. **Menü vereinfachen** — Maximal 5 Hauptpunkte im mobilen Menü
+## Phase 1: Quick Wins (this week)
+1. **Compress images** — Current images are uncompressed (3-5 MB). Target: under 200 KB per image
+2. **Click-to-call button** — Large, visible phone button in header
+3. **Simplify menu** — Max 5 main items in mobile menu
 
-## Phase 2: Strukturelle Verbesserungen (nächste 2 Wochen)
-4. **Online-Terminbuchung** integrieren (z.B. Calendly oder eigenes Formular)
-5. **WhatsApp-Button** als floating Action-Button
-6. **Bewertungen** direkt auf der Startseite einbinden
+## Phase 2: Structural Improvements (next 2 weeks)
+4. **Online booking** integration (e.g. Calendly or custom form)
+5. **WhatsApp button** as floating action button
+6. **Reviews** embedded directly on homepage
 
-## Phase 3: Content (laufend)
-7. **Vorher/Nachher-Galerie** für abgeschlossene Projekte
-8. **Ratgeber-Blog** starten (SEO + Vertrauensaufbau)
+## Phase 3: Content (ongoing)
+7. **Before/after gallery** for completed projects
+8. **Guide blog** to start (SEO + trust building)
 
-Soll ich daraus Aufgaben für dein Dashboard erstellen?`,
+Should I create tasks for your planner?`,
         createdAt: "2026-02-09T14:01:00Z",
       },
     ],
@@ -222,8 +235,9 @@ export const mockTasks: ImprovementTask[] = [
   {
     id: "task-1",
     websiteProfileId: "wp-1",
-    title: "Bilder komprimieren",
-    description: "Alle Website-Bilder auf unter 200 KB komprimieren. Tools: TinyPNG, Squoosh.",
+    title: "Compress images",
+    description: "Compress all website images to under 200 KB. Tools: TinyPNG, Squoosh.",
+    category: "Speed",
     status: "done",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",
@@ -231,8 +245,9 @@ export const mockTasks: ImprovementTask[] = [
   {
     id: "task-2",
     websiteProfileId: "wp-1",
-    title: "Click-to-Call Button einbauen",
-    description: "Großen, gut sichtbaren Telefon-Button im mobilen Header platzieren.",
+    title: "Add click-to-call button",
+    description: "Place a large, visible phone button in the mobile header.",
+    category: "UX",
     status: "in_progress",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",
@@ -240,8 +255,9 @@ export const mockTasks: ImprovementTask[] = [
   {
     id: "task-3",
     websiteProfileId: "wp-1",
-    title: "WhatsApp-Button integrieren",
-    description: "Floating WhatsApp-Button auf allen Seiten einbauen für schnellen Kontakt.",
+    title: "Integrate WhatsApp button",
+    description: "Add floating WhatsApp button on all pages for quick contact.",
+    category: "UX",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",
@@ -249,8 +265,9 @@ export const mockTasks: ImprovementTask[] = [
   {
     id: "task-4",
     websiteProfileId: "wp-1",
-    title: "Online-Terminbuchung einrichten",
-    description: "Calendly oder eigenes Buchungsformular integrieren.",
+    title: "Set up online booking",
+    description: "Integrate Calendly or custom booking form.",
+    category: "Conversion",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",
@@ -258,8 +275,9 @@ export const mockTasks: ImprovementTask[] = [
   {
     id: "task-5",
     websiteProfileId: "wp-1",
-    title: "Vorher/Nachher-Galerie erstellen",
-    description: "Bildergalerie mit abgeschlossenen Projekten als Referenz anlegen.",
+    title: "Create before/after gallery",
+    description: "Build image gallery with completed project references.",
+    category: "Content",
     status: "todo",
     priority: "low",
     createdAt: "2026-02-09T14:02:00Z",

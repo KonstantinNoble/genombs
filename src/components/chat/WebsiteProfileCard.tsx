@@ -7,20 +7,86 @@ interface WebsiteProfileCardProps {
   compact?: boolean;
 }
 
+const ScoreRing = ({ score, size = 56 }: { score: number; size?: number }) => {
+  const radius = (size - 8) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  const color =
+    score >= 80
+      ? "hsl(var(--chart-6))"
+      : score >= 60
+        ? "hsl(var(--primary))"
+        : "hsl(var(--destructive))";
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="hsl(var(--border))"
+          strokeWidth={4}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={4}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className="transition-all duration-700"
+        />
+      </svg>
+      <span
+        className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground"
+      >
+        {score}
+      </span>
+    </div>
+  );
+};
+
+const CategoryBar = ({ label, value }: { label: string; value: number }) => {
+  const color =
+    value >= 80
+      ? "bg-chart-6"
+      : value >= 60
+        ? "bg-primary"
+        : "bg-destructive";
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-muted-foreground w-14 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div
+          className={`h-full rounded-full ${color} transition-all duration-700`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+      <span className="text-[11px] text-muted-foreground w-6 text-right">{value}</span>
+    </div>
+  );
+};
+
 const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
-  const { profileData, url, isOwnWebsite } = profile;
+  const { profileData, url, isOwnWebsite, overallScore, categoryScores } = profile;
 
   if (compact) {
     return (
       <Card className="border-border bg-card">
         <CardContent className="p-3 flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full shrink-0 bg-primary" style={{ opacity: isOwnWebsite ? 1 : 0.4 }} />
+          <ScoreRing score={overallScore} size={36} />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-foreground truncate">{profileData.name}</p>
             <p className="text-xs text-muted-foreground truncate">{url}</p>
           </div>
           <Badge variant={isOwnWebsite ? "default" : "outline"} className="text-[10px] shrink-0">
-            {isOwnWebsite ? "Eigene" : "Konkurrenz"}
+            {isOwnWebsite ? "Your Site" : "Competitor"}
           </Badge>
         </CardContent>
       </Card>
@@ -29,58 +95,50 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
 
   return (
     <Card className={`border-border bg-card ${isOwnWebsite ? "ring-1 ring-primary/30" : ""}`}>
-      <CardContent className="p-5 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <h3 className="text-base font-bold text-foreground">{profileData.name}</h3>
-            <p className="text-xs text-muted-foreground font-mono">{url}</p>
-          </div>
-          <Badge variant={isOwnWebsite ? "default" : "outline"} className="text-xs shrink-0">
-            {isOwnWebsite ? "Eigene" : "Konkurrenz"}
-          </Badge>
-        </div>
-
-        <div className="space-y-2 text-sm">
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Zielgruppe</p>
-            <p className="text-foreground">{profileData.targetAudience}</p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">USP</p>
-            <p className="text-foreground">{profileData.usp}</p>
+      <CardContent className="p-5 space-y-4">
+        <div className="flex items-start gap-4">
+          <ScoreRing score={overallScore} />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-base font-bold text-foreground">{profileData.name}</h3>
+              <Badge variant={isOwnWebsite ? "default" : "outline"} className="text-[10px] shrink-0">
+                {isOwnWebsite ? "Your Site" : "Competitor"}
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground font-mono mt-0.5">{url}</p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {profileData.ctas.map((cta) => (
-            <Badge key={cta} variant="secondary" className="text-[10px]">
-              {cta}
-            </Badge>
-          ))}
+        <div className="space-y-1.5">
+          <CategoryBar label="SEO" value={categoryScores.seo} />
+          <CategoryBar label="UX" value={categoryScores.ux} />
+          <CategoryBar label="Content" value={categoryScores.content} />
+          <CategoryBar label="Trust" value={categoryScores.trust} />
+          <CategoryBar label="Speed" value={categoryScores.speed} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Stärken</p>
-            <ul className="space-y-0.5">
+            <p className="text-[11px] text-muted-foreground mb-1.5">Strengths</p>
+            <div className="space-y-1">
               {profileData.strengths.slice(0, 3).map((s) => (
-                <li key={s} className="text-xs text-foreground flex items-start gap-1">
-                  <span className="text-primary mt-0.5">+</span>
-                  <span>{s}</span>
-                </li>
+                <div key={s} className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-chart-6 shrink-0" />
+                  <span className="text-[11px] text-foreground leading-tight">{s}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Schwächen</p>
-            <ul className="space-y-0.5">
+            <p className="text-[11px] text-muted-foreground mb-1.5">Weaknesses</p>
+            <div className="space-y-1">
               {profileData.weaknesses.slice(0, 3).map((w) => (
-                <li key={w} className="text-xs text-foreground flex items-start gap-1">
-                  <span className="text-destructive mt-0.5">−</span>
-                  <span>{w}</span>
-                </li>
+                <div key={w} className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
+                  <span className="text-[11px] text-foreground leading-tight">{w}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       </CardContent>

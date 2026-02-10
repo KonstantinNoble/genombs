@@ -9,14 +9,14 @@ interface TaskCardProps {
 
 const statusConfig: Record<ImprovementTask["status"], { label: string; variant: "default" | "secondary" | "outline" }> = {
   todo: { label: "To Do", variant: "outline" },
-  in_progress: { label: "In Arbeit", variant: "secondary" },
-  done: { label: "Erledigt", variant: "default" },
+  in_progress: { label: "In Progress", variant: "secondary" },
+  done: { label: "Done", variant: "default" },
 };
 
-const priorityConfig: Record<ImprovementTask["priority"], { label: string; className: string }> = {
-  high: { label: "Hoch", className: "text-destructive" },
-  medium: { label: "Mittel", className: "text-primary" },
-  low: { label: "Niedrig", className: "text-muted-foreground" },
+const priorityBorder: Record<ImprovementTask["priority"], string> = {
+  high: "border-l-destructive",
+  medium: "border-l-primary",
+  low: "border-l-muted-foreground/30",
 };
 
 const nextStatus: Record<ImprovementTask["status"], ImprovementTask["status"]> = {
@@ -27,28 +27,28 @@ const nextStatus: Record<ImprovementTask["status"], ImprovementTask["status"]> =
 
 const TaskCard = ({ task, onStatusChange }: TaskCardProps) => {
   const status = statusConfig[task.status];
-  const priority = priorityConfig[task.priority];
 
   return (
-    <Card className={`border-border bg-card transition-all ${task.status === "done" ? "opacity-60" : ""}`}>
-      <CardContent className="p-4 space-y-2">
+    <Card className={`border-border bg-card border-l-2 ${priorityBorder[task.priority]} ${task.status === "done" ? "opacity-50" : ""}`}>
+      <CardContent className="p-3 space-y-1.5">
         <div className="flex items-start justify-between gap-2">
-          <h4 className={`text-sm font-medium ${task.status === "done" ? "line-through text-muted-foreground" : "text-foreground"}`}>
+          <h4 className={`text-xs font-medium leading-tight ${task.status === "done" ? "line-through text-muted-foreground" : "text-foreground"}`}>
             {task.title}
           </h4>
           <button
             onClick={() => onStatusChange(task.id, nextStatus[task.status])}
             className="shrink-0"
           >
-            <Badge variant={status.variant} className="text-[10px] cursor-pointer hover:opacity-80 transition-opacity">
+            <Badge variant={status.variant} className="text-[9px] cursor-pointer hover:opacity-80 transition-opacity">
               {status.label}
             </Badge>
           </button>
         </div>
-        <p className="text-xs text-muted-foreground">{task.description}</p>
-        <p className={`text-[10px] font-medium ${priority.className}`}>
-          Priorität: {priority.label}
-        </p>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+            {task.category}
+          </Badge>
+        </div>
       </CardContent>
     </Card>
   );

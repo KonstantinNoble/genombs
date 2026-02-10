@@ -2,7 +2,6 @@ import { useState } from "react";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
@@ -28,11 +27,13 @@ const Chat = () => {
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
 
   const activeConversation = conversations.find((c) => c.id === activeId) || null;
+  const hasProfiles = mockWebsiteProfiles.length > 0;
+  const hasMultipleProfiles = mockWebsiteProfiles.length >= 2;
 
   const handleNewConversation = () => {
     const newConv: ChatConversation = {
       id: `conv-${Date.now()}`,
-      title: "Neue Conversation",
+      title: "New Conversation",
       messages: [],
       createdAt: new Date().toISOString(),
     };
@@ -55,7 +56,7 @@ const Chat = () => {
       id: `msg-${Date.now() + 1}`,
       role: "assistant",
       content:
-        "Das ist eine Demo-Antwort. Im finalen Produkt wird hier die KI-Analyse basierend auf den gecrawlten Website-Profilen angezeigt.",
+        "This is a demo response. In the final product, the AI analysis based on crawled website profiles will be displayed here.",
       createdAt: new Date().toISOString(),
     };
 
@@ -92,11 +93,11 @@ const Chat = () => {
       )}
       <div className="min-w-0">
         <h2 className="text-sm font-medium text-foreground truncate">
-          {activeConversation?.title || "Wähle eine Conversation"}
+          {activeConversation?.title || "Select a conversation"}
         </h2>
         {activeConversation && (
           <p className="text-xs text-muted-foreground">
-            {activeConversation.messages.length} Nachrichten
+            {activeConversation.messages.length} messages
           </p>
         )}
       </div>
@@ -110,7 +111,7 @@ const Chat = () => {
         <div className="max-w-3xl mx-auto p-4 space-y-4">
           {activeConversation?.messages.length === 0 && (
             <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
-              Gib eine URL ein oder stelle eine Frage...
+              Enter a URL or ask a question...
             </div>
           )}
           {activeConversation?.messages.map((msg) => (
@@ -127,26 +128,26 @@ const Chat = () => {
   const dashboardPanel = (
     <div className="h-full flex flex-col">
       <div className="border-b border-border bg-card px-4 py-3">
-        <h2 className="text-sm font-medium text-foreground">Dashboard</h2>
+        <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
       <ScrollArea className="flex-1">
-        <div className="p-4">
-          <Tabs defaultValue="websites">
-            <TabsList className="mb-4">
-              <TabsTrigger value="websites">Websites</TabsTrigger>
-              <TabsTrigger value="comparison">Vergleich</TabsTrigger>
-              <TabsTrigger value="tasks">Aufgaben</TabsTrigger>
-            </TabsList>
-            <TabsContent value="websites">
-              <WebsiteGrid profiles={mockWebsiteProfiles} />
-            </TabsContent>
-            <TabsContent value="comparison">
+        <div className="p-4 space-y-6">
+          {/* Dynamic website profiles */}
+          {hasProfiles && <WebsiteGrid profiles={mockWebsiteProfiles} />}
+
+          {/* Comparison view when 2+ sites */}
+          {hasMultipleProfiles && (
+            <div>
+              <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
               <ComparisonTable profiles={mockWebsiteProfiles} />
-            </TabsContent>
-            <TabsContent value="tasks">
-              <TaskBoard initialTasks={mockTasks} />
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
+
+          {/* Planner always visible */}
+          <div>
+            <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Planner</h3>
+            <TaskBoard initialTasks={mockTasks} />
+          </div>
         </div>
       </ScrollArea>
     </div>
@@ -189,12 +190,10 @@ const Chat = () => {
 
         {/* Main Content */}
         {isMobile ? (
-          // Mobile: toggle between chat and dashboard
           <div className="flex-1 flex flex-col min-w-0">
             {mobileView === "chat" ? chatPanel : dashboardPanel}
           </div>
         ) : (
-          // Desktop: resizable split panels
           <ResizablePanelGroup direction="horizontal" className="flex-1">
             <ResizablePanel defaultSize={55} minSize={30}>
               {chatPanel}

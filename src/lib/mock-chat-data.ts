@@ -277,7 +277,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Create before/after gallery",
     description: "Build image gallery with completed project references.",
-    category: "Content",
+    category: "Trust & Proof",
     status: "todo",
     priority: "low",
     createdAt: "2026-02-09T14:02:00Z",

@@ -15,8 +15,6 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 
 // Lazy load authenticated and less critical pages
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const GenomeView = lazy(() => import("./pages/GenomeView"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PricingPage = lazy(() => import("./pages/Pricing"));
@@ -25,7 +23,7 @@ const Imprint = lazy(() => import("./pages/Imprint"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
-const CompetitorAnalysis = lazy(() => import("./pages/CompetitorAnalysis"));
+
 
 const queryClient = new QueryClient();
 
@@ -64,8 +62,6 @@ const App = () => (
                   <Route path="/" element={<Home />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/genome/:id" element={<GenomeView />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/pricing" element={<PricingPage />} />
                   <Route path="/contact" element={<Contact />} />
@@ -74,7 +70,7 @@ const App = () => (
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/update-password" element={<UpdatePassword />} />
-                  <Route path="/competitor-analysis" element={<CompetitorAnalysis />} />
+                  
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

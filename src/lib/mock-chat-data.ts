@@ -267,7 +267,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Set up online booking",
     description: "Integrate Calendly or custom booking form.",
-    category: "Conversion",
+    category: "Conversion Readiness",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",

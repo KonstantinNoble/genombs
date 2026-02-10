@@ -1,65 +1,91 @@
 
 
-# Replace Scanner Bar with "+" Button and Multi-URL Popup
+# Business-Oriented Dashboard Redesign
 
-## What Changes
+## 3 Changes
 
-### `src/components/chat/ChatInput.tsx` -- Redesign
+### 1. Rename Categories from Technical to Business-Oriented
 
-Remove the entire URL scanner bar (lines 95-122) and the old single-URL dialog. Replace with:
+Replace the generic SEO/UX/Content/Trust/Speed scores with categories that reflect real business value for small business owners.
 
-**A "+" button** next to the Send button in the chat input row. Clicking it opens a **Dialog popup** with 3-4 input fields:
+**Old → New mapping:**
 
-```text
-+------------------------------------------+
-| [Chat textarea...         ] [+] [Send]   |
-+------------------------------------------+
-```
+| Old | New | Key in code |
+|-----|-----|-------------|
+| SEO | Findability | findability |
+| UX | Mobile Usability | mobileUsability |
+| Content | Offer Clarity | offerClarity |
+| Trust | Trust & Proof | trustProof |
+| Speed | Conversion Readiness | conversionReadiness |
 
-**Popup layout:**
+**Files affected:**
+- `src/lib/mock-chat-data.ts` -- rename `categoryScores` keys + update `WebsiteProfile` type
+- `src/components/chat/WebsiteProfileCard.tsx` -- update `CategoryBar` labels
+- `src/components/dashboard/ComparisonTable.tsx` -- update category labels
 
-```text
-+----------------------------------+
-|   Add Websites to Analyze        |
-|                                  |
-|   Your Website                   |
-|   [https://your-site.com     ]   |
-|                                  |
-|   Competitor 1                   |
-|   [https://competitor1.com   ]   |
-|                                  |
-|   Competitor 2                   |
-|   [https://competitor2.com   ]   |
-|                                  |
-|   Competitor 3                   |
-|   [https://competitor3.com   ]   |
-|                                  |
-|          [Start Analysis]        |
-+----------------------------------+
-```
+### 2. Add Analysis Mode Tabs in Dashboard
 
-- Field 1: "Your Website" -- single URL input
-- Fields 2-4: "Competitor 1/2/3" -- competitor URL inputs (optional, at least one required)
-- "Start Analysis" button submits all URLs at once
+Add a horizontal tab bar below the "Workspace" header with 4 analysis perspectives:
 
-### Props Update
+- **Overview** (default) -- shows profiles + comparison as today
+- **Positioning** -- shows side-by-side positioning comparison (target audience, USP, differentiators)
+- **Offer & CTAs** -- shows CTA comparison, contact flow, pricing logic
+- **Trust & Proof** -- shows trust signals, reviews, certifications comparison
 
-Change `onScan` prop signature:
+Each tab renders a focused card view pulling data from existing `profileData` fields. No new data needed -- just different visual groupings of strengths/weaknesses/CTAs/USP.
+
+**Files affected:**
+- `src/pages/Chat.tsx` -- add tab state + tab bar in dashboard panel
+- New file: `src/components/dashboard/AnalysisTabs.tsx` -- tab content for each mode
+
+### 3. Add Improvement Plan Section in Dashboard
+
+Bring back a focused "Improvement Plan" section (not the old Kanban planner). This is a simple, visual card list showing actionable tasks derived from the analysis.
+
+Each card shows:
+- Task title (e.g. "Improve hero headline")
+- Priority indicator (colored left border)
+- Category tag matching the new business categories
+
+This section sits below the comparison in the dashboard, always visible when profiles exist.
+
+**Files affected:**
+- `src/pages/Chat.tsx` -- add Improvement Plan section
+- New file: `src/components/dashboard/ImprovementPlan.tsx` -- renders task cards from `mockTasks`
+- `src/lib/mock-chat-data.ts` -- update task categories to match new business categories
+
+---
+
+## Technical Details
+
+### Type Change in `mock-chat-data.ts`
 
 ```typescript
-onScan?: (ownUrl: string, competitorUrls: string[]) => void;
+categoryScores: {
+  findability: number;
+  mobileUsability: number;
+  offerClarity: number;
+  trustProof: number;
+  conversionReadiness: number;
+};
 ```
 
-This passes the user's site URL and an array of competitor URLs in one call.
+### Analysis Tabs Component
 
-### `src/pages/Chat.tsx`
+Simple state-driven component using existing `Tabs` from shadcn. Each tab filters/groups existing profile data differently -- no new API or data structures needed.
 
-Update the `onScan` handler to match the new signature -- receives one own URL + array of competitor URLs.
+### Improvement Plan Component
 
-### Files Modified
+A compact vertical list of task cards (not Kanban). Each card: title, colored priority border, category badge. Uses existing `mockTasks` data with updated category names.
 
-| File | Change |
+### Files Summary
+
+| File | Action |
 |------|--------|
-| `src/components/chat/ChatInput.tsx` | Remove scanner bar, add "+" button + multi-URL dialog |
-| `src/pages/Chat.tsx` | Update onScan handler signature |
+| `src/lib/mock-chat-data.ts` | Update categoryScores keys + task categories |
+| `src/components/chat/WebsiteProfileCard.tsx` | Update category labels |
+| `src/components/dashboard/ComparisonTable.tsx` | Update category labels |
+| `src/pages/Chat.tsx` | Add analysis tabs + improvement plan section |
+| `src/components/dashboard/AnalysisTabs.tsx` | New -- tab content views |
+| `src/components/dashboard/ImprovementPlan.tsx` | New -- task card list |
 

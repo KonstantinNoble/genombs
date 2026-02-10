@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Progress } from "@/components/ui/progress";
 import TaskCard from "./TaskCard";
 import type { ImprovementTask } from "@/lib/mock-chat-data";
 
@@ -18,12 +19,13 @@ const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
   const todo = tasks.filter((t) => t.status === "todo");
   const inProgress = tasks.filter((t) => t.status === "in_progress");
   const done = tasks.filter((t) => t.status === "done");
+  const progress = tasks.length > 0 ? Math.round((done.length / tasks.length) * 100) : 0;
 
   const Column = ({ title, items, count }: { title: string; items: ImprovementTask[]; count: number }) => (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <h3 className="text-sm font-medium text-foreground">{title}</h3>
-        <span className="text-xs text-muted-foreground">({count})</span>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{title}</h3>
+        <span className="text-[10px] text-muted-foreground bg-secondary rounded-full px-1.5 py-0.5">{count}</span>
       </div>
       <div className="space-y-2">
         {items.map((task) => (
@@ -34,10 +36,19 @@ const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Column title="To Do" items={todo} count={todo.length} />
-      <Column title="In Arbeit" items={inProgress} count={inProgress.length} />
-      <Column title="Erledigt" items={done} count={done.length} />
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-muted-foreground">Progress</span>
+          <span className="text-foreground font-medium">{done.length}/{tasks.length} done</span>
+        </div>
+        <Progress value={progress} className="h-1.5" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Column title="To Do" items={todo} count={todo.length} />
+        <Column title="In Progress" items={inProgress} count={inProgress.length} />
+        <Column title="Done" items={done} count={done.length} />
+      </div>
     </div>
   );
 };

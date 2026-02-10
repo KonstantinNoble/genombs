@@ -1,64 +1,76 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import type { WebsiteProfile } from "@/lib/mock-chat-data";
 
 interface ComparisonTableProps {
   profiles: WebsiteProfile[];
 }
 
-const criteria = ["Zielgruppe", "USP", "CTAs", "Stärken", "Schwächen"] as const;
-
-const getCriterionValue = (profile: WebsiteProfile, criterion: typeof criteria[number]): string => {
-  const d = profile.profileData;
-  switch (criterion) {
-    case "Zielgruppe": return d.targetAudience;
-    case "USP": return d.usp;
-    case "CTAs": return d.ctas.join(", ");
-    case "Stärken": return d.strengths.join(" · ");
-    case "Schwächen": return d.weaknesses.join(" · ");
-  }
-};
+const categories = [
+  { key: "seo" as const, label: "SEO" },
+  { key: "ux" as const, label: "UX" },
+  { key: "content" as const, label: "Content" },
+  { key: "trust" as const, label: "Trust" },
+  { key: "speed" as const, label: "Speed" },
+];
 
 const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
-  if (profiles.length === 0) return null;
+  if (profiles.length < 2) return null;
+
+  const ownSite = profiles.find((p) => p.isOwnWebsite);
+  const competitors = profiles.filter((p) => !p.isOwnWebsite);
+
+  if (!ownSite || competitors.length === 0) return null;
 
   return (
-    <Card className="border-border bg-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground w-28">Kriterium</th>
-              {profiles.map((p) => (
-                <th key={p.id} className="text-left py-3 px-4 text-xs font-medium min-w-[200px]">
-                  <div className="flex items-center gap-2">
-                    <span className={p.isOwnWebsite ? "text-primary" : "text-foreground"}>
-                      {p.profileData.name}
-                    </span>
-                    {p.isOwnWebsite && (
-                      <Badge variant="default" className="text-[9px] px-1.5 py-0">Eigene</Badge>
-                    )}
+    <Card className="border-border bg-card">
+      <CardContent className="p-4 space-y-4">
+        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
+            {ownSite.profileData.name}
+          </span>
+          {competitors.map((c) => (
+            <span key={c.id} className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-sm bg-muted-foreground/40" />
+              {c.profileData.name}
+            </span>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          {categories.map((cat) => (
+            <div key={cat.key} className="space-y-1.5">
+              <span className="text-[11px] text-muted-foreground">{cat.label}</span>
+              {/* Own site bar */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-700"
+                    style={{ width: `${ownSite.categoryScores[cat.key]}%` }}
+                  />
+                </div>
+                <span className="text-xs font-medium text-foreground w-7 text-right">
+                  {ownSite.categoryScores[cat.key]}
+                </span>
+              </div>
+              {/* Competitor bars */}
+              {competitors.map((comp) => (
+                <div key={comp.id} className="flex items-center gap-2">
+                  <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-muted-foreground/40 transition-all duration-700"
+                      style={{ width: `${comp.categoryScores[cat.key]}%` }}
+                    />
                   </div>
-                </th>
+                  <span className="text-xs text-muted-foreground w-7 text-right">
+                    {comp.categoryScores[cat.key]}
+                  </span>
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {criteria.map((criterion) => (
-              <tr key={criterion} className="border-b border-border/50">
-                <td className="py-3 px-4 text-xs font-medium text-muted-foreground align-top">
-                  {criterion}
-                </td>
-                {profiles.map((p) => (
-                  <td key={p.id} className="py-3 px-4 text-xs text-foreground align-top leading-relaxed">
-                    {getCriterionValue(p, criterion)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
     </Card>
   );
 };

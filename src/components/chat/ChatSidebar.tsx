@@ -16,7 +16,7 @@ const ChatSidebar = ({ conversations, activeId, onSelect, onNew }: ChatSidebarPr
       <div className="p-4 border-b border-border">
         <Button onClick={onNew} className="w-full gap-2" size="sm">
           <Plus className="w-4 h-4" />
-          Neue Conversation
+          New Conversation
         </Button>
       </div>
       <ScrollArea className="flex-1">
@@ -35,7 +35,7 @@ const ChatSidebar = ({ conversations, activeId, onSelect, onNew }: ChatSidebarPr
               <div className="min-w-0">
                 <p className="font-medium truncate">{conv.title}</p>
                 <p className="text-xs text-muted-foreground/60 mt-0.5">
-                  {new Date(conv.createdAt).toLocaleDateString("de-DE")}
+                  {new Date(conv.createdAt).toLocaleDateString("en-US")}
                 </p>
               </div>
             </button>

@@ -34,7 +34,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
         <div className="mb-2 flex items-center gap-2 rounded-lg bg-secondary/50 border border-border px-3 py-2 text-xs text-muted-foreground">
           <Globe className="w-3.5 h-3.5 text-primary shrink-0" />
           <span className="truncate">
-            URL erkannt: <span className="text-foreground font-medium">{detectedUrl}</span> — wird analysiert
+            URL detected: <span className="text-foreground font-medium">{detectedUrl}</span> — will be analyzed
           </span>
         </div>
       )}
@@ -43,7 +43,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Nachricht eingeben oder URL einfügen..."
+          placeholder="Enter a URL or ask a question..."
           className="min-h-[44px] max-h-[120px] resize-none bg-background"
           rows={1}
           disabled={disabled}

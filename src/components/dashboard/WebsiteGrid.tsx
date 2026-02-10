@@ -10,11 +10,11 @@ const WebsiteGrid = ({ profiles }: WebsiteGridProps) => {
   const competitors = profiles.filter((p) => !p.isOwnWebsite);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {ownSites.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-muted-foreground mb-3">Eigene Website</h3>
-          <div className="grid grid-cols-1 gap-4">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Your Website</h3>
+          <div className="grid grid-cols-1 gap-3">
             {ownSites.map((p) => (
               <WebsiteProfileCard key={p.id} profile={p} />
             ))}
@@ -23,8 +23,8 @@ const WebsiteGrid = ({ profiles }: WebsiteGridProps) => {
       )}
       {competitors.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-muted-foreground mb-3">Konkurrenz ({competitors.length})</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Competitors ({competitors.length})</h3>
+          <div className="grid grid-cols-1 gap-3">
             {competitors.map((p) => (
               <WebsiteProfileCard key={p.id} profile={p} />
             ))}

@@ -3,13 +3,15 @@ import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare } from "l
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import WebsiteGrid from "@/components/dashboard/WebsiteGrid";
 import ComparisonTable from "@/components/dashboard/ComparisonTable";
-import TaskBoard from "@/components/dashboard/TaskBoard";
+import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
+import ImprovementPlan from "@/components/dashboard/ImprovementPlan";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   mockConversations,
@@ -25,6 +27,7 @@ const Chat = () => {
   const [activeId, setActiveId] = useState<string | null>(mockConversations[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
+  const [analysisTab, setAnalysisTab] = useState("overview");
 
   const activeConversation = conversations.find((c) => c.id === activeId) || null;
   const hasProfiles = mockWebsiteProfiles.length > 0;
@@ -132,19 +135,39 @@ const Chat = () => {
       <div className="border-b border-border bg-card px-4 py-3">
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
+      {hasProfiles && (
+        <div className="border-b border-border bg-card px-4 py-1">
+          <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
+            <TabsList className="bg-transparent h-8 p-0 gap-0">
+              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Overview</TabsTrigger>
+              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Positioning</TabsTrigger>
+              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Offer & CTAs</TabsTrigger>
+              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Trust & Proof</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
-          {/* Dynamic website profiles */}
-          {hasProfiles && <WebsiteGrid profiles={mockWebsiteProfiles} />}
-
-          {/* Comparison view when 2+ sites */}
-          {hasMultipleProfiles && (
-            <div>
-              <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
-              <ComparisonTable profiles={mockWebsiteProfiles} />
-            </div>
+          {analysisTab === "overview" ? (
+            <>
+              {hasProfiles && <WebsiteGrid profiles={mockWebsiteProfiles} />}
+              {hasMultipleProfiles && (
+                <div>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
+                  <ComparisonTable profiles={mockWebsiteProfiles} />
+                </div>
+              )}
+              {hasProfiles && (
+                <div>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Improvement Plan</h3>
+                  <ImprovementPlan tasks={mockTasks} />
+                </div>
+              )}
+            </>
+          ) : (
+            hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={mockWebsiteProfiles} />
           )}
-
         </div>
       </ScrollArea>
     </div>

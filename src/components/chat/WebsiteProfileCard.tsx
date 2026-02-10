@@ -110,11 +110,11 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
         </div>
 
         <div className="space-y-1.5">
-          <CategoryBar label="SEO" value={categoryScores.seo} />
-          <CategoryBar label="UX" value={categoryScores.ux} />
-          <CategoryBar label="Content" value={categoryScores.content} />
-          <CategoryBar label="Trust" value={categoryScores.trust} />
-          <CategoryBar label="Speed" value={categoryScores.speed} />
+          <CategoryBar label="Findability" value={categoryScores.findability} />
+          <CategoryBar label="Mobile" value={categoryScores.mobileUsability} />
+          <CategoryBar label="Offer" value={categoryScores.offerClarity} />
+          <CategoryBar label="Trust" value={categoryScores.trustProof} />
+          <CategoryBar label="Conversion" value={categoryScores.conversionReadiness} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-1">

@@ -4,11 +4,11 @@ export interface WebsiteProfile {
   isOwnWebsite: boolean;
   overallScore: number;
   categoryScores: {
-    seo: number;
-    ux: number;
-    content: number;
-    trust: number;
-    speed: number;
+    findability: number;
+    mobileUsability: number;
+    offerClarity: number;
+    trustProof: number;
+    conversionReadiness: number;
   };
   profileData: {
     name: string;
@@ -53,7 +53,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://my-craft.com",
     isOwnWebsite: true,
     overallScore: 68,
-    categoryScores: { seo: 55, ux: 62, content: 70, trust: 82, speed: 45 },
+    categoryScores: { findability: 55, mobileUsability: 62, offerClarity: 70, trustProof: 82, conversionReadiness: 45 },
     profileData: {
       name: "My Craft",
       targetAudience: "Homeowners and tenants in Munich area, 30–60, mid to high income.",
@@ -78,7 +78,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://quick-repair.com",
     isOwnWebsite: false,
     overallScore: 74,
-    categoryScores: { seo: 70, ux: 80, content: 60, trust: 72, speed: 78 },
+    categoryScores: { findability: 70, mobileUsability: 80, offerClarity: 60, trustProof: 72, conversionReadiness: 78 },
     profileData: {
       name: "Quick Repair",
       targetAudience: "Customers with urgent repair needs. Broad age range, local focus.",
@@ -103,7 +103,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://builder-mueller.com",
     isOwnWebsite: false,
     overallScore: 81,
-    categoryScores: { seo: 78, ux: 85, content: 88, trust: 80, speed: 55 },
+    categoryScores: { findability: 78, mobileUsability: 85, offerClarity: 88, trustProof: 80, conversionReadiness: 55 },
     profileData: {
       name: "Builder Mueller",
       targetAudience: "Builders and architects for new construction and major renovations.",
@@ -237,7 +237,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Compress images",
     description: "Compress all website images to under 200 KB. Tools: TinyPNG, Squoosh.",
-    category: "Speed",
+    category: "Conversion Readiness",
     status: "done",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",
@@ -247,7 +247,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Add click-to-call button",
     description: "Place a large, visible phone button in the mobile header.",
-    category: "UX",
+    category: "Mobile Usability",
     status: "in_progress",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",
@@ -257,7 +257,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Integrate WhatsApp button",
     description: "Add floating WhatsApp button on all pages for quick contact.",
-    category: "UX",
+    category: "Mobile Usability",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",
@@ -267,7 +267,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Set up online booking",
     description: "Integrate Calendly or custom booking form.",
-    category: "Conversion",
+    category: "Conversion Readiness",
     status: "todo",
     priority: "medium",
     createdAt: "2026-02-09T14:02:00Z",
@@ -277,7 +277,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Create before/after gallery",
     description: "Build image gallery with completed project references.",
-    category: "Content",
+    category: "Trust & Proof",
     status: "todo",
     priority: "low",
     createdAt: "2026-02-09T14:02:00Z",

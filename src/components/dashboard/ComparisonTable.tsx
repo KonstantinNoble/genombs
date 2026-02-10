@@ -6,11 +6,11 @@ interface ComparisonTableProps {
 }
 
 const categories = [
-  { key: "seo" as const, label: "SEO" },
-  { key: "ux" as const, label: "UX" },
-  { key: "content" as const, label: "Content" },
-  { key: "trust" as const, label: "Trust" },
-  { key: "speed" as const, label: "Speed" },
+  { key: "findability" as const, label: "Findability" },
+  { key: "mobileUsability" as const, label: "Mobile Usability" },
+  { key: "offerClarity" as const, label: "Offer Clarity" },
+  { key: "trustProof" as const, label: "Trust & Proof" },
+  { key: "conversionReadiness" as const, label: "Conversion Readiness" },
 ];
 
 const ComparisonTable = ({ profiles }: ComparisonTableProps) => {

@@ -137,8 +137,7 @@ const Navbar = () => {
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center gap-7">
             <NavLink to="/">Home</NavLink>
-            {user && <NavLink to="/chat">Chat</NavLink>}
-            {user && <NavLink to="/dashboard">Dashboard</NavLink>}
+            {user && <NavLink to="/chat">Analyse</NavLink>}
             <NavLink to="/pricing">Pricing</NavLink>
             <NavLink to="/contact">Contact</NavLink>
           </div>
@@ -225,12 +224,7 @@ const Navbar = () => {
               </MobileNavLink>
               {user && (
                 <MobileNavLink to="/chat" onClick={() => setIsOpen(false)} delay={1}>
-                  Chat
-                </MobileNavLink>
-              )}
-              {user && (
-                <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={2}>
-                  Dashboard
+                  Analyse
                 </MobileNavLink>
               )}
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={3}>

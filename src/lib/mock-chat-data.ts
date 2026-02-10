@@ -103,7 +103,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://builder-mueller.com",
     isOwnWebsite: false,
     overallScore: 81,
-    categoryScores: { seo: 78, ux: 85, content: 88, trust: 80, speed: 55 },
+    categoryScores: { findability: 78, mobileUsability: 85, offerClarity: 88, trustProof: 80, conversionReadiness: 55 },
     profileData: {
       name: "Builder Mueller",
       targetAudience: "Builders and architects for new construction and major renovations.",

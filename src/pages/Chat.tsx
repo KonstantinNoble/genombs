@@ -27,6 +27,7 @@ const Chat = () => {
   const [activeId, setActiveId] = useState<string | null>(mockConversations[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
+  const [analysisTab, setAnalysisTab] = useState("overview");
 
   const activeConversation = conversations.find((c) => c.id === activeId) || null;
   const hasProfiles = mockWebsiteProfiles.length > 0;

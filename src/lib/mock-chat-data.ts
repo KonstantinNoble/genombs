@@ -53,7 +53,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://my-craft.com",
     isOwnWebsite: true,
     overallScore: 68,
-    categoryScores: { seo: 55, ux: 62, content: 70, trust: 82, speed: 45 },
+    categoryScores: { findability: 55, mobileUsability: 62, offerClarity: 70, trustProof: 82, conversionReadiness: 45 },
     profileData: {
       name: "My Craft",
       targetAudience: "Homeowners and tenants in Munich area, 30–60, mid to high income.",

@@ -1,65 +1,65 @@
 
 
-# URL Scanner Bar Below Chat Input
+# Replace Scanner Bar with "+" Button and Multi-URL Popup
 
 ## What Changes
 
-### `src/components/chat/ChatInput.tsx`
+### `src/components/chat/ChatInput.tsx` -- Redesign
 
-Add a new section **below** the chat input area -- a "URL Scanner" bar. It contains:
+Remove the entire URL scanner bar (lines 95-122) and the old single-URL dialog. Replace with:
 
-- An input field with a Globe icon and placeholder "Enter website URL..."
-- A "Scan" button next to it
-- When the user clicks "Scan", a **Dialog popup** appears with two options:
-  - **"Scan Your Site"** -- marks the URL as the user's own website
-  - **"Scan Competitor"** -- marks the URL as a competitor
-  - Both buttons close the dialog and trigger `onScan(url, type)` callback
-- The scanner bar is visually distinct from the chat input (subtle background, separator)
+**A "+" button** next to the Send button in the chat input row. Clicking it opens a **Dialog popup** with 3-4 input fields:
+
+```text
++------------------------------------------+
+| [Chat textarea...         ] [+] [Send]   |
++------------------------------------------+
+```
+
+**Popup layout:**
+
+```text
++----------------------------------+
+|   Add Websites to Analyze        |
+|                                  |
+|   Your Website                   |
+|   [https://your-site.com     ]   |
+|                                  |
+|   Competitor 1                   |
+|   [https://competitor1.com   ]   |
+|                                  |
+|   Competitor 2                   |
+|   [https://competitor2.com   ]   |
+|                                  |
+|   Competitor 3                   |
+|   [https://competitor3.com   ]   |
+|                                  |
+|          [Start Analysis]        |
++----------------------------------+
+```
+
+- Field 1: "Your Website" -- single URL input
+- Fields 2-4: "Competitor 1/2/3" -- competitor URL inputs (optional, at least one required)
+- "Start Analysis" button submits all URLs at once
 
 ### Props Update
 
-- Add new prop: `onScan: (url: string, type: 'own' | 'competitor') => void`
-- The scan bar manages its own URL state, separate from the chat message input
+Change `onScan` prop signature:
 
-### Visual Layout
-
-```text
-+------------------------------------------+
-| [Chat textarea...              ] [Send]  |
-+------------------------------------------+
-| [Globe icon] [Enter website URL...] [Scan]|
-+------------------------------------------+
+```typescript
+onScan?: (ownUrl: string, competitorUrls: string[]) => void;
 ```
 
-Dialog popup on Scan click:
-
-```text
-+---------------------------+
-|   Scan Website            |
-|   example.com             |
-|                           |
-|  [Scan Your Site]         |
-|  [Scan Competitor]        |
-|                           |
-|  [Cancel]                 |
-+---------------------------+
-```
+This passes the user's site URL and an array of competitor URLs in one call.
 
 ### `src/pages/Chat.tsx`
 
-- Pass the new `onScan` prop to `ChatInput`
-- For now (frontend-only), the handler logs the scan and could add a mock message to the chat like "Scanning example.com..."
-
-### Components Used
-
-- `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle` from existing UI components
-- `Input` for the URL field
-- `Button` for Scan, Scan Your Site, Scan Competitor
+Update the `onScan` handler to match the new signature -- receives one own URL + array of competitor URLs.
 
 ### Files Modified
 
 | File | Change |
 |------|--------|
-| `src/components/chat/ChatInput.tsx` | Add URL scanner bar + scan dialog |
-| `src/pages/Chat.tsx` | Pass `onScan` handler to ChatInput |
+| `src/components/chat/ChatInput.tsx` | Remove scanner bar, add "+" button + multi-URL dialog |
+| `src/pages/Chat.tsx` | Update onScan handler signature |
 

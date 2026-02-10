@@ -224,12 +224,7 @@ const Navbar = () => {
               </MobileNavLink>
               {user && (
                 <MobileNavLink to="/chat" onClick={() => setIsOpen(false)} delay={1}>
-                  Chat
-                </MobileNavLink>
-              )}
-              {user && (
-                <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={2}>
-                  Dashboard
+                  Analyse
                 </MobileNavLink>
               )}
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={3}>

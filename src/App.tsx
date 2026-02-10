@@ -15,8 +15,6 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 
 // Lazy load authenticated and less critical pages
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const GenomeView = lazy(() => import("./pages/GenomeView"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PricingPage = lazy(() => import("./pages/Pricing"));

@@ -145,11 +145,6 @@ const Chat = () => {
             </div>
           )}
 
-          {/* Planner always visible */}
-          <div>
-            <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Planner</h3>
-            <TaskBoard initialTasks={mockTasks} />
-          </div>
         </div>
       </ScrollArea>
     </div>

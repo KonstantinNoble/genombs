@@ -135,19 +135,39 @@ const Chat = () => {
       <div className="border-b border-border bg-card px-4 py-3">
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
+      {hasProfiles && (
+        <div className="border-b border-border bg-card px-4 py-1">
+          <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
+            <TabsList className="bg-transparent h-8 p-0 gap-0">
+              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Overview</TabsTrigger>
+              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Positioning</TabsTrigger>
+              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Offer & CTAs</TabsTrigger>
+              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Trust & Proof</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
-          {/* Dynamic website profiles */}
-          {hasProfiles && <WebsiteGrid profiles={mockWebsiteProfiles} />}
-
-          {/* Comparison view when 2+ sites */}
-          {hasMultipleProfiles && (
-            <div>
-              <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
-              <ComparisonTable profiles={mockWebsiteProfiles} />
-            </div>
+          {analysisTab === "overview" ? (
+            <>
+              {hasProfiles && <WebsiteGrid profiles={mockWebsiteProfiles} />}
+              {hasMultipleProfiles && (
+                <div>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
+                  <ComparisonTable profiles={mockWebsiteProfiles} />
+                </div>
+              )}
+              {hasProfiles && (
+                <div>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Improvement Plan</h3>
+                  <ImprovementPlan tasks={mockTasks} />
+                </div>
+              )}
+            </>
+          ) : (
+            hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={mockWebsiteProfiles} />
           )}
-
         </div>
       </ScrollArea>
     </div>

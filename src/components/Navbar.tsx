@@ -221,7 +221,7 @@ const Navbar = () => {
               <MobileNavLink to="/" onClick={() => setIsOpen(false)} delay={0}>
                 Home
               </MobileNavLink>
-              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={user ? 3 : 1}>
+              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={1}>
                 Pricing
               </MobileNavLink>
               <MobileNavLink to="/contact" onClick={() => setIsOpen(false)} delay={user ? 3 : 2}>

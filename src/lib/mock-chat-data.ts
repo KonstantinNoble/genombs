@@ -78,7 +78,7 @@ export const mockWebsiteProfiles: WebsiteProfile[] = [
     url: "https://quick-repair.com",
     isOwnWebsite: false,
     overallScore: 74,
-    categoryScores: { seo: 70, ux: 80, content: 60, trust: 72, speed: 78 },
+    categoryScores: { findability: 70, mobileUsability: 80, offerClarity: 60, trustProof: 72, conversionReadiness: 78 },
     profileData: {
       name: "Quick Repair",
       targetAudience: "Customers with urgent repair needs. Broad age range, local focus.",

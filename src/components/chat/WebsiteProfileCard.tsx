@@ -54,7 +54,7 @@ const ScoreRing = ({ score, size = 56 }: { score: number; size?: number }) => {
 const CategoryBar = ({ label, value }: { label: string; value: number }) => {
   const color =
     value >= 80
-      ? "bg-green-500"
+      ? "bg-chart-6"
       : value >= 60
         ? "bg-primary"
         : "bg-destructive";

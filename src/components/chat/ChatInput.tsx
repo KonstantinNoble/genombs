@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Send, Globe, Search } from "lucide-react";
+import { Send, Globe, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -12,18 +13,17 @@ import {
 
 interface ChatInputProps {
   onSend: (message: string) => void;
-  onScan?: (url: string, type: "own" | "competitor") => void;
+  onScan?: (ownUrl: string, competitorUrls: string[]) => void;
   disabled?: boolean;
 }
 
-const URL_REGEX = /https?:\/\/[^\s]+/;
-
 const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
   const [value, setValue] = useState("");
-  const [scanUrl, setScanUrl] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const detectedUrl = value.match(URL_REGEX)?.[0] || null;
+  const [ownUrl, setOwnUrl] = useState("");
+  const [comp1, setComp1] = useState("");
+  const [comp2, setComp2] = useState("");
+  const [comp3, setComp3] = useState("");
 
   const handleSend = () => {
     if (!value.trim()) return;
@@ -38,39 +38,22 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
     }
   };
 
-  const handleScanClick = () => {
-    if (!scanUrl.trim()) return;
-    setDialogOpen(true);
-  };
+  const competitorUrls = [comp1, comp2, comp3].filter((u) => u.trim());
+  const canStartAnalysis = ownUrl.trim() && competitorUrls.length > 0;
 
-  const handleScanType = (type: "own" | "competitor") => {
-    onScan?.(scanUrl.trim(), type);
+  const handleStartAnalysis = () => {
+    if (!canStartAnalysis) return;
+    onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()));
     setDialogOpen(false);
-    setScanUrl("");
+    setOwnUrl("");
+    setComp1("");
+    setComp2("");
+    setComp3("");
   };
-
-  // Extract domain for display in dialog
-  const displayDomain = (() => {
-    try {
-      const url = scanUrl.trim().startsWith("http") ? scanUrl.trim() : `https://${scanUrl.trim()}`;
-      return new URL(url).hostname;
-    } catch {
-      return scanUrl.trim();
-    }
-  })();
 
   return (
     <div className="border-t border-border bg-card">
-      {/* Chat input area */}
-      <div className="p-4 pb-2">
-        {detectedUrl && (
-          <div className="mb-2 flex items-center gap-2 rounded-lg bg-secondary/50 border border-border px-3 py-2 text-xs text-muted-foreground">
-            <Globe className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate">
-              URL detected: <span className="text-foreground font-medium">{detectedUrl}</span> — will be analyzed
-            </span>
-          </div>
-        )}
+      <div className="p-4">
         <div className="flex items-end gap-2">
           <Textarea
             value={value}
@@ -82,6 +65,15 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
             disabled={disabled}
           />
           <Button
+            onClick={() => setDialogOpen(true)}
+            disabled={disabled}
+            size="icon"
+            variant="outline"
+            className="shrink-0 h-[44px] w-[44px]"
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+          <Button
             onClick={handleSend}
             disabled={!value.trim() || disabled}
             size="icon"
@@ -92,48 +84,49 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
         </div>
       </div>
 
-      {/* URL Scanner bar */}
-      <div className="px-4 pb-3 pt-1">
-        <div className="flex items-center gap-2 rounded-lg bg-muted/50 border border-border px-3 py-2">
-          <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
-          <Input
-            value={scanUrl}
-            onChange={(e) => setScanUrl(e.target.value)}
-            placeholder="Enter website URL..."
-            className="h-8 border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 text-sm"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleScanClick();
-              }
-            }}
-          />
-          <Button
-            onClick={handleScanClick}
-            disabled={!scanUrl.trim()}
-            size="sm"
-            variant="secondary"
-            className="shrink-0 gap-1.5"
-          >
-            <Search className="w-3.5 h-3.5" />
-            Scan
-          </Button>
-        </div>
-      </div>
-
-      {/* Scan type dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Scan Website</DialogTitle>
+            <DialogTitle>Add Websites to Analyze</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground truncate">{displayDomain}</p>
-          <div className="flex flex-col gap-2 mt-2">
-            <Button onClick={() => handleScanType("own")} className="w-full">
-              Scan Your Site
-            </Button>
-            <Button onClick={() => handleScanType("competitor")} variant="secondary" className="w-full">
-              Scan Competitor
+          <div className="flex flex-col gap-4 mt-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="own-url" className="text-sm font-medium">Your Website</Label>
+              <div className="relative">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="own-url"
+                  value={ownUrl}
+                  onChange={(e) => setOwnUrl(e.target.value)}
+                  placeholder="https://your-site.com"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            {[
+              { label: "Competitor 1", value: comp1, set: setComp1 },
+              { label: "Competitor 2", value: comp2, set: setComp2 },
+              { label: "Competitor 3", value: comp3, set: setComp3 },
+            ].map((field) => (
+              <div key={field.label} className="space-y-1.5">
+                <Label className="text-sm font-medium">{field.label}</Label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={field.value}
+                    onChange={(e) => field.set(e.target.value)}
+                    placeholder={`https://${field.label.toLowerCase().replace(" ", "")}.com`}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+            ))}
+            <Button
+              onClick={handleStartAnalysis}
+              disabled={!canStartAnalysis}
+              className="w-full mt-2"
+            >
+              Start Analysis
             </Button>
           </div>
         </DialogContent>

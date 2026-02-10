@@ -247,7 +247,7 @@ export const mockTasks: ImprovementTask[] = [
     websiteProfileId: "wp-1",
     title: "Add click-to-call button",
     description: "Place a large, visible phone button in the mobile header.",
-    category: "UX",
+    category: "Mobile Usability",
     status: "in_progress",
     priority: "high",
     createdAt: "2026-02-09T14:02:00Z",

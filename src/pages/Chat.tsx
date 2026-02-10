@@ -3,13 +3,15 @@ import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare } from "l
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import WebsiteGrid from "@/components/dashboard/WebsiteGrid";
 import ComparisonTable from "@/components/dashboard/ComparisonTable";
-import TaskBoard from "@/components/dashboard/TaskBoard";
+import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
+import ImprovementPlan from "@/components/dashboard/ImprovementPlan";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   mockConversations,

@@ -123,7 +123,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
             <div className="space-y-1">
               {profileData.strengths.slice(0, 3).map((s) => (
                 <div key={s} className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-chart-6 shrink-0" />
                   <span className="text-[11px] text-foreground leading-tight">{s}</span>
                 </div>
               ))}

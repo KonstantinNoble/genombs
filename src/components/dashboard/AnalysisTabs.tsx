@@ -94,6 +94,7 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
       <div className="space-y-3">
         {[ownSite, ...competitors].map((profile) => {
           if (!profile.profile_data) return null;
+          const trustScore = profile.category_scores?.trustProof ?? 0;
           return (
             <Card key={profile.id} className="border-border bg-card">
               <CardContent className="p-4 space-y-3">
@@ -103,37 +104,39 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
                     {profile.is_own_website ? "Your Site" : "Competitor"}
                   </Badge>
                 </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground">Trust & Proof Score</span>
+                    <span className="text-sm font-bold text-foreground">{trustScore}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${trustScore >= 80 ? "bg-chart-6" : trustScore >= 60 ? "bg-primary" : "bg-destructive"}`}
+                      style={{ width: `${trustScore}%` }}
+                    />
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[11px] text-muted-foreground mb-1">Trust Signals</p>
+                    <p className="text-[11px] text-muted-foreground mb-1">Strengths</p>
                     <div className="space-y-1">
-                      {profile.profile_data.strengths
-                        .filter((s) => /trust|review|certif|proof|guarantee/i.test(s))
-                        .map((s) => (
-                          <div key={s} className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-chart-6 shrink-0" />
-                            <span className="text-[11px] text-foreground">{s}</span>
-                          </div>
-                        ))}
-                      {profile.profile_data.strengths.filter((s) => /trust|review|certif|proof|guarantee/i.test(s)).length === 0 && (
-                        <span className="text-[11px] text-muted-foreground">No specific trust signals found</span>
-                      )}
+                      {profile.profile_data.strengths.slice(0, 5).map((s) => (
+                        <div key={s} className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-chart-6 shrink-0" />
+                          <span className="text-[11px] text-foreground">{s}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[11px] text-muted-foreground mb-1">Trust Gaps</p>
+                    <p className="text-[11px] text-muted-foreground mb-1">Weaknesses</p>
                     <div className="space-y-1">
-                      {profile.profile_data.weaknesses
-                        .filter((w) => /trust|review|certif|proof|unprofessional/i.test(w))
-                        .map((w) => (
-                          <div key={w} className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
-                            <span className="text-[11px] text-foreground">{w}</span>
-                          </div>
-                        ))}
-                      {profile.profile_data.weaknesses.filter((w) => /trust|review|certif|proof|unprofessional/i.test(w)).length === 0 && (
-                        <span className="text-[11px] text-muted-foreground">No trust gaps identified</span>
-                      )}
+                      {profile.profile_data.weaknesses.slice(0, 5).map((w) => (
+                        <div key={w} className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
+                          <span className="text-[11px] text-foreground">{w}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

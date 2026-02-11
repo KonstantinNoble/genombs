@@ -27,8 +27,11 @@ import {
   analyzeWebsite,
   streamChat,
   deleteProfilesForConversation,
+  deleteConversation,
 } from "@/lib/api/chat-api";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
+
+const MAX_CONVERSATIONS = 20;
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -155,9 +158,23 @@ const Chat = () => {
     if (!user) return;
     try {
       const conv = await createConversation(user.id);
-      setConversations((prev) => [conv, ...prev]);
+      const updated = [conv, ...conversations];
+      setConversations(updated);
       setActiveId(conv.id);
       setSidebarOpen(false);
+
+      // Enforce max 20 conversations: delete oldest if exceeded
+      if (updated.length > MAX_CONVERSATIONS) {
+        const oldest = updated[updated.length - 1]; // sorted by updated_at desc
+        try {
+          const token = await getAccessToken();
+          await deleteConversation(oldest.id, token);
+          setConversations((prev) => prev.filter((c) => c.id !== oldest.id));
+          console.log(`Auto-deleted oldest conversation: ${oldest.id}`);
+        } catch (delErr) {
+          console.error("Failed to auto-delete oldest conversation:", delErr);
+        }
+      }
     } catch (e) {
       toast.error("Failed to create conversation");
       console.error(e);

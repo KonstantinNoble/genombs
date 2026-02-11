@@ -106,6 +106,31 @@ export async function deleteProfilesForConversation(conversationId: string, acce
   return { deletedProfiles: result.deletedProfiles, deletedTasks: result.deletedTasks };
 }
 
+// ─── Delete entire conversation (profiles, tasks, messages, conversation) ───
+
+export async function deleteConversation(conversationId: string, accessToken: string): Promise<void> {
+  // 1. Delete profiles + tasks via Edge Function
+  try {
+    await deleteProfilesForConversation(conversationId, accessToken);
+  } catch (e) {
+    console.warn("deleteProfilesForConversation failed (may have no profiles):", e);
+  }
+
+  // 2. Delete messages
+  const { error: msgErr } = await supabase
+    .from("messages")
+    .delete()
+    .eq("conversation_id", conversationId);
+  if (msgErr) console.error("Failed to delete messages:", msgErr);
+
+  // 3. Delete conversation
+  const { error: convErr } = await supabase
+    .from("conversations")
+    .delete()
+    .eq("id", conversationId);
+  if (convErr) throw convErr;
+}
+
 // ─── Analyze Website (Edge Function) ───
 
 export async function analyzeWebsite(

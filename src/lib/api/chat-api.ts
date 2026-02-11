@@ -82,68 +82,28 @@ export async function loadTasks(websiteProfileIds: string[]): Promise<Improvemen
   return (data ?? []) as unknown as ImprovementTask[];
 }
 
-// ─── Delete old profiles for a conversation ───
+// ─── Delete old profiles for a conversation (via Edge Function) ───
 
-export async function deleteProfilesForConversation(conversationId: string): Promise<{ deletedProfiles: number; deletedTasks: number }> {
-  // Step 1: Fetch existing profiles
-  const { data: oldProfiles, error: fetchError } = await supabase
-    .from("website_profiles")
-    .select("id")
-    .eq("conversation_id", conversationId);
+export async function deleteProfilesForConversation(conversationId: string, accessToken: string): Promise<{ deletedProfiles: number; deletedTasks: number }> {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/delete-profiles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ conversationId }),
+  });
 
-  if (fetchError) {
-    console.error("Failed to fetch old profiles:", fetchError);
-    throw new Error(`Failed to fetch old profiles: ${fetchError.message}`);
+  const result = await resp.json();
+
+  if (!resp.ok) {
+    console.error("Delete profiles failed:", result);
+    throw new Error(result.error || "Failed to delete profiles");
   }
 
-  let deletedTasks = 0;
-  if (oldProfiles && oldProfiles.length > 0) {
-    const ids = oldProfiles.map((p) => p.id);
-    const { error: taskDeleteError } = await supabase.from("improvement_tasks").delete().in("website_profile_id", ids);
-    if (taskDeleteError) {
-      console.error("Failed to delete improvement tasks:", taskDeleteError);
-      throw new Error(`Failed to delete improvement tasks: ${taskDeleteError.message}`);
-    }
-    deletedTasks = ids.length;
-  }
-
-  // Step 2: Delete profiles
-  const { error: profileDeleteError } = await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
-  if (profileDeleteError) {
-    console.error("Failed to delete website profiles:", profileDeleteError);
-    throw new Error(`Failed to delete website profiles: ${profileDeleteError.message}`);
-  }
-
-  const deletedProfiles = oldProfiles?.length ?? 0;
-
-  // Step 3: Verify deletion
-  const { data: remaining, error: verifyError } = await supabase
-    .from("website_profiles")
-    .select("id")
-    .eq("conversation_id", conversationId);
-
-  if (verifyError) {
-    console.warn("Could not verify deletion:", verifyError);
-  } else if (remaining && remaining.length > 0) {
-    console.warn(`${remaining.length} profiles still exist after delete, retrying...`);
-    // Retry delete
-    const { error: retryError } = await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
-    if (retryError) {
-      console.error("Retry delete failed:", retryError);
-      throw new Error(`Retry delete failed: ${retryError.message}`);
-    }
-    // Final verification
-    const { data: stillRemaining } = await supabase
-      .from("website_profiles")
-      .select("id")
-      .eq("conversation_id", conversationId);
-    if (stillRemaining && stillRemaining.length > 0) {
-      throw new Error(`${stillRemaining.length} profiles could not be deleted`);
-    }
-  }
-
-  console.log(`Deleted ${deletedProfiles} profiles and ${deletedTasks} task groups for conversation ${conversationId}`);
-  return { deletedProfiles, deletedTasks };
+  console.log(`Deleted ${result.deletedProfiles} profiles and ${result.deletedTasks} task groups for conversation ${conversationId}`);
+  return { deletedProfiles: result.deletedProfiles, deletedTasks: result.deletedTasks };
 }
 
 // ─── Analyze Website (Edge Function) ───

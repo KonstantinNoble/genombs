@@ -1,44 +1,45 @@
 
 
-# Chat-Limit auf 20 Konversationen
+# Manuelle Loesch-Funktion fuer Konversationen
 
-## Ziel
+## Pruefungsergebnis (Punkt 1)
 
-Maximal 20 Konversationen pro User erlauben. Wenn eine neue erstellt wird und bereits 20 existieren, wird die aelteste automatisch geloescht -- inklusive aller zugehoerigen Nachrichten, Profile und Tasks aus der Datenbank.
+Die automatische Loeschung bei Ueberschreitung von 20 Konversationen ist korrekt implementiert. Alle vier relevanten Tabellen werden in der richtigen Reihenfolge geloescht:
 
-## Umsetzung
+1. `improvement_tasks` (via Edge Function, Service Role Key)
+2. `website_profiles` (via Edge Function, Service Role Key)
+3. `messages` (via Client, RLS-Policy vorhanden)
+4. `conversations` (via Client, RLS-Policy vorhanden)
 
-### Aenderung 1: `src/lib/api/chat-api.ts` -- Funktion zum Loeschen einer Konversation
+Keine Aenderungen noetig.
 
-Neue Funktion `deleteConversation(conversationId, accessToken)` hinzufuegen, die:
-- Die `delete-profiles` Edge Function aufruft (loescht Profile + Tasks)
-- Danach die Nachrichten (`messages`) fuer die Konversation loescht
-- Dann die Konversation selbst loescht
+## Neue Funktion (Punkt 2): Manuelles Loeschen von Konversationen
 
-Da Nachrichten und Konversationen korrekte RLS-Policies haben (`auth.uid() = user_id`), koennen diese direkt ueber den Client geloescht werden. Nur Profile/Tasks brauchen die Edge Function.
+### Aenderung 1: `src/components/chat/ChatSidebar.tsx`
 
-**Hinweis:** Die `messages`-Tabelle hat aktuell keine DELETE-Policy. Es wird eine Migration noetig sein, um eine DELETE-Policy hinzuzufuegen.
+Einen Loeschen-Button (Muelleimer-Icon) zu jedem Konversations-Eintrag in der Sidebar hinzufuegen:
 
-### Aenderung 2: Datenbank-Migration -- DELETE-Policy fuer `messages`
+- Das Icon erscheint nur beim Hover ueber den Eintrag
+- Klick auf das Icon ruft `onDelete(conversationId)` auf
+- Neues Prop `onDelete: (id: string) => void` hinzufuegen
+- Bestaetigung per Klick (kein separater Dialog noetig, einfach ein Klick genuegt, da die Funktion nicht destruktiv-kritisch ist - alternativ mit kurzem Confirm-Dialog)
 
-Neue RLS-Policy: "Users can delete messages in own conversations" mit der Bedingung:
-```sql
-EXISTS (SELECT 1 FROM conversations c WHERE c.id = messages.conversation_id AND c.user_id = auth.uid())
-```
+### Aenderung 2: `src/pages/Chat.tsx`
 
-### Aenderung 3: `src/pages/Chat.tsx` -- Limit-Pruefung bei neuer Konversation
+Neue Handler-Funktion `handleDeleteConversation`:
 
-In `handleNewConversation`:
-1. Nach dem Erstellen der neuen Konversation pruefen, ob die Gesamtanzahl > 20 ist
-2. Falls ja, die aelteste Konversation (letzte in der nach `updated_at` sortierten Liste) identifizieren
-3. `deleteConversation` fuer die aelteste aufrufen
-4. Die geloeschte Konversation aus dem lokalen State entfernen
+1. `deleteConversation(id, token)` aufrufen (loescht alles aus der DB)
+2. Konversation aus dem lokalen State entfernen
+3. Falls die geloeschte Konversation aktiv war: zur naechsten wechseln oder `activeId` auf `null` setzen
+4. Erfolgsmeldung per Toast anzeigen
+5. Fehlerbehandlung mit Fehlermeldung
+
+Die Funktion wird als `onDelete`-Prop an `ChatSidebar` uebergeben.
 
 ## Zusammenfassung
 
-| Datei / Bereich | Aenderung |
+| Datei | Aenderung |
 |---|---|
-| DB-Migration | DELETE-Policy fuer `messages`-Tabelle |
-| `src/lib/api/chat-api.ts` | Neue `deleteConversation`-Funktion |
-| `src/pages/Chat.tsx` | Limit-Pruefung in `handleNewConversation`, aelteste Konversation loeschen wenn > 20 |
+| `src/components/chat/ChatSidebar.tsx` | Loeschen-Button (Trash-Icon) pro Konversation, neues `onDelete`-Prop |
+| `src/pages/Chat.tsx` | `handleDeleteConversation`-Handler, Weitergabe an Sidebar |
 

@@ -9,11 +9,13 @@ const corsHeaders = {
 
 const SYSTEM_PROMPT = `You are an expert website & marketing analyst at Synoptas. You help users improve their websites by analyzing their online presence and comparing it with competitors.
 
-You have access to structured website profiles that were created by analyzing websites. Use this data to provide specific, actionable advice.
+You have access to:
+1. Structured website profiles with scores, strengths, and weaknesses.
+2. The actual crawled content (text, headings, links) from each website.
+
+IMPORTANT: When answering user questions, always reference specific details from the crawled content. Quote actual text, mention specific pages, headings, CTAs, or product descriptions you can see in the data. Never give generic advice when you have real data available.
 
 When comparing websites, use concrete metrics and examples from the profile data. Format your responses with markdown: use headers, tables, bullet points, and bold text for clarity.
-
-Always be constructive and specific. Instead of generic advice, reference the actual data from the website profiles.
 
 Answer in the same language as the user's message.`;
 
@@ -287,7 +289,7 @@ serve(async (req) => {
     if (conversationId) {
       const { data: profiles } = await supabaseAuth
         .from("website_profiles")
-        .select("url, is_own_website, overall_score, category_scores, profile_data, status")
+        .select("url, is_own_website, overall_score, category_scores, profile_data, raw_markdown, status")
         .eq("conversation_id", conversationId)
         .eq("status", "completed");
 
@@ -298,7 +300,14 @@ serve(async (req) => {
           profileContext += `### [${label}] ${p.url}\n`;
           profileContext += `Overall Score: ${p.overall_score}/100\n`;
           profileContext += `Category Scores: ${JSON.stringify(p.category_scores)}\n`;
-          profileContext += `Profile: ${JSON.stringify(p.profile_data)}\n\n`;
+          profileContext += `Profile: ${JSON.stringify(p.profile_data)}\n`;
+
+          // Include actual crawled content (truncated to ~6000 chars per site)
+          if (p.raw_markdown) {
+            const trimmed = p.raw_markdown.slice(0, 6000);
+            profileContext += `\nCrawled Content:\n${trimmed}\n`;
+          }
+          profileContext += "\n";
         }
       }
     }

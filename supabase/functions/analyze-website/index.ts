@@ -11,14 +11,14 @@ const corsHeaders = {
  * analyze-website
  *
  * 1. Scrapes the given URL via Firecrawl (markdown + screenshot)
- * 2. Sends the markdown to Gemini to produce a structured website profile
+ * 2. Sends the markdown to the selected AI model to produce a structured website profile
  * 3. Stores the result in `website_profiles`
  *
- * Required secrets on the Supabase project:
- *   FIRECRAWL_API_KEY, GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Required secrets: FIRECRAWL_API_KEY, GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ * Optional secrets: OPENAI_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY
  */
 
-const GEMINI_SYSTEM_PROMPT = `You are an expert website analyst. Analyze the provided website content and return a JSON object with exactly this structure:
+const ANALYSIS_SYSTEM_PROMPT = `You are an expert website analyst. Analyze the provided website content and return a JSON object with exactly this structure:
 
 {
   "name": "Company/website name",
@@ -46,13 +46,188 @@ Return the complete result as:
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
 
+// ─── Provider-specific analysis functions ───
+
+async function analyzeWithGemini(markdown: string, url: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: ANALYSIS_SYSTEM_PROMPT },
+              { text: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+          responseMimeType: "application/json",
+        },
+      }),
+    }
+  );
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    console.error("Gemini error:", data);
+    throw new Error(`Gemini API error: ${resp.status}`);
+  }
+
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithOpenAI(markdown: string, url: string, apiKey: string, modelName: string): Promise<unknown> {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: modelName,
+      messages: [
+        { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
+        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.2,
+      max_tokens: 4096,
+    }),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    console.error("OpenAI error:", data);
+    throw new Error(`OpenAI API error: ${resp.status}`);
+  }
+
+  const text = data.choices?.[0]?.message?.content || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithAnthropic(markdown: string, url: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      system: ANALYSIS_SYSTEM_PROMPT,
+      messages: [
+        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+      ],
+      max_tokens: 8192,
+    }),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    console.error("Anthropic error:", data);
+    throw new Error(`Anthropic API error: ${resp.status}`);
+  }
+
+  const text = data.content?.[0]?.text || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithPerplexity(markdown: string, url: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch("https://api.perplexity.ai/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "sonar-pro",
+      messages: [
+        { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
+        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+      ],
+      temperature: 0.2,
+      max_tokens: 4096,
+    }),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    console.error("Perplexity error:", data);
+    throw new Error(`Perplexity API error: ${resp.status}`);
+  }
+
+  const text = data.choices?.[0]?.message?.content || "";
+  return parseJsonResponse(text);
+}
+
+function parseJsonResponse(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    // Try to extract JSON from markdown code block
+    const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1]);
+    }
+    throw new Error("Could not parse AI response as JSON");
+  }
+}
+
+// ─── Model Router ───
+
+type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";
+
+async function routeAnalysis(model: ModelId, markdown: string, url: string): Promise<unknown> {
+  switch (model) {
+    case "gemini-flash": {
+      const key = Deno.env.get("GEMINI_API_KEY");
+      if (!key) throw new Error("GEMINI_API_KEY not configured");
+      return analyzeWithGemini(markdown, url, key);
+    }
+    case "gpt-mini": {
+      const key = Deno.env.get("OPENAI_API_KEY");
+      if (!key) throw new Error("OPENAI_API_KEY not configured");
+      return analyzeWithOpenAI(markdown, url, key, "gpt-4o-mini");
+    }
+    case "gpt": {
+      const key = Deno.env.get("OPENAI_API_KEY");
+      if (!key) throw new Error("OPENAI_API_KEY not configured");
+      return analyzeWithOpenAI(markdown, url, key, "gpt-4o");
+    }
+    case "claude-sonnet": {
+      const key = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!key) throw new Error("ANTHROPIC_API_KEY not configured");
+      return analyzeWithAnthropic(markdown, url, key);
+    }
+    case "perplexity": {
+      const key = Deno.env.get("PERPLEXITY_API_KEY");
+      if (!key) throw new Error("PERPLEXITY_API_KEY not configured");
+      return analyzeWithPerplexity(markdown, url, key);
+    }
+    default:
+      // Fallback to Gemini
+      const key = Deno.env.get("GEMINI_API_KEY");
+      if (!key) throw new Error("GEMINI_API_KEY not configured");
+      return analyzeWithGemini(markdown, url, key);
+  }
+}
+
+// ─── Main handler ───
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { url, conversationId, isOwnWebsite } = await req.json();
+    const { url, conversationId, isOwnWebsite, model = "gemini-flash" } = await req.json();
 
     if (!url || !conversationId) {
       return new Response(
@@ -73,17 +248,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
 
     if (!firecrawlKey) {
       return new Response(
         JSON.stringify({ error: "FIRECRAWL_API_KEY not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (!geminiKey) {
-      return new Response(
-        JSON.stringify({ error: "GEMINI_API_KEY not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -189,7 +357,6 @@ serve(async (req) => {
     // 3. Optionally store screenshot in Supabase Storage
     if (screenshotBase64) {
       try {
-        // Remove data:image/... prefix if present
         const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
         const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
 
@@ -204,64 +371,11 @@ serve(async (req) => {
       }
     }
 
-    // 4. Analyze with Gemini
-    console.log("Analyzing with Gemini...");
+    // 4. Analyze with selected AI model
+    console.log(`Analyzing with model: ${model}...`);
     try {
       const truncatedMarkdown = markdown.substring(0, 30000);
-
-      const geminiResp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: GEMINI_SYSTEM_PROMPT },
-                  { text: `Website URL: ${formattedUrl}\n\nWebsite Content:\n${truncatedMarkdown}` },
-                ],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.2,
-              maxOutputTokens: 4096,
-              responseMimeType: "application/json",
-            },
-          }),
-        }
-      );
-
-      const geminiData = await geminiResp.json();
-
-      if (!geminiResp.ok) {
-        console.error("Gemini error:", geminiData);
-        await supabaseAdmin
-          .from("website_profiles")
-          .update({ status: "error", error_message: "AI analysis failed" })
-          .eq("id", profileId);
-        return new Response(
-          JSON.stringify({ error: "AI analysis failed", profileId }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // Extract JSON from Gemini response
-      const responseText =
-        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      
-      let analysisResult;
-      try {
-        analysisResult = JSON.parse(responseText);
-      } catch {
-        // Try to extract JSON from markdown code block
-        const jsonMatch = responseText.match(/```json?\s*([\s\S]*?)\s*```/);
-        if (jsonMatch) {
-          analysisResult = JSON.parse(jsonMatch[1]);
-        } else {
-          throw new Error("Could not parse Gemini response as JSON");
-        }
-      }
+      const analysisResult = await routeAnalysis(model as ModelId, truncatedMarkdown, formattedUrl) as Record<string, unknown>;
 
       // 5. Update website_profile with results
       await supabaseAdmin
@@ -286,13 +400,13 @@ serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } catch (aiErr) {
-      console.error("Gemini exception:", aiErr);
+      console.error("AI analysis exception:", aiErr);
       await supabaseAdmin
         .from("website_profiles")
         .update({ status: "error", error_message: String(aiErr) })
         .eq("id", profileId);
       return new Response(
-        JSON.stringify({ error: "AI analysis exception", profileId }),
+        JSON.stringify({ error: String(aiErr), profileId }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

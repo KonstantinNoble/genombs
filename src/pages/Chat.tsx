@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
+import AnalysisProgress from "@/components/chat/AnalysisProgress";
 import WebsiteGrid from "@/components/dashboard/WebsiteGrid";
 import ComparisonTable from "@/components/dashboard/ComparisonTable";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
@@ -225,6 +226,54 @@ const Chat = () => {
         )
       );
       toast.success("Analysis started! Results will appear in the dashboard.");
+
+      // Wait for realtime updates, then generate AI summary
+      setTimeout(async () => {
+        try {
+          const freshProfiles = await loadProfiles(activeId);
+          const completed = freshProfiles.filter((p) => p.status === "completed");
+          if (completed.length === 0) return;
+
+          const summaryLines = completed.map((p) => {
+            const pd = p.profile_data;
+            const scores = p.category_scores;
+            return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [EIGENE WEBSITE]" : ""}\n  Stärken: ${pd?.strengths?.join(", ") || "N/A"}\n  Schwächen: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Kategorien: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
+          });
+
+          const summaryPrompt = `Du bist ein Website-Analyse-Experte. Hier sind die Ergebnisse der gerade abgeschlossenen Analyse:\n\n${summaryLines.join("\n\n")}\n\nFasse die Ergebnisse zusammen:\n1. Wie schneidet die eigene Website im Vergleich zu den Wettbewerbern ab?\n2. Was sind die wichtigsten Stärken und Schwächen?\n3. Gib 3-5 konkrete, priorisierte Handlungsempfehlungen.\n\nAntworte auf Deutsch, strukturiert und prägnant.`;
+
+          const chatHistory = [{ role: "user", content: summaryPrompt }];
+
+          let assistantContent = "";
+          const tempId = `temp-summary-${Date.now()}`;
+          setMessages((prev) => [
+            ...prev,
+            { id: tempId, conversation_id: activeId, role: "assistant" as const, content: "", created_at: new Date().toISOString() },
+          ]);
+          setIsStreaming(true);
+
+          await streamChat({
+            messages: chatHistory,
+            conversationId: activeId,
+            accessToken: token,
+            model,
+            onDelta: (delta) => {
+              assistantContent += delta;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m))
+              );
+            },
+            onDone: () => {},
+          });
+
+          const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
+          setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
+          setIsStreaming(false);
+        } catch (e) {
+          console.error("Summary generation failed:", e);
+          setIsStreaming(false);
+        }
+      }, 3000);
     } catch (e) {
       toast.error("Analysis request failed");
       console.error(e);
@@ -322,12 +371,17 @@ const Chat = () => {
           <div ref={scrollRef} />
         </div>
       </ScrollArea>
+      {profiles.some((p) => p.status !== "completed" && p.status !== "error") && (
+        <AnalysisProgress profiles={profiles} />
+      )}
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
           onSend={handleSend}
           onScan={handleScan}
           disabled={!activeId || isStreaming}
           hasProfiles={profiles.length > 0}
+          initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}
+          initialCompetitorUrls={profiles.filter((p) => !p.is_own_website).map((p) => p.url)}
         />
       </div>
     </div>

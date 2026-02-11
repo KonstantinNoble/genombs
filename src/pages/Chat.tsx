@@ -239,7 +239,7 @@ const Chat = () => {
 
     // Clean up old profiles and tasks before starting new analysis
     try {
-      const result = await deleteProfilesForConversation(activeId);
+      const result = await deleteProfilesForConversation(activeId, token);
       console.log(`Cleanup complete: ${result.deletedProfiles} profiles, ${result.deletedTasks} task groups removed`);
     } catch (e) {
       console.error("Failed to delete old profiles:", e);

@@ -1,1 +1,4 @@
 project_id = "rrrhsbmyndgublwsirfx"
+
+[functions.delete-profiles]
+verify_jwt = false

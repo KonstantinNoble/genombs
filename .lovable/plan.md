@@ -1,64 +1,55 @@
 
+# Feature: URL-Hinweis wenn User ohne Analyse chattet
 
-# Fix: Graue Farben durch lebendige, marken-konforme Farben ersetzen
+## Was passiert
 
-## Problem
+Wenn ein User eine Chat-Nachricht schreibt, aber noch keine URLs analysiert hat (d.h. `profiles` ist leer), wird die Nachricht abgefangen. Statt sie direkt abzusenden, oeffnet sich ein Hinweis-Dialog mit dem URL-Formular -- aehnlich dem bestehenden "+" Pop-up.
 
-Aktuell werden viele Balken und Punkte grau angezeigt, weil:
+## Ablauf
 
-1. **`--chart-6`** (fuer Scores >= 80, Strength-Dots) ist auf `0 0% 70%` gesetzt = reines Grau
-2. **Competitor-Balken** in der ComparisonTable verwenden `bg-muted-foreground/40` = ebenfalls grau
-3. Die gesamte Chart-Palette besteht fast nur aus Orange-Varianten und einem Grau
+```text
+User tippt Nachricht und drueckt Enter
+  |
+  v
+Gibt es bereits Profile in dieser Conversation?
+  |
+  Ja --> Nachricht normal senden (Chat mit KI)
+  |
+  Nein --> Hinweis-Dialog oeffnen:
+           "Um deine Website zu analysieren, gib zuerst deine URLs ein."
+           [URL-Formular mit eigene Website + 3 Competitors]
+           [Start Analysis Button]
+```
 
-## Loesung
+Die eingegebene Nachricht geht dabei nicht verloren -- sie wird im Textfeld behalten, sodass der User nach der Analyse weiterchatten kann.
 
-### 1. Neue Chart-Farbpalette in `src/index.css`
+## Technische Aenderungen
 
-Die Chart-Farben werden durch eine visuelle Abstufung ersetzt, die zum Schwarz-Orange-Design passt, aber mehr Kontrast und Lebendigkeit bietet:
+### 1. `ChatInput.tsx` -- Neue Prop `hasProfiles`
 
-| Variable | Alt (HSL) | Neu (HSL) | Farbe |
-|----------|-----------|-----------|-------|
-| `--chart-1` | `25 95% 53%` (Orange) | bleibt | Primaer-Orange |
-| `--chart-2` | `30 90% 45%` (Dunkel-Orange) | `30 90% 48%` | Warm-Orange |
-| `--chart-3` | `20 85% 60%` (Hell-Orange) | `20 85% 60%` | bleibt |
-| `--chart-4` | `35 80% 50%` | `45 90% 50%` | Amber/Gold |
-| `--chart-5` | `15 75% 55%` | `160 70% 45%` | Tuerkis-Gruen (Kontrast) |
-| `--chart-6` | **`0 0% 70%` (GRAU)** | **`145 65% 42%`** | **Gruen (fuer "gut")** |
-| `--chart-7` | `40 70% 45%` | `200 70% 50%` | Blau (zusaetzlicher Kontrast) |
+Eine neue Prop `hasProfiles: boolean` wird hinzugefuegt. Die `handleSend`-Funktion prueft diesen Wert:
 
-Die Kern-Aenderung: `--chart-6` wird von Grau zu **Gruen**, was intuitiv "gut/positiv" signalisiert und sofort erkennbar ist.
+- `hasProfiles === true`: Nachricht normal via `onSend()` absenden
+- `hasProfiles === false`: Statt zu senden, den URL-Dialog oeffnen. Die Nachricht bleibt im Textfeld stehen. Im Dialog wird ein zusaetzlicher Hinweistext angezeigt: "To get started, add your website and at least one competitor."
 
-### 2. Balken-Farblogik in `WebsiteProfileCard.tsx`
+Der Dialog selbst ist bereits vorhanden und wird wiederverwendet -- es wird lediglich ein optionaler Hinweistext oben eingefuegt, der nur erscheint, wenn der Dialog durch eine "fehlende URLs"-Situation geoeffnet wurde.
 
-Die `CategoryBar`-Komponente verwendet aktuell:
-- Score >= 80: `bg-chart-6` (war grau, wird gruen)
-- Score >= 60: `bg-primary` (orange)
-- Score < 60: `bg-destructive` (rot)
+### 2. `Chat.tsx` -- Prop durchreichen
 
-Das wird beibehalten, da mit der neuen Gruen-Farbe die Ampellogik (Gruen/Orange/Rot) intuitiv funktioniert.
+Die `hasProfiles`-Information wird an `ChatInput` weitergegeben:
 
-Die `ScoreRing`-Farbe verwendet ebenfalls `hsl(var(--chart-6))` fuer >= 80, das wird also automatisch mitgeaendert.
+```
+<ChatInput
+  onSend={handleSend}
+  onScan={handleScan}
+  disabled={!activeId || isStreaming}
+  hasProfiles={profiles.length > 0}
+/>
+```
 
-### 3. Competitor-Balken in `ComparisonTable.tsx`
-
-Statt `bg-muted-foreground/40` (grau) fuer Competitor-Balken wird `bg-chart-4` (Amber/Gold) verwendet, sodass Competitors klar sichtbar sind und sich visuell von der eigenen Seite (orange `bg-primary`) unterscheiden.
-
-Auch der Legend-Dot fuer Competitors wird von `bg-muted-foreground/40` zu `bg-chart-4` geaendert.
-
-### 4. Trust-Bar in `AnalysisTabs.tsx`
-
-Der Trust-Score-Balken verwendet ebenfalls `bg-primary` -- das bleibt, da es gut funktioniert.
-
-## Betroffene Dateien
+### Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/index.css` | Chart-Farben `--chart-4` bis `--chart-7` in `:root` und `.dark` aendern |
-| `src/components/dashboard/ComparisonTable.tsx` | Competitor-Balken: `bg-muted-foreground/40` zu `bg-chart-4` |
-
-## Keine Aenderungen noetig
-
-- `WebsiteProfileCard.tsx` -- profitiert automatisch von der neuen `--chart-6` Farbe
-- `AnalysisTabs.tsx` -- nutzt `bg-primary`, das bereits orange ist
-- `tailwind.config.ts` -- Chart-Farben sind bereits registriert
-
+| `src/components/chat/ChatInput.tsx` | Neue Prop `hasProfiles`, Send-Logik anpassen, Hinweistext im Dialog |
+| `src/pages/Chat.tsx` | `hasProfiles` Prop an ChatInput uebergeben |

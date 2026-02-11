@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deleted_accounts: {
         Row: {
           deleted_at: string | null
@@ -34,6 +58,85 @@ export type Database = {
           reason?: string | null
         }
         Relationships: []
+      }
+      improvement_tasks: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          user_id: string
+          website_profile_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          user_id: string
+          website_profile_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          user_id?: string
+          website_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "improvement_tasks_website_profile_id_fkey"
+            columns: ["website_profile_id"]
+            isOneToOne: false
+            referencedRelation: "website_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pending_premium: {
         Row: {
@@ -193,6 +296,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      website_profiles: {
+        Row: {
+          category_scores: Json | null
+          conversation_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          is_own_website: boolean
+          overall_score: number | null
+          profile_data: Json | null
+          raw_markdown: string | null
+          status: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          category_scores?: Json | null
+          conversation_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_own_website?: boolean
+          overall_score?: number | null
+          profile_data?: Json | null
+          raw_markdown?: string | null
+          status?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          category_scores?: Json | null
+          conversation_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_own_website?: boolean
+          overall_score?: number | null
+          profile_data?: Json | null
+          raw_markdown?: string | null
+          status?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_profiles_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

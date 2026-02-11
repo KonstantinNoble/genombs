@@ -82,6 +82,22 @@ export async function loadTasks(websiteProfileIds: string[]): Promise<Improvemen
   return (data ?? []) as unknown as ImprovementTask[];
 }
 
+// ─── Delete old profiles for a conversation ───
+
+export async function deleteProfilesForConversation(conversationId: string): Promise<void> {
+  const { data: oldProfiles } = await supabase
+    .from("website_profiles")
+    .select("id")
+    .eq("conversation_id", conversationId);
+
+  if (oldProfiles && oldProfiles.length > 0) {
+    const ids = oldProfiles.map((p) => p.id);
+    await supabase.from("improvement_tasks").delete().in("website_profile_id", ids);
+  }
+
+  await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
+}
+
 // ─── Analyze Website (Edge Function) ───
 
 export async function analyzeWebsite(

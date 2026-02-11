@@ -117,10 +117,15 @@ const Chat = () => {
     };
   }, [activeId, user]);
 
-  // ─── Auto-scroll chat ───
+  // ─── Scroll to bottom on initial messages load only ───
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (messages.length === 0) return;
+    // Only scroll on initial load, not on every message update
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollIntoView({ behavior: "auto" });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [activeId]);
 
   // ─── Get access token ───
   const getAccessToken = useCallback(async () => {

@@ -181,6 +181,23 @@ const Chat = () => {
     }
   };
 
+  // ─── Delete conversation manually ───
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      const token = await getAccessToken();
+      await deleteConversation(id, token);
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (activeId === id) {
+        const remaining = conversations.filter((c) => c.id !== id);
+        setActiveId(remaining.length > 0 ? remaining[0].id : null);
+      }
+      toast.success("Conversation deleted");
+    } catch (e) {
+      toast.error("Failed to delete conversation");
+      console.error(e);
+    }
+  };
+
   // ─── Send message + stream response ───
   const handleSend = async (content: string, model?: string) => {
     if (!activeId || !user || isStreaming) return;
@@ -537,6 +554,7 @@ const Chat = () => {
             activeId={activeId}
             onSelect={(id) => setActiveId(id)}
             onNew={handleNewConversation}
+            onDelete={handleDeleteConversation}
           />
         </div>
 
@@ -556,6 +574,7 @@ const Chat = () => {
                   setSidebarOpen(false);
                 }}
                 onNew={handleNewConversation}
+                onDelete={handleDeleteConversation}
               />
             </div>
           </div>

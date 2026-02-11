@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, Globe, Plus, Sparkles, Bot, Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,9 +31,11 @@ interface ChatInputProps {
   onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
   disabled?: boolean;
   hasProfiles?: boolean;
+  initialOwnUrl?: string;
+  initialCompetitorUrls?: string[];
 }
 
-const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
@@ -43,6 +45,19 @@ const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true }: ChatInputPr
   const [comp1, setComp1] = useState("");
   const [comp2, setComp2] = useState("");
   const [comp3, setComp3] = useState("");
+
+  // Sync initial URLs from props (loaded from profiles)
+  useEffect(() => {
+    if (initialOwnUrl !== undefined) setOwnUrl(initialOwnUrl);
+  }, [initialOwnUrl]);
+
+  useEffect(() => {
+    if (initialCompetitorUrls) {
+      setComp1(initialCompetitorUrls[0] ?? "");
+      setComp2(initialCompetitorUrls[1] ?? "");
+      setComp3(initialCompetitorUrls[2] ?? "");
+    }
+  }, [initialCompetitorUrls]);
 
   const currentModel = AI_MODELS.find((m) => m.id === selectedModel)!;
 
@@ -72,10 +87,7 @@ const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true }: ChatInputPr
     onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
     setDialogOpen(false);
     setShowHint(false);
-    setOwnUrl("");
-    setComp1("");
-    setComp2("");
-    setComp3("");
+    // URLs are intentionally NOT cleared so the user can re-run with a different model
   };
 
   return (

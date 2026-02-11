@@ -28,7 +28,7 @@ type ModelId = (typeof AI_MODELS)[number]["id"];
 
 interface ChatInputProps {
   onSend: (message: string, model: string) => void;
-  onScan?: (ownUrl: string, competitorUrls: string[]) => void;
+  onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
   disabled?: boolean;
   hasProfiles?: boolean;
 }
@@ -69,7 +69,7 @@ const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true }: ChatInputPr
 
   const handleStartAnalysis = () => {
     if (!canStartAnalysis) return;
-    onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()));
+    onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
     setDialogOpen(false);
     setShowHint(false);
     setOwnUrl("");

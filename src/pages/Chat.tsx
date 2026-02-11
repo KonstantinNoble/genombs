@@ -195,7 +195,7 @@ const Chat = () => {
   };
 
   // ─── Start analysis (scan) ───
-  const handleScan = async (ownUrl: string, competitorUrls: string[]) => {
+  const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string) => {
     if (!activeId || !user) return;
 
     setIsAnalyzing(true);
@@ -219,7 +219,7 @@ const Chat = () => {
     try {
       await Promise.all(
         allUrls.map(({ url, isOwn }) =>
-          analyzeWebsite(url, activeId, isOwn, token).catch((e) => {
+          analyzeWebsite(url, activeId, isOwn, token, model).catch((e) => {
             toast.error(`Analysis failed for ${url}: ${e.message}`);
           })
         )

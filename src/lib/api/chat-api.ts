@@ -88,7 +88,8 @@ export async function analyzeWebsite(
   url: string,
   conversationId: string,
   isOwnWebsite: boolean,
-  accessToken: string
+  accessToken: string,
+  model?: string
 ): Promise<{ profileId: string }> {
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/analyze-website`, {
     method: "POST",
@@ -97,7 +98,7 @@ export async function analyzeWebsite(
       Authorization: `Bearer ${accessToken}`,
       apikey: SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ url, conversationId, isOwnWebsite }),
+    body: JSON.stringify({ url, conversationId, isOwnWebsite, model }),
   });
 
   if (!resp.ok) {

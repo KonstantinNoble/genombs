@@ -1,53 +1,54 @@
 
 
-# Fix: KI-Einleitung und Löschung alter Profile
+# Fix: Alte Analysen werden nicht geloescht + URL-Felder leeren
 
-## Problem 1: KI stellt sich vor / zitiert die Analyse
+## Problem
 
-Die KI antwortet mit "As an expert website & marketing analyst at Synoptas, I've thoroughly reviewed..." -- das passiert aus zwei Gruenden:
+Alte Website-Profile werden nicht zuverlaessig geloescht, wenn eine neue Analyse gestartet wird. Dadurch haeufen sich doppelte Profile an (z.B. "Synoptas" erscheint mehrfach). Zusaetzlich bleiben die URL-Felder nach dem Start einer Analyse gefuellt, was dazu fuehren kann, dass alte URLs versehentlich erneut analysiert werden.
 
-1. Der **System-Prompt** (Zeile 10) sagt woertlich "You are an expert website & marketing analyst at Synoptas" und die KI wiederholt das.
-2. Der **Summary-Prompt** (Zeile 254 in Chat.tsx) sagt "Summarize the results" -- die KI fasst dann brav alles zusammen, anstatt die Daten als Kontext zu nutzen.
+## Ursachenanalyse
 
-### Loesung
+1. **Delete funktioniert moeglicherweise nicht**: Die Funktion `deleteProfilesForConversation` in `chat-api.ts` nutzt den User-Client mit RLS. Fehler werden zwar geloggt, aber die Analyse laeuft trotzdem weiter (Zeile 224-226 in Chat.tsx: "Continuing with new analysis").
+2. **Race Condition**: Die Realtime-Subscription (Zeile 89-118) laedt Profile bei jedem DB-Event neu. Waehrend der Delete laeuft, koennte die Subscription alte Daten zurueckladen.
+3. **URL-Felder bleiben gefuellt**: `ChatInput.tsx` Zeile 90 sagt explizit "URLs are intentionally NOT cleared" -- dadurch werden bei erneutem Klick auf "Start Analysis" dieselben URLs nochmal analysiert.
 
-**`supabase/functions/chat/index.ts` -- System-Prompt (Zeile 10-20)**
+## Loesung
 
-Neue Anweisung hinzufuegen:
-- "NEVER introduce yourself, state your role, or say things like 'As an expert...' or 'I've reviewed the profiles'"
-- "Use the data as background context to answer naturally and directly -- do NOT summarize or repeat the analysis data back to the user unless explicitly asked"
+### Aenderung 1: `src/lib/api/chat-api.ts` -- Delete robuster machen
 
-**`src/pages/Chat.tsx` -- Summary-Prompt (Zeile 254)**
+Die Delete-Funktion wird verbessert:
+- Nach dem Loeschen wird verifiziert, dass tatsaechlich keine Profile mehr existieren
+- Falls Profile uebrig bleiben, wird ein zweiter Loeschversuch gestartet
+- Rueckgabe der Anzahl geloeschter Profile fuer Debugging
 
-Den automatischen Summary-Prompt umformulieren von "Summarize the results" zu etwas wie:
-- "Based on the analysis results, give the user a brief, actionable overview. Focus on the most important finding and top 3 action items. Do NOT repeat scores or list all data -- be conversational and direct."
+### Aenderung 2: `src/pages/Chat.tsx` -- Analyse erst starten wenn Delete bestaetigt
 
----
+- Die Analyse wird **nicht** gestartet, wenn der Delete fehlschlaegt (statt "Continuing with new analysis")
+- Toast-Fehlermeldung und Abbruch
+- Realtime-Subscription wird kurzzeitig pausiert waehrend des Delete+Insert-Zyklus
 
-## Problem 2: Alte Profile werden nicht geloescht
+### Aenderung 3: `src/pages/Chat.tsx` -- URL-Felder nach Start leeren
 
-Die Funktion `deleteProfilesForConversation` in `chat-api.ts` (Zeile 87-99) hat **keine Fehlerbehandlung**. Wenn die Loeschung fehlschlaegt (z.B. durch Netzwerk- oder Auth-Probleme), wird der Fehler stillschweigend ignoriert und die neuen Profile werden neben den alten erstellt.
+- Neue Callback-Prop `onClearUrls` an `ChatInput` uebergeben
+- Nach erfolgreichem Start der Analyse wird diese Callback-Funktion aufgerufen
+- Die URL-States (ownUrl, comp1, comp2, comp3) werden zurueckgesetzt
 
-### Loesung
+### Aenderung 4: `src/components/chat/ChatInput.tsx` -- Reset-Funktion
 
-**`src/lib/api/chat-api.ts` -- deleteProfilesForConversation (Zeile 87-99)**
+- `onClearUrls` Prop hinzufuegen
+- Kommentar auf Zeile 90 entfernen, stattdessen URLs nach Analyse-Start leeren
 
-- Fehlerbehandlung fuer beide DELETE-Aufrufe (improvement_tasks und website_profiles) hinzufuegen
-- Fehler loggen und werfen, damit der Aufrufer weiss, dass die Loeschung fehlgeschlagen ist
+### Aenderung 5: `src/pages/Chat.tsx` -- Deduplizierung als Sicherheitsnetz
 
-**`src/pages/Chat.tsx` -- handleScan (Zeile 220-223)**
-
-- Try-Catch um den Delete-Aufruf, mit Toast-Fehlermeldung falls Loeschung fehlschlaegt
-- Analyse trotzdem fortsetzen, aber den User informieren
-
----
+- Bevor Profile in den State geschrieben werden, nach URL deduplizieren (nur das neueste Profil pro URL behalten)
+- Dies ist eine Sicherheitsebene fuer den Fall, dass trotz Delete alte Eintraege uebrig bleiben
 
 ## Zusammenfassung
 
 | Datei | Aenderung |
 |---|---|
-| `supabase/functions/chat/index.ts` | System-Prompt: keine Selbstvorstellung, Daten als Kontext nutzen |
-| `src/pages/Chat.tsx` | Summary-Prompt umformulieren: direkt und aktionsorientiert |
-| `src/lib/api/chat-api.ts` | Fehlerbehandlung fuer Profil-Loeschung |
-| `src/pages/Chat.tsx` | Try-Catch und User-Feedback bei fehlgeschlagener Loeschung |
+| `src/lib/api/chat-api.ts` | Delete-Funktion mit Verifikation und Retry |
+| `src/pages/Chat.tsx` | Analyse stoppen wenn Delete fehlschlaegt, Realtime-Pause, Deduplizierung |
+| `src/pages/Chat.tsx` | URL-Felder nach Analyse-Start leeren |
+| `src/components/chat/ChatInput.tsx` | `onClearUrls` Prop + URL-Reset |
 

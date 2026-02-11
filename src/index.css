@@ -40,10 +40,10 @@ All colors MUST be HSL.
     --chart-1: 25 95% 53%;
     --chart-2: 30 90% 45%;
     --chart-3: 20 85% 60%;
-    --chart-4: 35 80% 50%;
-    --chart-5: 15 75% 55%;
-    --chart-6: 0 0% 70%;
-    --chart-7: 40 70% 45%;
+    --chart-4: 45 90% 50%;
+    --chart-5: 160 70% 45%;
+    --chart-6: 145 65% 42%;
+    --chart-7: 200 70% 50%;
 
     --radius: 0.75rem;
     
@@ -102,10 +102,10 @@ All colors MUST be HSL.
     --chart-1: 25 95% 53%;
     --chart-2: 30 90% 45%;
     --chart-3: 20 85% 60%;
-    --chart-4: 35 80% 50%;
-    --chart-5: 15 75% 55%;
-    --chart-6: 0 0% 70%;
-    --chart-7: 40 70% 45%;
+    --chart-4: 45 90% 50%;
+    --chart-5: 160 70% 45%;
+    --chart-6: 145 65% 42%;
+    --chart-7: 200 70% 50%;
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 90%;

@@ -31,7 +31,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
           </span>
           {competitors.map((c) => (
             <span key={c.id} className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-muted-foreground/40" />
+              <span className="w-2.5 h-2.5 rounded-sm bg-chart-4" />
               {c.profile_data?.name ?? c.url}
             </span>
           ))}
@@ -56,7 +56,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
                 <div key={comp.id} className="flex items-center gap-2">
                   <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-muted-foreground/40 transition-all duration-700"
+                      className="h-full rounded-full bg-chart-4 transition-all duration-700"
                       style={{ width: `${comp.category_scores?.[cat.key] ?? 0}%` }}
                     />
                   </div>

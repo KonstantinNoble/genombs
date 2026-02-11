@@ -1,46 +1,44 @@
 
 
-# Fix: Profile-Loeschung ueber Server-Side Edge Function
+# Chat-Limit auf 20 Konversationen
 
-## Ursache
+## Ziel
 
-Das Delete schlaegt nicht mit einem Fehler fehl — es loescht einfach **0 Zeilen** ohne Fehlermeldung. Das ist Standard-Verhalten von Supabase: Wenn RLS (Row Level Security) den Zugriff blockiert, gibt `.delete()` keinen Fehler zurueck, sondern loescht einfach nichts.
+Maximal 20 Konversationen pro User erlauben. Wenn eine neue erstellt wird und bereits 20 existieren, wird die aelteste automatisch geloescht -- inklusive aller zugehoerigen Nachrichten, Profile und Tasks aus der Datenbank.
 
-Die Profile werden vom Edge Function `analyze-website` mit dem **Service Role Key** (Admin-Rechte) eingefuegt. Wenn der Client-Side Delete mit dem normalen User-Token versucht wird, stimmt `auth.uid()` moeglicherweise nicht mit dem gespeicherten `user_id` ueberein, weil die Auth-Sessions zwischen Lovable Cloud und dem externen Backend unterschiedlich sein koennen.
+## Umsetzung
 
-## Loesung
+### Aenderung 1: `src/lib/api/chat-api.ts` -- Funktion zum Loeschen einer Konversation
 
-Eine neue Edge Function `delete-profiles` erstellen, die den Service Role Key nutzt — genau wie die Erstellung auch serverseitig laeuft.
+Neue Funktion `deleteConversation(conversationId, accessToken)` hinzufuegen, die:
+- Die `delete-profiles` Edge Function aufruft (loescht Profile + Tasks)
+- Danach die Nachrichten (`messages`) fuer die Konversation loescht
+- Dann die Konversation selbst loescht
 
-### Aenderung 1: Neue Edge Function `supabase/functions/delete-profiles/index.ts`
+Da Nachrichten und Konversationen korrekte RLS-Policies haben (`auth.uid() = user_id`), koennen diese direkt ueber den Client geloescht werden. Nur Profile/Tasks brauchen die Edge Function.
 
-- Empfaengt `conversationId` per POST
-- Authentifiziert den User ueber JWT
-- Verwendet den Service Role Key (Admin-Client) fuer die Loeschung
-- Loescht zuerst `improvement_tasks`, dann `website_profiles`
-- Gibt die Anzahl geloeschter Eintraege zurueck
+**Hinweis:** Die `messages`-Tabelle hat aktuell keine DELETE-Policy. Es wird eine Migration noetig sein, um eine DELETE-Policy hinzuzufuegen.
 
-### Aenderung 2: `src/lib/api/chat-api.ts`
+### Aenderung 2: Datenbank-Migration -- DELETE-Policy fuer `messages`
 
-- `deleteProfilesForConversation` wird umgeschrieben: statt direkte DB-Aufrufe wird die neue Edge Function aufgerufen
-- Nutzt denselben Auth-Token wie die anderen Edge Function Aufrufe
-- Vereinfachte Fehlerbehandlung, da die Edge Function die Arbeit macht
+Neue RLS-Policy: "Users can delete messages in own conversations" mit der Bedingung:
+```sql
+EXISTS (SELECT 1 FROM conversations c WHERE c.id = messages.conversation_id AND c.user_id = auth.uid())
+```
 
-### Aenderung 3: `src/pages/Chat.tsx`
+### Aenderung 3: `src/pages/Chat.tsx` -- Limit-Pruefung bei neuer Konversation
 
-- `handleScan` uebergibt den Access Token an die Delete-Funktion
-- Signatur von `deleteProfilesForConversation` aendern, um `accessToken` zu akzeptieren
-
-### Aenderung 4: `supabase/config.toml`
-
-- Neuen Eintrag fuer `delete-profiles` mit `verify_jwt = false` (Validierung im Code)
+In `handleNewConversation`:
+1. Nach dem Erstellen der neuen Konversation pruefen, ob die Gesamtanzahl > 20 ist
+2. Falls ja, die aelteste Konversation (letzte in der nach `updated_at` sortierten Liste) identifizieren
+3. `deleteConversation` fuer die aelteste aufrufen
+4. Die geloeschte Konversation aus dem lokalen State entfernen
 
 ## Zusammenfassung
 
-| Datei | Aenderung |
+| Datei / Bereich | Aenderung |
 |---|---|
-| `supabase/functions/delete-profiles/index.ts` | Neue Edge Function fuer serverseitige Loeschung |
-| `src/lib/api/chat-api.ts` | Delete-Funktion ruft Edge Function statt direkte DB auf |
-| `src/pages/Chat.tsx` | Access Token an Delete-Funktion uebergeben |
-| `supabase/config.toml` | Eintrag fuer neue Edge Function |
+| DB-Migration | DELETE-Policy fuer `messages`-Tabelle |
+| `src/lib/api/chat-api.ts` | Neue `deleteConversation`-Funktion |
+| `src/pages/Chat.tsx` | Limit-Pruefung in `handleNewConversation`, aelteste Konversation loeschen wenn > 20 |
 

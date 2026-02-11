@@ -237,10 +237,10 @@ const Chat = () => {
           const summaryLines = completed.map((p) => {
             const pd = p.profile_data;
             const scores = p.category_scores;
-            return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [EIGENE WEBSITE]" : ""}\n  Stärken: ${pd?.strengths?.join(", ") || "N/A"}\n  Schwächen: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Kategorien: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
+            return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
           });
 
-          const summaryPrompt = `Du bist ein Website-Analyse-Experte. Hier sind die Ergebnisse der gerade abgeschlossenen Analyse:\n\n${summaryLines.join("\n\n")}\n\nFasse die Ergebnisse zusammen:\n1. Wie schneidet die eigene Website im Vergleich zu den Wettbewerbern ab?\n2. Was sind die wichtigsten Stärken und Schwächen?\n3. Gib 3-5 konkrete, priorisierte Handlungsempfehlungen.\n\nAntworte auf Deutsch, strukturiert und prägnant.`;
+          const summaryPrompt = `You are a website analysis expert. Here are the results of the completed analysis:\n\n${summaryLines.join("\n\n")}\n\nSummarize the results:\n1. How does the own website compare to the competitors?\n2. What are the key strengths and weaknesses?\n3. Provide 3-5 concrete, prioritized action items.\n\nBe structured and concise.`;
 
           const chatHistory = [{ role: "user", content: summaryPrompt }];
 

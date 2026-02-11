@@ -141,7 +141,7 @@ const Chat = () => {
   };
 
   // ─── Send message + stream response ───
-  const handleSend = async (content: string) => {
+  const handleSend = async (content: string, model?: string) => {
     if (!activeId || !user || isStreaming) return;
 
     try {
@@ -171,6 +171,7 @@ const Chat = () => {
         messages: chatHistory,
         conversationId: activeId,
         accessToken: token,
+        model,
         onDelta: (delta) => {
           assistantContent += delta;
           setMessages((prev) =>

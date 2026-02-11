@@ -85,17 +85,30 @@ export async function loadTasks(websiteProfileIds: string[]): Promise<Improvemen
 // ─── Delete old profiles for a conversation ───
 
 export async function deleteProfilesForConversation(conversationId: string): Promise<void> {
-  const { data: oldProfiles } = await supabase
+  const { data: oldProfiles, error: fetchError } = await supabase
     .from("website_profiles")
     .select("id")
     .eq("conversation_id", conversationId);
 
-  if (oldProfiles && oldProfiles.length > 0) {
-    const ids = oldProfiles.map((p) => p.id);
-    await supabase.from("improvement_tasks").delete().in("website_profile_id", ids);
+  if (fetchError) {
+    console.error("Failed to fetch old profiles:", fetchError);
+    throw new Error(`Failed to fetch old profiles: ${fetchError.message}`);
   }
 
-  await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
+  if (oldProfiles && oldProfiles.length > 0) {
+    const ids = oldProfiles.map((p) => p.id);
+    const { error: taskDeleteError } = await supabase.from("improvement_tasks").delete().in("website_profile_id", ids);
+    if (taskDeleteError) {
+      console.error("Failed to delete improvement tasks:", taskDeleteError);
+      throw new Error(`Failed to delete improvement tasks: ${taskDeleteError.message}`);
+    }
+  }
+
+  const { error: profileDeleteError } = await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
+  if (profileDeleteError) {
+    console.error("Failed to delete website profiles:", profileDeleteError);
+    throw new Error(`Failed to delete website profiles: ${profileDeleteError.message}`);
+  }
 }
 
 // ─── Analyze Website (Edge Function) ───

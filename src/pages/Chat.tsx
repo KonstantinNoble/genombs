@@ -218,7 +218,12 @@ const Chat = () => {
     }
 
     // Clean up old profiles and tasks before starting new analysis
-    await deleteProfilesForConversation(activeId);
+    try {
+      await deleteProfilesForConversation(activeId);
+    } catch (e) {
+      console.error("Failed to delete old profiles:", e);
+      toast.error("Could not remove old analysis data. Continuing with new analysis.");
+    }
     setProfiles([]);
     setTasks([]);
 
@@ -251,7 +256,7 @@ const Chat = () => {
             return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
           });
 
-          const summaryPrompt = `You are a website analysis expert. Here are the results of the completed analysis:\n\n${summaryLines.join("\n\n")}\n\nSummarize the results:\n1. How does the own website compare to the competitors?\n2. What are the key strengths and weaknesses?\n3. Provide 3-5 concrete, prioritized action items.\n\nBe structured and concise.`;
+          const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
 
           const chatHistory = [{ role: "user", content: summaryPrompt }];
 

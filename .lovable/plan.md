@@ -1,105 +1,217 @@
 
+# Feature: Vollständig flexible KI-Modell-Auswahl für alle Funktionen
 
-# Feature: Modell-Auswahl im Chat (eigene API Keys)
+## Status-Analyse
 
-## Uebersicht
+### ✅ Bereits implementiert (Chat):
+- **UI**: Model-Selector in `ChatInput.tsx` mit allen 5 Modellen (Gemini Flash, GPT Mini, GPT, Claude, Perplexity)
+- **API-Layer**: `streamChat()` in `chat-api.ts` akzeptiert `model` Parameter und sendet ihn im Request-Body
+- **Edge Function**: `supabase/functions/chat/index.ts` ist ein vollständiger Model-Router mit:
+  - Gemini 2.5 Flash (Streaming mit TransformStream)
+  - OpenAI GPT-4o(-mini) (Streaming direkt)
+  - Anthropic Claude (Streaming mit TransformStream)
+  - Perplexity Sonar Pro (Streaming direkt)
 
-Ein Modell-Selektor wird links neben dem Chat-Eingabefeld eingefuegt. Die Chat Edge Function wird erweitert, um je nach gewaehltem Modell die richtige API direkt mit deinen eigenen API Keys aufzurufen.
+### ❌ Nicht implementiert (Website-Analyse):
+- **UI**: `onScan()` Callback in `ChatInput.tsx` (Zeile 31) sendet KEIN `model` Parameter
+- **API-Layer**: `analyzeWebsite()` in `chat-api.ts` (Zeile 87-109) hat keinen `model` Parameter
+- **Backend**: `supabase/functions/analyze-website/index.ts` ist **hardcoded auf Gemini 2.0 Flash** (Zeile 213):
+  - Nutzt nur `gemini-2.0-flash:generateContent` (wird am 31. März 2026 deprecated)
+  - Ist **nicht-streaming** (JSON-Output erforderlich)
+  - Hat **keine Model-Router-Logik**
 
-## Verifizierte Modellbezeichnungen
+### 📊 Dashboard:
+- Verbraucht nur die bereits analysierten Daten aus `website_profiles`
+- Führt selbst KEINE AI-Calls durch
+- Ist **nicht betroffen** von dieser Änderung
 
-Nach Pruefung der aktuellen API-Dokumentationen (Stand Februar 2026):
+## Implementierungsplan
 
-| Anzeigename | Interner Key | API-Endpoint | API Key Secret | Modell-String (verifiziert) |
-|---|---|---|---|---|
-| Gemini Flash | `gemini-flash` | `generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent` | `GEMINI_API_KEY` (vorhanden) | `gemini-2.5-flash` |
-| ChatGPT Mini | `gpt-mini` | `api.openai.com/v1/chat/completions` | `OPENAI_API_KEY` (neu) | `gpt-4o-mini` |
-| ChatGPT | `gpt` | `api.openai.com/v1/chat/completions` | `OPENAI_API_KEY` (neu) | `gpt-4o` |
-| Claude Sonnet | `claude-sonnet` | `api.anthropic.com/v1/messages` | `ANTHROPIC_API_KEY` (neu) | `claude-sonnet-4-20250514` |
-| Perplexity | `perplexity` | `api.perplexity.ai/chat/completions` | `PERPLEXITY_API_KEY` (neu) | `sonar-pro` |
+### Phase 1: Frontend (UI + API-Layer)
 
-**Wichtig:** `gemini-2.0-flash` (aktuell im Code) wird am 31. Maerz 2026 abgeschaltet -- wird auf `gemini-2.5-flash` aktualisiert.
-
-## Voraussetzung: 3 neue API Keys
-
-Diese muessen im **externen Supabase-Projekt** als Secrets hinterlegt werden (da die Edge Functions dort deployed sind):
-
-- `OPENAI_API_KEY` -- von https://platform.openai.com/api-keys
-- `ANTHROPIC_API_KEY` -- von https://console.anthropic.com/settings/keys
-- `PERPLEXITY_API_KEY` -- von https://www.perplexity.ai/settings/api
-
-## UI-Design
-
-Links neben dem Textarea erscheint ein kompakter Modell-Selektor-Button mit Popover:
-
+#### 1.1 `src/components/chat/ChatInput.tsx`
+**Zeile 31** (`onScan` Signature):
 ```text
-[Gemini Flash v] [____Textarea____] [+] [Send]
+VORHER: onScan?: (ownUrl: string, competitorUrls: string[]) => void;
+NACHHER: onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
 ```
 
-## Technische Aenderungen
+**Zeile 72** (`handleStartAnalysis`):
+```text
+VORHER: onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()));
+NACHHER: onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
+```
 
-### 1. `src/components/chat/ChatInput.tsx`
+#### 1.2 `src/pages/Chat.tsx`
+**Zeile 198** (`handleScan` Signature):
+```text
+VORHER: const handleScan = async (ownUrl: string, competitorUrls: string[]) => {
+NACHHER: const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string) => {
+```
 
-- Neuer State `selectedModel` (default: `gemini-flash`)
-- Modell-Konstante mit Label, ID, Icon, Beschreibung
-- Popover-Button (Radix Popover, bereits installiert) links im Eingabebereich
-- `onSend` Signatur wird zu `onSend(message: string, model: string)`
+**Zeile 220-225** (analyzeWebsite-Aufrufe):
+```text
+VORHER: analyzeWebsite(url, activeId, isOwn, token)
+NACHHER: analyzeWebsite(url, activeId, isOwn, token, model)
+```
 
-### 2. `src/pages/Chat.tsx`
+#### 1.3 `src/lib/api/chat-api.ts`
+**Zeile 87-91** (`analyzeWebsite` Signature):
+```text
+VORHER: 
+export async function analyzeWebsite(
+  url: string,
+  conversationId: string,
+  isOwnWebsite: boolean,
+  accessToken: string
+): Promise<{ profileId: string }> {
 
-- `handleSend` akzeptiert `(content: string, model: string)`
-- `model` wird an `streamChat()` weitergereicht
+NACHHER:
+export async function analyzeWebsite(
+  url: string,
+  conversationId: string,
+  isOwnWebsite: boolean,
+  accessToken: string,
+  model?: string
+): Promise<{ profileId: string }> {
+```
 
-### 3. `src/lib/api/chat-api.ts`
+**Zeile 100** (Request-Body):
+```text
+VORHER: body: JSON.stringify({ url, conversationId, isOwnWebsite }),
+NACHHER: body: JSON.stringify({ url, conversationId, isOwnWebsite, model }),
+```
 
-- `streamChat` bekommt optionalen Parameter `model?: string`
-- Wird im Request-Body mitgesendet: `{ messages, conversationId, model }`
+### Phase 2: Backend Edge Function (Hauptarbeit)
 
-### 4. `supabase/functions/chat/index.ts` -- Model-Router
+#### 2.1 `supabase/functions/analyze-website/index.ts`
 
-Die groesste Aenderung. Die Edge Function erhaelt einen Router, der je nach `model`-Parameter die richtige API aufruft:
+**2.1.1 Request-Parameter akzeptieren (Zeile 55)**
+```text
+VORHER: const { url, conversationId, isOwnWebsite } = await req.json();
+NACHHER: const { url, conversationId, isOwnWebsite, model = "gemini-flash" } = await req.json();
+```
 
-**Gemini (default):**
-- Bleibt aehnlich wie bisher, aber mit `gemini-2.5-flash`
-- Eigenes SSE-Format wird per TransformStream in OpenAI-Format konvertiert (wie bisher)
-- Nutzt `?alt=sse&key=` Query-Parameter
+**2.1.2 Secrets laden (nach Zeile 76)**
+Zusätzliche Secrets für alle Provider:
+```
+const openaiKey = Deno.env.get("OPENAI_API_KEY");
+const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
+```
 
-**OpenAI (gpt / gpt-mini):**
-- `POST https://api.openai.com/v1/chat/completions`
-- Header: `Authorization: Bearer $OPENAI_API_KEY`
-- Body: `{ model, messages: [{role, content}], stream: true }`
-- Antwort ist bereits OpenAI-SSE-Format -- wird direkt durchgereicht
+**2.1.3 System-Prompt auslagern (vor Zeile 21)**
+Der aktuelle `GEMINI_SYSTEM_PROMPT` wird zu `ANALYSIS_SYSTEM_PROMPT`, damit alle Provider dieselbe Anweisung verwenden.
 
-**Anthropic (claude-sonnet):**
-- `POST https://api.anthropic.com/v1/messages`
-- Header: `x-api-key: $ANTHROPIC_API_KEY`, `anthropic-version: 2023-06-01`
-- Body: `{ model, messages, max_tokens: 8192, stream: true }`
-- **System-Prompt wird separat als `system` Parameter uebergeben** (nicht als Message)
-- Eigenes SSE-Format (`content_block_delta` mit `delta.text`) -- muss per TransformStream in OpenAI-Format konvertiert werden
+**2.1.4 Model-Router implementieren (nach Status "analyzing", ca. Zeile 187)**
 
-**Perplexity (perplexity):**
-- `POST https://api.perplexity.ai/chat/completions`
-- Header: `Authorization: Bearer $PERPLEXITY_API_KEY`
-- Body: `{ model: "sonar-pro", messages, stream: true }`
-- OpenAI-kompatibles Format -- wird direkt durchgereicht
+Die aktuelle Gemini-Logik (Zeile 207-306) wird zu 4 Provider-spezifischen Funktionen refaktoriert:
 
-**Fehlerbehandlung:**
-- Fehlender API Key: Klare Fehlermeldung zurueck ("OPENAI_API_KEY not configured" etc.)
-- Rate Limit (429): Weiterleitung an Frontend
-- Jeder Provider hat dedizierte Fehlerbehandlung
+**Gemini (non-streaming, JSON):**
+- URL: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`
+- Body: Aktuelles Format mit `responseMimeType: "application/json"` (bereits vorhanden)
+- Vorteil: Nutzt `gemini-2.5-flash` statt deprecated `gemini-2.0-flash`
+
+**OpenAI (non-streaming, JSON):**
+- URL: `https://api.openai.com/v1/chat/completions`
+- Header: `Authorization: Bearer ${openaiKey}`
+- Body: 
+  ```json
+  {
+    "model": "gpt-4o" oder "gpt-4o-mini",
+    "messages": [{"role": "system", "content": ANALYSIS_SYSTEM_PROMPT}, ...messages],
+    "response_format": { "type": "json_object" },
+    "temperature": 0.2,
+    "max_tokens": 4096
+  }
+  ```
+- JSON-Parsing: `response.choices[0].message.content`
+
+**Anthropic (non-streaming, JSON):**
+- URL: `https://api.anthropic.com/v1/messages`
+- Header: `x-api-key: ${anthropicKey}`, `anthropic-version: 2023-06-01`
+- Body:
+  ```json
+  {
+    "model": "claude-sonnet-4-20250514",
+    "system": ANALYSIS_SYSTEM_PROMPT,
+    "messages": [...messages],
+    "max_tokens": 8192
+  }
+  ```
+- JSON-Parsing: `response.content[0].text` → JSON.parse()
+
+**Perplexity (non-streaming, JSON):**
+- URL: `https://api.perplexity.ai/chat/completions`
+- Header: `Authorization: Bearer ${perplexityKey}`
+- Body:
+  ```json
+  {
+    "model": "sonar-pro",
+    "messages": [{"role": "system", "content": ANALYSIS_SYSTEM_PROMPT}, ...messages],
+    "temperature": 0.2,
+    "max_tokens": 4096
+  }
+  ```
+- JSON-Parsing: `response.choices[0].message.content` → JSON.parse()
+
+**2.1.5 Fehlerbehandlung pro Provider**
+- Fehlender API Key: Klar identifizierbare Meldung: `"OPENAI_API_KEY not configured"`, etc.
+- HTTP-Fehler (429 Rate Limit, 401 Auth): Status an Frontend durchreichen, Error-Message in DB speichern
+- JSON-Parse-Fehler: Error-Message speichern, Status auf `"error"` setzen
+
+**2.1.6 Routen-Logik**
+```
+if model === "gemini-flash" → Use Gemini (bereits vorhanden)
+else if model === "gpt-mini" → Use OpenAI with gpt-4o-mini
+else if model === "gpt" → Use OpenAI with gpt-4o
+else if model === "claude-sonnet" → Use Anthropic
+else if model === "perplexity" → Use Perplexity
+else → Default to Gemini
+```
 
 ## Betroffene Dateien
 
-| Datei | Aenderung |
-|---|---|
-| `src/components/chat/ChatInput.tsx` | Modell-Selektor UI + Popover, `onSend` Signatur |
-| `src/pages/Chat.tsx` | `model` Parameter durchreichen |
-| `src/lib/api/chat-api.ts` | `model` im Request-Body |
-| `supabase/functions/chat/index.ts` | Model-Router mit 4 API-Anbindungen, Gemini Update auf 2.5-flash |
+| Datei | Typ | Zeile(n) | Änderung |
+|---|---|---|---|
+| `src/components/chat/ChatInput.tsx` | Frontend | 31, 72 | `onScan` Signatur + Aufruf um `selectedModel` erweitern |
+| `src/pages/Chat.tsx` | Frontend | 198, 220-225 | `handleScan` akzeptiert + reicht `model` weiter |
+| `src/lib/api/chat-api.ts` | API-Layer | 87-91, 100 | `analyzeWebsite()` um `model` Parameter erweitern |
+| `supabase/functions/analyze-website/index.ts` | Backend | 21, 55, 76+, 187+ | Kompletter Model-Router: Gemini 2.5 + OpenAI + Anthropic + Perplexity |
 
-## Nicht betroffen
+## Wichtige Technische Details
 
-- `analyze-website/index.ts` -- bleibt separat auf Gemini
-- Dashboard-Komponenten -- keine Aenderung
-- Datenbank -- keine Schema-Aenderung
+### JSON-Output pro Provider (non-streaming)
+- **Gemini**: `responseMimeType: "application/json"` im `generationConfig` → JSON native
+- **OpenAI**: `response_format: { type: "json_object" }` → JSON native
+- **Anthropic**: System-Prompt fordert JSON + `JSON.parse()` auf `response.content[0].text`
+- **Perplexity**: System-Prompt fordert JSON + `JSON.parse()` auf `response.choices[0].message.content`
+
+### Nicht-Streaming (im Gegensatz zu Chat)
+- Chat braucht Token-by-Token Rendering → **Streaming erforderlich**
+- Website-Analyse braucht strukturiertes JSON → **Non-Streaming (warten auf complete response)**
+
+### Gemini-Update: 2.0 → 2.5
+- `gemini-2.0-flash` wird am **31. März 2026** deprecated
+- Neue Konstante im Analyze-Router: `gemini-2.5-flash`
+- Kein Breaking Change, da wir den Model-Parameter nicht hardcodieren
+
+## Anforderungen zur Aktivierung
+
+Die 3 **neuen API Keys** müssen im **externen Supabase-Projekt** als Secrets konfiguriert sein:
+
+1. **`OPENAI_API_KEY`** (von https://platform.openai.com/api-keys)
+2. **`ANTHROPIC_API_KEY`** (von https://console.anthropic.com/settings/keys)
+3. **`PERPLEXITY_API_KEY`** (von https://www.perplexity.ai/settings/api)
+
+(Hinweis: `GEMINI_API_KEY` ist bereits vorhanden)
+
+## Resultat: Vollständige Flexibilität
+
+Nach dieser Implementierung:
+- ✅ **Chat**: Modell-Auswahl funktioniert → Streaming mit allen 5 Modellen
+- ✅ **Website-Analyse**: Modell-Auswahl funktioniert → Non-Streaming JSON-Output mit allen 5 Modellen
+- ✅ **Dashboard**: Zeigt Ergebnisse an (unabhängig davon, welches Modell analysiert hat)
+
+**Ergebnis**: Der User wählt EIN Modell aus, und **sowohl Chat als auch Website-Analyse** verwenden dieses Modell.
 

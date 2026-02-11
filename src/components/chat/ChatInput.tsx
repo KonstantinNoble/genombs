@@ -29,13 +29,14 @@ type ModelId = (typeof AI_MODELS)[number]["id"];
 interface ChatInputProps {
   onSend: (message: string, model: string) => void;
   onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
+  onClearUrls?: () => void;
   disabled?: boolean;
   hasProfiles?: boolean;
   initialOwnUrl?: string;
   initialCompetitorUrls?: string[];
 }
 
-const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
@@ -87,7 +88,12 @@ const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true, initialOwnUrl
     onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
     setDialogOpen(false);
     setShowHint(false);
-    // URLs are intentionally NOT cleared so the user can re-run with a different model
+    // Clear URLs after starting analysis
+    setOwnUrl("");
+    setComp1("");
+    setComp2("");
+    setComp3("");
+    onClearUrls?.();
   };
 
   return (

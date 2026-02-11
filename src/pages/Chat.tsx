@@ -85,6 +85,21 @@ const Chat = () => {
       .catch((e) => console.error("Failed to load profiles:", e));
   }, [activeId]);
 
+  // ─── Realtime pause flag ───
+  const realtimePausedRef = useRef(false);
+
+  // ─── Deduplicate profiles by URL (keep newest) ───
+  const deduplicateProfiles = useCallback((ps: WebsiteProfile[]): WebsiteProfile[] => {
+    const byUrl = new Map<string, WebsiteProfile>();
+    for (const p of ps) {
+      const existing = byUrl.get(p.url);
+      if (!existing || new Date(p.created_at) > new Date(existing.created_at)) {
+        byUrl.set(p.url, p);
+      }
+    }
+    return Array.from(byUrl.values());
+  }, []);
+
   // ─── Realtime subscription for website_profiles ───
   useEffect(() => {
     if (!activeId || !user) return;
@@ -100,10 +115,12 @@ const Chat = () => {
           filter: `conversation_id=eq.${activeId}`,
         },
         () => {
+          if (realtimePausedRef.current) return;
           // Reload profiles on any change
           loadProfiles(activeId).then((ps) => {
-            setProfiles(ps);
-            const completedIds = ps.filter((p) => p.status === "completed").map((p) => p.id);
+            const deduped = deduplicateProfiles(ps);
+            setProfiles(deduped);
+            const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
             if (completedIds.length > 0) {
               loadTasks(completedIds).then(setTasks).catch(console.error);
             }
@@ -115,7 +132,7 @@ const Chat = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeId, user]);
+  }, [activeId, user, deduplicateProfiles]);
 
   // ─── Scroll to bottom on initial messages load only ───
   useEffect(() => {
@@ -217,15 +234,27 @@ const Chat = () => {
       console.error("Failed to save scan message:", e);
     }
 
+    // Pause realtime during delete+insert cycle
+    realtimePausedRef.current = true;
+
     // Clean up old profiles and tasks before starting new analysis
     try {
-      await deleteProfilesForConversation(activeId);
+      const result = await deleteProfilesForConversation(activeId);
+      console.log(`Cleanup complete: ${result.deletedProfiles} profiles, ${result.deletedTasks} task groups removed`);
     } catch (e) {
       console.error("Failed to delete old profiles:", e);
-      toast.error("Could not remove old analysis data. Continuing with new analysis.");
+      toast.error("Alte Analysedaten konnten nicht gelöscht werden. Bitte versuche es erneut.");
+      realtimePausedRef.current = false;
+      setIsAnalyzing(false);
+      return; // Stop — don't continue with new analysis
     }
     setProfiles([]);
     setTasks([]);
+
+    // Resume realtime after a short delay to let inserts settle
+    setTimeout(() => {
+      realtimePausedRef.current = false;
+    }, 2000);
 
     // Fire all analysis requests in parallel
     const allUrls = [

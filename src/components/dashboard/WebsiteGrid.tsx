@@ -1,13 +1,13 @@
 import WebsiteProfileCard from "@/components/chat/WebsiteProfileCard";
-import type { WebsiteProfile } from "@/lib/mock-chat-data";
+import type { WebsiteProfile } from "@/types/chat";
 
 interface WebsiteGridProps {
   profiles: WebsiteProfile[];
 }
 
 const WebsiteGrid = ({ profiles }: WebsiteGridProps) => {
-  const ownSites = profiles.filter((p) => p.isOwnWebsite);
-  const competitors = profiles.filter((p) => !p.isOwnWebsite);
+  const ownSites = profiles.filter((p) => p.is_own_website);
+  const competitors = profiles.filter((p) => !p.is_own_website);
 
   return (
     <div className="space-y-4">

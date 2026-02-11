@@ -1,10 +1,15 @@
 import { Plus, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { ChatConversation } from "@/lib/mock-chat-data";
+
+interface SidebarConversation {
+  id: string;
+  title: string;
+  createdAt: string;
+}
 
 interface ChatSidebarProps {
-  conversations: ChatConversation[];
+  conversations: SidebarConversation[];
   activeId: string | null;
   onSelect: (id: string) => void;
   onNew: () => void;

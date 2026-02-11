@@ -1,9 +1,9 @@
+import type { Message } from "@/types/chat";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { ChatMessage as ChatMessageType } from "@/lib/mock-chat-data";
 
 interface ChatMessageProps {
-  message: ChatMessageType;
+  message: Message;
 }
 
 const ChatMessage = ({ message }: ChatMessageProps) => {
@@ -28,7 +28,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           </div>
         )}
         <p className={`text-[10px] mt-1.5 ${isUser ? "text-primary-foreground/60" : "text-muted-foreground/60"}`}>
-          {new Date(message.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+          {new Date(message.created_at).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>
     </div>

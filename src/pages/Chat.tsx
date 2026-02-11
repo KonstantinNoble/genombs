@@ -326,6 +326,7 @@ const Chat = () => {
           onSend={handleSend}
           onScan={handleScan}
           disabled={!activeId || isStreaming}
+          hasProfiles={profiles.length > 0}
         />
       </div>
     </div>

@@ -15,11 +15,13 @@ interface ChatInputProps {
   onSend: (message: string) => void;
   onScan?: (ownUrl: string, competitorUrls: string[]) => void;
   disabled?: boolean;
+  hasProfiles?: boolean;
 }
 
-const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, disabled, hasProfiles = true }: ChatInputProps) => {
   const [value, setValue] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const [ownUrl, setOwnUrl] = useState("");
   const [comp1, setComp1] = useState("");
   const [comp2, setComp2] = useState("");
@@ -27,6 +29,11 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
 
   const handleSend = () => {
     if (!value.trim()) return;
+    if (!hasProfiles) {
+      setShowHint(true);
+      setDialogOpen(true);
+      return;
+    }
     onSend(value.trim());
     setValue("");
   };
@@ -45,6 +52,7 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
     if (!canStartAnalysis) return;
     onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()));
     setDialogOpen(false);
+    setShowHint(false);
     setOwnUrl("");
     setComp1("");
     setComp2("");
@@ -88,6 +96,11 @@ const ChatInput = ({ onSend, onScan, disabled }: ChatInputProps) => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Websites to Analyze</DialogTitle>
+            {showHint && (
+              <p className="text-sm text-muted-foreground mt-1">
+                To get started, add your website and at least one competitor.
+              </p>
+            )}
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-2">
             <div className="space-y-1.5">

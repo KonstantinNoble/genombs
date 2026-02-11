@@ -1,59 +1,95 @@
 
 
-# Fix: German Text in Analysis Summary Prompt
+# Fix: Duplicate Website Profiles in Dashboard
 
-## Problem
+## Root Cause
 
-The AI summary prompt generated after website analysis (in `src/pages/Chat.tsx`, lines 237-243) is written entirely in German. This causes the AI to respond in German, contradicting the project's English-only design.
+When the user clicks "Start Analysis", each URL creates a **new** `website_profiles` row (line 281-291 in `analyze-website/index.ts`). Old profiles for the same conversation are **never deleted or replaced**. So re-analyzing the same or different URLs causes:
 
-## Specific Issues (all in `src/pages/Chat.tsx`)
-
-**Line 240** - German labels in data template:
-- `[EIGENE WEBSITE]` should be `[OWN WEBSITE]`
-- `Staerken:` should be `Strengths:`
-- `Schwaechen:` should be `Weaknesses:`
-- `Kategorien:` should be `Categories:`
-
-**Lines 243** - Entire prompt is German:
-- `"Du bist ein Website-Analyse-Experte..."` should be English
-- `"Fasse die Ergebnisse zusammen..."` should be English
-- `"Antworte auf Deutsch"` explicitly instructs the AI to answer in German -- must be removed
+1. Duplicate entries in WebsiteGrid (e.g. two "Synoptas" cards)
+2. Conflicting bars in ComparisonTable (old vs new scores shown together)
+3. The legend shows all profiles including stale ones
 
 ## Solution
 
-Replace the German summary prompt with an English equivalent:
+**Before starting a new analysis batch**, delete all existing `website_profiles` for the active conversation. This ensures only the latest analysis results are shown.
 
-```text
-BEFORE (line 240):
-`[EIGENE WEBSITE]` / `Staerken:` / `Schwaechen:` / `Kategorien:`
+### Change 1: `src/pages/Chat.tsx` -- `handleScan` function
 
-AFTER:
-`[OWN WEBSITE]` / `Strengths:` / `Weaknesses:` / `Categories:`
+Add a cleanup step at the beginning of `handleScan` (before firing `analyzeWebsite` calls):
+
+- Delete all existing `website_profiles` where `conversation_id = activeId`
+- Also delete related `improvement_tasks` for those profiles
+- Clear the local `profiles` and `tasks` state immediately so the UI resets
+
+```
+// Before line 214 (the allUrls block):
+// 1. Delete old profiles and tasks for this conversation
+const oldProfileIds = profiles.map(p => p.id);
+if (oldProfileIds.length > 0) {
+  await supabase.from("improvement_tasks").delete().in("website_profile_id", oldProfileIds);
+}
+await supabase.from("website_profiles").delete().eq("conversation_id", activeId);
+setProfiles([]);
+setTasks([]);
 ```
 
-```text
-BEFORE (line 243):
-"Du bist ein Website-Analyse-Experte. Hier sind die Ergebnisse...
-Fasse die Ergebnisse zusammen... Antworte auf Deutsch..."
+### Change 2: `src/lib/api/chat-api.ts` -- Add `deleteProfilesForConversation` helper
 
-AFTER:
-"You are a website analysis expert. Here are the results of the
-completed analysis:... Summarize the results:
-1. How does the own website compare to competitors?
-2. What are the key strengths and weaknesses?
-3. Provide 3-5 concrete, prioritized action items.
-Be structured and concise."
+Export a new function to cleanly delete old profiles:
+
+```typescript
+export async function deleteProfilesForConversation(conversationId: string): Promise<void> {
+  // First get profile IDs to delete related tasks
+  const { data: oldProfiles } = await supabase
+    .from("website_profiles")
+    .select("id")
+    .eq("conversation_id", conversationId);
+
+  if (oldProfiles && oldProfiles.length > 0) {
+    const ids = oldProfiles.map((p) => p.id);
+    await supabase.from("improvement_tasks").delete().in("website_profile_id", ids);
+  }
+
+  await supabase.from("website_profiles").delete().eq("conversation_id", conversationId);
+}
 ```
 
-## Affected File
+### Change 3: Database -- Add DELETE RLS policy for `website_profiles`
 
-| File | Lines | Change |
-|---|---|---|
-| `src/pages/Chat.tsx` | 240, 243 | Replace German labels and prompt with English |
+Currently, users **cannot delete** website_profiles (no DELETE policy exists). We need to add one:
 
-## No Other Files Affected
+```sql
+CREATE POLICY "Users can delete own profiles"
+  ON public.website_profiles FOR DELETE
+  USING (auth.uid() = user_id);
+```
 
-- `AnalysisProgress.tsx`: Already English
-- `analyze-website/index.ts`: System prompt already English
-- `chat/index.ts`: System prompt already English ("Answer in the same language as the user's message" -- this is fine since the summary prompt will now be in English)
+### Change 4: `src/pages/Chat.tsx` -- Use the new helper
+
+Import and call `deleteProfilesForConversation` at the start of `handleScan`:
+
+```typescript
+import { deleteProfilesForConversation } from "@/lib/api/chat-api";
+
+// Inside handleScan, before allUrls:
+await deleteProfilesForConversation(activeId);
+setProfiles([]);
+setTasks([]);
+```
+
+## Summary of Changes
+
+| File / Resource | Change |
+|---|---|
+| Database (migration) | Add DELETE RLS policy on `website_profiles` |
+| `src/lib/api/chat-api.ts` | New `deleteProfilesForConversation()` function |
+| `src/pages/Chat.tsx` | Call cleanup before starting new analysis |
+
+## Why This Fixes the Issues
+
+- **No more duplicates**: Old profiles are removed before new ones are inserted
+- **No contradicting bars**: Only the latest analysis results exist
+- **Clean re-analysis**: Changing URLs or models and re-running gives fresh results
+- **Tasks stay in sync**: Old improvement tasks are cleaned up with their profiles
 

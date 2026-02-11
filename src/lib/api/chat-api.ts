@@ -114,12 +114,14 @@ export async function streamChat({
   messages,
   conversationId,
   accessToken,
+  model,
   onDelta,
   onDone,
 }: {
   messages: { role: string; content: string }[];
   conversationId: string;
   accessToken: string;
+  model?: string;
   onDelta: (text: string) => void;
   onDone: () => void;
 }) {
@@ -130,7 +132,7 @@ export async function streamChat({
       Authorization: `Bearer ${accessToken}`,
       apikey: SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ messages, conversationId }),
+    body: JSON.stringify({ messages, conversationId, model }),
   });
 
   if (!resp.ok || !resp.body) {

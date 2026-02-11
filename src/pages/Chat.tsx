@@ -26,6 +26,7 @@ import {
   loadTasks,
   analyzeWebsite,
   streamChat,
+  deleteProfilesForConversation,
 } from "@/lib/api/chat-api";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
 
@@ -210,6 +211,11 @@ const Chat = () => {
     } catch (e) {
       console.error("Failed to save scan message:", e);
     }
+
+    // Clean up old profiles and tasks before starting new analysis
+    await deleteProfilesForConversation(activeId);
+    setProfiles([]);
+    setTasks([]);
 
     // Fire all analysis requests in parallel
     const allUrls = [

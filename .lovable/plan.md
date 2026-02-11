@@ -1,49 +1,64 @@
 
 
-# Fix: Fehlende Balken und leere Trust & Proof Sektion
+# Fix: Graue Farben durch lebendige, marken-konforme Farben ersetzen
 
-## Problem 1: Balken werden nicht angezeigt
+## Problem
 
-Die `CategoryBar`-Komponente verwendet `bg-chart-6` fuer Werte >= 80. Diese Tailwind-Klasse existiert aber nicht, weil im `tailwind.config.ts` keine `chart`-Farben definiert sind. Nur die CSS-Variablen (`--chart-6`) existieren in `index.css`, aber ohne Tailwind-Mapping erzeugt `bg-chart-6` keine Hintergrundfarbe.
+Aktuell werden viele Balken und Punkte grau angezeigt, weil:
 
-**Loesung**: In `tailwind.config.ts` die Chart-Farben als Tailwind-Colors registrieren, oder alternativ in den Komponenten direkt inline-Styles mit `hsl(var(--chart-6))` verwenden. Der sauberste Weg ist, die Farben im Tailwind-Config hinzuzufuegen.
+1. **`--chart-6`** (fuer Scores >= 80, Strength-Dots) ist auf `0 0% 70%` gesetzt = reines Grau
+2. **Competitor-Balken** in der ComparisonTable verwenden `bg-muted-foreground/40` = ebenfalls grau
+3. Die gesamte Chart-Palette besteht fast nur aus Orange-Varianten und einem Grau
 
-**Aenderung in `tailwind.config.ts`** -- Unter `colors` hinzufuegen:
-```
-chart: {
-  1: "hsl(var(--chart-1))",
-  2: "hsl(var(--chart-2))",
-  3: "hsl(var(--chart-3))",
-  4: "hsl(var(--chart-4))",
-  5: "hsl(var(--chart-5))",
-  6: "hsl(var(--chart-6))",
-  7: "hsl(var(--chart-7))",
-},
-```
+## Loesung
 
-## Problem 2: Trust & Proof zeigt keine Daten
+### 1. Neue Chart-Farbpalette in `src/index.css`
 
-Die Trust-Tab-Ansicht in `AnalysisTabs.tsx` filtert Strengths und Weaknesses mit einem zu engen Regex:
-```
-/trust|review|certif|proof|guarantee/i
-```
-Da die KI-generierten Staerken/Schwaechen diese Woerter fast nie enthalten, bleibt die Anzeige leer.
+Die Chart-Farben werden durch eine visuelle Abstufung ersetzt, die zum Schwarz-Orange-Design passt, aber mehr Kontrast und Lebendigkeit bietet:
 
-**Loesung**: Den Regex-Filter entfernen und stattdessen alle Strengths/Weaknesses anzeigen, plus den Trust-Score aus `category_scores.trustProof` prominent darstellen. Die Trust-Sektion soll die gesamten Staerken/Schwaechen im Kontext von Vertrauenswuerdigkeit zeigen.
+| Variable | Alt (HSL) | Neu (HSL) | Farbe |
+|----------|-----------|-----------|-------|
+| `--chart-1` | `25 95% 53%` (Orange) | bleibt | Primaer-Orange |
+| `--chart-2` | `30 90% 45%` (Dunkel-Orange) | `30 90% 48%` | Warm-Orange |
+| `--chart-3` | `20 85% 60%` (Hell-Orange) | `20 85% 60%` | bleibt |
+| `--chart-4` | `35 80% 50%` | `45 90% 50%` | Amber/Gold |
+| `--chart-5` | `15 75% 55%` | `160 70% 45%` | Tuerkis-Gruen (Kontrast) |
+| `--chart-6` | **`0 0% 70%` (GRAU)** | **`145 65% 42%`** | **Gruen (fuer "gut")** |
+| `--chart-7` | `40 70% 45%` | `200 70% 50%` | Blau (zusaetzlicher Kontrast) |
 
-**Aenderung in `src/components/dashboard/AnalysisTabs.tsx`** -- Die Trust-Tab-Logik ersetzen:
-- Alle Strengths und Weaknesses anzeigen (ohne Regex-Filter)
-- Den `trustProof`-Score als Balken oben anzeigen
-- Maximal 5 Eintraege pro Spalte zur Uebersichtlichkeit
+Die Kern-Aenderung: `--chart-6` wird von Grau zu **Gruen**, was intuitiv "gut/positiv" signalisiert und sofort erkennbar ist.
+
+### 2. Balken-Farblogik in `WebsiteProfileCard.tsx`
+
+Die `CategoryBar`-Komponente verwendet aktuell:
+- Score >= 80: `bg-chart-6` (war grau, wird gruen)
+- Score >= 60: `bg-primary` (orange)
+- Score < 60: `bg-destructive` (rot)
+
+Das wird beibehalten, da mit der neuen Gruen-Farbe die Ampellogik (Gruen/Orange/Rot) intuitiv funktioniert.
+
+Die `ScoreRing`-Farbe verwendet ebenfalls `hsl(var(--chart-6))` fuer >= 80, das wird also automatisch mitgeaendert.
+
+### 3. Competitor-Balken in `ComparisonTable.tsx`
+
+Statt `bg-muted-foreground/40` (grau) fuer Competitor-Balken wird `bg-chart-4` (Amber/Gold) verwendet, sodass Competitors klar sichtbar sind und sich visuell von der eigenen Seite (orange `bg-primary`) unterscheiden.
+
+Auch der Legend-Dot fuer Competitors wird von `bg-muted-foreground/40` zu `bg-chart-4` geaendert.
+
+### 4. Trust-Bar in `AnalysisTabs.tsx`
+
+Der Trust-Score-Balken verwendet ebenfalls `bg-primary` -- das bleibt, da es gut funktioniert.
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `tailwind.config.ts` | Chart-Farben als Tailwind-Colors hinzufuegen |
-| `src/components/dashboard/AnalysisTabs.tsx` | Trust-Tab: Regex-Filter entfernen, alle Daten anzeigen |
+| `src/index.css` | Chart-Farben `--chart-4` bis `--chart-7` in `:root` und `.dark` aendern |
+| `src/components/dashboard/ComparisonTable.tsx` | Competitor-Balken: `bg-muted-foreground/40` zu `bg-chart-4` |
 
-## Keine weiteren Aenderungen noetig
-- `WebsiteProfileCard.tsx` nutzt dieselben `bg-chart-6`-Klassen, die nach dem Tailwind-Config-Fix funktionieren werden
-- `ComparisonTable.tsx` ist nicht betroffen (nutzt `bg-primary` und `bg-muted-foreground`)
+## Keine Aenderungen noetig
+
+- `WebsiteProfileCard.tsx` -- profitiert automatisch von der neuen `--chart-6` Farbe
+- `AnalysisTabs.tsx` -- nutzt `bg-primary`, das bereits orange ist
+- `tailwind.config.ts` -- Chart-Farben sind bereits registriert
 

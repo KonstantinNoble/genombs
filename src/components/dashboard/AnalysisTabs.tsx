@@ -41,7 +41,7 @@ const ScoreRing = ({ score, size = 52 }: { score: number; size?: number }) => {
           className="transition-all duration-1000 ease-out"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">
         {score}
       </span>
     </div>
@@ -62,27 +62,27 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
           return (
             <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-foreground">{profile.profile_data.name}</h4>
-                  <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-[10px]">
+                 <div className="flex items-center justify-between">
+                   <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                   <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-xs">
                     {profile.is_own_website ? "Your Site" : "Competitor"}
                   </Badge>
                 </div>
                 <div className="space-y-3">
-                  <div className="border-l-2 border-primary/30 pl-3">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Target Audience</p>
-                    <p className="text-xs text-foreground">{profile.profile_data.targetAudience}</p>
-                  </div>
-                  <div className="border-l-2 border-primary/30 pl-3">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Unique Selling Proposition</p>
-                    <p className="text-xs text-foreground">{profile.profile_data.usp}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-1.5">Site Structure</p>
+                   <div className="border-l-2 border-primary/30 pl-3">
+                     <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-0.5">Target Audience</p>
+                     <p className="text-sm text-foreground">{profile.profile_data.targetAudience}</p>
+                   </div>
+                   <div className="border-l-2 border-primary/30 pl-3">
+                     <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-0.5">Unique Selling Proposition</p>
+                     <p className="text-sm text-foreground">{profile.profile_data.usp}</p>
+                   </div>
+                   <div>
+                     <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Site Structure</p>
                     <div className="flex flex-wrap gap-1">
-                      {profile.profile_data.siteStructure.map((s) => (
-                        <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
-                      ))}
+                       {profile.profile_data.siteStructure.map((s) => (
+                         <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
+                       ))}
                     </div>
                   </div>
                 </div>
@@ -102,26 +102,26 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
           return (
             <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-foreground">{profile.profile_data.name}</h4>
-                  <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-[10px]">
-                    {profile.is_own_website ? "Your Site" : "Competitor"}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-1.5">Call-to-Actions</p>
+                 <div className="flex items-center justify-between">
+                   <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                   <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-xs">
+                     {profile.is_own_website ? "Your Site" : "Competitor"}
+                   </Badge>
+                 </div>
+                 <div>
+                   <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Call-to-Actions</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {profile.profile_data.ctas.map((cta) => (
-                      <Badge key={cta} variant="outline" className="text-[10px] border-primary/30 text-primary">
-                        {cta}
-                      </Badge>
-                    ))}
+                     {profile.profile_data.ctas.map((cta) => (
+                       <Badge key={cta} variant="outline" className="text-xs border-primary/30 text-primary">
+                         {cta}
+                       </Badge>
+                     ))}
                   </div>
                 </div>
-                <div className="border-l-2 border-primary/30 pl-3">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Value Proposition</p>
-                  <p className="text-xs text-foreground">{profile.profile_data.usp}</p>
-                </div>
+                 <div className="border-l-2 border-primary/30 pl-3">
+                   <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-0.5">Value Proposition</p>
+                   <p className="text-sm text-foreground">{profile.profile_data.usp}</p>
+                 </div>
               </CardContent>
             </Card>
           );
@@ -139,43 +139,43 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
           return (
             <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <ScoreRing score={trustScore} />
-                    <div>
-                      <h4 className="text-sm font-semibold text-foreground">{profile.profile_data.name}</h4>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Trust & Proof Score</p>
-                    </div>
-                  </div>
-                  <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-[10px]">
+                 <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                     <ScoreRing score={trustScore} />
+                     <div>
+                       <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                       <p className="text-xs text-muted-foreground mt-0.5">Trust & Proof Score</p>
+                     </div>
+                   </div>
+                   <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-xs">
                     {profile.is_own_website ? "Your Site" : "Competitor"}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3 h-3 text-chart-6" />
-                      Strengths
-                    </p>
+                     <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                       <CheckCircle2 className="w-4 h-4 text-chart-6" />
+                       Strengths
+                     </p>
                     <div className="space-y-1.5">
                       {profile.profile_data.strengths.slice(0, 5).map((s) => (
                         <div key={s} className="flex items-start gap-1.5">
                           <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
-                          <span className="text-[11px] text-foreground leading-tight">{s}</span>
+                          <span className="text-sm text-foreground leading-tight">{s}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1.5">
-                      <XCircle className="w-3 h-3 text-destructive" />
-                      Weaknesses
-                    </p>
+                     <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                       <XCircle className="w-4 h-4 text-destructive" />
+                       Weaknesses
+                     </p>
                     <div className="space-y-1.5">
                       {profile.profile_data.weaknesses.slice(0, 5).map((w) => (
                         <div key={w} className="flex items-start gap-1.5">
                           <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
-                          <span className="text-[11px] text-foreground leading-tight">{w}</span>
+                          <span className="text-sm text-foreground leading-tight">{w}</span>
                         </div>
                       ))}
                     </div>

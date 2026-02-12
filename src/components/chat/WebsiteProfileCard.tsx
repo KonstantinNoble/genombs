@@ -55,7 +55,7 @@ const ScoreRing = ({ score, size = 64 }: { score: number; size?: number }) => {
           className="transition-all duration-1000 ease-out"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">
+      <span className="absolute inset-0 flex items-center justify-center text-base font-bold text-foreground">
         {score}
       </span>
     </div>
@@ -66,14 +66,14 @@ const CategoryBar = ({ label, value }: { label: string; value: number }) => {
   const color = value >= 80 ? "bg-chart-6" : value >= 60 ? "bg-primary" : "bg-destructive";
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[11px] text-muted-foreground w-16 shrink-0">{label}</span>
+      <span className="text-xs text-muted-foreground w-16 shrink-0">{label}</span>
       <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
         <div
           className={`h-full rounded-full ${color} transition-all duration-1000 ease-out`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-foreground w-7 text-right">{value}</span>
+      <span className="text-sm font-bold text-foreground w-7 text-right">{value}</span>
     </div>
   );
 };
@@ -89,8 +89,8 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
         <CardContent className="p-3 flex items-center gap-3">
           <ScoreRing score={overall_score} size={40} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-foreground truncate">{profile_data.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{url}</p>
+            <p className="text-base font-medium text-foreground truncate">{profile_data.name}</p>
+            <p className="text-sm text-muted-foreground truncate">{url}</p>
           </div>
           <Badge variant={is_own_website ? "default" : "outline"} className="text-[10px] shrink-0">
             {is_own_website ? "Your Site" : "Competitor"}
@@ -114,7 +114,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
                 {is_own_website ? "Your Site" : "Competitor"}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground font-mono mt-0.5">{url}</p>
+            <p className="text-sm text-muted-foreground font-mono mt-0.5">{url}</p>
           </div>
         </div>
 
@@ -128,29 +128,29 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
 
         <div className="grid grid-cols-2 gap-4 pt-1">
           <div>
-            <p className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-chart-6" />
+            <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-chart-6" />
               Strengths
             </p>
             <div className="space-y-1.5">
               {profile_data.strengths.slice(0, 3).map((s) => (
                 <div key={s} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
-                  <span className="text-[11px] text-foreground leading-tight">{s}</span>
+                  <span className="text-sm text-foreground leading-tight">{s}</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
-            <p className="text-[11px] text-muted-foreground mb-2 flex items-center gap-1.5">
-              <XCircle className="w-3 h-3 text-destructive" />
+            <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+              <XCircle className="w-4 h-4 text-destructive" />
               Weaknesses
             </p>
             <div className="space-y-1.5">
               {profile_data.weaknesses.slice(0, 3).map((w) => (
                 <div key={w} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
-                  <span className="text-[11px] text-foreground leading-tight">{w}</span>
+                  <span className="text-sm text-foreground leading-tight">{w}</span>
                 </div>
               ))}
             </div>

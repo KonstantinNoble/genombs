@@ -7,12 +7,22 @@ interface AuthContextType {
   user: SupabaseUser | null;
   isPremium: boolean;
   isLoading: boolean;
+  creditsUsed: number;
+  creditsLimit: number;
+  creditsResetAt: string | null;
+  remainingCredits: number;
+  refreshCredits: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isPremium: false,
   isLoading: true,
+  creditsUsed: 0,
+  creditsLimit: 20,
+  creditsResetAt: null,
+  remainingCredits: 20,
+  refreshCredits: async () => {},
 });
 
 export const useAuth = () => {
@@ -35,6 +45,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [creditsUsed, setCreditsUsed] = useState(0);
+  const [creditsLimit, setCreditsLimit] = useState(20);
+  const [creditsResetAt, setCreditsResetAt] = useState<string | null>(null);
 
   // Helper function to calculate actual premium status
   const calculatePremiumStatus = useCallback((data: { 
@@ -46,7 +59,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     let actualPremiumStatus = data.is_premium ?? false;
     
-    // Fallback check: If subscription was cancelled
     if (actualPremiumStatus && data.auto_renew === false) {
       if (data.subscription_end_date) {
         const endDate = new Date(data.subscription_end_date);
@@ -61,7 +73,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return actualPremiumStatus;
   }, []);
 
-  // Realtime subscription for premium status changes
+  const updateCreditsFromData = useCallback((data: {
+    credits_used?: number | null;
+    daily_credits_limit?: number | null;
+    credits_reset_at?: string | null;
+  } | null) => {
+    if (!data) return;
+    // Auto-reset if period expired
+    const resetAt = data.credits_reset_at ? new Date(data.credits_reset_at) : null;
+    if (resetAt && resetAt < new Date()) {
+      setCreditsUsed(0);
+    } else {
+      setCreditsUsed(data.credits_used ?? 0);
+    }
+    setCreditsLimit(data.daily_credits_limit ?? 20);
+    setCreditsResetAt(data.credits_reset_at ?? null);
+  }, []);
+
+  const refreshCredits = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from('user_credits')
+        .select('credits_used, daily_credits_limit, credits_reset_at')
+        .eq('user_id', user.id)
+        .single();
+      updateCreditsFromData(data);
+    } catch (error) {
+      console.error('Failed to refresh credits:', error);
+    }
+  }, [user, updateCreditsFromData]);
+
+  // Realtime subscription for credit changes
   useEffect(() => {
     if (!user) return;
 
@@ -70,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       channel = supabase
         .channel(`user_credits_${user.id}`)
-        .on<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>(
+        .on<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null; credits_used: number; daily_credits_limit: number; credits_reset_at: string }>(
           'postgres_changes',
           {
             event: 'UPDATE',
@@ -78,15 +121,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             table: 'user_credits',
             filter: `user_id=eq.${user.id}`
           },
-          (payload: RealtimePostgresUpdatePayload<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null }>) => {
-            console.log('Realtime premium status update:', payload.new);
+          (payload: RealtimePostgresUpdatePayload<{ is_premium: boolean; subscription_end_date: string | null; auto_renew: boolean | null; credits_used: number; daily_credits_limit: number; credits_reset_at: string }>) => {
+            console.log('Realtime credits update:', payload.new);
             const newPremiumStatus = calculatePremiumStatus(payload.new);
             setIsPremium(newPremiumStatus);
+            updateCreditsFromData(payload.new);
           }
         )
         .subscribe((status) => {
           if (status === 'CHANNEL_ERROR') {
-            console.warn('Realtime channel error - premium updates may be delayed');
+            console.warn('Realtime channel error - updates may be delayed');
           }
         });
     } catch (error) {
@@ -102,14 +146,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     };
-  }, [user, calculatePremiumStatus]);
+  }, [user, calculatePremiumStatus, updateCreditsFromData]);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
         const { data: { session } } = await withTimeout(
           supabase.auth.getSession(),
-          10000 // 10 second timeout
+          10000
         );
         setUser(session?.user ?? null);
         
@@ -117,16 +161,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const creditsQuery = supabase
               .from('user_credits')
-              .select('is_premium, subscription_end_date, auto_renew')
+              .select('is_premium, subscription_end_date, auto_renew, credits_used, daily_credits_limit, credits_reset_at')
               .eq('user_id', session.user.id)
               .single();
             
             const { data } = await withTimeout(
               Promise.resolve(creditsQuery),
-              8000 // 8 second timeout
+              8000
             );
             
             setIsPremium(calculatePremiumStatus(data));
+            updateCreditsFromData(data);
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);
@@ -149,7 +194,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const creditsQuery = supabase
               .from('user_credits')
-              .select('is_premium, subscription_end_date, auto_renew')
+              .select('is_premium, subscription_end_date, auto_renew, credits_used, daily_credits_limit, credits_reset_at')
               .eq('user_id', session.user.id)
               .single();
             
@@ -159,6 +204,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             );
             
             setIsPremium(calculatePremiumStatus(data));
+            updateCreditsFromData(data);
           } catch (error) {
             console.error('Premium check failed:', error);
             setIsPremium(false);
@@ -166,14 +212,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }, 0);
       } else {
         setIsPremium(false);
+        setCreditsUsed(0);
+        setCreditsLimit(20);
+        setCreditsResetAt(null);
       }
     });
     
     return () => subscription.unsubscribe();
   }, []);
+
+  const remainingCredits = Math.max(0, creditsLimit - creditsUsed);
   
   return (
-    <AuthContext.Provider value={{ user, isPremium, isLoading }}>
+    <AuthContext.Provider value={{ user, isPremium, isLoading, creditsUsed, creditsLimit, creditsResetAt, remainingCredits, refreshCredits }}>
       {children}
     </AuthContext.Provider>
   );

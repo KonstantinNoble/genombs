@@ -235,6 +235,9 @@ export type Database = {
         Row: {
           auto_renew: boolean | null
           created_at: string
+          credits_reset_at: string
+          credits_used: number
+          daily_credits_limit: number
           freemius_customer_id: string | null
           freemius_subscription_id: string | null
           id: string
@@ -249,6 +252,9 @@ export type Database = {
         Insert: {
           auto_renew?: boolean | null
           created_at?: string
+          credits_reset_at?: string
+          credits_used?: number
+          daily_credits_limit?: number
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string
@@ -263,6 +269,9 @@ export type Database = {
         Update: {
           auto_renew?: boolean | null
           created_at?: string
+          credits_reset_at?: string
+          credits_used?: number
+          daily_credits_limit?: number
           freemius_customer_id?: string | null
           freemius_subscription_id?: string | null
           id?: string

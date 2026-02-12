@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, Zap } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -46,7 +47,7 @@ const MAX_CONVERSATIONS = 20;
 
 const Chat = () => {
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, remainingCredits, creditsLimit, isPremium, refreshCredits } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -272,8 +273,16 @@ const Chat = () => {
       setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Chat failed";
-      toast.error(msg);
+      if (msg === "premium_model_required") {
+        toast.error("Dieses Modell ist nur für Premium-Nutzer verfügbar.");
+      } else if (msg.startsWith("insufficient_credits:")) {
+        const hours = msg.split(":")[1];
+        toast.error(`Keine Credits mehr – regeneriert sich in ${hours}h.`);
+      } else {
+        toast.error(msg);
+      }
       console.error(e);
+      refreshCredits();
     } finally {
       setIsStreaming(false);
     }
@@ -347,7 +356,15 @@ const Chat = () => {
       await Promise.all(
         allUrls.map(({ url, isOwn }) =>
           analyzeWebsite(url, activeId, isOwn, token, model).catch((e) => {
-            toast.error(`Analysis failed for ${url}: ${e.message}`);
+            const msg = e.message || "Analysis failed";
+            if (msg === "premium_model_required") {
+              toast.error("Dieses Modell ist nur für Premium-Nutzer verfügbar.");
+            } else if (msg.startsWith("insufficient_credits:")) {
+              const hours = msg.split(":")[1];
+              toast.error(`Keine Credits mehr – regeneriert sich in ${hours}h.`);
+            } else {
+              toast.error(`Analysis failed for ${url}: ${msg}`);
+            }
           })
         )
       );
@@ -410,6 +427,7 @@ const Chat = () => {
       console.error(e);
     } finally {
       setIsAnalyzing(false);
+      refreshCredits();
     }
   };
 
@@ -448,6 +466,9 @@ const Chat = () => {
     );
   }
 
+  const creditPercent = creditsLimit > 0 ? (remainingCredits / creditsLimit) * 100 : 0;
+  const creditColor = remainingCredits <= 0 ? "text-destructive" : remainingCredits < 5 ? "text-chart-4" : "text-primary";
+
   const chatHeader = (
     <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-3">
       <Button
@@ -462,7 +483,7 @@ const Chat = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="shrink-0 ml-auto"
+          className="shrink-0"
           onClick={() => setMobileView(mobileView === "chat" ? "dashboard" : "chat")}
         >
           {mobileView === "chat" ? (
@@ -472,7 +493,7 @@ const Chat = () => {
           )}
         </Button>
       )}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <h2 className="text-sm font-medium text-foreground truncate">
           {activeConversation?.title || "Select a conversation"}
         </h2>
@@ -482,6 +503,16 @@ const Chat = () => {
             {isAnalyzing && " · Analyzing..."}
           </p>
         )}
+      </div>
+      {/* Credit indicator */}
+      <div className="shrink-0 flex items-center gap-2 ml-auto">
+        <Zap className={`w-3.5 h-3.5 ${creditColor}`} />
+        <div className="flex flex-col items-end gap-0.5">
+          <span className={`text-xs font-medium ${creditColor}`}>
+            {remainingCredits}/{creditsLimit}
+          </span>
+          <Progress value={creditPercent} className="w-16 h-1" />
+        </div>
       </div>
     </div>
   );

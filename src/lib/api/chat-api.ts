@@ -160,7 +160,12 @@ export async function analyzeWebsite(
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({ error: "Unknown error" }));
-    throw new Error(err.error || "Analysis failed");
+    const errorMsg = err.error || "Analysis failed";
+    // Propagate credit/premium errors
+    if (resp.status === 403) {
+      throw new Error(errorMsg);
+    }
+    throw new Error(errorMsg);
   }
 
   return resp.json();
@@ -195,7 +200,8 @@ export async function streamChat({
 
   if (!resp.ok || !resp.body) {
     const err = await resp.json().catch(() => ({ error: "Stream failed" }));
-    throw new Error(err.error || "Stream failed");
+    const errorMsg = err.error || "Stream failed";
+    throw new Error(errorMsg);
   }
 
   const reader = resp.body.getReader();

@@ -1,5 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -48,6 +58,8 @@ const Chat = () => {
   const [analysisTab, setAnalysisTab] = useState("overview");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({ isOpen: false, conversationId: null });
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -182,7 +194,14 @@ const Chat = () => {
   };
 
   // ─── Delete conversation manually ───
-  const handleDeleteConversation = async (id: string) => {
+  const handleOpenDeleteDialog = (id: string) => {
+    setDeleteDialogState({ isOpen: true, conversationId: id });
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = deleteDialogState.conversationId;
+    setDeleteDialogState({ isOpen: false, conversationId: null });
+    if (!id) return;
     try {
       const token = await getAccessToken();
       await deleteConversation(id, token);
@@ -554,7 +573,7 @@ const Chat = () => {
             activeId={activeId}
             onSelect={(id) => setActiveId(id)}
             onNew={handleNewConversation}
-            onDelete={handleDeleteConversation}
+            onDelete={handleOpenDeleteDialog}
           />
         </div>
 
@@ -574,7 +593,7 @@ const Chat = () => {
                   setSidebarOpen(false);
                 }}
                 onNew={handleNewConversation}
-                onDelete={handleDeleteConversation}
+                onDelete={handleOpenDeleteDialog}
               />
             </div>
           </div>
@@ -597,6 +616,23 @@ const Chat = () => {
           </ResizablePanelGroup>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogState.isOpen} onOpenChange={(open) => !open && setDeleteDialogState({ isOpen: false, conversationId: null })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konversation löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Diese Aktion kann nicht rückgängig gemacht werden. Die Konversation und alle zugehörigen Daten werden permanent gelöscht.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Löschen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

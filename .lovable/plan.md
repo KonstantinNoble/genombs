@@ -1,45 +1,43 @@
 
+# Bestätigungsdialog für Konversationslöschung
 
-# Manuelle Loesch-Funktion fuer Konversationen
+## Ziel
 
-## Pruefungsergebnis (Punkt 1)
+Wenn ein Benutzer das Mülleimer-Icon klickt, um eine Konversation zu löschen, soll ein Bestätigungsdialog (AlertDialog) angezeigt werden. Der Dialog sollte fragen, ob der Benutzer sicher ist, und erst nach Bestätigung die Konversation löschen.
 
-Die automatische Loeschung bei Ueberschreitung von 20 Konversationen ist korrekt implementiert. Alle vier relevanten Tabellen werden in der richtigen Reihenfolge geloescht:
+## Umsetzung
 
-1. `improvement_tasks` (via Edge Function, Service Role Key)
-2. `website_profiles` (via Edge Function, Service Role Key)
-3. `messages` (via Client, RLS-Policy vorhanden)
-4. `conversations` (via Client, RLS-Policy vorhanden)
+### Aenderung 1: `src/pages/Chat.tsx` - State und Handler erweitern
 
-Keine Aenderungen noetig.
+1. Neuen State hinzufügen:
+   - `dialogState`: object mit `isOpen: boolean` und `conversationIdToDelete: string | null`
 
-## Neue Funktion (Punkt 2): Manuelles Loeschen von Konversationen
+2. Handler-Funktionen erweitern:
+   - `handleDeleteConversation` (bestehend): Wird nur noch aufgerufen, wenn der Benutzer im Dialog auf "Löschen" klickt
+   - Neue `handleOpenDeleteDialog(id: string)`: Öffnet den Dialog mit der Konversations-ID
+   - Neue `handleConfirmDelete()`: Führt die tatsächliche Löschung durch (ruft bestehende `handleDeleteConversation` auf)
+   - Neue `handleCancelDelete()`: Schließt den Dialog ohne zu löschen
 
-### Aenderung 1: `src/components/chat/ChatSidebar.tsx`
+3. AlertDialog-Komponente hinzufügen:
+   - Import der AlertDialog-Komponenten (`AlertDialog`, `AlertDialogTrigger`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogFooter`, `AlertDialogAction`, `AlertDialogCancel`)
+   - Dialog vor der Rückgabe des JSX hinzufügen (nach allen anderen Components)
+   - Mit `open` und `onOpenChange` für State-Management
+   - Titel: "Konversation löschen?"
+   - Beschreibung: "Diese Aktion kann nicht rückgängig gemacht werden. Die Konversation und alle zugehörigen Daten werden permanent gelöscht."
+   - Cancel-Button: "Abbrechen"
+   - Delete-Button (destructive): "Löschen"
 
-Einen Loeschen-Button (Muelleimer-Icon) zu jedem Konversations-Eintrag in der Sidebar hinzufuegen:
+### Aenderung 2: `src/components/chat/ChatSidebar.tsx` - onClick Handler anpassen
 
-- Das Icon erscheint nur beim Hover ueber den Eintrag
-- Klick auf das Icon ruft `onDelete(conversationId)` auf
-- Neues Prop `onDelete: (id: string) => void` hinzufuegen
-- Bestaetigung per Klick (kein separater Dialog noetig, einfach ein Klick genuegt, da die Funktion nicht destruktiv-kritisch ist - alternativ mit kurzem Confirm-Dialog)
+Statt `onDelete(conv.id)` direkt aufzurufen, wird `onDelete(conv.id)` nur den Dialog öffnen:
+- Die `onDelete`-Funktion wird weiterhin verwendet, aber jetzt ruft sie `handleOpenDeleteDialog` statt der direkten Löschung auf
 
-### Aenderung 2: `src/pages/Chat.tsx`
-
-Neue Handler-Funktion `handleDeleteConversation`:
-
-1. `deleteConversation(id, token)` aufrufen (loescht alles aus der DB)
-2. Konversation aus dem lokalen State entfernen
-3. Falls die geloeschte Konversation aktiv war: zur naechsten wechseln oder `activeId` auf `null` setzen
-4. Erfolgsmeldung per Toast anzeigen
-5. Fehlerbehandlung mit Fehlermeldung
-
-Die Funktion wird als `onDelete`-Prop an `ChatSidebar` uebergeben.
+**Hinweis:** Keine Änderung der Signature nötig, nur die Semantik ändert sich.
 
 ## Zusammenfassung
 
 | Datei | Aenderung |
 |---|---|
-| `src/components/chat/ChatSidebar.tsx` | Loeschen-Button (Trash-Icon) pro Konversation, neues `onDelete`-Prop |
-| `src/pages/Chat.tsx` | `handleDeleteConversation`-Handler, Weitergabe an Sidebar |
+| `src/pages/Chat.tsx` | State für Dialog + `handleOpenDeleteDialog`, `handleConfirmDelete`, `handleCancelDelete` Handler + AlertDialog Component |
+| `src/components/chat/ChatSidebar.tsx` | Keine Änderung nötig (ruft `onDelete` weiterhin auf) |
 

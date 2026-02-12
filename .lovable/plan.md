@@ -1,43 +1,53 @@
 
-# Bestätigungsdialog für Konversationslöschung
 
-## Ziel
+# Translate German UI Text to English
 
-Wenn ein Benutzer das Mülleimer-Icon klickt, um eine Konversation zu löschen, soll ein Bestätigungsdialog (AlertDialog) angezeigt werden. Der Dialog sollte fragen, ob der Benutzer sicher ist, und erst nach Bestätigung die Konversation löschen.
+## Verification Result (Task 1)
 
-## Umsetzung
+The delete flow has been fully verified. When a conversation is deleted (either manually or via the 20-conversation limit), all related data is correctly removed in the proper order:
 
-### Aenderung 1: `src/pages/Chat.tsx` - State und Handler erweitern
+1. **improvement_tasks** -- deleted via edge function (service role)
+2. **website_profiles** -- deleted via edge function (service role)
+3. **messages** -- deleted via client (RLS policy in place)
+4. **conversations** -- deleted via client (RLS policy in place)
 
-1. Neuen State hinzufügen:
-   - `dialogState`: object mit `isOpen: boolean` und `conversationIdToDelete: string | null`
+No changes needed here.
 
-2. Handler-Funktionen erweitern:
-   - `handleDeleteConversation` (bestehend): Wird nur noch aufgerufen, wenn der Benutzer im Dialog auf "Löschen" klickt
-   - Neue `handleOpenDeleteDialog(id: string)`: Öffnet den Dialog mit der Konversations-ID
-   - Neue `handleConfirmDelete()`: Führt die tatsächliche Löschung durch (ruft bestehende `handleDeleteConversation` auf)
-   - Neue `handleCancelDelete()`: Schließt den Dialog ohne zu löschen
+## German Text Translation (Task 2)
 
-3. AlertDialog-Komponente hinzufügen:
-   - Import der AlertDialog-Komponenten (`AlertDialog`, `AlertDialogTrigger`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogFooter`, `AlertDialogAction`, `AlertDialogCancel`)
-   - Dialog vor der Rückgabe des JSX hinzufügen (nach allen anderen Components)
-   - Mit `open` und `onOpenChange` für State-Management
-   - Titel: "Konversation löschen?"
-   - Beschreibung: "Diese Aktion kann nicht rückgängig gemacht werden. Die Konversation und alle zugehörigen Daten werden permanent gelöscht."
-   - Cancel-Button: "Abbrechen"
-   - Delete-Button (destructive): "Löschen"
+### Change 1: `src/pages/Chat.tsx` -- Line 299 (Error toast)
 
-### Aenderung 2: `src/components/chat/ChatSidebar.tsx` - onClick Handler anpassen
+Current (German):
+"Alte Analysedaten konnten nicht geloescht werden. Bitte versuche es erneut."
 
-Statt `onDelete(conv.id)` direkt aufzurufen, wird `onDelete(conv.id)` nur den Dialog öffnen:
-- Die `onDelete`-Funktion wird weiterhin verwendet, aber jetzt ruft sie `handleOpenDeleteDialog` statt der direkten Löschung auf
+New (English):
+"Failed to delete old analysis data. Please try again."
 
-**Hinweis:** Keine Änderung der Signature nötig, nur die Semantik ändert sich.
+### Change 2: `src/pages/Chat.tsx` -- Lines 623-631 (Delete confirmation dialog)
 
-## Zusammenfassung
+Current (German):
+- Title: "Konversation loeschen?"
+- Description: "Diese Aktion kann nicht rueckgaengig gemacht werden. Die Konversation und alle zugehoerigen Daten werden permanent geloescht."
+- Cancel: "Abbrechen"
+- Confirm: "Loeschen"
 
-| Datei | Aenderung |
-|---|---|
-| `src/pages/Chat.tsx` | State für Dialog + `handleOpenDeleteDialog`, `handleConfirmDelete`, `handleCancelDelete` Handler + AlertDialog Component |
-| `src/components/chat/ChatSidebar.tsx` | Keine Änderung nötig (ruft `onDelete` weiterhin auf) |
+New (English):
+- Title: "Delete conversation?"
+- Description: "This action cannot be undone. The conversation and all associated data will be permanently deleted."
+- Cancel: "Cancel"
+- Confirm: "Delete"
+
+### Note on other files
+
+- **Edge function comments** (freemius-webhook, check-email-availability) and **hook comments** (useFreemiusCheckout) contain German comments. These are internal developer comments and not user-facing, but will also be translated for consistency.
+
+## Summary
+
+| File | Line(s) | Change |
+|---|---|---|
+| `src/pages/Chat.tsx` | 299 | German error toast to English |
+| `src/pages/Chat.tsx` | 623-631 | German dialog text to English |
+| `supabase/functions/freemius-webhook/index.ts` | Various | German comments to English |
+| `supabase/functions/check-email-availability/index.ts` | Various | German comments to English |
+| `src/hooks/useFreemiusCheckout.ts` | 18 | German comment to English |
 

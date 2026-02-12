@@ -1,133 +1,80 @@
 
+# URL-Felder basierend auf verbleibenden Credits dynamisch sperren
 
-# Premium-System: Credits, Modell-Zugang und URL-Limits
+## Uebersicht
 
-## Ubersicht
+Die URL-Eingabefelder im Analyse-Dialog werden dynamisch basierend auf den verbleibenden Credits aktiviert/deaktiviert. Wenn ein User z.B. nur noch 5 Credits hat und ein guenstiges Modell nutzt (5 Credits pro URL), kann er nur 1 URL analysieren. Die restlichen Felder werden gesperrt mit einer englischen Hinweismeldung.
 
-Dieses Feature fuehrt ein Credit-basiertes Nutzungssystem ein, das Free- und Premium-Nutzer klar unterscheidet. Credits regenerieren sich alle 24 Stunden. Verschiedene Aktionen kosten unterschiedlich viele Credits, und Premium-Nutzer erhalten Zugang zu allen Modellen und mehr URL-Feldern.
+## Logik
 
-## Regeln im Detail
+Die Anzahl der bezahlbaren URLs wird berechnet als:
 
-| Eigenschaft | Free | Premium |
-|---|---|---|
-| Modelle | Gemini Flash, GPT Mini | Alle 5 Modelle |
-| Credits pro 24h | 20 | 100 |
-| Chat-Nachricht (Gemini Flash / GPT Mini) | 1 Credit | 1 Credit |
-| Chat-Nachricht (GPT / Claude / Perplexity) | -- | 3 Credits |
-| URL-Analyse (Gemini Flash / GPT Mini) | 5 Credits | 5 Credits |
-| URL-Analyse (GPT / Claude / Perplexity) | -- | 10 Credits |
-| URL-Felder im Analyse-Dialog | 2 (eigene + 1 Konkurrent) | 4 (eigene + 3 Konkurrenten) |
+```text
+affordableUrls = Math.floor(remainingCredits / analysisCostPerUrl)
+```
+
+- Guenstige Modelle: 5 Credits pro URL
+- Teure Modelle: 10 Credits pro URL
+
+Beispiele:
+- 20 Credits, guenstiges Modell: 4 URLs moeglich (alle frei)
+- 12 Credits, guenstiges Modell: 2 URLs moeglich
+- 7 Credits, teures Modell: 0 URLs (alle gesperrt)
+- 0 Credits: alle Felder gesperrt, "Start Analysis" Button deaktiviert
 
 ## Aenderungen
 
-### 1. Datenbank: `user_credits` Tabelle erweitern
+### `src/components/chat/ChatInput.tsx`
 
-Neue Spalten zur bestehenden `user_credits` Tabelle hinzufuegen:
+1. `remainingCredits` aus `useAuth()` importieren
+2. `getAnalysisCreditCost` aus constants importieren
+3. Berechnung der bezahlbaren URL-Anzahl:
+   - `costPerUrl = getAnalysisCreditCost(selectedModel)`
+   - `affordableUrls = Math.floor(remainingCredits / costPerUrl)`
+   - `enabledUrlFields = Math.min(maxUrlFields, affordableUrls)`
+4. URL-Eingabefelder ab Index `enabledUrlFields` deaktivieren (`disabled` Prop)
+5. Deaktivierte Felder erhalten einen visuellen Hinweis (ausgegraut + Lock-Icon)
+6. Unter den Feldern eine Meldung anzeigen wenn nicht alle Felder verfuegbar:
+   - `"Not enough credits to analyze more URLs. You need X credits per URL."`
+7. "Start Analysis" Button deaktivieren wenn `affordableUrls < 1`
+8. Auch den "+" Button (der den Dialog oeffnet) deaktivieren wenn `remainingCredits < costPerUrl`
+9. Alle Meldungen auf Englisch
 
-```text
-daily_credits_limit  INTEGER  DEFAULT 20
-credits_used         INTEGER  DEFAULT 0
-credits_reset_at     TIMESTAMPTZ  DEFAULT now() + interval '24 hours'
-```
+### Felder-Reihenfolge und Sperrung
 
-Ein neuer pg_cron Job setzt `credits_used` auf 0 und `credits_reset_at` auf `now() + 24h` fuer alle Nutzer, deren `credits_reset_at` in der Vergangenheit liegt.
-
-### 2. Edge Functions: Credit-Pruefung und -Abzug
-
-**`supabase/functions/chat/index.ts`**:
-- Nach der User-Authentifizierung: `user_credits` abfragen
-- Pruefen ob das gewaehlte Modell fuer den Nutzer verfuegbar ist (Free-User: nur `gemini-flash` und `gpt-mini`)
-- Credits-Reset pruefen (wenn `credits_reset_at < now()`, automatisch zuruecksetzen)
-- Pruefen ob genuegend Credits vorhanden sind (1 fuer guenstige Modelle, 3 fuer teure)
-- Credits abziehen (`credits_used += cost`)
-- Bei Fehler: 403 mit klarer Fehlermeldung zurueckgeben
-
-**`supabase/functions/analyze-website/index.ts`**:
-- Gleiche Logik: Modell-Zugang pruefen, Credits pruefen (5 fuer guenstig, 10 fuer teuer)
-- Credits abziehen pro URL-Analyse
-
-### 3. AuthContext erweitern
-
-**`src/contexts/AuthContext.tsx`**:
-- Neue Felder im Context: `creditsUsed`, `creditsLimit`, `creditsResetAt`
-- Diese Werte aus `user_credits` laden und per Realtime aktualisieren
-- Hilfsfunktion `remainingCredits` bereitstellen
-
-### 4. ChatInput: Modell-Sperre und URL-Limit
-
-**`src/components/chat/ChatInput.tsx`**:
-- Premium-Modelle (GPT, Claude, Perplexity) mit Lock-Icon und "Premium"-Badge versehen
-- Free-User koennen diese nicht auswaehlen; Klick zeigt Tooltip "Upgrade to Premium"
-- URL-Felder: Free-User sehen nur "Your Website" + "Competitor 1"; die anderen Felder sind ausgeblendet
-- Premium-User sehen alle 4 Felder
-
-### 5. Credit-Anzeige im Chat-Header
-
-**`src/pages/Chat.tsx`**:
-- Kleine Credit-Anzeige im Chat-Header: z.B. "12/20 Credits" mit Progress-Bar
-- Farbe aendert sich wenn wenig Credits uebrig sind (gelb bei < 5, rot bei 0)
-- Klick auf die Anzeige oeffnet Upgrade-Hinweis fuer Free-User
-
-### 6. Fehlerbehandlung im Frontend
-
-**`src/pages/Chat.tsx`** und **`src/lib/api/chat-api.ts`**:
-- 403-Fehler abfangen und nutzerfreundliche Toast-Meldungen anzeigen:
-  - "Keine Credits mehr -- regeneriert sich in X Stunden"
-  - "Dieses Modell ist nur fuer Premium-Nutzer verfuegbar"
+- Feld "Your Website" ist das erste Feld (Index 0)
+- Competitor-Felder folgen danach (Index 1, 2, 3)
+- Wenn z.B. nur 2 URLs bezahlbar sind: "Your Website" + "Competitor 1" aktiv, Rest gesperrt
+- Wenn 0 URLs bezahlbar: alle Felder gesperrt
 
 ## Technische Details
 
-### Datenbank-Migration (SQL)
-
-```text
-ALTER TABLE public.user_credits
-  ADD COLUMN daily_credits_limit INTEGER NOT NULL DEFAULT 20,
-  ADD COLUMN credits_used INTEGER NOT NULL DEFAULT 0,
-  ADD COLUMN credits_reset_at TIMESTAMPTZ NOT NULL DEFAULT (now() + interval '24 hours');
-
--- Setze Premium-User auf 100 Credits Limit
-UPDATE public.user_credits SET daily_credits_limit = 100 WHERE is_premium = true;
-
--- Trigger: Bei is_premium Aenderung -> Limit anpassen
-CREATE OR REPLACE FUNCTION public.sync_credits_limit()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$
-BEGIN
-  IF NEW.is_premium = true AND OLD.is_premium = false THEN
-    NEW.daily_credits_limit := 100;
-  ELSIF NEW.is_premium = false AND OLD.is_premium = true THEN
-    NEW.daily_credits_limit := 20;
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER on_premium_change
-  BEFORE UPDATE ON public.user_credits
-  FOR EACH ROW EXECUTE FUNCTION public.sync_credits_limit();
-```
-
-### Credit-Kosten-Konstanten (shared)
-
-```text
-CREDIT_COSTS = {
-  chat: { cheap: 1, expensive: 3 },
-  analysis: { cheap: 5, expensive: 10 }
-}
-
-EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"]
-FREE_MODELS = ["gemini-flash", "gpt-mini"]
-```
-
-### Dateien die geaendert werden
+### Betroffene Datei
 
 | Datei | Aenderung |
 |---|---|
-| Datenbank-Migration | 3 neue Spalten + Trigger + pg_cron Update |
-| `supabase/functions/chat/index.ts` | Credit-Check + Modell-Guard + Abzug |
-| `supabase/functions/analyze-website/index.ts` | Credit-Check + Modell-Guard + Abzug |
-| `src/contexts/AuthContext.tsx` | Credits-State laden + Realtime |
-| `src/components/chat/ChatInput.tsx` | Modell-Lock UI + URL-Feld-Limit |
-| `src/pages/Chat.tsx` | Credit-Anzeige im Header + Fehlerbehandlung |
-| `src/lib/api/chat-api.ts` | 403-Fehler parsen und weiterleiten |
-| `src/lib/constants.ts` | Credit-Kosten-Konstanten |
+| `src/components/chat/ChatInput.tsx` | Credits-basierte Feld-Sperrung, englische Hinweise, Button-Deaktivierung |
 
+### Neue Imports in ChatInput
+
+```text
+import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
+// remainingCredits aus useAuth()
+const { isPremium, remainingCredits } = useAuth();
+```
+
+### Berechnungslogik
+
+```text
+const costPerUrl = getAnalysisCreditCost(selectedModel);
+const affordableUrls = costPerUrl > 0 ? Math.floor(remainingCredits / costPerUrl) : 0;
+const effectiveMaxFields = Math.min(maxUrlFields, affordableUrls);
+const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
+```
+
+### UI-Aenderungen im Dialog
+
+- Jedes URL-Feld prueft ob sein Index innerhalb von `effectiveMaxFields` liegt
+- Felder ausserhalb werden `disabled` gesetzt mit reduzierter Opazitaet
+- Hinweistext unterhalb der Felder: "Not enough credits — X credits per URL analysis with [Model]"
+- "Start Analysis" Button: `disabled={!canStartAnalysis || affordableUrls < 1}`

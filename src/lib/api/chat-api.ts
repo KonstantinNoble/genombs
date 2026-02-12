@@ -29,6 +29,14 @@ export async function createConversation(userId: string, title = "New Analysis")
   return data as Conversation;
 }
 
+export async function updateConversationTitle(conversationId: string, title: string): Promise<void> {
+  const { error } = await supabase
+    .from("conversations")
+    .update({ title })
+    .eq("id", conversationId);
+  if (error) throw error;
+}
+
 // ─── Messages ───
 
 export async function loadMessages(conversationId: string): Promise<Message[]> {

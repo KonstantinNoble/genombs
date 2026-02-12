@@ -38,6 +38,7 @@ import {
   streamChat,
   deleteProfilesForConversation,
   deleteConversation,
+  updateConversationTitle,
 } from "@/lib/api/chat-api";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
 
@@ -330,6 +331,17 @@ const Chat = () => {
       { url: ownUrl, isOwn: true },
       ...competitorUrls.map((u) => ({ url: u, isOwn: false })),
     ];
+
+    // Update conversation title to the domain of the own website
+    try {
+      const domain = new URL(ownUrl.startsWith("http") ? ownUrl : `https://${ownUrl}`).hostname.replace(/^www\./, "");
+      await updateConversationTitle(activeId, domain);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === activeId ? { ...c, title: domain } : c))
+      );
+    } catch (e) {
+      console.error("Failed to update conversation title:", e);
+    }
 
     try {
       await Promise.all(

@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -47,7 +47,7 @@ interface ChatInputProps {
 }
 
 const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
-  const { isPremium } = useAuth();
+  const { isPremium, remainingCredits } = useAuth();
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
@@ -59,8 +59,14 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   const [comp3, setComp3] = useState("");
 
   const maxUrlFields = isPremium ? PREMIUM_MAX_URL_FIELDS : FREE_MAX_URL_FIELDS;
-  // Free users: own + 1 competitor = 2 fields total, so max 1 competitor field
   const maxCompetitorFields = maxUrlFields - 1;
+
+  // Credit-based URL field locking
+  const costPerUrl = getAnalysisCreditCost(selectedModel);
+  const affordableUrls = costPerUrl > 0 ? Math.floor(remainingCredits / costPerUrl) : 0;
+  const effectiveMaxFields = Math.min(maxUrlFields, affordableUrls);
+  const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
+  const notEnoughCredits = affordableUrls < maxUrlFields;
 
   // Sync initial URLs from props (loaded from profiles)
   useEffect(() => {
@@ -101,8 +107,9 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     { label: "Competitor 3", value: comp3, set: setComp3 },
   ].slice(0, maxCompetitorFields);
 
-  const competitorUrls = [comp1, comp2, comp3].slice(0, maxCompetitorFields).filter((u) => u.trim());
-  const canStartAnalysis = ownUrl.trim() && competitorUrls.length > 0;
+  const competitorUrls = [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
+  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && competitorUrls.length > 0;
+  const isOwnUrlDisabled = affordableUrls < 1;
 
   const handleStartAnalysis = () => {
     if (!canStartAnalysis) return;
@@ -193,15 +200,28 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
             rows={1}
             disabled={disabled}
           />
-          <Button
-            onClick={() => setDialogOpen(true)}
-            disabled={disabled}
-            size="icon"
-            variant="outline"
-            className="shrink-0 h-[44px] w-[44px]"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex">
+                  <Button
+                    onClick={() => setDialogOpen(true)}
+                    disabled={disabled || remainingCredits < costPerUrl}
+                    size="icon"
+                    variant="outline"
+                    className="shrink-0 h-[44px] w-[44px]"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {remainingCredits < costPerUrl && (
+                <TooltipContent>
+                  <p className="text-xs">Not enough credits for analysis</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
           <Button
             onClick={handleSend}
             disabled={!value.trim() || disabled}
@@ -224,8 +244,11 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
             )}
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="own-url" className="text-sm font-medium">Your Website</Label>
+            <div className={`space-y-1.5 ${isOwnUrlDisabled ? "opacity-50" : ""}`}>
+              <Label htmlFor="own-url" className="text-sm font-medium flex items-center gap-1.5">
+                Your Website
+                {isOwnUrlDisabled && <Lock className="w-3 h-3 text-muted-foreground" />}
+              </Label>
               <div className="relative">
                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -234,24 +257,39 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                   onChange={(e) => setOwnUrl(e.target.value)}
                   placeholder="https://your-site.com"
                   className="pl-9"
+                  disabled={isOwnUrlDisabled}
                 />
               </div>
             </div>
-            {competitorFields.map((field) => (
-              <div key={field.label} className="space-y-1.5">
-                <Label className="text-sm font-medium">{field.label}</Label>
-                <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    value={field.value}
-                    onChange={(e) => field.set(e.target.value)}
-                    placeholder={`https://${field.label.toLowerCase().replace(" ", "")}.com`}
-                    className="pl-9"
-                  />
+            {competitorFields.map((field, index) => {
+              const fieldIndex = index + 1; // 0 = own website, so competitors start at 1
+              const isFieldDisabled = fieldIndex >= effectiveMaxFields;
+              return (
+                <div key={field.label} className={`space-y-1.5 ${isFieldDisabled ? "opacity-50" : ""}`}>
+                  <Label className="text-sm font-medium flex items-center gap-1.5">
+                    {field.label}
+                    {isFieldDisabled && <Lock className="w-3 h-3 text-muted-foreground" />}
+                  </Label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={field.value}
+                      onChange={(e) => field.set(e.target.value)}
+                      placeholder={`https://${field.label.toLowerCase().replace(" ", "")}.com`}
+                      className="pl-9"
+                      disabled={isFieldDisabled}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-            {!isPremium && (
+              );
+            })}
+            {notEnoughCredits && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                Not enough credits to analyze more URLs. You need {costPerUrl} credits per URL.
+              </p>
+            )}
+            {!isPremium && !notEnoughCredits && (
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Lock className="w-3 h-3" />
                 Upgrade to Premium for up to 3 competitor URLs

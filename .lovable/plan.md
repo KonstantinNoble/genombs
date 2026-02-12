@@ -1,79 +1,48 @@
 
 
-# Fix: Dashboard Empty After Rescan and Missing Loading Animation
+# Dynamischer Konversationsname basierend auf der analysierten Website
 
 ## Problem
 
-Two related bugs in `src/pages/Chat.tsx`:
+Alle Konversationen heissen "New Analysis", was es schwierig macht, sie in der Sidebar voneinander zu unterscheiden.
 
-1. **Dashboard shows empty after rescan**: When rescanning websites, old profiles are cleared (`setProfiles([])`), realtime is paused for 2 seconds, and the edge function inserts new profiles during that pause. The realtime listener misses those INSERT events. The `setTimeout` callback at line 336 loads fresh profiles but never updates the `profiles` state -- it only uses them for summary generation. Result: dashboard stays empty until manual page refresh.
+## Loesung
 
-2. **No loading animation at scan start**: The dashboard only shows loading spinners for profiles with non-completed status (line 527). But after `setProfiles([])` and before realtime delivers new rows, `profiles` is empty. The dashboard falls through to the "Start an analysis to see results here" placeholder instead of showing a loading state.
+Sobald eine Website-Analyse gestartet wird, wird der Konversationstitel automatisch auf die URL der eigenen Website aktualisiert (z.B. "synoptas.com"). So kann der Benutzer sofort erkennen, welche Analyse zu welcher Konversation gehoert.
 
-## Fix
+### Aenderung 1: Neue Funktion `updateConversationTitle` in `src/lib/api/chat-api.ts`
 
-### Change 1: Update `setProfiles` in the summary `setTimeout` callback (line 336-381)
-
-After `loadProfiles(activeId)` returns fresh data inside the `setTimeout`, also update the state:
+Eine neue Funktion wird hinzugefuegt, die den Titel einer Konversation in der Datenbank aktualisiert:
 
 ```typescript
-const freshProfiles = await loadProfiles(activeId);
-setProfiles(freshProfiles); // <-- ADD THIS LINE
-```
-
-Also update tasks from the fresh profiles:
-
-```typescript
-const completedIds = freshProfiles.filter(p => p.status === "completed").map(p => p.id);
-if (completedIds.length > 0) {
-  loadTasks(completedIds).then(setTasks).catch(console.error);
+export async function updateConversationTitle(conversationId: string, title: string): Promise<void> {
+  const { error } = await supabase
+    .from("conversations")
+    .update({ title })
+    .eq("id", conversationId);
+  if (error) throw error;
 }
 ```
 
-### Change 2: Add explicit profile reload after realtime pause ends (line 315-317)
+### Aenderung 2: Titel-Update in `src/pages/Chat.tsx` nach Analyse-Start
 
-Replace the simple `setTimeout` that just unpauses realtime with one that also reloads profiles:
+In der `handleAnalyze`-Funktion wird nach dem Start der Analyse der Konversationstitel auf eine gekuerzte Version der eigenen Website-URL gesetzt (z.B. `www.example.com` wird zu `example.com`). Zusaetzlich wird der lokale State (`conversations`) aktualisiert, damit die Sidebar sofort den neuen Namen anzeigt.
 
-```typescript
-setTimeout(() => {
-  realtimePausedRef.current = false;
-  // Reload profiles to catch any inserts missed during the pause
-  loadProfiles(activeId).then((ps) => {
-    const deduped = deduplicateProfiles(ps);
-    setProfiles(deduped);
-    const completedIds = deduped.filter(p => p.status === "completed").map(p => p.id);
-    if (completedIds.length > 0) {
-      loadTasks(completedIds).then(setTasks).catch(console.error);
-    }
-  });
-}, 2000);
-```
+Die URL wird bereinigt:
+- `https://www.example.com/path` wird zu `example.com`
+- Protokoll (http/https) und "www." werden entfernt
 
-### Change 3: Show loading state in dashboard when `isAnalyzing` is true (line 571-575)
+### Ablauf
 
-Update the empty-state condition to also check `isAnalyzing`. When analyzing but no profiles exist yet, show a spinner instead of "Start an analysis":
+1. Benutzer startet eine Analyse mit einer eigenen URL
+2. Die `handleAnalyze`-Funktion extrahiert die Domain aus der URL
+3. Der Konversationstitel wird in der Datenbank auf die Domain aktualisiert
+4. Der lokale `conversations`-State wird aktualisiert, damit die Sidebar sofort reagiert
 
-```typescript
-{!hasProfiles && pendingProfiles.length === 0 &&
- profiles.filter(p => p.status === "error").length === 0 && (
-  isAnalyzing ? (
-    <div className="flex items-center justify-center h-40 gap-3 text-muted-foreground text-sm">
-      <Loader2 className="w-4 h-4 animate-spin" />
-      Preparing analysis...
-    </div>
-  ) : (
-    <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-      Start an analysis to see results here
-    </div>
-  )
-)}
-```
+## Technische Details
 
-## Summary
-
-| File | Lines | Change |
-|---|---|---|
-| `src/pages/Chat.tsx` | 315-317 | Reload profiles after realtime pause ends |
-| `src/pages/Chat.tsx` | 338 | Add `setProfiles` + task reload in summary callback |
-| `src/pages/Chat.tsx` | 571-575 | Show spinner when `isAnalyzing` but no profiles yet |
+| Datei | Aenderung |
+|---|---|
+| `src/lib/api/chat-api.ts` | Neue Funktion `updateConversationTitle` |
+| `src/pages/Chat.tsx` | Import der neuen Funktion, Aufruf in `handleAnalyze` nach Analyse-Start, lokaler State-Update fuer Sidebar |
 

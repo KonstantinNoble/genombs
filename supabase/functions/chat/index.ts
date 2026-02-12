@@ -257,10 +257,31 @@ async function checkAndDeductCredits(
     .from("user_credits")
     .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
 
-  if (creditsError || !credits) {
+  if (creditsError) {
+    console.error("Credits query error:", creditsError);
     return { ok: false, status: 500, error: "Could not load user credits" };
+  }
+
+  // If no credits row exists yet, create one (free tier defaults)
+  if (!credits) {
+    const { data: newCredits, error: insertErr } = await supabaseAdmin
+      .from("user_credits")
+      .insert({ user_id: userId, daily_credits_limit: 20, credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
+      .single();
+    if (insertErr || !newCredits) {
+      console.error("Credits insert error:", insertErr);
+      return { ok: false, status: 500, error: "Could not initialize user credits" };
+    }
+    // Fresh row, no need to check limits — just deduct
+    const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
+    if (isPremiumRequired) {
+      return { ok: false, status: 403, error: "premium_model_required" };
+    }
+    await supabaseAdmin.from("user_credits").update({ credits_used: cost }).eq("id", newCredits.id);
+    return { ok: true };
   }
 
   const userIsPremium = credits.is_premium;

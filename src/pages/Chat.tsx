@@ -296,7 +296,7 @@ const Chat = () => {
       console.log(`Cleanup complete: ${result.deletedProfiles} profiles, ${result.deletedTasks} task groups removed`);
     } catch (e) {
       console.error("Failed to delete old profiles:", e);
-      toast.error("Alte Analysedaten konnten nicht gelöscht werden. Bitte versuche es erneut.");
+      toast.error("Failed to delete old analysis data. Please try again.");
       realtimePausedRef.current = false;
       setIsAnalyzing(false);
       return; // Stop — don't continue with new analysis
@@ -620,15 +620,15 @@ const Chat = () => {
       <AlertDialog open={deleteDialogState.isOpen} onOpenChange={(open) => !open && setDeleteDialogState({ isOpen: false, conversationId: null })}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Konversation löschen?</AlertDialogTitle>
+            <AlertDialogTitle>Delete conversation?</AlertDialogTitle>
             <AlertDialogDescription>
-              Diese Aktion kann nicht rückgängig gemacht werden. Die Konversation und alle zugehörigen Daten werden permanent gelöscht.
+              This action cannot be undone. The conversation and all associated data will be permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Löschen
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

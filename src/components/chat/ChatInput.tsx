@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Send, Globe, Plus, ChevronDown } from "lucide-react";
+import { Send, Globe, Plus, ChevronDown, Lock } from "lucide-react";
 import { GoogleIcon, OpenAIIcon, AnthropicIcon, PerplexityIcon } from "./ModelIcons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useAuth } from "@/contexts/AuthContext";
+import { isExpensiveModel, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -38,6 +47,7 @@ interface ChatInputProps {
 }
 
 const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
+  const { isPremium } = useAuth();
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
@@ -47,6 +57,10 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   const [comp1, setComp1] = useState("");
   const [comp2, setComp2] = useState("");
   const [comp3, setComp3] = useState("");
+
+  const maxUrlFields = isPremium ? PREMIUM_MAX_URL_FIELDS : FREE_MAX_URL_FIELDS;
+  // Free users: own + 1 competitor = 2 fields total, so max 1 competitor field
+  const maxCompetitorFields = maxUrlFields - 1;
 
   // Sync initial URLs from props (loaded from profiles)
   useEffect(() => {
@@ -81,7 +95,13 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     }
   };
 
-  const competitorUrls = [comp1, comp2, comp3].filter((u) => u.trim());
+  const competitorFields = [
+    { label: "Competitor 1", value: comp1, set: setComp1 },
+    { label: "Competitor 2", value: comp2, set: setComp2 },
+    { label: "Competitor 3", value: comp3, set: setComp3 },
+  ].slice(0, maxCompetitorFields);
+
+  const competitorUrls = [comp1, comp2, comp3].slice(0, maxCompetitorFields).filter((u) => u.trim());
   const canStartAnalysis = ownUrl.trim() && competitorUrls.length > 0;
 
   const handleStartAnalysis = () => {
@@ -89,7 +109,6 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     onScan?.(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
     setDialogOpen(false);
     setShowHint(false);
-    // Clear URLs after starting analysis
     setOwnUrl("");
     setComp1("");
     setComp2("");
@@ -116,30 +135,52 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-56 p-1">
-              {AI_MODELS.map((model) => {
-                const Icon = model.icon;
-                const isActive = model.id === selectedModel;
-                return (
-                  <button
-                    key={model.id}
-                    onClick={() => {
-                      setSelectedModel(model.id);
-                      setModelOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "hover:bg-muted text-foreground"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <div className="min-w-0">
-                      <div className="font-medium text-sm">{model.label}</div>
-                      <div className="text-[11px] text-muted-foreground">{model.description}</div>
-                    </div>
-                  </button>
-                );
-              })}
+              <TooltipProvider>
+                {AI_MODELS.map((model) => {
+                  const Icon = model.icon;
+                  const isActive = model.id === selectedModel;
+                  const isLocked = !isPremium && isExpensiveModel(model.id);
+                  return (
+                    <Tooltip key={model.id}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => {
+                            if (isLocked) return;
+                            setSelectedModel(model.id);
+                            setModelOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${
+                            isLocked
+                              ? "opacity-50 cursor-not-allowed"
+                              : isActive
+                              ? "bg-primary/10 text-primary"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-sm flex items-center gap-1.5">
+                              {model.label}
+                              {isLocked && (
+                                <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-primary/30 text-primary">
+                                  <Lock className="w-2.5 h-2.5 mr-0.5" />
+                                  Premium
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-muted-foreground">{model.description}</div>
+                          </div>
+                        </button>
+                      </TooltipTrigger>
+                      {isLocked && (
+                        <TooltipContent side="right">
+                          <p className="text-xs">Upgrade to Premium to use {model.label}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  );
+                })}
+              </TooltipProvider>
             </PopoverContent>
           </Popover>
 
@@ -196,11 +237,7 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                 />
               </div>
             </div>
-            {[
-              { label: "Competitor 1", value: comp1, set: setComp1 },
-              { label: "Competitor 2", value: comp2, set: setComp2 },
-              { label: "Competitor 3", value: comp3, set: setComp3 },
-            ].map((field) => (
+            {competitorFields.map((field) => (
               <div key={field.label} className="space-y-1.5">
                 <Label className="text-sm font-medium">{field.label}</Label>
                 <div className="relative">
@@ -214,6 +251,12 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                 </div>
               </div>
             ))}
+            {!isPremium && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                Upgrade to Premium for up to 3 competitor URLs
+              </p>
+            )}
             <Button
               onClick={handleStartAnalysis}
               disabled={!canStartAnalysis}

@@ -21,6 +21,17 @@ CRITICAL RULES:
 - Format responses with markdown: headers, tables, bullet points, bold text
 - Answer in the same language as the user's message.`;
 
+// ─── Credit system constants ───
+
+const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
+const FREE_MODELS = ["gemini-flash", "gpt-mini"];
+const CHAT_CREDIT_COST_CHEAP = 1;
+const CHAT_CREDIT_COST_EXPENSIVE = 3;
+
+function isExpensiveModel(modelKey: string): boolean {
+  return EXPENSIVE_MODELS.includes(modelKey);
+}
+
 // ─── Model config ───
 
 interface ModelConfig {
@@ -58,7 +69,6 @@ async function streamGemini(
   systemPrompt: string,
   messages: { role: string; content: string }[]
 ): Promise<Response> {
-  // Build Gemini contents with system prepended to first user message
   const geminiContents: { role: string; parts: { text: string }[] }[] = [];
   for (let i = 0; i < messages.length; i++) {
     const msg = messages[i];
@@ -73,7 +83,6 @@ async function streamGemini(
     }
   }
 
-  // Merge consecutive same-role messages
   const sanitized: typeof geminiContents = [];
   for (const c of geminiContents) {
     if (sanitized.length > 0 && sanitized[sanitized.length - 1].role === c.role) {
@@ -169,7 +178,6 @@ async function streamAnthropic(
   systemPrompt: string,
   messages: { role: string; content: string }[]
 ): Promise<Response> {
-  // Filter out system messages and ensure proper alternation
   const anthropicMessages = messages
     .filter((m) => m.role !== "system")
     .map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content }));
@@ -226,7 +234,6 @@ function transformAnthropicStream(body: ReadableStream<Uint8Array>): ReadableStr
             } catch { /* partial */ }
           }
         }
-        // Ensure [DONE] is sent
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } catch (e) {
         console.error("Anthropic transform error:", e);
@@ -235,6 +242,60 @@ function transformAnthropicStream(body: ReadableStream<Uint8Array>): ReadableStr
       }
     },
   });
+}
+
+// ─── Credit check helper ───
+
+async function checkAndDeductCredits(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  userId: string,
+  modelKey: string,
+  isPremiumRequired: boolean
+): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  // Fetch user credits
+  const { data: credits, error: creditsError } = await supabaseAdmin
+    .from("user_credits")
+    .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
+    .eq("user_id", userId)
+    .single();
+
+  if (creditsError || !credits) {
+    return { ok: false, status: 500, error: "Could not load user credits" };
+  }
+
+  const userIsPremium = credits.is_premium;
+
+  // Model access check
+  if (isPremiumRequired && !userIsPremium) {
+    return { ok: false, status: 403, error: "premium_model_required" };
+  }
+
+  // Auto-reset credits if period expired
+  const resetAt = new Date(credits.credits_reset_at);
+  let creditsUsed = credits.credits_used;
+  if (resetAt < new Date()) {
+    creditsUsed = 0;
+    await supabaseAdmin
+      .from("user_credits")
+      .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+      .eq("id", credits.id);
+  }
+
+  const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
+  const remaining = credits.daily_credits_limit - creditsUsed;
+
+  if (remaining < cost) {
+    const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+    return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+  }
+
+  // Deduct credits
+  await supabaseAdmin
+    .from("user_credits")
+    .update({ credits_used: creditsUsed + cost })
+    .eq("id", credits.id);
+
+  return { ok: true };
 }
 
 // ─── Main handler ───
@@ -262,8 +323,8 @@ serve(async (req) => {
       );
     }
 
-    // Resolve model
-    const config = MODEL_MAP[modelKey || "gemini-flash"] || MODEL_MAP["gemini-flash"];
+    const resolvedModelKey = modelKey || "gemini-flash";
+    const config = MODEL_MAP[resolvedModelKey] || MODEL_MAP["gemini-flash"];
     const keyInfo = getRequiredKey(config.provider);
     if (!keyInfo) {
       return new Response(
@@ -275,6 +336,7 @@ serve(async (req) => {
     // Verify user
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -283,6 +345,17 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ─── Credit check ───
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    const isPremiumModel = isExpensiveModel(resolvedModelKey);
+    const creditResult = await checkAndDeductCredits(supabaseAdmin, user.id, resolvedModelKey, isPremiumModel);
+    if (!creditResult.ok) {
+      return new Response(
+        JSON.stringify({ error: creditResult.error }),
+        { status: creditResult.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -304,7 +377,6 @@ serve(async (req) => {
           profileContext += `Category Scores: ${JSON.stringify(p.category_scores)}\n`;
           profileContext += `Profile: ${JSON.stringify(p.profile_data)}\n`;
 
-          // Include actual crawled content (truncated to ~6000 chars per site)
           if (p.raw_markdown) {
             const trimmed = p.raw_markdown.slice(0, 6000);
             profileContext += `\nCrawled Content:\n${trimmed}\n`;
@@ -371,7 +443,6 @@ serve(async (req) => {
     } else if (config.provider === "anthropic") {
       outputStream = transformAnthropicStream(providerResp.body!);
     } else {
-      // OpenAI and Perplexity are already in OpenAI SSE format
       outputStream = providerResp.body!;
     }
 

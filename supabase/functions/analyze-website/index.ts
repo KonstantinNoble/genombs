@@ -359,6 +359,64 @@ async function routeAnalysis(model: ModelId, content: string): Promise<unknown> 
 
 // ─── Main handler ───
 
+// ─── Credit system constants ───
+
+const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
+const ANALYSIS_CREDIT_COST_CHEAP = 5;
+const ANALYSIS_CREDIT_COST_EXPENSIVE = 10;
+
+function isExpensiveModel(modelKey: string): boolean {
+  return EXPENSIVE_MODELS.includes(modelKey);
+}
+
+async function checkAndDeductAnalysisCredits(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  userId: string,
+  modelKey: string,
+  isPremiumRequired: boolean
+): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  const { data: credits, error: creditsError } = await supabaseAdmin
+    .from("user_credits")
+    .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
+    .eq("user_id", userId)
+    .single();
+
+  if (creditsError || !credits) {
+    return { ok: false, status: 500, error: "Could not load user credits" };
+  }
+
+  if (isPremiumRequired && !credits.is_premium) {
+    return { ok: false, status: 403, error: "premium_model_required" };
+  }
+
+  const resetAt = new Date(credits.credits_reset_at);
+  let creditsUsed = credits.credits_used;
+  if (resetAt < new Date()) {
+    creditsUsed = 0;
+    await supabaseAdmin
+      .from("user_credits")
+      .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+      .eq("id", credits.id);
+  }
+
+  const cost = isExpensiveModel(modelKey) ? ANALYSIS_CREDIT_COST_EXPENSIVE : ANALYSIS_CREDIT_COST_CHEAP;
+  const remaining = credits.daily_credits_limit - creditsUsed;
+
+  if (remaining < cost) {
+    const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+    return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+  }
+
+  await supabaseAdmin
+    .from("user_credits")
+    .update({ credits_used: creditsUsed + cost })
+    .eq("id", credits.id);
+
+  return { ok: true };
+}
+
+// ─── Main handler ───
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -408,6 +466,16 @@ serve(async (req) => {
 
     // Admin client for DB writes
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // ─── Credit check ───
+    const isPremiumModel = isExpensiveModel(model);
+    const creditResult = await checkAndDeductAnalysisCredits(supabaseAdmin, user.id, model, isPremiumModel);
+    if (!creditResult.ok) {
+      return new Response(
+        JSON.stringify({ error: creditResult.error }),
+        { status: creditResult.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Format URL
     let formattedUrl = url.trim();

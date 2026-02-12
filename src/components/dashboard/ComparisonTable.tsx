@@ -25,7 +25,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
     <Card className="border-border bg-card">
       <CardContent className="p-4 space-y-4">
         {/* Legend */}
-        <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
             {ownSite.profile_data.name}
@@ -39,7 +39,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
         </div>
 
         {/* Header row */}
-        <div className="grid grid-cols-[1fr_auto] gap-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 px-1">
+        <div className="grid grid-cols-[1fr_auto] gap-2 text-xs uppercase tracking-wider text-muted-foreground/60 px-1">
           <span>Category</span>
           <span className="w-7 text-right">Score</span>
         </div>
@@ -52,7 +52,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
                 key={cat.key}
                 className={`space-y-1.5 rounded-lg p-2 -mx-2 ${i % 2 === 0 ? "bg-secondary/30" : ""}`}
               >
-                <span className="text-[11px] font-medium text-muted-foreground">{cat.label}</span>
+                <span className="text-sm font-semibold text-muted-foreground">{cat.label}</span>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
                     <div
@@ -60,9 +60,9 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
                       style={{ width: `${ownScore}%` }}
                     />
                   </div>
-                  <span className="text-xs font-bold text-foreground w-7 text-right">
-                    {ownScore}
-                  </span>
+                   <span className="text-sm font-bold text-foreground w-8 text-right">
+                     {ownScore}
+                   </span>
                 </div>
                 {competitors.map((comp) => {
                   const compScore = comp.category_scores?.[cat.key] ?? 0;
@@ -74,9 +74,9 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
                           style={{ width: `${compScore}%` }}
                         />
                       </div>
-                      <span className="text-xs text-muted-foreground w-7 text-right">
-                        {compScore}
-                      </span>
+                       <span className="text-sm text-muted-foreground w-8 text-right">
+                         {compScore}
+                       </span>
                     </div>
                   );
                 })}

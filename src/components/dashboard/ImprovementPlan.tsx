@@ -44,9 +44,9 @@ const ImprovementPlan = ({ tasks }: ImprovementPlanProps) => {
               style={{ width: `${(doneCount / totalCount) * 100}%` }}
             />
           </div>
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
-            {doneCount}/{totalCount} done
-          </span>
+           <span className="text-xs text-muted-foreground whitespace-nowrap">
+             {doneCount}/{totalCount} done
+           </span>
         </div>
       )}
 
@@ -63,32 +63,32 @@ const ImprovementPlan = ({ tasks }: ImprovementPlanProps) => {
                 ) : (
                   priorityIcons[task.priority]
                 )}
-                <p
-                  className={`text-sm font-medium ${task.status === "done" ? "text-muted-foreground line-through" : "text-foreground"}`}
-                >
-                  {task.title}
-                </p>
+                 <p
+                   className={`text-base font-semibold ${task.status === "done" ? "text-muted-foreground line-through" : "text-foreground"}`}
+                 >
+                   {task.title}
+                 </p>
               </div>
-              {task.description && (
-                <p className="text-[11px] text-muted-foreground mt-0.5 ml-5.5 pl-[22px]">
-                  {task.description}
-                </p>
-              )}
+               {task.description && (
+                 <p className="text-sm text-muted-foreground mt-0.5 ml-5.5 pl-[22px]">
+                   {task.description}
+                 </p>
+               )}
             </div>
             <Badge
               variant={task.status === "done" ? "secondary" : task.status === "in_progress" ? "default" : "outline"}
-              className="text-[10px] shrink-0"
+              className="text-xs shrink-0"
             >
               {statusLabels[task.status] ?? task.status}
             </Badge>
           </div>
-          {task.category && (
-            <div className="mt-2 pl-[22px]">
-              <Badge variant="secondary" className="text-[10px]">
-                {task.category}
-              </Badge>
-            </div>
-          )}
+           {task.category && (
+             <div className="mt-2 pl-[22px]">
+               <Badge variant="secondary" className="text-xs">
+                 {task.category}
+               </Badge>
+             </div>
+           )}
         </div>
       ))}
     </div>

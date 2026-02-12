@@ -314,6 +314,15 @@ const Chat = () => {
     // Resume realtime after a short delay to let inserts settle
     setTimeout(() => {
       realtimePausedRef.current = false;
+      // Reload profiles to catch any inserts missed during the pause
+      loadProfiles(activeId).then((ps) => {
+        const deduped = deduplicateProfiles(ps);
+        setProfiles(deduped);
+        const completedIds = deduped.filter(p => p.status === "completed").map(p => p.id);
+        if (completedIds.length > 0) {
+          loadTasks(completedIds).then(setTasks).catch(console.error);
+        }
+      }).catch(console.error);
     }, 2000);
 
     // Fire all analysis requests in parallel
@@ -336,6 +345,11 @@ const Chat = () => {
       setTimeout(async () => {
         try {
           const freshProfiles = await loadProfiles(activeId);
+          setProfiles(freshProfiles);
+          const completedIds = freshProfiles.filter(p => p.status === "completed").map(p => p.id);
+          if (completedIds.length > 0) {
+            loadTasks(completedIds).then(setTasks).catch(console.error);
+          }
           const completed = freshProfiles.filter((p) => p.status === "completed");
           if (completed.length === 0) return;
 
@@ -569,9 +583,16 @@ const Chat = () => {
           )}
 
           {!hasProfiles && pendingProfiles.length === 0 && profiles.filter((p) => p.status === "error").length === 0 && (
-            <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-              Start an analysis to see results here
-            </div>
+            isAnalyzing ? (
+              <div className="flex items-center justify-center h-40 gap-3 text-muted-foreground text-sm">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Preparing analysis...
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
+                Start an analysis to see results here
+              </div>
+            )
           )}
         </div>
       </ScrollArea>

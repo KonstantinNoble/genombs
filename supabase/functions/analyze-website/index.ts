@@ -10,45 +10,177 @@ const corsHeaders = {
 /**
  * analyze-website
  *
- * 1. Scrapes the given URL via Firecrawl (markdown + screenshot)
- * 2. Sends the markdown to the selected AI model to produce a structured website profile
- * 3. Stores the result in `website_profiles`
+ * 1. Scrapes the given URL via Firecrawl (markdown + html + links + screenshot)
+ * 2. Extracts SEO meta-data from the HTML
+ * 3. Sends enriched context to the selected AI model to produce a structured website profile
+ * 4. Stores the result in `website_profiles`
  *
  * Required secrets: FIRECRAWL_API_KEY, GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  * Optional secrets: OPENAI_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY
  */
 
-const ANALYSIS_SYSTEM_PROMPT = `You are an expert website analyst. Analyze the provided website content and return a JSON object with exactly this structure:
+// ─── SEO Data Extraction ───
 
-{
-  "name": "Company/website name",
-  "targetAudience": "Description of the target audience",
-  "usp": "Unique selling proposition",
-  "ctas": ["CTA 1", "CTA 2"],
-  "siteStructure": ["Page 1", "Page 2"],
-  "strengths": ["Strength 1", "Strength 2", "Strength 3"],
-  "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+interface SEOData {
+  title: string | null;
+  metaDescription: string | null;
+  viewport: string | null;
+  robots: string | null;
+  canonical: string | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImage: string | null;
+  jsonLd: string[];
 }
 
-Also provide category scores (0-100) for:
-- findability: How easy is it to find via search engines? (SEO, meta tags, structured data)
-- mobileUsability: Mobile responsiveness and usability
-- offerClarity: How clear is the value proposition and offer?
-- trustProof: Trust signals like reviews, certifications, testimonials
-- conversionReadiness: CTAs, booking forms, contact options
+function extractSEOData(html: string): SEOData {
+  const getMetaContent = (nameOrProperty: string): string | null => {
+    const regex = new RegExp(
+      `<meta\\s+(?:[^>]*?(?:name|property)\\s*=\\s*["']${nameOrProperty}["'][^>]*?content\\s*=\\s*["']([^"']*?)["']|[^>]*?content\\s*=\\s*["']([^"']*?)["'][^>]*?(?:name|property)\\s*=\\s*["']${nameOrProperty}["'])`,
+      "i"
+    );
+    const match = html.match(regex);
+    return match ? (match[1] || match[2] || null) : null;
+  };
 
-Return the complete result as:
+  // Title
+  const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].trim() : null;
+
+  // Canonical
+  const canonicalMatch = html.match(/<link[^>]*rel\s*=\s*["']canonical["'][^>]*href\s*=\s*["']([^"']*?)["']/i);
+  const canonical = canonicalMatch ? canonicalMatch[1] : null;
+
+  // JSON-LD structured data
+  const jsonLd: string[] = [];
+  const jsonLdRegex = /<script[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let jsonLdMatch;
+  while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      // Validate it's valid JSON
+      JSON.parse(jsonLdMatch[1].trim());
+      jsonLd.push(jsonLdMatch[1].trim());
+    } catch {
+      // Skip invalid JSON-LD
+    }
+  }
+
+  return {
+    title,
+    metaDescription: getMetaContent("description"),
+    viewport: getMetaContent("viewport"),
+    robots: getMetaContent("robots"),
+    canonical,
+    ogTitle: getMetaContent("og:title"),
+    ogDescription: getMetaContent("og:description"),
+    ogImage: getMetaContent("og:image"),
+    jsonLd,
+  };
+}
+
+function buildEnrichedContext(
+  url: string,
+  markdown: string,
+  seo: SEOData,
+  links: { internal: number; external: number }
+): string {
+  const sections: string[] = [];
+
+  sections.push(`Website URL: ${url}`);
+  sections.push("");
+  sections.push("=== SEO & TECHNICAL DATA ===");
+  sections.push(`Title Tag: ${seo.title ? `"${seo.title}"` : "MISSING"}`);
+  sections.push(`Meta Description: ${seo.metaDescription ? `"${seo.metaDescription}"` : "MISSING"}`);
+  sections.push(`Viewport Meta: ${seo.viewport ? `"${seo.viewport}"` : "MISSING (likely not mobile-responsive)"}`);
+  sections.push(`Robots Meta: ${seo.robots ? `"${seo.robots}"` : "not set (defaults to index, follow)"}`);
+  sections.push(`Canonical URL: ${seo.canonical || "not set"}`);
+
+  if (seo.ogTitle || seo.ogDescription || seo.ogImage) {
+    const ogParts: string[] = [];
+    if (seo.ogTitle) ogParts.push(`og:title="${seo.ogTitle}"`);
+    if (seo.ogDescription) ogParts.push(`og:description="${seo.ogDescription}"`);
+    if (seo.ogImage) ogParts.push(`og:image="${seo.ogImage}"`);
+    sections.push(`Open Graph: ${ogParts.join(", ")}`);
+  } else {
+    sections.push("Open Graph Tags: MISSING");
+  }
+
+  if (seo.jsonLd.length > 0) {
+    // Only include first 3 to avoid token bloat
+    const truncated = seo.jsonLd.slice(0, 3);
+    sections.push(`Structured Data (JSON-LD): ${truncated.length} block(s) found`);
+    for (const ld of truncated) {
+      // Truncate each block to 500 chars
+      sections.push(ld.length > 500 ? ld.substring(0, 500) + "..." : ld);
+    }
+  } else {
+    sections.push("Structured Data (JSON-LD): NONE");
+  }
+
+  sections.push(`Internal Links: ${links.internal}`);
+  sections.push(`External Links: ${links.external}`);
+
+  sections.push("");
+  sections.push("=== WEBSITE CONTENT ===");
+  sections.push(markdown);
+
+  return sections.join("\n");
+}
+
+// ─── Analysis Prompt ───
+
+const ANALYSIS_SYSTEM_PROMPT = `You are an expert website analyst. You receive both the website's text content AND its technical SEO metadata (title tag, meta description, viewport, robots, Open Graph tags, structured data, link counts).
+
+Analyze all provided data and return a JSON object with exactly this structure:
+
 {
-  "profileData": { ... the profile object above ... },
-  "categoryScores": { "findability": N, "mobileUsability": N, "offerClarity": N, "trustProof": N, "conversionReadiness": N },
+  "profileData": {
+    "name": "Company/website name",
+    "targetAudience": "Description of the target audience",
+    "usp": "Unique selling proposition",
+    "ctas": ["CTA 1", "CTA 2"],
+    "siteStructure": ["Page 1", "Page 2"],
+    "strengths": ["Strength 1", "Strength 2", "Strength 3"],
+    "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+  },
+  "categoryScores": {
+    "findability": N,
+    "mobileUsability": N,
+    "offerClarity": N,
+    "trustProof": N,
+    "conversionReadiness": N
+  },
   "overallScore": N
 }
+
+SCORING GUIDELINES (0-100 for each category):
+
+**findability**: Base this on the ACTUAL technical data provided:
+- Is there a title tag? Is it well-crafted (under 60 chars, contains keywords)?
+- Is there a meta description? Is it compelling (under 160 chars)?
+- Are Open Graph tags present for social sharing?
+- Is there structured data (JSON-LD)? What types?
+- How many internal vs external links are there?
+- If any of these are MISSING, lower the score and mention it explicitly.
+
+**mobileUsability**: Check the viewport meta tag:
+- If viewport meta is MISSING, score should be significantly lower (max 40) and state this.
+- If viewport is present ("width=device-width, initial-scale=1"), that's a positive signal.
+- Also assess content structure (headings, readability, content length).
+
+**offerClarity**: How clear is the value proposition and offer based on the content?
+
+**trustProof**: Trust signals like reviews, certifications, testimonials, about page, team info.
+
+**conversionReadiness**: CTAs, booking forms, contact options, clear next steps.
+
+IMPORTANT: When technical data shows "MISSING", explicitly mention this in weaknesses and reflect it in scores. Do NOT guess or assume data exists if it's marked as MISSING.
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
 
 // ─── Provider-specific analysis functions ───
 
-async function analyzeWithGemini(markdown: string, url: string, apiKey: string): Promise<unknown> {
+async function analyzeWithGemini(content: string, apiKey: string): Promise<unknown> {
   const resp = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
     {
@@ -59,7 +191,7 @@ async function analyzeWithGemini(markdown: string, url: string, apiKey: string):
           {
             parts: [
               { text: ANALYSIS_SYSTEM_PROMPT },
-              { text: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+              { text: content },
             ],
           },
         ],
@@ -82,7 +214,7 @@ async function analyzeWithGemini(markdown: string, url: string, apiKey: string):
   return parseJsonResponse(text);
 }
 
-async function analyzeWithOpenAI(markdown: string, url: string, apiKey: string, modelName: string): Promise<unknown> {
+async function analyzeWithOpenAI(content: string, apiKey: string, modelName: string): Promise<unknown> {
   const resp = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -93,7 +225,7 @@ async function analyzeWithOpenAI(markdown: string, url: string, apiKey: string, 
       model: modelName,
       messages: [
         { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
-        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+        { role: "user", content },
       ],
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -111,7 +243,7 @@ async function analyzeWithOpenAI(markdown: string, url: string, apiKey: string, 
   return parseJsonResponse(text);
 }
 
-async function analyzeWithAnthropic(markdown: string, url: string, apiKey: string): Promise<unknown> {
+async function analyzeWithAnthropic(content: string, apiKey: string): Promise<unknown> {
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -123,7 +255,7 @@ async function analyzeWithAnthropic(markdown: string, url: string, apiKey: strin
       model: "claude-sonnet-4-20250514",
       system: ANALYSIS_SYSTEM_PROMPT,
       messages: [
-        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+        { role: "user", content },
       ],
       max_tokens: 8192,
     }),
@@ -139,7 +271,7 @@ async function analyzeWithAnthropic(markdown: string, url: string, apiKey: strin
   return parseJsonResponse(text);
 }
 
-async function analyzeWithPerplexity(markdown: string, url: string, apiKey: string): Promise<unknown> {
+async function analyzeWithPerplexity(content: string, apiKey: string): Promise<unknown> {
   const resp = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
@@ -150,7 +282,7 @@ async function analyzeWithPerplexity(markdown: string, url: string, apiKey: stri
       model: "sonar-pro",
       messages: [
         { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
-        { role: "user", content: `Website URL: ${url}\n\nWebsite Content:\n${markdown}` },
+        { role: "user", content },
       ],
       temperature: 0.2,
       max_tokens: 4096,
@@ -184,38 +316,38 @@ function parseJsonResponse(text: string): unknown {
 
 type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";
 
-async function routeAnalysis(model: ModelId, markdown: string, url: string): Promise<unknown> {
+async function routeAnalysis(model: ModelId, content: string): Promise<unknown> {
   switch (model) {
     case "gemini-flash": {
       const key = Deno.env.get("GEMINI_API_KEY");
       if (!key) throw new Error("GEMINI_API_KEY not configured");
-      return analyzeWithGemini(markdown, url, key);
+      return analyzeWithGemini(content, key);
     }
     case "gpt-mini": {
       const key = Deno.env.get("OPENAI_API_KEY");
       if (!key) throw new Error("OPENAI_API_KEY not configured");
-      return analyzeWithOpenAI(markdown, url, key, "gpt-4o-mini");
+      return analyzeWithOpenAI(content, key, "gpt-4o-mini");
     }
     case "gpt": {
       const key = Deno.env.get("OPENAI_API_KEY");
       if (!key) throw new Error("OPENAI_API_KEY not configured");
-      return analyzeWithOpenAI(markdown, url, key, "gpt-4o");
+      return analyzeWithOpenAI(content, key, "gpt-4o");
     }
     case "claude-sonnet": {
       const key = Deno.env.get("ANTHROPIC_API_KEY");
       if (!key) throw new Error("ANTHROPIC_API_KEY not configured");
-      return analyzeWithAnthropic(markdown, url, key);
+      return analyzeWithAnthropic(content, key);
     }
     case "perplexity": {
       const key = Deno.env.get("PERPLEXITY_API_KEY");
       if (!key) throw new Error("PERPLEXITY_API_KEY not configured");
-      return analyzeWithPerplexity(markdown, url, key);
+      return analyzeWithPerplexity(content, key);
     }
-    default:
-      // Fallback to Gemini
+    default: {
       const key = Deno.env.get("GEMINI_API_KEY");
       if (!key) throw new Error("GEMINI_API_KEY not configured");
-      return analyzeWithGemini(markdown, url, key);
+      return analyzeWithGemini(content, key);
+    }
   }
 }
 
@@ -300,10 +432,12 @@ serve(async (req) => {
 
     const profileId = profile.id;
 
-    // 2. Crawl with Firecrawl
+    // 2. Crawl with Firecrawl – now requesting html + links for SEO analysis
     console.log("Scraping URL:", formattedUrl);
     let markdown = "";
+    let html = "";
     let screenshotBase64 = "";
+    let crawlLinks: string[] = [];
 
     try {
       const crawlResp = await fetch("https://api.firecrawl.dev/v1/scrape", {
@@ -314,8 +448,8 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           url: formattedUrl,
-          formats: ["markdown", "screenshot"],
-          onlyMainContent: true,
+          formats: ["markdown", "html", "links", "screenshot"],
+          onlyMainContent: false, // We need full HTML for meta tags
           waitFor: 3000,
         }),
       });
@@ -335,7 +469,9 @@ serve(async (req) => {
       }
 
       markdown = crawlData.data?.markdown || crawlData.markdown || "";
+      html = crawlData.data?.html || crawlData.html || "";
       screenshotBase64 = crawlData.data?.screenshot || crawlData.screenshot || "";
+      crawlLinks = crawlData.data?.links || crawlData.links || [];
     } catch (crawlErr) {
       console.error("Firecrawl exception:", crawlErr);
       await supabaseAdmin
@@ -371,13 +507,36 @@ serve(async (req) => {
       }
     }
 
-    // 4. Analyze with selected AI model
+    // 4. Extract SEO data from HTML and build enriched context
+    const seoData = extractSEOData(html);
+
+    // Count internal vs external links
+    let hostname = "";
+    try {
+      hostname = new URL(formattedUrl).hostname;
+    } catch { /* ignore */ }
+
+    const internalLinks = crawlLinks.filter((l: string) => {
+      try { return new URL(l).hostname === hostname; } catch { return false; }
+    }).length;
+    const externalLinks = crawlLinks.length - internalLinks;
+
+    console.log(`SEO data: title=${!!seoData.title}, viewport=${!!seoData.viewport}, jsonLd=${seoData.jsonLd.length}, links=${crawlLinks.length}`);
+
+    const truncatedMarkdown = markdown.substring(0, 30000);
+    const enrichedContent = buildEnrichedContext(
+      formattedUrl,
+      truncatedMarkdown,
+      seoData,
+      { internal: internalLinks, external: externalLinks }
+    );
+
+    // 5. Analyze with selected AI model
     console.log(`Analyzing with model: ${model}...`);
     try {
-      const truncatedMarkdown = markdown.substring(0, 30000);
-      const analysisResult = await routeAnalysis(model as ModelId, truncatedMarkdown, formattedUrl) as Record<string, unknown>;
+      const analysisResult = await routeAnalysis(model as ModelId, enrichedContent) as Record<string, unknown>;
 
-      // 5. Update website_profile with results
+      // 6. Update website_profile with results
       await supabaseAdmin
         .from("website_profiles")
         .update({

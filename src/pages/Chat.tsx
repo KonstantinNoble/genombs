@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, Zap } from "lucide-react";
+import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
@@ -47,7 +48,7 @@ const MAX_CONVERSATIONS = 20;
 
 const Chat = () => {
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading, remainingCredits, creditsLimit, isPremium, refreshCredits } = useAuth();
+  const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, isPremium, refreshCredits } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -513,6 +514,7 @@ const Chat = () => {
           </span>
           <Progress value={creditPercent} className="w-16 h-1" />
         </div>
+        <CreditResetTimer creditsResetAt={creditsResetAt} />
       </div>
     </div>
   );

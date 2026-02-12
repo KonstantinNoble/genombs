@@ -1,76 +1,43 @@
 
 
-# Analyse-Genauigkeit verbessern: Mehr Daten fuer die KI
+# Fix: rawHtml statt html fuer korrekte SEO-Extraktion
 
 ## Problem
 
-Die KI bekommt aktuell nur den Textinhalt (Markdown) der Website. Fuer technische Kategorien wie "Findability/SEO" und "Mobile Usability" fehlen ihr die entscheidenden Daten:
-
-- Keine HTML-Meta-Tags (title, description, og:tags, robots)
-- Keine viewport-Einstellungen (mobile-responsive Indikator)
-- Keine strukturierten Daten (JSON-LD / Schema.org)
-- Keine Link-Struktur (interne/externe Verlinkung)
+Firecrawl's `html`-Format liefert **verarbeitetes HTML**, bei dem `<script>`-Tags (inklusive JSON-LD) und Styles entfernt werden. Dadurch kann die `extractSEOData()`-Funktion keine strukturierten Daten finden, und auch `<meta>`-Tags im `<head>` koennten fehlen.
 
 ## Loesung
 
-### Aenderung 1: Mehr Formate von Firecrawl anfordern (`analyze-website/index.ts`)
+Eine kleine aber wichtige Aenderung: `rawHtml` statt `html` im Firecrawl-Request verwenden.
 
-Firecrawl unterstuetzt zusaetzliche Formate. Wir fordern `html` und `links` zusaetzlich zu `markdown` und `screenshot` an:
+### Aenderung in `supabase/functions/analyze-website/index.ts`
 
-```typescript
-formats: ["markdown", "html", "links", "screenshot"],
+**Zeile 451** - Firecrawl formats:
+```
+Vorher:  formats: ["markdown", "html", "links", "screenshot"]
+Nachher: formats: ["markdown", "rawHtml", "links", "screenshot"]
 ```
 
-### Aenderung 2: Meta-Tags und strukturierte Daten aus dem HTML extrahieren (`analyze-website/index.ts`)
-
-Eine neue Hilfsfunktion `extractSEOData(html)` parst den HTML-Head-Bereich und extrahiert:
-
-- `<title>` Tag
-- `<meta name="description">` 
-- `<meta name="viewport">` (zeigt ob mobile-responsive)
-- `<meta name="robots">`
-- Open Graph Tags (`og:title`, `og:description`, `og:image`)
-- Strukturierte Daten (`<script type="application/ld+json">`)
-- Canonical URL
-
-Dies geschieht ueber einfache Regex-Extraktion (kein DOM-Parser noetig in Deno).
-
-### Aenderung 3: Erweiterten Kontext an die KI uebergeben (`analyze-website/index.ts`)
-
-Statt nur den Markdown zu senden, wird ein erweiterter Kontext zusammengestellt:
-
+**Zeile 472** - Response-Zugriff:
 ```
-Website URL: example.com
-
-=== SEO & TECHNICAL DATA ===
-Title Tag: "Example - Best Service"
-Meta Description: "We offer the best..."
-Viewport: "width=device-width, initial-scale=1"
-Robots: "index, follow"
-Open Graph: og:title="...", og:description="..."
-Structured Data (JSON-LD): {"@type": "LocalBusiness", ...}
-Internal Links: 12
-External Links: 5
-
-=== WEBSITE CONTENT ===
-[Markdown content...]
+Vorher:  html = crawlData.data?.html || crawlData.html || "";
+Nachher: html = crawlData.data?.rawHtml || crawlData.rawHtml || "";
 ```
 
-### Aenderung 4: Analyse-Prompt praezisieren (`analyze-website/index.ts`)
+## Warum ist das wichtig?
 
-Den `ANALYSIS_SYSTEM_PROMPT` aktualisieren, damit die KI die neuen Daten gezielt nutzt:
-
-- **findability**: Bewertung basierend auf den tatsaechlichen Meta-Tags, strukturierten Daten, Title-Tag-Qualitaet und Link-Struktur
-- **mobileUsability**: Pruefung ob viewport-Meta-Tag vorhanden ist, plus Inhaltsstruktur-Analyse
-- Die KI soll bei fehlenden Daten dies explizit erwaehnen statt zu raten
+| Format | Meta-Tags | JSON-LD Scripts | Vollstaendiger Head |
+|---|---|---|---|
+| `html` | Teilweise | Nein (entfernt) | Nein |
+| `rawHtml` | Ja | Ja | Ja |
 
 ## Betroffene Datei
 
 | Datei | Aenderung |
 |---|---|
-| `supabase/functions/analyze-website/index.ts` | Firecrawl-Formate erweitern, SEO-Extraktion, erweiterter KI-Kontext, Prompt-Update |
+| `supabase/functions/analyze-website/index.ts` | 2 Zeilen: `html` durch `rawHtml` ersetzen |
 
 ## Ergebnis
 
-Die KI erhaelt konkrete technische Daten und kann fundierte Bewertungen abgeben statt zu schaetzen. Die Scores fuer Findability und Mobile Usability werden deutlich realistischer.
+Die SEO-Extraktion erhaelt das vollstaendige, originale HTML und kann alle Meta-Tags, Open Graph Tags und JSON-LD Structured Data korrekt extrahieren.
 

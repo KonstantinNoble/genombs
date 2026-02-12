@@ -159,6 +159,13 @@ const Chat = () => {
     return () => clearTimeout(timer);
   }, [activeId]);
 
+  // ─── Scroll to bottom when streaming starts ───
+  useEffect(() => {
+    if (isStreaming) {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isStreaming]);
+
   // ─── Get access token ───
   const getAccessToken = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
@@ -466,6 +473,15 @@ const Chat = () => {
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
+          {isStreaming && (
+            <div className="flex justify-start">
+              <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+              </div>
+            </div>
+          )}
           <div ref={scrollRef} />
         </div>
       </ScrollArea>

@@ -91,7 +91,7 @@ function buildEnrichedContext(
   sections.push("=== SEO & TECHNICAL DATA ===");
   sections.push(`Title Tag: ${seo.title ? `"${seo.title}"` : "MISSING"}`);
   sections.push(`Meta Description: ${seo.metaDescription ? `"${seo.metaDescription}"` : "MISSING"}`);
-  sections.push(`Viewport Meta: ${seo.viewport ? `"${seo.viewport}"` : "MISSING (likely not mobile-responsive)"}`);
+  sections.push(`Viewport Meta: ${seo.viewport ? `"${seo.viewport}"` : "NOT FOUND in static HTML (may be set dynamically via JavaScript)"}`);
   sections.push(`Robots Meta: ${seo.robots ? `"${seo.robots}"` : "not set (defaults to index, follow)"}`);
   sections.push(`Canonical URL: ${seo.canonical || "not set"}`);
 
@@ -161,12 +161,14 @@ SCORING GUIDELINES (0-100 for each category):
 - Are Open Graph tags present for social sharing?
 - Is there structured data (JSON-LD)? What types?
 - How many internal vs external links are there?
-- If any of these are MISSING, lower the score and mention it explicitly.
+- If technical tags are MISSING: Note this as a weakness, but consider that JavaScript-rendered sites may inject these dynamically.
+- Weigh content quality, keyword usage, heading hierarchy, and internal linking structure alongside technical meta-tag presence.
 
-**mobileUsability**: Check the viewport meta tag:
-- If viewport meta is MISSING, score should be significantly lower (max 40) and state this.
-- If viewport is present ("width=device-width, initial-scale=1"), that's a positive signal.
-- Also assess content structure (headings, readability, content length).
+**mobileUsability**: Evaluate mobile responsiveness by examining:
+- Viewport meta tag: If present ("width=device-width, initial-scale=1"), that's a positive signal.
+- If viewport meta is NOT FOUND in static HTML: Note this but DO NOT automatically cap the score. Many modern websites (SPAs, React, Angular apps) inject meta tags via JavaScript, which may not appear in the static HTML.
+- Content structure: headings, readability, text blocks, content organization that suggests responsive design.
+- Only score very low (30-40) if the content itself shows poor mobile design (e.g., very wide unbroken tables, extremely long text lines, no clear hierarchy).
 
 **offerClarity**: How clear is the value proposition and offer based on the content?
 
@@ -174,7 +176,7 @@ SCORING GUIDELINES (0-100 for each category):
 
 **conversionReadiness**: CTAs, booking forms, contact options, clear next steps.
 
-IMPORTANT: When technical data shows "MISSING", explicitly mention this in weaknesses and reflect it in scores. Do NOT guess or assume data exists if it's marked as MISSING.
+IMPORTANT: When technical data shows "MISSING", mention this in weaknesses but consider that many modern JavaScript-rendered websites inject meta tags dynamically. Evaluate the overall content quality and structure, not just individual technical signals.
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
 

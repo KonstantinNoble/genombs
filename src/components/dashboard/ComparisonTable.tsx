@@ -24,7 +24,8 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-4 space-y-4">
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
             {ownSite.profile_data.name}
@@ -37,36 +38,51 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
           ))}
         </div>
 
-        <div className="space-y-3">
-          {categories.map((cat) => (
-            <div key={cat.key} className="space-y-1.5">
-              <span className="text-[11px] text-muted-foreground">{cat.label}</span>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary transition-all duration-700"
-                    style={{ width: `${ownSite.category_scores![cat.key]}%` }}
-                  />
-                </div>
-                <span className="text-xs font-medium text-foreground w-7 text-right">
-                  {ownSite.category_scores![cat.key]}
-                </span>
-              </div>
-              {competitors.map((comp) => (
-                <div key={comp.id} className="flex items-center gap-2">
-                  <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+        {/* Header row */}
+        <div className="grid grid-cols-[1fr_auto] gap-2 text-[10px] uppercase tracking-wider text-muted-foreground/60 px-1">
+          <span>Category</span>
+          <span className="w-7 text-right">Score</span>
+        </div>
+
+        <div className="space-y-4">
+          {categories.map((cat, i) => {
+            const ownScore = ownSite.category_scores![cat.key];
+            return (
+              <div
+                key={cat.key}
+                className={`space-y-1.5 rounded-lg p-2 -mx-2 ${i % 2 === 0 ? "bg-secondary/30" : ""}`}
+              >
+                <span className="text-[11px] font-medium text-muted-foreground">{cat.label}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-chart-4 transition-all duration-700"
-                      style={{ width: `${comp.category_scores?.[cat.key] ?? 0}%` }}
+                      className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
+                      style={{ width: `${ownScore}%` }}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground w-7 text-right">
-                    {comp.category_scores?.[cat.key] ?? 0}
+                  <span className="text-xs font-bold text-foreground w-7 text-right">
+                    {ownScore}
                   </span>
                 </div>
-              ))}
-            </div>
-          ))}
+                {competitors.map((comp) => {
+                  const compScore = comp.category_scores?.[cat.key] ?? 0;
+                  return (
+                    <div key={comp.id} className="flex items-center gap-2">
+                      <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-chart-4 transition-all duration-1000 ease-out"
+                          style={{ width: `${compScore}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-7 text-right">
+                        {compScore}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

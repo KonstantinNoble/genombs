@@ -252,71 +252,70 @@ async function checkAndDeductCredits(
   modelKey: string,
   isPremiumRequired: boolean
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  // Fetch user credits
-  const { data: credits, error: creditsError } = await supabaseAdmin
-    .from("user_credits")
-    .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (creditsError) {
-    console.error("Credits query error:", creditsError);
-    return { ok: false, status: 500, error: "Could not load user credits" };
-  }
-
-  // If no credits row exists yet, create one (free tier defaults)
-  if (!credits) {
-    const { data: newCredits, error: insertErr } = await supabaseAdmin
+  try {
+    // First check if user has a credits row (using only columns that always exist)
+    const { data: baseCredits, error: baseError } = await supabaseAdmin
       .from("user_credits")
-      .insert({ user_id: userId, daily_credits_limit: 20, credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
-      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
-      .single();
-    if (insertErr || !newCredits) {
-      console.error("Credits insert error:", insertErr);
-      return { ok: false, status: 500, error: "Could not initialize user credits" };
+      .select("id, is_premium")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (baseError) {
+      console.warn("Credits query failed, skipping credit check:", baseError.message);
+      return { ok: true };
     }
-    // Fresh row, no need to check limits — just deduct
-    const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
-    if (isPremiumRequired) {
+
+    // Model access check (works even without credit columns)
+    if (isPremiumRequired && (!baseCredits || !baseCredits.is_premium)) {
       return { ok: false, status: 403, error: "premium_model_required" };
     }
-    await supabaseAdmin.from("user_credits").update({ credits_used: cost }).eq("id", newCredits.id);
-    return { ok: true };
-  }
 
-  const userIsPremium = credits.is_premium;
+    if (!baseCredits) {
+      return { ok: true };
+    }
 
-  // Model access check
-  if (isPremiumRequired && !userIsPremium) {
-    return { ok: false, status: 403, error: "premium_model_required" };
-  }
+    // Try to query credit-specific columns (may not exist on external DB yet)
+    const { data: credits, error: creditsError } = await supabaseAdmin
+      .from("user_credits")
+      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-  // Auto-reset credits if period expired
-  const resetAt = new Date(credits.credits_reset_at);
-  let creditsUsed = credits.credits_used;
-  if (resetAt < new Date()) {
-    creditsUsed = 0;
+    if (creditsError || !credits) {
+      console.warn("Credit columns not available, skipping:", creditsError?.message);
+      return { ok: true };
+    }
+
+    // Auto-reset credits if period expired
+    const resetAt = new Date(credits.credits_reset_at);
+    let creditsUsed = credits.credits_used ?? 0;
+    if (resetAt < new Date()) {
+      creditsUsed = 0;
+      await supabaseAdmin
+        .from("user_credits")
+        .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+        .eq("id", credits.id);
+    }
+
+    const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
+    const limit = credits.daily_credits_limit ?? 20;
+    const remaining = limit - creditsUsed;
+
+    if (remaining < cost) {
+      const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+      return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+    }
+
     await supabaseAdmin
       .from("user_credits")
-      .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+      .update({ credits_used: creditsUsed + cost })
       .eq("id", credits.id);
+
+    return { ok: true };
+  } catch (e) {
+    console.warn("Credit check failed unexpectedly, allowing request:", e);
+    return { ok: true };
   }
-
-  const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
-  const remaining = credits.daily_credits_limit - creditsUsed;
-
-  if (remaining < cost) {
-    const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
-    return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
-  }
-
-  // Deduct credits
-  await supabaseAdmin
-    .from("user_credits")
-    .update({ credits_used: creditsUsed + cost })
-    .eq("id", credits.id);
-
-  return { ok: true };
 }
 
 // ─── Main handler ───

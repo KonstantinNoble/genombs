@@ -448,7 +448,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           url: formattedUrl,
-          formats: ["markdown", "html", "links", "screenshot"],
+          formats: ["markdown", "rawHtml", "links", "screenshot"],
           onlyMainContent: false, // We need full HTML for meta tags
           waitFor: 3000,
         }),
@@ -469,7 +469,7 @@ serve(async (req) => {
       }
 
       markdown = crawlData.data?.markdown || crawlData.markdown || "";
-      html = crawlData.data?.html || crawlData.html || "";
+      html = crawlData.data?.rawHtml || crawlData.rawHtml || "";
       screenshotBase64 = crawlData.data?.screenshot || crawlData.screenshot || "";
       crawlLinks = crawlData.data?.links || crawlData.links || [];
     } catch (crawlErr) {

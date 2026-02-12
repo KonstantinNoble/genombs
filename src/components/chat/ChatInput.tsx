@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Send, Globe, Plus, Sparkles, Bot, Search, ChevronDown } from "lucide-react";
+import { Send, Globe, Plus, ChevronDown } from "lucide-react";
+import { GoogleIcon, OpenAIIcon, AnthropicIcon, PerplexityIcon } from "./ModelIcons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -17,11 +18,11 @@ import {
 } from "@/components/ui/popover";
 
 const AI_MODELS = [
-  { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: Sparkles },
-  { id: "gpt-mini", label: "ChatGPT Mini", description: "Good value", icon: Bot },
-  { id: "gpt", label: "ChatGPT", description: "High accuracy", icon: Bot },
-  { id: "claude-sonnet", label: "Claude Sonnet", description: "Strong reasoning", icon: Bot },
-  { id: "perplexity", label: "Perplexity", description: "Web search powered", icon: Search },
+  { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
+  { id: "gpt-mini", label: "ChatGPT Mini", description: "Good value", icon: OpenAIIcon },
+  { id: "gpt", label: "ChatGPT", description: "High accuracy", icon: OpenAIIcon },
+  { id: "claude-sonnet", label: "Claude Sonnet", description: "Strong reasoning", icon: AnthropicIcon },
+  { id: "perplexity", label: "Perplexity", description: "Web search powered", icon: PerplexityIcon },
 ] as const;
 
 type ModelId = (typeof AI_MODELS)[number]["id"];

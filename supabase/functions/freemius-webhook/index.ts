@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-signature',
 };
 
-// KORRIGIERTES Interface basierend auf Freemius API Dokumentation
+// Corrected interface based on Freemius API documentation
 interface FreemiusWebhookEvent {
   type: string;
   id: string;
@@ -22,24 +22,24 @@ interface FreemiusWebhookEvent {
       id: string;
       plan_id: string;
       created: string;
-      next_payment?: string;        // KORRIGIERT: war next_payment_date
-      canceled_at?: string;         // KORRIGIERT: war ends (existiert nicht)
-      billing_cycle?: number;       // NEU: 1=monatlich, 12=jährlich
+      next_payment?: string;        // Corrected: was next_payment_date
+      canceled_at?: string;         // Corrected: was ends (doesn't exist)
+      billing_cycle?: number;       // 1=monthly, 12=yearly
     };
-    license?: {                     // NEU: License-Objekt
+    license?: {                     // License object
       id: string;
-      expiration?: string;          // Das tatsächliche Ablaufdatum
+      expiration?: string;          // The actual expiration date
     };
     payment?: {
       id: string;
       subscription_id?: string;
       gross?: number;
-      is_renewal?: boolean;         // NEU: Zeigt ob es eine Verlängerung ist
+      is_renewal?: boolean;         // Indicates if this is a renewal
     };
   };
 }
 
-// Helper: Berechne Abo-Ende basierend auf billing_cycle
+// Helper: Calculate subscription end date based on billing_cycle
 function calculateSubscriptionEndDate(billingCycle?: number): Date {
   const endDate = new Date();
   if (billingCycle === 12) {
@@ -205,7 +205,7 @@ serve(async (req) => {
         );
       }
 
-      // Berechne subscription_end_date für pending_premium
+      // Calculate subscription_end_date for pending_premium
       let pendingSubscriptionEndDate: string;
       if (event.objects.license?.expiration) {
         pendingSubscriptionEndDate = new Date(event.objects.license.expiration).toISOString();
@@ -213,7 +213,7 @@ serve(async (req) => {
         pendingSubscriptionEndDate = calculateSubscriptionEndDate(event.objects.subscription?.billing_cycle).toISOString();
       }
 
-      // Store in pending_premium table mit allen relevanten Feldern
+      // Store in pending_premium table with all relevant fields
       const { error: pendingError } = await supabase
         .from('pending_premium')
         .upsert({
@@ -261,7 +261,7 @@ serve(async (req) => {
     // Handle different webhook events
     switch (event.type) {
       // ============================================
-      // NEUE ABO-ERSTELLUNG
+      // NEW SUBSCRIPTION CREATED
       // ============================================
       case 'subscription.created': {
         console.log('✅ NEW SUBSCRIPTION CREATED');
@@ -290,18 +290,18 @@ serve(async (req) => {
           updateData.premium_since = new Date().toISOString();
         }
 
-        // KORRIGIERT: Verwende license.expiration für das Ablaufdatum
+        // Use license.expiration for the end date
         if (event.objects.license?.expiration) {
           updateData.subscription_end_date = new Date(event.objects.license.expiration).toISOString();
           console.log('Using license.expiration:', updateData.subscription_end_date);
         } else {
-          // Fallback: Berechne basierend auf billing_cycle
+          // Fallback: Calculate based on billing_cycle
           const endDate = calculateSubscriptionEndDate(billingCycle);
           updateData.subscription_end_date = endDate.toISOString();
           console.log('Calculated subscription_end_date based on billing_cycle:', billingCycle, '->', updateData.subscription_end_date);
         }
         
-        // KORRIGIERT: Verwende next_payment statt next_payment_date
+        // Use next_payment instead of next_payment_date
         if (event.objects.subscription?.next_payment) {
           updateData.next_payment_date = new Date(event.objects.subscription.next_payment).toISOString();
           console.log('Using next_payment:', updateData.next_payment_date);
@@ -324,7 +324,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // ZAHLUNG ERHALTEN (NEU ODER VERLÄNGERUNG)
+      // PAYMENT RECEIVED (NEW OR RENEWAL)
       // ============================================
       case 'payment.created': {
         console.log('💰 PAYMENT RECEIVED');
@@ -351,7 +351,7 @@ serve(async (req) => {
         const customerId = event.objects.user?.id || null;
         const billingCycle = event.objects.subscription?.billing_cycle;
 
-        // Berechne neues Ablaufdatum basierend auf billing_cycle
+        // Calculate new end date based on billing_cycle
         const newEndDate = calculateSubscriptionEndDate(billingCycle);
 
         const updateData: any = {
@@ -364,12 +364,12 @@ serve(async (req) => {
         if (subscriptionId) updateData.freemius_subscription_id = subscriptionId;
         if (customerId) updateData.freemius_customer_id = customerId;
 
-        // KORRIGIERT: Verwende next_payment statt next_payment_date
+        // Use next_payment instead of next_payment_date
         if (event.objects.subscription?.next_payment) {
           updateData.next_payment_date = new Date(event.objects.subscription.next_payment).toISOString();
           console.log('Using next_payment:', updateData.next_payment_date);
         } else {
-          // Fallback: Gleiches Datum wie subscription_end_date
+          // Fallback: Same date as subscription_end_date
           updateData.next_payment_date = newEndDate.toISOString();
         }
 
@@ -403,7 +403,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // ABO GEKÜNDIGT (aber noch aktiv bis Ablauf)
+      // SUBSCRIPTION CANCELLED (still active until expiry)
       // ============================================
       case 'subscription.cancelled': {
         console.log('⚠️ SUBSCRIPTION CANCELLED');
@@ -451,7 +451,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // RÜCKERSTATTUNG - SOFORTIGE DEAKTIVIERUNG
+      // REFUND - IMMEDIATE DEACTIVATION
       // ============================================
       case 'payment.refund': {
         console.log('💰 REFUND PROCESSED');
@@ -491,7 +491,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // ZAHLUNG FEHLGESCHLAGEN (erste Versuche)
+      // PAYMENT FAILED (initial attempts)
       // ============================================
       case 'subscription.renewal.failed': {
         console.log('⚠️ RENEWAL PAYMENT FAILED');
@@ -514,7 +514,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // ZAHLUNG ENDGÜLTIG FEHLGESCHLAGEN - DEAKTIVIEREN
+      // PAYMENT FINALLY FAILED - DEACTIVATE
       // ============================================
       case 'subscription.renewal.failed.last': {
         console.log('❌ RENEWAL PAYMENT FAILED - FINAL');
@@ -553,7 +553,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // UNBEKANNTES EVENT
+      // UNKNOWN EVENT
       // ============================================
       default:
         console.log('Unhandled event type:', event.type);

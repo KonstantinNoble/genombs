@@ -67,8 +67,8 @@ serve(async (req) => {
     const ipHashArray = Array.from(new Uint8Array(ipHashBuffer));
     const ipHash = ipHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    // ZUERST: Versuch loggen (bevor wir das Limit prüfen)
-    // Das verhindert Race Conditions bei parallelen Requests
+    // Log attempt first (before checking the limit)
+    // This prevents race conditions with parallel requests
     const { error: insertError } = await supabase
       .from('registration_attempts')
       .insert({ ip_hash: ipHash, email_hash: emailHash });
@@ -78,7 +78,7 @@ serve(async (req) => {
       // Continue anyway - don't block registration
     }
 
-    // DANN: Aktuelle Anzahl prüfen (inkl. dem gerade eingefügten Eintrag)
+    // Then: Check current count (including the just-inserted entry)
     const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
     const { count, error: countError } = await supabase
       .from('registration_attempts')
@@ -90,7 +90,7 @@ serve(async (req) => {
       console.error('Rate limit check failed:', countError);
       // Fail-open on database error
     } else if (count !== null && count > RATE_LIMIT_MAX) {
-      // Bei mehr als 3 Versuchen (inkl. aktuellem): Rate Limit Error
+      // More than 3 attempts (including current): Rate limit error
       console.log(`Rate limit exceeded for IP hash: ${ipHash.substring(0, 8)}... (${count} attempts)`);
       return new Response(
         JSON.stringify({ 
@@ -98,7 +98,7 @@ serve(async (req) => {
           reason: "RATE_LIMITED",
           message: "Too many registration attempts. Please try again in 1 hour."
         }),
-        // Status 200 damit supabase.functions.invoke() es als data zurückgibt, nicht als error
+        // Status 200 so supabase.functions.invoke() returns it as data, not error
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }

@@ -9,21 +9,21 @@ export const useFreemiusCheckout = () => {
   const openCheckout = useCallback((email?: string) => {
     const userEmail = email || user?.email;
     
-    // Email ist Pflicht - wenn keine vorhanden, zur Auth-Seite
+    // Email is required - redirect to auth page if missing
     if (!userEmail) {
       window.location.href = '/auth?intent=premium';
       return;
     }
 
-    // Checkout-URL mit Email-Parameter erstellen (readonly_user macht Email unveränderlich)
+    // Build checkout URL with email parameter (readonly_user makes email immutable)
     const checkoutUrl = new URL(CHECKOUT_BASE_URL);
     checkoutUrl.searchParams.set('user_email', userEmail);
     checkoutUrl.searchParams.set('readonly_user', 'true');
     
-    // Im gleichen Tab öffnen (ersetzt Synoptas-Seite temporär)
+    // Open in same tab (temporarily replaces Synoptas page)
     window.location.href = checkoutUrl.toString();
   }, [user]);
 
-  // Behalte isLoaded und isLoading für Rückwärtskompatibilität
+  // Keep isLoaded and isLoading for backwards compatibility
   return { openCheckout, isLoaded: true, isLoading: false };
 };

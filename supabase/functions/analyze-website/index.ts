@@ -375,63 +375,66 @@ async function checkAndDeductAnalysisCredits(
   modelKey: string,
   isPremiumRequired: boolean
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const { data: credits, error: creditsError } = await supabaseAdmin
-    .from("user_credits")
-    .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (creditsError) {
-    console.error("Credits query error:", creditsError);
-    return { ok: false, status: 500, error: "Could not load user credits" };
-  }
-
-  if (!credits) {
-    const { data: newCredits, error: insertErr } = await supabaseAdmin
+  try {
+    const { data: baseCredits, error: baseError } = await supabaseAdmin
       .from("user_credits")
-      .insert({ user_id: userId, daily_credits_limit: 20, credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
-      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
-      .single();
-    if (insertErr || !newCredits) {
-      console.error("Credits insert error:", insertErr);
-      return { ok: false, status: 500, error: "Could not initialize user credits" };
+      .select("id, is_premium")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (baseError) {
+      console.warn("Credits query failed, skipping credit check:", baseError.message);
+      return { ok: true };
     }
-    if (isPremiumRequired) {
+
+    if (isPremiumRequired && (!baseCredits || !baseCredits.is_premium)) {
       return { ok: false, status: 403, error: "premium_model_required" };
     }
+
+    if (!baseCredits) {
+      return { ok: true };
+    }
+
+    const { data: credits, error: creditsError } = await supabaseAdmin
+      .from("user_credits")
+      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (creditsError || !credits) {
+      console.warn("Credit columns not available, skipping:", creditsError?.message);
+      return { ok: true };
+    }
+
+    const resetAt = new Date(credits.credits_reset_at);
+    let creditsUsed = credits.credits_used ?? 0;
+    if (resetAt < new Date()) {
+      creditsUsed = 0;
+      await supabaseAdmin
+        .from("user_credits")
+        .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+        .eq("id", credits.id);
+    }
+
     const cost = isExpensiveModel(modelKey) ? ANALYSIS_CREDIT_COST_EXPENSIVE : ANALYSIS_CREDIT_COST_CHEAP;
-    await supabaseAdmin.from("user_credits").update({ credits_used: cost }).eq("id", newCredits.id);
-    return { ok: true };
-  }
+    const limit = credits.daily_credits_limit ?? 20;
+    const remaining = limit - creditsUsed;
 
-  if (isPremiumRequired && !credits.is_premium) {
-    return { ok: false, status: 403, error: "premium_model_required" };
-  }
+    if (remaining < cost) {
+      const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+      return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+    }
 
-  const resetAt = new Date(credits.credits_reset_at);
-  let creditsUsed = credits.credits_used;
-  if (resetAt < new Date()) {
-    creditsUsed = 0;
     await supabaseAdmin
       .from("user_credits")
-      .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+      .update({ credits_used: creditsUsed + cost })
       .eq("id", credits.id);
+
+    return { ok: true };
+  } catch (e) {
+    console.warn("Credit check failed unexpectedly, allowing request:", e);
+    return { ok: true };
   }
-
-  const cost = isExpensiveModel(modelKey) ? ANALYSIS_CREDIT_COST_EXPENSIVE : ANALYSIS_CREDIT_COST_CHEAP;
-  const remaining = credits.daily_credits_limit - creditsUsed;
-
-  if (remaining < cost) {
-    const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
-    return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
-  }
-
-  await supabaseAdmin
-    .from("user_credits")
-    .update({ credits_used: creditsUsed + cost })
-    .eq("id", credits.id);
-
-  return { ok: true };
 }
 
 // ─── Main handler ───

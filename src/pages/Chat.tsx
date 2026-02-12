@@ -532,17 +532,18 @@ const Chat = () => {
 
   const dashboardPanel = (
     <div className="h-full flex flex-col">
-      <div className="border-b border-border bg-card px-4 py-3">
+      <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-2">
+        <LayoutDashboard className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
       {hasProfiles && (
         <div className="border-b border-border bg-card px-4 py-1">
           <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
-            <TabsList className="bg-transparent h-8 p-0 gap-0">
-              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Overview</TabsTrigger>
-              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Positioning</TabsTrigger>
-              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Offer & CTAs</TabsTrigger>
-              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 data-[state=active]:bg-secondary rounded-md">Trust & Proof</TabsTrigger>
+            <TabsList className="bg-transparent h-8 p-0 gap-1">
+              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Overview</TabsTrigger>
+              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Positioning</TabsTrigger>
+              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Offer & CTAs</TabsTrigger>
+              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Trust & Proof</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -596,13 +597,14 @@ const Chat = () => {
 
           {!hasProfiles && pendingProfiles.length === 0 && profiles.filter((p) => p.status === "error").length === 0 && (
             isAnalyzing ? (
-              <div className="flex items-center justify-center h-40 gap-3 text-muted-foreground text-sm">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Preparing analysis...
+              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-                Start an analysis to see results here
+              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
+                <p className="text-sm">Start an analysis to see results here</p>
               </div>
             )
           )}

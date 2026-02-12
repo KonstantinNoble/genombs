@@ -91,7 +91,7 @@ function buildEnrichedContext(
   sections.push("=== SEO & TECHNICAL DATA ===");
   sections.push(`Title Tag: ${seo.title ? `"${seo.title}"` : "MISSING"}`);
   sections.push(`Meta Description: ${seo.metaDescription ? `"${seo.metaDescription}"` : "MISSING"}`);
-  sections.push(`Viewport Meta: ${seo.viewport ? `"${seo.viewport}"` : "NOT FOUND in static HTML (may be set dynamically via JavaScript)"}`);
+  sections.push(`Viewport Meta: ${seo.viewport ? `"${seo.viewport}"` : "NOT FOUND in static HTML"}`);
   sections.push(`Robots Meta: ${seo.robots ? `"${seo.robots}"` : "not set (defaults to index, follow)"}`);
   sections.push(`Canonical URL: ${seo.canonical || "not set"}`);
 
@@ -161,14 +161,18 @@ SCORING GUIDELINES (0-100 for each category):
 - Are Open Graph tags present for social sharing?
 - Is there structured data (JSON-LD)? What types?
 - How many internal vs external links are there?
-- If technical tags are MISSING: Note this as a weakness, but consider that JavaScript-rendered sites may inject these dynamically.
-- Weigh content quality, keyword usage, heading hierarchy, and internal linking structure alongside technical meta-tag presence.
+- Each MISSING element (title, description, OG tags, structured data) should lower the score by 5-15 points depending on importance.
+- A site with all technical tags present AND good content: 80-100.
+- A site missing some tags but with strong content and structure: 50-75.
+- A site missing most tags: 30-50 regardless of content quality.
 
-**mobileUsability**: Evaluate mobile responsiveness by examining:
-- Viewport meta tag: If present ("width=device-width, initial-scale=1"), that's a positive signal.
-- If viewport meta is NOT FOUND in static HTML: Note this but DO NOT automatically cap the score. Many modern websites (SPAs, React, Angular apps) inject meta tags via JavaScript, which may not appear in the static HTML.
-- Content structure: headings, readability, text blocks, content organization that suggests responsive design.
-- Only score very low (30-40) if the content itself shows poor mobile design (e.g., very wide unbroken tables, extremely long text lines, no clear hierarchy).
+**mobileUsability**: Evaluate mobile responsiveness:
+- Viewport meta tag present ("width=device-width, initial-scale=1"): strong positive signal (+20 points baseline).
+- Viewport meta NOT FOUND: note as a weakness. Deduct 15-25 points, but do not cap at 40 since some frameworks inject it via JavaScript.
+- Content structure: headings, readability, text blocks, content organization.
+- Score 70-100: viewport present AND good content structure.
+- Score 45-70: viewport missing BUT content structure suggests responsive design.
+- Score 20-45: viewport missing AND poor content structure.
 
 **offerClarity**: How clear is the value proposition and offer based on the content?
 
@@ -176,7 +180,7 @@ SCORING GUIDELINES (0-100 for each category):
 
 **conversionReadiness**: CTAs, booking forms, contact options, clear next steps.
 
-IMPORTANT: When technical data shows "MISSING", mention this in weaknesses but consider that many modern JavaScript-rendered websites inject meta tags dynamically. Evaluate the overall content quality and structure, not just individual technical signals.
+IMPORTANT: When technical data shows "MISSING", reflect this proportionally in the scores and mention it in weaknesses. Missing elements are real weaknesses even if some may be injected dynamically. Score based on what is actually verifiable in the provided data.
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
 

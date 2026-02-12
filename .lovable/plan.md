@@ -1,72 +1,133 @@
 
 
-# Visual Upgrade: Analysis Workspace
+# Premium-System: Credits, Modell-Zugang und URL-Limits
 
-## Overview
+## Ubersicht
 
-The workspace/dashboard panel currently has a functional but plain appearance -- flat cards, thin bars, small text, and minimal visual hierarchy. This plan introduces subtle but impactful visual improvements to make the analysis results feel more polished and premium, while staying within the existing black-and-orange design system.
+Dieses Feature fuehrt ein Credit-basiertes Nutzungssystem ein, das Free- und Premium-Nutzer klar unterscheidet. Credits regenerieren sich alle 24 Stunden. Verschiedene Aktionen kosten unterschiedlich viele Credits, und Premium-Nutzer erhalten Zugang zu allen Modellen und mehr URL-Feldern.
 
-## Changes
+## Regeln im Detail
 
-### 1. WebsiteProfileCard -- More visual impact
-**File:** `src/components/chat/WebsiteProfileCard.tsx`
+| Eigenschaft | Free | Premium |
+|---|---|---|
+| Modelle | Gemini Flash, GPT Mini | Alle 5 Modelle |
+| Credits pro 24h | 20 | 100 |
+| Chat-Nachricht (Gemini Flash / GPT Mini) | 1 Credit | 1 Credit |
+| Chat-Nachricht (GPT / Claude / Perplexity) | -- | 3 Credits |
+| URL-Analyse (Gemini Flash / GPT Mini) | 5 Credits | 5 Credits |
+| URL-Analyse (GPT / Claude / Perplexity) | -- | 10 Credits |
+| URL-Felder im Analyse-Dialog | 2 (eigene + 1 Konkurrent) | 4 (eigene + 3 Konkurrenten) |
 
-- Add a subtle gradient background to the card (dark gradient from card to slightly lighter)
-- Make the ScoreRing larger (64px instead of 56px) with a glow effect matching the score color
-- Thicker, more prominent category bars (h-2 instead of h-1.5) with rounded ends and animated fill on mount
-- Add small colored icons/emoji before "Strengths" and "Weaknesses" headers
-- Slightly larger text for the website name (text-lg instead of text-base)
-- Add a subtle hover effect on cards (scale + border glow)
+## Aenderungen
 
-### 2. ComparisonTable -- Visual bar chart upgrade
-**File:** `src/components/dashboard/ComparisonTable.tsx`
+### 1. Datenbank: `user_credits` Tabelle erweitern
 
-- Add score numbers inside or next to the bars for immediate readability
-- Use color-coded backgrounds for each category row (very subtle alternating tint)
-- Add a subtle animated entrance for bars (CSS transition on mount)
-- Increase bar height from h-2 to h-2.5 for better visibility
-- Add a header row with "Category / You / Competitor" labels
+Neue Spalten zur bestehenden `user_credits` Tabelle hinzufuegen:
 
-### 3. ImprovementPlan -- Task cards with more flair
-**File:** `src/components/dashboard/ImprovementPlan.tsx`
+```text
+daily_credits_limit  INTEGER  DEFAULT 20
+credits_used         INTEGER  DEFAULT 0
+credits_reset_at     TIMESTAMPTZ  DEFAULT now() + interval '24 hours'
+```
 
-- Add priority icons (flame for high, arrow for medium, minus for low) next to the priority border
-- Slightly larger card padding and spacing
-- Add a subtle progress indicator showing completed vs total tasks
-- Improve the category badge with a colored dot matching the priority
+Ein neuer pg_cron Job setzt `credits_used` auf 0 und `credits_reset_at` auf `now() + 24h` fuer alle Nutzer, deren `credits_reset_at` in der Vergangenheit liegt.
 
-### 4. AnalysisTabs (Positioning, Offers, Trust) -- Richer content cards
-**File:** `src/components/dashboard/AnalysisTabs.tsx`
+### 2. Edge Functions: Credit-Pruefung und -Abzug
 
-- Add subtle gradient borders or accent lines on cards
-- Improve the Trust tab score display with a larger, more prominent score ring (reuse ScoreRing component)
-- Add icon indicators for strengths (checkmark) and weaknesses (x mark) instead of plain dots
-- Better spacing and typography hierarchy
+**`supabase/functions/chat/index.ts`**:
+- Nach der User-Authentifizierung: `user_credits` abfragen
+- Pruefen ob das gewaehlte Modell fuer den Nutzer verfuegbar ist (Free-User: nur `gemini-flash` und `gpt-mini`)
+- Credits-Reset pruefen (wenn `credits_reset_at < now()`, automatisch zuruecksetzen)
+- Pruefen ob genuegend Credits vorhanden sind (1 fuer guenstige Modelle, 3 fuer teure)
+- Credits abziehen (`credits_used += cost`)
+- Bei Fehler: 403 mit klarer Fehlermeldung zurueckgeben
 
-### 5. Dashboard Panel Header & Tabs -- More polished
-**File:** `src/pages/Chat.tsx` (dashboard panel section, lines 533-548)
+**`supabase/functions/analyze-website/index.ts`**:
+- Gleiche Logik: Modell-Zugang pruefen, Credits pruefen (5 fuer guenstig, 10 fuer teuer)
+- Credits abziehen pro URL-Analyse
 
-- Add a subtle gradient or accent line under the workspace header
-- Style the tab triggers with an underline indicator instead of background change
-- Add an icon next to "Workspace" title (e.g., LayoutDashboard icon)
+### 3. AuthContext erweitern
 
-### 6. Empty & Loading States -- More engaging
-**File:** `src/pages/Chat.tsx` (empty/loading states, lines 597-608)
+**`src/contexts/AuthContext.tsx`**:
+- Neue Felder im Context: `creditsUsed`, `creditsLimit`, `creditsResetAt`
+- Diese Werte aus `user_credits` laden und per Realtime aktualisieren
+- Hilfsfunktion `remainingCredits` bereitstellen
 
-- Replace plain text with a styled empty state including an icon illustration
-- Add a pulsing animation to the loading state
-- Better visual hierarchy for the "Start an analysis" prompt
+### 4. ChatInput: Modell-Sperre und URL-Limit
 
-## Technical Details
+**`src/components/chat/ChatInput.tsx`**:
+- Premium-Modelle (GPT, Claude, Perplexity) mit Lock-Icon und "Premium"-Badge versehen
+- Free-User koennen diese nicht auswaehlen; Klick zeigt Tooltip "Upgrade to Premium"
+- URL-Felder: Free-User sehen nur "Your Website" + "Competitor 1"; die anderen Felder sind ausgeblendet
+- Premium-User sehen alle 4 Felder
 
-| File | Type of Change |
+### 5. Credit-Anzeige im Chat-Header
+
+**`src/pages/Chat.tsx`**:
+- Kleine Credit-Anzeige im Chat-Header: z.B. "12/20 Credits" mit Progress-Bar
+- Farbe aendert sich wenn wenig Credits uebrig sind (gelb bei < 5, rot bei 0)
+- Klick auf die Anzeige oeffnet Upgrade-Hinweis fuer Free-User
+
+### 6. Fehlerbehandlung im Frontend
+
+**`src/pages/Chat.tsx`** und **`src/lib/api/chat-api.ts`**:
+- 403-Fehler abfangen und nutzerfreundliche Toast-Meldungen anzeigen:
+  - "Keine Credits mehr -- regeneriert sich in X Stunden"
+  - "Dieses Modell ist nur fuer Premium-Nutzer verfuegbar"
+
+## Technische Details
+
+### Datenbank-Migration (SQL)
+
+```text
+ALTER TABLE public.user_credits
+  ADD COLUMN daily_credits_limit INTEGER NOT NULL DEFAULT 20,
+  ADD COLUMN credits_used INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN credits_reset_at TIMESTAMPTZ NOT NULL DEFAULT (now() + interval '24 hours');
+
+-- Setze Premium-User auf 100 Credits Limit
+UPDATE public.user_credits SET daily_credits_limit = 100 WHERE is_premium = true;
+
+-- Trigger: Bei is_premium Aenderung -> Limit anpassen
+CREATE OR REPLACE FUNCTION public.sync_credits_limit()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$
+BEGIN
+  IF NEW.is_premium = true AND OLD.is_premium = false THEN
+    NEW.daily_credits_limit := 100;
+  ELSIF NEW.is_premium = false AND OLD.is_premium = true THEN
+    NEW.daily_credits_limit := 20;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_premium_change
+  BEFORE UPDATE ON public.user_credits
+  FOR EACH ROW EXECUTE FUNCTION public.sync_credits_limit();
+```
+
+### Credit-Kosten-Konstanten (shared)
+
+```text
+CREDIT_COSTS = {
+  chat: { cheap: 1, expensive: 3 },
+  analysis: { cheap: 5, expensive: 10 }
+}
+
+EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"]
+FREE_MODELS = ["gemini-flash", "gpt-mini"]
+```
+
+### Dateien die geaendert werden
+
+| Datei | Aenderung |
 |---|---|
-| `src/components/chat/WebsiteProfileCard.tsx` | Larger score ring with glow, thicker bars, hover effects, better typography |
-| `src/components/dashboard/ComparisonTable.tsx` | Taller bars, alternating row tints, header labels |
-| `src/components/dashboard/ImprovementPlan.tsx` | Priority icons, progress summary, improved spacing |
-| `src/components/dashboard/AnalysisTabs.tsx` | ScoreRing reuse in Trust tab, icon indicators for strengths/weaknesses |
-| `src/pages/Chat.tsx` | Styled workspace header, tab underlines, improved empty/loading states |
-| `src/index.css` | Optional: add a subtle glow utility class for score rings |
-
-All changes use existing Tailwind classes and the current color palette (orange primary, chart-6 green, destructive red, chart-4 amber). No new dependencies needed.
+| Datenbank-Migration | 3 neue Spalten + Trigger + pg_cron Update |
+| `supabase/functions/chat/index.ts` | Credit-Check + Modell-Guard + Abzug |
+| `supabase/functions/analyze-website/index.ts` | Credit-Check + Modell-Guard + Abzug |
+| `src/contexts/AuthContext.tsx` | Credits-State laden + Realtime |
+| `src/components/chat/ChatInput.tsx` | Modell-Lock UI + URL-Feld-Limit |
+| `src/pages/Chat.tsx` | Credit-Anzeige im Header + Fehlerbehandlung |
+| `src/lib/api/chat-api.ts` | 403-Fehler parsen und weiterleiten |
+| `src/lib/constants.ts` | Credit-Kosten-Konstanten |
 

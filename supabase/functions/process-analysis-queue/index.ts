@@ -574,19 +574,15 @@ serve(async (req) => {
   if (req.method === "POST") {
     try {
       await processQueue();
-      const responseBody = JSON.stringify({ success: true });
-      await (await fetch("about:blank")).text(); // Consume response
-      return new Response(responseBody, {
+      return new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
     } catch (err) {
       console.error("Queue processor error:", err);
-      const responseBody = JSON.stringify({
+      return new Response(JSON.stringify({
         error: err instanceof Error ? err.message : "Unknown error",
-      });
-      await (await fetch("about:blank")).text(); // Consume response
-      return new Response(responseBody, {
+      }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });

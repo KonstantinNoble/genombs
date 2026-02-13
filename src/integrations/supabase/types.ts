@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      analysis_queue: {
+        Row: {
+          completed_at: string | null
+          conversation_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          is_own_website: boolean
+          model: string
+          priority: number
+          profile_id: string | null
+          started_at: string | null
+          status: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          conversation_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_own_website?: boolean
+          model?: string
+          priority?: number
+          profile_id?: string | null
+          started_at?: string | null
+          status?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          conversation_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          is_own_website?: boolean
+          model?: string
+          priority?: number
+          profile_id?: string | null
+          started_at?: string | null
+          status?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string

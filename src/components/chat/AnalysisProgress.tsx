@@ -7,7 +7,8 @@ interface AnalysisProgressProps {
 }
 
 const STATUS_CONFIG: Record<string, { percent: number; label: string; color: string }> = {
-  pending: { percent: 10, label: "Waiting...", color: "text-muted-foreground" },
+  pending: { percent: 10, label: "In queue...", color: "text-muted-foreground" },
+  queued: { percent: 10, label: "In queue...", color: "text-muted-foreground" },
   crawling: { percent: 33, label: "Crawling website...", color: "text-primary" },
   analyzing: { percent: 66, label: "AI analyzing...", color: "text-primary" },
   completed: { percent: 100, label: "Done", color: "text-chart-6" },

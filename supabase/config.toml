@@ -2,3 +2,6 @@ project_id = "rrrhsbmyndgublwsirfx"
 
 [functions.delete-profiles]
 verify_jwt = false
+
+[functions.process-analysis-queue]
+verify_jwt = false

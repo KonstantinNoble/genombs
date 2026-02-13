@@ -507,12 +507,12 @@ const Chat = () => {
       </div>
       {/* Credit indicator */}
       <div className="shrink-0 flex items-center gap-3 ml-auto">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Credits</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Credits</span>
           <span className={`text-xs font-bold ${creditColor}`}>
             {remainingCredits}/{creditsLimit}
           </span>
-          <Progress value={creditPercent} className="w-14 h-1.5 rounded-full" />
+          <Progress value={creditPercent} className="hidden sm:block w-14 h-1.5 rounded-full" />
           <CreditResetTimer creditsResetAt={creditsResetAt} />
         </div>
       </div>
@@ -573,11 +573,11 @@ const Chat = () => {
       {hasProfiles && (
         <div className="border-b border-border bg-card px-4 py-1">
           <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
-            <TabsList className="bg-transparent h-8 p-0 gap-1">
-              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Overview</TabsTrigger>
-              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Positioning</TabsTrigger>
-              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Offer & CTAs</TabsTrigger>
-              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all">Trust & Proof</TabsTrigger>
+            <TabsList className="bg-transparent h-8 p-0 gap-1 overflow-x-auto scrollbar-hide flex-nowrap w-full justify-start">
+              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Overview</TabsTrigger>
+              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Positioning</TabsTrigger>
+              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Offer & CTAs</TabsTrigger>
+              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Trust & Proof</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

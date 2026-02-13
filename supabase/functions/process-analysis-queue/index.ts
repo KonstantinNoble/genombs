@@ -1,25 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
 /**
- * analyze-website
+ * process-analysis-queue
  *
- * 1. Scrapes the given URL via Firecrawl (markdown + html + links + screenshot)
- * 2. Extracts SEO meta-data from the HTML
- * 3. Sends enriched context to the selected AI model to produce a structured website profile
- * 4. Stores the result in `website_profiles`
- *
- * Required secrets: FIRECRAWL_API_KEY, GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
- * Optional secrets: OPENAI_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY
+ * Worker function that processes analysis requests from the queue.
+ * - Runs every 30 seconds via pg_cron
+ * - Processes max 3 concurrent jobs to prevent overload
+ * - Premium users get priority
+ * - Jobs stuck for 5+ minutes are marked as error
+ * - Contains all the analysis logic previously in analyze-website
  */
 
-// ─── SEO Data Extraction ───
+// ─── SEO Data Extraction (same as analyze-website) ───
 
 interface SEOData {
   title: string | null;
@@ -43,21 +36,17 @@ function extractSEOData(html: string): SEOData {
     return match ? (match[1] || match[2] || null) : null;
   };
 
-  // Title
   const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].trim() : null;
 
-  // Canonical
   const canonicalMatch = html.match(/<link[^>]*rel\s*=\s*["']canonical["'][^>]*href\s*=\s*["']([^"']*?)["']/i);
   const canonical = canonicalMatch ? canonicalMatch[1] : null;
 
-  // JSON-LD structured data
   const jsonLd: string[] = [];
   const jsonLdRegex = /<script[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   let jsonLdMatch;
   while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null) {
     try {
-      // Validate it's valid JSON
       JSON.parse(jsonLdMatch[1].trim());
       jsonLd.push(jsonLdMatch[1].trim());
     } catch {
@@ -106,11 +95,9 @@ function buildEnrichedContext(
   }
 
   if (seo.jsonLd.length > 0) {
-    // Only include first 3 to avoid token bloat
     const truncated = seo.jsonLd.slice(0, 3);
     sections.push(`Structured Data (JSON-LD): ${truncated.length} block(s) found`);
     for (const ld of truncated) {
-      // Truncate each block to 500 chars
       sections.push(ld.length > 500 ? ld.substring(0, 500) + "..." : ld);
     }
   } else {
@@ -126,8 +113,6 @@ function buildEnrichedContext(
 
   return sections.join("\n");
 }
-
-// ─── Analysis Prompt ───
 
 const ANALYSIS_SYSTEM_PROMPT = `You are an expert website analyst. You receive both the website's text content AND its technical SEO metadata (title tag, meta description, viewport, robots, Open Graph tags, structured data, link counts).
 
@@ -184,7 +169,7 @@ IMPORTANT: When technical data shows "MISSING", reflect this proportionally in t
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
 
-// ─── Provider-specific analysis functions ───
+// ─── Analysis functions ───
 
 async function analyzeWithGemini(content: string, apiKey: string): Promise<unknown> {
   const resp = await fetch(
@@ -210,6 +195,7 @@ async function analyzeWithGemini(content: string, apiKey: string): Promise<unkno
     }
   );
 
+  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Gemini error:", data);
@@ -239,6 +225,7 @@ async function analyzeWithOpenAI(content: string, apiKey: string, modelName: str
     }),
   });
 
+  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("OpenAI error:", data);
@@ -267,6 +254,7 @@ async function analyzeWithAnthropic(content: string, apiKey: string): Promise<un
     }),
   });
 
+  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Anthropic error:", data);
@@ -295,6 +283,7 @@ async function analyzeWithPerplexity(content: string, apiKey: string): Promise<u
     }),
   });
 
+  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Perplexity error:", data);
@@ -309,7 +298,6 @@ function parseJsonResponse(text: string): unknown {
   try {
     return JSON.parse(text);
   } catch {
-    // Try to extract JSON from markdown code block
     const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[1]);
@@ -317,8 +305,6 @@ function parseJsonResponse(text: string): unknown {
     throw new Error("Could not parse AI response as JSON");
   }
 }
-
-// ─── Model Router ───
 
 type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";
 
@@ -357,224 +343,255 @@ async function routeAnalysis(model: ModelId, content: string): Promise<unknown> 
   }
 }
 
-// ─── Main handler ───
+// ─── Queue Processing ───
 
-// ─── Credit system constants ───
+async function processQueue() {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
 
-const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
-const ANALYSIS_CREDIT_COST_CHEAP = 5;
-const ANALYSIS_CREDIT_COST_EXPENSIVE = 10;
+  if (!firecrawlKey) {
+    throw new Error("FIRECRAWL_API_KEY not configured");
+  }
 
-function isExpensiveModel(modelKey: string): boolean {
-  return EXPENSIVE_MODELS.includes(modelKey);
-}
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-async function checkAndDeductAnalysisCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
-  userId: string,
-  modelKey: string,
-  isPremiumRequired: boolean
-): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  try {
-    const { data: baseCredits, error: baseError } = await supabaseAdmin
-      .from("user_credits")
-      .select("id, is_premium")
-      .eq("user_id", userId)
-      .maybeSingle();
+  // 1. Mark jobs stuck for 5+ minutes as error
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  await supabaseAdmin
+    .from("analysis_queue")
+    .update({ status: "error", error_message: "Job timeout (5+ minutes)" })
+    .eq("status", "processing")
+    .lt("started_at", fiveMinutesAgo);
 
-    if (baseError) {
-      console.warn("Credits query failed, skipping credit check:", baseError.message);
-      return { ok: true };
-    }
+  // 2. Count current processing jobs
+  const { data: processingJobs, error: countError } = await supabaseAdmin
+    .from("analysis_queue")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "processing");
 
-    if (isPremiumRequired && (!baseCredits || !baseCredits.is_premium)) {
-      return { ok: false, status: 403, error: "premium_model_required" };
-    }
+  if (countError) {
+    console.error("Error counting processing jobs:", countError);
+    return;
+  }
 
-    if (!baseCredits) {
-      return { ok: true };
-    }
+  const processingCount = processingJobs?.length || 0;
+  const maxConcurrent = 3;
+  const slotsAvailable = Math.max(0, maxConcurrent - processingCount);
 
-    const { data: credits, error: creditsError } = await supabaseAdmin
-      .from("user_credits")
-      .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
-      .eq("user_id", userId)
-      .maybeSingle();
+  if (slotsAvailable === 0) {
+    console.log("Max concurrent jobs reached, waiting for next cycle");
+    return;
+  }
 
-    if (creditsError || !credits) {
-      console.warn("Credit columns not available, skipping:", creditsError?.message);
-      return { ok: true };
-    }
+  // 3. Fetch pending jobs (ordered by priority DESC, created_at ASC)
+  const { data: nextJobs, error: fetchError } = await supabaseAdmin
+    .from("analysis_queue")
+    .select("*")
+    .eq("status", "pending")
+    .order("priority", { ascending: false })
+    .order("created_at", { ascending: true })
+    .limit(slotsAvailable);
 
-    const resetAt = new Date(credits.credits_reset_at);
-    let creditsUsed = credits.credits_used ?? 0;
-    if (resetAt < new Date()) {
-      creditsUsed = 0;
+  if (fetchError || !nextJobs || nextJobs.length === 0) {
+    console.log("No pending jobs found");
+    return;
+  }
+
+  console.log(`Processing ${nextJobs.length} job(s) from queue`);
+
+  // 4. Process each job
+  for (const job of nextJobs) {
+    try {
+      // Mark as processing
       await supabaseAdmin
-        .from("user_credits")
-        .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
-        .eq("id", credits.id);
+        .from("analysis_queue")
+        .update({ status: "processing", started_at: new Date().toISOString() })
+        .eq("id", job.id);
+
+      console.log(`Processing job ${job.id} for URL: ${job.url}`);
+
+      // Crawl with Firecrawl
+      const crawlResp = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${firecrawlKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: job.url,
+          formats: ["markdown", "rawHtml", "links", "screenshot"],
+          onlyMainContent: false,
+          waitFor: 3000,
+        }),
+      });
+
+      const crawlData = await crawlResp.json();
+
+      if (!crawlResp.ok) {
+        console.error("Firecrawl error for job", job.id, crawlData);
+        await supabaseAdmin
+          .from("analysis_queue")
+          .update({
+            status: "error",
+            error_message: crawlData.error || "Crawl failed",
+            completed_at: new Date().toISOString(),
+          })
+          .eq("id", job.id);
+
+        await supabaseAdmin
+          .from("website_profiles")
+          .update({
+            status: "error",
+            error_message: crawlData.error || "Crawl failed",
+          })
+          .eq("id", job.profile_id);
+
+        continue;
+      }
+
+      const markdown = crawlData.data?.markdown || crawlData.markdown || "";
+      const html = crawlData.data?.rawHtml || crawlData.rawHtml || "";
+      const screenshotBase64 = crawlData.data?.screenshot || crawlData.screenshot || "";
+      const crawlLinks = crawlData.data?.links || crawlData.links || [];
+
+      // Update website_profile status to crawling
+      await supabaseAdmin
+        .from("website_profiles")
+        .update({
+          status: "crawling",
+          raw_markdown: markdown.substring(0, 50000),
+        })
+        .eq("id", job.profile_id);
+
+      // Store screenshot if available
+      if (screenshotBase64) {
+        try {
+          const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
+          const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+
+          await supabaseAdmin.storage
+            .from("website-screenshots")
+            .upload(`${job.user_id}/${job.profile_id}.png`, binaryData, {
+              contentType: "image/png",
+              upsert: true,
+            });
+        } catch (storageErr) {
+          console.warn("Screenshot storage failed (non-critical):", storageErr);
+        }
+      }
+
+      // Extract SEO data and build context
+      const seoData = extractSEOData(html);
+
+      let hostname = "";
+      try {
+        hostname = new URL(job.url).hostname || "";
+      } catch {
+        // ignore
+      }
+
+      const internalLinks = crawlLinks.filter((l: string) => {
+        try {
+          return new URL(l).hostname === hostname;
+        } catch {
+          return false;
+        }
+      }).length;
+      const externalLinks = crawlLinks.length - internalLinks;
+
+      const truncatedMarkdown = markdown.substring(0, 30000);
+      const enrichedContent = buildEnrichedContext(
+        job.url,
+        truncatedMarkdown,
+        seoData,
+        { internal: internalLinks, external: externalLinks }
+      );
+
+      // Update status to analyzing
+      await supabaseAdmin
+        .from("website_profiles")
+        .update({ status: "analyzing" })
+        .eq("id", job.profile_id);
+
+      // Analyze with AI
+      console.log(`Analyzing with model: ${job.model}...`);
+      const analysisResult = (await routeAnalysis(
+        job.model as ModelId,
+        enrichedContent
+      )) as Record<string, unknown>;
+
+      // Update website_profile with results
+      await supabaseAdmin
+        .from("website_profiles")
+        .update({
+          status: "completed",
+          profile_data: analysisResult.profileData,
+          category_scores: analysisResult.categoryScores,
+          overall_score: analysisResult.overallScore,
+          error_message: null,
+        })
+        .eq("id", job.profile_id);
+
+      // Mark queue job as completed
+      await supabaseAdmin
+        .from("analysis_queue")
+        .update({
+          status: "completed",
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", job.id);
+
+      console.log(`Job ${job.id} completed successfully`);
+    } catch (err) {
+      console.error(`Error processing job ${job.id}:`, err);
+      const errorMsg = err instanceof Error ? err.message : String(err);
+
+      await supabaseAdmin
+        .from("analysis_queue")
+        .update({
+          status: "error",
+          error_message: errorMsg,
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", job.id);
+
+      await supabaseAdmin
+        .from("website_profiles")
+        .update({
+          status: "error",
+          error_message: errorMsg,
+        })
+        .eq("id", job.profile_id);
     }
-
-    const cost = isExpensiveModel(modelKey) ? ANALYSIS_CREDIT_COST_EXPENSIVE : ANALYSIS_CREDIT_COST_CHEAP;
-    const limit = credits.daily_credits_limit ?? 20;
-    const remaining = limit - creditsUsed;
-
-    if (remaining < cost) {
-      const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
-      return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
-    }
-
-    await supabaseAdmin
-      .from("user_credits")
-      .update({ credits_used: creditsUsed + cost })
-      .eq("id", credits.id);
-
-    return { ok: true };
-  } catch (e) {
-    console.warn("Credit check failed unexpectedly, allowing request:", e);
-    return { ok: true };
   }
 }
 
 // ─── Main handler ───
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const { url, conversationId, isOwnWebsite, model = "gemini-flash" } = await req.json();
-
-    if (!url || !conversationId) {
-      return new Response(
-        JSON.stringify({ error: "url and conversationId are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Auth: get user from JWT
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-
-    if (!firecrawlKey) {
-      return new Response(
-        JSON.stringify({ error: "FIRECRAWL_API_KEY not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Create authenticated client to get user id
-    const supabaseAuth = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Admin client for DB writes
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-
-    // ─── Credit check ───
-    const isPremiumModel = isExpensiveModel(model);
-    const creditResult = await checkAndDeductAnalysisCredits(supabaseAdmin, user.id, model, isPremiumModel);
-    if (!creditResult.ok) {
-      return new Response(
-        JSON.stringify({ error: creditResult.error }),
-        { status: creditResult.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Format URL
-    let formattedUrl = url.trim();
-    if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
-      formattedUrl = `https://${formattedUrl}`;
-    }
-
-    // 1. Create initial website_profile record with status "pending" (queued)
-    const { data: profile, error: insertError } = await supabaseAdmin
-      .from("website_profiles")
-      .insert({
-        url: formattedUrl,
-        conversation_id: conversationId,
-        user_id: user.id,
-        is_own_website: isOwnWebsite ?? false,
-        status: "pending",
-      })
-      .select("id")
-      .single();
-
-    if (insertError) {
-      console.error("Insert error:", insertError);
-      return new Response(
-        JSON.stringify({ error: "Failed to create profile record" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const profileId = profile.id;
-
-    // 2. Insert into analysis_queue
-    const { error: queueError } = await supabaseAdmin
-      .from("analysis_queue")
-      .insert({
-        user_id: user.id,
-        conversation_id: conversationId,
-        url: formattedUrl,
-        model,
-        is_own_website: isOwnWebsite ?? false,
-        profile_id: profileId,
-        status: "pending",
+  // This endpoint is called by pg_cron, no auth needed
+  if (req.method === "POST") {
+    try {
+      await processQueue();
+      const responseBody = JSON.stringify({ success: true });
+      await (await fetch("about:blank")).text(); // Consume response
+      return new Response(responseBody, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
       });
-
-    if (queueError) {
-      console.error("Queue insert error:", queueError);
-      return new Response(
-        JSON.stringify({ error: "Failed to queue analysis" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    } catch (err) {
+      console.error("Queue processor error:", err);
+      const responseBody = JSON.stringify({
+        error: err instanceof Error ? err.message : "Unknown error",
+      });
+      await (await fetch("about:blank")).text(); // Consume response
+      return new Response(responseBody, {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
     }
-
-    // Get queue position
-    const { data: queuePosition, error: positionError } = await supabaseAdmin
-      .from("analysis_queue")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "pending")
-      .eq("user_id", user.id)
-      .lt("created_at", new Date().toISOString());
-
-    const position = (positionError ? 0 : (queuePosition?.length || 0)) + 1;
-
-    console.log(`Analysis queued for ${formattedUrl} (position ${position})`);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        profileId,
-        queued: true,
-        queuePosition: position,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (err) {
-    console.error("analyze-website error:", err);
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
   }
+
+  return new Response("Method not allowed", { status: 405 });
 });

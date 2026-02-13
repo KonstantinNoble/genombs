@@ -66,35 +66,91 @@ serve(async (req) => {
     const userId = userData.user.id;
     console.log('Starting GDPR-compliant account deletion for user:', userId);
 
-    // 1. Delete user_roles
+    // 1. Delete improvement_tasks (depends on website_profiles)
+    console.log('Deleting improvement_tasks for user:', userId);
+    const { error: tasksError } = await adminClient
+      .from('improvement_tasks')
+      .delete()
+      .eq('user_id', userId);
+    if (tasksError) {
+      console.error('Failed to delete improvement_tasks:', tasksError);
+    }
+
+    // 2. Fetch conversation IDs for message deletion
+    const { data: convData } = await adminClient
+      .from('conversations')
+      .select('id')
+      .eq('user_id', userId);
+    const conversationIds = (convData || []).map((c: { id: string }) => c.id);
+
+    // 3. Delete messages (depends on conversations, no direct user_id)
+    if (conversationIds.length > 0) {
+      console.log('Deleting messages for', conversationIds.length, 'conversations');
+      const { error: messagesError } = await adminClient
+        .from('messages')
+        .delete()
+        .in('conversation_id', conversationIds);
+      if (messagesError) {
+        console.error('Failed to delete messages:', messagesError);
+      }
+    }
+
+    // 4. Delete website_profiles (depends on conversations)
+    console.log('Deleting website_profiles for user:', userId);
+    const { error: wpError } = await adminClient
+      .from('website_profiles')
+      .delete()
+      .eq('user_id', userId);
+    if (wpError) {
+      console.error('Failed to delete website_profiles:', wpError);
+    }
+
+    // 5. Delete analysis_queue
+    console.log('Deleting analysis_queue for user:', userId);
+    const { error: queueError } = await adminClient
+      .from('analysis_queue')
+      .delete()
+      .eq('user_id', userId);
+    if (queueError) {
+      console.error('Failed to delete analysis_queue:', queueError);
+    }
+
+    // 6. Delete conversations (now free of dependencies)
+    console.log('Deleting conversations for user:', userId);
+    const { error: convsError } = await adminClient
+      .from('conversations')
+      .delete()
+      .eq('user_id', userId);
+    if (convsError) {
+      console.error('Failed to delete conversations:', convsError);
+    }
+
+    // 7. Delete user_roles
     console.log('Deleting user_roles for user:', userId);
     const { error: rolesError } = await adminClient
       .from('user_roles')
       .delete()
       .eq('user_id', userId);
-    
     if (rolesError) {
       console.error('Failed to delete user_roles:', rolesError);
     }
 
-    // 2. Delete user_credits
+    // 8. Delete user_credits
     console.log('Deleting user_credits for user:', userId);
     const { error: creditsError } = await adminClient
       .from('user_credits')
       .delete()
       .eq('user_id', userId);
-    
     if (creditsError) {
       console.error('Failed to delete user_credits:', creditsError);
     }
 
-    // 3. Delete profile
+    // 9. Delete profile
     console.log('Deleting profile for user:', userId);
     const { error: profileError } = await adminClient
       .from('profiles')
       .delete()
       .eq('id', userId);
-    
     if (profileError) {
       console.error('Failed to delete profile:', profileError);
     }

@@ -362,8 +362,19 @@ async function routeAnalysis(model: ModelId, content: string): Promise<unknown> 
 // ─── Credit system constants ───
 
 const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
-const ANALYSIS_CREDIT_COST_CHEAP = 5;
-const ANALYSIS_CREDIT_COST_EXPENSIVE = 10;
+
+// Model-specific credit costs for analysis
+const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
+  "gemini-flash": 5,
+  "gpt-mini": 5,
+  "gpt": 8,
+  "claude-sonnet": 8,
+  "perplexity": 10,
+};
+
+function getAnalysisCreditCost(modelKey: string): number {
+  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 5;
+}
 
 function isExpensiveModel(modelKey: string): boolean {
   return EXPENSIVE_MODELS.includes(modelKey);
@@ -416,7 +427,7 @@ async function checkAndDeductAnalysisCredits(
         .eq("id", credits.id);
     }
 
-    const cost = isExpensiveModel(modelKey) ? ANALYSIS_CREDIT_COST_EXPENSIVE : ANALYSIS_CREDIT_COST_CHEAP;
+    const cost = getAnalysisCreditCost(modelKey);
     const limit = credits.daily_credits_limit ?? 20;
     const remaining = limit - creditsUsed;
 

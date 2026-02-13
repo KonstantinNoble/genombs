@@ -25,8 +25,19 @@ CRITICAL RULES:
 
 const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
 const FREE_MODELS = ["gemini-flash", "gpt-mini"];
-const CHAT_CREDIT_COST_CHEAP = 1;
-const CHAT_CREDIT_COST_EXPENSIVE = 3;
+
+// Model-specific credit costs for chat
+const CHAT_CREDIT_COSTS: Record<string, number> = {
+  "gemini-flash": 1,
+  "gpt-mini": 1,
+  "gpt": 4,
+  "claude-sonnet": 4,
+  "perplexity": 5,
+};
+
+function getChatCreditCost(modelKey: string): number {
+  return CHAT_CREDIT_COSTS[modelKey] ?? 1;
+}
 
 function isExpensiveModel(modelKey: string): boolean {
   return EXPENSIVE_MODELS.includes(modelKey);
@@ -351,7 +362,7 @@ async function checkAndDeductCredits(
       .eq("id", credits.id);
   }
 
-  const cost = isExpensiveModel(modelKey) ? CHAT_CREDIT_COST_EXPENSIVE : CHAT_CREDIT_COST_CHEAP;
+  const cost = getChatCreditCost(modelKey);
   const remaining = credits.daily_credits_limit - creditsUsed;
 
   if (remaining < cost) {

@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -60,6 +60,18 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   const [comp2, setComp2] = useState("");
   const [comp3, setComp3] = useState("");
 
+
+  // Auto-switch to cheapest affordable model if current becomes unaffordable
+  useEffect(() => {
+    const cost = getChatCreditCost(selectedModel);
+    if (remainingCredits < cost) {
+      const affordable = AI_MODELS.find(
+        (m) => (isPremium || !isExpensiveModel(m.id)) && remainingCredits >= getChatCreditCost(m.id)
+      );
+      if (affordable) setSelectedModel(affordable.id);
+    }
+  }, [remainingCredits, selectedModel, isPremium]);
+
   const maxUrlFields = isPremium ? PREMIUM_MAX_URL_FIELDS : FREE_MAX_URL_FIELDS;
   const maxCompetitorFields = maxUrlFields - 1;
 
@@ -89,6 +101,8 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   };
 
   const currentModel = AI_MODELS.find((m) => m.id === selectedModel)!;
+  const chatCost = getChatCreditCost(selectedModel);
+  const notEnoughForChat = remainingCredits < chatCost;
 
   const handleSend = () => {
     if (!value.trim()) return;
@@ -156,17 +170,20 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                   const Icon = model.icon;
                   const isActive = model.id === selectedModel;
                   const isLocked = !isPremium && isExpensiveModel(model.id);
+                  const modelChatCost = getChatCreditCost(model.id);
+                  const noCredits = !isLocked && remainingCredits < modelChatCost;
+                  const isDisabled = isLocked || noCredits;
                   return (
                     <Tooltip key={model.id}>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => {
-                            if (isLocked) return;
+                            if (isDisabled) return;
                             setSelectedModel(model.id);
                             setModelOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${
-                            isLocked
+                            isDisabled
                               ? "opacity-50 cursor-not-allowed"
                               : isActive
                               ? "bg-primary/10 text-primary"
@@ -183,6 +200,12 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                                   Premium
                                 </Badge>
                               )}
+                              {noCredits && (
+                                <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-destructive/30 text-destructive">
+                                  <Lock className="w-2.5 h-2.5 mr-0.5" />
+                                  {modelChatCost} Credits
+                                </Badge>
+                              )}
                             </div>
                             <div className="text-[11px] text-muted-foreground">{model.description}</div>
                           </div>
@@ -191,6 +214,11 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                       {isLocked && (
                         <TooltipContent side="right">
                           <p className="text-xs">Upgrade to Premium to use {model.label}</p>
+                        </TooltipContent>
+                      )}
+                      {noCredits && (
+                        <TooltipContent side="right">
+                          <p className="text-xs">Not enough credits ({modelChatCost} needed)</p>
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -239,7 +267,7 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
           </TooltipProvider>
           <Button
             onClick={handleSend}
-            disabled={!value.trim() || disabled}
+            disabled={!value.trim() || disabled || notEnoughForChat}
             size="icon"
             className="shrink-0 h-[44px] w-[44px]"
           >

@@ -1,80 +1,51 @@
 
-# URL-Felder basierend auf verbleibenden Credits dynamisch sperren
 
-## Uebersicht
+## Fix: `TypeError: Url scheme 'about' not supported`
 
-Die URL-Eingabefelder im Analyse-Dialog werden dynamisch basierend auf den verbleibenden Credits aktiviert/deaktiviert. Wenn ein User z.B. nur noch 5 Credits hat und ein guenstiges Modell nutzt (5 Credits pro URL), kann er nur 1 URL analysieren. Die restlichen Felder werden gesperrt mit einer englischen Hinweismeldung.
+### Ursache
 
-## Logik
+In der `process-analysis-queue` Edge Function befinden sich auf **Zeile 578 und 588** zwei unsinnige Aufrufe:
 
-Die Anzahl der bezahlbaren URLs wird berechnet als:
-
-```text
-affordableUrls = Math.floor(remainingCredits / analysisCostPerUrl)
+```typescript
+await (await fetch("about:blank")).text(); // Consume response
 ```
 
-- Guenstige Modelle: 5 Credits pro URL
-- Teure Modelle: 10 Credits pro URL
+`fetch("about:blank")` ist in Deno nicht erlaubt -- Deno unterstuetzt nur `http:` und `https:` URL-Schemes. Diese Zeilen haben keinen funktionalen Zweck und verursachen den Fehler.
 
-Beispiele:
-- 20 Credits, guenstiges Modell: 4 URLs moeglich (alle frei)
-- 12 Credits, guenstiges Modell: 2 URLs moeglich
-- 7 Credits, teures Modell: 0 URLs (alle gesperrt)
-- 0 Credits: alle Felder gesperrt, "Start Analysis" Button deaktiviert
+### Loesung
 
-## Aenderungen
+Beide Zeilen (578 und 588) werden entfernt. Der restliche Handler-Code bleibt unveraendert:
 
-### `src/components/chat/ChatInput.tsx`
+```typescript
+serve(async (req) => {
+  if (req.method === "POST") {
+    try {
+      await processQueue();
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Queue processor error:", err);
+      return new Response(JSON.stringify({
+        error: err instanceof Error ? err.message : "Unknown error",
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
+  return new Response("Method not allowed", { status: 405 });
+});
+```
 
-1. `remainingCredits` aus `useAuth()` importieren
-2. `getAnalysisCreditCost` aus constants importieren
-3. Berechnung der bezahlbaren URL-Anzahl:
-   - `costPerUrl = getAnalysisCreditCost(selectedModel)`
-   - `affordableUrls = Math.floor(remainingCredits / costPerUrl)`
-   - `enabledUrlFields = Math.min(maxUrlFields, affordableUrls)`
-4. URL-Eingabefelder ab Index `enabledUrlFields` deaktivieren (`disabled` Prop)
-5. Deaktivierte Felder erhalten einen visuellen Hinweis (ausgegraut + Lock-Icon)
-6. Unter den Feldern eine Meldung anzeigen wenn nicht alle Felder verfuegbar:
-   - `"Not enough credits to analyze more URLs. You need X credits per URL."`
-7. "Start Analysis" Button deaktivieren wenn `affordableUrls < 1`
-8. Auch den "+" Button (der den Dialog oeffnet) deaktivieren wenn `remainingCredits < costPerUrl`
-9. Alle Meldungen auf Englisch
-
-### Felder-Reihenfolge und Sperrung
-
-- Feld "Your Website" ist das erste Feld (Index 0)
-- Competitor-Felder folgen danach (Index 1, 2, 3)
-- Wenn z.B. nur 2 URLs bezahlbar sind: "Your Website" + "Competitor 1" aktiv, Rest gesperrt
-- Wenn 0 URLs bezahlbar: alle Felder gesperrt
-
-## Technische Details
-
-### Betroffene Datei
+### Aenderungen
 
 | Datei | Aenderung |
-|---|---|
-| `src/components/chat/ChatInput.tsx` | Credits-basierte Feld-Sperrung, englische Hinweise, Button-Deaktivierung |
+|-------|-----------|
+| `supabase/functions/process-analysis-queue/index.ts` | Zeilen 578 und 588 entfernen (`fetch("about:blank")`) |
 
-### Neue Imports in ChatInput
+### Hinweis
 
-```text
-import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
-// remainingCredits aus useAuth()
-const { isPremium, remainingCredits } = useAuth();
-```
+Der zweite Fehler in den Logs (`FIRECRAWL_API_KEY not configured`) kommt von der **Lovable Cloud** Instanz (Projekt `rrrhsbmyndgublwsirfx`), nicht von deinem externen Supabase-Projekt. Dieser Fehler ist erwartet, da die Secrets nur auf dem externen Projekt konfiguriert sind. Falls du die Queue ausschliesslich auf dem externen Projekt nutzt, ist das kein Problem.
 
-### Berechnungslogik
-
-```text
-const costPerUrl = getAnalysisCreditCost(selectedModel);
-const affordableUrls = costPerUrl > 0 ? Math.floor(remainingCredits / costPerUrl) : 0;
-const effectiveMaxFields = Math.min(maxUrlFields, affordableUrls);
-const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
-```
-
-### UI-Aenderungen im Dialog
-
-- Jedes URL-Feld prueft ob sein Index innerhalb von `effectiveMaxFields` liegt
-- Felder ausserhalb werden `disabled` gesetzt mit reduzierter Opazitaet
-- Hinweistext unterhalb der Felder: "Not enough credits — X credits per URL analysis with [Model]"
-- "Start Analysis" Button: `disabled={!canStartAnalysis || affordableUrls < 1}`

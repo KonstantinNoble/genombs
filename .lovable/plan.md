@@ -1,51 +1,82 @@
 
 
-## Fix: `TypeError: Url scheme 'about' not supported`
+## Fix: Entfernung der `fetch("about:blank")` Zeilen aus process-analysis-queue
 
-### Ursache
+### Problem
+Die Edge Function `process-analysis-queue` enthält zwei invalid `fetch("about:blank")` Aufrufe:
+- **Zeile 584**: Im success-Pfad (try-block)
+- **Zeile 596**: Im error-Pfad (catch-block)
 
-In der `process-analysis-queue` Edge Function befinden sich auf **Zeile 578 und 588** zwei unsinnige Aufrufe:
+Diese verursachen `TypeError: Url scheme 'about' not supported` weil Deno nur `http:` und `https:` Schemes akzeptiert.
 
+### Lösung
+Beide Zeilen müssen komplett entfernt werden. Die Logik wird vereinfacht:
+
+**Vorher (lines 581-599):**
 ```typescript
-await (await fetch("about:blank")).text(); // Consume response
+try {
+  await processQueue();
+  const responseBody = JSON.stringify({ success: true });
+  await (await fetch("about:blank")).text(); // ❌ ENTFERNEN
+  return new Response(responseBody, {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+} catch (err) {
+  console.error("Queue processor error:", err);
+  const responseBody = JSON.stringify({
+    error: err instanceof Error ? err.message : "Unknown error",
+  });
+  await (await fetch("about:blank")).text(); // ❌ ENTFERNEN
+  return new Response(responseBody, {
+    status: 500,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 ```
 
-`fetch("about:blank")` ist in Deno nicht erlaubt -- Deno unterstuetzt nur `http:` und `https:` URL-Schemes. Diese Zeilen haben keinen funktionalen Zweck und verursachen den Fehler.
-
-### Loesung
-
-Beide Zeilen (578 und 588) werden entfernt. Der restliche Handler-Code bleibt unveraendert:
-
+**Nachher:**
 ```typescript
-serve(async (req) => {
-  if (req.method === "POST") {
-    try {
-      await processQueue();
-      return new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (err) {
-      console.error("Queue processor error:", err);
-      return new Response(JSON.stringify({
-        error: err instanceof Error ? err.message : "Unknown error",
-      }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+try {
+  await processQueue();
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+} catch (err) {
+  console.error("Queue processor error:", err);
+  return new Response(
+    JSON.stringify({
+      error: err instanceof Error ? err.message : "Unknown error",
+    }),
+    {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
     }
-  }
-  return new Response("Method not allowed", { status: 405 });
-});
+  );
+}
 ```
 
-### Aenderungen
+### Änderungen
+| Datei | Aktion |
+|-------|--------|
+| `supabase/functions/process-analysis-queue/index.ts` | Zeilen 584 und 596 entfernen (`await (await fetch("about:blank")).text()`) |
 
-| Datei | Aenderung |
-|-------|-----------|
-| `supabase/functions/process-analysis-queue/index.ts` | Zeilen 578 und 588 entfernen (`fetch("about:blank")`) |
+### Nach der Änderung
+**Folgende Kommandos ausführen in deinem Terminal:**
 
-### Hinweis
+```bash
+# 1. Stelle sicher, dass die Datei gespeichert ist
+# 2. Deploy zu externem Supabase
+supabase functions deploy process-analysis-queue --project-ref xnkspttfhcnqzhmazggn
 
-Der zweite Fehler in den Logs (`FIRECRAWL_API_KEY not configured`) kommt von der **Lovable Cloud** Instanz (Projekt `rrrhsbmyndgublwsirfx`), nicht von deinem externen Supabase-Projekt. Dieser Fehler ist erwartet, da die Secrets nur auf dem externen Projekt konfiguriert sind. Falls du die Queue ausschliesslich auf dem externen Projekt nutzt, ist das kein Problem.
+# 3. Verifiziere den Deploy
+supabase functions list --project-ref xnkspttfhcnqzhmazggn
+```
+
+### Verifikation
+Nach dem Deploy sollte:
+- ✅ Der `TypeError: Url scheme 'about' not supported` Fehler verschwindet
+- ✅ Der Cron Job die Edge Function erfolgreich aufrufen
+- ✅ Jobs in `analysis_queue` von `pending` → `processing` → `completed` fortschreiten
 

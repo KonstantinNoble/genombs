@@ -123,9 +123,14 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
 
   /* Typography refinements */
@@ -946,4 +951,14 @@ All colors MUST be HSL.
   position: relative;
   background: hsl(var(--card));
   border: 1px solid hsl(var(--primary) / 0.25);
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

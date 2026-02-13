@@ -186,7 +186,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex flex-col">
+    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
         title="Business Genome – Turn your website into a growth engine"
         description="Scan your website and get a complete growth playbook — ICP, audience channels, optimization tips, and growth strategies in under 60 seconds."
@@ -208,7 +208,7 @@ const Home = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="flex-1 flex items-center justify-center py-20 sm:py-28">
+      <section className="flex items-center justify-center py-20 sm:py-28">
         <div className="container mx-auto px-4 text-center space-y-8 max-w-3xl">
           <Badge variant="outline" className="mb-2 text-sm">
             Business Growth Platform
@@ -363,25 +363,25 @@ const Home = () => {
           </div>
           <Card className="border-border bg-card overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[480px]">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
-                    <th className="text-center py-4 px-5 text-sm font-medium text-primary">Business Genome</th>
-                    <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Consultant</th>
+                    <th className="text-left py-3 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm font-medium text-muted-foreground">Feature</th>
+                    <th className="text-center py-3 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm font-medium text-primary">Business Genome</th>
+                    <th className="text-center py-3 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm font-medium text-muted-foreground">Consultant</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonRows.map((row) => (
                     <tr key={row.feature} className="border-b border-border/50">
-                      <td className="py-3 px-5 text-sm text-foreground">{row.feature}</td>
-                      <td className="py-3 px-5 text-center">
-                        <span className={`text-sm font-medium ${row.genome === "Yes" ? "text-primary" : "text-foreground"}`}>
+                      <td className="py-2.5 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm text-foreground">{row.feature}</td>
+                      <td className="py-2.5 sm:py-3 px-3 sm:px-5 text-center">
+                        <span className={`text-xs sm:text-sm font-medium ${row.genome === "Yes" ? "text-primary" : "text-foreground"}`}>
                           {row.genome}
                         </span>
                       </td>
-                      <td className="py-3 px-5 text-center">
-                        <span className={`text-sm ${row.traditional === "No" ? "text-muted-foreground/40" : "text-muted-foreground"}`}>
+                      <td className="py-2.5 sm:py-3 px-3 sm:px-5 text-center">
+                        <span className={`text-xs sm:text-sm ${row.traditional === "No" ? "text-muted-foreground/40" : "text-muted-foreground"}`}>
                           {row.traditional}
                         </span>
                       </td>

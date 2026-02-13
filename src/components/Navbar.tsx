@@ -108,12 +108,12 @@ const Navbar = () => {
   
   return (
     <>
-      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 pt-4 ${
+      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled 
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm pt-0" 
+          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
           : "bg-background/60 backdrop-blur-md border-b border-transparent"
       }`}>
-        <div className="container mx-auto flex h-18 items-center px-4">
+        <div className="container mx-auto flex h-16 items-center px-4">
           {/* Logo - Left */}
           <div className="flex items-center shrink-0">
             <Link to="/" className="flex items-center gap-2.5 pr-6 border-r border-border">

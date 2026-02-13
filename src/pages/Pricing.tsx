@@ -148,7 +148,7 @@ const PricingPage = () => {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
               >
                 {isLoggedIn ? "Go to Dashboard" : "Get Started"}
               </Button>
@@ -244,7 +244,7 @@ const PricingPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button
                 size="lg"
-                onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
               >
                 {isLoggedIn ? "Go to Dashboard" : "Create Account"}
               </Button>

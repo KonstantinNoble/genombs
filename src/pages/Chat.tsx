@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, Zap } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -506,15 +506,15 @@ const Chat = () => {
         )}
       </div>
       {/* Credit indicator */}
-      <div className="shrink-0 flex items-center gap-2 ml-auto">
-        <Zap className={`w-3.5 h-3.5 ${creditColor}`} />
-        <div className="flex flex-col items-end gap-0.5">
-          <span className={`text-xs font-medium ${creditColor}`}>
+      <div className="shrink-0 flex items-center gap-3 ml-auto">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Credits</span>
+          <span className={`text-xs font-bold ${creditColor}`}>
             {remainingCredits}/{creditsLimit}
           </span>
-          <Progress value={creditPercent} className="w-16 h-1" />
+          <Progress value={creditPercent} className="w-14 h-1.5 rounded-full" />
+          <CreditResetTimer creditsResetAt={creditsResetAt} />
         </div>
-        <CreditResetTimer creditsResetAt={creditsResetAt} />
       </div>
     </div>
   );
@@ -525,8 +525,9 @@ const Chat = () => {
       <ScrollArea className="flex-1">
         <div className="max-w-3xl mx-auto p-4 space-y-4">
           {messages.length === 0 && activeId && (
-            <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
-              Enter a URL or ask a question...
+            <div className="flex flex-col items-center justify-center h-64 gap-2">
+              <span className="text-muted-foreground/60 text-lg font-medium">Start a conversation</span>
+              <span className="text-muted-foreground/40 text-sm">Enter a URL or ask a question below</span>
             </div>
           )}
           {messages.map((msg) => (

@@ -283,9 +283,9 @@ const Chat = () => {
         toast.error(msg);
       }
       console.error(e);
-      refreshCredits();
     } finally {
       setIsStreaming(false);
+      refreshCredits();
     }
   };
 

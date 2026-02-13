@@ -1,7 +1,40 @@
 project_id = "rrrhsbmyndgublwsirfx"
 
+[functions.analyze-website]
+verify_jwt = false
+
+[functions.chat]
+verify_jwt = false
+
+[functions.check-deleted-account-block]
+verify_jwt = false
+
+[functions.check-email-availability]
+verify_jwt = false
+
+[functions.check-reset-eligibility]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
+
+[functions.delete-blocked-account]
+verify_jwt = false
+
 [functions.delete-profiles]
 verify_jwt = false
 
+[functions.freemius-webhook]
+verify_jwt = false
+
 [functions.process-analysis-queue]
+verify_jwt = false
+
+[functions.register-user]
+verify_jwt = false
+
+[functions.send-auth-email]
+verify_jwt = false
+
+[functions.sync-freemius-subscription]
 verify_jwt = false

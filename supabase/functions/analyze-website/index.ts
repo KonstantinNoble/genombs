@@ -550,14 +550,13 @@ serve(async (req) => {
     }
 
     // Get queue position
-    const { data: queuePosition, error: positionError } = await supabaseAdmin
+    const { count: queueCount, error: positionError } = await supabaseAdmin
       .from("analysis_queue")
       .select("*", { count: "exact", head: true })
       .eq("status", "pending")
-      .eq("user_id", user.id)
       .lt("created_at", new Date().toISOString());
 
-    const position = (positionError ? 0 : (queuePosition?.length || 0)) + 1;
+    const position = (positionError ? 0 : (queueCount || 0)) + 1;
 
     console.log(`Analysis queued for ${formattedUrl} (position ${position})`);
 

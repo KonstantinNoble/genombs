@@ -195,7 +195,6 @@ async function analyzeWithGemini(content: string, apiKey: string): Promise<unkno
     }
   );
 
-  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Gemini error:", data);
@@ -225,7 +224,6 @@ async function analyzeWithOpenAI(content: string, apiKey: string, modelName: str
     }),
   });
 
-  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("OpenAI error:", data);
@@ -254,7 +252,6 @@ async function analyzeWithAnthropic(content: string, apiKey: string): Promise<un
     }),
   });
 
-  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Anthropic error:", data);
@@ -283,7 +280,6 @@ async function analyzeWithPerplexity(content: string, apiKey: string): Promise<u
     }),
   });
 
-  await resp.text();
   const data = await resp.json();
   if (!resp.ok) {
     console.error("Perplexity error:", data);
@@ -365,7 +361,7 @@ async function processQueue() {
     .lt("started_at", fiveMinutesAgo);
 
   // 2. Count current processing jobs
-  const { data: processingJobs, error: countError } = await supabaseAdmin
+  const { count: processingCount, error: countError } = await supabaseAdmin
     .from("analysis_queue")
     .select("*", { count: "exact", head: true })
     .eq("status", "processing");
@@ -374,8 +370,6 @@ async function processQueue() {
     console.error("Error counting processing jobs:", countError);
     return;
   }
-
-  const processingCount = processingJobs?.length || 0;
   const maxConcurrent = 3;
   const slotsAvailable = Math.max(0, maxConcurrent - processingCount);
 

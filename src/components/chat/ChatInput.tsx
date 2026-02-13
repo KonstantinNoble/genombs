@@ -48,6 +48,8 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
+  const CHAT_MAX_LENGTH = 300;
+  const URL_MAX_LENGTH = 100;
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
@@ -81,6 +83,11 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     }
   }, [initialCompetitorUrls]);
 
+  const isValidUrl = (url: string) => {
+    const trimmed = url.trim();
+    return trimmed.startsWith("https://") && trimmed.includes(".");
+  };
+
   const currentModel = AI_MODELS.find((m) => m.id === selectedModel)!;
 
   const handleSend = () => {
@@ -108,7 +115,9 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   ].slice(0, maxCompetitorFields);
 
   const competitorUrls = [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
-  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && competitorUrls.length > 0;
+  const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u));
+  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && competitorUrls.length > 0 && allUrlsValid;
+  
   const isOwnUrlDisabled = affordableUrls < 1;
 
   const handleStartAnalysis = () => {
@@ -191,15 +200,21 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
             </PopoverContent>
           </Popover>
 
-          <Textarea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter a URL or ask a question..."
-            className="min-h-[44px] max-h-[120px] resize-none bg-background"
-            rows={1}
-            disabled={disabled}
-          />
+          <div className="relative flex-1">
+            <Textarea
+              value={value}
+              onChange={(e) => setValue(e.target.value.slice(0, CHAT_MAX_LENGTH))}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter a URL or ask a question..."
+              className="min-h-[44px] max-h-[120px] resize-none bg-background"
+              maxLength={CHAT_MAX_LENGTH}
+              rows={1}
+              disabled={disabled}
+            />
+            <span className="absolute right-2 bottom-1 text-[10px] text-muted-foreground/50">
+              {value.length}/{CHAT_MAX_LENGTH}
+            </span>
+          </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -254,12 +269,16 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                 <Input
                   id="own-url"
                   value={ownUrl}
-                  onChange={(e) => setOwnUrl(e.target.value)}
+                  onChange={(e) => setOwnUrl(e.target.value.slice(0, URL_MAX_LENGTH))}
                   placeholder="https://your-site.com"
                   className="pl-9"
+                  maxLength={URL_MAX_LENGTH}
                   disabled={isOwnUrlDisabled}
                 />
               </div>
+              {ownUrl.trim() && !isValidUrl(ownUrl) && (
+                <p className="text-[11px] text-destructive">URL must start with https:// and contain a dot</p>
+              )}
             </div>
             {competitorFields.map((field, index) => {
               const fieldIndex = index + 1; // 0 = own website, so competitors start at 1
@@ -274,12 +293,16 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       value={field.value}
-                      onChange={(e) => field.set(e.target.value)}
+                      onChange={(e) => field.set(e.target.value.slice(0, URL_MAX_LENGTH))}
                       placeholder={`https://${field.label.toLowerCase().replace(" ", "")}.com`}
                       className="pl-9"
+                      maxLength={URL_MAX_LENGTH}
                       disabled={isFieldDisabled}
                     />
                   </div>
+                  {field.value.trim() && !isValidUrl(field.value) && (
+                    <p className="text-[11px] text-destructive">URL must start with https:// and contain a dot</p>
+                  )}
                 </div>
               );
             })}

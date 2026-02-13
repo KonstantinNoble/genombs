@@ -1,111 +1,77 @@
 
 
-## DSGVO-konforme Vollständige Kontolöschung
+## Mobile und Desktop Stabilisierung und Optimierung
 
-### Problem
-Die aktuelle `delete-account` Edge Function ist unvollständig und nicht vollständig DSGVO-konform. Sie löscht nur 3 Tabellen, lässt aber folgende Benutzerdaten in der Datenbank:
+### Identifizierte Probleme
 
-**Fehlende Löschungen:**
-- `improvement_tasks` – Verbesserungsaufgaben des Nutzers
-- `website_profiles` – Analysierte Website-Profile mit allen Rohdaten
-- `messages` – Chat-Nachrichten des Nutzers
-- `conversations` – Chat-Konversationen
-- `analysis_queue` – Analysewarteschlangen-Einträge
+**Mobile Probleme:**
+1. Chat-Seite: Credit-Anzeige im Header ist auf kleinen Bildschirmen zu breit und wird abgeschnitten (Progress-Bar + Timer + Text quetschen sich)
+2. Chat-Input: Model-Selector, Textarea und 2 Buttons sind auf Mobile eng gedrängt - die untere Leiste hat wenig Platz
+3. Dashboard-Tabs auf Mobile: Die 4 Tab-Trigger ("Overview", "Positioning", "Offer & CTAs", "Trust & Proof") sind auf kleinen Screens nicht scrollbar und werden abgeschnitten
+4. Navbar: `h-18` ist keine Standard-Tailwind-Klasse und der `pt-4` springt beim Scrollen zu `pt-0`
+5. Home-Seite: Comparison-Table ist auf kleinen Screens schwer lesbar (3 Spalten auf 320px)
+6. Profile-Seite: Container hat falsches Nesting (`</div>` Einrückung ist fehlerhaft auf Zeile 120-254)
 
-### Lösung
-Die Edge Function `supabase/functions/delete-account/index.ts` erweitern, um **alle 8 Benutzerdatentabellen** in der korrekten relationalen Reihenfolge zu löschen. Die Reihenfolge ist wichtig, um Fremdschlüssel-Konflikte zu vermeiden.
+**Desktop Probleme:**
+1. Chat-Seite: ResizablePanel hat keine Mindestbreiten-Sicherung bei extremen Resize-Aktionen
+2. Home-Seite: Hero-Section nutzt `flex-1` was zu übermäßiger vertikaler Dehnung auf großen Screens führt
+3. Pricing-Seite: "Go to Dashboard"-Button verlinkt auf `/dashboard` (existiert nicht - sollte `/chat` sein)
 
-### Technische Details
+**Allgemeine Stabilitätsprobleme:**
+1. `overflow-hidden` auf Home-Root-Element kann Footer-Scroll-Probleme verursachen
+2. Fehlende `overflow-x-hidden` auf Body/Root kann horizontalen Scroll auf Mobile auslösen
+3. Kein `viewport-fit=cover` für iPhone-Notch-Unterstützung im HTML
 
-**Datei:** `supabase/functions/delete-account/index.ts`
+### Technische Umsetzung
 
-**Korrekte Löschreihenfolge (Abhängigkeiten respektieren):**
+**1. Chat-Header Credit-Anzeige (Mobile-optimiert)**
+- Datei: `src/pages/Chat.tsx`
+- Credits-Bereich auf Mobile kompakter gestalten: Progress-Bar auf Mobile ausblenden, nur Zahl + Timer zeigen
+- Responsive Klassen: `hidden sm:block` für Progress-Bar
 
-```text
-Abhängigkeitsgraph:
-improvement_tasks ──┐
-website_profiles ───┼──> conversations  ──> user_credits
-messages ───────────┘                        user_roles
-analysis_queue                               profiles
-                                             auth.users (zuletzt)
+**2. Chat-Input Mobile-Optimierung**
+- Datei: `src/components/chat/ChatInput.tsx`
+- Model-Label bereits korrekt mit `hidden sm:inline` - okay
+- Textarea `min-h` beibehalten, aber `gap-2` zu `gap-1.5` auf Mobile
 
-Löschreihenfolge:
-1. improvement_tasks    (hängt von website_profiles ab)
-2. website_profiles     (hängt von conversations ab)
-3. messages             (hängt von conversations ab)
-4. analysis_queue       (eigenständig, aber hat user_id)
-5. conversations        (jetzt keine abhängigen Daten mehr)
-6. user_roles          (bereits vorhanden)
-7. user_credits        (bereits vorhanden)
-8. profiles            (bereits vorhanden)
-9. auth.users          (zuletzt – invalidiert Login sofort)
-```
+**3. Dashboard-Tabs scrollbar machen**
+- Datei: `src/pages/Chat.tsx`
+- `overflow-x-auto` und `scrollbar-hide` auf TabsList hinzufügen
+- `flex-nowrap` und `w-max` auf die Tab-Trigger-Container
 
-**Code-Struktur:**
+**4. Navbar Scroll-Sprung beheben**
+- Datei: `src/components/Navbar.tsx`
+- `pt-4` durch konsistentes Padding ersetzen, das beim Scrollen nicht springt
+- `h-18` zu einer validen Höhe ändern (z.B. `h-16`)
 
-Nach der aktuellen `deleted_accounts` Hash-Speicherung (Zeile 59) werden folgende DELETE-Blöcke hinzugefügt, bevor die bestehenden Löschungen beginnen:
+**5. Home Comparison-Table Mobile**
+- Datei: `src/pages/Home.tsx`
+- Tabelle horizontal scrollbar machen mit kleinerer Schrift auf Mobile
 
-```typescript
-// 1. Delete improvement_tasks
-const { error: tasksError } = await adminClient
-  .from('improvement_tasks')
-  .delete()
-  .eq('user_id', userId);
+**6. Pricing "/dashboard" Fix**
+- Datei: `src/pages/Pricing.tsx`
+- Alle `/dashboard` Links auf `/chat` ändern (Zeilen 151, 249)
 
-// 2. Delete website_profiles
-const { error: profilesError } = await adminClient
-  .from('website_profiles')
-  .delete()
-  .eq('user_id', userId);
+**7. Globale Stabilität**
+- Datei: `src/index.css`
+- `overflow-x: hidden` auf `html` und `body` hinzufügen um horizontalen Scroll zu verhindern
+- Datei: `index.html`
+- `viewport-fit=cover` zum Viewport-Meta-Tag hinzufügen
 
-// 3. Delete messages
-const { error: messagesError } = await adminClient
-  .from('messages')
-  .delete()
-  .in('conversation_id', /* conversation IDs */);
+**8. Profile-Seite Layout-Fix**
+- Datei: `src/pages/Profile.tsx`
+- Einrückung korrigieren (kosmetisch, kein funktionaler Bug)
 
-// 4. Delete analysis_queue
-const { error: queueError } = await adminClient
-  .from('analysis_queue')
-  .delete()
-  .eq('user_id', userId);
+### Zusammenfassung der Änderungen
 
-// 5. Delete conversations
-const { error: conversationsError } = await adminClient
-  .from('conversations')
-  .delete()
-  .eq('user_id', userId);
-```
-
-**Für `messages` speziell:** Da die Tabelle kein direktes `user_id`-Feld hat, müssen wir erst die Konversations-IDs des Nutzers abfragen und dann diese zum Löschen der Messages verwenden.
-
-### Auswirkungen
-
-| Kategorie | Details |
-|-----------|---------|
-| **Dateien geändert** | 1 Datei: `supabase/functions/delete-account/index.ts` |
-| **Neue Datenbankmigrationen** | Keine nötig |
-| **RLS-Policies** | Keine Änderung nötig (Service Role Keyüberschreibt alle Policies) |
-| **Funktionen** | Keine neuen DB-Funktionen nötig |
-| **Frontend-Änderungen** | Keine nötig |
-
-### DSGVO-Konformität
-
-✅ **Alle Datenkategorien werden gelöscht:**
-- Nutzerprofil und Kreditsystem
-- Alle Chat-Konversationen und Nachrichten
-- Alle Website-Analysen und Profildaten
-- Alle Aufgaben und Analysewarteschlangen
-- Authentifizierung wird gelöscht (Login invalidiert)
-
-✅ **24h Sperre gegen Re-Registrierung** (bereits implementiert via `deleted_accounts` Tabelle)
-
-✅ **Audit Trail** (Logs zeigen alle gelöschten Einträge)
-
-### Implementierungsschritte
-
-1. Edge Function aktualisieren mit allen 5 neuen DELETE-Blöcken
-2. Die bereits existierenden 4 DELETE-Blöcke bleiben unverändert
-3. Fehlerbehandlung: Jeder DELETE wird geloggt, blockiert aber nicht die Gesamtlöschung
-4. Rückgabe: `success: true` nur wenn `auth.users` erfolgreich gelöscht (wie bisher)
+| Datei | Änderung |
+|-------|----------|
+| `src/pages/Chat.tsx` | Credit-Header responsive, Tabs scrollbar |
+| `src/components/chat/ChatInput.tsx` | Kompakteres Mobile-Layout |
+| `src/components/Navbar.tsx` | Konsistentes Padding, kein Sprung |
+| `src/pages/Home.tsx` | Comparison-Table Mobile-Scroll |
+| `src/pages/Pricing.tsx` | /dashboard zu /chat Fix |
+| `src/index.css` | overflow-x hidden global |
+| `index.html` | viewport-fit=cover |
+| `src/pages/Profile.tsx` | Layout-Einrückung korrigieren |
 

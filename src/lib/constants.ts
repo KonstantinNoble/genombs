@@ -2,9 +2,22 @@
 
 // ─── Credit System ───
 
-export const CREDIT_COSTS = {
-  chat: { cheap: 1, expensive: 3 },
-  analysis: { cheap: 5, expensive: 10 },
+// Model-specific credit costs
+export const MODEL_CREDIT_COSTS = {
+  chat: {
+    "gemini-flash": 1,
+    "gpt-mini": 1,
+    "gpt": 4,
+    "claude-sonnet": 4,
+    "perplexity": 5,
+  },
+  analysis: {
+    "gemini-flash": 5,
+    "gpt-mini": 5,
+    "gpt": 8,
+    "claude-sonnet": 8,
+    "perplexity": 10,
+  },
 } as const;
 
 export const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"] as const;
@@ -21,9 +34,9 @@ export function isExpensiveModel(modelId: string): boolean {
 }
 
 export function getChatCreditCost(modelId: string): number {
-  return isExpensiveModel(modelId) ? CREDIT_COSTS.chat.expensive : CREDIT_COSTS.chat.cheap;
+  return (MODEL_CREDIT_COSTS.chat as Record<string, number>)[modelId] ?? 1;
 }
 
 export function getAnalysisCreditCost(modelId: string): number {
-  return isExpensiveModel(modelId) ? CREDIT_COSTS.analysis.expensive : CREDIT_COSTS.analysis.cheap;
+  return (MODEL_CREDIT_COSTS.analysis as Record<string, number>)[modelId] ?? 5;
 }

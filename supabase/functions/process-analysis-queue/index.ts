@@ -165,6 +165,11 @@ SCORING GUIDELINES (0-100 for each category):
 
 **conversionReadiness**: CTAs, booking forms, contact options, clear next steps.
 
+If Google PageSpeed data is provided in the context, use it to anchor your scores:
+- findability: Weight Google's SEO score heavily (within +/-10 points of Google's value)
+- mobileUsability: Factor in Performance score and Core Web Vitals (LCP < 2.5s = good, > 4s = poor)
+- Reference these objective metrics in the strengths/weaknesses where relevant
+
 IMPORTANT: When technical data shows "MISSING", reflect this proportionally in the scores and mention it in weaknesses. Missing elements are real weaknesses even if some may be injected dynamically. Score based on what is actually verifiable in the provided data.
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
@@ -339,6 +344,64 @@ async function routeAnalysis(model: ModelId, content: string): Promise<unknown> 
   }
 }
 
+// ─── PageSpeed Insights ───
+
+interface PageSpeedResult {
+  performance: number;
+  accessibility: number;
+  bestPractices: number;
+  seo: number;
+  coreWebVitals: {
+    lcp: number | null;
+    cls: number | null;
+    fcp: number | null;
+    tbt: number | null;
+    speedIndex: number | null;
+  };
+}
+
+async function fetchPageSpeedData(url: string, apiKey: string): Promise<PageSpeedResult | null> {
+  try {
+    const params = new URLSearchParams({
+      url,
+      strategy: "mobile",
+      category: "performance",
+      key: apiKey,
+    });
+    // Add remaining categories
+    params.append("category", "accessibility");
+    params.append("category", "best-practices");
+    params.append("category", "seo");
+
+    const resp = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
+    if (!resp.ok) {
+      console.warn(`PageSpeed API returned ${resp.status} for ${url}`);
+      return null;
+    }
+
+    const data = await resp.json();
+    const cats = data.lighthouseResult?.categories || {};
+    const audits = data.lighthouseResult?.audits || {};
+
+    return {
+      performance: Math.round((cats.performance?.score ?? 0) * 100),
+      accessibility: Math.round((cats.accessibility?.score ?? 0) * 100),
+      bestPractices: Math.round((cats["best-practices"]?.score ?? 0) * 100),
+      seo: Math.round((cats.seo?.score ?? 0) * 100),
+      coreWebVitals: {
+        lcp: audits["largest-contentful-paint"]?.numericValue ?? null,
+        cls: audits["cumulative-layout-shift"]?.numericValue ?? null,
+        fcp: audits["first-contentful-paint"]?.numericValue ?? null,
+        tbt: audits["total-blocking-time"]?.numericValue ?? null,
+        speedIndex: audits["speed-index"]?.numericValue ?? null,
+      },
+    };
+  } catch (err) {
+    console.warn("PageSpeed fetch failed (non-blocking):", err);
+    return null;
+  }
+}
+
 // ─── Queue Processing ───
 
 async function processQueue() {
@@ -495,12 +558,23 @@ async function processQueue() {
       const externalLinks = crawlLinks.length - internalLinks;
 
       const truncatedMarkdown = markdown.substring(0, 30000);
-      const enrichedContent = buildEnrichedContext(
+      let enrichedContent = buildEnrichedContext(
         job.url,
         truncatedMarkdown,
         seoData,
         { internal: internalLinks, external: externalLinks }
       );
+
+      // Fetch PageSpeed data (non-blocking)
+      const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
+      let pagespeedData: PageSpeedResult | null = null;
+      if (pagespeedApiKey) {
+        pagespeedData = await fetchPageSpeedData(job.url, pagespeedApiKey);
+        if (pagespeedData) {
+          const cwv = pagespeedData.coreWebVitals;
+          enrichedContent += `\n\n=== GOOGLE PAGESPEED DATA (objective, verified by Google) ===\nPerformance: ${pagespeedData.performance}/100\nAccessibility: ${pagespeedData.accessibility}/100\nBest Practices: ${pagespeedData.bestPractices}/100\nSEO: ${pagespeedData.seo}/100\nCore Web Vitals: LCP=${cwv.lcp ? (cwv.lcp / 1000).toFixed(1) + "s" : "N/A"}, CLS=${cwv.cls?.toFixed(3) ?? "N/A"}, FCP=${cwv.fcp ? (cwv.fcp / 1000).toFixed(1) + "s" : "N/A"}, TBT=${cwv.tbt ? Math.round(cwv.tbt) + "ms" : "N/A"}`;
+        }
+      }
 
       // Update status to analyzing
       await supabaseAdmin
@@ -516,15 +590,22 @@ async function processQueue() {
       )) as Record<string, unknown>;
 
       // Update website_profile with results
+      const updatePayload: Record<string, unknown> = {
+        status: "completed",
+        profile_data: analysisResult.profileData,
+        category_scores: analysisResult.categoryScores,
+        overall_score: analysisResult.overallScore,
+        error_message: null,
+      };
+
+      // Add pagespeed_data if column exists (graceful fallback)
+      if (pagespeedData) {
+        updatePayload.pagespeed_data = pagespeedData;
+      }
+
       await supabaseAdmin
         .from("website_profiles")
-        .update({
-          status: "completed",
-          profile_data: analysisResult.profileData,
-          category_scores: analysisResult.categoryScores,
-          overall_score: analysisResult.overallScore,
-          error_message: null,
-        })
+        .update(updatePayload)
         .eq("id", job.profile_id);
 
       // Mark queue job as completed

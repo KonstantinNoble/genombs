@@ -1,57 +1,80 @@
 
 
-## Fix: PageSpeed Debug-Logging hinzufuegen
+## Homepage und Pricing modernisieren
 
-### Problem
+Beide Seiten werden visuell aufgefrischt und inhaltlich aktualisiert -- ohne Gradients, ohne Emojis/Icons, nur mit Typografie, Spacing und klaren Strukturen.
 
-Der Code ueberspringt PageSpeed still, wenn das Secret `PAGESPEED_GOOGLE` nicht gefunden wird. Es gibt kein Logging, das zeigt ob der Key geladen wurde -- daher keine Diagnose moeglich.
+---
 
-### Aenderung
+### Homepage (Home.tsx)
 
-**Datei:** `supabase/functions/process-analysis-queue/index.ts`
+**Hero-Bereich**
+- Groessere Headline mit besserem Zeilenabstand
+- Subtitel kompakter und praegnanter formuliert
+- Mini-Preview-Card entfernen (wirkt veraltet) -- stattdessen ein einfacher Social-Proof-Satz direkt unter den Buttons ("Trusted by 500+ businesses")
 
-An 3 Stellen wird Logging hinzugefuegt:
+**Stats-Leiste**
+- Aktualisierte Werte und besseres visuelles Gewicht
+- Trennlinien zwischen den einzelnen Stats auf Desktop
 
-1. **Zeile 569-577** -- Nach dem Lesen des Secrets:
-```
-const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
-if (pagespeedApiKey) {
-  console.log("PAGESPEED_GOOGLE key found, fetching PageSpeed data...");
-  pagespeedData = await fetchPageSpeedData(job.url, pagespeedApiKey);
-  if (pagespeedData) {
-    console.log("PageSpeed data received:", JSON.stringify(pagespeedData));
-    // ... append to enrichedContent (wie bisher)
-  } else {
-    console.warn("PageSpeed returned null for URL:", job.url);
-  }
-} else {
-  console.warn("PAGESPEED_GOOGLE secret NOT FOUND -- skipping PageSpeed");
-}
-```
+**Features-Sektion**
+- Drei-Spalten-Layout beibehalten, aber mit groesseren Titeln und mehr Whitespace
+- Nummern (01, 02, 03) prominent als dekorative Elemente
 
-2. **Zeile 376-379** -- In `fetchPageSpeedData`, bei API-Fehler den Response-Body loggen:
-```
-if (!resp.ok) {
-  const errorBody = await resp.text();
-  console.warn(`PageSpeed API error ${resp.status} for ${url}:`, errorBody);
-  return null;
-}
-```
+**Use Cases**
+- Von 2x2 Grid zu einem vertikalen, abwechselnden Layout (Text links/rechts)
+- Oder alternativ: kompaktere Cards mit klarerem Scan-Flow
 
-### Was du nach dem Deploy tun musst
+**How it Works**
+- Horizontale Timeline-Darstellung mit verbindenden Linien zwischen den Schritten
+- Klarer visueller Fortschritt von Schritt 1 zu 3
 
-1. Deploye die Edge Function auf deine externe Instanz
-2. Fuehre eine Analyse aus
-3. Pruefe die Edge Function Logs im Supabase Dashboard (Logs -> Edge Functions -> process-analysis-queue)
-4. Dort siehst du dann entweder:
-   - "PAGESPEED_GOOGLE secret NOT FOUND" -> Secret-Name pruefen
-   - "PageSpeed API error 403" -> API-Key ungueltig oder API nicht aktiviert
-   - "PageSpeed data received" -> Alles funktioniert
+**Comparison Table**
+- Aufgeraeumt mit besserem Kontrast fuer "Yes/No"-Werte
+- Primaerfarbe fuer Business-Genome-Spalte beibehalten
 
-### Checkliste fuer deine externe Instanz
+**Testimonials**
+- Groessere Zitat-Schrift, sauberere Cards
+- Dezenter Rahmen statt grossem Anfuehrungszeichen
 
-- [ ] Secret heisst exakt `PAGESPEED_GOOGLE` (Settings -> Edge Functions -> Secrets)
-- [ ] Google PageSpeed API ist in der Google Cloud Console aktiviert
-- [ ] API-Key hat keine Domain-Einschraenkung die den Server-Aufruf blockiert
-- [ ] `pagespeed_data` Spalte existiert in `website_profiles`
+**CTA-Bereich**
+- Link-Fix: "/dashboard" zu "/chat" aendern (Dashboard existiert nicht mehr)
+- Kompakterer, staerkerer Call-to-Action
+
+**FAQ**
+- Bleibt wie gehabt (FAQSection-Komponente)
+
+---
+
+### Pricing (Pricing.tsx)
+
+**Hero**
+- Kompakterer Header mit weniger vertikalem Abstand
+
+**Pricing Cards**
+- Visuell staerker differenziert: Free-Card schlichter, Premium-Card mit leichtem primary-Hintergrund-Tint (bg-primary/5)
+- Preis prominenter dargestellt
+- Feature-Listen mit besserem Spacing und klarerer "included/not included"-Darstellung
+
+**Trust Badges**
+- In einer horizontalen Linie unter den Cards, mit Trennstrichen
+
+**Feature Comparison Table**
+- Besserer visueller Kontrast, sauberere Zellen
+
+**CTA-Bereich**
+- Staerker hervorgehoben mit einem umrandeten Container
+
+---
+
+### Technische Details
+
+**Geaenderte Dateien:**
+1. `src/pages/Home.tsx` -- Komplettes Redesign der Sektionen (Struktur bleibt gleich, nur visuelles Upgrade)
+2. `src/pages/Pricing.tsx` -- Visuelles Upgrade der Cards und Sektionen
+3. `src/components/genome/FeatureComparisonTable.tsx` -- Kleinere visuelle Verbesserungen (Spacing, Kontrast)
+
+**Keine neuen Abhaengigkeiten noetig.** Alles wird mit vorhandenen Tailwind-Klassen und shadcn/ui-Komponenten umgesetzt.
+
+**Keine Icons/Emojis, keine Gradients** -- nur Typografie, Farbe (primary = Orange), Borders und Whitespace.
 

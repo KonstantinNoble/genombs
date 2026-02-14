@@ -148,10 +148,6 @@ const Home = () => {
       answer: "Most scans complete in under 60 seconds. Complex websites with many pages may take slightly longer. You'll see a real-time status update while the scan is running.",
     },
     {
-      question: "Can I export reports?",
-      answer: "Yes — Premium users can export any Growth Report as a professionally formatted PDF. Useful for sharing with team members, clients, or stakeholders.",
-    },
-    {
       question: "Is my data secure?",
       answer: "Absolutely. We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
     },

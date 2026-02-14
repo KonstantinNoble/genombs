@@ -46,8 +46,6 @@ const PricingPage = () => {
     { text: "AI Chat", included: true },
     { text: "Premium AI models (GPT-4o, Claude, Perplexity)", included: false },
     { text: "Up to 3 competitor URLs", included: false },
-    { text: "PDF export", included: false },
-    { text: "Priority support", included: false },
   ];
 
   const premiumFeatures = [
@@ -58,8 +56,6 @@ const PricingPage = () => {
     { text: "5 scoring categories", included: true },
     { text: "PageSpeed Insights", included: true },
     { text: "AI Chat with all models", included: true },
-    { text: "PDF export", included: true },
-    { text: "Priority support", included: true },
   ];
 
   const pricingFAQ = [

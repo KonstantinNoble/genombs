@@ -8,22 +8,17 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { name: "Scans per month", free: "3", premium: "Unlimited" },
-  { name: "Business Snapshot", free: "Basics", premium: "Full" },
-  { name: "Performance Radar Chart", free: true, premium: true },
-  { name: "Score Insights + Next Steps", free: false, premium: true },
-  { name: "Industry Benchmarks", free: false, premium: true },
-  { name: "ICP Profiles (basics)", free: true, premium: true },
-  { name: "ICP Buying Triggers & Objections", free: false, premium: true },
-  { name: "Channel Overview (basics)", free: true, premium: true },
-  { name: "SEO Keywords + Paid Data", free: false, premium: true },
-  { name: "Channel Links, Formats & Frequency", free: false, premium: true },
-  { name: "Optimization Recommendations", free: true, premium: true },
-  { name: "Optimization Effort & Outcomes", free: false, premium: true },
-  { name: "Competitor Analysis", free: false, premium: true },
+  { name: "Daily credits", free: "20", premium: "100" },
+  { name: "Daily credit reset", free: true, premium: true },
+  { name: "AI models", free: "2 (Gemini Flash, GPT Mini)", premium: "All 5" },
+  { name: "Competitor URLs", free: "1", premium: "Up to 3" },
+  { name: "Scoring categories", free: "5", premium: "5" },
+  { name: "PageSpeed Insights", free: true, premium: true },
+  { name: "AI Chat", free: true, premium: true },
+  { name: "Premium models (GPT-4o, Claude, Perplexity)", free: false, premium: true },
   { name: "PDF export", free: false, premium: true },
-  { name: "API access", free: false, premium: false, comingSoon: true },
   { name: "Priority support", free: false, premium: true },
+  { name: "API access", free: false, premium: false, comingSoon: true },
 ];
 
 const renderCell = (value: boolean | string, comingSoon?: boolean) => {

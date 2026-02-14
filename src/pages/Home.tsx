@@ -123,45 +123,25 @@ const Home = () => {
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
     { feature: "Data Depth", genome: "7 structured sections", traditional: "Surface-level overview" },
-    { feature: "Cost per Scan", genome: "Free / $26.99/mo unlimited", traditional: "$500+ per report" },
-    { feature: "Automation", genome: "Yes", traditional: "No" },
+    { feature: "Cost", genome: "Free daily credits / $26.99/mo", traditional: "$500+ per report" },
+    { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
     { feature: "Actionable Strategies", genome: "Yes", traditional: "No" },
   ];
 
-  const testimonials = [
-    {
-      quote: "We scanned our site before our Series A pitch. The ICP analysis and market sizing data gave us the ammunition we needed.",
-      name: "Sarah K.",
-      role: "Founder",
-      company: "TechVentures Inc.",
-    },
-    {
-      quote: "The audience channel recommendations alone were worth it. We found that our ICP is most active on communities we weren't even considering.",
-      name: "Marcus L.",
-      role: "Head of Growth",
-      company: "GrowthStack",
-    },
-    {
-      quote: "Business Genome replaced our quarterly agency reports. Faster, cheaper, and more actionable.",
-      name: "Dr. Elena M.",
-      role: "Strategy Lead",
-      company: "Innovate Partners",
-    },
-  ];
 
   const homeFAQ = [
     {
       question: "What is a Growth Report?",
-      answer: "A Growth Report is a structured analysis generated from your website. It identifies your ideal customers, where to find them, how to optimize your site, and which growth strategies to pursue — all based on your actual content and positioning.",
+      answer: "A Growth Report is a structured analysis generated from your website. It scores your site across 5 categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness — and provides ICP profiles, audience channels, and optimization recommendations.",
     },
     {
-      question: "How accurate is the analysis?",
-      answer: "Our AI engine combines web crawling, content extraction, and large language model analysis to achieve high accuracy. The system surfaces verifiable data points and clearly labels inferences. Traffic data comes from SimilarWeb for premium users.",
+      question: "How does the credit system work?",
+      answer: "You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model, and each chat message costs 1–5 credits. Credits reset automatically every 24 hours.",
     },
     {
-      question: "What data sources do you use?",
-      answer: "We crawl your website's publicly available pages, extract structured data, and analyze content patterns using AI. For premium users, we also integrate SimilarWeb traffic data for visitor estimates, keywords, and traffic source breakdowns.",
+      question: "What AI models are available?",
+      answer: "Free users have access to Gemini Flash and GPT Mini. Premium users unlock all 5 models: Gemini Flash, GPT Mini, GPT-4o, Claude Sonnet, and Perplexity.",
     },
     {
       question: "How long does a scan take?",
@@ -169,7 +149,7 @@ const Home = () => {
     },
     {
       question: "Can I export reports?",
-      answer: "Yes — premium users can export any Growth Report as a professionally formatted PDF. Useful for sharing with team members, clients, or stakeholders.",
+      answer: "Yes — Premium users can export any Growth Report as a professionally formatted PDF. Useful for sharing with team members, clients, or stakeholders.",
     },
     {
       question: "Is my data secure?",
@@ -178,10 +158,10 @@ const Home = () => {
   ];
 
   const stats = [
-    { value: "500+", label: "Websites Scanned" },
-    { value: "12", label: "Market Segments" },
+    { value: "5", label: "AI Models" },
+    { value: "5", label: "Score Categories" },
     { value: "<60s", label: "Per Scan" },
-    { value: "7", label: "Report Sections" },
+    { value: "✓", label: "PageSpeed Included" },
   ];
 
   return (
@@ -230,7 +210,7 @@ const Home = () => {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-8">
-            Trusted by 500+ businesses worldwide
+            20 free credits per day — no credit card required
           </p>
         </div>
       </section>
@@ -383,29 +363,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 sm:py-32 border-t border-border">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              Trusted by founders and growth teams
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t) => (
-              <div key={t.name} className="border border-border rounded-xl p-8 space-y-6">
-                <p className="text-base text-foreground leading-relaxed italic">
-                  "{t.quote}"
-                </p>
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{t.role}, {t.company}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* FAQ */}
       <section className="py-24 sm:py-32 border-t border-border">
@@ -421,7 +378,7 @@ const Home = () => {
             Ready to grow your business?
           </h2>
           <p className="text-lg text-muted-foreground mb-10">
-            Start with 3 free scans per month. No credit card required.
+            20 free credits per day. No credit card required.
           </p>
           <Button size="lg" asChild className="text-base px-10 h-13">
             <Link to={isLoggedIn ? "/chat" : "/auth"}>

@@ -65,6 +65,9 @@ const Chat = () => {
   const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({ isOpen: false, conversationId: null });
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const expectedProfileCountRef = useRef<number>(0);
+  const summaryModelRef = useRef<string | undefined>(undefined);
+  const summaryTokenRef = useRef<string>("");
 
   // ─── Load conversations on mount ───
   useEffect(() => {
@@ -146,12 +149,25 @@ const Chat = () => {
         () => {
           if (realtimePausedRef.current) return;
           // Reload profiles on any change
-          loadProfiles(activeId).then((ps) => {
+          loadProfiles(activeId).then(async (ps) => {
             const deduped = deduplicateProfiles(ps);
             setProfiles(deduped);
             const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
             if (completedIds.length > 0) {
               loadTasks(completedIds).then(setTasks).catch(console.error);
+            }
+
+            // Check if all expected profiles are done → trigger summary
+            const expected = expectedProfileCountRef.current;
+            if (expected > 0) {
+              const doneCount = deduped.filter((p) => p.status === "completed" || p.status === "error").length;
+              if (doneCount >= expected) {
+                expectedProfileCountRef.current = 0;
+                const completed = deduped.filter((p) => p.status === "completed");
+                if (completed.length > 0) {
+                  generateSummary(completed, summaryTokenRef.current, summaryModelRef.current);
+                }
+              }
             }
           });
         }
@@ -300,6 +316,51 @@ const Chat = () => {
     }
   };
 
+  // ─── Generate AI summary after all profiles complete ───
+  const generateSummary = useCallback(async (completed: WebsiteProfile[], accessToken: string, model?: string) => {
+    if (!activeId) return;
+    try {
+      const summaryLines = completed.map((p) => {
+        const pd = p.profile_data;
+        const scores = p.category_scores;
+        return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
+      });
+
+      const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
+
+      const chatHistory = [{ role: "user", content: summaryPrompt }];
+
+      let assistantContent = "";
+      const tempId = `temp-summary-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        { id: tempId, conversation_id: activeId, role: "assistant" as const, content: "", created_at: new Date().toISOString() },
+      ]);
+      setIsStreaming(true);
+
+      await streamChat({
+        messages: chatHistory,
+        conversationId: activeId,
+        accessToken,
+        model,
+        onDelta: (delta) => {
+          assistantContent += delta;
+          setMessages((prev) =>
+            prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m))
+          );
+        },
+        onDone: () => {},
+      });
+
+      const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
+      setIsStreaming(false);
+    } catch (e) {
+      console.error("Summary generation failed:", e);
+      setIsStreaming(false);
+    }
+  }, [activeId]);
+
   // ─── Start analysis (scan) ───
   const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string) => {
     if (!activeId || !user) return;
@@ -382,58 +443,10 @@ const Chat = () => {
       );
       toast.success("Analysis started! Results will appear in the dashboard.");
 
-      // Wait for realtime updates, then generate AI summary
-      setTimeout(async () => {
-        try {
-          const freshProfiles = await loadProfiles(activeId);
-          setProfiles(freshProfiles);
-          const completedIds = freshProfiles.filter(p => p.status === "completed").map(p => p.id);
-          if (completedIds.length > 0) {
-            loadTasks(completedIds).then(setTasks).catch(console.error);
-          }
-          const completed = freshProfiles.filter((p) => p.status === "completed");
-          if (completed.length === 0) return;
-
-          const summaryLines = completed.map((p) => {
-            const pd = p.profile_data;
-            const scores = p.category_scores;
-            return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
-          });
-
-          const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
-
-          const chatHistory = [{ role: "user", content: summaryPrompt }];
-
-          let assistantContent = "";
-          const tempId = `temp-summary-${Date.now()}`;
-          setMessages((prev) => [
-            ...prev,
-            { id: tempId, conversation_id: activeId, role: "assistant" as const, content: "", created_at: new Date().toISOString() },
-          ]);
-          setIsStreaming(true);
-
-          await streamChat({
-            messages: chatHistory,
-            conversationId: activeId,
-            accessToken: token,
-            model,
-            onDelta: (delta) => {
-              assistantContent += delta;
-              setMessages((prev) =>
-                prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m))
-              );
-            },
-            onDone: () => {},
-          });
-
-          const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
-          setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
-          setIsStreaming(false);
-        } catch (e) {
-          console.error("Summary generation failed:", e);
-          setIsStreaming(false);
-        }
-      }, 3000);
+      // Set expected count so realtime subscription triggers summary when all done
+      expectedProfileCountRef.current = allUrls.length;
+      summaryTokenRef.current = token;
+      summaryModelRef.current = model;
     } catch (e) {
       toast.error("Analysis request failed");
       console.error(e);

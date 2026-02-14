@@ -16,7 +16,6 @@ const features: Feature[] = [
   { name: "PageSpeed Insights", free: true, premium: true },
   { name: "AI Chat", free: true, premium: true },
   { name: "Premium models (GPT-4o, Claude, Perplexity)", free: false, premium: true },
-  { name: "API access", free: false, premium: false, comingSoon: true },
 ];
 
 const renderCell = (value: boolean | string, comingSoon?: boolean) => {

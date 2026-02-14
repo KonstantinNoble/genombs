@@ -61,21 +61,21 @@ const Home = () => {
   const features = [
     {
       num: "01",
-      title: "ICP Builder",
+      title: "Website Scoring",
       description:
-        "Automatically identify your ideal customer profile — demographics, pain points, and goals — from your website content.",
+        "AI evaluates your website across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness.",
     },
     {
       num: "02",
-      title: "Audience Discovery",
+      title: "Competitor Analysis",
       description:
-        "Find out where your potential customers hang out online — from Reddit and LinkedIn to niche communities and forums.",
+        "Compare your website against up to 3 competitors. See strengths, weaknesses, and score differences at a glance.",
     },
     {
       num: "03",
-      title: "Growth Playbook",
+      title: "Improvement Plan",
       description:
-        "Get a complete growth strategy — organic and paid — with concrete channel recommendations, budgets, and targeting tips.",
+        "Get concrete, prioritized optimization tasks based on the AI analysis of your website — ready to execute.",
     },
   ];
 
@@ -92,48 +92,48 @@ const Home = () => {
     },
     {
       step: "03",
-      title: "Get your Growth Report",
-      description: "Receive a structured report with ICP, audience channels, optimizations, and strategies.",
+      title: "Get your analysis",
+      description: "Receive scores across 5 categories, competitor comparisons, PageSpeed data, and an improvement plan.",
     },
   ];
 
   const useCases = [
     {
-      title: "Launch Optimization",
-      description: "Preparing to launch? Scan your site to find messaging gaps, missing trust elements, and funnel weaknesses before you go live.",
+      title: "Pre-Launch Check",
+      description: "Scan your site before launch to uncover messaging gaps, missing trust signals, and conversion weaknesses.",
       badge: "Pre-Launch",
     },
     {
-      title: "Customer Acquisition",
-      description: "Discover where your audience hangs out and which channels will drive the highest-quality traffic to your business.",
-      badge: "Growth",
+      title: "Competitor Benchmarking",
+      description: "Compare your scores side-by-side with up to 3 competitors. See exactly where you lead and where you fall behind.",
+      badge: "Comparison",
     },
     {
-      title: "Ad Strategy",
-      description: "Get concrete paid advertising recommendations — channels, budgets, formats, and targeting strategies tailored to your segment.",
-      badge: "Revenue",
+      title: "Conversion Optimization",
+      description: "Improve your CTAs, trust elements, and offer clarity based on AI-generated scoring and actionable improvement tasks.",
+      badge: "Optimization",
     },
     {
-      title: "Content Planning",
-      description: "Understand what content formats and topics resonate with your audience. Find the gaps your competitors miss.",
-      badge: "Content",
+      title: "Performance Monitoring",
+      description: "Track your PageSpeed scores and Core Web Vitals. Understand how technical performance impacts your user experience.",
+      badge: "Performance",
     },
   ];
 
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
-    { feature: "Data Depth", genome: "7 structured sections", traditional: "Surface-level overview" },
+    { feature: "Data Depth", genome: "5 scoring categories + PageSpeed", traditional: "Surface-level overview" },
     { feature: "Cost", genome: "Free daily credits / $26.99/mo", traditional: "$500+ per report" },
     { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
-    { feature: "Actionable Strategies", genome: "Yes", traditional: "No" },
+    { feature: "Improvement Tasks", genome: "Yes", traditional: "No" },
   ];
 
 
   const homeFAQ = [
     {
-      question: "What is a Growth Report?",
-      answer: "A Growth Report is a structured analysis generated from your website. It scores your site across 5 categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness — and provides ICP profiles, audience channels, and optimization recommendations.",
+      question: "What is a Website Analysis?",
+      answer: "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness — and includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
     },
     {
       question: "How does the credit system work?",
@@ -164,8 +164,8 @@ const Home = () => {
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
         title="Business Genome – Turn your website into a growth engine"
-        description="Scan your website and get a complete growth playbook — ICP, audience channels, optimization tips, and growth strategies in under 60 seconds."
-        keywords="business growth, website analysis, ICP builder, audience discovery, growth strategy, SaaS analytics"
+        description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
+        keywords="website analysis, website scoring, competitor analysis, PageSpeed insights, conversion optimization, SEO audit"
         canonical="/"
         ogImage="https://synoptas.com/synoptas-favicon.png"
       />
@@ -193,7 +193,7 @@ const Home = () => {
             <span className="text-primary">a growth engine</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            One URL. One scan. A complete growth playbook with ICP, audience channels, and strategies — in under 60 seconds.
+            One URL. One scan. AI-powered website scoring, competitor analysis, and an improvement plan — in under 60 seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-base px-8 h-13">
@@ -238,7 +238,7 @@ const Home = () => {
               Everything you need to grow
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              One URL. One scan. A complete growth playbook.
+              One scan. Five scoring categories. Actionable results.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
@@ -295,7 +295,7 @@ const Home = () => {
               How it works
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              From URL to growth playbook in under 60 seconds.
+              From URL to actionable insights in under 60 seconds.
             </p>
           </div>
           {/* Horizontal timeline */}

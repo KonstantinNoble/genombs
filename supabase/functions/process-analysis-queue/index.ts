@@ -375,7 +375,8 @@ async function fetchPageSpeedData(url: string, apiKey: string): Promise<PageSpee
 
     const resp = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
     if (!resp.ok) {
-      console.warn(`PageSpeed API returned ${resp.status} for ${url}`);
+      const errorBody = await resp.text();
+      console.warn(`PageSpeed API error ${resp.status} for ${url}:`, errorBody);
       return null;
     }
 
@@ -569,11 +570,17 @@ async function processQueue() {
       const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
       let pagespeedData: PageSpeedResult | null = null;
       if (pagespeedApiKey) {
+        console.log("PAGESPEED_GOOGLE key found, fetching PageSpeed data...");
         pagespeedData = await fetchPageSpeedData(job.url, pagespeedApiKey);
         if (pagespeedData) {
+          console.log("PageSpeed data received:", JSON.stringify(pagespeedData));
           const cwv = pagespeedData.coreWebVitals;
           enrichedContent += `\n\n=== GOOGLE PAGESPEED DATA (objective, verified by Google) ===\nPerformance: ${pagespeedData.performance}/100\nAccessibility: ${pagespeedData.accessibility}/100\nBest Practices: ${pagespeedData.bestPractices}/100\nSEO: ${pagespeedData.seo}/100\nCore Web Vitals: LCP=${cwv.lcp ? (cwv.lcp / 1000).toFixed(1) + "s" : "N/A"}, CLS=${cwv.cls?.toFixed(3) ?? "N/A"}, FCP=${cwv.fcp ? (cwv.fcp / 1000).toFixed(1) + "s" : "N/A"}, TBT=${cwv.tbt ? Math.round(cwv.tbt) + "ms" : "N/A"}`;
+        } else {
+          console.warn("PageSpeed returned null for URL:", job.url);
         }
+      } else {
+        console.warn("PAGESPEED_GOOGLE secret NOT FOUND -- skipping PageSpeed");
       }
 
       // Update status to analyzing

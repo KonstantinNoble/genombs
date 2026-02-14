@@ -1,80 +1,63 @@
 
 
-## Homepage und Pricing modernisieren
+## Homepage und Pricing: Inhaltliche Korrektur
 
-Beide Seiten werden visuell aufgefrischt und inhaltlich aktualisiert -- ohne Gradients, ohne Emojis/Icons, nur mit Typografie, Spacing und klaren Strukturen.
+Alle Texte, Zahlen und Feature-Listen werden an die tatsaechlichen Produktfunktionen angepasst, die aus dem Code abgeleitet wurden.
 
 ---
 
-### Homepage (Home.tsx)
+### Was ist falsch und wie wird es korrigiert
 
-**Hero-Bereich**
-- Groessere Headline mit besserem Zeilenabstand
-- Subtitel kompakter und praegnanter formuliert
-- Mini-Preview-Card entfernen (wirkt veraltet) -- stattdessen ein einfacher Social-Proof-Satz direkt unter den Buttons ("Trusted by 500+ businesses")
+**Credit-System (statt "3 Scans/Monat")**
+- Tatsaechlich: Taegliches Credit-System
+- Free: 20 Credits/Tag, Premium: 100 Credits/Tag
+- Scan-Kosten variieren je nach Modell (5-10 Credits), Chat-Kosten 1-5 Credits
+- Darstellung: "20 daily credits" (Free) / "100 daily credits" (Premium)
+
+**Feature-Listen (Free vs Premium)**
+Die tatsaechlichen Unterschiede aus dem Code:
+- Free: 2 URL-Felder (eigene + 1 Competitor), Standard-Modelle (Gemini Flash, GPT Mini)
+- Premium: 4 URL-Felder (eigene + 3 Competitors), Alle AI-Modelle, PDF-Export, Priority Support
+- Scoring-Kategorien (beide): Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness
+- PageSpeed Insights (beide Tiers)
+- AI Chat (beide, aber Premium hat mehr Modelle)
 
 **Stats-Leiste**
-- Aktualisierte Werte und besseres visuelles Gewicht
-- Trennlinien zwischen den einzelnen Stats auf Desktop
-
-**Features-Sektion**
-- Drei-Spalten-Layout beibehalten, aber mit groesseren Titeln und mehr Whitespace
-- Nummern (01, 02, 03) prominent als dekorative Elemente
-
-**Use Cases**
-- Von 2x2 Grid zu einem vertikalen, abwechselnden Layout (Text links/rechts)
-- Oder alternativ: kompaktere Cards mit klarerem Scan-Flow
-
-**How it Works**
-- Horizontale Timeline-Darstellung mit verbindenden Linien zwischen den Schritten
-- Klarer visueller Fortschritt von Schritt 1 zu 3
-
-**Comparison Table**
-- Aufgeraeumt mit besserem Kontrast fuer "Yes/No"-Werte
-- Primaerfarbe fuer Business-Genome-Spalte beibehalten
+- "500+ Websites Scanned" entfernen (nicht belegbar)
+- "12 Market Segments" entfernen (nicht belegbar)
+- Ersetzen durch verifizierbare Fakten: "5 AI Models", "5 Score Categories", "< 60s Per Scan", "PageSpeed Included"
 
 **Testimonials**
-- Groessere Zitat-Schrift, sauberere Cards
-- Dezenter Rahmen statt grossem Anfuehrungszeichen
+- Komplette Sektion entfernen (fiktive Personen/Firmen sind unserioes)
+- Alternativ: Platzhalter-Sektion mit "Join hundreds of businesses..." ohne Fake-Zitate
 
-**CTA-Bereich**
-- Link-Fix: "/dashboard" zu "/chat" aendern (Dashboard existiert nicht mehr)
-- Kompakterer, staerkerer Call-to-Action
+**FAQ (Homepage)**
+- "SimilarWeb traffic data" Referenz entfernen (nicht implementiert)
+- "3 free growth reports" korrigieren zu Credit-System-Beschreibung
+- Antworten an tatsaechliche Features anpassen
 
-**FAQ**
-- Bleibt wie gehabt (FAQSection-Komponente)
+**Comparison Table (Homepage)**
+- "Cost per Scan" Zeile: "Free / $26.99/mo unlimited" aendern zu "Free daily credits / $26.99/mo"
+- Rest bleibt weitgehend korrekt
 
----
+**Pricing Page spezifisch**
+- Free Card: "3 growth reports per month" aendern zu "20 credits per day"
+- Premium Card: "Unlimited growth reports" aendern zu "100 credits per day"
+- Feature-Listen komplett ueberarbeiten basierend auf tatsaechlichen Code-Features
+- FAQ: "What happens when I hit the free limit?" anpassen an taegliches Reset
 
-### Pricing (Pricing.tsx)
-
-**Hero**
-- Kompakterer Header mit weniger vertikalem Abstand
-
-**Pricing Cards**
-- Visuell staerker differenziert: Free-Card schlichter, Premium-Card mit leichtem primary-Hintergrund-Tint (bg-primary/5)
-- Preis prominenter dargestellt
-- Feature-Listen mit besserem Spacing und klarerer "included/not included"-Darstellung
-
-**Trust Badges**
-- In einer horizontalen Linie unter den Cards, mit Trennstrichen
-
-**Feature Comparison Table**
-- Besserer visueller Kontrast, sauberere Zellen
-
-**CTA-Bereich**
-- Staerker hervorgehoben mit einem umrandeten Container
+**FeatureComparisonTable.tsx**
+- "Scans per month: 3 / Unlimited" aendern zu "Daily credits: 20 / 100"
+- Feature-Zeilen an tatsaechliche Produkt-Features anpassen
+- Neue Zeilen: "AI Models", "Competitor URLs", "Daily Credit Reset"
 
 ---
 
-### Technische Details
+### Geaenderte Dateien
 
-**Geaenderte Dateien:**
-1. `src/pages/Home.tsx` -- Komplettes Redesign der Sektionen (Struktur bleibt gleich, nur visuelles Upgrade)
-2. `src/pages/Pricing.tsx` -- Visuelles Upgrade der Cards und Sektionen
-3. `src/components/genome/FeatureComparisonTable.tsx` -- Kleinere visuelle Verbesserungen (Spacing, Kontrast)
+1. `src/pages/Home.tsx` — Stats, Features, Use Cases, Comparison Table, Testimonials, FAQ, CTA-Texte
+2. `src/pages/Pricing.tsx` — Feature-Listen (Free/Premium), FAQ-Antworten, Preis-Beschreibungen
+3. `src/components/genome/FeatureComparisonTable.tsx` — Alle Feature-Zeilen an tatsaechliche Funktionen anpassen
 
-**Keine neuen Abhaengigkeiten noetig.** Alles wird mit vorhandenen Tailwind-Klassen und shadcn/ui-Komponenten umgesetzt.
-
-**Keine Icons/Emojis, keine Gradients** -- nur Typografie, Farbe (primary = Orange), Borders und Whitespace.
+Keine neuen Abhaengigkeiten. Keine strukturellen Aenderungen, nur inhaltliche Korrekturen.
 

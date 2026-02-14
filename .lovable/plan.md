@@ -1,57 +1,58 @@
 
 
-## Google PageSpeed Insights Integration -- Vollstaendiger Implementierungsplan
+## Google PageSpeed Insights Integration
 
-### Vorbedingung: API-Key Secret
+### Architektur-Klarstellung
 
-Das Secret `PAGESPEED_GOOGLE` ist aktuell **nicht** in der Lovable Cloud Umgebung verfuegbar, wo die Edge Functions laufen. Es muss dort als Secret hinzugefuegt werden, bevor die Integration funktioniert. Dies wird im ersten Schritt erledigt.
+- **Lovable Cloud** = nur Frontend (React App)
+- **Externe Supabase (xnkspttfhcnqzhmazggn)** = alle Tabellen, Edge Functions, Cron Jobs, Secrets
+- Der API-Key `PAGESPEED_GOOGLE` liegt als Secret auf der externen Instanz und ist per `Deno.env.get("PAGESPEED_GOOGLE")` in den Edge Functions verfuegbar
 
-### Aenderungsuebersicht
+### Aenderungen
 
-| # | Datei / Aktion | Aenderung |
-|---|----------------|-----------|
-| 1 | Secret hinzufuegen | `PAGESPEED_GOOGLE` API-Key als Lovable Cloud Secret anlegen |
-| 2 | Datenbank-Migration (externe Instanz) | `pagespeed_data jsonb` Spalte in `website_profiles` hinzufuegen |
-| 3 | `supabase/functions/process-analysis-queue/index.ts` | PageSpeed API-Aufruf + Prompt-Erweiterung + Daten speichern |
-| 4 | `src/types/chat.ts` | `PageSpeedData` Interface + Feld in `WebsiteProfile` |
-| 5 | `src/components/dashboard/PageSpeedCard.tsx` (neu) | Score-Anzeige mit Google-Ampelsystem |
-| 6 | `src/components/dashboard/AnalysisTabs.tsx` | Neuer "Technical Performance" Bereich einbauen |
+| # | Wo | Datei | Aenderung |
+|---|----|-------|-----------|
+| 1 | Externe DB (manuell) | SQL im Supabase Dashboard | `pagespeed_data jsonb` Spalte in `website_profiles` |
+| 2 | Lovable (Code) | `supabase/functions/process-analysis-queue/index.ts` | PageSpeed API-Aufruf + Prompt-Erweiterung + Daten speichern |
+| 3 | Lovable (Code) | `src/types/chat.ts` | `PageSpeedData` Interface + Feld in `WebsiteProfile` |
+| 4 | Lovable (Code) | `src/components/dashboard/PageSpeedCard.tsx` (neu) | Score-Anzeige mit Google-Ampelsystem |
+| 5 | Lovable (Code) | `src/components/dashboard/AnalysisTabs.tsx` | Neuer "Performance" Bereich |
 
 ---
 
-### Schritt 1: Secret `PAGESPEED_GOOGLE`
+### Schritt 1: Datenbank-Migration (manuell auf externer Instanz)
 
-Der API-Key wird ueber das Secret-Tool in Lovable Cloud hinterlegt, damit die Edge Function per `Deno.env.get("PAGESPEED_GOOGLE")` darauf zugreifen kann.
-
-### Schritt 2: Datenbank-Migration
+Du fuehrst dieses SQL im Supabase Dashboard deiner externen Instanz aus:
 
 ```sql
 ALTER TABLE public.website_profiles
 ADD COLUMN IF NOT EXISTS pagespeed_data jsonb DEFAULT NULL;
 ```
 
-Diese Migration laeuft auf der externen Supabase-Instanz, auf der alle Tabellen liegen.
+### Schritt 2: Edge Function `process-analysis-queue/index.ts`
 
-### Schritt 3: Edge Function `process-analysis-queue/index.ts`
+**Neue Funktion `fetchPageSpeedData(url: string, apiKey: string)`:**
+- Ruft `https://www.googleapis.com/pagespeedonline/v5/runPagespeed` auf
+- Parameter: `url`, `strategy=mobile`, alle 4 Kategorien, `key={apiKey}`
+- Extrahiert 4 Scores (Performance, Accessibility, Best Practices, SEO) je mal 100
+- Extrahiert Core Web Vitals aus `lighthouseResult.audits` (LCP, CLS, FCP, TBT, Speed Index)
+- Gibt strukturiertes Objekt zurueck oder `null` bei Fehler (non-blocking)
 
-**Neue Funktion `fetchPageSpeedData`** (ca. 40 Zeilen, vor der `processQueue`-Funktion):
+**Integration in `processQueue()` (nach Firecrawl-Crawling, vor KI-Analyse):**
 
-- Liest `PAGESPEED_GOOGLE` per `Deno.env.get()`
-- Ruft `https://www.googleapis.com/pagespeedonline/v5/runPagespeed` auf mit:
-  - `url` = die zu analysierende URL
-  - `strategy=mobile`
-  - `category=performance&category=accessibility&category=best-practices&category=seo`
-  - `key={PAGESPEED_GOOGLE}`
-- Extrahiert aus der Antwort:
-  - 4 Kategorie-Scores (Performance, Accessibility, Best Practices, SEO) -- jeweils `* 100` gerundet
-  - Core Web Vitals: LCP, CLS, FCP, TBT, Speed Index aus `lighthouseResult.audits`
-- Gibt ein strukturiertes Objekt zurueck oder `null` bei Fehler (non-blocking, darf Analyse nicht abbrechen)
+1. API-Key lesen:
+```text
+const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
+```
 
-**Integration in den Job-Loop** (nach Firecrawl-Crawling, vor KI-Analyse, ca. Zeile 497):
+2. Nach dem Crawling (ca. Zeile 497):
+```text
+const pagespeedData = pagespeedApiKey 
+  ? await fetchPageSpeedData(job.url, pagespeedApiKey) 
+  : null;
+```
 
-1. `const pagespeedData = await fetchPageSpeedData(job.url);` aufrufen
-2. Falls Daten vorhanden: dem `buildEnrichedContext`-Ergebnis einen neuen Abschnitt anhaengen:
-
+3. Falls Daten vorhanden, dem `enrichedContent` anhaengen:
 ```text
 === GOOGLE PAGESPEED DATA (objective, verified by Google) ===
 Performance: 85/100
@@ -61,99 +62,88 @@ SEO: 95/100
 Core Web Vitals: LCP=2.1s, CLS=0.05, FCP=1.2s, TBT=180ms
 ```
 
-3. Damit die KI diese Daten bei der Bewertung beruecksichtigt, wird der `ANALYSIS_SYSTEM_PROMPT` um einen Absatz erweitert:
-
+4. `ANALYSIS_SYSTEM_PROMPT` erweitern:
 ```text
 If Google PageSpeed data is provided in the context, use it to anchor your scores:
 - findability: Weight Google's SEO score heavily (within +/-10 points of Google's value)
 - mobileUsability: Factor in Performance score and Core Web Vitals (LCP < 2.5s = good, > 4s = poor)
-- Reference these objective metrics in the strengths/weaknesses where relevant
+- Reference these objective metrics in strengths/weaknesses where relevant
 ```
 
-4. Beim Speichern der Ergebnisse (Zeile 519-528) wird `pagespeed_data` als zusaetzliches Feld mitgegeben:
-
-```typescript
-await supabaseAdmin
-  .from("website_profiles")
-  .update({
-    status: "completed",
-    profile_data: analysisResult.profileData,
-    category_scores: analysisResult.categoryScores,
-    overall_score: analysisResult.overallScore,
-    pagespeed_data: pagespeedData,  // NEU
-    error_message: null,
-  })
-  .eq("id", job.profile_id);
+5. Beim Speichern (Zeile 519-528) `pagespeed_data` als Feld hinzufuegen:
+```text
+.update({
+  status: "completed",
+  profile_data: analysisResult.profileData,
+  category_scores: analysisResult.categoryScores,
+  overall_score: analysisResult.overallScore,
+  pagespeed_data: pagespeedData,  // NEU
+  error_message: null,
+})
 ```
 
-### Schritt 4: TypeScript-Typen (`src/types/chat.ts`)
+### Schritt 3: TypeScript-Typen (`src/types/chat.ts`)
 
 Neues Interface:
-
-```typescript
-export interface PageSpeedData {
-  performance: number;
-  accessibility: number;
-  bestPractices: number;
-  seo: number;
+```text
+PageSpeedData {
+  performance: number
+  accessibility: number
+  bestPractices: number
+  seo: number
   coreWebVitals: {
-    lcp: number | null;
-    cls: number | null;
-    fcp: number | null;
-    tbt: number | null;
-    speedIndex: number | null;
-  };
+    lcp: number | null
+    cls: number | null
+    fcp: number | null
+    tbt: number | null
+    speedIndex: number | null
+  }
 }
 ```
 
-`WebsiteProfile` erhaelt: `pagespeed_data?: PageSpeedData | null;`
+`WebsiteProfile` erhaelt: `pagespeed_data?: PageSpeedData | null`
 
-### Schritt 5: Neue Komponente `PageSpeedCard.tsx`
+### Schritt 4: Neue Komponente `PageSpeedCard.tsx`
 
-Zeigt die 4 Google-Scores als Kreisdiagramme im Ampelsystem:
-- Gruen: >= 90
-- Orange: 50-89
-- Rot: < 50
+- 4 Score-Kreise im Google-Ampelsystem (gruen >= 90, orange 50-89, rot < 50)
+- Core Web Vitals als kompakte Metriken (LCP, CLS, FCP, TBT)
+- Footer: "Source: Google PageSpeed Insights"
+- Fallback wenn `pagespeed_data` null: dezenter Hinweis
 
-Darunter Core Web Vitals als kompakte Metriken (LCP, CLS, FCP).
-Footer: "Source: Google PageSpeed Insights" fuer Glaubwuerdigkeit.
-Falls `pagespeed_data` null ist: dezenter Hinweis "PageSpeed data not available".
+### Schritt 5: Dashboard-Update (`AnalysisTabs.tsx`)
 
-### Schritt 6: Dashboard-Update (`AnalysisTabs.tsx`)
+- Neuer `tab === "performance"` Block der `PageSpeedCard` rendert
+- Zeigt Daten fuer jedes Profil das `pagespeed_data` hat
+- Gleiches Card-Layout wie bestehende Tabs
 
-- Neuer Tab-Bereich "Technical Performance" wird angezeigt, wenn mindestens ein Profil `pagespeed_data` hat
-- Rendert die `PageSpeedCard` fuer jedes Profil mit Daten
-- Nutzt das gleiche Card-Layout wie die bestehenden Tabs (Your Site / Competitor Badges)
-
-### Ablauf nach Implementierung
+### Ablauf
 
 ```text
-User startet Analyse
+Edge Function startet (auf externer Instanz)
        |
        v
-  analyze-website (Queue Insert + Kick)
-       |
-       v
-  process-analysis-queue startet
+  Deno.env.get("PAGESPEED_GOOGLE") lesen
        |
        v
   Firecrawl Crawling (wie bisher)
        |
        v
-  PageSpeed API parallel abrufen (NEU)
+  fetchPageSpeedData(url, apiKey) -- non-blocking
        |
        v
-  Enriched Context bauen (Firecrawl + SEO + PageSpeed)
+  Enriched Context = Firecrawl + SEO + PageSpeed
        |
        v
   KI-Analyse mit angereicherten Daten
        |
        v
-  Ergebnis + PageSpeed-Daten in website_profiles speichern
+  Ergebnis + pagespeed_data in website_profiles speichern
        |
        v
-  Dashboard zeigt:
-  - KI-basierte Business-Scores (wie bisher)
-  - Google PageSpeed Metriken (NEU)
+  Frontend liest pagespeed_data und zeigt PageSpeedCard
 ```
+
+### Wichtig: Was DU manuell tun musst
+
+Vor dem Testen musst du das SQL aus Schritt 1 in deinem externen Supabase Dashboard ausfuehren (SQL Editor). Alles andere wird automatisch ueber den Code hier erledigt.
 

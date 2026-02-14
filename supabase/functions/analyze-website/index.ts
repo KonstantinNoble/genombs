@@ -571,6 +571,21 @@ serve(async (req) => {
 
     console.log(`Analysis queued for ${formattedUrl} (position ${position})`);
 
+    // Fire-and-forget: kick the queue processor immediately
+    try {
+      const processUrl = `${supabaseUrl}/functions/v1/process-analysis-queue`;
+      fetch(processUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+        },
+        body: JSON.stringify({ time: new Date().toISOString() }),
+      }).catch((e) => console.warn("Queue kick failed (non-critical):", e));
+    } catch (e) {
+      console.warn("Queue kick setup failed (non-critical):", e);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,

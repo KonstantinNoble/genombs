@@ -70,9 +70,20 @@ const Chat = () => {
   useEffect(() => {
     if (!user) return;
     loadConversations(user.id)
-      .then((convs) => {
-        setConversations(convs);
-        if (convs.length > 0) setActiveId(convs[0].id);
+      .then(async (convs) => {
+        if (convs.length > 0) {
+          setConversations(convs);
+          setActiveId(convs[0].id);
+        } else {
+          // Auto-create first conversation
+          try {
+            const conv = await createConversation(user.id);
+            setConversations([conv]);
+            setActiveId(conv.id);
+          } catch (e) {
+            console.error("Failed to auto-create conversation:", e);
+          }
+        }
       })
       .catch((e) => console.error("Failed to load conversations:", e));
   }, [user]);

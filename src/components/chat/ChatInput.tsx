@@ -73,13 +73,14 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     }
   }, [remainingCredits, selectedModel, isPremium]);
 
-  const maxUrlFields = isPremium ? PREMIUM_MAX_URL_FIELDS : FREE_MAX_URL_FIELDS;
-  const maxCompetitorFields = maxUrlFields - 1;
+  // Always show all 4 fields (own + 3 competitors), but lock premium-only ones for free users
+  const maxUrlFields = PREMIUM_MAX_URL_FIELDS; // always show all 4
+  const maxCompetitorFields = maxUrlFields - 1; // always 3
 
   // Credit-based URL field locking
   const costPerUrl = getAnalysisCreditCost(selectedModel);
   const affordableUrls = costPerUrl > 0 ? Math.floor(remainingCredits / costPerUrl) : 0;
-  const effectiveMaxFields = Math.min(maxUrlFields, affordableUrls);
+  const effectiveMaxFields = Math.min(isPremium ? PREMIUM_MAX_URL_FIELDS : FREE_MAX_URL_FIELDS, affordableUrls);
   const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
   const notEnoughCredits = affordableUrls < maxUrlFields;
 
@@ -323,19 +324,27 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
             </div>
             {competitorFields.map((field, index) => {
               const fieldIndex = index + 1; // 0 = own website, so competitors start at 1
-              const isFieldDisabled = fieldIndex >= effectiveMaxFields;
+              const isPremiumLocked = !isPremium && fieldIndex >= FREE_MAX_URL_FIELDS;
+              const isCreditLocked = !isPremiumLocked && fieldIndex >= effectiveMaxFields;
+              const isFieldDisabled = isPremiumLocked || isCreditLocked;
               return (
                 <div key={field.label} className={`space-y-1.5 ${isFieldDisabled ? "opacity-50" : ""}`}>
                   <Label className="text-sm font-medium flex items-center gap-1.5">
                     {field.label}
-                    {isFieldDisabled && <Lock className="w-3 h-3 text-muted-foreground" />}
+                    {isPremiumLocked && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-primary/30 text-primary">
+                        <Lock className="w-2.5 h-2.5 mr-0.5" />
+                        Premium
+                      </Badge>
+                    )}
+                    {isCreditLocked && <Lock className="w-3 h-3 text-muted-foreground" />}
                   </Label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       value={field.value}
                       onChange={(e) => field.set(e.target.value.slice(0, URL_MAX_LENGTH))}
-                      placeholder={`https://${field.label.toLowerCase().replace(" ", "")}.com`}
+                      placeholder={isPremiumLocked ? "Premium only" : `https://${field.label.toLowerCase().replace(" ", "")}.com`}
                       className="pl-9"
                       maxLength={URL_MAX_LENGTH}
                       disabled={isFieldDisabled}
@@ -347,16 +356,16 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
                 </div>
               );
             })}
+            {!isPremium && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                Upgrade to Premium to analyze up to 4 URLs at once
+              </p>
+            )}
             {notEnoughCredits && (
               <p className="text-xs text-destructive flex items-center gap-1">
                 <Lock className="w-3 h-3" />
                 Not enough credits to analyze more URLs. You need {costPerUrl} credits per URL.
-              </p>
-            )}
-            {!isPremium && !notEnoughCredits && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Lock className="w-3 h-3" />
-                Upgrade to Premium for up to 3 competitor URLs
               </p>
             )}
             <Button

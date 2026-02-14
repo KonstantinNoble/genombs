@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Send, Globe, Plus, ChevronDown, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { GoogleIcon, OpenAIIcon, AnthropicIcon, PerplexityIcon } from "./ModelIcons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -248,8 +249,14 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
               <TooltipTrigger asChild>
                 <span className="inline-flex">
                   <Button
-                    onClick={() => setDialogOpen(true)}
-                    disabled={disabled || remainingCredits < costPerUrl}
+                    onClick={() => {
+                      if (remainingCredits < costPerUrl) {
+                        toast.error("Not enough credits for analysis.");
+                        return;
+                      }
+                      setDialogOpen(true);
+                    }}
+                    disabled={disabled}
                     size="icon"
                     variant="outline"
                     className="shrink-0 h-[44px] w-[44px]"
@@ -266,8 +273,14 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
             </Tooltip>
           </TooltipProvider>
           <Button
-            onClick={handleSend}
-            disabled={!value.trim() || disabled || notEnoughForChat}
+            onClick={() => {
+              if (notEnoughForChat) {
+                toast.error("Not enough credits to send a message.");
+                return;
+              }
+              handleSend();
+            }}
+            disabled={!value.trim() || disabled}
             size="icon"
             className="shrink-0 h-[44px] w-[44px]"
           >

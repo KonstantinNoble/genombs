@@ -37,29 +37,27 @@ const PricingPage = () => {
   }
 
   const freeFeatures = [
-    { text: "3 growth reports per month", included: true },
-    { text: "Business Snapshot (basics)", included: true },
-    { text: "Performance Radar Chart", included: true },
-    { text: "ICP Profiles (basics)", included: true },
-    { text: "Channel Overview (basics)", included: true },
-    { text: "Optimization Recommendations", included: true },
-    { text: "Competitor Analysis", included: false },
-    { text: "Score Insights + Next Steps", included: false },
-    { text: "Industry Benchmarks", included: false },
-    { text: "ICP Buying Triggers & Objections", included: false },
-    { text: "SEO Keywords + Paid Channel Data", included: false },
+    { text: "20 credits per day", included: true },
+    { text: "Daily credit reset", included: true },
+    { text: "2 AI models (Gemini Flash, GPT Mini)", included: true },
+    { text: "Own website + 1 competitor URL", included: true },
+    { text: "5 scoring categories", included: true },
+    { text: "PageSpeed Insights", included: true },
+    { text: "AI Chat", included: true },
+    { text: "Premium AI models (GPT-4o, Claude, Perplexity)", included: false },
+    { text: "Up to 3 competitor URLs", included: false },
     { text: "PDF export", included: false },
+    { text: "Priority support", included: false },
   ];
 
   const premiumFeatures = [
-    { text: "Unlimited growth reports", included: true },
-    { text: "Competitor Analysis", included: true },
-    { text: "Detailed Score Insights + Next Steps", included: true },
-    { text: "Industry Benchmarks", included: true },
-    { text: "ICP Buying Triggers & Objections", included: true },
-    { text: "SEO Keywords + Paid Channel Data", included: true },
-    { text: "Channel Links, Formats & Frequency", included: true },
-    { text: "Optimization Effort & Outcomes", included: true },
+    { text: "100 credits per day", included: true },
+    { text: "Daily credit reset", included: true },
+    { text: "All 5 AI models", included: true },
+    { text: "Own website + up to 3 competitor URLs", included: true },
+    { text: "5 scoring categories", included: true },
+    { text: "PageSpeed Insights", included: true },
+    { text: "AI Chat with all models", included: true },
     { text: "PDF export", included: true },
     { text: "Priority support", included: true },
   ];
@@ -70,8 +68,8 @@ const PricingPage = () => {
       answer: "Yes, you can cancel your Premium subscription at any time. Your access will remain active until the end of the current billing period. No cancellation fees, no questions asked.",
     },
     {
-      question: "What happens when I hit the free limit?",
-      answer: "When you've used all 3 free growth reports in a month, you'll need to wait until the next month or upgrade to Premium for unlimited access. Your existing reports remain accessible.",
+      question: "What happens when I run out of credits?",
+      answer: "Your credits reset automatically every 24 hours. Free users get 20 credits per day, Premium users get 100. You can also upgrade to Premium anytime for more credits and access to all AI models.",
     },
     {
       question: "Do you offer annual billing?",
@@ -94,7 +92,7 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Pricing – Business Genome"
-        description="Simple, transparent pricing. Start free with 3 growth reports per month. Upgrade for unlimited access."
+        description="Simple, transparent pricing. Start free with 20 daily credits. Upgrade for 100 credits and all AI models."
         canonical="/pricing"
       />
 
@@ -117,7 +115,7 @@ const PricingPage = () => {
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
-                : "Start free with 3 growth reports per month. Upgrade when you need more."}
+                : "Start free with 20 daily credits. Upgrade when you need more."}
             </p>
           </div>
         </section>
@@ -243,7 +241,7 @@ const PricingPage = () => {
               <p className="text-lg text-muted-foreground">
                 {isPremium && isLoggedIn
                   ? "Head to your dashboard to start a new scan."
-                  : "Start free with 3 growth reports. No credit card required."}
+                  : "Start free with 20 daily credits. No credit card required."}
               </p>
               <div className="pt-2">
                 <Button

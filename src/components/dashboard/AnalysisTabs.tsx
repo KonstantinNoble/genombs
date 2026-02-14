@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle } from "lucide-react";
 import type { WebsiteProfile } from "@/types/chat";
+import PageSpeedCard from "./PageSpeedCard";
 
 interface AnalysisTabsContentProps {
   tab: string;
@@ -126,6 +127,30 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
             </Card>
           );
         })}
+      </div>
+    );
+  }
+
+  if (tab === "performance") {
+    const profilesWithPSI = [ownSite, ...competitors].filter(
+      (p) => p.pagespeed_data
+    );
+    if (profilesWithPSI.length === 0) {
+      return (
+        <div className="text-center py-8 text-muted-foreground text-sm">
+          PageSpeed data not available yet. Re-run an analysis to generate performance metrics.
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-3">
+        {profilesWithPSI.map((profile) => (
+          <PageSpeedCard
+            key={profile.id}
+            data={profile.pagespeed_data!}
+            siteName={profile.profile_data?.name || profile.url}
+          />
+        ))}
       </div>
     );
   }

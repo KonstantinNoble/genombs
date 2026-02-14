@@ -38,6 +38,20 @@ export interface ProfileData {
   weaknesses: string[];
 }
 
+export interface PageSpeedData {
+  performance: number;
+  accessibility: number;
+  bestPractices: number;
+  seo: number;
+  coreWebVitals: {
+    lcp: number | null;
+    cls: number | null;
+    fcp: number | null;
+    tbt: number | null;
+    speedIndex: number | null;
+  };
+}
+
 export interface WebsiteProfile {
   id: string;
   url: string;
@@ -48,6 +62,7 @@ export interface WebsiteProfile {
   overall_score: number | null;
   category_scores: CategoryScores | null;
   profile_data: ProfileData | null;
+  pagespeed_data: PageSpeedData | null;
   raw_markdown: string | null;
   error_message: string | null;
   created_at: string;

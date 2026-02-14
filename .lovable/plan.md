@@ -1,63 +1,88 @@
 
 
-## Homepage und Pricing: Inhaltliche Korrektur
+## Homepage und Pricing: Komplette inhaltliche Korrektur
 
-Alle Texte, Zahlen und Feature-Listen werden an die tatsaechlichen Produktfunktionen angepasst, die aus dem Code abgeleitet wurden.
+Alle falschen/erfundenen Features werden entfernt und durch die tatsaechlichen Produktfunktionen ersetzt, die aus dem Code abgeleitet wurden.
 
 ---
 
-### Was ist falsch und wie wird es korrigiert
+### Was ist aktuell falsch
 
-**Credit-System (statt "3 Scans/Monat")**
-- Tatsaechlich: Taegliches Credit-System
-- Free: 20 Credits/Tag, Premium: 100 Credits/Tag
-- Scan-Kosten variieren je nach Modell (5-10 Credits), Chat-Kosten 1-5 Credits
-- Darstellung: "20 daily credits" (Free) / "100 daily credits" (Premium)
+**Homepage Features-Sektion (01, 02, 03):**
+- "ICP Builder" -- existiert nicht als Feature
+- "Audience Discovery" -- existiert nicht als Feature  
+- "Growth Playbook" -- existiert nicht als Feature
+- Diese drei Features sind komplett erfunden
 
-**Feature-Listen (Free vs Premium)**
-Die tatsaechlichen Unterschiede aus dem Code:
-- Free: 2 URL-Felder (eigene + 1 Competitor), Standard-Modelle (Gemini Flash, GPT Mini)
-- Premium: 4 URL-Felder (eigene + 3 Competitors), Alle AI-Modelle, PDF-Export, Priority Support
-- Scoring-Kategorien (beide): Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness
-- PageSpeed Insights (beide Tiers)
-- AI Chat (beide, aber Premium hat mehr Modelle)
+**Homepage Use Cases:**
+- "Customer Acquisition", "Ad Strategy", "Content Planning" beschreiben Funktionen die nicht existieren
+- Referenzen zu "audience channels", "paid advertising recommendations", "budgets" -- alles nicht vorhanden
 
-**Stats-Leiste**
-- "500+ Websites Scanned" entfernen (nicht belegbar)
-- "12 Market Segments" entfernen (nicht belegbar)
-- Ersetzen durch verifizierbare Fakten: "5 AI Models", "5 Score Categories", "< 60s Per Scan", "PageSpeed Included"
+**Homepage Comparison Table:**
+- "7 structured sections" -- stimmt nicht, es gibt 4 Dashboard-Tabs (Overview, Positioning, Offer & CTAs, Trust & Proof)
+- "Actionable Strategies: Yes" -- uebertrieben, es gibt Improvement Tasks aber keine "Strategies"
 
-**Testimonials**
-- Komplette Sektion entfernen (fiktive Personen/Firmen sind unserioes)
-- Alternativ: Platzhalter-Sektion mit "Join hundreds of businesses..." ohne Fake-Zitate
+**Homepage FAQ:**
+- "ICP profiles, audience channels" in der Growth Report Beschreibung -- existiert nicht
 
-**FAQ (Homepage)**
-- "SimilarWeb traffic data" Referenz entfernen (nicht implementiert)
-- "3 free growth reports" korrigieren zu Credit-System-Beschreibung
-- Antworten an tatsaechliche Features anpassen
+**Homepage Hero/SEO:**
+- "growth playbook with ICP, audience channels" -- falsch
+- SEO keywords enthalten "ICP builder, audience discovery" -- falsch
 
-**Comparison Table (Homepage)**
-- "Cost per Scan" Zeile: "Free / $26.99/mo unlimited" aendern zu "Free daily credits / $26.99/mo"
-- Rest bleibt weitgehend korrekt
+**Pricing / FeatureComparisonTable:**
+- "API access (Coming Soon)" -- nicht geplant, sollte entfernt werden
 
-**Pricing Page spezifisch**
-- Free Card: "3 growth reports per month" aendern zu "20 credits per day"
-- Premium Card: "Unlimited growth reports" aendern zu "100 credits per day"
-- Feature-Listen komplett ueberarbeiten basierend auf tatsaechlichen Code-Features
-- FAQ: "What happens when I hit the free limit?" anpassen an taegliches Reset
+---
 
-**FeatureComparisonTable.tsx**
-- "Scans per month: 3 / Unlimited" aendern zu "Daily credits: 20 / 100"
-- Feature-Zeilen an tatsaechliche Produkt-Features anpassen
-- Neue Zeilen: "AI Models", "Competitor URLs", "Daily Credit Reset"
+### Was das Produkt tatsaechlich macht (aus dem Code)
+
+1. **Website-Analyse**: URL eingeben, AI crawlt und analysiert die Seite
+2. **5 Scoring-Kategorien**: Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness
+3. **Profil-Daten**: Name, Target Audience, USP, CTAs, Site Structure, Strengths, Weaknesses
+4. **4 Dashboard-Tabs**: Overview, Positioning, Offer & CTAs, Trust & Proof
+5. **Competitor-Vergleich**: Score-Vergleichstabelle wenn mehrere URLs analysiert werden
+6. **Improvement Plan**: Konkrete Aufgaben mit Prioritaeten
+7. **PageSpeed Insights**: Google Core Web Vitals Integration
+8. **AI Chat**: Kontextbezogene Fragen zur Analyse stellen
+
+---
+
+### Korrekturen
+
+**Home.tsx -- Features (01, 02, 03) ersetzen durch:**
+- 01: "Website Scoring" -- AI bewertet deine Website in 5 Kategorien: Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness
+- 02: "Competitor Analysis" -- Vergleiche deine Website mit bis zu 3 Wettbewerbern. Sieh Staerken, Schwaechen und Score-Unterschiede auf einen Blick
+- 03: "Improvement Plan" -- Erhalte konkrete, priorisierte Optimierungsvorschlaege basierend auf der AI-Analyse deiner Website
+
+**Home.tsx -- Use Cases ersetzen durch realistische Szenarien:**
+- Pre-Launch Check: Website vor dem Launch auf Schwachstellen pruefen
+- Competitor Benchmarking: Eigene Scores mit Wettbewerbern vergleichen
+- Conversion Optimization: CTAs, Trust-Signale und Angebote verbessern
+- Performance Monitoring: PageSpeed und Core Web Vitals tracken
+
+**Home.tsx -- Comparison Table korrigieren:**
+- "7 structured sections" aendern zu "5 scoring categories + PageSpeed"
+- "Actionable Strategies" aendern zu "Improvement Tasks"
+
+**Home.tsx -- FAQ korrigieren:**
+- Growth Report Beschreibung: ICP/audience-Referenzen entfernen, durch tatsaechliche Features ersetzen
+
+**Home.tsx -- Hero/SEO korrigieren:**
+- "growth playbook" durch "website analysis" ersetzen
+- SEO keywords aktualisieren
+
+**Home.tsx -- Steps korrigieren:**
+- Schritt 3: "ICP, audience channels" entfernen
+
+**FeatureComparisonTable.tsx:**
+- "API access (Coming Soon)" Zeile entfernen
 
 ---
 
 ### Geaenderte Dateien
 
-1. `src/pages/Home.tsx` — Stats, Features, Use Cases, Comparison Table, Testimonials, FAQ, CTA-Texte
-2. `src/pages/Pricing.tsx` — Feature-Listen (Free/Premium), FAQ-Antworten, Preis-Beschreibungen
-3. `src/components/genome/FeatureComparisonTable.tsx` — Alle Feature-Zeilen an tatsaechliche Funktionen anpassen
+1. `src/pages/Home.tsx` -- Features, Use Cases, Comparison Table, FAQ, Hero, SEO-Meta
+2. `src/components/genome/FeatureComparisonTable.tsx` -- API access Zeile entfernen
 
-Keine neuen Abhaengigkeiten. Keine strukturellen Aenderungen, nur inhaltliche Korrekturen.
+Die Pricing-Seite (`src/pages/Pricing.tsx`) ist inhaltlich bereits korrekt bis auf die indirekte Nutzung der FeatureComparisonTable.
 

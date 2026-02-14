@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -85,10 +84,10 @@ const PricingPage = () => {
   ];
 
   const trustBadges = [
-    { label: "Cancel anytime" },
-    { label: "No credit card for free" },
-    { label: "SSL encrypted" },
-    { label: "GDPR compliant" },
+    "Cancel anytime",
+    "No credit card for free",
+    "SSL encrypted",
+    "GDPR compliant",
   ];
 
   return (
@@ -104,18 +103,18 @@ const PricingPage = () => {
       <main className="flex-1">
         {/* Hero */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in">
+          <div className="max-w-2xl mx-auto text-center">
             {isPremium && isLoggedIn ? (
-              <Badge className="mb-4 bg-primary text-primary-foreground">Premium Member</Badge>
+              <p className="text-sm uppercase tracking-widest text-primary font-medium mb-5">Premium Member</p>
             ) : (
-              <Badge variant="outline" className="mb-4">
+              <p className="text-sm uppercase tracking-widest text-primary font-medium mb-5">
                 Simple, Transparent Pricing
-              </Badge>
+              </p>
             )}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-[1.08] mb-5">
               {isPremium && isLoggedIn ? "You're all set" : "Choose your plan"}
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
                 : "Start free with 3 growth reports per month. Upgrade when you need more."}
@@ -127,19 +126,20 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
             {/* Free */}
-            <div className="border border-border rounded-2xl p-8 space-y-6">
+            <div className="border border-border rounded-xl p-8 sm:p-10 space-y-8">
               <div>
                 <h3 className="text-2xl font-bold text-foreground">Free</h3>
                 <p className="text-muted-foreground mt-1">Get started at no cost</p>
               </div>
-              <div className="text-4xl font-extrabold text-foreground">
-                $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
+              <div>
+                <span className="text-5xl font-extrabold text-foreground">$0</span>
+                <span className="text-lg text-muted-foreground ml-1">/mo</span>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-3.5">
                 {freeFeatures.map((feature) => (
-                  <li key={feature.text} className="flex items-center gap-2 text-foreground">
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${feature.included ? "bg-primary" : "bg-muted-foreground/30"}`} />
-                    <span className={feature.included ? "" : "text-muted-foreground/50"}>
+                  <li key={feature.text} className="flex items-start gap-3 text-sm">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${feature.included ? "bg-primary" : "bg-muted-foreground/20"}`} />
+                    <span className={feature.included ? "text-foreground" : "text-muted-foreground/40 line-through"}>
                       {feature.text}
                     </span>
                   </li>
@@ -147,7 +147,7 @@ const PricingPage = () => {
               </ul>
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full h-12"
                 onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
               >
                 {isLoggedIn ? "Go to Dashboard" : "Get Started"}
@@ -155,7 +155,7 @@ const PricingPage = () => {
             </div>
 
             {/* Premium */}
-            <div className="border-2 border-primary rounded-2xl p-8 space-y-6 relative">
+            <div className="border-2 border-primary rounded-xl p-8 sm:p-10 space-y-8 relative bg-primary/5">
               <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
                 Recommended
               </Badge>
@@ -163,19 +163,20 @@ const PricingPage = () => {
                 <h3 className="text-2xl font-bold text-foreground">Premium</h3>
                 <p className="text-muted-foreground mt-1">Full access to everything</p>
               </div>
-              <div className="text-4xl font-extrabold text-foreground">
-                $26.99<span className="text-lg font-normal text-muted-foreground">/mo</span>
+              <div>
+                <span className="text-5xl font-extrabold text-foreground">$26.99</span>
+                <span className="text-lg text-muted-foreground ml-1">/mo</span>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-3.5">
                 {premiumFeatures.map((feature) => (
-                  <li key={feature.text} className="flex items-center gap-2 text-foreground">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <li key={feature.text} className="flex items-start gap-3 text-sm text-foreground">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
                     {feature.text}
                   </li>
                 ))}
               </ul>
               <Button
-                className="w-full"
+                className="w-full h-12"
                 onClick={() => {
                   if (isPremium && isLoggedIn) {
                     navigate("/profile");
@@ -193,13 +194,15 @@ const PricingPage = () => {
         </section>
 
         {/* Trust Badges */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-3xl mx-auto">
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              {trustBadges.map((badge) => (
-                <div key={badge.label} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <span>{badge.label}</span>
+            <div className="flex flex-wrap items-center justify-center gap-0">
+              {trustBadges.map((badge, i) => (
+                <div key={badge} className="flex items-center">
+                  <span className="text-sm text-muted-foreground px-4 py-2">{badge}</span>
+                  {i < trustBadges.length - 1 && (
+                    <span className="hidden sm:block w-px h-4 bg-border" />
+                  )}
                 </div>
               ))}
             </div>
@@ -207,9 +210,9 @@ const PricingPage = () => {
         </section>
 
         {/* Feature Comparison */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 border-t border-border">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-10">
+            <div className="text-center mb-14">
               <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
                 Full Feature Comparison
               </h2>
@@ -217,14 +220,14 @@ const PricingPage = () => {
                 See exactly what's included in each plan.
               </p>
             </div>
-            <Card className="border-border bg-card overflow-hidden">
+            <div className="border border-border rounded-xl overflow-hidden">
               <FeatureComparisonTable />
-            </Card>
+            </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 border-t border-border">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-2xl mx-auto">
             <FAQSection title="Pricing FAQ" items={pricingFAQ} />
           </div>
@@ -232,22 +235,25 @@ const PricingPage = () => {
 
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
-          <div className="max-w-2xl mx-auto text-center space-y-6">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              {isPremium && isLoggedIn ? "You're all set" : "Ready to grow your business?"}
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              {isPremium && isLoggedIn
-                ? "Head to your dashboard to start a new scan."
-                : "Start free with 3 growth reports. No credit card required."}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button
-                size="lg"
-                onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
-              >
-                {isLoggedIn ? "Go to Dashboard" : "Create Account"}
-              </Button>
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="border border-border rounded-xl p-10 sm:p-14 space-y-6">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+                {isPremium && isLoggedIn ? "You're all set" : "Ready to grow your business?"}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                {isPremium && isLoggedIn
+                  ? "Head to your dashboard to start a new scan."
+                  : "Start free with 3 growth reports. No credit card required."}
+              </p>
+              <div className="pt-2">
+                <Button
+                  size="lg"
+                  className="px-10 h-13"
+                  onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
+                >
+                  {isLoggedIn ? "Go to Dashboard" : "Create Account"}
+                </Button>
+              </div>
             </div>
           </div>
         </section>

@@ -29,26 +29,26 @@ const features: Feature[] = [
 const renderCell = (value: boolean | string, comingSoon?: boolean) => {
   if (typeof value === "string") {
     return (
-      <span className="text-sm font-medium text-foreground">{value}</span>
+      <span className="text-sm font-semibold text-foreground">{value}</span>
     );
   }
   if (value) {
     return (
-      <div className="flex items-center gap-1 justify-center">
-        <span className="text-sm font-medium text-primary">Yes</span>
+      <div className="flex items-center gap-1.5 justify-center">
+        <span className="text-sm font-semibold text-primary">Yes</span>
         {comingSoon && <Badge variant="outline" className="text-[10px]">Soon</Badge>}
       </div>
     );
   }
   if (comingSoon) {
     return (
-      <div className="flex items-center gap-1 justify-center">
-        <span className="text-sm text-muted-foreground/50">No</span>
+      <div className="flex items-center gap-1.5 justify-center">
+        <span className="text-sm text-muted-foreground/30">—</span>
         <Badge variant="outline" className="text-[10px]">Soon</Badge>
       </div>
     );
   }
-  return <span className="text-sm text-muted-foreground/40">No</span>;
+  return <span className="text-sm text-muted-foreground/30">—</span>;
 };
 
 const FeatureComparisonTable = () => {
@@ -56,22 +56,27 @@ const FeatureComparisonTable = () => {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border">
-            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Feature</th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">Free</th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-primary">Premium</th>
+          <tr className="border-b border-border bg-muted/30">
+            <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
+            <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Free</th>
+            <th className="text-center py-4 px-5 text-sm font-bold text-primary">Premium</th>
           </tr>
         </thead>
         <tbody>
-          {features.map((feature) => (
-            <tr key={feature.name} className="border-b border-border/50">
-              <td className="py-3 px-4 text-sm text-foreground">{feature.name}</td>
-              <td className="py-3 px-4 text-center">
+          {features.map((feature, i) => (
+            <tr
+              key={feature.name}
+              className={`${i < features.length - 1 ? "border-b border-border/40" : ""} ${
+                i % 2 === 0 ? "bg-muted/10" : ""
+              }`}
+            >
+              <td className="py-3.5 px-5 text-sm text-foreground font-medium">{feature.name}</td>
+              <td className="py-3.5 px-5 text-center">
                 <div className="flex justify-center">
                   {renderCell(feature.free)}
                 </div>
               </td>
-              <td className="py-3 px-4 text-center">
+              <td className="py-3.5 px-5 text-center">
                 <div className="flex justify-center">
                   {renderCell(feature.premium, feature.comingSoon)}
                 </div>

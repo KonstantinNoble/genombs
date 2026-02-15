@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
+import MobileBlocker from "./components/MobileBlocker";
 
 // Eager load critical pages
 import Home from "./pages/Home";
@@ -55,6 +56,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <MobileBlocker />
           <ScrollToTop />
           <BackgroundWrapper>
             <ErrorBoundary>

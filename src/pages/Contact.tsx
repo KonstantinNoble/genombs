@@ -1,7 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Card } from "@/components/ui/card";
-import { Mail } from "lucide-react";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { WebPageSchema } from "@/components/seo/StructuredData";
 
@@ -26,30 +24,21 @@ const Contact = () => {
             Contact Us
           </h1>
           <p className="text-lg text-muted-foreground mb-12">
-            Questions, feedback, or business inquiries – we're here to help.
+            Questions, feedback, or business inquiries — we're here to help.
           </p>
           
-          <Card className="p-8 md:p-12 border-border bg-card/50 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-6">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Mail className="w-8 h-8 text-primary" />
-              </div>
-              
-              <div>
-                <p className="text-muted-foreground mb-2">Email us at</p>
-                <a 
-                  href="mailto:mail@wealthconomy.com"
-                  className="text-2xl md:text-3xl font-semibold text-primary hover:underline transition-all duration-300"
-                >
-                  mail@wealthconomy.com
-                </a>
-              </div>
-              
-              <p className="text-sm text-muted-foreground mt-4">
-                We typically respond within 24-48 hours.
-              </p>
-            </div>
-          </Card>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">Email us at</p>
+            <a 
+              href="mailto:mail@wealthconomy.com"
+              className="text-2xl md:text-3xl font-semibold text-primary hover:underline transition-all duration-300 block"
+            >
+              mail@wealthconomy.com
+            </a>
+            <p className="text-sm text-muted-foreground mt-6">
+              We typically respond within 24–48 hours.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

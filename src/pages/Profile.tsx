@@ -152,7 +152,7 @@ const Profile = () => {
                   {credits?.is_premium ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-green-600 dark:text-green-500 font-medium">✓ Premium Active</span>
+                        <span className="text-green-600 dark:text-green-500 font-medium">Premium Active</span>
                         {credits.premium_since && (
                           <span className="text-xs text-muted-foreground">
                             Since {new Date(credits.premium_since).toLocaleDateString()}
@@ -172,12 +172,12 @@ const Profile = () => {
                       <div className="flex items-center gap-2 flex-wrap">
                         {credits.auto_renew === null ? (
                           <span className="text-muted-foreground text-sm">
-                            ⓘ Status unknown - sync may be pending
+                            Status unknown — sync may be pending
                           </span>
                         ) : credits.auto_renew ? (
                           <>
                             <span className="text-green-600 dark:text-green-500 text-sm">
-                              ✓ Auto-renewal active
+                              Auto-renewal active
                             </span>
                             {credits.next_payment_date && (
                               <span className="text-xs text-muted-foreground">
@@ -187,7 +187,7 @@ const Profile = () => {
                           </>
                         ) : (
                           <span className="text-orange-600 dark:text-orange-500 text-sm">
-                            ⚠ Auto-renewal canceled - expires on {credits.subscription_end_date 
+                            Auto-renewal canceled — expires on {credits.subscription_end_date
                               ? new Date(credits.subscription_end_date).toLocaleDateString() 
                               : 'subscription end'}
                           </span>

@@ -157,7 +157,7 @@ const Home = () => {
     { value: "5", label: "AI Models" },
     { value: "5", label: "Score Categories" },
     { value: "<60s", label: "Per Scan" },
-    { value: "✓", label: "PageSpeed Included" },
+    { value: "Incl.", label: "PageSpeed Data" },
   ];
 
   return (
@@ -173,7 +173,7 @@ const Home = () => {
         name="Synoptas"
         url="https://synoptas.com"
         logo="https://synoptas.com/synoptas-favicon.png"
-        description="Business Genome – Business Growth Platform"
+        description="Synoptas – Website Analysis Platform"
       />
       <WebPageSchema
         name="Business Genome – Turn your website into a growth engine"
@@ -186,14 +186,14 @@ const Home = () => {
       <section className="flex items-center justify-center py-24 sm:py-32">
         <div className="container mx-auto px-4 text-center max-w-3xl">
           <p className="text-sm uppercase tracking-widest text-primary font-medium mb-6">
-            Business Growth Platform
+            Website Analysis Platform
           </p>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6">
-            Turn your website into{" "}
-            <span className="text-primary">a growth engine</span>
+            Know exactly what's{" "}
+            <span className="text-primary">holding your website back</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            One URL. One scan. AI-powered website scoring, competitor analysis, and an improvement plan — in under 60 seconds.
+            Paste a URL. Get a structured analysis across findability, usability, clarity, trust, and conversion — with competitor benchmarks and a prioritized fix list.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-base px-8 h-13">
@@ -231,20 +231,20 @@ const Home = () => {
       </section>
 
       {/* Features */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              Everything you need to grow
+              What you get
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              One scan. Five scoring categories. Actionable results.
+              A structured breakdown of what works, what doesn't, and what to fix first.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {features.map((feature) => (
               <div key={feature.title} className="space-y-5">
-                <span className="text-6xl font-extrabold text-primary/20 leading-none block">{feature.num}</span>
+                <span className="text-4xl font-extrabold text-primary/20 leading-none block">{feature.num}</span>
                 <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   {feature.description}
@@ -256,15 +256,12 @@ const Home = () => {
       </section>
 
       {/* Use Cases */}
-      <section className="py-24 sm:py-32 border-t border-border">
+      <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              Built for every growth workflow
+              Use cases
             </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Whether you're launching, scaling, or optimizing — Business Genome has you covered.
-            </p>
           </div>
           <div className="space-y-0">
             {useCases.map((uc, i) => (
@@ -272,7 +269,7 @@ const Home = () => {
                 key={uc.title}
                 className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 ${
                   i < useCases.length - 1 ? "border-b border-border" : ""
-                } ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
+                }`}
               >
                 <div className="md:w-1/4 shrink-0">
                   <span className="text-xs uppercase tracking-widest text-primary font-medium">{uc.badge}</span>
@@ -288,14 +285,14 @@ const Home = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-24 sm:py-32 border-t border-border">
+      <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
               How it works
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              From URL to actionable insights in under 60 seconds.
+              Three steps. No setup required.
             </p>
           </div>
           {/* Horizontal timeline */}
@@ -316,15 +313,12 @@ const Home = () => {
       </section>
 
       {/* Comparison Table */}
-      <section className="py-24 sm:py-32 border-t border-border">
+      <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-16">
+          <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              Business Genome vs. Consultant
+              Compared to traditional consulting
             </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Replace hours of manual research with structured, AI-powered analysis.
-            </p>
           </div>
           <div className="border border-border rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
@@ -361,24 +355,21 @@ const Home = () => {
 
 
       {/* FAQ */}
-      <section className="py-24 sm:py-32 border-t border-border">
+      <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 max-w-2xl">
           <FAQSection items={homeFAQ} />
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 sm:py-32 border-t border-border">
+      <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 text-center max-w-2xl">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-            Ready to grow your business?
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-8">
+            Try it now
           </h2>
-          <p className="text-lg text-muted-foreground mb-10">
-            20 free credits per day. No credit card required.
-          </p>
           <Button size="lg" asChild className="text-base px-10 h-13">
             <Link to={isLoggedIn ? "/chat" : "/auth"}>
-              Get Started Free
+              Get Started
             </Link>
           </Button>
         </div>

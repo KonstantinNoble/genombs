@@ -53,7 +53,7 @@ const formatMs = (ms: number | null) => {
 };
 
 const PageSpeedCard = ({ data, siteName }: PageSpeedCardProps) => {
-  const cwv = data.coreWebVitals;
+  const cwv = data.coreWebVitals ?? { lcp: null, cls: null, fcp: null, tbt: null, speedIndex: null };
 
   const vitals = [
     { label: "LCP", value: formatMs(cwv.lcp), good: cwv.lcp !== null && cwv.lcp < 2500 },

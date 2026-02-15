@@ -24,44 +24,6 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error);
     console.error('Component stack:', errorInfo.componentStack);
-    
-    // Auto-enable Safe Mode on mobile without UI
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || 
-                     window.matchMedia('(max-width: 767px)').matches;
-    
-    // Check if Safe Mode is already active
-    const params = new URLSearchParams(window.location.search);
-    const safeModeParam = params.get('safe') === '1';
-    let safeModeStorage = false;
-    try {
-      safeModeStorage = localStorage.getItem('safe-mode') === 'true';
-    } catch {}
-    
-    const alreadySafe = safeModeParam || safeModeStorage;
-    
-    // Check if we've already attempted auto-safe (prevent loops)
-    let attempted = false;
-    try {
-      attempted = sessionStorage.getItem('auto-safe-attempted') === '1';
-    } catch {}
-    
-    if (isMobile && !alreadySafe && !attempted) {
-      try {
-        sessionStorage.setItem('auto-safe-attempted', '1');
-      } catch {}
-      
-      try {
-        localStorage.setItem('safe-mode', 'true');
-      } catch {}
-      
-      try {
-        const url = new URL(window.location.href);
-        url.searchParams.set('safe', '1');
-        window.location.replace(url.toString());
-      } catch {
-        window.location.reload();
-      }
-    }
   }
 
   handleRetry = () => {
@@ -84,6 +46,11 @@ class ErrorBoundary extends Component<Props, State> {
               <CardDescription className="text-muted-foreground">
                 We encountered an unexpected error. Please try again.
               </CardDescription>
+              {this.state.error?.message && (
+                <p className="mt-2 text-xs text-destructive font-mono break-all">
+                  {this.state.error.message}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <Button 

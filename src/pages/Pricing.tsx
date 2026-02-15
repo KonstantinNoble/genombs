@@ -69,7 +69,7 @@ const PricingPage = () => {
     },
     {
       question: "Do you offer annual billing?",
-      answer: "We're working on annual billing with a discounted rate. Currently, Premium is available at $26.99/month. Sign up for our newsletter to be notified when annual plans launch.",
+      answer: "We're working on annual billing with a discounted rate. Currently, Premium is available at $14.99/month. Sign up for our newsletter to be notified when annual plans launch.",
     },
     {
       question: "Is there a refund policy?",
@@ -158,7 +158,7 @@ const PricingPage = () => {
                 <p className="text-muted-foreground mt-1">All features, higher limits</p>
               </div>
               <div>
-                <span className="text-5xl font-extrabold text-foreground">$26.99</span>
+                <span className="text-5xl font-extrabold text-foreground">$14.99</span>
                 <span className="text-lg text-muted-foreground ml-1">/mo</span>
               </div>
               <ul className="space-y-3.5">

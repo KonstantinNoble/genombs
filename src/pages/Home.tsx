@@ -148,7 +148,7 @@ const Home = () => {
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
     { feature: "Data Depth", genome: "5 scoring categories + PageSpeed", traditional: "Surface-level overview" },
-    { feature: "Cost", genome: "Free daily credits / $26.99/mo", traditional: "$500+ per report" },
+    { feature: "Cost", genome: "Free daily credits / $14.99/mo", traditional: "$500+ per report" },
     { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
     { feature: "Improvement Tasks", genome: "Yes", traditional: "No" },

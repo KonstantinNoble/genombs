@@ -457,8 +457,8 @@ const PrivacyPolicy = () => {
             
             <h3 className="text-xl font-semibold mb-3 mt-6">5.1 Subscription Overview</h3>
             <p className="text-muted-foreground mb-4">
-              We offer a Premium subscription at $26.99/month that provides enhanced features 
-              and capabilities.
+               We offer a Premium subscription at $14.99/month that provides enhanced features 
+               and capabilities.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">5.2 Payment Processing via Freemius</h3>

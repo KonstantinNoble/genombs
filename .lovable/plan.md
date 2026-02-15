@@ -1,55 +1,58 @@
 
+## Fix: "Invalid regular expression" Crash auf Mobile
 
-## Mobile-Crash Fix: Fehler sichtbar machen und alle Crash-Stellen absichern
+### Ursache
 
-### Das eigentliche Problem
+Die Bibliothek `remark-gfm` (importiert in `src/components/chat/ChatMessage.tsx`, Zeile 3) verwendet intern Named Capture Groups in regulaeren Ausdruecken. Aeltere mobile Browser (iOS Safari vor Version 16.4, aeltere Android WebViews) unterstuetzen diese Syntax nicht und werfen beim Laden des Moduls sofort den Fehler:
 
-Die ErrorBoundary zeigt nur "Something went wrong" ohne jegliche Details. Auf Mobile macht sie sogar einen unsichtbaren Redirect zu `?safe=1`, der nichts bewirkt und den echten Fehler verschleiert. Ohne die Fehlermeldung zu sehen, ist es unmoeglich den genauen Crash zu identifizieren.
+> "Invalid regular expression: Invalid group specifier name"
 
-### Strategie: 2 Schritte
+Da der Fehler beim Modul-Import passiert (nicht beim Rendern), crasht die gesamte Chat-Seite bevor sie ueberhaupt angezeigt wird.
 
-**Schritt 1: Fehler sichtbar machen** (Wichtigster Schritt)
+### Loesung
 
-Die ErrorBoundary wird so angepasst, dass der tatsaechliche Fehlertext angezeigt wird. Der nutzlose Safe-Mode-Redirect wird entfernt. So siehst du beim naechsten Crash sofort, welche Zeile/Komponente das Problem verursacht.
+`remark-gfm` wird **dynamisch und fehlertolerant** geladen. Wenn der Import fehlschlaegt (auf alten Browsern), wird Markdown einfach ohne GFM-Erweiterungen (Tabellen, Strikethrough, etc.) gerendert -- die Seite crasht nicht mehr.
 
-**Schritt 2: Alle bekannten Crash-Stellen absichern**
+### Aenderung: `src/components/chat/ChatMessage.tsx`
 
-Ich habe folgende unsichere Stellen gefunden:
-
-| Datei | Problem |
-|-------|---------|
-| `PageSpeedCard.tsx` Zeile 56 | `data.coreWebVitals` wird direkt auf `.lcp`, `.cls` etc. zugegriffen -- crasht wenn `coreWebVitals` null ist |
-| `ComparisonTable.tsx` Zeile 49 | `category_scores!` Non-null Assertion -- unsicher |
-| `ChatInput.tsx` Zeile 107 | `AI_MODELS.find(...)!` Non-null Assertion |
-
----
-
-### Aenderungen im Detail
-
-**1. `src/components/ErrorBoundary.tsx`**
-- Die gesamte `componentDidCatch`-Methode wird vereinfacht: Nur noch `console.error`, kein Redirect mehr (die ca. 30 Zeilen Safe-Mode-Logik werden entfernt)
-- Im Render wird `this.state.error?.message` angezeigt, damit man den Fehler diagnostizieren kann
-- "Try Again" und "Reload Page" Buttons bleiben
-
-**2. `src/components/dashboard/PageSpeedCard.tsx`**
-- Zeile 56: Null-Check fuer `coreWebVitals` hinzufuegen:
 ```typescript
-const cwv = data.coreWebVitals ?? { lcp: null, cls: null, fcp: null, tbt: null, speedIndex: null };
+import { useState, useEffect } from "react";
+import type { Message } from "@/types/chat";
+import ReactMarkdown from "react-markdown";
+
+// Dynamisch laden, da remark-gfm auf alten mobilen Browsern crasht
+// (Named Capture Groups in Regex werden nicht unterstuetzt)
+let remarkGfmPlugin: any = null;
+let pluginLoadAttempted = false;
+
+const loadRemarkGfm = async () => {
+  if (pluginLoadAttempted) return;
+  pluginLoadAttempted = true;
+  try {
+    const mod = await import("remark-gfm");
+    remarkGfmPlugin = mod.default;
+  } catch (e) {
+    console.warn("remark-gfm not supported on this browser:", e);
+  }
+};
+
+const ChatMessage = ({ message }: ChatMessageProps) => {
+  const [pluginReady, setPluginReady] = useState(!!remarkGfmPlugin);
+
+  useEffect(() => {
+    if (!remarkGfmPlugin && !pluginLoadAttempted) {
+      loadRemarkGfm().then(() => setPluginReady(!!remarkGfmPlugin));
+    }
+  }, []);
+
+  const plugins = remarkGfmPlugin ? [remarkGfmPlugin] : [];
+
+  // ... rest bleibt gleich, nur remarkPlugins={plugins} statt remarkPlugins={[remarkGfm]}
+};
 ```
 
-**3. `src/components/dashboard/ComparisonTable.tsx`**
-- Zeile 49: Non-null Assertion entfernen:
-```typescript
-const ownScore = ownSite.category_scores?.[cat.key] ?? 0;
-```
+### Was sich aendert
 
-**4. `src/components/chat/ChatInput.tsx`**
-- Zeile 107: Non-null Assertion absichern:
-```typescript
-const currentModel = AI_MODELS.find((m) => m.id === selectedModel) ?? AI_MODELS[0];
-```
-
-### Nach dem Fix
-
-Falls die Seite nach diesen Aenderungen immer noch crasht, wird die ErrorBoundary jetzt den tatsaechlichen Fehlertext anzeigen. Das macht es moeglich, den genauen Fehler sofort zu identifizieren und gezielt zu beheben.
-
+- **Alte Mobile-Browser**: Markdown wird ohne Tabellen/Strikethrough gerendert, aber die Seite funktioniert
+- **Moderne Browser**: Keine Aenderung, `remark-gfm` wird wie bisher geladen
+- **Nur 1 Datei** wird geaendert: `src/components/chat/ChatMessage.tsx`

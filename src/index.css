@@ -19,6 +19,7 @@ All colors MUST be HSL.
 
     --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
+    --primary-neon: 25 100% 55%;
 
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 98%;
@@ -52,6 +53,7 @@ All colors MUST be HSL.
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
     --shadow-glow: 0 0 20px hsl(25 95% 53% / 0.25);
+    --shadow-neon: 0 0 30px hsl(25 100% 55% / 0.4), 0 0 60px hsl(25 100% 55% / 0.15);
     --shadow-lift: 0 20px 40px -15px rgb(0 0 0 / 0.5);
     
     /* Smooth transitions */
@@ -961,4 +963,78 @@ All colors MUST be HSL.
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* ============================================
+   NEON ORANGE EFFECTS
+   ============================================ */
+
+.neon-text {
+  color: hsl(var(--primary));
+  text-shadow: 
+    0 0 10px hsl(var(--primary-neon) / 0.6),
+    0 0 30px hsl(var(--primary-neon) / 0.3),
+    0 0 60px hsl(var(--primary-neon) / 0.15);
+}
+
+.neon-border {
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 
+    0 0 10px hsl(var(--primary-neon) / 0.2),
+    inset 0 0 10px hsl(var(--primary-neon) / 0.05);
+}
+
+.neon-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--primary) / 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neon-card:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 
+    0 0 20px hsl(var(--primary-neon) / 0.15),
+    0 0 40px hsl(var(--primary-neon) / 0.05),
+    0 8px 32px -8px rgb(0 0 0 / 0.4);
+  transform: translateY(-4px);
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px hsl(var(--primary-neon) / 0.6),
+      0 0 30px hsl(var(--primary-neon) / 0.3);
+  }
+  50% {
+    text-shadow: 
+      0 0 20px hsl(var(--primary-neon) / 0.8),
+      0 0 50px hsl(var(--primary-neon) / 0.5),
+      0 0 80px hsl(var(--primary-neon) / 0.2);
+  }
+}
+
+.neon-pulse {
+  animation: neon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-line {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+.glow-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary-neon) / 0.3), transparent);
+  animation: glow-line 3s ease-in-out infinite;
 }

@@ -1,48 +1,42 @@
 
-## Umbenennung: Synoptas → Synvertas
 
-Globales Suchen-und-Ersetzen von "Synoptas" zu "Synvertas" und "synoptas" zu "synvertas" in allen betroffenen Dateien.
+## E-Mail-Templates modernisieren: Dark Theme mit Synvertas Branding
 
----
-
-### Betroffene Dateien (20 Dateien)
-
-**Frontend-Seiten:**
-1. `src/pages/Auth.tsx` - SEO description
-2. `src/pages/UpdatePassword.tsx` - SEO description
-3. `src/pages/TermsOfService.tsx` - ca. 20 Vorkommen (Vertragstext)
-4. `src/pages/PrivacyPolicy.tsx` - Datenschutztext
-5. `src/pages/Imprint.tsx` - Impressum
-6. `src/pages/Home.tsx` - SEO, FAQ, Strukturdaten
-7. `src/pages/Pricing.tsx` - SEO
-8. `src/pages/Contact.tsx` - SEO
-9. `src/pages/Profile.tsx` - SEO
-10. `src/pages/ResetPassword.tsx` - SEO
-
-**Komponenten:**
-11. `src/components/Navbar.tsx` - Logo-Text und Alt-Text ("Synoptas" → "Synvertas", Logo-Dateipfad bleibt, nur Alt-Text aendern)
-12. `src/components/Footer.tsx` - Markenname und Copyright
-13. `src/components/seo/SEOHead.tsx` - siteUrl, fullTitle, og:site_name, twitter:creator, ogImage-URL
-14. `src/components/seo/StructuredData.tsx` - Social-Links, Publisher-Name, Logo-URL
-
-**Hooks:**
-15. `src/hooks/useFreemiusCheckout.ts` - Kommentar
-
-**Backend (Edge Functions):**
-16. `supabase/functions/send-auth-email/index.ts` - E-Mail-Absender, Betreffzeilen, HTML-Inhalte
-17. `supabase/functions/register-user/index.ts` - E-Mail-HTML-Inhalte, Absender
-18. `supabase/functions/check-reset-eligibility/index.ts` - E-Mail-HTML, Absender, Betreff
-
-**Statische Dateien:**
-19. `index.html` - Title, Meta-Tags, Structured Data, Noscript-Inhalte
-20. `public/robots.txt` - Kommentare, Sitemap-URL, Host
-21. `public/sitemap.xml` - Alle URLs
+Alle drei Edge Functions erhalten ein neues E-Mail-Design, das zum aktuellen Schwarz-Orange-Branding der Website passt.
 
 ---
 
-### Hinweise
+### Aktuelles Problem
 
-- Die Favicon-Datei `public/synoptas-favicon.png` wird NICHT umbenannt (gleiches Bild, nur Referenzen im Alt-Text werden aktualisiert). Falls du auch den Dateinamen aendern moechtest, sag Bescheid.
-- URLs wie `synoptas.com` werden zu `synvertas.com` geaendert. Falls die Domain noch nicht registriert ist, muessen die URLs spaeter ggf. angepasst werden.
-- Die E-Mail-Adresse `mail@wealthconomy.com` bleibt unveraendert (gehoert nicht zum Markennamen).
-- Reine Text-Ersetzung, keine strukturellen Aenderungen.
+- Gruen (#10b981) als Primaerfarbe statt Orange (#F97316)
+- Weisser Hintergrund mit einfachem Text-Header "Synvertas" statt Logo
+- Kein Logo eingebunden
+- Design passt nicht zur Website-Aesthetik
+
+### Neues Design
+
+- **Hintergrund:** Dunkel (#0A0A0A)
+- **Card:** Dunkles Grau (#1A1A1A) mit subtiler Border (#2A2A2A)
+- **Primaerfarbe/Buttons:** Orange (#F97316) 
+- **Logo:** Eingebunden als Bild ueber `https://synvertas.com/synvertas-logo.png`
+- **Typografie:** Weiss (#FAFAFA) fuer Ueberschriften, Grau (#A1A1AA) fuer Sekundaertext
+- **Footer:** Dezenter Trennstrich, Copyright-Zeile
+
+### Betroffene Dateien (3 Edge Functions)
+
+1. **`supabase/functions/send-auth-email/index.ts`** - Confirmation + Reset Templates
+2. **`supabase/functions/register-user/index.ts`** - Registration Confirmation Template  
+3. **`supabase/functions/check-reset-eligibility/index.ts`** - Password Reset Template
+
+### Aenderungen pro Template
+
+- `background-color: #f4f4f5` wird zu `#0A0A0A`
+- Card `background: white` wird zu `#1A1A1A` mit `border: 1px solid #2A2A2A`
+- Text-Header `<h1>Synvertas</h1>` wird ersetzt durch `<img>` mit dem Logo (max-height: 40px)
+- Alle `#10b981` Farben werden zu `#F97316` (Buttons, Links)
+- Text-Farben: `#18181b` zu `#FAFAFA`, `#52525b` zu `#D4D4D8`, `#71717a` bleibt, `#a1a1aa` bleibt
+- Button border-radius bleibt bei 8px
+- Footer-Link-Farbe: `#F97316`
+
+Keine strukturellen Aenderungen an der Logik, nur das HTML/CSS der E-Mail-Templates.
+

@@ -553,29 +553,55 @@ const Chat = () => {
   const chatPanel = (
     <div className="flex-1 flex flex-col min-w-0 h-full">
       {chatHeader}
-      <ScrollArea className="flex-1">
-        <div className="max-w-3xl mx-auto p-4 space-y-4">
-          {messages.length === 0 && activeId && (
-            <div className="flex flex-col items-center justify-center h-64 gap-2">
-              <span className="text-muted-foreground/60 text-lg font-medium">Start a conversation</span>
-              <span className="text-muted-foreground/40 text-sm">Enter a URL or ask a question below</span>
-            </div>
-          )}
-          {messages.map((msg) => (
-            <ChatMessage key={msg.id} message={msg} />
-          ))}
-          {isStreaming && (
-            <div className="flex justify-start">
-              <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
-                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
-                <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+      {isMobile ? (
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="max-w-3xl mx-auto p-4 space-y-4">
+            {messages.length === 0 && activeId && (
+              <div className="flex flex-col items-center justify-center h-64 gap-2">
+                <span className="text-muted-foreground/60 text-lg font-medium">Start a conversation</span>
+                <span className="text-muted-foreground/40 text-sm">Enter a URL or ask a question below</span>
               </div>
-            </div>
-          )}
-          <div ref={scrollRef} />
+            )}
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} message={msg} />
+            ))}
+            {isStreaming && (
+              <div className="flex justify-start">
+                <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+                </div>
+              </div>
+            )}
+            <div ref={scrollRef} />
+          </div>
         </div>
-      </ScrollArea>
+      ) : (
+        <ScrollArea className="flex-1">
+          <div className="max-w-3xl mx-auto p-4 space-y-4">
+            {messages.length === 0 && activeId && (
+              <div className="flex flex-col items-center justify-center h-64 gap-2">
+                <span className="text-muted-foreground/60 text-lg font-medium">Start a conversation</span>
+                <span className="text-muted-foreground/40 text-sm">Enter a URL or ask a question below</span>
+              </div>
+            )}
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} message={msg} />
+            ))}
+            {isStreaming && (
+              <div className="flex justify-start">
+                <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
+                  <span className="w-2 h-2 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+                </div>
+              </div>
+            )}
+            <div ref={scrollRef} />
+          </div>
+        </ScrollArea>
+      )}
       {profiles.some((p) => p.status !== "completed" && p.status !== "error") && (
         <AnalysisProgress profiles={profiles} />
       )}
@@ -633,84 +659,165 @@ const Chat = () => {
           </Tabs>
         </div>
       )}
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-6">
-          {/* Show pending/analyzing profiles */}
-          {pendingProfiles.length > 0 && (
-            <div className="space-y-2">
-              {pendingProfiles.map((p) => (
-                <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+      {isMobile ? (
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="p-4 space-y-6">
+            {/* Show pending/analyzing profiles */}
+            {pendingProfiles.length > 0 && (
+              <div className="space-y-2">
+                {pendingProfiles.map((p) => (
+                  <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
+                      <p className="text-[11px] text-muted-foreground capitalize">
+                        {p.status === "crawling"
+                          ? "Crawling website..."
+                          : p.status === "analyzing"
+                            ? "AI analyzing..."
+                            : p.status}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error profiles */}
+            {profiles
+              .filter((p) => p.status === "error")
+              .map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
+                >
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                    <p className="text-[11px] text-muted-foreground capitalize">
-                      {p.status === "crawling"
-                        ? "Crawling website..."
-                        : p.status === "analyzing"
-                          ? "AI analyzing..."
-                          : p.status}
-                    </p>
+                    <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
                   </div>
                 </div>
               ))}
-            </div>
-          )}
 
-          {/* Error profiles */}
-          {profiles
-            .filter((p) => p.status === "error")
-            .map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                  <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
-                </div>
-              </div>
-            ))}
-
-          {analysisTab === "overview" ? (
-            <>
-              {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
-              {hasMultipleProfiles && (
-                <div>
-                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                    Comparison
-                  </h3>
-                  <ComparisonTable profiles={completedProfiles} />
-                </div>
-              )}
-              {hasProfiles && tasks.length > 0 && (
-                <div>
-                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                    Improvement Plan
-                  </h3>
-                  <ImprovementPlan tasks={tasks} />
-                </div>
-              )}
-            </>
-          ) : (
-            hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
-          )}
-
-          {!hasProfiles &&
-            pendingProfiles.length === 0 &&
-            profiles.filter((p) => p.status === "error").length === 0 &&
-            (isAnalyzing ? (
-              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
-              </div>
+            {analysisTab === "overview" ? (
+              <>
+                {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
+                {hasMultipleProfiles && (
+                  <div>
+                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      Comparison
+                    </h3>
+                    <ComparisonTable profiles={completedProfiles} />
+                  </div>
+                )}
+                {hasProfiles && tasks.length > 0 && (
+                  <div>
+                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      Improvement Plan
+                    </h3>
+                    <ImprovementPlan tasks={tasks} />
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
-                <p className="text-sm">Start an analysis to see results here</p>
-              </div>
-            ))}
+              hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
+            )}
+
+            {!hasProfiles &&
+              pendingProfiles.length === 0 &&
+              profiles.filter((p) => p.status === "error").length === 0 &&
+              (isAnalyzing ? (
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                  <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
+                  <p className="text-sm">Start an analysis to see results here</p>
+                </div>
+              ))}
+          </div>
         </div>
-      </ScrollArea>
+      ) : (
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-6">
+            {/* Show pending/analyzing profiles */}
+            {pendingProfiles.length > 0 && (
+              <div className="space-y-2">
+                {pendingProfiles.map((p) => (
+                  <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
+                      <p className="text-[11px] text-muted-foreground capitalize">
+                        {p.status === "crawling"
+                          ? "Crawling website..."
+                          : p.status === "analyzing"
+                            ? "AI analyzing..."
+                            : p.status}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error profiles */}
+            {profiles
+              .filter((p) => p.status === "error")
+              .map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
+                    <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
+                  </div>
+                </div>
+              ))}
+
+            {analysisTab === "overview" ? (
+              <>
+                {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
+                {hasMultipleProfiles && (
+                  <div>
+                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      Comparison
+                    </h3>
+                    <ComparisonTable profiles={completedProfiles} />
+                  </div>
+                )}
+                {hasProfiles && tasks.length > 0 && (
+                  <div>
+                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      Improvement Plan
+                    </h3>
+                    <ImprovementPlan tasks={tasks} />
+                  </div>
+                )}
+              </>
+            ) : (
+              hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
+            )}
+
+            {!hasProfiles &&
+              pendingProfiles.length === 0 &&
+              profiles.filter((p) => p.status === "error").length === 0 &&
+              (isAnalyzing ? (
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                  <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
+                  <p className="text-sm">Start an analysis to see results here</p>
+                </div>
+              ))}
+          </div>
+        </ScrollArea>
+      )}
     </div>
   );
 

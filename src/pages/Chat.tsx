@@ -27,6 +27,7 @@ import ComparisonTable from "@/components/dashboard/ComparisonTable";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
 import ImprovementPlan from "@/components/dashboard/ImprovementPlan";
 import { useIsMobile } from "@/hooks/use-mobile";
+import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase/external-client";
 import {
@@ -481,6 +482,10 @@ const Chat = () => {
   const completedProfiles = profiles.filter((p) => p.status === "completed");
   const hasProfiles = completedProfiles.length > 0;
   const hasMultipleProfiles = completedProfiles.length >= 2;
+
+  if (isMobile) {
+    return <MobileBlocker />;
+  }
 
   if (authLoading) {
     return (

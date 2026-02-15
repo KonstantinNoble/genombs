@@ -14,7 +14,7 @@ const MobileBlocker = () => {
         <Monitor className="h-16 w-16 text-primary" />
         <h1 className="text-2xl font-bold text-foreground">Desktop Only</h1>
         <p className="text-muted-foreground text-base leading-relaxed">
-          Synvertas is optimized for desktop use. Please open this page on a computer for the best experience.
+          The analysis workspace is optimized for desktop use. Please open this page on a computer for the best experience.
         </p>
       </div>
     </div>

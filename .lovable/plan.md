@@ -1,51 +1,48 @@
 
+## Umbenennung: Synoptas → Synvertas
 
-## Text-Polish: Menschlicher, weniger KI-typisch
-
-Die Seite hat noch mehrere typische KI-Merkmale. Hier die konkreten Korrekturen:
-
----
-
-### 1. Em-Dashes ("—") entfernen
-
-Alle Vorkommen von " — " und " -- " durch Punkte, Kommas oder Umformulierungen ersetzen:
-
-- **Zeile 78** (Feature 3): "...based on the AI analysis of your website — ready to execute." wird zu: "...based on the AI analysis of your website. Ready to execute."
-- **Zeile 136** (FAQ): "...scores your site across 5 categories — Findability..." wird zu: "...scores your site across 5 categories: Findability..."
-- **Zeile 196** (Hero Subtitle): "...trust, and conversion — with competitor benchmarks..." wird zu: "...trust, and conversion. Includes competitor benchmarks and a prioritized fix list."
-- **Zeile 209** (Credits): "20 free credits per day — no credit card required" wird zu: "20 free credits per day. No credit card required."
-
-### 2. "Website Analysis Platform" Tagline entfernen
-
-Die Zeile `<p className="text-sm uppercase tracking-widest...">Website Analysis Platform</p>` (Zeile 188-189) wird komplett entfernt. Das ist ein typisches KI-Template-Muster (kleiner Tagline-Text ueber der Headline).
-
-### 3. Texte natuerlicher formulieren
-
-Einige Stellen klingen noch nach Vorlage:
-
-- **Hero Headline** (Zeile 192-194): "Know exactly what's holding your website back" ist okay, aber der Orange-Span-Split wirkt konstruiert. Aendern zu: `"What's holding your website back?"` (ohne Span-Split, komplett weiss, als direkte Frage)
-- **Hero Subtitle** (Zeile 195-197): Kuerzere, natuerlichere Formulierung: "Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to fix."
-- **Features Subheading** (Zeile 241): "A structured breakdown of what works, what doesn't, and what to fix first." ist dreigliedrig (typisches KI-Muster). Aendern zu: "Scores, comparisons, and a concrete fix list for your website."
-- **Feature 1 Description** (Zeile 66): Kuerzer: "Your website is scored across five categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness."
-- **Feature 3 Description** (Zeile 78): "Concrete, prioritized optimization tasks based on the analysis. Ready to execute."
-- **Use Case Descriptions**: Dreigliedrige Aufzaehlungen aufloesen und direkter formulieren
-- **CTA Heading** (Zeile 368): "Try it now" ist generisch. Aendern zu: "See what your website scores"
-
-### 4. FAQ-Texte natuerlicher machen
-
-- Zeile 136: "Absolutely." am Anfang der Sicherheits-Antwort entfernen (typische KI-Floskel). Stattdessen direkt anfangen: "We only analyze publicly available website data."
+Globales Suchen-und-Ersetzen von "Synoptas" zu "Synvertas" und "synoptas" zu "synvertas" in allen betroffenen Dateien.
 
 ---
 
-### Zusammenfassung der Aenderungen
+### Betroffene Dateien (20 Dateien)
 
-Nur eine Datei betroffen: `src/pages/Home.tsx`
+**Frontend-Seiten:**
+1. `src/pages/Auth.tsx` - SEO description
+2. `src/pages/UpdatePassword.tsx` - SEO description
+3. `src/pages/TermsOfService.tsx` - ca. 20 Vorkommen (Vertragstext)
+4. `src/pages/PrivacyPolicy.tsx` - Datenschutztext
+5. `src/pages/Imprint.tsx` - Impressum
+6. `src/pages/Home.tsx` - SEO, FAQ, Strukturdaten
+7. `src/pages/Pricing.tsx` - SEO
+8. `src/pages/Contact.tsx` - SEO
+9. `src/pages/Profile.tsx` - SEO
+10. `src/pages/ResetPassword.tsx` - SEO
 
-Aenderungen:
-- Tagline "Website Analysis Platform" entfernt
-- Alle Em-Dashes durch Punkte/Doppelpunkte ersetzt
-- Hero-Headline als Frage ohne Farb-Split
-- Dreigliedrige Aufzaehlungen aufgeloest
-- KI-Floskeln ("Absolutely", "at a glance") entfernt
-- CTA konkreter formuliert
+**Komponenten:**
+11. `src/components/Navbar.tsx` - Logo-Text und Alt-Text ("Synoptas" → "Synvertas", Logo-Dateipfad bleibt, nur Alt-Text aendern)
+12. `src/components/Footer.tsx` - Markenname und Copyright
+13. `src/components/seo/SEOHead.tsx` - siteUrl, fullTitle, og:site_name, twitter:creator, ogImage-URL
+14. `src/components/seo/StructuredData.tsx` - Social-Links, Publisher-Name, Logo-URL
 
+**Hooks:**
+15. `src/hooks/useFreemiusCheckout.ts` - Kommentar
+
+**Backend (Edge Functions):**
+16. `supabase/functions/send-auth-email/index.ts` - E-Mail-Absender, Betreffzeilen, HTML-Inhalte
+17. `supabase/functions/register-user/index.ts` - E-Mail-HTML-Inhalte, Absender
+18. `supabase/functions/check-reset-eligibility/index.ts` - E-Mail-HTML, Absender, Betreff
+
+**Statische Dateien:**
+19. `index.html` - Title, Meta-Tags, Structured Data, Noscript-Inhalte
+20. `public/robots.txt` - Kommentare, Sitemap-URL, Host
+21. `public/sitemap.xml` - Alle URLs
+
+---
+
+### Hinweise
+
+- Die Favicon-Datei `public/synoptas-favicon.png` wird NICHT umbenannt (gleiches Bild, nur Referenzen im Alt-Text werden aktualisiert). Falls du auch den Dateinamen aendern moechtest, sag Bescheid.
+- URLs wie `synoptas.com` werden zu `synvertas.com` geaendert. Falls die Domain noch nicht registriert ist, muessen die URLs spaeter ggf. angepasst werden.
+- Die E-Mail-Adresse `mail@wealthconomy.com` bleibt unveraendert (gehoert nicht zum Markennamen).
+- Reine Text-Ersetzung, keine strukturellen Aenderungen.

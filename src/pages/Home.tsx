@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/StructuredData";
+import { WebPageSchema, OrganizationSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
 import { Button } from "@/components/ui/button";
@@ -391,7 +391,6 @@ const Home = () => {
       </section>
 
       {/* FAQ */}
-      <FAQSchema faqs={homeFAQ} />
       <section className="py-20 sm:py-28 border-t border-primary/15">
         <div className="container mx-auto px-4 max-w-2xl scroll-reveal">
           <FAQSection items={homeFAQ} />

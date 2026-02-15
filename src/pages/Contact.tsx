@@ -13,9 +13,9 @@ const Contact = () => {
         canonical="/contact"
       />
       <WebPageSchema
-        name="Contact | Synoptas"
+        name="Contact | Synvertas"
         description="Questions or feedback? We're here to help."
-        url="https://synoptas.com/contact"
+        url="https://synvertas.com/contact"
       />
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-16 md:py-24">

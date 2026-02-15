@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://synoptas.com/</loc>
+    <loc>https://synvertas.com/</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,7 +10,7 @@
 
   <!-- Multi-AI Validator - Main Tool -->
   <url>
-    <loc>https://synoptas.com/validate</loc>
+    <loc>https://synvertas.com/validate</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -18,7 +18,7 @@
 
   <!-- Pricing -->
   <url>
-    <loc>https://synoptas.com/pricing</loc>
+    <loc>https://synvertas.com/pricing</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -26,7 +26,7 @@
 
   <!-- Contact -->
   <url>
-    <loc>https://synoptas.com/contact</loc>
+    <loc>https://synvertas.com/contact</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -34,21 +34,21 @@
 
   <!-- Legal Pages -->
   <url>
-    <loc>https://synoptas.com/privacy-policy</loc>
+    <loc>https://synvertas.com/privacy-policy</loc>
     <lastmod>2026-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://synoptas.com/terms-of-service</loc>
+    <loc>https://synvertas.com/terms-of-service</loc>
     <lastmod>2026-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://synoptas.com/imprint</loc>
+    <loc>https://synvertas.com/imprint</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

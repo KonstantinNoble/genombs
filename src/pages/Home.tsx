@@ -191,18 +191,18 @@ const Home = () => {
         description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
         keywords="website analysis, website scoring, competitor analysis, PageSpeed insights, conversion optimization, SEO audit"
         canonical="/"
-        ogImage="https://synoptas.com/synoptas-favicon.png"
+        ogImage="https://synvertas.com/synoptas-favicon.png"
       />
       <OrganizationSchema
-        name="Synoptas"
-        url="https://synoptas.com"
-        logo="https://synoptas.com/synoptas-favicon.png"
-        description="Synoptas – Website Analysis Platform"
+        name="Synvertas"
+        url="https://synvertas.com"
+        logo="https://synvertas.com/synoptas-favicon.png"
+        description="Synvertas – Website Analysis Platform"
       />
       <WebPageSchema
         name="Business Genome – Turn your website into a growth engine"
         description="Scan your website and get a complete growth playbook."
-        url="https://synoptas.com/"
+        url="https://synvertas.com/"
       />
       <Navbar />
 

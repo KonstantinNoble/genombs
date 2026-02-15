@@ -1,4 +1,4 @@
-# Synoptas SEO Configuration
+# Synvertas SEO Configuration
 # Updated: 2025-01-10
 
 # Google - Priority Crawler
@@ -23,7 +23,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://synoptas.com/sitemap.xml
+Sitemap: https://synvertas.com/sitemap.xml
 
 # Canonical host (prevents duplicate content)
-Host: https://synoptas.com
+Host: https://synvertas.com

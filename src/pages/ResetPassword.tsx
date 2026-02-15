@@ -290,7 +290,7 @@ const ResetPassword = () => {
     <>
       <SEOHead
         title="Reset Password"
-        description="Reset your Synoptas password."
+        description="Reset your Synvertas password."
         canonical="/reset-password"
         noindex={true}
       />

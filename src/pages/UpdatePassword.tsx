@@ -86,7 +86,7 @@ const UpdatePassword = () => {
     <>
       <SEOHead
         title="Update Password"
-        description="Set a new password for your Synoptas account."
+        description="Set a new password for your Synvertas account."
         canonical="/update-password"
         noindex={true}
       />

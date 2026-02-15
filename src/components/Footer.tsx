@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="max-w-lg mx-auto">
           {/* Logo */}
           <div className="flex items-center justify-center mb-10">
-            <span className="font-sans font-bold text-2xl text-foreground">Synoptas</span>
+            <span className="font-sans font-bold text-2xl text-foreground">Synvertas</span>
           </div>
           
           {/* Links Grid */}
@@ -64,7 +64,7 @@ const Footer = () => {
           {/* Bottom section */}
           <div className="flex flex-col items-center">
             <p className="text-xs text-muted-foreground/60">
-              © {new Date().getFullYear()} Synoptas. All rights reserved.
+              © {new Date().getFullYear()} Synvertas. All rights reserved.
             </p>
           </div>
         </div>

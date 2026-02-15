@@ -93,10 +93,10 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="max-width: 560px; margin: 0 auto; padding: 40px 20px;">
           <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #10b981; font-size: 28px; margin: 0;">Synoptas</h1>
+              <h1 style="color: #10b981; font-size: 28px; margin: 0;">Synvertas</h1>
             </div>
             
-            <h2 style="color: #18181b; font-size: 20px; margin: 0 0 16px;">Welcome to Synoptas!</h2>
+            <h2 style="color: #18181b; font-size: 20px; margin: 0 0 16px;">Welcome to Synvertas!</h2>
             
             <p style="color: #52525b; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
               Thank you for signing up. Please confirm your email address by clicking the button below.
@@ -109,13 +109,13 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             
             <p style="color: #71717a; font-size: 14px; line-height: 20px; margin: 24px 0 0;">
-              If you didn't create an account with Synoptas, you can safely ignore this email.
+              If you didn't create an account with Synvertas, you can safely ignore this email.
             </p>
             
             <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
             
             <p style="color: #a1a1aa; font-size: 12px; line-height: 18px; margin: 0; text-align: center;">
-              This email was sent by Synoptas. If the button doesn't work, copy and paste this link into your browser:<br>
+              This email was sent by Synvertas. If the button doesn't work, copy and paste this link into your browser:<br>
               <a href="${confirmationUrl}" style="color: #10b981; word-break: break-all;">${confirmationUrl}</a>
             </p>
           </div>
@@ -131,9 +131,9 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Synoptas <noreply@wealthconomy.com>",
+        from: "Synvertas <noreply@wealthconomy.com>",
         to: [email],
-        subject: "Confirm your Synoptas account",
+        subject: "Confirm your Synvertas account",
         html,
       }),
     });
@@ -142,8 +142,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!emailResponse.ok) {
       console.error("Resend API error:", emailData);
-      // User was created but email failed - log but don't throw
-      // User can request resend later
       return new Response(
         JSON.stringify({ 
           success: true, 

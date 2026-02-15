@@ -94,7 +94,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (creditsError) {
       console.error("Error fetching user credits:", creditsError);
-      // Continue anyway - if no credits record exists, no rate limit applies
     }
 
     if (credits?.last_password_reset_at) {
@@ -139,7 +138,6 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Step 4: Update last_password_reset_at timestamp
-    // First check if user_credits record exists
     const { data: existingCredits } = await supabaseAdmin
       .from("user_credits")
       .select("id")
@@ -147,13 +145,11 @@ const handler = async (req: Request): Promise<Response> => {
       .maybeSingle();
 
     if (existingCredits) {
-      // Update existing record
       await supabaseAdmin
         .from("user_credits")
         .update({ last_password_reset_at: new Date().toISOString() })
         .eq("user_id", user.id);
     } else {
-      // Create new record with minimal required fields
       await supabaseAdmin
         .from("user_credits")
         .insert({
@@ -178,7 +174,7 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="max-width: 560px; margin: 0 auto; padding: 40px 20px;">
           <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #10b981; font-size: 28px; margin: 0;">Synoptas</h1>
+              <h1 style="color: #10b981; font-size: 28px; margin: 0;">Synvertas</h1>
             </div>
             
             <h2 style="color: #18181b; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
@@ -204,7 +200,7 @@ const handler = async (req: Request): Promise<Response> => {
             <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
             
             <p style="color: #a1a1aa; font-size: 12px; line-height: 18px; margin: 0; text-align: center;">
-              This email was sent by Synoptas. If the button doesn't work, copy and paste this link into your browser:<br>
+              This email was sent by Synvertas. If the button doesn't work, copy and paste this link into your browser:<br>
               <a href="${resetLink}" style="color: #10b981; word-break: break-all;">${resetLink}</a>
             </p>
           </div>
@@ -220,9 +216,9 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Synoptas <noreply@wealthconomy.com>",
+        from: "Synvertas <noreply@wealthconomy.com>",
         to: [email],
-        subject: "Reset your Synoptas password",
+        subject: "Reset your Synvertas password",
         html,
       }),
     });

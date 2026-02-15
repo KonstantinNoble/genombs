@@ -120,7 +120,7 @@ const Navbar = () => {
               <div className="w-10 h-10 overflow-hidden rounded-lg">
                 <img 
                   src={logo} 
-                  alt="Synoptas Logo" 
+                  alt="Synvertas Logo" 
                   className="w-full h-full object-cover"
                   loading="eager"
                   fetchPriority="high"
@@ -128,7 +128,7 @@ const Navbar = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-semibold tracking-tight text-foreground">
-                  Synoptas
+                  Synvertas
                 </span>
               </div>
             </Link>
@@ -205,12 +205,12 @@ const Navbar = () => {
               <div className="w-16 h-16 overflow-hidden rounded-2xl mb-3">
                 <img 
                   src={logo} 
-                  alt="Synoptas Logo" 
+                  alt="Synvertas Logo" 
                   className="w-full h-full object-cover"
                 />
               </div>
               <span className="text-2xl font-semibold tracking-tight text-foreground">
-                Synoptas
+                Synvertas
               </span>
             </div>
             

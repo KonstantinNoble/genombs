@@ -170,21 +170,21 @@ const handler = async (req: Request): Promise<Response> => {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f5;">
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #0A0A0A;">
         <div style="max-width: 560px; margin: 0 auto; padding: 40px 20px;">
-          <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+          <div style="background: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 12px; padding: 40px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="color: #10b981; font-size: 28px; margin: 0;">Synvertas</h1>
+              <img src="https://synvertas.com/synvertas-logo.png" alt="Synvertas" style="max-height: 40px; width: auto;">
             </div>
             
-            <h2 style="color: #18181b; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
+            <h2 style="color: #FAFAFA; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
             
-            <p style="color: #52525b; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+            <p style="color: #D4D4D8; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
               We received a request to reset your password. Click the button below to choose a new password.
             </p>
             
             <div style="text-align: center; margin: 32px 0;">
-              <a href="${resetLink}" style="display: inline-block; background-color: #10b981; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+              <a href="${resetLink}" style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                 Reset Password
               </a>
             </div>
@@ -197,11 +197,15 @@ const handler = async (req: Request): Promise<Response> => {
               This link will expire in 1 hour.
             </p>
             
-            <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
+            <hr style="border: none; border-top: 1px solid #2A2A2A; margin: 32px 0;">
             
             <p style="color: #a1a1aa; font-size: 12px; line-height: 18px; margin: 0; text-align: center;">
               This email was sent by Synvertas. If the button doesn't work, copy and paste this link into your browser:<br>
-              <a href="${resetLink}" style="color: #10b981; word-break: break-all;">${resetLink}</a>
+              <a href="${resetLink}" style="color: #F97316; word-break: break-all;">${resetLink}</a>
+            </p>
+            
+            <p style="color: #71717a; font-size: 11px; margin: 16px 0 0; text-align: center;">
+              &copy; ${new Date().getFullYear()} Synvertas. All rights reserved.
             </p>
           </div>
         </div>

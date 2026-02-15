@@ -19,7 +19,7 @@ const TermsOfService = () => {
           <div className="space-y-8">
             <section>
               <p className="text-muted-foreground mb-6">
-                These Terms govern your use of Synoptas. By creating an account, you agree to these Terms.
+                These Terms govern your use of Synvertas. By creating an account, you agree to these Terms.
               </p>
             </section>
             {/* Section I - Scope */}
@@ -48,7 +48,7 @@ const TermsOfService = () => {
                 </p>
                 <p className="mb-2">
                   This means: All purchase contracts for Premium features are concluded{" "}
-                  <strong>directly between you and Freemius</strong> – not with Synoptas/Muhammed Kagan Yilmaz.
+                  <strong>directly between you and Freemius</strong> – not with Synvertas/Muhammed Kagan Yilmaz.
                 </p>
                 <p>
                   For payment transactions, Freemius's own terms and conditions apply, which you accept during the
@@ -212,7 +212,7 @@ const TermsOfService = () => {
                 <p>
                   Premium subscriptions are sold and processed by <strong>Freemius, Inc.</strong> as Merchant of Record
                   (MoR). The purchase contract for Premium features is concluded between{" "}
-                  <strong>you and Freemius</strong> – NOT with Synoptas/Muhammed Kagan Yilmaz.
+                  <strong>you and Freemius</strong> – NOT with Synvertas/Muhammed Kagan Yilmaz.
                 </p>
               </div>
 
@@ -288,7 +288,7 @@ const TermsOfService = () => {
                 <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
                   mail@wealthconomy.com
                 </a>
-                . We (Synoptas/Muhammed Kagan Yilmaz) will review your request and decide whether a refund is appropriate 
+                . We (Synvertas/Muhammed Kagan Yilmaz) will review your request and decide whether a refund is appropriate 
                 based on the circumstances. If approved, Freemius will execute the technical refund on our behalf. 
                 Refunds are generally not provided for partially used subscription periods unless legally required or 
                 exceptional circumstances apply.
@@ -403,11 +403,11 @@ const TermsOfService = () => {
               </p>
               <p className="mb-4">
                 <strong>Payment Processing:</strong> While <strong>Freemius, Inc.</strong> handles the technical 
-                payment processing as Merchant of Record, we (Synoptas/Muhammed Kagan Yilmaz) remain responsible 
-                for customer support, refund decisions, and resolving disputes.
+                payment processing as Merchant of Record, we (Synvertas/Muhammed Kagan Yilmaz) remain responsible 
+                 for customer support, refund decisions, and resolving disputes.
               </p>
               <p className="mb-4">
-                <strong>We (Synoptas/Muhammed Kagan Yilmaz) are NOT liable for:</strong>
+                 <strong>We (Synvertas/Muhammed Kagan Yilmaz) are NOT liable for:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Technical payment processing errors caused by Freemius's systems</li>
@@ -427,7 +427,7 @@ const TermsOfService = () => {
 
               <p className="mb-4">
                 Your contract to use the <strong>free platform</strong> continues indefinitely with no minimum
-                commitment. You may terminate your <strong>Synoptas account</strong> anytime:
+                commitment. You may terminate your <strong>Synvertas account</strong> anytime:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>Via your Profile page ("Delete Account" button)</li>
@@ -445,7 +445,7 @@ const TermsOfService = () => {
               <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 my-4">
                 <p className="font-bold mb-2">⚠️ IMPORTANT for Premium Subscribers</p>
                 <p className="mb-2">
-                  Deleting your <strong>Synoptas account</strong> does <strong>NOT automatically cancel</strong> your{" "}
+                  Deleting your <strong>Synvertas account</strong> does <strong>NOT automatically cancel</strong> your{" "}
                   <strong>Premium subscription with Freemius</strong>!
                 </p>
                 <p className="mb-2">
@@ -458,7 +458,7 @@ const TermsOfService = () => {
                 </ul>
                 <p className="mt-2">
                   <strong>Otherwise, your subscription will continue and you will continue to be charged</strong> – even
-                  if you no longer have a Synoptas account!
+                  if you no longer have a Synvertas account!
                 </p>
               </div>
 
@@ -491,7 +491,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold mb-3 mt-6">7.1 Effects of Termination on Premium Features</h3>
               <p className="mb-4">
-                <strong>When deleting your Synoptas account:</strong>
+                <strong>When deleting your Synvertas account:</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
                 <li>
@@ -506,7 +506,7 @@ const TermsOfService = () => {
                 <strong>When canceling your Premium subscription (through Freemius):</strong>
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-1">
-                <li>Your Synoptas account remains active (free features still usable)</li>
+                <li>Your Synvertas account remains active (free features still usable)</li>
                 <li>
                   Premium access ends at the <strong>end of the paid period</strong>
                 </li>
@@ -569,7 +569,7 @@ const TermsOfService = () => {
                   Email: mail@wealthconomy.com
                 </p>
                 <p className="mb-2">
-                  I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for Synoptas.
+                  I/We (*) hereby withdraw from my/our (*) contract for the Premium subscription for Synvertas.
                 </p>
                 <p className="mb-2">
                   Ordered on: _______________
@@ -597,7 +597,7 @@ const TermsOfService = () => {
                   Freemius refunds all received payments within <strong>14 days</strong>
                 </li>
                 <li>Your Premium access is terminated (downgraded to Free Plan)</li>
-                <li>Your Synoptas account remains active (free features still usable)</li>
+                <li>Your Synvertas account remains active (free features still usable)</li>
               </ul>
 
               <p className="mb-4">
@@ -632,7 +632,7 @@ const TermsOfService = () => {
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 my-4">
                 <p className="font-semibold mb-3">📧 Primary Contact for ALL Issues</p>
                 <p className="mb-2">
-                  Contact <strong>us (Synoptas)</strong> first for any questions, complaints, or support requests:{" "}
+                  Contact <strong>us (Synvertas)</strong> first for any questions, complaints, or support requests:{" "}
                   <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">
                     mail@wealthconomy.com
                   </a>
@@ -705,7 +705,7 @@ const TermsOfService = () => {
             {/* Final Statement */}
             <section className="bg-muted/30 border border-border rounded-lg p-6 mt-8">
               <h3 className="text-xl font-semibold mb-4">Acknowledgment</h3>
-              <p className="mb-4">By creating an account and using the Synoptas platform, you acknowledge that:</p>
+              <p className="mb-4">By creating an account and using the Synvertas platform, you acknowledge that:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>You have read and understood these Terms of Service in their entirety</li>
                 <li>You agree to be legally bound by these Terms</li>

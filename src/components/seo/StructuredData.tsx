@@ -16,8 +16,8 @@ export const OrganizationSchema = ({ name, url, logo, description }: Organizatio
     "logo": logo,
     "description": description,
     "sameAs": [
-      "https://twitter.com/synoptas",
-      "https://www.linkedin.com/company/synoptas"
+      "https://twitter.com/synvertas",
+      "https://www.linkedin.com/company/synvertas"
     ]
   };
 
@@ -45,10 +45,10 @@ export const WebPageSchema = ({ name, description, url }: WebPageSchemaProps) =>
     "url": url,
     "publisher": {
       "@type": "Organization",
-      "name": "Synoptas",
+      "name": "Synvertas",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://synoptas.com/favicon.png"
+        "url": "https://synvertas.com/favicon.png"
       }
     }
   };

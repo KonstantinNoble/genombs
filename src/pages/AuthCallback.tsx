@@ -98,7 +98,7 @@ const AuthCallback = () => {
         localStorage.removeItem('auth_intent');
         
         if (isNewUser && storedIntent !== 'premium') {
-          toast.success("Welcome to Synoptas!");
+          toast.success("Welcome to Synvertas!");
           navigate('/');
         } else if (storedIntent === 'premium') {
           const checkoutUrl = `https://checkout.freemius.com/product/21730/plan/36437/?user_email=${encodeURIComponent(user.email || '')}&readonly_user=true`;

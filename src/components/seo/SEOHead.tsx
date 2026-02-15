@@ -16,11 +16,11 @@ export const SEOHead = ({
   keywords = "AI advisory board, startup decisions, second opinions, business analysis, investor-ready, founder tools, strategic advice",
   canonical,
   ogType = "website",
-  ogImage = "https://synoptas.com/favicon.png",
+  ogImage = "https://synvertas.com/favicon.png",
   noindex = false
 }: SEOHeadProps) => {
-  const siteUrl = "https://synoptas.com";
-  const fullTitle = `${title} | Synoptas`;
+  const siteUrl = "https://synvertas.com";
+  const fullTitle = `${title} | Synvertas`;
   const canonicalUrl = canonical ? `${siteUrl}${canonical}` : siteUrl;
 
   return (
@@ -40,7 +40,7 @@ export const SEOHead = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
-      <meta property="og:site_name" content="Synoptas" />
+      <meta property="og:site_name" content="Synvertas" />
       <meta property="og:locale" content="en_US" />
       
       {/* Twitter */}
@@ -49,7 +49,7 @@ export const SEOHead = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:creator" content="@synoptas" />
+      <meta name="twitter:creator" content="@synvertas" />
     </Helmet>
   );
 };

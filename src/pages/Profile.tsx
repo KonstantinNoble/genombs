@@ -110,7 +110,7 @@ const Profile = () => {
     <>
       <SEOHead
         title="Profile Settings"
-        description="Manage your Synoptas account settings and preferences."
+        description="Manage your Synvertas account settings and preferences."
         canonical="/profile"
         noindex={true}
       />

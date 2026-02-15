@@ -20,7 +20,7 @@ export const useFreemiusCheckout = () => {
     checkoutUrl.searchParams.set('user_email', userEmail);
     checkoutUrl.searchParams.set('readonly_user', 'true');
     
-    // Open in same tab (temporarily replaces Synoptas page)
+    // Open in same tab (temporarily replaces Synvertas page)
     window.location.href = checkoutUrl.toString();
   }, [user]);
 

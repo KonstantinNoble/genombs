@@ -104,7 +104,7 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
     return trimmed.startsWith("https://") && trimmed.includes(".");
   };
 
-  const currentModel = AI_MODELS.find((m) => m.id === selectedModel)!;
+  const currentModel = AI_MODELS.find((m) => m.id === selectedModel) ?? AI_MODELS[0];
   const chatCost = getChatCreditCost(selectedModel);
   const notEnoughForChat = remainingCredits < chatCost;
 

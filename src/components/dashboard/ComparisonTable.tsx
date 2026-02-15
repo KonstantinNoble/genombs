@@ -46,7 +46,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
 
         <div className="space-y-4">
           {categories.map((cat, i) => {
-            const ownScore = ownSite.category_scores![cat.key];
+            const ownScore = ownSite.category_scores?.[cat.key] ?? 0;
             return (
               <div
                 key={cat.key}

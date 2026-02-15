@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const CHECKOUT_BASE_URL = 'https://checkout.freemius.com/product/21730/plan/36437/';
+const CHECKOUT_BASE_URL = 'https://checkout.freemius.com/product/24351/plan/40440/';
 
 export const useFreemiusCheckout = () => {
   const { user } = useAuth();

@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Privacy Policy"
+        description="Synvertas Privacy Policy – How we handle your data, GDPR compliance, and your rights."
+        canonical="/privacy-policy"
+        noindex={true}
+      />
       <div className="container mx-auto px-4 py-8">
         <Link to="/">
           <Button variant="ghost" className="mb-8">

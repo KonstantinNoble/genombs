@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { FAQSchema, WebPageSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import FeatureComparisonTable from "@/components/genome/FeatureComparisonTable";
 import FAQSection from "@/components/genome/FAQSection";
@@ -91,6 +92,12 @@ const PricingPage = () => {
         description="Simple, transparent pricing. Start free with 20 daily credits. Upgrade for 100 credits and all AI models."
         canonical="/pricing"
       />
+      <WebPageSchema
+        name="Pricing – Synvertas"
+        description="Simple, transparent pricing for AI-powered website analysis."
+        url="https://synvertas.com/pricing"
+      />
+      <FAQSchema faqs={pricingFAQ} />
 
       <Navbar />
 

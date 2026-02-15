@@ -1,58 +1,33 @@
 
-## Fix: "Invalid regular expression" Crash auf Mobile
 
-### Ursache
+## Mobile-Sperre: "Bitte Desktop verwenden" Hinweis
 
-Die Bibliothek `remark-gfm` (importiert in `src/components/chat/ChatMessage.tsx`, Zeile 3) verwendet intern Named Capture Groups in regulaeren Ausdruecken. Aeltere mobile Browser (iOS Safari vor Version 16.4, aeltere Android WebViews) unterstuetzen diese Syntax nicht und werfen beim Laden des Moduls sofort den Fehler:
+### Konzept
 
-> "Invalid regular expression: Invalid group specifier name"
+Eine fullscreen Overlay-Komponente, die auf mobilen Geraeten (Bildschirmbreite unter 768px) die gesamte App ueberdeckt und den Nutzer freundlich darauf hinweist, dass die Anwendung nur auf Desktop-Geraeten verfuegbar ist.
 
-Da der Fehler beim Modul-Import passiert (nicht beim Rendern), crasht die gesamte Chat-Seite bevor sie ueberhaupt angezeigt wird.
+### Umsetzung
 
-### Loesung
+**1. Neue Komponente: `src/components/MobileBlocker.tsx`**
 
-`remark-gfm` wird **dynamisch und fehlertolerant** geladen. Wenn der Import fehlschlaegt (auf alten Browsern), wird Markdown einfach ohne GFM-Erweiterungen (Tabellen, Strikethrough, etc.) gerendert -- die Seite crasht nicht mehr.
+- Prueft per `useIsMobile()` Hook (bereits vorhanden) ob der Nutzer auf einem mobilen Geraet ist
+- Zeigt ein zentriertes Fullscreen-Overlay mit:
+  - Synvertas Logo
+  - Monitor-Icon (aus lucide-react)
+  - Ueberschrift: "Desktop Only"
+  - Text: "Synvertas is optimized for desktop use. Please open this page on a computer for the best experience."
+  - Dunkel gehaltenes Design passend zum bestehenden Theme
+- Wenn der Nutzer auf Desktop ist, wird nichts gerendert (return null)
+- Das Overlay hat `fixed inset-0 z-[9999]` damit es alles ueberdeckt
 
-### Aenderung: `src/components/chat/ChatMessage.tsx`
+**2. Einbindung in `src/App.tsx`**
 
-```typescript
-import { useState, useEffect } from "react";
-import type { Message } from "@/types/chat";
-import ReactMarkdown from "react-markdown";
+- `<MobileBlocker />` wird direkt innerhalb des `<BrowserRouter>` aber vor den `<Routes>` platziert
+- Dadurch wird die Sperre auf allen Seiten aktiv, unabhaengig von der Route
 
-// Dynamisch laden, da remark-gfm auf alten mobilen Browsern crasht
-// (Named Capture Groups in Regex werden nicht unterstuetzt)
-let remarkGfmPlugin: any = null;
-let pluginLoadAttempted = false;
+### Ergebnis
 
-const loadRemarkGfm = async () => {
-  if (pluginLoadAttempted) return;
-  pluginLoadAttempted = true;
-  try {
-    const mod = await import("remark-gfm");
-    remarkGfmPlugin = mod.default;
-  } catch (e) {
-    console.warn("remark-gfm not supported on this browser:", e);
-  }
-};
+- **Mobile**: Nutzer sieht nur den "Bitte Desktop verwenden" Hinweis, kann die App nicht bedienen
+- **Desktop**: Keine Aenderung, alles funktioniert wie bisher
+- **2 Dateien** werden bearbeitet: 1 neue Komponente, 1 Import in App.tsx
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
-  const [pluginReady, setPluginReady] = useState(!!remarkGfmPlugin);
-
-  useEffect(() => {
-    if (!remarkGfmPlugin && !pluginLoadAttempted) {
-      loadRemarkGfm().then(() => setPluginReady(!!remarkGfmPlugin));
-    }
-  }, []);
-
-  const plugins = remarkGfmPlugin ? [remarkGfmPlugin] : [];
-
-  // ... rest bleibt gleich, nur remarkPlugins={plugins} statt remarkPlugins={[remarkGfm]}
-};
-```
-
-### Was sich aendert
-
-- **Alte Mobile-Browser**: Markdown wird ohne Tabellen/Strikethrough gerendert, aber die Seite funktioniert
-- **Moderne Browser**: Keine Aenderung, `remark-gfm` wird wie bisher geladen
-- **Nur 1 Datei** wird geaendert: `src/components/chat/ChatMessage.tsx`

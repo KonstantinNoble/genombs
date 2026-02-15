@@ -29,12 +29,14 @@ const Home = () => {
           }
         });
       },
-      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" },
     );
 
-    document.querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale").forEach((el) => {
-      observerRef.current?.observe(el);
-    });
+    document
+      .querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale")
+      .forEach((el) => {
+        observerRef.current?.observe(el);
+      });
   }, []);
 
   useEffect(() => {
@@ -54,11 +56,7 @@ const Home = () => {
           } = await supabase.auth.getSession();
 
           if (session?.user) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("id")
-              .eq("id", session.user.id)
-              .single();
+            const { data: profile } = await supabase.from("profiles").select("id").eq("id", session.user.id).single();
 
             if (!profile) {
               await supabase.from("profiles").insert({
@@ -99,8 +97,7 @@ const Home = () => {
     {
       num: "03",
       title: "Improvement Plan",
-      description:
-        "Concrete, prioritized optimization tasks based on the analysis. Ready to execute.",
+      description: "Concrete, prioritized optimization tasks based on the analysis. Ready to execute.",
     },
   ];
 
@@ -118,29 +115,34 @@ const Home = () => {
     {
       step: "03",
       title: "Get your analysis",
-      description: "Receive scores across 5 categories, competitor comparisons, PageSpeed data, and an improvement plan.",
+      description:
+        "Receive scores across 5 categories, competitor comparisons, PageSpeed data, and an improvement plan.",
     },
   ];
 
   const useCases = [
     {
       title: "Pre-Launch Check",
-      description: "Scan your site before launch to uncover messaging gaps, missing trust signals, and conversion weaknesses.",
+      description:
+        "Scan your site before launch to uncover messaging gaps, missing trust signals, and conversion weaknesses.",
       badge: "Pre-Launch",
     },
     {
       title: "Competitor Benchmarking",
-      description: "Compare your scores side-by-side with up to 3 competitors. See exactly where you lead and where you fall behind.",
+      description:
+        "Compare your scores side-by-side with up to 3 competitors. See exactly where you lead and where you fall behind.",
       badge: "Comparison",
     },
     {
       title: "Conversion Optimization",
-      description: "Improve your CTAs, trust elements, and offer clarity based on AI-generated scoring and actionable improvement tasks.",
+      description:
+        "Improve your CTAs, trust elements, and offer clarity based on AI-generated scoring and actionable improvement tasks.",
       badge: "Optimization",
     },
     {
       title: "Performance Monitoring",
-      description: "Track your PageSpeed scores and Core Web Vitals. Understand how technical performance impacts your user experience.",
+      description:
+        "Track your PageSpeed scores and Core Web Vitals. Understand how technical performance impacts your user experience.",
       badge: "Performance",
     },
   ];
@@ -157,23 +159,28 @@ const Home = () => {
   const homeFAQ = [
     {
       question: "What is a Website Analysis?",
-      answer: "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
+      answer:
+        "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
     },
     {
       question: "How does the credit system work?",
-      answer: "You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model, and each chat message costs 1–5 credits. Credits reset automatically every 24 hours.",
+      answer:
+        "You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model, and each chat message costs 1–5 credits. Credits reset automatically every 24 hours.",
     },
     {
       question: "What AI models are available?",
-      answer: "Free users have access to Gemini Flash and GPT Mini. Premium users unlock all 5 models: Gemini Flash, GPT Mini, GPT-4o, Claude Sonnet, and Perplexity.",
+      answer:
+        "Free users have access to Gemini Flash and GPT Mini. Premium users unlock all 5 models: Gemini Flash, GPT Mini, GPT-4o, Claude Sonnet, and Perplexity.",
     },
     {
       question: "How long does a scan take?",
-      answer: "Most scans complete in under 60 seconds. Complex websites with many pages may take slightly longer. You'll see a real-time status update while the scan is running.",
+      answer:
+        "Most scans complete in under 60 seconds. Complex websites with many pages may take slightly longer. You'll see a real-time status update while the scan is running.",
     },
     {
       question: "Is my data secure?",
-      answer: "We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
+      answer:
+        "We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
     },
   ];
 
@@ -187,7 +194,7 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
-        title="Business Genome – Turn your website into a growth engine"
+        title="Synvertas – Turn your website into a growth engine"
         description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
         keywords="website analysis, website scoring, competitor analysis, PageSpeed insights, conversion optimization, SEO audit"
         canonical="/"
@@ -214,23 +221,39 @@ const Home = () => {
 
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6 animate-fade-in">
-            What's holding your{" "}
-            <span className="neon-text neon-pulse">website</span> back?
+            What's holding your <span className="neon-text neon-pulse">website</span> back?
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s", animationFillMode: "both" }}>
-            Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to fix.
+          <p
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up"
+            style={{ animationDelay: "0.15s", animationFillMode: "both" }}
+          >
+            Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to
+            fix.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
-            <Button size="lg" asChild className="text-base px-8 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500">
-              <Link to={isLoggedIn ? "/chat" : "/auth"}>
-                Start Analyzing
-              </Link>
+          <div
+            className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+            style={{ animationDelay: "0.3s", animationFillMode: "both" }}
+          >
+            <Button
+              size="lg"
+              asChild
+              className="text-base px-8 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500"
+            >
+              <Link to={isLoggedIn ? "/chat" : "/auth"}>Start Analyzing</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-base px-8 h-13 neon-border hover:bg-primary/10 transition-all duration-500">
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+              className="text-base px-8 h-13 neon-border hover:bg-primary/10 transition-all duration-500"
+            >
               <Link to="/pricing">View Pricing</Link>
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-8 animate-fade-in-up" style={{ animationDelay: "0.45s", animationFillMode: "both" }}>
+          <p
+            className="text-sm text-muted-foreground mt-8 animate-fade-in-up"
+            style={{ animationDelay: "0.45s", animationFillMode: "both" }}
+          >
             20 free credits per day. No credit card required.
           </p>
         </div>
@@ -261,9 +284,7 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              What you get
-            </h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">What you get</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Scores, comparisons, and a concrete fix list for your website.
             </p>
@@ -277,9 +298,7 @@ const Home = () => {
               >
                 <span className="text-4xl font-extrabold neon-text leading-none block">{feature.num}</span>
                 <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -291,9 +310,7 @@ const Home = () => {
         <div className="absolute bottom-0 right-0 w-[350px] h-[350px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              Use cases
-            </h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">Use cases</h2>
           </div>
           <div className="space-y-0">
             {useCases.map((uc, i) => (
@@ -305,7 +322,9 @@ const Home = () => {
                 style={{ transitionDelay: `${i * 0.08}s` }}
               >
                 <div className="md:w-1/4 shrink-0">
-                  <span className="text-xs uppercase tracking-widest text-primary font-semibold neon-text">{uc.badge}</span>
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold neon-text">
+                    {uc.badge}
+                  </span>
                 </div>
                 <div className="md:w-3/4 space-y-3">
                   <h3 className="text-xl font-bold text-foreground">{uc.title}</h3>
@@ -321,12 +340,8 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-primary/15 relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
-              How it works
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Three steps. No setup required.
-            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">How it works</h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">Three steps. No setup required.</p>
           </div>
           {/* Horizontal timeline */}
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
@@ -372,12 +387,16 @@ const Home = () => {
                     <tr key={row.feature} className={i < comparisonRows.length - 1 ? "border-b border-primary/10" : ""}>
                       <td className="py-3.5 px-5 text-sm text-foreground font-medium">{row.feature}</td>
                       <td className="py-3.5 px-5 text-center">
-                        <span className={`text-sm font-semibold ${row.genome === "Yes" ? "text-primary neon-text" : "text-foreground"}`}>
+                        <span
+                          className={`text-sm font-semibold ${row.genome === "Yes" ? "text-primary neon-text" : "text-foreground"}`}
+                        >
                           {row.genome}
                         </span>
                       </td>
                       <td className="py-3.5 px-5 text-center">
-                        <span className={`text-sm ${row.traditional === "No" ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
+                        <span
+                          className={`text-sm ${row.traditional === "No" ? "text-muted-foreground/30" : "text-muted-foreground"}`}
+                        >
                           {row.traditional}
                         </span>
                       </td>
@@ -404,10 +423,12 @@ const Home = () => {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-8">
             See what your website scores
           </h2>
-          <Button size="lg" asChild className="text-base px-10 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500">
-            <Link to={isLoggedIn ? "/chat" : "/auth"}>
-              Get Started
-            </Link>
+          <Button
+            size="lg"
+            asChild
+            className="text-base px-10 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500"
+          >
+            <Link to={isLoggedIn ? "/chat" : "/auth"}>Get Started</Link>
           </Button>
         </div>
       </section>

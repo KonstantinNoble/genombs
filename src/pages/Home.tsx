@@ -63,19 +63,19 @@ const Home = () => {
       num: "01",
       title: "Website Scoring",
       description:
-        "AI evaluates your website across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness.",
+        "Your website is scored across five categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness.",
     },
     {
       num: "02",
       title: "Competitor Analysis",
       description:
-        "Compare your website against up to 3 competitors. See strengths, weaknesses, and score differences at a glance.",
+        "Compare your website against up to 3 competitors. See strengths, weaknesses, and score differences side by side.",
     },
     {
       num: "03",
       title: "Improvement Plan",
       description:
-        "Get concrete, prioritized optimization tasks based on the AI analysis of your website — ready to execute.",
+        "Concrete, prioritized optimization tasks based on the analysis. Ready to execute.",
     },
   ];
 
@@ -133,7 +133,7 @@ const Home = () => {
   const homeFAQ = [
     {
       question: "What is a Website Analysis?",
-      answer: "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness — and includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
+      answer: "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
     },
     {
       question: "How does the credit system work?",
@@ -149,7 +149,7 @@ const Home = () => {
     },
     {
       question: "Is my data secure?",
-      answer: "Absolutely. We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
+      answer: "We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
     },
   ];
 
@@ -185,15 +185,11 @@ const Home = () => {
       {/* Hero */}
       <section className="flex items-center justify-center py-24 sm:py-32">
         <div className="container mx-auto px-4 text-center max-w-3xl">
-          <p className="text-sm uppercase tracking-widest text-primary font-medium mb-6">
-            Website Analysis Platform
-          </p>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6">
-            Know exactly what's{" "}
-            <span className="text-primary">holding your website back</span>
+            What's holding your website back?
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Paste a URL. Get a structured analysis across findability, usability, clarity, trust, and conversion — with competitor benchmarks and a prioritized fix list.
+            Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to fix.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-base px-8 h-13">
@@ -206,7 +202,7 @@ const Home = () => {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-8">
-            20 free credits per day — no credit card required
+            20 free credits per day. No credit card required.
           </p>
         </div>
       </section>
@@ -238,7 +234,7 @@ const Home = () => {
               What you get
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              A structured breakdown of what works, what doesn't, and what to fix first.
+              Scores, comparisons, and a concrete fix list for your website.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
@@ -365,7 +361,7 @@ const Home = () => {
       <section className="py-16 sm:py-20 border-t border-border">
         <div className="container mx-auto px-4 text-center max-w-2xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-8">
-            Try it now
+            See what your website scores
           </h2>
           <Button size="lg" asChild className="text-base px-10 h-13">
             <Link to={isLoggedIn ? "/chat" : "/auth"}>

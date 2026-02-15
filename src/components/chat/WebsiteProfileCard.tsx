@@ -9,11 +9,7 @@ interface WebsiteProfileCardProps {
 }
 
 const getScoreColor = (score: number) =>
-  score >= 80
-    ? "hsl(var(--chart-6))"
-    : score >= 60
-      ? "hsl(var(--primary))"
-      : "hsl(var(--destructive))";
+  score >= 80 ? "hsl(var(--chart-6))" : score >= 60 ? "hsl(var(--primary))" : "hsl(var(--destructive))";
 
 const getScoreGlow = (score: number) =>
   score >= 80
@@ -29,19 +25,9 @@ const ScoreRing = ({ score, size = 64 }: { score: number; size?: number }) => {
   const color = getScoreColor(score);
 
   return (
-    <div
-      className="relative"
-      style={{ width: size, height: size, filter: `drop-shadow(${getScoreGlow(score)})` }}
-    >
+    <div className="relative" style={{ width: size, height: size, filter: `drop-shadow(${getScoreGlow(score)})` }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="hsl(var(--border))"
-          strokeWidth={4}
-        />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth={4} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -133,7 +119,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
               Strengths
             </p>
             <div className="space-y-1.5">
-              {profile_data.strengths.slice(0, 3).map((s) => (
+              {(profile_data.strengths || []).slice(0, 3).map((s) => (
                 <div key={s} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
                   <span className="text-sm text-foreground leading-tight">{s}</span>
@@ -147,7 +133,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
               Weaknesses
             </p>
             <div className="space-y-1.5">
-              {profile_data.weaknesses.slice(0, 3).map((w) => (
+              {(profile_data.weaknesses || []).slice(0, 3).map((w) => (
                 <div key={w} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
                   <span className="text-sm text-foreground leading-tight">{w}</span>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Send, Globe, Plus, ChevronDown, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { GoogleIcon, OpenAIIcon, AnthropicIcon, PerplexityIcon } from "./ModelIcons";
@@ -49,6 +50,7 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
+  const navigate = useNavigate();
   const CHAT_MAX_LENGTH = 300;
   const URL_MAX_LENGTH = 100;
   const [value, setValue] = useState("");
@@ -328,7 +330,11 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
               const isCreditLocked = !isPremiumLocked && fieldIndex >= effectiveMaxFields;
               const isFieldDisabled = isPremiumLocked || isCreditLocked;
               return (
-                <div key={field.label} className={`space-y-1.5 ${isFieldDisabled ? "opacity-50" : ""}`}>
+                <div
+                  key={field.label}
+                  className={`space-y-1.5 ${isFieldDisabled ? "opacity-50" : ""} ${isPremiumLocked ? "cursor-pointer" : ""}`}
+                  onClick={isPremiumLocked ? () => navigate("/pricing") : undefined}
+                >
                   <Label className="text-sm font-medium flex items-center gap-1.5">
                     {field.label}
                     {isPremiumLocked && (
@@ -357,7 +363,10 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
               );
             })}
             {!isPremium && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <p
+                className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                onClick={() => navigate("/pricing")}
+              >
                 <Lock className="w-3 h-3" />
                 Upgrade to Premium to analyze up to 4 URLs at once
               </p>

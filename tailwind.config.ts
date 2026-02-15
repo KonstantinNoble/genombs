@@ -81,6 +81,7 @@ export default {
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
+        'neon': 'var(--shadow-neon)',
         'lift': 'var(--shadow-lift)',
       },
       keyframes: {

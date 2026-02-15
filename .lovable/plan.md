@@ -1,124 +1,103 @@
 
 
-## Datenschutzerklaerung: Umfassende inhaltliche Korrektur
+## Website Visual and Text Polish
 
-Die Datenschutzerklaerung wird an die tatsaechlichen Funktionen des Produkts angepasst. Folgende Probleme wurden identifiziert und werden korrigiert:
-
----
-
-### Probleme und Korrekturen
-
-**1. Section 6.2 - Marketing Emails (komplett entfernen)**
-- Behauptet: Marketing-Consent-Checkbox beim ersten Login, Consent-Status wird gespeichert
-- Realitaet: Kein Marketing-Email-Feature existiert im Code, keine Checkbox, kein Consent-Feld
-- Korrektur: Gesamte Section 6.2 entfernen
-
-**2. Section 13 - Automatisierte Entscheidungsfindung (aktualisieren)**
-- Behauptet: "We do not currently engage in automated decision-making" und "Should we introduce AI-powered features in the future..."
-- Realitaet: Das Produkt IST AI-powered. Es nutzt 5 verschiedene AI-Modelle (Gemini Flash, GPT-4o-mini, GPT-4o, Claude Sonnet, Perplexity Sonar Pro) fuer Website-Scoring und Chat
-- Korrektur: Klarstellen, dass AI fuer Analyse verwendet wird, aber keine automatisierten Entscheidungen mit rechtlicher Wirkung (Art. 22 GDPR) getroffen werden
-
-**3. Fehlende Section: AI-Datenverarbeitung (neu hinzufuegen)**
-Es fehlt komplett eine Beschreibung der AI-Verarbeitung:
-- Welche AI-Anbieter genutzt werden (Google/Gemini, OpenAI, Anthropic, Perplexity)
-- Welche Daten an diese uebermittelt werden (gecrawlter Website-Inhalt als Markdown, SEO-Metadaten, Chat-Nachrichten)
-- Dass die Verarbeitung serverseitig in Edge Functions stattfindet
-- Rechtsgrundlage und Drittlandtransfer-Basis fuer jeden Anbieter
-- Korrektur: Neue Section nach Section 7 einfuegen
-
-**4. Fehlende Section: Website-Crawling via Firecrawl (neu hinzufuegen)**
-- Das Produkt nutzt Firecrawl zum Crawlen von Websites (Markdown, HTML, Links, Screenshots)
-- Dies wird nirgends in der Datenschutzerklaerung erwaehnt
-- Korrektur: Neue Section hinzufuegen, die Firecrawl als Auftragsverarbeiter beschreibt
-
-**5. Fehlende Section: Google PageSpeed Insights API (neu hinzufuegen)**
-- Das Produkt ruft die Google PageSpeed Insights API auf
-- Die eingegebene URL wird an Google uebermittelt
-- Korrektur: Neue Section hinzufuegen
-
-**6. Section 10 - Datenkategorien (ergaenzen)**
-- Fehlend: "Analysis Data" Kategorie (gecrawlter Website-Inhalt, Scores, Profildata)
-- Fehlend: "Chat Data" Kategorie (Chat-Nachrichten, Konversationen)
-- Korrektur: Zwei neue Zeilen in die Tabelle einfuegen
-
-**7. Section 11 - Empfaenger (ergaenzen)**
-- Fehlend: AI-Anbieter (Google Gemini, OpenAI, Anthropic, Perplexity)
-- Fehlend: Firecrawl (Website-Crawling)
-- Fehlend: Google PageSpeed API
-- Korrektur: Zeilen in die Empfaenger-Tabelle einfuegen
-
-**8. Section 14 - Speicherdauer (ergaenzen)**
-- Fehlend: Zeile fuer Website-Analyse-Daten (bis Konversation/Account geloescht)
-- Fehlend: Zeile fuer Chat-Nachrichten (bis Konversation/Account geloescht)
-- Korrektur: Zwei Zeilen ergaenzen
-
-**9. Section 3.1 - Session Cookie bleibt (wie vom User bestaetigt)**
-- Der User hat bestaetigt, dass der Session-Cookie tatsaechlich vorhanden ist
-- Keine Aenderung noetig
-
-**10. Section 15.7 - Consent-Referenz korrigieren**
-- Erwaehnt "marketing emails" als Beispiel fuer Consent-basierte Verarbeitung
-- Da Section 6.2 entfernt wird, muss dieses Beispiel angepasst werden
-
-**11. Version und Datum aktualisieren**
-- Von "Version 6.0 (February 8, 2026)" auf "Version 7.0 (February 14, 2026)"
-- Version History ergaenzen
+The current site is already clean and minimal, which is good. The goal is to refine it so it feels more **hand-crafted and editorial** rather than template-generated, while keeping the no-emoji, no-icon, no-gradient rule.
 
 ---
 
-### Struktur nach der Korrektur
+### Text Improvements
 
-Die Sections werden nach Section 7 (Hosting) neu eingefuegt und alle nachfolgenden Sections werden umnummeriert:
+The biggest "AI-generated" tell is the generic marketing language. Here are the specific text rewrites:
 
-1. Introduction and Controller Information (unveraendert)
-2. Data Collection When Visiting This Website (unveraendert)
-3. Cookies (unveraendert, inkl. Session Cookie)
-4. User Authentication (unveraendert)
-5. Premium Subscription and Payment Processing (unveraendert)
-6. Email Communication (Section 6.2 Marketing Emails entfernt)
-7. Hosting and Infrastructure (unveraendert)
-8. **NEU: Website Crawling and Analysis (Firecrawl)**
-9. **NEU: AI-Powered Data Processing (Google, OpenAI, Anthropic, Perplexity)**
-10. **NEU: Google PageSpeed Insights**
-11. Contact Form and Email Inquiries (vorher 8)
-12. External Links (vorher 9)
-13. Categories of Personal Data Processed (vorher 10, ergaenzt)
-14. Recipients of Personal Data (vorher 11, ergaenzt)
-15. Obligation to Provide Personal Data (vorher 12)
-16. Automated Decision-Making and Profiling (vorher 13, aktualisiert)
-17. Storage Duration (vorher 14, ergaenzt)
-18. Your Rights Under GDPR (vorher 15, Consent-Beispiel korrigiert)
-19. Changes to This Privacy Policy (vorher 16)
-20. Version History (aktualisiert)
+**Home.tsx - Hero:**
+- Current: "Turn your website into a growth engine"
+- New: "Know exactly what's holding your website back"
+- Current subtitle: "One URL. One scan. AI-powered website scoring, competitor analysis, and an improvement plan -- in under 60 seconds."
+- New: "Paste a URL. Get a structured analysis across findability, usability, clarity, trust, and conversion -- with competitor benchmarks and a prioritized fix list."
+- Current tagline: "Business Growth Platform"
+- New: "Website Analysis Platform"
+
+**Home.tsx - Features section:**
+- Current heading: "Everything you need to grow"
+- New: "What you get"
+- Current subheading: "One scan. Five scoring categories. Actionable results."
+- New: "A structured breakdown of what works, what doesn't, and what to fix first."
+- Rewrite feature descriptions to be shorter, more direct, less salesy
+
+**Home.tsx - Use Cases section:**
+- Current heading: "Built for every growth workflow"
+- New: "Use cases"
+- Current subheading: "Whether you're launching, scaling, or optimizing -- Business Genome has you covered."
+- New: Remove entirely or replace with a single factual line
+
+**Home.tsx - How it works:**
+- Current heading subtext: "From URL to actionable insights in under 60 seconds."
+- New: "Three steps. No setup required."
+
+**Home.tsx - Comparison table:**
+- Current heading: "Business Genome vs. Consultant"
+- New: "Compared to traditional consulting"
+- Remove "Replace hours of manual research with structured, AI-powered analysis." (too salesy)
+
+**Home.tsx - CTA:**
+- Current: "Ready to grow your business?"
+- New: "Try it now" or simply "Get started"
+- Remove "20 free credits per day. No credit card required." from CTA (already stated in hero)
+
+**Home.tsx - Stats section:**
+- Remove the checkmark symbol from "PageSpeed Included" -- replace with "Incl." or just the text without a symbol
+
+**Pricing.tsx:**
+- Texts are already clean, minor polish only
+- "Get started at no cost" --> "No account fees"
+- "Full access to everything" --> "All features, higher limits"
+
+**Contact.tsx:**
+- Remove the Mail icon (per no-icons rule for marketing surfaces)
+- Make the layout simpler -- just heading, email, response time. No card wrapper needed.
+
+**Profile.tsx:**
+- Remove emoji-like symbols: checkmark, warning triangle, info circle in Premium Status section
+- Replace with text: "Active", "Canceled", "Pending"
 
 ---
 
-### Neue Inhalte im Detail
+### Visual Improvements
 
-**Section 8 - Website Crawling:**
-- Firecrawl, Inc. als Anbieter
-- Daten: Eingegebene URL, gecrawlter Seiteninhalt (Markdown, HTML, Links)
-- Screenshots werden in Supabase Storage gespeichert
-- Rechtsgrundlage: Art. 6(1)(b) GDPR (Vertragserfullung)
-- Drittlandtransfer: SCCs
+**Home.tsx - Layout refinements:**
+- Reduce vertical padding from py-24/py-32 to py-16/py-20 on some sections to feel less "template spacey"
+- Use Cases section: remove the alternating flex-row-reverse pattern (feels like a template trick)
+- Features section: reduce the oversized decorative numbers (text-6xl) to text-4xl -- they dominate too much
+- Stats section: the checkmark symbol looks unprofessional, replace with text
 
-**Section 9 - AI-Datenverarbeitung:**
-- 4 Anbieter: Google (Gemini), OpenAI (GPT-4o/GPT-4o-mini), Anthropic (Claude Sonnet), Perplexity (Sonar Pro)
-- Daten die uebermittelt werden: Gecrawlter Website-Inhalt, SEO-Metadaten, Chat-Nachrichten mit Kontext
-- Verarbeitung findet serverseitig statt (Edge Functions)
-- Keine API-Keys oder sensible Nutzerdaten werden an AI-Anbieter gesendet
-- Rechtsgrundlage: Art. 6(1)(b) GDPR
-- Drittlandtransfer: DPF/SCCs je nach Anbieter
+**Contact.tsx:**
+- Remove the icon circle (w-16 h-16 rounded-full bg-primary/10 with Mail icon)
+- Simplify to just text: heading, email link, response time
 
-**Section 10 - Google PageSpeed:**
-- Google PageSpeed Insights API
-- Daten: Eingegebene URL wird an Google uebermittelt
-- Ergebnis: Performance, Accessibility, Best Practices, SEO Scores, Core Web Vitals
-- Rechtsgrundlage: Art. 6(1)(b) GDPR
+**Profile.tsx:**
+- Replace unicode symbols with plain text labels for premium status
+
+**Footer.tsx:**
+- The footer "Business" column only has one link ("Business Inquiries") -- add Pricing link to give it balance, or merge into a single column
+
+**Navbar.tsx:**
+- Already clean, no changes needed
 
 ---
 
-### Geaenderte Datei
+### Files to modify
 
-`src/pages/PrivacyPolicy.tsx` -- Komplett ueberarbeitet mit allen oben beschriebenen Aenderungen
+1. **src/pages/Home.tsx** -- Text rewrites (hero, features, use cases, how it works, comparison, CTA, stats), reduce padding, smaller decorative numbers, remove checkmark from stats
+2. **src/pages/Contact.tsx** -- Remove Mail icon and card, simplify layout
+3. **src/pages/Profile.tsx** -- Replace emoji symbols with text
+4. **src/pages/Pricing.tsx** -- Minor text polish (2 lines)
+5. **src/components/Footer.tsx** -- Add Pricing link to Business column for balance
+
+### What stays unchanged
+- Color scheme (black/orange) -- already strong
+- Navbar -- already clean
+- Chat page -- functional interface, not a marketing surface
+- CSS/design system -- no structural changes needed
+- Auth page -- already professional
 

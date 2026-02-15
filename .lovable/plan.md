@@ -1,103 +1,51 @@
 
 
-## Website Visual and Text Polish
+## Text-Polish: Menschlicher, weniger KI-typisch
 
-The current site is already clean and minimal, which is good. The goal is to refine it so it feels more **hand-crafted and editorial** rather than template-generated, while keeping the no-emoji, no-icon, no-gradient rule.
-
----
-
-### Text Improvements
-
-The biggest "AI-generated" tell is the generic marketing language. Here are the specific text rewrites:
-
-**Home.tsx - Hero:**
-- Current: "Turn your website into a growth engine"
-- New: "Know exactly what's holding your website back"
-- Current subtitle: "One URL. One scan. AI-powered website scoring, competitor analysis, and an improvement plan -- in under 60 seconds."
-- New: "Paste a URL. Get a structured analysis across findability, usability, clarity, trust, and conversion -- with competitor benchmarks and a prioritized fix list."
-- Current tagline: "Business Growth Platform"
-- New: "Website Analysis Platform"
-
-**Home.tsx - Features section:**
-- Current heading: "Everything you need to grow"
-- New: "What you get"
-- Current subheading: "One scan. Five scoring categories. Actionable results."
-- New: "A structured breakdown of what works, what doesn't, and what to fix first."
-- Rewrite feature descriptions to be shorter, more direct, less salesy
-
-**Home.tsx - Use Cases section:**
-- Current heading: "Built for every growth workflow"
-- New: "Use cases"
-- Current subheading: "Whether you're launching, scaling, or optimizing -- Business Genome has you covered."
-- New: Remove entirely or replace with a single factual line
-
-**Home.tsx - How it works:**
-- Current heading subtext: "From URL to actionable insights in under 60 seconds."
-- New: "Three steps. No setup required."
-
-**Home.tsx - Comparison table:**
-- Current heading: "Business Genome vs. Consultant"
-- New: "Compared to traditional consulting"
-- Remove "Replace hours of manual research with structured, AI-powered analysis." (too salesy)
-
-**Home.tsx - CTA:**
-- Current: "Ready to grow your business?"
-- New: "Try it now" or simply "Get started"
-- Remove "20 free credits per day. No credit card required." from CTA (already stated in hero)
-
-**Home.tsx - Stats section:**
-- Remove the checkmark symbol from "PageSpeed Included" -- replace with "Incl." or just the text without a symbol
-
-**Pricing.tsx:**
-- Texts are already clean, minor polish only
-- "Get started at no cost" --> "No account fees"
-- "Full access to everything" --> "All features, higher limits"
-
-**Contact.tsx:**
-- Remove the Mail icon (per no-icons rule for marketing surfaces)
-- Make the layout simpler -- just heading, email, response time. No card wrapper needed.
-
-**Profile.tsx:**
-- Remove emoji-like symbols: checkmark, warning triangle, info circle in Premium Status section
-- Replace with text: "Active", "Canceled", "Pending"
+Die Seite hat noch mehrere typische KI-Merkmale. Hier die konkreten Korrekturen:
 
 ---
 
-### Visual Improvements
+### 1. Em-Dashes ("—") entfernen
 
-**Home.tsx - Layout refinements:**
-- Reduce vertical padding from py-24/py-32 to py-16/py-20 on some sections to feel less "template spacey"
-- Use Cases section: remove the alternating flex-row-reverse pattern (feels like a template trick)
-- Features section: reduce the oversized decorative numbers (text-6xl) to text-4xl -- they dominate too much
-- Stats section: the checkmark symbol looks unprofessional, replace with text
+Alle Vorkommen von " — " und " -- " durch Punkte, Kommas oder Umformulierungen ersetzen:
 
-**Contact.tsx:**
-- Remove the icon circle (w-16 h-16 rounded-full bg-primary/10 with Mail icon)
-- Simplify to just text: heading, email link, response time
+- **Zeile 78** (Feature 3): "...based on the AI analysis of your website — ready to execute." wird zu: "...based on the AI analysis of your website. Ready to execute."
+- **Zeile 136** (FAQ): "...scores your site across 5 categories — Findability..." wird zu: "...scores your site across 5 categories: Findability..."
+- **Zeile 196** (Hero Subtitle): "...trust, and conversion — with competitor benchmarks..." wird zu: "...trust, and conversion. Includes competitor benchmarks and a prioritized fix list."
+- **Zeile 209** (Credits): "20 free credits per day — no credit card required" wird zu: "20 free credits per day. No credit card required."
 
-**Profile.tsx:**
-- Replace unicode symbols with plain text labels for premium status
+### 2. "Website Analysis Platform" Tagline entfernen
 
-**Footer.tsx:**
-- The footer "Business" column only has one link ("Business Inquiries") -- add Pricing link to give it balance, or merge into a single column
+Die Zeile `<p className="text-sm uppercase tracking-widest...">Website Analysis Platform</p>` (Zeile 188-189) wird komplett entfernt. Das ist ein typisches KI-Template-Muster (kleiner Tagline-Text ueber der Headline).
 
-**Navbar.tsx:**
-- Already clean, no changes needed
+### 3. Texte natuerlicher formulieren
+
+Einige Stellen klingen noch nach Vorlage:
+
+- **Hero Headline** (Zeile 192-194): "Know exactly what's holding your website back" ist okay, aber der Orange-Span-Split wirkt konstruiert. Aendern zu: `"What's holding your website back?"` (ohne Span-Split, komplett weiss, als direkte Frage)
+- **Hero Subtitle** (Zeile 195-197): Kuerzere, natuerlichere Formulierung: "Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to fix."
+- **Features Subheading** (Zeile 241): "A structured breakdown of what works, what doesn't, and what to fix first." ist dreigliedrig (typisches KI-Muster). Aendern zu: "Scores, comparisons, and a concrete fix list for your website."
+- **Feature 1 Description** (Zeile 66): Kuerzer: "Your website is scored across five categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness."
+- **Feature 3 Description** (Zeile 78): "Concrete, prioritized optimization tasks based on the analysis. Ready to execute."
+- **Use Case Descriptions**: Dreigliedrige Aufzaehlungen aufloesen und direkter formulieren
+- **CTA Heading** (Zeile 368): "Try it now" ist generisch. Aendern zu: "See what your website scores"
+
+### 4. FAQ-Texte natuerlicher machen
+
+- Zeile 136: "Absolutely." am Anfang der Sicherheits-Antwort entfernen (typische KI-Floskel). Stattdessen direkt anfangen: "We only analyze publicly available website data."
 
 ---
 
-### Files to modify
+### Zusammenfassung der Aenderungen
 
-1. **src/pages/Home.tsx** -- Text rewrites (hero, features, use cases, how it works, comparison, CTA, stats), reduce padding, smaller decorative numbers, remove checkmark from stats
-2. **src/pages/Contact.tsx** -- Remove Mail icon and card, simplify layout
-3. **src/pages/Profile.tsx** -- Replace emoji symbols with text
-4. **src/pages/Pricing.tsx** -- Minor text polish (2 lines)
-5. **src/components/Footer.tsx** -- Add Pricing link to Business column for balance
+Nur eine Datei betroffen: `src/pages/Home.tsx`
 
-### What stays unchanged
-- Color scheme (black/orange) -- already strong
-- Navbar -- already clean
-- Chat page -- functional interface, not a marketing surface
-- CSS/design system -- no structural changes needed
-- Auth page -- already professional
+Aenderungen:
+- Tagline "Website Analysis Platform" entfernt
+- Alle Em-Dashes durch Punkte/Doppelpunkte ersetzt
+- Hero-Headline als Frage ohne Farb-Split
+- Dreigliedrige Aufzaehlungen aufgeloest
+- KI-Floskeln ("Absolutely", "at a glance") entfernt
+- CTA konkreter formuliert
 

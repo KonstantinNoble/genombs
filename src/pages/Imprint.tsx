@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const Imprint = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Imprint"
+        description="Synvertas Imprint – Legal information and company details."
+        canonical="/imprint"
+        noindex={true}
+      />
       <div className="container mx-auto px-4 py-8">
         <Link to="/">
           <Button variant="ghost" className="mb-8">

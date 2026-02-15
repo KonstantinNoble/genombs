@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead
+        title="Terms of Service"
+        description="Synvertas Terms of Service – Usage terms and conditions for our website analysis platform."
+        canonical="/terms-of-service"
+        noindex={true}
+      />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <Link
           to="/"

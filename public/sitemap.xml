@@ -3,15 +3,15 @@
   <!-- Homepage -->
   <url>
     <loc>https://synvertas.com/</loc>
-    <lastmod>2026-01-18</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Multi-AI Validator - Main Tool -->
+  <!-- Analysis Tool -->
   <url>
-    <loc>https://synvertas.com/validate</loc>
-    <lastmod>2026-01-18</lastmod>
+    <loc>https://synvertas.com/chat</loc>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -19,7 +19,7 @@
   <!-- Pricing -->
   <url>
     <loc>https://synvertas.com/pricing</loc>
-    <lastmod>2026-01-18</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -27,7 +27,7 @@
   <!-- Contact -->
   <url>
     <loc>https://synvertas.com/contact</loc>
-    <lastmod>2026-01-18</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -35,21 +35,21 @@
   <!-- Legal Pages -->
   <url>
     <loc>https://synvertas.com/privacy-policy</loc>
-    <lastmod>2026-01-17</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://synvertas.com/terms-of-service</loc>
-    <lastmod>2026-01-17</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://synvertas.com/imprint</loc>
-    <lastmod>2026-01-18</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

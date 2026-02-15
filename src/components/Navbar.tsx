@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, ArrowRight } from "lucide-react";
 
-const logo = "/synoptas-favicon.png";
+import logo from "@/assets/synvertas-logo.png";
 
 const Navbar = () => {
   const location = useLocation();

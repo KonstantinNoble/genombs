@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 8, 2026 | Version 6.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 14, 2026 | Version 7.0</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -518,7 +518,6 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Email Communication</h2>
             
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.1 Transactional Emails</h3>
             <p className="text-muted-foreground mb-4">
               We send transactional emails that are necessary for the operation of your account:
             </p>
@@ -533,29 +532,9 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground mb-4">
               <strong>Legal basis:</strong> Art. 6(1)(b) GDPR (necessary for contract performance).
             </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">6.2 Marketing Emails (Optional)</h3>
             <p className="text-muted-foreground mb-4">
-              With your explicit consent, we may send you marketing communications about new features, 
-              tips for using the platform, and special offers.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Consent collection:</strong> Marketing consent is requested during your first login 
-              via an optional, unchecked-by-default checkbox. You are never automatically subscribed.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Consent management:</strong> You can withdraw your consent at any time through your 
-              Profile settings.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              <strong>Data stored:</strong>
-            </p>
-            <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Marketing consent status (true/false)</li>
-              <li>Timestamp when consent was given or withdrawn</li>
-            </ul>
-            <p className="text-muted-foreground mb-4">
-              <strong>Legal basis:</strong> Art. 6(1)(a) GDPR (consent).
+              We do not send marketing emails. All email communication is strictly transactional and 
+              related to the operation of your account.
             </p>
           </section>
 
@@ -611,9 +590,238 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 8: Contact */}
+          {/* Section 8: Website Crawling and Analysis */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Contact Form and Email Inquiries</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Website Crawling and Analysis</h2>
+            <p className="text-muted-foreground mb-4">
+              Our platform allows you to analyze websites by entering their URLs. When you initiate a website 
+              analysis, the following data processing takes place:
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.1 Website Crawling via Firecrawl</h3>
+            <p className="text-muted-foreground mb-4">
+              To extract the content of the website you submit for analysis, we use the Firecrawl API. 
+              This service crawls the specified URL and returns the website content in a structured format.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to Firecrawl</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The URL you entered for analysis</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Received from Firecrawl</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Raw HTML content of the crawled page</li>
+              <li>Markdown representation of the page content</li>
+              <li>List of links found on the page</li>
+              <li>Screenshot of the page (stored in our file storage for display purposes)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Firecrawl, Inc.
+              <br />
+              <strong>Location:</strong> United States
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://www.firecrawl.dev/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://www.firecrawl.dev/privacy
+              </a>
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transfer to Third Countries</h4>
+            <p className="text-muted-foreground mb-4">
+              Firecrawl is based in the United States. Data transfers are conducted in compliance with GDPR 
+              requirements using Standard Contractual Clauses (SCCs) pursuant to Art. 46(2)(c) GDPR.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.2 Data Stored from Analysis</h3>
+            <p className="text-muted-foreground mb-4">
+              The following data is stored in our database as a result of the analysis:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The URL you submitted</li>
+              <li>Crawled website content (Markdown format)</li>
+              <li>AI-generated website profile (name, target audience, USP, CTAs, strengths, weaknesses)</li>
+              <li>Scores in 5 categories: Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness</li>
+              <li>Screenshot of the analyzed website</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              This data is associated with your user account and the conversation in which the analysis was initiated.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (providing the website analysis service you requested).
+            </p>
+          </section>
+
+          {/* Section 9: AI-Powered Data Processing */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">9. AI-Powered Data Processing</h2>
+            <p className="text-muted-foreground mb-4">
+              Our platform uses artificial intelligence (AI) to analyze websites and provide insights. 
+              AI processing is a core component of our service. All AI processing takes place server-side 
+              in our backend functions — no data is sent directly from your browser to AI providers.
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">9.1 AI Providers Used</h3>
+            <p className="text-muted-foreground mb-4">
+              Depending on your selected AI model, data is processed by one of the following providers:
+            </p>
+
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-muted-foreground border-collapse border border-border">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="border border-border p-3 text-left font-semibold">Provider</th>
+                    <th className="border border-border p-3 text-left font-semibold">Models Used</th>
+                    <th className="border border-border p-3 text-left font-semibold">Location</th>
+                    <th className="border border-border p-3 text-left font-semibold">Transfer Basis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Google LLC</strong></td>
+                    <td className="border border-border p-3">Gemini Flash</td>
+                    <td className="border border-border p-3">USA</td>
+                    <td className="border border-border p-3">DPF (Art. 45 GDPR)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>OpenAI, Inc.</strong></td>
+                    <td className="border border-border p-3">GPT-4o-mini, GPT-4o</td>
+                    <td className="border border-border p-3">USA</td>
+                    <td className="border border-border p-3">DPF (Art. 45 GDPR)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Anthropic, PBC</strong></td>
+                    <td className="border border-border p-3">Claude Sonnet</td>
+                    <td className="border border-border p-3">USA</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c) GDPR)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3">Sonar Pro</td>
+                    <td className="border border-border p-3">USA</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c) GDPR)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">9.2 Data Transmitted to AI Providers</h3>
+            <p className="text-muted-foreground mb-4">
+              The following data may be transmitted to the selected AI provider for processing:
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">For Website Analysis</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Crawled website content (Markdown, up to 30,000 characters)</li>
+              <li>Extracted SEO metadata (title, description, headings, Open Graph tags)</li>
+              <li>List of internal and external links</li>
+              <li>The URL of the analyzed website</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">For AI Chat</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your chat messages (questions you ask about the analysis)</li>
+              <li>Previous messages in the conversation (for context)</li>
+              <li>Website profile data from completed analyses (as context for answers)</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">9.3 What Is NOT Transmitted</h3>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Your email address or account information</li>
+              <li>Your IP address</li>
+              <li>Payment or subscription data</li>
+              <li>Any API keys or authentication credentials</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">9.4 Data Retention by AI Providers</h3>
+            <p className="text-muted-foreground mb-4">
+              We use the AI providers' APIs in a way that minimizes data retention on their side. 
+              Data sent via API calls is generally not used to train the providers' models. Please refer 
+              to each provider's privacy policy for their specific data retention practices:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Google Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  OpenAI Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Anthropic Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.perplexity.ai/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Perplexity AI Privacy Policy
+                </a>
+              </li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (providing the AI-powered analysis and chat service you requested).
+            </p>
+          </section>
+
+          {/* Section 10: Google PageSpeed Insights */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">10. Google PageSpeed Insights</h2>
+            <p className="text-muted-foreground mb-4">
+              As part of the website analysis, we use the Google PageSpeed Insights API to provide 
+              objective technical performance metrics for the analyzed website.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to Google</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The URL of the website being analyzed</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Received from Google</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Performance score</li>
+              <li>Accessibility score</li>
+              <li>Best Practices score</li>
+              <li>SEO score</li>
+              <li>Core Web Vitals (Largest Contentful Paint, Cumulative Layout Shift, First Contentful Paint, Total Blocking Time)</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              These metrics are stored alongside the website profile in our database and displayed 
+              in the analysis dashboard.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> Google LLC
+              <br />
+              <strong>Location:</strong> 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                https://policies.google.com/privacy
+              </a>
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (providing technical website performance data as part of the analysis service you requested).
+            </p>
+          </section>
+
+          {/* Section 11: Contact */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">11. Contact Form and Email Inquiries</h2>
             <p className="text-muted-foreground mb-4">
               If you contact us via email (mail@wealthconomy.com), the data you provide (your email address, 
               name if provided, and the content of your message) will be stored and processed for the purpose 
@@ -636,18 +844,19 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* Section 9: External Links */}
+          {/* Section 12: External Links */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. External Links</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. External Links</h2>
             <p className="text-muted-foreground mb-4">
               Our website may contain links to external websites. We have no control over the content or 
-              privacy practices of these external sites. Please refer to their respective privacy policies.
+              privacy practices of these external sites and accept no responsibility for them. Please review 
+              the privacy policies of any external websites you visit.
             </p>
           </section>
 
-          {/* Section 10: Categories of Personal Data */}
+          {/* Section 13: Categories of Personal Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">10. Categories of Personal Data Processed</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Categories of Personal Data Processed</h2>
             <p className="text-muted-foreground mb-4">
               The following categories of personal data may be processed through our platform:
             </p>
@@ -669,7 +878,7 @@ const PrivacyPolicy = () => {
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Usage Data</strong></td>
-                    <td className="border border-border p-3">Timestamps, premium status</td>
+                    <td className="border border-border p-3">Credits used, timestamps, premium status</td>
                     <td className="border border-border p-3">Service limits and subscription management</td>
                   </tr>
                   <tr>
@@ -682,14 +891,24 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Freemius IDs, subscription status, billing cycle</td>
                     <td className="border border-border p-3">Payment and subscription management</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Analysis Data</strong></td>
+                    <td className="border border-border p-3">Submitted URLs, crawled website content, AI-generated scores and profiles, screenshots</td>
+                    <td className="border border-border p-3">Website analysis and scoring service</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Chat Data</strong></td>
+                    <td className="border border-border p-3">Chat messages, conversation history</td>
+                    <td className="border border-border p-3">AI-powered contextual assistance</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </section>
 
-          {/* Section 11: Recipients of Personal Data */}
+          {/* Section 14: Recipients of Personal Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">11. Recipients of Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Recipients of Personal Data</h2>
             <p className="text-muted-foreground mb-4">
               Your personal data may be shared with the following categories of recipients:
             </p>
@@ -707,24 +926,48 @@ const PrivacyPolicy = () => {
                 <tbody>
                   <tr>
                     <td className="border border-border p-3"><strong>Google LLC</strong></td>
-                    <td className="border border-border p-3">OAuth authentication</td>
-                    <td className="border border-border p-3">OAuth data</td>
+                    <td className="border border-border p-3">OAuth authentication, AI processing (Gemini), PageSpeed API</td>
+                    <td className="border border-border p-3">OAuth data, website content, URLs</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Supabase</strong></td>
+                    <td className="border border-border p-3"><strong>OpenAI, Inc.</strong></td>
+                    <td className="border border-border p-3">AI-powered website analysis and chat</td>
+                    <td className="border border-border p-3">Website content, chat messages</td>
+                    <td className="border border-border p-3">DPF (Art. 45)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Anthropic, PBC</strong></td>
+                    <td className="border border-border p-3">AI-powered website analysis and chat</td>
+                    <td className="border border-border p-3">Website content, chat messages</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Perplexity AI, Inc.</strong></td>
+                    <td className="border border-border p-3">AI-powered website analysis and chat</td>
+                    <td className="border border-border p-3">Website content, chat messages</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Firecrawl, Inc.</strong></td>
+                    <td className="border border-border p-3">Website crawling</td>
+                    <td className="border border-border p-3">URLs submitted for analysis</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Supabase, Inc.</strong></td>
                     <td className="border border-border p-3">Hosting, database, authentication (with DPA per Art. 28 GDPR)</td>
                     <td className="border border-border p-3">All stored data</td>
                     <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Resend</strong></td>
+                    <td className="border border-border p-3"><strong>Resend, Inc.</strong></td>
                     <td className="border border-border p-3">Transactional emails</td>
                     <td className="border border-border p-3">Email address</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3"><strong>Freemius</strong></td>
+                    <td className="border border-border p-3"><strong>Freemius, Inc.</strong></td>
                     <td className="border border-border p-3">Payment processing</td>
                     <td className="border border-border p-3">Email, payment details</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
@@ -738,9 +981,9 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 12: Obligation to Provide Data */}
+          {/* Section 15: Obligation to Provide Data */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">12. Obligation to Provide Personal Data</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Obligation to Provide Personal Data</h2>
             <p className="text-muted-foreground mb-4">
               The provision of personal data is partially required by law or may result from contractual 
               provisions. Specifically:
@@ -757,23 +1000,33 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* Section 13: Automated Decision-Making */}
+          {/* Section 16: Automated Decision-Making */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">13. Automated Decision-Making and Profiling</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Automated Decision-Making and Profiling</h2>
             <p className="text-muted-foreground mb-4">
-              We do not currently engage in automated decision-making with legal effects as defined in 
-              Art. 22 GDPR. Our platform does not make binding decisions about you based on automated 
-              processing alone.
+              Our platform uses AI to generate website scores, profiles, and recommendations. This AI processing 
+              is a core part of the service you use. However, these AI-generated outputs are <strong>informational 
+              and advisory only</strong> — they do not produce any legal effects or similarly significant effects 
+              concerning you as defined in Art. 22 GDPR.
             </p>
             <p className="text-muted-foreground mb-4">
-              Should we introduce AI-powered features in the future, any such processing will be documented 
-              in an updated version of this Privacy Policy with appropriate transparency and safeguards.
+              Specifically:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Website scores and improvement suggestions are generated by AI models based on the crawled website content</li>
+              <li>These results are not used to make decisions about your access, rights, or contractual relationship</li>
+              <li>You are free to follow, ignore, or disagree with any AI-generated recommendation</li>
+              <li>No profiling of your person takes place — the analysis is focused on the website content you submit</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              We do not engage in automated individual decision-making with legal or similarly significant effects 
+              as defined in Art. 22 GDPR.
             </p>
           </section>
 
-          {/* Section 14: Storage Duration */}
+          {/* Section 17: Storage Duration */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">14. Storage Duration</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Storage Duration</h2>
             <p className="text-muted-foreground mb-4">
               We store your personal data only for as long as necessary for the purposes for which it was collected:
             </p>
@@ -791,6 +1044,16 @@ const PrivacyPolicy = () => {
                   <tr>
                     <td className="border border-border p-3">Account data</td>
                     <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">User-initiated deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Website analysis data</td>
+                    <td className="border border-border p-3">Until conversation or account deletion</td>
+                    <td className="border border-border p-3">User-initiated deletion</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3">Chat messages</td>
+                    <td className="border border-border p-3">Until conversation or account deletion</td>
                     <td className="border border-border p-3">User-initiated deletion</td>
                   </tr>
                   <tr>
@@ -823,60 +1086,60 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 15: Your Rights */}
+          {/* Section 18: Your Rights */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">15. Your Rights Under GDPR</h2>
+            <h2 className="text-2xl font-semibold mb-4">18. Your Rights Under GDPR</h2>
             <p className="text-muted-foreground mb-4">
               Under the General Data Protection Regulation (GDPR), you have the following rights regarding 
               your personal data:
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.1 Right of Access (Art. 15 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.1 Right of Access (Art. 15 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to obtain confirmation as to whether personal data concerning you is being 
               processed. If so, you have the right to access that data and receive information about the 
               processing.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.2 Right to Rectification (Art. 16 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.2 Right to Rectification (Art. 16 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request correction of inaccurate personal data and, where applicable, 
               completion of incomplete personal data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.3 Right to Erasure (Art. 17 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.3 Right to Erasure (Art. 17 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request deletion of your personal data under certain conditions. You 
               can delete your account at any time through the Profile settings, which will permanently 
               erase all your data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.4 Right to Restriction of Processing (Art. 18 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.4 Right to Restriction of Processing (Art. 18 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to request restriction of processing under certain conditions, for example, 
               if you contest the accuracy of the data.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.5 Right to Data Portability (Art. 20 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.5 Right to Data Portability (Art. 20 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to receive your personal data in a structured, commonly used, and 
               machine-readable format and to transmit that data to another controller.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.6 Right to Object (Art. 21 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.6 Right to Object (Art. 21 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to object to processing based on legitimate interests (Art. 6(1)(f) GDPR). 
               We will cease processing unless we demonstrate compelling legitimate grounds that override 
               your interests.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.7 Right to Withdraw Consent (Art. 7(3) GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.7 Right to Withdraw Consent (Art. 7(3) GDPR)</h3>
             <p className="text-muted-foreground mb-4">
-              Where processing is based on consent (e.g., marketing emails), you have the right to withdraw 
+              Where processing is based on consent, you have the right to withdraw 
               consent at any time. Withdrawal does not affect the lawfulness of processing before withdrawal.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.8 Right to Lodge a Complaint (Art. 77 GDPR)</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.8 Right to Lodge a Complaint (Art. 77 GDPR)</h3>
             <p className="text-muted-foreground mb-4">
               You have the right to lodge a complaint with a supervisory authority. The responsible 
               supervisory authority for us is:
@@ -896,7 +1159,7 @@ const PrivacyPolicy = () => {
               </a>
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">15.9 Exercising Your Rights</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">18.9 Exercising Your Rights</h3>
             <p className="text-muted-foreground mb-4">
               To exercise any of these rights, please contact us at:
             </p>
@@ -909,9 +1172,9 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* Section 16: Changes to Privacy Policy */}
+          {/* Section 19: Changes to Privacy Policy */}
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">16. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4">19. Changes to This Privacy Policy</h2>
             <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time to reflect changes in our services, 
               legal requirements, or operational practices. Changes will be indicated by updating the 
@@ -931,6 +1194,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 7.0 (February 14, 2026):</strong> Added sections for Website Crawling (Firecrawl), AI-Powered Data Processing (Google Gemini, OpenAI, Anthropic, Perplexity), and Google PageSpeed Insights. Updated recipients and data categories tables. Corrected automated decision-making section to reflect active AI usage. Removed non-existent marketing emails section. Renumbered all sections.</li>
               <li><strong>Version 6.0 (February 8, 2026):</strong> Platform update – removed feature-specific sections (Multi-AI Validation, Team Workspaces, Business Context, Dashboard Statistics, Decision Audit Records, Experiment Workflow) pending new service implementation. Simplified data categories, recipients, and retention tables accordingly. Renumbered all sections.</li>
               <li><strong>Version 5.9 (February 1, 2026):</strong> Corrected Business Context section – basic profile fields available to all registered users; only Website URL input and website scanning via Firecrawl is Premium-exclusive.</li>
               <li><strong>Version 5.0 (January 21, 2026):</strong> Added Anthropic and Perplexity AI providers. Documented Lovable AI Gateway. Added web search functionality disclosure.</li>
@@ -940,7 +1204,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: February 8, 2026
+              Last updated: February 14, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

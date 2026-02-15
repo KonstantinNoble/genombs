@@ -43,10 +43,16 @@ const Footer = () => {
               <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide text-center sm:text-left">Business</h3>
               <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Business links">
                 <Link 
+                  to="/pricing" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
+                  Pricing
+                </Link>
+                <Link 
                   to="/contact" 
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
                 >
-                  Business Inquiries
+                  Contact
                 </Link>
               </nav>
             </div>

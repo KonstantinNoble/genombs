@@ -123,7 +123,7 @@ const PricingPage = () => {
             <div className="border border-border rounded-xl p-8 sm:p-10 space-y-8">
               <div>
                 <h3 className="text-2xl font-bold text-foreground">Free</h3>
-                <p className="text-muted-foreground mt-1">Get started at no cost</p>
+                <p className="text-muted-foreground mt-1">No account fees</p>
               </div>
               <div>
                 <span className="text-5xl font-extrabold text-foreground">$0</span>
@@ -155,7 +155,7 @@ const PricingPage = () => {
               </Badge>
               <div>
                 <h3 className="text-2xl font-bold text-foreground">Premium</h3>
-                <p className="text-muted-foreground mt-1">Full access to everything</p>
+                <p className="text-muted-foreground mt-1">All features, higher limits</p>
               </div>
               <div>
                 <span className="text-5xl font-extrabold text-foreground">$26.99</span>
@@ -232,7 +232,7 @@ const PricingPage = () => {
           <div className="max-w-2xl mx-auto text-center">
             <div className="border border-border rounded-xl p-10 sm:p-14 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
-                {isPremium && isLoggedIn ? "You're all set" : "Ready to grow your business?"}
+                {isPremium && isLoggedIn ? "You're all set" : "Try it now"}
               </h2>
               <p className="text-lg text-muted-foreground">
                 {isPremium && isLoggedIn

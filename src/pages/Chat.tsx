@@ -48,7 +48,15 @@ const MAX_CONVERSATIONS = 20;
 
 const Chat = () => {
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, isPremium, refreshCredits } = useAuth();
+  const {
+    user,
+    isLoading: authLoading,
+    remainingCredits,
+    creditsLimit,
+    creditsResetAt,
+    isPremium,
+    refreshCredits,
+  } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -62,7 +70,10 @@ const Chat = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({ isOpen: false, conversationId: null });
+  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({
+    isOpen: false,
+    conversationId: null,
+  });
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const expectedProfileCountRef = useRef<number>(0);
@@ -170,14 +181,14 @@ const Chat = () => {
               }
             }
           });
-        }
+        },
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeId, user, deduplicateProfiles]);
+  }, [activeId, user]); // Removed deduplicateProfiles - it's stable with empty deps
 
   // ─── Scroll to bottom on initial messages load only ───
   useEffect(() => {
@@ -288,9 +299,7 @@ const Chat = () => {
         model,
         onDelta: (delta) => {
           assistantContent += delta;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m))
-          );
+          setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
         },
         onDone: () => {},
       });
@@ -317,49 +326,56 @@ const Chat = () => {
   };
 
   // ─── Generate AI summary after all profiles complete ───
-  const generateSummary = useCallback(async (completed: WebsiteProfile[], accessToken: string, model?: string) => {
-    if (!activeId) return;
-    try {
-      const summaryLines = completed.map((p) => {
-        const pd = p.profile_data;
-        const scores = p.category_scores;
-        return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
-      });
+  const generateSummary = useCallback(
+    async (completed: WebsiteProfile[], accessToken: string, model?: string) => {
+      if (!activeId) return;
+      try {
+        const summaryLines = completed.map((p) => {
+          const pd = p.profile_data;
+          const scores = p.category_scores;
+          return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
+        });
 
-      const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
+        const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
 
-      const chatHistory = [{ role: "user", content: summaryPrompt }];
+        const chatHistory = [{ role: "user", content: summaryPrompt }];
 
-      let assistantContent = "";
-      const tempId = `temp-summary-${Date.now()}`;
-      setMessages((prev) => [
-        ...prev,
-        { id: tempId, conversation_id: activeId, role: "assistant" as const, content: "", created_at: new Date().toISOString() },
-      ]);
-      setIsStreaming(true);
+        let assistantContent = "";
+        const tempId = `temp-summary-${Date.now()}`;
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: tempId,
+            conversation_id: activeId,
+            role: "assistant" as const,
+            content: "",
+            created_at: new Date().toISOString(),
+          },
+        ]);
+        setIsStreaming(true);
 
-      await streamChat({
-        messages: chatHistory,
-        conversationId: activeId,
-        accessToken,
-        model,
-        onDelta: (delta) => {
-          assistantContent += delta;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m))
-          );
-        },
-        onDone: () => {},
-      });
+        await streamChat({
+          messages: chatHistory,
+          conversationId: activeId,
+          accessToken,
+          model,
+          onDelta: (delta) => {
+            assistantContent += delta;
+            setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
+          },
+          onDone: () => {},
+        });
 
-      const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
-      setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
-      setIsStreaming(false);
-    } catch (e) {
-      console.error("Summary generation failed:", e);
-      setIsStreaming(false);
-    }
-  }, [activeId]);
+        const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
+        setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
+        setIsStreaming(false);
+      } catch (e) {
+        console.error("Summary generation failed:", e);
+        setIsStreaming(false);
+      }
+    },
+    [activeId],
+  );
 
   // ─── Start analysis (scan) ───
   const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string) => {
@@ -398,29 +414,26 @@ const Chat = () => {
     setTimeout(() => {
       realtimePausedRef.current = false;
       // Reload profiles to catch any inserts missed during the pause
-      loadProfiles(activeId).then((ps) => {
-        const deduped = deduplicateProfiles(ps);
-        setProfiles(deduped);
-        const completedIds = deduped.filter(p => p.status === "completed").map(p => p.id);
-        if (completedIds.length > 0) {
-          loadTasks(completedIds).then(setTasks).catch(console.error);
-        }
-      }).catch(console.error);
+      loadProfiles(activeId)
+        .then((ps) => {
+          const deduped = deduplicateProfiles(ps);
+          setProfiles(deduped);
+          const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
+          if (completedIds.length > 0) {
+            loadTasks(completedIds).then(setTasks).catch(console.error);
+          }
+        })
+        .catch(console.error);
     }, 2000);
 
     // Fire all analysis requests in parallel
-    const allUrls = [
-      { url: ownUrl, isOwn: true },
-      ...competitorUrls.map((u) => ({ url: u, isOwn: false })),
-    ];
+    const allUrls = [{ url: ownUrl, isOwn: true }, ...competitorUrls.map((u) => ({ url: u, isOwn: false }))];
 
     // Update conversation title to the domain of the own website
     try {
       const domain = new URL(ownUrl.startsWith("http") ? ownUrl : `https://${ownUrl}`).hostname.replace(/^www\./, "");
       await updateConversationTitle(activeId, domain);
-      setConversations((prev) =>
-        prev.map((c) => (c.id === activeId ? { ...c, title: domain } : c))
-      );
+      setConversations((prev) => prev.map((c) => (c.id === activeId ? { ...c, title: domain } : c)));
     } catch (e) {
       console.error("Failed to update conversation title:", e);
     }
@@ -438,8 +451,8 @@ const Chat = () => {
             } else {
               toast.error(`Analysis failed for ${url}: ${msg}`);
             }
-          })
-        )
+          }),
+        ),
       );
       toast.success("Analysis started! Results will appear in the dashboard.");
 
@@ -492,16 +505,12 @@ const Chat = () => {
   }
 
   const creditPercent = creditsLimit > 0 ? (remainingCredits / creditsLimit) * 100 : 0;
-  const creditColor = remainingCredits <= 0 ? "text-destructive" : remainingCredits < 5 ? "text-chart-4" : "text-primary";
+  const creditColor =
+    remainingCredits <= 0 ? "text-destructive" : remainingCredits < 5 ? "text-chart-4" : "text-primary";
 
   const chatHeader = (
     <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden shrink-0"
-        onClick={() => setSidebarOpen(true)}
-      >
+      <Button variant="ghost" size="icon" className="md:hidden shrink-0" onClick={() => setSidebarOpen(true)}>
         {sidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
       </Button>
       {isMobile && (
@@ -511,11 +520,7 @@ const Chat = () => {
           className="shrink-0"
           onClick={() => setMobileView(mobileView === "chat" ? "dashboard" : "chat")}
         >
-          {mobileView === "chat" ? (
-            <LayoutDashboard className="w-5 h-5" />
-          ) : (
-            <MessageSquare className="w-5 h-5" />
-          )}
+          {mobileView === "chat" ? <LayoutDashboard className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
         </Button>
       )}
       <div className="min-w-0 flex-1">
@@ -532,7 +537,9 @@ const Chat = () => {
       {/* Credit indicator */}
       <div className="shrink-0 flex items-center gap-3 ml-auto">
         <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Credits</span>
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+            Credits
+          </span>
           <span className={`text-xs font-bold ${creditColor}`}>
             {remainingCredits}/{creditsLimit}
           </span>
@@ -598,10 +605,30 @@ const Chat = () => {
         <div className="border-b border-border bg-card px-4 py-1">
           <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
             <TabsList className="bg-transparent h-8 p-0 gap-1 overflow-x-auto scrollbar-hide flex-nowrap w-full justify-start">
-              <TabsTrigger value="overview" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Overview</TabsTrigger>
-              <TabsTrigger value="positioning" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Positioning</TabsTrigger>
-              <TabsTrigger value="offers" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Offer & CTAs</TabsTrigger>
-              <TabsTrigger value="trust" className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0">Trust & Proof</TabsTrigger>
+              <TabsTrigger
+                value="overview"
+                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="positioning"
+                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
+              >
+                Positioning
+              </TabsTrigger>
+              <TabsTrigger
+                value="offers"
+                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
+              >
+                Offer & CTAs
+              </TabsTrigger>
+              <TabsTrigger
+                value="trust"
+                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
+              >
+                Trust & Proof
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -616,7 +643,13 @@ const Chat = () => {
                   <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                    <p className="text-[11px] text-muted-foreground capitalize">{p.status === "crawling" ? "Crawling website..." : p.status === "analyzing" ? "AI analyzing..." : p.status}</p>
+                    <p className="text-[11px] text-muted-foreground capitalize">
+                      {p.status === "crawling"
+                        ? "Crawling website..."
+                        : p.status === "analyzing"
+                          ? "AI analyzing..."
+                          : p.status}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -624,27 +657,36 @@ const Chat = () => {
           )}
 
           {/* Error profiles */}
-          {profiles.filter((p) => p.status === "error").map((p) => (
-            <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
+          {profiles
+            .filter((p) => p.status === "error")
+            .map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
+                  <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
           {analysisTab === "overview" ? (
             <>
               {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
               {hasMultipleProfiles && (
                 <div>
-                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Comparison</h3>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    Comparison
+                  </h3>
                   <ComparisonTable profiles={completedProfiles} />
                 </div>
               )}
               {hasProfiles && tasks.length > 0 && (
                 <div>
-                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Improvement Plan</h3>
+                  <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    Improvement Plan
+                  </h3>
                   <ImprovementPlan tasks={tasks} />
                 </div>
               )}
@@ -653,8 +695,10 @@ const Chat = () => {
             hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
           )}
 
-          {!hasProfiles && pendingProfiles.length === 0 && profiles.filter((p) => p.status === "error").length === 0 && (
-            isAnalyzing ? (
+          {!hasProfiles &&
+            pendingProfiles.length === 0 &&
+            profiles.filter((p) => p.status === "error").length === 0 &&
+            (isAnalyzing ? (
               <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
@@ -664,8 +708,7 @@ const Chat = () => {
                 <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
                 <p className="text-sm">Start an analysis to see results here</p>
               </div>
-            )
-          )}
+            ))}
         </div>
       </ScrollArea>
     </div>
@@ -689,10 +732,7 @@ const Chat = () => {
         {/* Mobile Sidebar Overlay */}
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 md:hidden">
-            <div
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-              onClick={() => setSidebarOpen(false)}
-            />
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
             <div className="relative w-72 h-full">
               <ChatSidebar
                 conversations={sidebarConversations}
@@ -710,9 +750,7 @@ const Chat = () => {
 
         {/* Main Content */}
         {isMobile ? (
-          <div className="flex-1 flex flex-col min-w-0">
-            {mobileView === "chat" ? chatPanel : dashboardPanel}
-          </div>
+          <div className="flex-1 flex flex-col min-w-0">{mobileView === "chat" ? chatPanel : dashboardPanel}</div>
         ) : (
           <ResizablePanelGroup direction="horizontal" className="flex-1">
             <ResizablePanel defaultSize={55} minSize={30}>
@@ -726,7 +764,10 @@ const Chat = () => {
         )}
       </div>
 
-      <AlertDialog open={deleteDialogState.isOpen} onOpenChange={(open) => !open && setDeleteDialogState({ isOpen: false, conversationId: null })}>
+      <AlertDialog
+        open={deleteDialogState.isOpen}
+        onOpenChange={(open) => !open && setDeleteDialogState({ isOpen: false, conversationId: null })}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete conversation?</AlertDialogTitle>
@@ -736,7 +777,10 @@ const Chat = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

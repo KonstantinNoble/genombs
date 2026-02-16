@@ -21,7 +21,7 @@ const PricingPage = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <SEOHead
           title="Pricing"
-          description="Simple, transparent pricing for Business Genome."
+          description="Simple, transparent pricing for Synvertas."
           canonical="/pricing"
         />
         <Navbar />
@@ -87,7 +87,7 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing – Business Genome"
+        title="Pricing – Synvertas"
         description="Simple, transparent pricing. Start free with 20 daily credits. Upgrade for 100 credits and all AI models."
         canonical="/pricing"
       />

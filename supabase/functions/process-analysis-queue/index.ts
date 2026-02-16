@@ -458,8 +458,8 @@ async function processQueue() {
 
   console.log(`Processing ${nextJobs.length} job(s) from queue`);
 
-  // 4. Process each job
-  for (const job of nextJobs) {
+  // 4. Process jobs in parallel using Promise.allSettled
+  const jobPromises = nextJobs.map(async (job) => {
     try {
       // Mark as processing
       await supabaseAdmin
@@ -469,8 +469,13 @@ async function processQueue() {
 
       console.log(`Processing job ${job.id} for URL: ${job.url}`);
 
-      // Crawl with Firecrawl
-      const crawlResp = await fetch("https://api.firecrawl.dev/v1/scrape", {
+      // Start Firecrawl AND PageSpeed in parallel
+      const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
+      const pagespeedPromise = pagespeedApiKey
+        ? fetchPageSpeedData(job.url, pagespeedApiKey)
+        : Promise.resolve(null);
+
+      const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${firecrawlKey}`,
@@ -480,9 +485,11 @@ async function processQueue() {
           url: job.url,
           formats: ["markdown", "rawHtml", "links", "screenshot"],
           onlyMainContent: false,
-          waitFor: 3000,
+          waitFor: 2000,
         }),
       });
+
+      const [crawlResp, pagespeedData] = await Promise.all([crawlPromise, pagespeedPromise]);
 
       const crawlData = await crawlResp.json();
 
@@ -505,7 +512,7 @@ async function processQueue() {
           })
           .eq("id", job.profile_id);
 
-        continue;
+        return;
       }
 
       const markdown = crawlData.data?.markdown || crawlData.markdown || "";
@@ -522,21 +529,21 @@ async function processQueue() {
         })
         .eq("id", job.profile_id);
 
-      // Store screenshot if available
+      // Store screenshot as fire-and-forget (non-blocking)
       if (screenshotBase64) {
-        try {
-          const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
-          const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
+        const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
 
-          await supabaseAdmin.storage
-            .from("website-screenshots")
-            .upload(`${job.user_id}/${job.profile_id}.png`, binaryData, {
-              contentType: "image/png",
-              upsert: true,
-            });
-        } catch (storageErr) {
-          console.warn("Screenshot storage failed (non-critical):", storageErr);
-        }
+        supabaseAdmin.storage
+          .from("website-screenshots")
+          .upload(`${job.user_id}/${job.profile_id}.png`, binaryData, {
+            contentType: "image/png",
+            upsert: true,
+          })
+          .then(({ error: storageErr }) => {
+            if (storageErr) console.warn("Screenshot storage failed (non-critical):", storageErr);
+          })
+          .catch((err) => console.warn("Screenshot storage failed (non-critical):", err));
       }
 
       // Extract SEO data and build context
@@ -566,19 +573,13 @@ async function processQueue() {
         { internal: internalLinks, external: externalLinks }
       );
 
-      // Fetch PageSpeed data (non-blocking)
-      const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
-      let pagespeedData: PageSpeedResult | null = null;
-      if (pagespeedApiKey) {
-        console.log("PAGESPEED_GOOGLE key found, fetching PageSpeed data...");
-        pagespeedData = await fetchPageSpeedData(job.url, pagespeedApiKey);
-        if (pagespeedData) {
-          console.log("PageSpeed data received:", JSON.stringify(pagespeedData));
-          const cwv = pagespeedData.coreWebVitals;
-          enrichedContent += `\n\n=== GOOGLE PAGESPEED DATA (objective, verified by Google) ===\nPerformance: ${pagespeedData.performance}/100\nAccessibility: ${pagespeedData.accessibility}/100\nBest Practices: ${pagespeedData.bestPractices}/100\nSEO: ${pagespeedData.seo}/100\nCore Web Vitals: LCP=${cwv.lcp ? (cwv.lcp / 1000).toFixed(1) + "s" : "N/A"}, CLS=${cwv.cls?.toFixed(3) ?? "N/A"}, FCP=${cwv.fcp ? (cwv.fcp / 1000).toFixed(1) + "s" : "N/A"}, TBT=${cwv.tbt ? Math.round(cwv.tbt) + "ms" : "N/A"}`;
-        } else {
-          console.warn("PageSpeed returned null for URL:", job.url);
-        }
+      // Append PageSpeed data if available
+      if (pagespeedData) {
+        console.log("PageSpeed data received:", JSON.stringify(pagespeedData));
+        const cwv = pagespeedData.coreWebVitals;
+        enrichedContent += `\n\n=== GOOGLE PAGESPEED DATA (objective, verified by Google) ===\nPerformance: ${pagespeedData.performance}/100\nAccessibility: ${pagespeedData.accessibility}/100\nBest Practices: ${pagespeedData.bestPractices}/100\nSEO: ${pagespeedData.seo}/100\nCore Web Vitals: LCP=${cwv.lcp ? (cwv.lcp / 1000).toFixed(1) + "s" : "N/A"}, CLS=${cwv.cls?.toFixed(3) ?? "N/A"}, FCP=${cwv.fcp ? (cwv.fcp / 1000).toFixed(1) + "s" : "N/A"}, TBT=${cwv.tbt ? Math.round(cwv.tbt) + "ms" : "N/A"}`;
+      } else if (pagespeedApiKey) {
+        console.warn("PageSpeed returned null for URL:", job.url);
       } else {
         console.warn("PAGESPEED_GOOGLE secret NOT FOUND -- skipping PageSpeed");
       }
@@ -605,7 +606,6 @@ async function processQueue() {
         error_message: null,
       };
 
-      // Add pagespeed_data if column exists (graceful fallback)
       if (pagespeedData) {
         updatePayload.pagespeed_data = pagespeedData;
       }
@@ -646,7 +646,9 @@ async function processQueue() {
         })
         .eq("id", job.profile_id);
     }
-  }
+  });
+
+  await Promise.allSettled(jobPromises);
 }
 
 // ─── Main handler ───

@@ -296,15 +296,30 @@ async function analyzeWithPerplexity(content: string, apiKey: string): Promise<u
 }
 
 function parseJsonResponse(text: string): unknown {
+  // 1. Direct parse
   try {
     return JSON.parse(text);
-  } catch {
-    const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
-    if (jsonMatch) {
+  } catch { /* continue */ }
+
+  // 2. Markdown code block
+  const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
+  if (jsonMatch) {
+    try {
       return JSON.parse(jsonMatch[1]);
-    }
-    throw new Error("Could not parse AI response as JSON");
+    } catch { /* continue */ }
   }
+
+  // 3. Extract first { ... last }
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(text.substring(firstBrace, lastBrace + 1));
+    } catch { /* continue */ }
+  }
+
+  console.error("Failed to parse AI response. First 500 chars:", text.substring(0, 500));
+  throw new Error("Could not parse AI response as JSON");
 }
 
 type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";

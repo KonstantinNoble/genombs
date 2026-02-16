@@ -145,9 +145,9 @@ const Navbar = () => {
           {/* CTA Button - Right */}
           <div className="hidden md:flex items-center shrink-0">
             {user ? (
-              <Link 
+                <Link 
                 to="/profile"
-                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
                 Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -155,7 +155,7 @@ const Navbar = () => {
             ) : (
               <Link 
                 to="/auth"
-                className="bg-foreground text-background rounded-full px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 hover:scale-105 hover:shadow-lg transition-all duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />

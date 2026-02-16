@@ -214,14 +214,10 @@ const Home = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative flex items-center justify-center py-28 sm:py-36 overflow-hidden">
-        {/* Neon glow orbs */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px] animate-pulse-soft pointer-events-none" />
-        <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-primary/5 blur-[80px] animate-morph-blob pointer-events-none" />
-
+      <section className="relative flex items-center justify-center py-28 sm:py-36 overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6 animate-fade-in">
-            What's holding your <span className="neon-text neon-pulse">website</span> back?
+            What's holding your <span className="text-primary">website</span> back?
           </h1>
           <p
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up"
@@ -237,7 +233,7 @@ const Home = () => {
             <Button
               size="lg"
               asChild
-              className="text-base px-8 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500"
+              className="text-base px-8 h-13"
             >
               <Link to={isLoggedIn ? "/chat" : "/auth"}>Start Analyzing</Link>
             </Button>
@@ -245,7 +241,7 @@ const Home = () => {
               size="lg"
               variant="outline"
               asChild
-              className="text-base px-8 h-13 neon-border hover:bg-primary/10 transition-all duration-500"
+              className="text-base px-8 h-13"
             >
               <Link to="/pricing">View Pricing</Link>
             </Button>
@@ -260,18 +256,18 @@ const Home = () => {
       </section>
 
       {/* Social Proof Stats */}
-      <section className="py-14 border-t border-b border-primary/20 relative glow-line">
+      <section className="py-14 border-t border-b border-border relative">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
             {stats.map((stat, i) => (
               <div
                 key={stat.label}
                 className={`text-center py-4 md:py-0 space-y-1 scroll-reveal ${
-                  i < stats.length - 1 ? "md:border-r md:border-primary/15" : ""
+                  i < stats.length - 1 ? "md:border-r md:border-border" : ""
                 }`}
                 style={{ transitionDelay: `${i * 0.1}s` }}
               >
-                <p className="text-3xl sm:text-4xl font-extrabold text-primary">{stat.value}</p>
+                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">{stat.value}</p>
                 <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">{stat.label}</p>
               </div>
             ))}
@@ -281,7 +277,6 @@ const Home = () => {
 
       {/* Features */}
       <section className="py-20 sm:py-28 relative">
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">What you get</h2>
@@ -293,10 +288,10 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="neon-card rounded-2xl p-8 space-y-5 scroll-reveal"
+                className="border border-border bg-card rounded-lg p-8 space-y-5 scroll-reveal hover:border-primary/40 transition-colors duration-200"
                 style={{ transitionDelay: `${i * 0.12}s` }}
               >
-                <span className="text-4xl font-extrabold neon-text leading-none block">{feature.num}</span>
+                <span className="text-4xl font-extrabold text-primary font-mono leading-none block">{feature.num}</span>
                 <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
@@ -306,8 +301,7 @@ const Home = () => {
       </section>
 
       {/* Use Cases */}
-      <section className="py-20 sm:py-28 border-t border-primary/15 relative">
-        <div className="absolute bottom-0 right-0 w-[350px] h-[350px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
+      <section className="py-20 sm:py-28 border-t border-border relative">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">Use cases</h2>
@@ -317,12 +311,12 @@ const Home = () => {
               <div
                 key={uc.title}
                 className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 scroll-reveal ${
-                  i < useCases.length - 1 ? "border-b border-primary/10" : ""
+                  i < useCases.length - 1 ? "border-b border-border" : ""
                 }`}
                 style={{ transitionDelay: `${i * 0.08}s` }}
               >
                 <div className="md:w-1/4 shrink-0">
-                  <span className="text-xs uppercase tracking-widest text-primary font-semibold neon-text">
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold font-mono">
                     {uc.badge}
                   </span>
                 </div>
@@ -337,7 +331,7 @@ const Home = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-20 sm:py-28 border-t border-primary/15 relative overflow-hidden">
+      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">How it works</h2>
@@ -345,16 +339,16 @@ const Home = () => {
           </div>
           {/* Horizontal timeline */}
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
-            {/* Connecting line with neon glow */}
-            <div className="hidden md:block absolute top-7 left-[16.67%] right-[16.67%] h-px bg-primary/30 shadow-[0_0_8px_hsl(25_95%_53%/0.3)]" />
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-7 left-[16.67%] right-[16.67%] h-px bg-border" />
             {steps.map((step, i) => (
               <div
                 key={step.step}
                 className="relative text-center md:px-8 space-y-5 scroll-reveal-scale"
                 style={{ transitionDelay: `${i * 0.15}s` }}
               >
-                <div className="mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10 shadow-glow animate-pulse-glow">
-                  <span className="text-lg font-bold text-primary">{step.step}</span>
+                <div className="mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10">
+                  <span className="text-lg font-bold text-primary font-mono">{step.step}</span>
                 </div>
                 <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
                 <p className="text-muted-foreground">{step.description}</p>
@@ -365,30 +359,30 @@ const Home = () => {
       </section>
 
       {/* Comparison Table */}
-      <section className="py-20 sm:py-28 border-t border-primary/15">
+      <section className="py-20 sm:py-28 border-t border-border">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-14 scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
               Compared to traditional consulting
             </h2>
           </div>
-          <div className="neon-card rounded-xl overflow-hidden scroll-reveal-scale">
+          <div className="border border-border rounded-lg overflow-hidden scroll-reveal-scale">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px]">
                 <thead>
-                  <tr className="border-b border-primary/20 bg-primary/5">
+                  <tr className="border-b border-border bg-muted/30">
                     <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
-                    <th className="text-center py-4 px-5 text-sm font-bold text-primary neon-text">Synvertas</th>
+                    <th className="text-center py-4 px-5 text-sm font-bold text-primary font-mono">Synvertas</th>
                     <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Consultant</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
-                    <tr key={row.feature} className={i < comparisonRows.length - 1 ? "border-b border-primary/10" : ""}>
+                    <tr key={row.feature} className={i < comparisonRows.length - 1 ? "border-b border-border" : ""}>
                       <td className="py-3.5 px-5 text-sm text-foreground font-medium">{row.feature}</td>
                       <td className="py-3.5 px-5 text-center">
                         <span
-                          className={`text-sm font-semibold ${row.genome === "Yes" ? "text-primary neon-text" : "text-foreground"}`}
+                          className={`text-sm font-semibold ${row.genome === "Yes" ? "text-primary" : "text-foreground"}`}
                         >
                           {row.genome}
                         </span>
@@ -410,15 +404,14 @@ const Home = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 sm:py-28 border-t border-primary/15">
+      <section className="py-20 sm:py-28 border-t border-border">
         <div className="container mx-auto px-4 max-w-2xl scroll-reveal">
           <FAQSection items={homeFAQ} />
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 sm:py-28 border-t border-primary/15 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/8 blur-[100px] animate-pulse-soft pointer-events-none" />
+      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-8">
             See what your website scores
@@ -426,7 +419,7 @@ const Home = () => {
           <Button
             size="lg"
             asChild
-            className="text-base px-10 h-13 shadow-glow hover:shadow-neon transition-shadow duration-500"
+            className="text-base px-10 h-13"
           >
             <Link to={isLoggedIn ? "/chat" : "/auth"}>Get Started</Link>
           </Button>

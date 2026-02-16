@@ -1,54 +1,48 @@
 
 
-## Inline URL-Eingabe statt Pop-up
+## Analyse-Geschwindigkeit optimieren
 
-### Konzept
+### Was wird geaendert
 
-Wenn ein Nutzer eine Nachricht schreibt, ohne vorher eine URL-Analyse gestartet zu haben, erscheint statt des Pop-up-Dialogs eine automatische Systemnachricht im Chat. Diese Nachricht enthaelt ein eingebettetes URL-Eingabeformular mit der gleichen Funktionalitaet wie der bisherige Dialog.
+Eine einzige Datei wird angepasst: `supabase/functions/process-analysis-queue/index.ts`. Es gibt keine Aenderungen am Frontend oder an der Datenbank.
 
-### Aenderungen
+### Optimierungen
 
-**1. Neue Komponente: `src/components/chat/InlineUrlPrompt.tsx`**
+**1. Firecrawl + PageSpeed gleichzeitig starten**
 
-Eine Chat-Bubble im Stil einer Assistenten-Nachricht, die folgendes enthaelt:
-- Hinweistext: "Please enter your website URL and at least one competitor before chatting with the AI about your website."
-- URL-Eingabefelder (gleiche Logik wie im Dialog): Your Website + 3 Competitor-Felder
-- Premium-Locks und Credit-Locks fuer die zusaetzlichen Felder (gleich wie bisher)
-- "Start Analysis" Button
-- Die gleiche Validierungslogik (https://, Punkt erforderlich, etc.)
+Bisher wird erst gecrawlt, dann PageSpeed abgerufen. Beide sind unabhaengig und koennen parallel laufen. Das spart 2-5 Sekunden.
 
-**2. Aenderung in `src/components/chat/ChatInput.tsx`**
+**2. Screenshot-Upload im Hintergrund**
 
-- `handleSend`: Statt `setDialogOpen(true)` wenn `!hasProfiles`, wird ein Callback `onPromptUrl` aufgerufen
-- Neues Prop `onPromptUrl?: () => void` hinzufuegen
+Der Screenshot-Upload blockiert aktuell die Analyse. Da er nicht kritisch ist, wird er als "fire-and-forget" ausgefuehrt -- mit Fehlerprotokollierung, aber ohne die Analyse aufzuhalten. Spart ca. 0.5-1 Sekunde.
 
-**3. Aenderung in `src/pages/Chat.tsx`**
+**3. Firecrawl Wartezeit reduzieren**
 
-- State `showInlineUrlPrompt` hinzufuegen
-- Wenn `onPromptUrl` ausgeloest wird: Die eingegebene User-Nachricht trotzdem als Nachricht speichern, dann `showInlineUrlPrompt = true` setzen
-- Die `InlineUrlPrompt`-Komponente wird als letzte Nachricht im Chat-Verlauf angezeigt (vor dem Scroll-Anchor)
-- Wenn der Nutzer im Inline-Formular "Start Analysis" klickt, wird `handleScan` aufgerufen und das Prompt verschwindet
-- Wenn Profiles geladen werden (nach Analyse), verschwindet das Prompt automatisch
+`waitFor` wird von 3000ms auf 2000ms gesenkt. Die meisten Websites rendern innerhalb von 2 Sekunden. Spart 1 Sekunde.
+
+**4. Mehrere Queue-Jobs parallel**
+
+Die `for`-Schleife (nacheinander) wird durch `Promise.allSettled` ersetzt, sodass bis zu 3 Jobs gleichzeitig verarbeitet werden.
+
+### Sicherheit
+
+- Jeder Job hat weiterhin seine eigene Fehlerbehandlung (try/catch)
+- Wenn ein Job fehlschlaegt, beeinflusst das die anderen nicht
+- Screenshot-Fehler werden geloggt, blockieren aber nichts
+- Keine neuen Abhaengigkeiten, keine DB-Aenderungen
+
+### Geschaetzte Verbesserung
+
+Ca. 3-7 Sekunden schneller pro Analyse (von ~15s auf ~9s).
 
 ### Technische Details
 
-```text
-Aktueller Flow:
-User tippt Nachricht -> hasProfiles=false -> Pop-up oeffnet sich -> User muss URLs eingeben
+| Aenderung | Vorher | Nachher |
+|---|---|---|
+| Firecrawl + PageSpeed | Sequenziell | `Promise.all` |
+| Screenshot-Upload | `await` (blockierend) | Fire-and-forget mit `.then()` |
+| waitFor | 3000ms | 2000ms |
+| Job-Verarbeitung | `for`-Schleife | `Promise.allSettled` |
 
-Neuer Flow:
-User tippt Nachricht -> hasProfiles=false -> Nachricht wird gespeichert ->
-Systemnachricht mit URL-Formular erscheint im Chat -> User gibt URLs ein ->
-Klickt "Start Analysis" -> Analyse startet, Prompt verschwindet
-```
-
-### Dateien
-
-| Datei | Aenderung |
-|---|---|
-| `src/components/chat/InlineUrlPrompt.tsx` | Neue Komponente (URL-Eingabe als Chat-Nachricht) |
-| `src/components/chat/ChatInput.tsx` | `handleSend` ruft `onPromptUrl` statt Dialog auf |
-| `src/pages/Chat.tsx` | State-Management fuer Inline-Prompt, Einbindung der Komponente |
-
-Der bisherige URL-Dialog (Plus-Button) bleibt weiterhin verfuegbar, damit Nutzer auch spaeter neue Analysen starten koennen.
+Datei: `supabase/functions/process-analysis-queue/index.ts`
 

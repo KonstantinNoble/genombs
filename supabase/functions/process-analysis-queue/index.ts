@@ -531,19 +531,23 @@ async function processQueue() {
 
       // Store screenshot as fire-and-forget (non-blocking)
       if (screenshotBase64) {
-        const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
-        const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        try {
+          const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
+          const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
 
-        supabaseAdmin.storage
-          .from("website-screenshots")
-          .upload(`${job.user_id}/${job.profile_id}.png`, binaryData, {
-            contentType: "image/png",
-            upsert: true,
-          })
-          .then(({ error: storageErr }) => {
-            if (storageErr) console.warn("Screenshot storage failed (non-critical):", storageErr);
-          })
-          .catch((err) => console.warn("Screenshot storage failed (non-critical):", err));
+          supabaseAdmin.storage
+            .from("website-screenshots")
+            .upload(`${job.user_id}/${job.profile_id}.png`, binaryData, {
+              contentType: "image/png",
+              upsert: true,
+            })
+            .then(({ error: storageErr }) => {
+              if (storageErr) console.warn("Screenshot storage failed (non-critical):", storageErr);
+            })
+            .catch((err) => console.warn("Screenshot storage failed (non-critical):", err));
+        } catch (screenshotErr) {
+          console.warn("Screenshot decode failed (non-critical):", screenshotErr);
+        }
       }
 
       // Extract SEO data and build context

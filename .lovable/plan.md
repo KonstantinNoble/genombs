@@ -1,56 +1,75 @@
 
 
-## Fix: Base64-Dekodierungsfehler im Screenshot-Upload
+## Fix: Robusteres JSON-Parsing der KI-Antworten
 
 ### Problem
 
-Der Screenshot von Firecrawl enthaelt manchmal ungueltige Base64-Zeichen (z.B. URL-safe Encoding mit `_` und `-` statt `/` und `+`, oder anderweitig fehlerhafte Daten). Der `atob()`-Aufruf in Zeile 535 wirft dann einen `InvalidCharacterError`, der den gesamten Job zum Absturz bringt -- obwohl der Screenshot gar nicht kritisch ist.
+Die Funktion `parseJsonResponse` versucht nur zwei Strategien:
+1. Direktes `JSON.parse()` auf den gesamten Text
+2. Regex-Suche nach Markdown-Codeblocks (` ```json ... ``` `)
 
-Das Problem: `atob()` wird synchron aufgerufen, **bevor** die fire-and-forget Kette startet. Der Fehler wird daher nicht abgefangen.
+Wenn die KI den JSON-Output mit zusaetzlichem Text umgibt (z.B. "Here is the analysis:" vor dem JSON oder Erklaerungen danach), schlaegt beides fehl und der gesamte Job wird abgebrochen.
 
 ### Loesung
 
-Den gesamten Screenshot-Block (inklusive `atob()`) in einen eigenen try/catch wrappen, damit ein fehlerhafter Screenshot niemals den Job abbricht.
+Die `parseJsonResponse`-Funktion wird erweitert um zusaetzliche Fallback-Strategien:
+
+1. Direktes `JSON.parse` (wie bisher)
+2. Markdown-Codeblock-Extraktion (wie bisher)
+3. **NEU**: Erstes `{` bis letztes `}` im Text finden und diesen Substring parsen -- faengt die meisten Faelle ab, in denen die KI Text vor/nach dem JSON einfuegt
 
 ### Technische Aenderung
 
-**Datei: `supabase/functions/process-analysis-queue/index.ts`** (Zeilen 532-547)
+**Datei: `supabase/functions/process-analysis-queue/index.ts`** (Zeilen 298-308)
 
 Vorher:
 ```typescript
-if (screenshotBase64) {
-  const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
-  const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-  
-  supabaseAdmin.storage
-    .from("website-screenshots")
-    .upload(...)
-    .then(...)
-    .catch(...);
+function parseJsonResponse(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1]);
+    }
+    throw new Error("Could not parse AI response as JSON");
+  }
 }
 ```
 
 Nachher:
 ```typescript
-if (screenshotBase64) {
+function parseJsonResponse(text: string): unknown {
+  // 1. Direct parse
   try {
-    const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
-    const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-    
-    supabaseAdmin.storage
-      .from("website-screenshots")
-      .upload(...)
-      .then(...)
-      .catch(...);
-  } catch (screenshotErr) {
-    console.warn("Screenshot decode failed (non-critical):", screenshotErr);
+    return JSON.parse(text);
+  } catch { /* continue */ }
+
+  // 2. Markdown code block
+  const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
+  if (jsonMatch) {
+    try {
+      return JSON.parse(jsonMatch[1]);
+    } catch { /* continue */ }
   }
+
+  // 3. Extract first { ... last }
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(text.substring(firstBrace, lastBrace + 1));
+    } catch { /* continue */ }
+  }
+
+  console.error("Failed to parse AI response. First 500 chars:", text.substring(0, 500));
+  throw new Error("Could not parse AI response as JSON");
 }
 ```
 
 ### Auswirkung
 
-- Der Fehler wird abgefangen und geloggt, aber die Analyse laeuft weiter
-- Keine Auswirkung auf die Webseite oder andere Funktionalitaet
-- Nur eine Datei betroffen, minimale Aenderung (3 Zeilen hinzugefuegt)
-
+- Faengt den haeufigsten Fehlerfall ab (Text vor/nach dem JSON)
+- Loggt den fehlgeschlagenen Text fuer zukuenftige Diagnose
+- Keine Auswirkung auf korrekte Antworten (die werden weiterhin im ersten Schritt geparst)
+- Nur eine Funktion in einer Datei betroffen

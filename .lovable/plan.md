@@ -1,48 +1,56 @@
 
 
-## Analyse-Geschwindigkeit optimieren
+## Fix: Base64-Dekodierungsfehler im Screenshot-Upload
 
-### Was wird geaendert
+### Problem
 
-Eine einzige Datei wird angepasst: `supabase/functions/process-analysis-queue/index.ts`. Es gibt keine Aenderungen am Frontend oder an der Datenbank.
+Der Screenshot von Firecrawl enthaelt manchmal ungueltige Base64-Zeichen (z.B. URL-safe Encoding mit `_` und `-` statt `/` und `+`, oder anderweitig fehlerhafte Daten). Der `atob()`-Aufruf in Zeile 535 wirft dann einen `InvalidCharacterError`, der den gesamten Job zum Absturz bringt -- obwohl der Screenshot gar nicht kritisch ist.
 
-### Optimierungen
+Das Problem: `atob()` wird synchron aufgerufen, **bevor** die fire-and-forget Kette startet. Der Fehler wird daher nicht abgefangen.
 
-**1. Firecrawl + PageSpeed gleichzeitig starten**
+### Loesung
 
-Bisher wird erst gecrawlt, dann PageSpeed abgerufen. Beide sind unabhaengig und koennen parallel laufen. Das spart 2-5 Sekunden.
+Den gesamten Screenshot-Block (inklusive `atob()`) in einen eigenen try/catch wrappen, damit ein fehlerhafter Screenshot niemals den Job abbricht.
 
-**2. Screenshot-Upload im Hintergrund**
+### Technische Aenderung
 
-Der Screenshot-Upload blockiert aktuell die Analyse. Da er nicht kritisch ist, wird er als "fire-and-forget" ausgefuehrt -- mit Fehlerprotokollierung, aber ohne die Analyse aufzuhalten. Spart ca. 0.5-1 Sekunde.
+**Datei: `supabase/functions/process-analysis-queue/index.ts`** (Zeilen 532-547)
 
-**3. Firecrawl Wartezeit reduzieren**
+Vorher:
+```typescript
+if (screenshotBase64) {
+  const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
+  const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+  
+  supabaseAdmin.storage
+    .from("website-screenshots")
+    .upload(...)
+    .then(...)
+    .catch(...);
+}
+```
 
-`waitFor` wird von 3000ms auf 2000ms gesenkt. Die meisten Websites rendern innerhalb von 2 Sekunden. Spart 1 Sekunde.
+Nachher:
+```typescript
+if (screenshotBase64) {
+  try {
+    const base64Data = screenshotBase64.replace(/^data:image\/\w+;base64,/, "");
+    const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+    
+    supabaseAdmin.storage
+      .from("website-screenshots")
+      .upload(...)
+      .then(...)
+      .catch(...);
+  } catch (screenshotErr) {
+    console.warn("Screenshot decode failed (non-critical):", screenshotErr);
+  }
+}
+```
 
-**4. Mehrere Queue-Jobs parallel**
+### Auswirkung
 
-Die `for`-Schleife (nacheinander) wird durch `Promise.allSettled` ersetzt, sodass bis zu 3 Jobs gleichzeitig verarbeitet werden.
-
-### Sicherheit
-
-- Jeder Job hat weiterhin seine eigene Fehlerbehandlung (try/catch)
-- Wenn ein Job fehlschlaegt, beeinflusst das die anderen nicht
-- Screenshot-Fehler werden geloggt, blockieren aber nichts
-- Keine neuen Abhaengigkeiten, keine DB-Aenderungen
-
-### Geschaetzte Verbesserung
-
-Ca. 3-7 Sekunden schneller pro Analyse (von ~15s auf ~9s).
-
-### Technische Details
-
-| Aenderung | Vorher | Nachher |
-|---|---|---|
-| Firecrawl + PageSpeed | Sequenziell | `Promise.all` |
-| Screenshot-Upload | `await` (blockierend) | Fire-and-forget mit `.then()` |
-| waitFor | 3000ms | 2000ms |
-| Job-Verarbeitung | `for`-Schleife | `Promise.allSettled` |
-
-Datei: `supabase/functions/process-analysis-queue/index.ts`
+- Der Fehler wird abgefangen und geloggt, aber die Analyse laeuft weiter
+- Keine Auswirkung auf die Webseite oder andere Funktionalitaet
+- Nur eine Datei betroffen, minimale Aenderung (3 Zeilen hinzugefuegt)
 

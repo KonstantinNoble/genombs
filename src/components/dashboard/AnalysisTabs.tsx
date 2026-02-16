@@ -1,12 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle } from "lucide-react";
-import type { WebsiteProfile } from "@/types/chat";
+import type { WebsiteProfile, ImprovementTask } from "@/types/chat";
 import PageSpeedCard from "./PageSpeedCard";
+import WebsiteGrid from "./WebsiteGrid";
+import ComparisonTable from "./ComparisonTable";
+import ImprovementPlan from "./ImprovementPlan";
 
 interface AnalysisTabsContentProps {
-  tab: string;
   profiles: WebsiteProfile[];
+  tasks: ImprovementTask[];
 }
 
 const getScoreColor = (score: number) =>
@@ -42,22 +45,30 @@ const ScoreRing = ({ score, size = 52 }: { score: number; size?: number }) => {
   );
 };
 
-const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
+const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
   const ownSite = profiles.find((p) => p.is_own_website);
   const competitors = profiles.filter((p) => !p.is_own_website);
+  const hasMultiple = profiles.length >= 2;
 
   if (!ownSite || !ownSite.profile_data) return null;
 
-  if (tab === "positioning") {
-    return (
-      <div className="space-y-3">
+  return (
+    <div className="space-y-8">
+      {/* ── Overview ── */}
+      <section id="section-overview" className="scroll-mt-16 space-y-4">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Overview</h3>
+        <WebsiteGrid profiles={profiles} />
+        {hasMultiple && <ComparisonTable profiles={profiles} />}
+        {tasks.length > 0 && <ImprovementPlan tasks={tasks} />}
+      </section>
+
+      {/* ── Positioning ── */}
+      <section id="section-positioning" className="scroll-mt-16 space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Positioning</h3>
         {[ownSite, ...competitors].map((profile) => {
           if (!profile.profile_data) return null;
           return (
-            <Card
-              key={profile.id}
-              className="border-border bg-card transition-all duration-200 hover:border-primary/20"
-            >
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
@@ -71,18 +82,14 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
                     <p className="text-sm text-foreground">{profile.profile_data.targetAudience}</p>
                   </div>
                   <div className="border-l-2 border-primary/30 pl-3">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-0.5">
-                      Unique Selling Proposition
-                    </p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-0.5">Unique Selling Proposition</p>
                     <p className="text-sm text-foreground">{profile.profile_data.usp}</p>
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Site Structure</p>
                     <div className="flex flex-wrap gap-1">
                       {(profile.profile_data.siteStructure || []).map((s) => (
-                        <Badge key={s} variant="secondary" className="text-xs">
-                          {s}
-                        </Badge>
+                        <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
                       ))}
                     </div>
                   </div>
@@ -91,20 +98,15 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
             </Card>
           );
         })}
-      </div>
-    );
-  }
+      </section>
 
-  if (tab === "offers") {
-    return (
-      <div className="space-y-3">
+      {/* ── Offer & CTAs ── */}
+      <section id="section-offers" className="scroll-mt-16 space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Offer & CTAs</h3>
         {[ownSite, ...competitors].map((profile) => {
           if (!profile.profile_data) return null;
           return (
-            <Card
-              key={profile.id}
-              className="border-border bg-card transition-all duration-200 hover:border-primary/20"
-            >
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
@@ -116,9 +118,7 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
                   <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Call-to-Actions</p>
                   <div className="flex flex-wrap gap-1.5">
                     {(profile.profile_data.ctas || []).map((cta) => (
-                      <Badge key={cta} variant="outline" className="text-xs border-primary/30 text-primary">
-                        {cta}
-                      </Badge>
+                      <Badge key={cta} variant="outline" className="text-xs border-primary/30 text-primary">{cta}</Badge>
                     ))}
                   </div>
                 </div>
@@ -130,43 +130,16 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
             </Card>
           );
         })}
-      </div>
-    );
-  }
+      </section>
 
-  if (tab === "performance") {
-    const profilesWithPSI = [ownSite, ...competitors].filter((p) => p.pagespeed_data);
-    if (profilesWithPSI.length === 0) {
-      return (
-        <div className="text-center py-8 text-muted-foreground text-sm">
-          PageSpeed data not available yet. Re-run an analysis to generate performance metrics.
-        </div>
-      );
-    }
-    return (
-      <div className="space-y-3">
-        {profilesWithPSI.map((profile) => (
-          <PageSpeedCard
-            key={profile.id}
-            data={profile.pagespeed_data!}
-            siteName={profile.profile_data?.name || profile.url}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (tab === "trust") {
-    return (
-      <div className="space-y-3">
+      {/* ── Trust & Proof ── */}
+      <section id="section-trust" className="scroll-mt-16 space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Trust & Proof</h3>
         {[ownSite, ...competitors].map((profile) => {
           if (!profile.profile_data) return null;
           const trustScore = profile.category_scores?.trustProof ?? 0;
           return (
-            <Card
-              key={profile.id}
-              className="border-border bg-card transition-all duration-200 hover:border-primary/20"
-            >
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -183,8 +156,7 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-chart-6" />
-                      Strengths
+                      <CheckCircle2 className="w-4 h-4 text-chart-6" /> Strengths
                     </p>
                     <div className="space-y-1.5">
                       {(profile.profile_data.strengths || []).slice(0, 5).map((s) => (
@@ -197,8 +169,7 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                      <XCircle className="w-4 h-4 text-destructive" />
-                      Weaknesses
+                      <XCircle className="w-4 h-4 text-destructive" /> Weaknesses
                     </p>
                     <div className="space-y-1.5">
                       {(profile.profile_data.weaknesses || []).slice(0, 5).map((w) => (
@@ -214,11 +185,9 @@ const AnalysisTabsContent = ({ tab, profiles }: AnalysisTabsContentProps) => {
             </Card>
           );
         })}
-      </div>
-    );
-  }
-
-  return null;
+      </section>
+    </div>
+  );
 };
 
 export default AnalysisTabsContent;

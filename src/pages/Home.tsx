@@ -207,8 +207,8 @@ const Home = () => {
         description="Synvertas – Website Analysis Platform"
       />
       <WebPageSchema
-        name="Business Genome – Turn your website into a growth engine"
-        description="Scan your website and get a complete growth playbook."
+        name="Synvertas – Turn your website into a growth engine"
+        description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
         url="https://synvertas.com/"
       />
       <Navbar />
@@ -378,7 +378,7 @@ const Home = () => {
                 <thead>
                   <tr className="border-b border-primary/20 bg-primary/5">
                     <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
-                    <th className="text-center py-4 px-5 text-sm font-bold text-primary neon-text">Business Genome</th>
+                    <th className="text-center py-4 px-5 text-sm font-bold text-primary neon-text">Synvertas</th>
                     <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Consultant</th>
                   </tr>
                 </thead>

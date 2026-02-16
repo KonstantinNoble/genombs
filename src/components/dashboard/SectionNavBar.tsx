@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const SECTIONS = [
   { id: "section-overview", label: "Overview" },
@@ -7,40 +7,58 @@ const SECTIONS = [
   { id: "section-trust", label: "Trust & Proof" },
 ];
 
-interface SectionNavBarProps {
-  scrollContainerRef?: React.RefObject<HTMLElement>;
-}
-
-const SectionNavBar = ({ scrollContainerRef }: SectionNavBarProps) => {
+const SectionNavBar = () => {
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
 
-  useEffect(() => {
-    const root = scrollContainerRef?.current ?? null;
-    if (!root) return;
+  const updateActive = useCallback(() => {
+    // Find the closest section to the top of the viewport
+    let closest = SECTIONS[0].id;
+    let closestDist = Infinity;
 
-    // Find the viewport element inside ScrollArea (the [data-radix-scroll-area-viewport])
-    const viewport = root.querySelector("[data-radix-scroll-area-viewport]") as HTMLElement | null;
-    const scrollEl = viewport ?? root;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length > 0) {
-          setActiveSection(visible[0].target.id);
-        }
-      },
-      { root: scrollEl, rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
-    );
-
-    SECTIONS.forEach((s) => {
+    for (const s of SECTIONS) {
       const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      // We want the section whose top is closest to (but not far below) the top
+      const dist = Math.abs(rect.top - 120);
+      if (rect.top <= 200 && dist < closestDist) {
+        closestDist = dist;
+        closest = s.id;
+      }
+    }
+
+    setActiveSection(closest);
+  }, []);
+
+  useEffect(() => {
+    // Listen on all possible scroll containers
+    const handleScroll = () => {
+      requestAnimationFrame(updateActive);
+    };
+
+    // Find the ScrollArea viewport(s) in the dashboard panel
+    const viewports = document.querySelectorAll("[data-radix-scroll-area-viewport]");
+    const scrollEls: Element[] = [];
+
+    viewports.forEach((vp) => {
+      // Only attach to viewports that contain our sections
+      if (vp.querySelector("#section-overview")) {
+        scrollEls.push(vp);
+        vp.addEventListener("scroll", handleScroll, { passive: true });
+      }
     });
 
-    return () => observer.disconnect();
-  }, [scrollContainerRef]);
+    // Also listen on window as fallback
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Initial check
+    updateActive();
+
+    return () => {
+      scrollEls.forEach((el) => el.removeEventListener("scroll", handleScroll));
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [updateActive]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);

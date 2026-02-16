@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, Lock, Search } from "lucide-react";
+import { Globe, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,10 +53,9 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
   return (
     <div className="flex justify-start">
       <div className="bg-card border border-border rounded-2xl rounded-bl-md px-5 py-4 max-w-md w-full space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Search className="w-4 h-4 text-primary" />
-          <span>Please enter your website URL and at least one competitor to get started.</span>
-        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          A website URL and at least one competitor are required to chat with the AI about your site.
+        </p>
 
         {/* Own URL */}
         <div className={`space-y-1.5 ${isOwnUrlDisabled ? "opacity-50" : ""}`}>

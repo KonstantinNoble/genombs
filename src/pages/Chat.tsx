@@ -22,6 +22,7 @@ import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import AnalysisProgress from "@/components/chat/AnalysisProgress";
+import InlineUrlPrompt from "@/components/chat/InlineUrlPrompt";
 import WebsiteGrid from "@/components/dashboard/WebsiteGrid";
 import ComparisonTable from "@/components/dashboard/ComparisonTable";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
@@ -70,6 +71,7 @@ const Chat = () => {
   const [analysisTab, setAnalysisTab] = useState("overview");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showInlineUrlPrompt, setShowInlineUrlPrompt] = useState(false);
 
   const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({
     isOpen: false,
@@ -109,6 +111,7 @@ const Chat = () => {
       setMessages([]);
       setProfiles([]);
       setTasks([]);
+      setShowInlineUrlPrompt(false);
       return;
     }
 
@@ -119,6 +122,7 @@ const Chat = () => {
     loadProfiles(activeId)
       .then((ps) => {
         setProfiles(ps);
+        if (ps.length > 0) setShowInlineUrlPrompt(false);
         const completedIds = ps.filter((p) => p.status === "completed").map((p) => p.id);
         if (completedIds.length > 0) {
           loadTasks(completedIds).then(setTasks).catch(console.error);
@@ -594,6 +598,15 @@ const Chat = () => {
             {messages.map((msg) => (
               <ChatMessage key={msg.id} message={msg} />
             ))}
+            {showInlineUrlPrompt && !hasProfiles && (
+              <InlineUrlPrompt
+                onStartAnalysis={(ownUrl, competitorUrls, model) => {
+                  setShowInlineUrlPrompt(false);
+                  handleScan(ownUrl, competitorUrls, model);
+                }}
+                selectedModel="gemini-flash"
+              />
+            )}
             {isStreaming && (
               <div className="flex justify-start">
                 <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
@@ -614,6 +627,16 @@ const Chat = () => {
         <ChatInput
           onSend={handleSend}
           onScan={handleScan}
+          onPromptUrl={async (message) => {
+            if (!activeId) return;
+            try {
+              const userMsg = await saveMessage(activeId, "user", message);
+              setMessages((prev) => [...prev, userMsg]);
+            } catch (e) {
+              console.error("Failed to save message:", e);
+            }
+            setShowInlineUrlPrompt(true);
+          }}
           disabled={!activeId || isStreaming}
           hasProfiles={profiles.length > 0}
           initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}

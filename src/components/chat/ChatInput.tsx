@@ -42,13 +42,14 @@ interface ChatInputProps {
   onSend: (message: string, model: string) => void;
   onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
   onClearUrls?: () => void;
+  onPromptUrl?: (message: string) => void;
   disabled?: boolean;
   hasProfiles?: boolean;
   initialOwnUrl?: string;
   initialCompetitorUrls?: string[];
 }
 
-const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, onClearUrls, onPromptUrl, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const CHAT_MAX_LENGTH = 300;
@@ -111,8 +112,8 @@ const ChatInput = ({ onSend, onScan, onClearUrls, disabled, hasProfiles = true, 
   const handleSend = () => {
     if (!value.trim()) return;
     if (!hasProfiles) {
-      setShowHint(true);
-      setDialogOpen(true);
+      onPromptUrl?.(value.trim());
+      setValue("");
       return;
     }
     onSend(value.trim(), selectedModel);

@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SectionNavBar from "@/components/dashboard/SectionNavBar";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
@@ -23,10 +23,7 @@ import ChatMessage from "@/components/chat/ChatMessage";
 import ChatInput from "@/components/chat/ChatInput";
 import AnalysisProgress from "@/components/chat/AnalysisProgress";
 import InlineUrlPrompt from "@/components/chat/InlineUrlPrompt";
-import WebsiteGrid from "@/components/dashboard/WebsiteGrid";
-import ComparisonTable from "@/components/dashboard/ComparisonTable";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
-import ImprovementPlan from "@/components/dashboard/ImprovementPlan";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -68,7 +65,7 @@ const Chat = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
-  const [analysisTab, setAnalysisTab] = useState("overview");
+  
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showInlineUrlPrompt, setShowInlineUrlPrompt] = useState(false);
@@ -485,7 +482,7 @@ const Chat = () => {
   const activeConversation = conversations.find((c) => c.id === activeId) || null;
   const completedProfiles = profiles.filter((p) => p.status === "completed");
   const hasProfiles = completedProfiles.length > 0;
-  const hasMultipleProfiles = completedProfiles.length >= 2;
+  
 
   if (isMobile) {
     return <MobileBlocker />;
@@ -655,38 +652,7 @@ const Chat = () => {
         <LayoutDashboard className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
-      {hasProfiles && (
-        <div className="border-b border-border bg-card px-4 py-1">
-          <Tabs value={analysisTab} onValueChange={setAnalysisTab}>
-            <TabsList className="bg-transparent h-8 p-0 gap-1 overflow-x-auto scrollbar-hide flex-nowrap w-full justify-start">
-              <TabsTrigger
-                value="overview"
-                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
-              >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger
-                value="positioning"
-                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
-              >
-                Positioning
-              </TabsTrigger>
-              <TabsTrigger
-                value="offers"
-                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
-              >
-                Offer & CTAs
-              </TabsTrigger>
-              <TabsTrigger
-                value="trust"
-                className="text-[11px] h-7 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-muted-foreground transition-all whitespace-nowrap shrink-0"
-              >
-                Trust & Proof
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      )}
+      {hasProfiles && <SectionNavBar />}
       {isMobile ? (
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <div className="p-4 space-y-6">
@@ -726,29 +692,7 @@ const Chat = () => {
                 </div>
               ))}
 
-            {analysisTab === "overview" ? (
-              <>
-                {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
-                {hasMultipleProfiles && (
-                  <div>
-                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Comparison
-                    </h3>
-                    <ComparisonTable profiles={completedProfiles} />
-                  </div>
-                )}
-                {hasProfiles && tasks.length > 0 && (
-                  <div>
-                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Improvement Plan
-                    </h3>
-                    <ImprovementPlan tasks={tasks} />
-                  </div>
-                )}
-              </>
-            ) : (
-              hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
-            )}
+            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} />}
 
             {!hasProfiles &&
               pendingProfiles.length === 0 &&
@@ -805,29 +749,7 @@ const Chat = () => {
                 </div>
               ))}
 
-            {analysisTab === "overview" ? (
-              <>
-                {hasProfiles && <WebsiteGrid profiles={completedProfiles} />}
-                {hasMultipleProfiles && (
-                  <div>
-                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Comparison
-                    </h3>
-                    <ComparisonTable profiles={completedProfiles} />
-                  </div>
-                )}
-                {hasProfiles && tasks.length > 0 && (
-                  <div>
-                    <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                      Improvement Plan
-                    </h3>
-                    <ImprovementPlan tasks={tasks} />
-                  </div>
-                )}
-              </>
-            ) : (
-              hasMultipleProfiles && <AnalysisTabsContent tab={analysisTab} profiles={completedProfiles} />
-            )}
+            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} />}
 
             {!hasProfiles &&
               pendingProfiles.length === 0 &&

@@ -6,6 +6,7 @@ import PageSpeedCard from "./PageSpeedCard";
 import WebsiteGrid from "./WebsiteGrid";
 import ComparisonTable from "./ComparisonTable";
 import ImprovementPlan from "./ImprovementPlan";
+import CodeAnalysisCard from "./CodeAnalysisCard";
 
 interface AnalysisTabsContentProps {
   profiles: WebsiteProfile[];
@@ -186,6 +187,17 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
           );
         })}
       </section>
+
+      {/* ── Code Quality (only if code_analysis exists) ── */}
+      {ownSite.code_analysis && (
+        <section id="section-code-quality" className="scroll-mt-16 space-y-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Code Quality</h3>
+          <CodeAnalysisCard
+            codeAnalysis={ownSite.code_analysis}
+            githubUrl={ownSite.github_repo_url}
+          />
+        </section>
+      )}
     </div>
   );
 };

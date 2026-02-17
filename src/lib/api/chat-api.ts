@@ -182,7 +182,8 @@ export async function analyzeWebsite(
 export async function addGithubAnalysis(
   profileId: string,
   githubRepoUrl: string,
-  accessToken: string
+  accessToken: string,
+  model?: string
 ): Promise<{ success: boolean; codeAnalysis: Record<string, unknown> }> {
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/add-github-analysis`, {
     method: "POST",
@@ -191,7 +192,7 @@ export async function addGithubAnalysis(
       Authorization: `Bearer ${accessToken}`,
       apikey: SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ profileId, githubRepoUrl }),
+    body: JSON.stringify({ profileId, githubRepoUrl, model }),
   });
 
   if (!resp.ok) {

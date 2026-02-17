@@ -7,14 +7,189 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-/**
- * add-github-analysis
- *
- * Adds a GitHub code analysis to an existing website profile.
- * 1. Fetches repo code via fetch-github-repo
- * 2. Runs AI analysis on the code
- * 3. Stores result in website_profiles.code_analysis
- */
+// ─── Improved Code Analysis Prompt ───
+
+function buildCodeAnalysisPrompt(repoName: string, websiteUrl: string, fileTree: string, codeContext: string): string {
+  return `You are a senior full-stack developer and code auditor.
+Analyze the source code from the GitHub repository "${repoName}" which powers the website ${websiteUrl}.
+
+Evaluate the code in the context of the LIVE website it serves.
+
+File tree (first 100 files):
+${fileTree}
+
+Source code of key files:
+${codeContext}
+
+Pay special attention to:
+- **Framework best practices**: Detect the framework (React, Next.js, Vue, Angular, Svelte, etc.) and evaluate adherence to its conventions (component structure, state management, routing patterns, SSR/SSG usage).
+- **Security vulnerabilities**: Exposed API keys or secrets in client code, XSS attack vectors, CSRF protection, SQL injection risks, insecure authentication patterns, missing input validation, unsafe use of dangerouslySetInnerHTML or equivalent.
+- **Performance anti-patterns**: Unnecessary re-renders, missing React.memo/useMemo/useCallback where beneficial, missing lazy loading (routes, images, components), large bundle imports (importing entire libraries instead of tree-shaking), unoptimized images, missing code splitting.
+- **Accessibility compliance**: ARIA attributes usage, semantic HTML elements (nav, main, article, section, aside, header, footer), keyboard navigation support, color contrast considerations in code, alt attributes on images, form label associations.
+- **SEO implementation quality**: Meta tags management, structured data (JSON-LD), SSR/SSG for crawlability, canonical URLs, Open Graph tags, sitemap generation, robots.txt configuration, proper heading hierarchy (single H1).
+- **Code maintainability**: Component organization and size, TypeScript type safety, error handling and error boundaries, consistent naming conventions, DRY principles, separation of concerns, test coverage indicators.
+- **Dependency health**: Outdated major versions in package.json, known vulnerable packages, unnecessary dependencies, dependency count.
+
+Return a structured JSON analysis with exactly this format:
+{
+  "summary": "Brief overall assessment of the codebase (2-3 sentences focusing on the most critical findings)",
+  "techStack": ["list of detected technologies and frameworks"],
+  "codeQuality": {
+    "score": 0-100,
+    "strengths": ["specific positive findings with file references where applicable"],
+    "weaknesses": ["specific issues with file references where applicable"]
+  },
+  "security": {
+    "score": 0-100,
+    "issues": ["specific security concerns found in the code"],
+    "recommendations": ["actionable fixes for each issue"]
+  },
+  "performance": {
+    "score": 0-100,
+    "issues": ["specific performance anti-patterns found"],
+    "recommendations": ["concrete optimization suggestions"]
+  },
+  "accessibility": {
+    "score": 0-100,
+    "issues": ["specific accessibility problems found in the code"],
+    "recommendations": ["actionable accessibility improvements"]
+  },
+  "maintainability": {
+    "score": 0-100,
+    "issues": ["specific maintainability concerns"],
+    "recommendations": ["concrete refactoring suggestions"]
+  },
+  "seo": {
+    "codeIssues": ["SEO-related code issues found"],
+    "recommendations": ["specific SEO improvements to implement in code"]
+  }
+}
+
+Return ONLY the JSON object, no markdown formatting.`;
+}
+
+// ─── Model Router (mirrors process-analysis-queue) ───
+
+type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";
+
+function parseJsonResponse(text: string): unknown {
+  try { return JSON.parse(text); } catch { /* continue */ }
+  const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
+  if (jsonMatch) { try { return JSON.parse(jsonMatch[1]); } catch { /* continue */ } }
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try { return JSON.parse(text.substring(firstBrace, lastBrace + 1)); } catch { /* continue */ }
+  }
+  console.error("Failed to parse AI response. First 500 chars:", text.substring(0, 500));
+  throw new Error("Could not parse AI response as JSON");
+}
+
+async function analyzeWithGemini(prompt: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: "application/json" },
+      }),
+    }
+  );
+  const data = await resp.json();
+  if (!resp.ok) { console.error("Gemini error:", data); throw new Error(`Gemini API error: ${resp.status}`); }
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithOpenAI(prompt: string, apiKey: string, modelName: string): Promise<unknown> {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: modelName,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.3,
+      max_tokens: 8192,
+    }),
+  });
+  const data = await resp.json();
+  if (!resp.ok) { console.error("OpenAI error:", data); throw new Error(`OpenAI API error: ${resp.status}`); }
+  const text = data.choices?.[0]?.message?.content || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithAnthropic(prompt: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 8192,
+    }),
+  });
+  const data = await resp.json();
+  if (!resp.ok) { console.error("Anthropic error:", data); throw new Error(`Anthropic API error: ${resp.status}`); }
+  const text = data.content?.[0]?.text || "";
+  return parseJsonResponse(text);
+}
+
+async function analyzeWithPerplexity(prompt: string, apiKey: string): Promise<unknown> {
+  const resp = await fetch("https://api.perplexity.ai/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "sonar-pro",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+      max_tokens: 8192,
+    }),
+  });
+  const data = await resp.json();
+  if (!resp.ok) { console.error("Perplexity error:", data); throw new Error(`Perplexity API error: ${resp.status}`); }
+  const text = data.choices?.[0]?.message?.content || "";
+  return parseJsonResponse(text);
+}
+
+async function routeAnalysis(model: ModelId, prompt: string): Promise<unknown> {
+  switch (model) {
+    case "gemini-flash": {
+      const key = Deno.env.get("GEMINI_API_KEY");
+      if (!key) throw new Error("GEMINI_API_KEY not configured");
+      return analyzeWithGemini(prompt, key);
+    }
+    case "gpt-mini": {
+      const key = Deno.env.get("OPENAI_API_KEY");
+      if (!key) throw new Error("OPENAI_API_KEY not configured");
+      return analyzeWithOpenAI(prompt, key, "gpt-4o-mini");
+    }
+    case "gpt": {
+      const key = Deno.env.get("OPENAI_API_KEY");
+      if (!key) throw new Error("OPENAI_API_KEY not configured");
+      return analyzeWithOpenAI(prompt, key, "gpt-4o");
+    }
+    case "claude-sonnet": {
+      const key = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!key) throw new Error("ANTHROPIC_API_KEY not configured");
+      return analyzeWithAnthropic(prompt, key);
+    }
+    case "perplexity": {
+      const key = Deno.env.get("PERPLEXITY_API_KEY");
+      if (!key) throw new Error("PERPLEXITY_API_KEY not configured");
+      return analyzeWithPerplexity(prompt, key);
+    }
+    default: {
+      const key = Deno.env.get("GEMINI_API_KEY");
+      if (!key) throw new Error("GEMINI_API_KEY not configured");
+      return analyzeWithGemini(prompt, key);
+    }
+  }
+}
+
+// ─── Main Handler ───
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -44,7 +219,7 @@ serve(async (req) => {
       );
     }
 
-    const { profileId, githubRepoUrl } = await req.json();
+    const { profileId, githubRepoUrl, model } = await req.json();
 
     if (!profileId || !githubRepoUrl) {
       return new Response(
@@ -88,7 +263,8 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Starting GitHub analysis for profile ${profileId}, repo: ${githubRepoUrl}`);
+    const selectedModel: ModelId = (model as ModelId) || "gemini-flash";
+    console.log(`Starting GitHub analysis for profile ${profileId}, repo: ${githubRepoUrl}, model: ${selectedModel}`);
 
     // 1. Fetch GitHub repo code
     const fetchRepoResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
@@ -116,90 +292,10 @@ serve(async (req) => {
       .map((f: { path: string; content: string }) => `### ${f.path}\n\`\`\`\n${f.content}\n\`\`\``)
       .join("\n\n");
 
-    const aiPrompt = `You are a senior web developer and code quality analyst. Analyze the following source code from the GitHub repository "${repoData.repo}" for the website ${profile.url}.
+    const aiPrompt = buildCodeAnalysisPrompt(repoData.repo, profile.url, repoData.fileTree, codeContext);
 
-File tree (first 100 files):
-${repoData.fileTree}
-
-Source code of key files:
-${codeContext}
-
-Provide a structured JSON analysis with the following fields:
-{
-  "summary": "Brief overall assessment (2-3 sentences)",
-  "techStack": ["list of detected technologies"],
-  "codeQuality": {
-    "score": 0-100,
-    "strengths": ["list"],
-    "weaknesses": ["list"]
-  },
-  "security": {
-    "score": 0-100,
-    "issues": ["list of potential security concerns"],
-    "recommendations": ["list"]
-  },
-  "performance": {
-    "score": 0-100,
-    "issues": ["list"],
-    "recommendations": ["list"]
-  },
-  "maintainability": {
-    "score": 0-100,
-    "issues": ["list"],
-    "recommendations": ["list"]
-  },
-  "seo": {
-    "codeIssues": ["SEO-related code issues"],
-    "recommendations": ["list"]
-  }
-}
-
-Return ONLY the JSON object, no markdown formatting.`;
-
-    // 3. Call AI (Gemini)
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiKey) {
-      return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const aiResp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: aiPrompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 4096,
-            responseMimeType: "application/json",
-          },
-        }),
-      }
-    );
-
-    if (!aiResp.ok) {
-      const errText = await aiResp.text();
-      console.error("Gemini API error:", errText);
-      return new Response(
-        JSON.stringify({ error: "AI analysis failed" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const aiResult = await aiResp.json();
-    const aiText = aiResult.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    let codeAnalysis;
-    try {
-      codeAnalysis = JSON.parse(aiText);
-    } catch {
-      console.error("Failed to parse AI response as JSON:", aiText.substring(0, 500));
-      codeAnalysis = { summary: aiText, parseError: true };
-    }
+    // 3. Call AI via model router
+    const codeAnalysis = await routeAnalysis(selectedModel, aiPrompt);
 
     // 4. Save to profile
     const { error: updateError } = await supabase
@@ -218,7 +314,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       );
     }
 
-    console.log(`GitHub analysis complete for profile ${profileId}`);
+    console.log(`GitHub analysis complete for profile ${profileId} using model ${selectedModel}`);
 
     return new Response(
       JSON.stringify({ success: true, codeAnalysis }),

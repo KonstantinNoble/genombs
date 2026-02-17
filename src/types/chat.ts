@@ -52,6 +52,13 @@ export interface PageSpeedData {
   };
 }
 
+export interface CodeAnalysis {
+  codeQuality: number;
+  techStack: string[];
+  securityFlags: string[];
+  performanceFlags: string[];
+}
+
 export interface WebsiteProfile {
   id: string;
   url: string;
@@ -65,6 +72,8 @@ export interface WebsiteProfile {
   pagespeed_data: PageSpeedData | null;
   raw_markdown: string | null;
   error_message: string | null;
+  github_repo_url: string | null;
+  code_analysis: CodeAnalysis | null;
   created_at: string;
 }
 

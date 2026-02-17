@@ -146,8 +146,14 @@ export async function analyzeWebsite(
   conversationId: string,
   isOwnWebsite: boolean,
   accessToken: string,
-  model?: string
+  model?: string,
+  githubRepoUrl?: string
 ): Promise<{ profileId: string }> {
+  const body: Record<string, unknown> = { url, conversationId, isOwnWebsite, model };
+  if (githubRepoUrl) {
+    body.githubRepoUrl = githubRepoUrl;
+  }
+
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/analyze-website`, {
     method: "POST",
     headers: {
@@ -155,13 +161,12 @@ export async function analyzeWebsite(
       Authorization: `Bearer ${accessToken}`,
       apikey: SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ url, conversationId, isOwnWebsite, model }),
+    body: JSON.stringify(body),
   });
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({ error: "Unknown error" }));
     const errorMsg = err.error || "Analysis failed";
-    // Propagate credit/premium errors
     if (resp.status === 403) {
       throw new Error(errorMsg);
     }

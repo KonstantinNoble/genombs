@@ -380,7 +380,7 @@ const Chat = () => {
   );
 
   // ─── Start analysis (scan) ───
-  const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string) => {
+  const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string) => {
     if (!activeId || !user) return;
 
     setIsAnalyzing(true);
@@ -443,7 +443,7 @@ const Chat = () => {
     try {
       await Promise.all(
         allUrls.map(({ url, isOwn }) =>
-          analyzeWebsite(url, activeId, isOwn, token, model).catch((e) => {
+          analyzeWebsite(url, activeId, isOwn, token, model, isOwn ? githubRepoUrl : undefined).catch((e) => {
             const msg = e.message || "Analysis failed";
             if (msg === "premium_model_required") {
               toast.error("Dieses Modell ist nur für Premium-Nutzer verfügbar.");

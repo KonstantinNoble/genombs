@@ -170,6 +170,21 @@ If Google PageSpeed data is provided in the context, use it to anchor your score
 - mobileUsability: Factor in Performance score and Core Web Vitals (LCP < 2.5s = good, > 4s = poor)
 - Reference these objective metrics in the strengths/weaknesses where relevant
 
+If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key:
+{
+  "codeAnalysis": {
+    "codeQuality": N,
+    "techStack": ["React", "Tailwind", "TypeScript"],
+    "securityFlags": ["No CSP header configured", "API keys in client code"],
+    "performanceFlags": ["Large bundle size", "No code splitting"]
+  }
+}
+- "codeQuality": 0-100 (code structure, readability, best practices, type safety, component organization)
+- "techStack": detected technologies and frameworks from package.json and code
+- "securityFlags": potential security issues found in the source code (env vars exposure, missing headers, etc.)
+- "performanceFlags": code-level performance concerns (bundle size, missing lazy loading, unoptimized imports, etc.)
+Only include "codeAnalysis" if source code data is present in the input.
+
 IMPORTANT: When technical data shows "MISSING", reflect this proportionally in the scores and mention it in weaknesses. Missing elements are real weaknesses even if some may be injected dynamically. Score based on what is actually verifiable in the provided data.
 
 Respond ONLY with valid JSON, no markdown, no explanation.`;
@@ -484,7 +499,7 @@ async function processQueue() {
 
       console.log(`Processing job ${job.id} for URL: ${job.url}`);
 
-      // Start Firecrawl AND PageSpeed in parallel
+      // Start Firecrawl, PageSpeed, AND GitHub fetch in parallel
       const pagespeedApiKey = Deno.env.get("PAGESPEED_GOOGLE");
       const pagespeedPromise = pagespeedApiKey
         ? fetchPageSpeedData(job.url, pagespeedApiKey)
@@ -504,7 +519,33 @@ async function processQueue() {
         }),
       });
 
-      const [crawlResp, pagespeedData] = await Promise.all([crawlPromise, pagespeedPromise]);
+      // Fetch GitHub repo code if URL is provided (for own websites only)
+      const githubRepoUrl = job.github_repo_url;
+      const githubPromise = githubRepoUrl
+        ? (async () => {
+            try {
+              const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${supabaseServiceKey}`,
+                },
+                body: JSON.stringify({ repoUrl: githubRepoUrl }),
+              });
+              if (!ghResp.ok) {
+                console.warn("GitHub fetch failed:", await ghResp.text());
+                return null;
+              }
+              const ghData = await ghResp.json();
+              return ghData.success ? ghData.data : null;
+            } catch (err) {
+              console.warn("GitHub fetch error (non-blocking):", err);
+              return null;
+            }
+          })()
+        : Promise.resolve(null);
+
+      const [crawlResp, pagespeedData, githubData] = await Promise.all([crawlPromise, pagespeedPromise, githubPromise]);
 
       const crawlData = await crawlResp.json();
 
@@ -603,6 +644,18 @@ async function processQueue() {
         console.warn("PAGESPEED_GOOGLE secret NOT FOUND -- skipping PageSpeed");
       }
 
+      // Append GitHub source code data if available
+      if (githubData) {
+        console.log(`GitHub data: ${githubData.fetchedFiles} files, ${githubData.totalChars} chars from ${githubData.repo}`);
+        enrichedContent += `\n\n=== SOURCE CODE ANALYSIS (from GitHub: ${githubData.repo}) ===`;
+        enrichedContent += `\nRepository: ${githubData.repo}`;
+        enrichedContent += `\nTotal relevant files: ${githubData.totalRelevantFiles}`;
+        enrichedContent += `\n\n--- File Tree ---\n${githubData.fileTree}`;
+        for (const file of githubData.files) {
+          enrichedContent += `\n\n--- ${file.path} ---\n${file.content}`;
+        }
+      }
+
       // Update status to analyzing
       await supabaseAdmin
         .from("website_profiles")
@@ -627,6 +680,11 @@ async function processQueue() {
 
       if (pagespeedData) {
         updatePayload.pagespeed_data = pagespeedData;
+      }
+
+      // Store code analysis results if GitHub data was used
+      if (githubData && analysisResult.codeAnalysis) {
+        updatePayload.code_analysis = analysisResult.codeAnalysis;
       }
 
       await supabaseAdmin

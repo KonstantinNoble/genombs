@@ -20,6 +20,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           error_message: string | null
+          github_repo_url: string | null
           id: string
           is_own_website: boolean
           model: string
@@ -35,6 +36,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           error_message?: string | null
+          github_repo_url?: string | null
           id?: string
           is_own_website?: boolean
           model?: string
@@ -50,6 +52,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           error_message?: string | null
+          github_repo_url?: string | null
           id?: string
           is_own_website?: boolean
           model?: string
@@ -357,9 +360,11 @@ export type Database = {
       website_profiles: {
         Row: {
           category_scores: Json | null
+          code_analysis: Json | null
           conversation_id: string
           created_at: string
           error_message: string | null
+          github_repo_url: string | null
           id: string
           is_own_website: boolean
           overall_score: number | null
@@ -371,9 +376,11 @@ export type Database = {
         }
         Insert: {
           category_scores?: Json | null
+          code_analysis?: Json | null
           conversation_id: string
           created_at?: string
           error_message?: string | null
+          github_repo_url?: string | null
           id?: string
           is_own_website?: boolean
           overall_score?: number | null
@@ -385,9 +392,11 @@ export type Database = {
         }
         Update: {
           category_scores?: Json | null
+          code_analysis?: Json | null
           conversation_id?: string
           created_at?: string
           error_message?: string | null
+          github_repo_url?: string | null
           id?: string
           is_own_website?: boolean
           overall_score?: number | null

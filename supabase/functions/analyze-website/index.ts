@@ -456,7 +456,7 @@ serve(async (req) => {
   }
 
   try {
-    const { url, conversationId, isOwnWebsite, model = "gemini-flash" } = await req.json();
+    const { url, conversationId, isOwnWebsite, model = "gemini-flash", githubRepoUrl } = await req.json();
 
     if (!url || !conversationId) {
       return new Response(
@@ -517,6 +517,11 @@ serve(async (req) => {
     }
 
     // 1. Create initial website_profile record with status "pending" (queued)
+    // Only pass githubRepoUrl for own website
+    const validGithubUrl = (isOwnWebsite && githubRepoUrl && typeof githubRepoUrl === "string" && githubRepoUrl.includes("github.com/"))
+      ? githubRepoUrl.trim()
+      : null;
+
     const { data: profile, error: insertError } = await supabaseAdmin
       .from("website_profiles")
       .insert({
@@ -525,6 +530,7 @@ serve(async (req) => {
         user_id: user.id,
         is_own_website: isOwnWebsite ?? false,
         status: "pending",
+        github_repo_url: validGithubUrl,
       })
       .select("id")
       .single();
@@ -550,6 +556,7 @@ serve(async (req) => {
         is_own_website: isOwnWebsite ?? false,
         profile_id: profileId,
         status: "pending",
+        github_repo_url: validGithubUrl,
       });
 
     if (queueError) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, Lock } from "lucide-react";
+import { Globe, Lock, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 interface InlineUrlPromptProps {
-  onStartAnalysis: (ownUrl: string, competitorUrls: string[], model: string) => void;
+  onStartAnalysis: (ownUrl: string, competitorUrls: string[], model: string, githubRepoUrl?: string) => void;
   selectedModel: string;
 }
 
@@ -17,15 +17,23 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const URL_MAX_LENGTH = 100;
+  const GITHUB_MAX_LENGTH = 150;
 
   const [ownUrl, setOwnUrl] = useState("");
   const [comp1, setComp1] = useState("");
   const [comp2, setComp2] = useState("");
   const [comp3, setComp3] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
 
   const isValidUrl = (url: string) => {
     const trimmed = url.trim();
     return trimmed.startsWith("https://") && trimmed.includes(".");
+  };
+
+  const isValidGithubUrl = (url: string) => {
+    if (!url.trim()) return true; // optional field
+    const trimmed = url.trim();
+    return trimmed.startsWith("https://github.com/") && trimmed.split("/").length >= 5;
   };
 
   const maxCompetitorFields = PREMIUM_MAX_URL_FIELDS - 1;
@@ -42,12 +50,13 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
   ].slice(0, maxCompetitorFields);
 
   const competitorUrls = [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
-  const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u));
+  const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u)) && isValidGithubUrl(githubUrl);
   const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && competitorUrls.length > 0 && allUrlsValid;
 
   const handleStart = () => {
     if (!canStartAnalysis) return;
-    onStartAnalysis(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel);
+    const ghUrl = isPremium && githubUrl.trim() ? githubUrl.trim() : undefined;
+    onStartAnalysis(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel, ghUrl);
   };
 
   return (
@@ -76,6 +85,42 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
           </div>
           {ownUrl.trim() && !isValidUrl(ownUrl) && (
             <p className="text-[11px] text-destructive">URL must start with https:// and contain a dot</p>
+          )}
+        </div>
+
+        {/* GitHub Repo (Premium Deep Analysis) */}
+        <div
+          className={`space-y-1.5 ${!isPremium ? "opacity-50 cursor-pointer" : ""}`}
+          onClick={!isPremium ? () => navigate("/pricing") : undefined}
+        >
+          <Label className="text-xs font-medium flex items-center gap-1.5">
+            GitHub Repository
+            <span className="text-[10px] text-muted-foreground">(optional)</span>
+            {!isPremium && (
+              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-primary/30 text-primary">
+                <Lock className="w-2.5 h-2.5 mr-0.5" />
+                Premium
+              </Badge>
+            )}
+          </Label>
+          <div className="relative">
+            <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
+              placeholder={!isPremium ? "Deep Analysis – Premium only" : "https://github.com/user/repo"}
+              className="pl-9 h-9 text-sm"
+              maxLength={GITHUB_MAX_LENGTH}
+              disabled={!isPremium}
+            />
+          </div>
+          {githubUrl.trim() && !isValidGithubUrl(githubUrl) && (
+            <p className="text-[11px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+          )}
+          {isPremium && (
+            <p className="text-[10px] text-muted-foreground">
+              Add your public repo for a deep code + website analysis
+            </p>
           )}
         </div>
 

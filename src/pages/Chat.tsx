@@ -280,14 +280,41 @@ const Chat = () => {
       return;
     }
 
-    // Find the user's own website profile in the current conversation
-    const ownProfile = profiles.find((p) => p.is_own_website && p.status === "completed");
-    if (!ownProfile) {
-      toast.error("No completed website analysis found. Please analyze a website first.");
-      return;
-    }
-
     const token = await getAccessToken();
+
+    // Find or create the user's own website profile
+    let ownProfile = profiles.find((p) => p.is_own_website && p.status === "completed");
+    
+    if (!ownProfile) {
+      // Create a minimal GitHub-only profile as container for code_analysis
+      try {
+        const { data: newProfile, error } = await supabase
+          .from("website_profiles")
+          .insert({
+            url: githubUrl,
+            user_id: user.id,
+            conversation_id: activeId,
+            is_own_website: true,
+            status: "completed",
+            github_repo_url: githubUrl,
+          })
+          .select()
+          .single();
+        
+        if (error || !newProfile) {
+          const errorMsg = await saveMessage(activeId, "assistant", "❌ Failed to create profile for GitHub analysis.");
+          setMessages((prev) => [...prev, errorMsg]);
+          return;
+        }
+        ownProfile = { ...newProfile, pagespeed_data: null } as unknown as WebsiteProfile;
+        setProfiles((prev) => [...prev, ownProfile!]);
+      } catch (e) {
+        console.error("Failed to create GitHub-only profile:", e);
+        const errorMsg = await saveMessage(activeId, "assistant", "❌ Failed to create profile for GitHub analysis.");
+        setMessages((prev) => [...prev, errorMsg]);
+        return;
+      }
+    }
 
     // Validate repo existence before starting
     try {
@@ -356,9 +383,9 @@ const Chat = () => {
   const handleSend = async (content: string, model?: string) => {
     if (!activeId || !user || isStreaming) return;
 
-    // Check if the message contains a GitHub URL
+    // Check if the message contains a GitHub URL — always recognize for premium users
     const githubMatch = content.match(/https?:\/\/github\.com\/[\w.-]+\/[\w.-]+/i);
-    if (githubMatch && profiles.some((p) => p.is_own_website && p.status === "completed")) {
+    if (githubMatch && isPremium) {
       // Save the user message first
       const userMsg = await saveMessage(activeId, "user", content);
       setMessages((prev) => [...prev, userMsg]);
@@ -697,6 +724,10 @@ const Chat = () => {
                   setShowInlineUrlPrompt(false);
                   handleScan(ownUrl, competitorUrls, model);
                 }}
+                onGithubOnlyAnalysis={(githubUrl, model) => {
+                  setShowInlineUrlPrompt(false);
+                  handleGithubDeepAnalysis(githubUrl, model);
+                }}
                 selectedModel="gemini-flash"
               />
             )}
@@ -733,7 +764,7 @@ const Chat = () => {
           }}
           disabled={!activeId || isStreaming}
           hasProfiles={profiles.length > 0}
-          hasOwnProfile={profiles.some((p) => p.is_own_website && p.status === "completed")}
+          hasOwnProfile={true}
           initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}
           initialCompetitorUrls={profiles.filter((p) => !p.is_own_website).map((p) => p.url)}
         />
@@ -750,7 +781,12 @@ const Chat = () => {
         <LayoutDashboard className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
-      {hasProfiles && <SectionNavBar hasCodeAnalysis={completedProfiles.some((p) => p.is_own_website && !!p.code_analysis)} />}
+      {hasProfiles && (
+        <SectionNavBar
+          hasCodeAnalysis={completedProfiles.some((p) => p.is_own_website && !!p.code_analysis)}
+          hasWebsiteAnalysis={completedProfiles.some((p) => p.is_own_website && !!p.profile_data)}
+        />
+      )}
       {isMobile ? (
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <div className="p-4 space-y-6">

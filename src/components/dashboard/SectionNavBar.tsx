@@ -11,13 +11,18 @@ const CODE_QUALITY_SECTION = { id: "section-code-quality", label: "Code Quality"
 
 interface SectionNavBarProps {
   hasCodeAnalysis?: boolean;
+  hasWebsiteAnalysis?: boolean;
 }
 
-const SectionNavBar = ({ hasCodeAnalysis = false }: SectionNavBarProps) => {
-  const sections = hasCodeAnalysis ? [...BASE_SECTIONS, CODE_QUALITY_SECTION] : BASE_SECTIONS;
-  const [activeSection, setActiveSection] = useState(sections[0].id);
+const SectionNavBar = ({ hasCodeAnalysis = false, hasWebsiteAnalysis = true }: SectionNavBarProps) => {
+  const websiteSections = hasWebsiteAnalysis ? BASE_SECTIONS : [];
+  const codeSections = hasCodeAnalysis ? [CODE_QUALITY_SECTION] : [];
+  const sections = [...websiteSections, ...codeSections];
+
+  const [activeSection, setActiveSection] = useState(sections[0]?.id ?? "");
 
   const updateActive = useCallback(() => {
+    if (sections.length === 0) return;
     let closest = sections[0].id;
     let closestDist = Infinity;
 
@@ -33,7 +38,7 @@ const SectionNavBar = ({ hasCodeAnalysis = false }: SectionNavBarProps) => {
     }
 
     setActiveSection(closest);
-  }, [hasCodeAnalysis]);
+  }, [hasCodeAnalysis, hasWebsiteAnalysis]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +49,7 @@ const SectionNavBar = ({ hasCodeAnalysis = false }: SectionNavBarProps) => {
     const scrollEls: Element[] = [];
 
     viewports.forEach((vp) => {
-      if (vp.querySelector("#section-overview")) {
+      if (vp.querySelector("#section-overview") || vp.querySelector("#section-code-quality")) {
         scrollEls.push(vp);
         vp.addEventListener("scroll", handleScroll, { passive: true });
       }
@@ -65,6 +70,8 @@ const SectionNavBar = ({ hasCodeAnalysis = false }: SectionNavBarProps) => {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  if (sections.length === 0) return null;
 
   return (
     <nav className="sticky top-0 z-10 bg-card border-b border-border px-4 py-2">

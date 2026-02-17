@@ -272,6 +272,14 @@ const Chat = () => {
   const handleGithubDeepAnalysis = async (githubUrl: string, model?: string) => {
     if (!activeId || !user) return;
 
+    // Validate GitHub URL format
+    const ghMatch = githubUrl.match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)/);
+    if (!ghMatch) {
+      const errorMsg = await saveMessage(activeId, "assistant", "❌ Invalid GitHub URL. Please use the format: `https://github.com/owner/repo`");
+      setMessages((prev) => [...prev, errorMsg]);
+      return;
+    }
+
     // Find the user's own website profile in the current conversation
     const ownProfile = profiles.find((p) => p.is_own_website && p.status === "completed");
     if (!ownProfile) {
@@ -281,7 +289,19 @@ const Chat = () => {
 
     const token = await getAccessToken();
 
-    // Show confirmation in chat
+    // Validate repo existence before starting
+    try {
+      const checkRes = await fetch(`https://api.github.com/repos/${ghMatch[1]}/${ghMatch[2]}`, { method: "HEAD" });
+      if (!checkRes.ok) {
+        const errorMsg = await saveMessage(activeId, "assistant", `❌ Repository not found: \`${githubUrl}\`. Make sure the repository is public and the URL is correct.`);
+        setMessages((prev) => [...prev, errorMsg]);
+        return;
+      }
+    } catch {
+      // Network error — proceed anyway, edge function will handle it
+    }
+
+    // Show confirmation in chat only after validation passes
     const confirmMsg = await saveMessage(activeId, "assistant", `🔍 Starting Deep Analysis with GitHub repo: ${githubUrl}...`);
     setMessages((prev) => [...prev, confirmMsg]);
 
@@ -323,7 +343,9 @@ const Chat = () => {
       toast.success("Deep Analysis complete!");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Deep Analysis failed";
-      toast.error(msg);
+      // Show error in chat instead of just a toast
+      const errorMsg = await saveMessage(activeId, "assistant", `❌ Deep Analysis failed: ${msg}`);
+      setMessages((prev) => [...prev, errorMsg]);
       console.error("GitHub deep analysis failed:", e);
     } finally {
       refreshCredits();
@@ -728,7 +750,7 @@ const Chat = () => {
         <LayoutDashboard className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       </div>
-      {hasProfiles && <SectionNavBar />}
+      {hasProfiles && <SectionNavBar hasCodeAnalysis={completedProfiles.some((p) => p.is_own_website && !!p.code_analysis)} />}
       {isMobile ? (
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <div className="p-4 space-y-6">

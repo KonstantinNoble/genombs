@@ -308,13 +308,16 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
                     className="h-8 text-sm"
                     maxLength={GITHUB_MAX_LENGTH}
                   />
-                  {githubInput.trim() && !(githubInput.trim().startsWith("https://github.com/") && githubInput.trim().split("/").length >= 5) && (
+                  {githubInput.trim() && !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim())) && (
                     <p className="text-[10px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+                  )}
+                  {githubInput.trim() && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()) && (
+                    <p className="text-[10px] text-chart-6">✓ Valid GitHub URL</p>
                   )}
                   <Button
                     size="sm"
                     className="w-full"
-                    disabled={!githubInput.trim() || !(githubInput.trim().startsWith("https://github.com/") && githubInput.trim().split("/").length >= 5)}
+                    disabled={!githubInput.trim() || !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()))}
                     onClick={() => {
                       onGithubAnalysis?.(githubInput.trim(), selectedModel);
                       setGithubInput("");

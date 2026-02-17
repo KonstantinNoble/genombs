@@ -32,8 +32,7 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
 
   const isValidGithubUrl = (url: string) => {
     if (!url.trim()) return true; // optional field
-    const trimmed = url.trim();
-    return trimmed.startsWith("https://github.com/") && trimmed.split("/").length >= 5;
+    return /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(url.trim());
   };
 
   const maxCompetitorFields = PREMIUM_MAX_URL_FIELDS - 1;
@@ -119,6 +118,9 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
           </div>
           {githubUrl.trim() && !isValidGithubUrl(githubUrl) && (
             <p className="text-[11px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+          )}
+          {githubUrl.trim() && isValidGithubUrl(githubUrl) && (
+            <p className="text-[11px] text-chart-6">✓ Valid GitHub URL</p>
           )}
           {isPremium && (
             <p className="text-[10px] text-muted-foreground">

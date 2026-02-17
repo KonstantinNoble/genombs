@@ -54,9 +54,19 @@ export interface PageSpeedData {
 
 export interface CodeAnalysis {
   codeQuality: number;
+  security: number;
+  performance: number;
+  accessibility: number;
+  maintainability: number;
+  seo: { score: number; issues: string[] };
   techStack: string[];
-  securityFlags: string[];
-  performanceFlags: string[];
+  strengths: string[];
+  weaknesses: string[];
+  securityIssues: string[];
+  recommendations: string[];
+  // Legacy fields (backward compat)
+  securityFlags?: string[];
+  performanceFlags?: string[];
 }
 
 export interface WebsiteProfile {

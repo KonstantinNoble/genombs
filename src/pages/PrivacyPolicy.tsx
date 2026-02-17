@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
         </Link>
 
         <article className="max-w-4xl mx-auto prose prose-invert">
-          <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+          <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
           <p className="text-muted-foreground mb-8">Effective Date: February 14, 2026 | Version 7.0</p>
 
           {/* Section 1: Controller Information */}

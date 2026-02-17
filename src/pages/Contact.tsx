@@ -20,7 +20,7 @@ const Contact = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-semibold mb-6">
             Contact Us
           </h1>
           <p className="text-lg text-muted-foreground mb-12">

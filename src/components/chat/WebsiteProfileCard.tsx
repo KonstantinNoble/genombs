@@ -59,7 +59,7 @@ const CategoryBar = ({ label, value }: { label: string; value: number }) => {
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-sm font-bold text-foreground w-7 text-right">{value}</span>
+      <span className="text-sm font-semibold text-foreground w-7 text-right">{value}</span>
     </div>
   );
 };
@@ -95,7 +95,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           <ScoreRing score={overall_score} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="text-lg font-bold text-foreground">{profile_data.name}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{profile_data.name}</h3>
               <Badge variant={is_own_website ? "default" : "outline"} className="text-[10px] shrink-0">
                 {is_own_website ? "Your Site" : "Competitor"}
               </Badge>

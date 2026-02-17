@@ -363,22 +363,22 @@ const Home = () => {
             {/* Counter stats */}
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border">
               <div ref={counter1.ref}>
-                <p className="text-3xl sm:text-4xl font-bold text-primary font-mono animate-count-fade">{counter1.count}</p>
+                <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono animate-count-fade">{counter1.count}</p>
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">AI Models</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.1s" }}>
               <div ref={counter2.ref}>
-                <p className="text-3xl sm:text-4xl font-bold text-primary font-mono animate-count-fade">{counter2.count}</p>
+                <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono animate-count-fade">{counter2.count}</p>
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Score Categories</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.2s" }}>
-              <p className="text-3xl sm:text-4xl font-bold text-primary font-mono">&lt;60s</p>
+              <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono">&lt;60s</p>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Per Scan</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal" style={{ transitionDelay: "0.3s" }}>
-              <p className="text-3xl sm:text-4xl font-bold text-primary font-mono">Incl.</p>
+              <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono">Incl.</p>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed Data</p>
             </div>
           </div>
@@ -401,7 +401,7 @@ const Home = () => {
                 className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover:border-primary/40 transition-colors duration-200"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
-                <span className="text-4xl font-bold text-primary font-mono leading-none block">{feature.num}</span>
+                <span className="text-4xl font-semibold text-primary font-mono leading-none block">{feature.num}</span>
                 <h3 className="text-xl font-medium text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>

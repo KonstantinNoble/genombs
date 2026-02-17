@@ -71,7 +71,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
             <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                  <h4 className="text-base font-semibold text-foreground">{profile.profile_data.name}</h4>
                   <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-xs">
                     {profile.is_own_website ? "Your Site" : "Competitor"}
                   </Badge>
@@ -109,7 +109,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
             <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                  <h4 className="text-base font-semibold text-foreground">{profile.profile_data.name}</h4>
                   <Badge variant={profile.is_own_website ? "default" : "outline"} className="text-xs">
                     {profile.is_own_website ? "Your Site" : "Competitor"}
                   </Badge>
@@ -145,7 +145,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
                   <div className="flex items-center gap-3">
                     <ScoreRing score={trustScore} />
                     <div>
-                      <h4 className="text-base font-bold text-foreground">{profile.profile_data.name}</h4>
+                      <h4 className="text-base font-semibold text-foreground">{profile.profile_data.name}</h4>
                       <p className="text-xs text-muted-foreground mt-0.5">Trust & Proof Score</p>
                     </div>
                   </div>

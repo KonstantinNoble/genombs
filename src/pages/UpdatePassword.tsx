@@ -102,7 +102,7 @@ const UpdatePassword = () => {
 
         <Card className="w-full max-w-md shadow-2xl relative z-10 animate-scale-in border-border/50">
           <CardHeader className="space-y-3">
-            <CardTitle className="text-3xl font-bold text-center">
+            <CardTitle className="text-3xl font-semibold text-center">
               {success ? "Password Updated" : "Set New Password"}
             </CardTitle>
             <CardDescription className="text-center text-base">

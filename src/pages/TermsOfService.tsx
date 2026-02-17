@@ -13,7 +13,7 @@ const TermsOfService = () => {
         </Link>
 
         <div className="max-w-4xl mx-auto prose prose-invert">
-          <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
+          <h1 className="text-4xl font-semibold mb-2">Terms of Service</h1>
           <p className="text-muted-foreground mb-8">Effective Date: January 26, 2026 | Version 3.1</p>
 
           <div className="space-y-8">
@@ -118,7 +118,7 @@ const TermsOfService = () => {
               </p>
 
               <div className="bg-destructive/10 border border-destructive rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">IMPORTANT DISCLAIMER</p>
+                <p className="font-semibold mb-2">IMPORTANT DISCLAIMER</p>
                 <p className="mb-2">
                   Our services are for <strong>informational and educational purposes only</strong>. They are NOT
                   professional advice (financial, legal, business consulting, advertising consulting). We make no guarantees 
@@ -443,7 +443,7 @@ const TermsOfService = () => {
               </p>
 
               <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">⚠️ IMPORTANT for Premium Subscribers</p>
+                <p className="font-semibold mb-2">⚠️ IMPORTANT for Premium Subscribers</p>
                 <p className="mb-2">
                   Deleting your <strong>Synvertas account</strong> does <strong>NOT automatically cancel</strong> your{" "}
                   <strong>Premium subscription with Freemius</strong>!
@@ -529,7 +529,7 @@ const TermsOfService = () => {
               </h3>
 
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 my-4">
-                <p className="font-bold mb-2">🔐 Important: Right of Withdrawal</p>
+                <p className="font-semibold mb-2">🔐 Important: Right of Withdrawal</p>
                 <p>
                   As an EU/EEA consumer, you have a statutory <strong>14-day right of withdrawal</strong> from the 
                   purchase date for Premium subscriptions. Since Freemius, Inc. acts as Merchant of Record, the 

@@ -176,6 +176,32 @@ export async function analyzeWebsite(
   return resp.json();
 }
 
+
+// ─── Add GitHub Analysis to existing profile ───
+
+export async function addGithubAnalysis(
+  profileId: string,
+  githubRepoUrl: string,
+  accessToken: string
+): Promise<{ success: boolean; codeAnalysis: Record<string, unknown> }> {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/add-github-analysis`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ profileId, githubRepoUrl }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(err.error || "GitHub analysis failed");
+  }
+
+  return resp.json();
+}
+
 // ─── Streaming Chat (Edge Function) ───
 
 export async function streamChat({

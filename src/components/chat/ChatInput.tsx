@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Globe, Plus, ChevronDown, Lock } from "lucide-react";
+import { Send, Globe, Plus, ChevronDown, Lock, Github } from "lucide-react";
 import { toast } from "sonner";
 import { GoogleIcon, OpenAIIcon, AnthropicIcon, PerplexityIcon } from "./ModelIcons";
 import { Button } from "@/components/ui/button";
@@ -41,23 +41,28 @@ type ModelId = (typeof AI_MODELS)[number]["id"];
 interface ChatInputProps {
   onSend: (message: string, model: string) => void;
   onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
+  onGithubAnalysis?: (githubUrl: string) => void;
   onClearUrls?: () => void;
   onPromptUrl?: (message: string) => void;
   disabled?: boolean;
   hasProfiles?: boolean;
+  hasOwnProfile?: boolean;
   initialOwnUrl?: string;
   initialCompetitorUrls?: string[];
 }
 
-const ChatInput = ({ onSend, onScan, onClearUrls, onPromptUrl, disabled, hasProfiles = true, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl, disabled, hasProfiles = true, hasOwnProfile = false, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const CHAT_MAX_LENGTH = 300;
   const URL_MAX_LENGTH = 100;
+  const GITHUB_MAX_LENGTH = 150;
   const [value, setValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<ModelId>("gemini-flash");
   const [modelOpen, setModelOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [githubPopoverOpen, setGithubPopoverOpen] = useState(false);
+  const [githubInput, setGithubInput] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [ownUrl, setOwnUrl] = useState("");
   const [comp1, setComp1] = useState("");
@@ -276,6 +281,52 @@ const ChatInput = ({ onSend, onScan, onClearUrls, onPromptUrl, disabled, hasProf
               )}
             </Tooltip>
           </TooltipProvider>
+          {/* GitHub Deep Analysis Button (Premium only, when profile exists) */}
+          {isPremium && hasOwnProfile && (
+            <Popover open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={disabled}
+                  className="shrink-0 h-[44px] w-[44px]"
+                  title="Add GitHub repo for Deep Analysis"
+                >
+                  <Github className="w-4 h-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 p-3">
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium">GitHub Repository URL</Label>
+                  <p className="text-[10px] text-muted-foreground">
+                    Add a public repo to run a Deep Code Analysis on your website's source code.
+                  </p>
+                  <Input
+                    value={githubInput}
+                    onChange={(e) => setGithubInput(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
+                    placeholder="https://github.com/user/repo"
+                    className="h-8 text-sm"
+                    maxLength={GITHUB_MAX_LENGTH}
+                  />
+                  {githubInput.trim() && !(githubInput.trim().startsWith("https://github.com/") && githubInput.trim().split("/").length >= 5) && (
+                    <p className="text-[10px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+                  )}
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    disabled={!githubInput.trim() || !(githubInput.trim().startsWith("https://github.com/") && githubInput.trim().split("/").length >= 5)}
+                    onClick={() => {
+                      onGithubAnalysis?.(githubInput.trim());
+                      setGithubInput("");
+                      setGithubPopoverOpen(false);
+                    }}
+                  >
+                    Start Deep Analysis
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
           <Button
             onClick={() => {
               if (notEnoughForChat) {

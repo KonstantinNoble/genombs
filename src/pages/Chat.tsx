@@ -40,6 +40,7 @@ import {
   deleteProfilesForConversation,
   deleteConversation,
   updateConversationTitle,
+  addGithubAnalysis,
 } from "@/lib/api/chat-api";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
 
@@ -267,9 +268,82 @@ const Chat = () => {
     }
   };
 
+  // ─── GitHub Deep Analysis handler ───
+  const handleGithubDeepAnalysis = async (githubUrl: string) => {
+    if (!activeId || !user) return;
+
+    // Find the user's own website profile in the current conversation
+    const ownProfile = profiles.find((p) => p.is_own_website && p.status === "completed");
+    if (!ownProfile) {
+      toast.error("No completed website analysis found. Please analyze a website first.");
+      return;
+    }
+
+    const token = await getAccessToken();
+
+    // Show confirmation in chat
+    const confirmMsg = await saveMessage(activeId, "assistant", `🔍 Starting Deep Analysis with GitHub repo: ${githubUrl}...`);
+    setMessages((prev) => [...prev, confirmMsg]);
+
+    try {
+      const result = await addGithubAnalysis(ownProfile.id, githubUrl, token);
+      
+      // Reload profiles to pick up updated code_analysis
+      const updatedProfiles = await loadProfiles(activeId);
+      setProfiles(deduplicateProfiles(updatedProfiles));
+
+      // Generate a summary of the code analysis
+      if (result.codeAnalysis) {
+        const summaryPrompt = `A Deep Code Analysis was just completed for the GitHub repository linked to ${ownProfile.url}. Here are the results:\n\n${JSON.stringify(result.codeAnalysis, null, 2)}\n\nGive a brief, actionable summary of the code quality findings. Focus on the top 3 most important issues and recommendations. Be conversational and direct.`;
+
+        let assistantContent = "";
+        const tempId = `temp-github-${Date.now()}`;
+        setMessages((prev) => [
+          ...prev,
+          { id: tempId, conversation_id: activeId, role: "assistant", content: "", created_at: new Date().toISOString() },
+        ]);
+        setIsStreaming(true);
+
+        await streamChat({
+          messages: [{ role: "user", content: summaryPrompt }],
+          conversationId: activeId,
+          accessToken: token,
+          onDelta: (delta) => {
+            assistantContent += delta;
+            setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
+          },
+          onDone: () => {},
+        });
+
+        const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
+        setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
+        setIsStreaming(false);
+      }
+
+      toast.success("Deep Analysis complete!");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Deep Analysis failed";
+      toast.error(msg);
+      console.error("GitHub deep analysis failed:", e);
+    } finally {
+      refreshCredits();
+    }
+  };
+
   // ─── Send message + stream response ───
   const handleSend = async (content: string, model?: string) => {
     if (!activeId || !user || isStreaming) return;
+
+    // Check if the message contains a GitHub URL
+    const githubMatch = content.match(/https?:\/\/github\.com\/[\w.-]+\/[\w.-]+/i);
+    if (githubMatch && profiles.some((p) => p.is_own_website && p.status === "completed")) {
+      // Save the user message first
+      const userMsg = await saveMessage(activeId, "user", content);
+      setMessages((prev) => [...prev, userMsg]);
+      // Trigger deep analysis
+      await handleGithubDeepAnalysis(githubMatch[0]);
+      return;
+    }
 
     try {
       // Save user message to DB
@@ -624,6 +698,7 @@ const Chat = () => {
         <ChatInput
           onSend={handleSend}
           onScan={handleScan}
+          onGithubAnalysis={handleGithubDeepAnalysis}
           onPromptUrl={async (message) => {
             if (!activeId) return;
             try {
@@ -636,6 +711,7 @@ const Chat = () => {
           }}
           disabled={!activeId || isStreaming}
           hasProfiles={profiles.length > 0}
+          hasOwnProfile={profiles.some((p) => p.is_own_website && p.status === "completed")}
           initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}
           initialCompetitorUrls={profiles.filter((p) => !p.is_own_website).map((p) => p.url)}
         />

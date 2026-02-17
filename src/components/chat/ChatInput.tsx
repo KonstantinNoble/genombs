@@ -41,7 +41,7 @@ type ModelId = (typeof AI_MODELS)[number]["id"];
 interface ChatInputProps {
   onSend: (message: string, model: string) => void;
   onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
-  onGithubAnalysis?: (githubUrl: string) => void;
+  onGithubAnalysis?: (githubUrl: string, model?: string) => void;
   onClearUrls?: () => void;
   onPromptUrl?: (message: string) => void;
   disabled?: boolean;
@@ -316,7 +316,7 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
                     className="w-full"
                     disabled={!githubInput.trim() || !(githubInput.trim().startsWith("https://github.com/") && githubInput.trim().split("/").length >= 5)}
                     onClick={() => {
-                      onGithubAnalysis?.(githubInput.trim());
+                      onGithubAnalysis?.(githubInput.trim(), selectedModel);
                       setGithubInput("");
                       setGithubPopoverOpen(false);
                     }}

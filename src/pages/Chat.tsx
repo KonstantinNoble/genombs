@@ -269,7 +269,7 @@ const Chat = () => {
   };
 
   // ─── GitHub Deep Analysis handler ───
-  const handleGithubDeepAnalysis = async (githubUrl: string) => {
+  const handleGithubDeepAnalysis = async (githubUrl: string, model?: string) => {
     if (!activeId || !user) return;
 
     // Find the user's own website profile in the current conversation
@@ -286,7 +286,7 @@ const Chat = () => {
     setMessages((prev) => [...prev, confirmMsg]);
 
     try {
-      const result = await addGithubAnalysis(ownProfile.id, githubUrl, token);
+      const result = await addGithubAnalysis(ownProfile.id, githubUrl, token, model);
       
       // Reload profiles to pick up updated code_analysis
       const updatedProfiles = await loadProfiles(activeId);
@@ -340,8 +340,8 @@ const Chat = () => {
       // Save the user message first
       const userMsg = await saveMessage(activeId, "user", content);
       setMessages((prev) => [...prev, userMsg]);
-      // Trigger deep analysis
-      await handleGithubDeepAnalysis(githubMatch[0]);
+      // Trigger deep analysis with the selected model
+      await handleGithubDeepAnalysis(githubMatch[0], model);
       return;
     }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { useToast } from "@/hooks/use-toast";
@@ -10,11 +10,77 @@ import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
 import { Button } from "@/components/ui/button";
 
+// Counter hook: animates from 0 to target when visible
+function useCountUp(target: number, duration = 1500) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [started]);
+
+  useEffect(() => {
+    if (!started) return;
+    const start = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [started, target, duration]);
+
+  return { count, ref };
+}
+
+// Typing effect hook
+function useTypingEffect(text: string, speed = 100, delay = 1000) {
+  const [displayed, setDisplayed] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    let i = 0;
+
+    timeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(interval);
+          // Hide cursor after typing done
+          setTimeout(() => setShowCursor(false), 2000);
+        }
+      }, speed);
+    }, delay);
+
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+
+  return { displayed, showCursor };
+}
+
 const Home = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
   const isLoggedIn = !!user;
+  const [urlInput, setUrlInput] = useState("");
+  const { displayed: typingPlaceholder, showCursor } = useTypingEffect("synvertas.com", 80, 1200);
 
   // Scroll reveal logic
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -33,7 +99,7 @@ const Home = () => {
     );
 
     document
-      .querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale")
+      .querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale, .stagger-reveal, .step-circle-pulse")
       .forEach((el) => {
         observerRef.current?.observe(el);
       });
@@ -80,6 +146,31 @@ const Home = () => {
 
     handleEmailVerification();
   }, [toast, navigate]);
+
+  const handleAnalyze = () => {
+    const trimmed = urlInput.trim();
+    if (!trimmed || !trimmed.includes(".")) {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid website URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (isLoggedIn) {
+      navigate("/chat?url=" + encodeURIComponent(trimmed));
+    } else {
+      navigate("/auth?redirect=" + encodeURIComponent("/chat?url=" + encodeURIComponent(trimmed)));
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleAnalyze();
+  };
+
+  // Counter refs for stats
+  const counter1 = useCountUp(5);
+  const counter2 = useCountUp(5);
 
   const features = [
     {
@@ -184,13 +275,6 @@ const Home = () => {
     },
   ];
 
-  const stats = [
-    { value: "5", label: "AI Models" },
-    { value: "5", label: "Score Categories" },
-    { value: "<60s", label: "Per Scan" },
-    { value: "Incl.", label: "PageSpeed Data" },
-  ];
-
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
@@ -214,63 +298,89 @@ const Home = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative flex items-center justify-center py-28 sm:py-36 overflow-hidden dot-grid">
+      <section className="relative flex items-center justify-center py-32 sm:py-40 overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6 animate-fade-in">
             What's holding your <span className="text-primary">website</span> back?
           </h1>
           <p
-            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up"
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 animate-fade-in-up"
             style={{ animationDelay: "0.15s", animationFillMode: "both" }}
           >
             Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to
             fix.
           </p>
+
+          {/* URL Input Container */}
           <div
-            className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+            className="url-input-container max-w-xl mx-auto bg-card border border-border rounded-lg p-1.5 flex items-center gap-2 animate-fade-in-up"
             style={{ animationDelay: "0.3s", animationFillMode: "both" }}
           >
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-transparent text-foreground text-base px-4 py-3 outline-none font-mono placeholder:text-muted-foreground/50"
+                placeholder=""
+                aria-label="Enter website URL"
+              />
+              {/* Typing placeholder overlay */}
+              {!urlInput && (
+                <div className="absolute inset-0 flex items-center px-4 pointer-events-none">
+                  <span className="text-muted-foreground/40 font-mono text-base">
+                    {typingPlaceholder}
+                    {showCursor && <span className="typing-cursor text-primary ml-px">|</span>}
+                  </span>
+                </div>
+              )}
+            </div>
             <Button
+              onClick={handleAnalyze}
               size="lg"
-              asChild
-              className="text-base px-8 h-13"
+              className="text-base px-6 h-11 shrink-0"
             >
-              <Link to={isLoggedIn ? "/chat" : "/auth"}>Start Analyzing</Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="text-base px-8 h-13"
-            >
-              <Link to="/pricing">View Pricing</Link>
+              Analyze
             </Button>
           </div>
-          <p
-            className="text-sm text-muted-foreground mt-8 animate-fade-in-up"
-            style={{ animationDelay: "0.45s", animationFillMode: "both" }}
-          >
-            20 free credits per day. No credit card required.
-          </p>
+
+          <div className="flex flex-col items-center gap-3 mt-6 animate-fade-in-up" style={{ animationDelay: "0.45s", animationFillMode: "both" }}>
+            <p className="text-sm text-muted-foreground">
+              20 free credits per day. No credit card required.
+            </p>
+            <Link to="/pricing" className="text-sm text-primary hover:underline font-medium">
+              View Pricing
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Social Proof Stats */}
-      <section className="py-14 border-t border-b border-border relative">
+      <section className="py-14 border-t border-b border-border bg-muted/20 relative">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-            {stats.map((stat, i) => (
-              <div
-                key={stat.label}
-                className={`text-center py-4 md:py-0 space-y-1 scroll-reveal ${
-                  i < stats.length - 1 ? "md:border-r md:border-border" : ""
-                }`}
-                style={{ transitionDelay: `${i * 0.1}s` }}
-              >
-                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">{stat.value}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">{stat.label}</p>
+            {/* Counter stats */}
+            <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border">
+              <div ref={counter1.ref}>
+                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono animate-count-fade">{counter1.count}</p>
               </div>
-            ))}
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">AI Models</p>
+            </div>
+            <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.1s" }}>
+              <div ref={counter2.ref}>
+                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono animate-count-fade">{counter2.count}</p>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Score Categories</p>
+            </div>
+            <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.2s" }}>
+              <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">&lt;60s</p>
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Per Scan</p>
+            </div>
+            <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal" style={{ transitionDelay: "0.3s" }}>
+              <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">Incl.</p>
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed Data</p>
+            </div>
           </div>
         </div>
       </section>
@@ -288,8 +398,8 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="border border-border bg-card rounded-lg p-8 space-y-5 scroll-reveal hover:border-primary/40 transition-colors duration-200"
-                style={{ transitionDelay: `${i * 0.12}s` }}
+                className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover:border-primary/40 transition-colors duration-200"
+                style={{ animationDelay: `${i * 0.15}s` }}
               >
                 <span className="text-4xl font-extrabold text-primary font-mono leading-none block">{feature.num}</span>
                 <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
@@ -310,10 +420,10 @@ const Home = () => {
             {useCases.map((uc, i) => (
               <div
                 key={uc.title}
-                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 scroll-reveal ${
+                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 stagger-reveal ${
                   i < useCases.length - 1 ? "border-b border-border" : ""
                 }`}
-                style={{ transitionDelay: `${i * 0.08}s` }}
+                style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="md:w-1/4 shrink-0">
                   <span className="text-xs uppercase tracking-widest text-primary font-semibold font-mono">
@@ -347,7 +457,7 @@ const Home = () => {
                 className="relative text-center md:px-8 space-y-5 scroll-reveal-scale"
                 style={{ transitionDelay: `${i * 0.15}s` }}
               >
-                <div className="mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10">
+                <div className="step-circle-pulse mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10">
                   <span className="text-lg font-bold text-primary font-mono">{step.step}</span>
                 </div>
                 <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
@@ -378,7 +488,7 @@ const Home = () => {
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
-                    <tr key={row.feature} className={i < comparisonRows.length - 1 ? "border-b border-border" : ""}>
+                    <tr key={row.feature} className={`alt-row ${i < comparisonRows.length - 1 ? "border-b border-border" : ""}`}>
                       <td className="py-3.5 px-5 text-sm text-foreground font-medium">{row.feature}</td>
                       <td className="py-3.5 px-5 text-center">
                         <span

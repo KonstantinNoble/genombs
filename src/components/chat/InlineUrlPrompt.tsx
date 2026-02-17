@@ -10,10 +10,11 @@ import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_M
 
 interface InlineUrlPromptProps {
   onStartAnalysis: (ownUrl: string, competitorUrls: string[], model: string, githubRepoUrl?: string) => void;
+  onGithubOnlyAnalysis?: (githubUrl: string, model: string) => void;
   selectedModel: string;
 }
 
-const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProps) => {
+const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel }: InlineUrlPromptProps) => {
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const URL_MAX_LENGTH = 100;
@@ -51,11 +52,19 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
   const competitorUrls = [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
   const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u)) && isValidGithubUrl(githubUrl);
   const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && competitorUrls.length > 0 && allUrlsValid;
+  
+  // GitHub-only mode: only GitHub URL filled, no website URL
+  const canStartGithubOnly = isPremium && !ownUrl.trim() && githubUrl.trim() && isValidGithubUrl(githubUrl) && onGithubOnlyAnalysis;
 
   const handleStart = () => {
     if (!canStartAnalysis) return;
     const ghUrl = isPremium && githubUrl.trim() ? githubUrl.trim() : undefined;
     onStartAnalysis(ownUrl.trim(), competitorUrls.map((u) => u.trim()), selectedModel, ghUrl);
+  };
+
+  const handleGithubOnly = () => {
+    if (!canStartGithubOnly) return;
+    onGithubOnlyAnalysis!(githubUrl.trim(), selectedModel);
   };
 
   return (
@@ -179,14 +188,28 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
           </p>
         )}
 
-        <Button
-          onClick={handleStart}
-          disabled={!canStartAnalysis}
-          className="w-full"
-          size="sm"
-        >
-          Start Analysis
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleStart}
+            disabled={!canStartAnalysis}
+            className="flex-1"
+            size="sm"
+          >
+            Start Analysis
+          </Button>
+          {isPremium && onGithubOnlyAnalysis && (
+            <Button
+              onClick={handleGithubOnly}
+              disabled={!canStartGithubOnly}
+              variant="outline"
+              className="flex-1"
+              size="sm"
+            >
+              <Github className="w-3.5 h-3.5 mr-1.5" />
+              Code Only
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

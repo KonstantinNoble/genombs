@@ -281,8 +281,8 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
               )}
             </Tooltip>
           </TooltipProvider>
-          {/* GitHub Deep Analysis Button (Premium only, when profile exists) */}
-          {isPremium && hasOwnProfile && (
+          {/* GitHub Deep Analysis Button (Premium only, always visible) */}
+          {isPremium && (
             <Popover open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
               <PopoverTrigger asChild>
                 <Button

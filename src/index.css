@@ -704,3 +704,98 @@ All colors MUST be HSL.
 .synthesis-point {
   animation: pulse-glow 3s ease-in-out infinite;
 }
+
+/* ============================================
+   HOMEPAGE DYNAMIC ANIMATIONS
+   ============================================ */
+
+/* Border pulse for URL input */
+@keyframes border-pulse {
+  0%, 100% {
+    border-color: hsl(var(--border));
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+  50% {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 12px 0 hsl(var(--primary) / 0.08);
+  }
+}
+
+.url-input-container {
+  animation: border-pulse 3s ease-in-out infinite;
+}
+
+.url-input-container:focus-within {
+  animation: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
+}
+
+/* Typing cursor blink */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor {
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+/* Accent stripe top on feature cards */
+.accent-stripe {
+  position: relative;
+}
+
+.accent-stripe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: hsl(var(--primary));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* Staggered fade-in for scroll elements */
+@keyframes stagger-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.stagger-reveal.revealed {
+  animation: stagger-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Step circle pulse on scroll */
+@keyframes step-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+}
+
+.step-circle-pulse.revealed {
+  animation: step-pulse 1s ease-out;
+}
+
+/* Alternating row tint */
+.alt-row:nth-child(even) {
+  background: hsl(var(--muted) / 0.3);
+}

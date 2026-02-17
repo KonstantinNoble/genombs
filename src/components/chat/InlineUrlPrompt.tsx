@@ -65,6 +65,9 @@ const InlineUrlPrompt = ({ onStartAnalysis, selectedModel }: InlineUrlPromptProp
         <p className="text-sm text-muted-foreground leading-relaxed">
           A website URL and at least one competitor are required to chat with the AI about your site.
         </p>
+        <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+          💡 The website URL is used for live performance &amp; SEO analysis. The GitHub link (optional, Premium) adds source code quality insights.
+        </p>
 
         {/* Own URL */}
         <div className={`space-y-1.5 ${isOwnUrlDisabled ? "opacity-50" : ""}`}>

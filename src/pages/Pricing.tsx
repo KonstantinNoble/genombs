@@ -105,7 +105,7 @@ const PricingPage = () => {
                 Simple, Transparent Pricing
               </p>
             )}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-[1.08] mb-5">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.08] mb-5">
               {isPremium && isLoggedIn ? "You're all set" : "Choose your plan"}
             </h1>
             <p className="text-lg text-muted-foreground">
@@ -122,11 +122,11 @@ const PricingPage = () => {
             {/* Free */}
             <div className="border border-border rounded-xl p-8 sm:p-10 space-y-8">
               <div>
-                <h3 className="text-2xl font-bold text-foreground">Free</h3>
+                <h3 className="text-2xl font-medium text-foreground">Free</h3>
                 <p className="text-muted-foreground mt-1">No account fees</p>
               </div>
               <div>
-                <span className="text-5xl font-extrabold text-foreground">$0</span>
+                <span className="text-5xl font-bold text-foreground">$0</span>
                 <span className="text-lg text-muted-foreground ml-1">/mo</span>
               </div>
               <ul className="space-y-3.5">
@@ -154,11 +154,11 @@ const PricingPage = () => {
                 Recommended
               </Badge>
               <div>
-                <h3 className="text-2xl font-bold text-foreground">Premium</h3>
+                <h3 className="text-2xl font-medium text-foreground">Premium</h3>
                 <p className="text-muted-foreground mt-1">All features, higher limits</p>
               </div>
               <div>
-                <span className="text-5xl font-extrabold text-foreground">$14.99</span>
+                <span className="text-5xl font-bold text-foreground">$14.99</span>
                 <span className="text-lg text-muted-foreground ml-1">/mo</span>
               </div>
               <ul className="space-y-3.5">
@@ -207,7 +207,7 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-14">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-4">
+              <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
                 Full Feature Comparison
               </h2>
               <p className="text-lg text-muted-foreground">
@@ -231,7 +231,7 @@ const PricingPage = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-2xl mx-auto text-center">
             <div className="border border-border rounded-xl p-10 sm:p-14 space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
+              <h2 className="text-3xl sm:text-4xl font-semibold text-foreground">
                 {isPremium && isLoggedIn ? "You're all set" : "Try it now"}
               </h2>
               <p className="text-lg text-muted-foreground">

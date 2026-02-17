@@ -1,60 +1,94 @@
 
 
-# Schriftgewicht reduzieren: Duenneres, eleganteres Erscheinungsbild
+# Schriftgewicht universell reduzieren
 
 ## Ziel
-Die gesamte Typografie der Webseite wird leichter/duenner gestaltet, damit sie weniger wie eine App und mehr wie eine professionelle SaaS-Website wirkt. Keine Funktionsaenderungen.
+Alle verbleibenden `font-bold` und `font-extrabold` Klassen auf den oeffentlichen Seiten und in gemeinsam genutzten Komponenten reduzieren, um ein konsistent duenneres Schriftbild zu erreichen.
 
-## Aenderungen
+## Aenderungen nach Datei
 
-### 1. Homepage (src/pages/Home.tsx)
+### Oeffentliche Seiten (Marketing / Legal / Auth)
 
-- **Hero H1**: `font-extrabold` wird zu `font-semibold`
-- **Section H2s** ("What you get", "Use cases", etc.): `font-extrabold` wird zu `font-semibold`
-- **Feature Card H3s**: `font-bold` wird zu `font-medium`
-- **Use Case H3s**: `font-bold` wird zu `font-medium`
-- **Step Titles**: `font-bold` wird zu `font-medium`
-- **Stats-Zahlen**: `font-extrabold` wird zu `font-bold`
-- **Feature-Nummern (01, 02, 03)**: `font-extrabold` wird zu `font-bold`
-- **Comparison Table Headers**: `font-bold` wird zu `font-medium`
+**src/pages/Contact.tsx**
+- H1 "Contact Us": `font-bold` zu `font-semibold`
 
-### 2. Button Component (src/components/ui/button.tsx)
+**src/pages/Imprint.tsx**
+- H1 "Imprint": `font-bold` zu `font-semibold`
 
-- `font-medium` wird zu `font-normal` -- CTAs wirken dadurch leichter und eleganter
+**src/pages/PrivacyPolicy.tsx**
+- H1 "Privacy Policy": `font-bold` zu `font-semibold`
 
-### 3. Navbar (src/components/Navbar.tsx)
+**src/pages/TermsOfService.tsx**
+- H1 "Terms of Service": `font-bold` zu `font-semibold`
+- "IMPORTANT DISCLAIMER", "IMPORTANT for Premium", "Important: Right of Withdrawal": `font-bold` zu `font-semibold`
 
-- Logo "Synvertas": `font-semibold` wird zu `font-medium`
-- Desktop NavLinks: `font-medium` bleibt (ist bereits duenn genug)
-- CTA Buttons: `font-medium` wird zu `font-normal`
-- Mobile Menu Links: `font-medium` wird zu `font-normal`
+**src/pages/Auth.tsx**
+- CardTitle "Create Account / Welcome Back": `font-bold` zu `font-semibold`
+- DialogTitle "Check your Email": `font-bold` zu `font-semibold`
 
-### 4. CSS Typografie (src/index.css)
+**src/pages/ResetPassword.tsx**
+- CardTitle: `font-bold` zu `font-semibold`
+- Countdown-Zahl: `font-bold` zu `font-semibold`
 
-- H1-H6 Basis-Styles: `font-sans` bleibt, aber der negative letter-spacing wird leicht reduziert (von -0.035em auf -0.02em bei H1) fuer ein luftigeres Gefuehl
+**src/pages/UpdatePassword.tsx**
+- CardTitle: `font-bold` zu `font-semibold`
 
-## Technische Details
+**src/pages/Profile.tsx**
+- H1 "Profile Settings": `font-bold` zu `font-semibold`
+
+### Gemeinsame Komponenten
+
+**src/components/Footer.tsx**
+- Logo "Synvertas": `font-bold` zu `font-medium`
+
+**src/components/MobileBlocker.tsx**
+- H1 "Desktop Only": `font-bold` zu `font-semibold`
+
+**src/components/genome/FAQSection.tsx**
+- H2 Titel: `font-extrabold` zu `font-semibold`
+
+**src/components/genome/WinLossChart.tsx**
+- Alle 4 Stat-Zahlen (Win Rate, Total Deals, Won, Lost): `font-extrabold` zu `font-bold`
+
+**src/components/genome/StatCard.tsx**
+- Wert-Anzeige: `font-bold` zu `font-semibold`
+
+**src/components/genome/PerformanceChart.tsx**
+- Score-Anzeige: `font-bold` zu `font-semibold`
+
+### Homepage verbleibende Stellen (src/pages/Home.tsx)
+
+- Stats-Zahlen (5 AI Models, 7 Categories, <60s, Incl.): `font-bold` zu `font-semibold`
+- Feature-Nummern (01, 02, 03): `font-bold` zu `font-semibold`
+
+### Workspace-Komponenten (dezente Reduktion)
+
+**src/components/dashboard/AnalysisTabs.tsx**
+- Profil-Namen (h4): `font-bold` zu `font-semibold`
+
+**src/components/dashboard/PageSpeedCard.tsx**
+- Site-Name (h4): `font-bold` zu `font-semibold`
+
+**src/components/dashboard/ComparisonTable.tsx**
+- Score-Wert: `font-bold` zu `font-semibold`
+
+**src/components/chat/WebsiteProfileCard.tsx**
+- Profil-Name (h3): `font-bold` zu `font-semibold`
+- Bar-Wert: `font-bold` zu `font-semibold`
+
+## Technischer Ueberblick
 
 ```text
-+----------------------------------+------------------------------------------+
-| Datei                            | Aenderung                                |
-+----------------------------------+------------------------------------------+
-| src/pages/Home.tsx               | font-extrabold -> font-semibold,         |
-|                                  | font-bold -> font-medium an diversen     |
-|                                  | Stellen                                  |
-+----------------------------------+------------------------------------------+
-| src/components/ui/button.tsx     | font-medium -> font-normal               |
-+----------------------------------+------------------------------------------+
-| src/components/Navbar.tsx        | font-semibold/medium -> font-medium/     |
-|                                  | font-normal an Logo + CTAs               |
-+----------------------------------+------------------------------------------+
-| src/index.css                    | Letter-spacing H1 anpassen               |
-+----------------------------------+------------------------------------------+
+Regel:
+  font-extrabold -> font-semibold (Ueberschriften) oder font-bold (Zahlen)
+  font-bold      -> font-semibold (Ueberschriften) oder font-medium (Logo/Labels)
+
+Betroffene Dateien: 16 Dateien
+Art: Nur Tailwind-Klassen-Austausch, keine Logik-Aenderungen
 ```
 
 ## Was sich NICHT aendert
+- Score-Ring-Zahlen (kleine inline-Scores) bleiben `font-bold` -- dort ist die Lesbarkeit wichtiger
 - Farben, Layout, Animationen bleiben identisch
-- Alle Funktionen bleiben unberuehrt
-- Schriftart (font-family) bleibt gleich
-- Nur das Gewicht (weight) wird reduziert
+- Keine Funktionsaenderungen
 

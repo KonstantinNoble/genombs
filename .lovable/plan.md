@@ -1,121 +1,88 @@
 
 
-# Design Redesign: Klassisches, technisches SaaS-Layout
+# Homepage Redesign: Dynamischer, mit URL-Vorschau
 
-## Ziel
-Das Design von "Neon-Gaming-Aesthetik" zu einem sauberen, professionellen SaaS-Look umbauen. Schaerfere Linien, weniger Glow-Effekte, strukturiertere Layouts, mehr technische Praezision. Farben (Schwarz + Orange) bleiben erhalten. Keine Funktionen werden veraendert.
+## Uebersicht
+Die Homepage wird dynamischer und interaktiver gestaltet. Das Herzstück: Ein URL-Eingabefeld direkt im Hero-Bereich, das wie ein echtes Analyse-Tool aussieht. Dazu kommen professionelle Animationen und ein verbessertes visuelles Layout.
 
-## Aenderungen im Detail
+## 1. Hero-Bereich: URL-Eingabe mit "Analyze"-Button
 
-### 1. CSS Design System ueberarbeiten (src/index.css)
+Der aktuelle Hero mit zwei generischen Buttons wird ersetzt durch ein prominentes URL-Eingabefeld:
 
-**Entfernen/Reduzieren:**
-- Neon-Glow-Effekte (neon-text, neon-card, neon-border, neon-pulse) werden durch dezente, scharfe Borders ersetzt
-- Morphende Blob-Animationen entfernen
-- Pulse-Glow-Effekte stark reduzieren
-- Glass-Card Blur-Effekte vereinfachen
+- Grosses, zentriertes Eingabefeld mit Placeholder "https://yourwebsite.com"
+- Daneben ein "Analyze" Button in Primary-Farbe
+- Das Ganze in einem dezenten Card-Container mit Border, der wie ein Terminal/Tool aussieht
+- Klick auf "Analyze":
+  - Eingeloggte User werden zu `/chat` weitergeleitet (URL wird als Query-Parameter mitgegeben)
+  - Nicht eingeloggte User werden zu `/auth` weitergeleitet (URL wird in Query-Parameter gespeichert)
+- Darunter bleibt der "View Pricing" Link als Text-Link erhalten
+- Der Subtitle-Text "20 free credits per day" bleibt
 
-**Hinzufuegen:**
-- Subtiles Dot-Grid-Hintergrundmuster (typisch SaaS)
-- Schaerfere 1px-Borders statt Glow-Schatten
-- Monospace-Font fuer technische Akzente (Zahlen, Labels, Badges)
-- Dezente Hover-States: nur Border-Farbwechsel, kein translateY
+## 2. Professionelle Animationen (CSS + Tailwind)
 
-### 2. Tailwind Config (tailwind.config.ts)
+Neue Animationen, die dem technischen SaaS-Stil entsprechen:
 
-- Monospace-Fontfamilie hinzufuegen (`font-mono`)
-- Neon-Shadows durch subtile, scharfe Shadows ersetzen
-- Border-Radius reduzieren: `--radius: 0.5rem` statt `0.75rem` (eckiger, technischer)
-- Weniger Animationen (Blob, Morph, Pulse entfernen)
+- **Counter-Animation**: Zahlen in der Stats-Sektion zaehlen von 0 hoch (z.B. "5" AI Models zaehlt von 0 auf 5)
+- **Staggered Fade-In**: Feature-Cards und Use-Case-Zeilen erscheinen nacheinander mit leichtem Versatz
+- **Typing-Effekt**: Im URL-Eingabefeld wird ein Beispiel-URL animiert eingetippt als Placeholder-Animation (z.B. "synvertas.com" wird Buchstabe fuer Buchstabe getippt)
+- **Border-Glow-Pulse**: Das URL-Eingabefeld hat einen subtilen, pulsierenden Border-Effekt in Primary-Farbe, der Aufmerksamkeit zieht
+- **Smooth Scroll-Reveal**: Die bestehenden scroll-reveal Animationen werden beibehalten und leicht verfeinert
 
-### 3. Homepage (src/pages/Home.tsx)
+## 3. Visuelles Layout-Update
 
-**Hero:**
-- Neon-Glow-Orbs im Hintergrund entfernen
-- Subtiles Dot-Grid-Pattern als Hintergrund
-- `neon-text` und `neon-pulse` Klassen von "website" entfernen, stattdessen einfache `text-primary` Hervorhebung
-- Buttons: scharf, flat, keine shadow-glow/shadow-neon
+- **Hero**: Mehr vertikaler Whitespace, groesserer Kontrast zwischen Headline und Sub-Copy
+- **Stats-Sektion**: Dezenter Hintergrund-Shift (leicht hellere Card-Farbe) fuer visuelle Trennung
+- **Feature Cards**: Subtiler Top-Accent-Stripe in Primary-Farbe (2px Linie oben an der Card)
+- **How it Works**: Die Step-Circles bekommen einen dezenten Puls-Effekt wenn sie in den Viewport scrollen
+- **Comparison Table**: Alternating Row-Tints fuer bessere Lesbarkeit
 
-**Stats-Sektion:**
-- `glow-line` Klasse entfernen
-- Zahlen in Monospace-Font darstellen
-- Scharfe Border-Top/Bottom statt primary/20 Glow
+## Technische Details
 
-**Feature Cards:**
-- `neon-card` durch saubere Cards mit 1px-Border ersetzen
-- Nummern (01, 02, 03) in Monospace statt neon-text
-- Hover: nur Border-Color-Change, kein translateY(-4px)
-
-**Use Cases:**
-- `neon-text` von Badges entfernen
-- Saubere Monospace-Labels
-
-**How it Works:**
-- `shadow-glow` und `animate-pulse-glow` von Step-Circles entfernen
-- Einfache Border-Circles, clean und statisch
-- Connecting Line ohne Glow-Shadow
-
-**Comparison Table:**
-- `neon-card` durch einfache bordered-table ersetzen
-- `neon-text` von Synvertas-Header entfernen
-
-### 4. Navbar (src/components/Navbar.tsx)
-
-- CTA-Button: Von `rounded-full` zu `rounded-lg` (eckiger, technischer)
-- Weniger Hover-Effekte (kein scale-105, kein shadow-lg)
-- Logo-Bereich: Border-Separator beibehalten (sieht bereits clean aus)
-
-### 5. Pricing Page (src/pages/Pricing.tsx)
-
-- Premium-Card: `bg-primary/5` beibehalten, aber scharfe 2px-Border statt Glow
-- Buttons: Flat, keine shadow-glow
-
-### 6. Button Component (src/components/ui/button.tsx)
-
-- `hover:shadow-glow` und `hover:scale-[1.02]` entfernen
-- Buttons flat und scharf: Hover nur als Farbwechsel, kein Scale-Effekt
-- `rounded-2xl` zu `rounded-lg` aendern (eckiger)
-
-### 7. Card Component (src/components/ui/card.tsx)
-
-- Kein visueller Change noetig, die Base-Card ist bereits clean
-
-### 8. Footer (src/components/Footer.tsx)
-
-- Bereits minimalistisch, keine Aenderungen noetig
-
----
-
-## Technischer Ueberblick
+### Geaenderte Dateien
 
 ```text
-Dateien die geaendert werden:
-+----------------------------------+---------------------------+
-| Datei                            | Art der Aenderung         |
-+----------------------------------+---------------------------+
-| src/index.css                    | Neon-Effekte entfernen,   |
-|                                  | Grid-Pattern hinzufuegen, |
-|                                  | Schaerfere Styles         |
-+----------------------------------+---------------------------+
-| tailwind.config.ts               | Radius, Shadows, Font     |
-+----------------------------------+---------------------------+
-| src/pages/Home.tsx               | Klassen austauschen       |
-+----------------------------------+---------------------------+
-| src/components/Navbar.tsx        | Button-Stil anpassen      |
-+----------------------------------+---------------------------+
-| src/components/ui/button.tsx     | Hover/Scale entfernen,    |
-|                                  | rounded-lg statt 2xl      |
-+----------------------------------+---------------------------+
-| src/pages/Pricing.tsx            | Minimale Klassen-Tweaks   |
-+----------------------------------+---------------------------+
++----------------------------------+------------------------------------------+
+| Datei                            | Aenderung                                |
++----------------------------------+------------------------------------------+
+| src/pages/Home.tsx               | URL-Input im Hero, Counter-Animation,    |
+|                                  | Typing-Effekt, Layout-Refinements        |
++----------------------------------+------------------------------------------+
+| src/index.css                    | Neue Keyframes: typing, counter-up,      |
+|                                  | border-pulse. Accent-stripe Utility.     |
++----------------------------------+------------------------------------------+
+| tailwind.config.ts               | Neue Animation-Definitionen              |
++----------------------------------+------------------------------------------+
 ```
 
-## Was sich NICHT aendert
-- Farben (Orange #F97316, Schwarz #0A0A0A) bleiben identisch
-- Alle Funktionen (Chat, Dashboard, Auth, Analyse) bleiben unberuehrt
-- Mobile Responsive-Verhalten bleibt gleich
-- Dashboard/Workspace Design wird nicht angefasst (nur Marketing-Seiten)
+### URL-Input Logik (Home.tsx)
 
-## Ergebnis
-Sauberes, eckiges, technisches SaaS-Design mit praezisen Linien, Monospace-Akzenten und minimalen Animationen. Professionell statt flashy.
+- Neuer State: `const [urlInput, setUrlInput] = useState("")`
+- Submit-Handler prueft ob User eingeloggt ist:
+  - Eingeloggt: `navigate("/chat?url=" + encodeURIComponent(urlInput))`
+  - Nicht eingeloggt: `navigate("/auth?redirect=" + encodeURIComponent("/chat?url=" + encodeURIComponent(urlInput)))`
+- Einfache URL-Validierung (muss mindestens einen Punkt enthalten)
+- Enter-Key triggert ebenfalls den Submit
+
+### Neue CSS-Animationen (index.css)
+
+- `@keyframes typing-cursor` - Blinkender Cursor im Eingabefeld
+- `@keyframes border-pulse` - Subtiles Pulsieren der Border-Farbe am URL-Input
+- `@keyframes count-up` - Wird via JS gesteuert (requestAnimationFrame) fuer die Zahlen-Animation
+- Accent-stripe Utility-Klasse fuer Feature-Cards
+
+### Counter-Animation (Home.tsx)
+
+- Custom Hook oder useEffect mit requestAnimationFrame
+- Zaehlt Zahlen in der Stats-Sektion von 0 zum Zielwert hoch
+- Startet erst wenn die Sektion in den Viewport scrollt (IntersectionObserver)
+- Dauer: ca. 1.5 Sekunden
+
+## Was sich NICHT aendert
+
+- Farben (Orange/Schwarz) bleiben identisch
+- Alle bestehenden Funktionen bleiben unberuehrt
+- Footer, Navbar, Chat, Dashboard - keine Aenderungen
+- Mobile-Verhalten bleibt erhalten
+- FAQ-Sektion bleibt unveraendert
+- Die bestehende Chat-Seite muss den `url` Query-Parameter auslesen (wird geprueft und ggf. angepasst)
 

@@ -1,94 +1,61 @@
 
+# Fix: GitHub-Analyse Verbesserungen
 
-# Schriftgewicht universell reduzieren
+## Probleme (3 Stück)
 
-## Ziel
-Alle verbleibenden `font-bold` und `font-extrabold` Klassen auf den oeffentlichen Seiten und in gemeinsam genutzten Komponenten reduzieren, um ein konsistent duenneres Schriftbild zu erreichen.
+1. Das GitHub-Eingabefeld ist nur im initialen Analyse-Formular sichtbar, nicht bei erneuten Analysen oder im Chat
+2. Es ist unlogisch, dass Website-URL UND GitHub-URL gleichzeitig erforderlich sind
+3. Wenn ein GitHub-Link im Chat gesendet wird, wird er ignoriert
 
-## Aenderungen nach Datei
+## Loesung
 
-### Oeffentliche Seiten (Marketing / Legal / Auth)
+### 1. GitHub-Link im Chat erkennen und verarbeiten
+- In der `handleSend`-Funktion (Chat.tsx) pruefen, ob die Nachricht einen GitHub-Link enthaelt (z.B. `https://github.com/user/repo`)
+- Wenn ja UND bereits ein Website-Profil existiert: Automatisch eine Deep Analysis mit dem GitHub-Repo nachtraeglich starten
+- Der Chat zeigt eine Bestaetigung: "Deep Analysis mit GitHub-Repo gestartet..."
 
-**src/pages/Contact.tsx**
-- H1 "Contact Us": `font-bold` zu `font-semibold`
+### 2. GitHub-Eingabefeld immer sichtbar machen
+- Wenn der User eine neue Analyse startet (InlineUrlPrompt), bleibt das GitHub-Feld wie bisher
+- Zusaetzlich: Im ChatInput-Bereich einen kleinen GitHub-Button hinzufuegen, der ein Eingabefeld oeffnet, um nachtraeglich ein Repo zu einer bestehenden Analyse hinzuzufuegen
 
-**src/pages/Imprint.tsx**
-- H1 "Imprint": `font-bold` zu `font-semibold`
+### 3. Website-URL weiterhin erforderlich lassen (mit Erklaerung)
+- Die Website-URL bleibt erforderlich, da die Analyse die LIVE-Website crawlt (Firecrawl + PageSpeed)
+- Der GitHub-Code ergaenzt diese Analyse um Source-Code-Insights
+- Einen kurzen Hilfetext hinzufuegen, der erklaert: "Die Website-URL wird fuer die Live-Analyse benoetigt, der GitHub-Link ergaenzt diese um Code-Qualitaet"
 
-**src/pages/PrivacyPolicy.tsx**
-- H1 "Privacy Policy": `font-bold` zu `font-semibold`
+---
 
-**src/pages/TermsOfService.tsx**
-- H1 "Terms of Service": `font-bold` zu `font-semibold`
-- "IMPORTANT DISCLAIMER", "IMPORTANT for Premium", "Important: Right of Withdrawal": `font-bold` zu `font-semibold`
+## Technische Aenderungen
 
-**src/pages/Auth.tsx**
-- CardTitle "Create Account / Welcome Back": `font-bold` zu `font-semibold`
-- DialogTitle "Check your Email": `font-bold` zu `font-semibold`
+### Chat.tsx
+- Neue Funktion `handleGithubDeepAnalysis(githubUrl: string)` die:
+  - Das bestehende eigene Website-Profil findet
+  - Die `fetch-github-repo` Edge Function aufruft
+  - Die Code-Analyse-Ergebnisse ins Profil schreibt
+  - Einen Summary-Chat generiert
+- In `handleSend`: Regex-Check auf GitHub-URLs, bei Match `handleGithubDeepAnalysis` aufrufen
 
-**src/pages/ResetPassword.tsx**
-- CardTitle: `font-bold` zu `font-semibold`
-- Countdown-Zahl: `font-bold` zu `font-semibold`
+### ChatInput.tsx
+- Kleiner GitHub-Button neben dem Send-Button (nur fuer Premium-User sichtbar)
+- Bei Klick: Popover mit Input-Feld fuer GitHub-URL
+- Bei Submit: Ruft die neue `handleGithubDeepAnalysis` Funktion auf
 
-**src/pages/UpdatePassword.tsx**
-- CardTitle: `font-bold` zu `font-semibold`
+### InlineUrlPrompt.tsx
+- Hilfetext ergaenzen: "Website-URL = Live-Analyse, GitHub = Code-Qualitaet (ergaenzend)"
+- Keine strukturellen Aenderungen noetig, das Feld existiert bereits
 
-**src/pages/Profile.tsx**
-- H1 "Profile Settings": `font-bold` zu `font-semibold`
+### Neue Edge Function oder bestehende erweitern
+- Option A: Eine neue "add-github-analysis" Edge Function erstellen
+  - Nimmt `profileId` + `githubRepoUrl`
+  - Ruft `fetch-github-repo` auf
+  - Fuehrt AI-Analyse nur auf den Code durch
+  - Speichert `code_analysis` im bestehenden Profil
+- Option B: Die bestehende `analyze-website` erweitern mit einem `githubOnly`-Modus
 
-### Gemeinsame Komponenten
+Option A ist sauberer und wird bevorzugt.
 
-**src/components/Footer.tsx**
-- Logo "Synvertas": `font-bold` zu `font-medium`
-
-**src/components/MobileBlocker.tsx**
-- H1 "Desktop Only": `font-bold` zu `font-semibold`
-
-**src/components/genome/FAQSection.tsx**
-- H2 Titel: `font-extrabold` zu `font-semibold`
-
-**src/components/genome/WinLossChart.tsx**
-- Alle 4 Stat-Zahlen (Win Rate, Total Deals, Won, Lost): `font-extrabold` zu `font-bold`
-
-**src/components/genome/StatCard.tsx**
-- Wert-Anzeige: `font-bold` zu `font-semibold`
-
-**src/components/genome/PerformanceChart.tsx**
-- Score-Anzeige: `font-bold` zu `font-semibold`
-
-### Homepage verbleibende Stellen (src/pages/Home.tsx)
-
-- Stats-Zahlen (5 AI Models, 7 Categories, <60s, Incl.): `font-bold` zu `font-semibold`
-- Feature-Nummern (01, 02, 03): `font-bold` zu `font-semibold`
-
-### Workspace-Komponenten (dezente Reduktion)
-
-**src/components/dashboard/AnalysisTabs.tsx**
-- Profil-Namen (h4): `font-bold` zu `font-semibold`
-
-**src/components/dashboard/PageSpeedCard.tsx**
-- Site-Name (h4): `font-bold` zu `font-semibold`
-
-**src/components/dashboard/ComparisonTable.tsx**
-- Score-Wert: `font-bold` zu `font-semibold`
-
-**src/components/chat/WebsiteProfileCard.tsx**
-- Profil-Name (h3): `font-bold` zu `font-semibold`
-- Bar-Wert: `font-bold` zu `font-semibold`
-
-## Technischer Ueberblick
-
-```text
-Regel:
-  font-extrabold -> font-semibold (Ueberschriften) oder font-bold (Zahlen)
-  font-bold      -> font-semibold (Ueberschriften) oder font-medium (Logo/Labels)
-
-Betroffene Dateien: 16 Dateien
-Art: Nur Tailwind-Klassen-Austausch, keine Logik-Aenderungen
-```
-
-## Was sich NICHT aendert
-- Score-Ring-Zahlen (kleine inline-Scores) bleiben `font-bold` -- dort ist die Lesbarkeit wichtiger
-- Farben, Layout, Animationen bleiben identisch
-- Keine Funktionsaenderungen
-
+### Zusammenfassung der Dateien
+- `src/pages/Chat.tsx` - GitHub-Link-Erkennung im Chat + Deep Analysis Handler
+- `src/components/chat/ChatInput.tsx` - GitHub-Button fuer nachtraegliche Analyse
+- `src/components/chat/InlineUrlPrompt.tsx` - Hilfetext ergaenzen
+- `supabase/functions/add-github-analysis/index.ts` - Neue Edge Function fuer nachtraegliche Code-Analyse

@@ -127,7 +127,7 @@ const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-semibold tracking-tight text-foreground">
+                <span className="text-lg font-medium tracking-tight text-foreground">
                   Synvertas
                 </span>
               </div>
@@ -147,15 +147,15 @@ const Navbar = () => {
             {user ? (
                 <Link 
                 to="/profile"
-                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
-                Profile
+              Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             ) : (
               <Link 
                 to="/auth"
-                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -209,7 +209,7 @@ const Navbar = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-2xl font-semibold tracking-tight text-foreground">
+              <span className="text-2xl font-medium tracking-tight text-foreground">
                 Synvertas
               </span>
             </div>
@@ -244,7 +244,7 @@ const Navbar = () => {
                 <Link 
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
+                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-normal flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
                 >
                   Profile
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -253,7 +253,7 @@ const Navbar = () => {
                 <Link 
                   to="/auth"
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-medium flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
+                  className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-normal flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
                 >
                   Get Started
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -285,7 +285,7 @@ const MobileNavLink = ({
   return (
     <Link
       to={to}
-      className={`text-2xl font-medium py-4 px-6 rounded-xl transition-all duration-200 animate-fade-in min-h-[56px] flex items-center justify-center ${
+      className={`text-2xl font-normal py-4 px-6 rounded-xl transition-all duration-200 animate-fade-in min-h-[56px] flex items-center justify-center ${
         isActive 
           ? "text-foreground bg-muted/50" 
           : "text-muted-foreground hover:text-foreground hover:bg-muted/30"

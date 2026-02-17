@@ -300,7 +300,7 @@ const Home = () => {
       {/* Hero */}
       <section className="relative flex items-center justify-center py-32 sm:py-40 overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.08] mb-6 animate-fade-in">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-[1.08] mb-6 animate-fade-in">
             What's holding your <span className="text-primary">website</span> back?
           </h1>
           <p
@@ -363,22 +363,22 @@ const Home = () => {
             {/* Counter stats */}
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border">
               <div ref={counter1.ref}>
-                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono animate-count-fade">{counter1.count}</p>
+                <p className="text-3xl sm:text-4xl font-bold text-primary font-mono animate-count-fade">{counter1.count}</p>
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">AI Models</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.1s" }}>
               <div ref={counter2.ref}>
-                <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono animate-count-fade">{counter2.count}</p>
+                <p className="text-3xl sm:text-4xl font-bold text-primary font-mono animate-count-fade">{counter2.count}</p>
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Score Categories</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal md:border-r md:border-border" style={{ transitionDelay: "0.2s" }}>
-              <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">&lt;60s</p>
+              <p className="text-3xl sm:text-4xl font-bold text-primary font-mono">&lt;60s</p>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Per Scan</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal" style={{ transitionDelay: "0.3s" }}>
-              <p className="text-3xl sm:text-4xl font-extrabold text-primary font-mono">Incl.</p>
+              <p className="text-3xl sm:text-4xl font-bold text-primary font-mono">Incl.</p>
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed Data</p>
             </div>
           </div>
@@ -389,7 +389,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 relative">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">What you get</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">What you get</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Scores, comparisons, and a concrete fix list for your website.
             </p>
@@ -401,8 +401,8 @@ const Home = () => {
                 className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover:border-primary/40 transition-colors duration-200"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
-                <span className="text-4xl font-extrabold text-primary font-mono leading-none block">{feature.num}</span>
-                <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
+                <span className="text-4xl font-bold text-primary font-mono leading-none block">{feature.num}</span>
+                <h3 className="text-xl font-medium text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             ))}
@@ -414,7 +414,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border relative">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">Use cases</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">Use cases</h2>
           </div>
           <div className="space-y-0">
             {useCases.map((uc, i) => (
@@ -431,7 +431,7 @@ const Home = () => {
                   </span>
                 </div>
                 <div className="md:w-3/4 space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">{uc.title}</h3>
+                  <h3 className="text-xl font-medium text-foreground">{uc.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{uc.description}</p>
                 </div>
               </div>
@@ -444,7 +444,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">How it works</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">How it works</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">Three steps. No setup required.</p>
           </div>
           {/* Horizontal timeline */}
@@ -458,9 +458,9 @@ const Home = () => {
                 style={{ transitionDelay: `${i * 0.15}s` }}
               >
                 <div className="step-circle-pulse mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10">
-                  <span className="text-lg font-bold text-primary font-mono">{step.step}</span>
+                  <span className="text-lg font-medium text-primary font-mono">{step.step}</span>
                 </div>
-                <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
+                <h3 className="text-xl font-medium text-foreground">{step.title}</h3>
                 <p className="text-muted-foreground">{step.description}</p>
               </div>
             ))}
@@ -472,7 +472,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-14 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-5">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">
               Compared to traditional consulting
             </h2>
           </div>
@@ -482,7 +482,7 @@ const Home = () => {
                 <thead>
                   <tr className="border-b border-border bg-muted/30">
                     <th className="text-left py-4 px-5 text-sm font-medium text-muted-foreground">Feature</th>
-                    <th className="text-center py-4 px-5 text-sm font-bold text-primary font-mono">Synvertas</th>
+                    <th className="text-center py-4 px-5 text-sm font-medium text-primary font-mono">Synvertas</th>
                     <th className="text-center py-4 px-5 text-sm font-medium text-muted-foreground">Consultant</th>
                   </tr>
                 </thead>
@@ -523,7 +523,7 @@ const Home = () => {
       {/* CTA */}
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-8">
             See what your website scores
           </h2>
           <Button

@@ -176,7 +176,7 @@ const ResetPassword = () => {
             {countdown > 0 && (
               <div className="bg-muted rounded-lg p-4">
                 <p className="text-sm text-muted-foreground mb-1">Time remaining</p>
-                <p className="text-2xl font-mono font-bold text-foreground">
+                <p className="text-2xl font-mono font-semibold text-foreground">
                   {formatCountdown(countdown)}
                 </p>
               </div>
@@ -313,7 +313,7 @@ const ResetPassword = () => {
 
         <Card className="w-full max-w-md shadow-2xl relative z-10 animate-scale-in border-border/50">
           <CardHeader className="space-y-3">
-            <CardTitle className="text-3xl font-bold text-center">
+            <CardTitle className="text-3xl font-semibold text-center">
               {getTitle()}
             </CardTitle>
             <CardDescription className="text-center text-base">

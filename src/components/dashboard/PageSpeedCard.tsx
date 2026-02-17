@@ -65,7 +65,7 @@ const PageSpeedCard = ({ data, siteName }: PageSpeedCardProps) => {
   return (
     <Card className="border-border bg-card transition-all duration-200 hover:border-primary/20">
       <CardContent className="p-4 space-y-4">
-        <h4 className="text-base font-bold text-foreground">{siteName}</h4>
+        <h4 className="text-base font-semibold text-foreground">{siteName}</h4>
 
         <div className="grid grid-cols-4 gap-3">
           <ScoreCircle score={data.performance} label="Performance" />

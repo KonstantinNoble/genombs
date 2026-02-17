@@ -270,7 +270,7 @@ const Auth = () => {
 
         <Card className="w-full max-w-md shadow-2xl relative z-10 animate-scale-in border-border/50">
           <CardHeader className="space-y-3">
-            <CardTitle className="text-3xl font-bold text-center">
+            <CardTitle className="text-3xl font-semibold text-center">
               {isSignUp ? "Create Account" : "Welcome Back"}
             </CardTitle>
             <CardDescription className="text-center text-base space-y-2">
@@ -468,7 +468,7 @@ const Auth = () => {
             <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
               <Mail className="w-8 h-8 text-primary" />
             </div>
-            <DialogTitle className="text-2xl font-bold">Check your Email</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">Check your Email</DialogTitle>
             <DialogDescription className="text-base space-y-4">
               <p>
                 We've sent a confirmation link to{" "}

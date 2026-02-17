@@ -60,7 +60,7 @@ const ComparisonTable = ({ profiles }: ComparisonTableProps) => {
                       style={{ width: `${ownScore}%` }}
                     />
                   </div>
-                   <span className="text-sm font-bold text-foreground w-8 text-right">
+                   <span className="text-sm font-semibold text-foreground w-8 text-right">
                      {ownScore}
                    </span>
                 </div>

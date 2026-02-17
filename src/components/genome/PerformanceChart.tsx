@@ -100,7 +100,7 @@ const PerformanceChart = ({ scores, industryAverage, companyName, scoreInsights,
                     {isAbove ? "+" : ""}{diff} vs avg
                   </p>
                 </div>
-                <p className="text-2xl font-bold text-foreground mb-1">{d.score}</p>
+                <p className="text-2xl font-semibold text-foreground mb-1">{d.score}</p>
                 {scoreInsight && (
                   <div className="space-y-2">
                     <p className="text-sm text-foreground/70 leading-relaxed">{scoreInsight.insight}</p>

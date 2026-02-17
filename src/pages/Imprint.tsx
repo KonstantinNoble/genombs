@@ -13,7 +13,7 @@ const Imprint = () => {
         </Link>
 
         <article className="max-w-4xl mx-auto prose prose-invert">
-          <h1 className="text-4xl font-bold mb-8">Imprint</h1>
+          <h1 className="text-4xl font-semibold mb-8">Imprint</h1>
           
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Information according to § 5 TMG</h2>

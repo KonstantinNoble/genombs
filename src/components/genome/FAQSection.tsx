@@ -18,7 +18,7 @@ interface FAQSectionProps {
 const FAQSection = ({ title = "Frequently Asked Questions", items }: FAQSectionProps) => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground text-center">
+      <h2 className="text-2xl sm:text-3xl font-semibold text-foreground text-center">
         {title}
       </h2>
       <Accordion type="single" collapsible className="w-full">

@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="max-w-lg mx-auto">
           {/* Logo */}
           <div className="flex items-center justify-center mb-10">
-            <span className="font-sans font-bold text-2xl text-foreground">Synvertas</span>
+            <span className="font-sans font-medium text-2xl text-foreground">Synvertas</span>
           </div>
           
           {/* Links Grid */}

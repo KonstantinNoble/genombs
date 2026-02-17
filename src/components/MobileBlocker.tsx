@@ -12,7 +12,7 @@ const MobileBlocker = () => {
       <div className="flex flex-col items-center gap-6 text-center max-w-sm">
         <img src={synvertasLogo} alt="Synvertas" className="h-8 object-contain" />
         <Monitor className="h-16 w-16 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">Desktop Only</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Desktop Only</h1>
         <p className="text-muted-foreground text-base leading-relaxed">
           The analysis workspace is optimized for desktop use. Please open this page on a computer for the best experience.
         </p>

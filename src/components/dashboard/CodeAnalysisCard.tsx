@@ -44,7 +44,7 @@ const ScoreRing = ({ score, size = 48, label }: { score: number; size?: number; 
           {score}
         </span>
       </div>
-      {label && <span className="text-[10px] text-muted-foreground text-center leading-tight">{label}</span>}
+      {label && <span className="text-xs text-muted-foreground text-center leading-tight">{label}</span>}
     </div>
   );
 };
@@ -91,7 +91,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
               <ScoreRing score={overallScore} size={56} />
               <div>
                 <h4 className="text-base font-semibold text-foreground">Code Quality</h4>
-                <p className="text-xs text-muted-foreground">Deep Analysis Score</p>
+                <p className="text-sm text-muted-foreground">Deep Analysis Score</p>
               </div>
             </div>
             {githubUrl && (
@@ -116,7 +116,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {techStack.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">Tech Stack</p>
+            <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Tech Stack</p>
             <div className="flex flex-wrap gap-1.5">
               {techStack.map((t) => (
                 <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
@@ -138,7 +138,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
                     {strengths.slice(0, 5).map((s) => (
                       <div key={s} className="flex items-start gap-1.5">
                         <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
-                        <span className="text-xs text-foreground leading-tight">{s}</span>
+                        <span className="text-sm text-foreground leading-tight">{s}</span>
                       </div>
                     ))}
                   </div>
@@ -151,7 +151,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
                     {weaknesses.slice(0, 5).map((w) => (
                       <div key={w} className="flex items-start gap-1.5">
                         <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
-                        <span className="text-xs text-foreground leading-tight">{w}</span>
+                        <span className="text-sm text-foreground leading-tight">{w}</span>
                       </div>
                     ))}
                   </div>
@@ -166,12 +166,12 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {securityIssues.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">Security Issues</p>
+            <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Security Issues</p>
             <div className="space-y-1.5">
               {securityIssues.map((issue) => (
                 <div key={issue} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
-                  <span className="text-xs text-foreground leading-tight">{issue}</span>
+                  <span className="text-sm text-foreground leading-tight">{issue}</span>
                 </div>
               ))}
             </div>
@@ -183,12 +183,12 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {seoIssues.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">SEO Code Issues</p>
+            <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">SEO Code Issues</p>
             <div className="space-y-1.5">
               {seoIssues.map((issue) => (
                 <div key={issue} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-primary shrink-0" />
-                  <span className="text-xs text-foreground leading-tight">{issue}</span>
+                  <span className="text-sm text-foreground leading-tight">{issue}</span>
                 </div>
               ))}
             </div>
@@ -200,12 +200,12 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {recommendations.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">Recommendations</p>
+            <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Recommendations</p>
             <div className="space-y-1.5">
               {recommendations.slice(0, 5).map((r) => (
                 <div key={r} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-primary shrink-0" />
-                  <span className="text-xs text-foreground leading-tight">{r}</span>
+                  <span className="text-sm text-foreground leading-tight">{r}</span>
                 </div>
               ))}
             </div>

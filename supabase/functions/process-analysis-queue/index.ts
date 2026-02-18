@@ -170,19 +170,44 @@ If Google PageSpeed data is provided in the context, use it to anchor your score
 - mobileUsability: Factor in Performance score and Core Web Vitals (LCP < 2.5s = good, > 4s = poor)
 - Reference these objective metrics in the strengths/weaknesses where relevant
 
-If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key:
+If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key with this exact structure:
 {
   "codeAnalysis": {
-    "codeQuality": N,
-    "techStack": ["React", "Tailwind", "TypeScript"],
-    "securityFlags": ["No CSP header configured", "API keys in client code"],
-    "performanceFlags": ["Large bundle size", "No code splitting"]
+    "summary": "Brief overall assessment of the codebase (2-3 sentences focusing on the most critical findings)",
+    "techStack": ["detected technologies and frameworks"],
+    "codeQuality": {
+      "score": 0-100,
+      "strengths": ["specific positive findings with file references where applicable"],
+      "weaknesses": ["specific issues with file references where applicable"]
+    },
+    "security": {
+      "score": 0-100,
+      "issues": ["specific security concerns found in the code"],
+      "recommendations": ["actionable fixes for each issue"]
+    },
+    "performance": {
+      "score": 0-100,
+      "issues": ["specific performance anti-patterns found"],
+      "recommendations": ["concrete optimization suggestions"]
+    },
+    "accessibility": {
+      "score": 0-100,
+      "issues": ["specific accessibility problems found in the code"],
+      "recommendations": ["actionable accessibility improvements"]
+    },
+    "maintainability": {
+      "score": 0-100,
+      "issues": ["specific maintainability concerns"],
+      "recommendations": ["concrete refactoring suggestions"]
+    },
+    "seo": {
+      "score": 0-100,
+      "codeIssues": ["SEO-related code issues found"],
+      "recommendations": ["specific SEO improvements to implement in code"]
+    }
   }
 }
-- "codeQuality": 0-100 (code structure, readability, best practices, type safety, component organization)
-- "techStack": detected technologies and frameworks from package.json and code
-- "securityFlags": potential security issues found in the source code (env vars exposure, missing headers, etc.)
-- "performanceFlags": code-level performance concerns (bundle size, missing lazy loading, unoptimized imports, etc.)
+Pay special attention to Security, Performance, Accessibility, Maintainability, and SEO - each MUST have a realistic score between 0-100.
 Only include "codeAnalysis" if source code data is present in the input.
 
 IMPORTANT: When technical data shows "MISSING", reflect this proportionally in the scores and mention it in weaknesses. Missing elements are real weaknesses even if some may be injected dynamically. Score based on what is actually verifiable in the provided data.
@@ -431,6 +456,58 @@ async function fetchPageSpeedData(url: string, apiKey: string): Promise<PageSpee
     console.warn("PageSpeed fetch failed (non-blocking):", err);
     return null;
   }
+}
+
+// ─── Code Analysis Validation ───
+
+function validateCodeAnalysis(raw: unknown): Record<string, unknown> {
+  const obj = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
+  const clamp = (v: unknown, fallback = 50): number => {
+    const n = Number(v);
+    return isNaN(n) ? fallback : Math.max(0, Math.min(100, Math.round(n)));
+  };
+  const ensureArr = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((i) => typeof i === "string") : [];
+  const ensureSub = (o: unknown) => {
+    const s = (typeof o === "object" && o !== null ? o : {}) as Record<string, unknown>;
+    return {
+      score: clamp(s.score),
+      issues: ensureArr(s.issues),
+      recommendations: ensureArr(s.recommendations),
+    };
+  };
+
+  const cq = (typeof obj.codeQuality === "object" && obj.codeQuality !== null
+    ? obj.codeQuality
+    : {}) as Record<string, unknown>;
+
+  return {
+    summary: typeof obj.summary === "string" ? obj.summary : "",
+    techStack: ensureArr(obj.techStack),
+    codeQuality: {
+      score: clamp(cq.score ?? obj.codeQuality),
+      strengths: ensureArr(cq.strengths),
+      weaknesses: ensureArr(cq.weaknesses),
+    },
+    security: ensureSub(obj.security),
+    performance: ensureSub(obj.performance),
+    accessibility: ensureSub(obj.accessibility),
+    maintainability: ensureSub(obj.maintainability),
+    seo: {
+      score: clamp((obj.seo as Record<string, unknown>)?.score),
+      codeIssues: ensureArr(
+        (obj.seo as Record<string, unknown>)?.codeIssues ??
+        (obj.seo as Record<string, unknown>)?.issues
+      ),
+      recommendations: ensureArr((obj.seo as Record<string, unknown>)?.recommendations),
+    },
+    strengths: ensureArr(obj.strengths ?? cq.strengths),
+    weaknesses: ensureArr(obj.weaknesses ?? cq.weaknesses),
+    securityIssues: ensureArr(
+      obj.securityIssues ?? (obj.security as Record<string, unknown>)?.issues
+    ),
+    recommendations: ensureArr(obj.recommendations),
+  };
 }
 
 // ─── Queue Processing ───
@@ -694,7 +771,7 @@ async function processQueue() {
 
       // Store code analysis results if GitHub data was used
       if (githubData && analysisResult.codeAnalysis) {
-        updatePayload.code_analysis = analysisResult.codeAnalysis;
+        updatePayload.code_analysis = validateCodeAnalysis(analysisResult.codeAnalysis);
       }
 
       await supabaseAdmin

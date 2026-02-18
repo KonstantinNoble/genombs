@@ -4,8 +4,10 @@ import { CheckCircle2, XCircle, Shield, Zap, Eye, Wrench, Search, ExternalLink }
 import type { CodeAnalysis, CodeAnalysisSubCategory } from "@/types/chat";
 
 /** Safely extract a numeric score from a field that may be a number or sub-category object */
+const safeNum = (v: unknown): number => { const n = Number(v); return isNaN(n) ? 0 : Math.round(n); };
+
 const extractScore = (val: number | CodeAnalysisSubCategory | undefined | null): number =>
-  typeof val === "object" && val !== null ? (val as CodeAnalysisSubCategory).score ?? 0 : (val as number) ?? 0;
+  typeof val === "object" && val !== null ? safeNum((val as CodeAnalysisSubCategory).score) : safeNum(val);
 
 const extractIssues = (val: number | CodeAnalysisSubCategory | undefined | null): string[] =>
   typeof val === "object" && val !== null ? (val as CodeAnalysisSubCategory).issues ?? [] : [];
@@ -50,8 +52,8 @@ const ScoreRing = ({ score, size = 48, label }: { score: number; size?: number; 
 const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) => {
   const ca = codeAnalysis;
   const overallScore = typeof ca.codeQuality === "object" && ca.codeQuality !== null
-    ? (ca.codeQuality as any).score ?? 0
-    : (ca.codeQuality as number) ?? 0;
+    ? safeNum((ca.codeQuality as any).score)
+    : safeNum(ca.codeQuality);
 
   const subScores = [
     { label: "Security", score: extractScore(ca.security), icon: Shield },
@@ -60,9 +62,9 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
     { label: "Maintainability", score: extractScore(ca.maintainability), icon: Wrench },
   ];
 
-  const seoScore = ca.seo?.score ?? 0;
-  const strengths = (typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).strengths : null) ?? ca.strengths ?? [];
-  const weaknesses = (typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).weaknesses : null) ?? ca.weaknesses ?? [];
+  const seoScore = safeNum(ca.seo?.score);
+  const strengths = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).strengths : null) ?? ca.strengths ?? []).filter((s: unknown) => typeof s === "string");
+  const weaknesses = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).weaknesses : null) ?? ca.weaknesses ?? []).filter((w: unknown) => typeof w === "string");
   // Aggregate security issues from sub-category object + legacy flat array
   const securityIssues = [
     ...extractIssues(ca.security),

@@ -66,7 +66,7 @@ Return a structured JSON analysis with exactly this format:
   }
 }
 
-Return ONLY the JSON object, no markdown formatting.`;
+IMPORTANT: Return ONLY valid JSON. No markdown, no explanation, no text before or after. Start with { and end with }.`;
 }
 
 // ─── Model Router (mirrors process-analysis-queue) ───
@@ -74,15 +74,30 @@ Return ONLY the JSON object, no markdown formatting.`;
 type ModelId = "gemini-flash" | "gpt-mini" | "gpt" | "claude-sonnet" | "perplexity";
 
 function parseJsonResponse(text: string): unknown {
+  // 1. Direct parse
   try { return JSON.parse(text); } catch { /* continue */ }
-  const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
-  if (jsonMatch) { try { return JSON.parse(jsonMatch[1]); } catch { /* continue */ } }
+
+  // 2. Markdown code block extraction
+  const jsonMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (jsonMatch) { try { return JSON.parse(jsonMatch[1].trim()); } catch { /* continue */ } }
+
+  // 3. Extract between first { and last }
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
   if (firstBrace !== -1 && lastBrace > firstBrace) {
-    try { return JSON.parse(text.substring(firstBrace, lastBrace + 1)); } catch { /* continue */ }
+    const extracted = text.substring(firstBrace, lastBrace + 1);
+    try { return JSON.parse(extracted); } catch { /* continue */ }
+
+    // 4. Try fixing trailing commas (common AI mistake)
+    const cleaned = extracted
+      .replace(/,\s*([\]}])/g, "$1")           // trailing commas
+      .replace(/(['"])?(\w+)(['"])?\s*:/g, '"$2":') // unquoted keys
+      .replace(/:\s*'([^']*)'/g, ': "$1"');     // single-quoted values
+    try { return JSON.parse(cleaned); } catch { /* continue */ }
   }
-  console.error("Failed to parse AI response. First 500 chars:", text.substring(0, 500));
+
+  console.error("Failed to parse AI response. Length:", text.length, "First 1000 chars:", text.substring(0, 1000));
+  console.error("Last 500 chars:", text.substring(Math.max(0, text.length - 500)));
   throw new Error("Could not parse AI response as JSON");
 }
 
@@ -360,8 +375,25 @@ serve(async (req) => {
 
     const aiPrompt = buildCodeAnalysisPrompt(repoData.repo, profile.url, repoData.fileTree, codeContext);
 
-    // 3. Call AI via model router + validate
-    const rawAnalysis = await routeAnalysis(selectedModel, aiPrompt);
+    // 3. Call AI via model router + validate (with retry)
+    let rawAnalysis: unknown;
+    try {
+      rawAnalysis = await routeAnalysis(selectedModel, aiPrompt);
+    } catch (firstErr) {
+      console.warn(`First AI attempt failed (${selectedModel}):`, firstErr);
+      // Retry once with gemini-flash as fallback (it has responseMimeType: "application/json")
+      if (selectedModel !== "gemini-flash") {
+        const geminiKey = Deno.env.get("GEMINI_API_KEY");
+        if (geminiKey) {
+          console.log("Retrying with gemini-flash as fallback...");
+          rawAnalysis = await analyzeWithGemini(aiPrompt, geminiKey);
+        } else {
+          throw firstErr;
+        }
+      } else {
+        throw firstErr;
+      }
+    }
     const codeAnalysis = validateCodeAnalysis(rawAnalysis);
 
     // 4. Save to profile

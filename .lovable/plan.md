@@ -1,105 +1,112 @@
 
-# Code Analysis fuer alle User freischalten (mit Credit-Kosten)
 
-## Credit-Kosten-Empfehlung
+# Code Analysis Bugs beheben
 
-Die URL-Analyse kostet 5-10 Credits je nach Modell. Da die Code Analysis aufwaendiger ist (GitHub-Repo abrufen + AI-Analyse), empfehle ich folgende Kosten:
+## Bug 1 (Kosmetisch): Code Quality Score gleich gross wie Sub-Scores
 
-| Modell | URL-Analyse | Code Analysis (neu) |
-|--------|------------|---------------------|
-| Gemini Flash | 5 | 8 |
-| GPT Mini | 5 | 8 |
-| GPT | 8 | 12 |
-| Claude Sonnet | 8 | 12 |
-| Perplexity | 10 | 15 |
+Der grosse Score-Ring fuer "Code Quality" ist nicht falsch, aber irrefuehrend weil er groesser dargestellt wird als die anderen Scores. 
 
-Das macht die Code Analysis ca. 50-60% teurer als die URL-Analyse, was den hoeheren Aufwand widerspiegelt, aber fuer Free-User (20 Credits/Tag) trotzdem mindestens 2x pro Tag nutzbar bleibt.
+**Loesung:** Code Quality wird in die Sub-Scores-Reihe aufgenommen und hat die gleiche Groesse (42px statt 56px). Der separate grosse Ring und der Header-Bereich werden entfernt -- alle 6 Scores stehen gleichberechtigt nebeneinander.
 
-## Aenderungen
+**Datei:** `src/components/dashboard/CodeAnalysisCard.tsx`
 
-### 1. `src/lib/constants.ts`
-- Neue Kategorie `codeAnalysis` in `MODEL_CREDIT_COSTS` hinzufuegen mit den oben genannten Werten
-- Neue Funktion `getCodeAnalysisCreditCost(modelId)` exportieren
+## Bug 2 (Echt): SEO Score ist immer 0
 
-### 2. `supabase/functions/add-github-analysis/index.ts`
-- Premium-Check (Zeilen 252-264) durch Credit-Check ersetzen:
-  - `credits_used` und `daily_credits_limit` aus `user_credits` lesen
-  - Verbleibende Credits berechnen
-  - Credit-Kosten fuer das gewaehlte Modell pruefen (Mapping im Edge Function Code)
-  - Bei nicht genuegend Credits: Fehler 403 mit klarer Meldung
-  - Nach erfolgreicher Analyse: `credits_used` um die Kosten erhoehen via UPDATE
+Der AI-Prompt fordert fuer SEO kein `score`-Feld an. Das Frontend liest `ca.seo?.score`, bekommt `undefined` und zeigt 0.
 
-### 3. `src/components/chat/ChatInput.tsx`
-- Zeile 304: `{isPremium && (` entfernen -- GitHub-Button fuer alle User sichtbar machen
-- Credit-Check hinzufuegen: Button zeigt Tooltip wenn nicht genug Credits vorhanden
-- Credit-Kosten-Anzeige im Popover (z.B. "Costs 8 credits")
+**Loesung:** Im Prompt `"score": 0-100` zum SEO-Objekt hinzufuegen.
 
-### 4. `src/pages/Chat.tsx`
-- Zeile 390: `&& isPremium` Bedingung entfernen -- GitHub-URLs im Chat werden fuer alle User erkannt
-- Vor dem Aufruf von `handleGithubDeepAnalysis` pruefen ob genuegend Credits vorhanden sind
+**Datei:** `supabase/functions/add-github-analysis/index.ts` (Zeilen 62-65)
 
-### 5. `src/components/dashboard/AnalysisTabs.tsx`
-- Der "Start Code Analysis" Button im Platzhalter funktioniert bereits ueber `onOpenGithubDialog` -- keine Aenderung noetig, da der GitHub-Dialog jetzt fuer alle User offen ist
+## Bug 3 (Echt): Keine Validierung der AI-Antwort
+
+Die AI-Antwort wird direkt in die Datenbank geschrieben ohne zu pruefen ob Scores numerisch sind, Felder fehlen oder das Format stimmt.
+
+**Loesung:** Eine `validateCodeAnalysis()`-Funktion einbauen, die:
+- Alle Scores auf Zahlen 0-100 clamped (fehlende Werte bekommen Default 50)
+- Arrays validiert (nicht-String-Eintraege entfernt)
+- Fehlende Objekte mit leeren Defaults auffuellt
+
+**Datei:** `supabase/functions/add-github-analysis/index.ts` (vor Zeile 314)
 
 ## Technische Details
 
-### Credit-Kosten im Edge Function
+### CodeAnalysisCard.tsx -- Alle Scores gleich gross
 
 ```typescript
-const CODE_ANALYSIS_COSTS: Record<string, number> = {
-  "gemini-flash": 8,
-  "gpt-mini": 8,
-  "gpt": 12,
-  "claude-sonnet": 12,
-  "perplexity": 15,
-};
+// Code Quality wird Teil der subScores-Reihe
+const subScores = [
+  { label: "Code Quality", score: overallScore },
+  { label: "Security", score: extractScore(ca.security) },
+  { label: "Performance", score: extractScore(ca.performance) },
+  { label: "Accessibility", score: extractScore(ca.accessibility) },
+  { label: "Maintainability", score: extractScore(ca.maintainability) },
+  { label: "SEO", score: seoScore },
+];
 
-// Ersetze den Premium-Check durch:
-const { data: credits } = await supabase
-  .from("user_credits")
-  .select("credits_used, daily_credits_limit")
-  .eq("user_id", user.id)
-  .single();
-
-const remaining = (credits?.daily_credits_limit ?? 20) - (credits?.credits_used ?? 0);
-const cost = CODE_ANALYSIS_COSTS[selectedModel] ?? 8;
-
-if (remaining < cost) {
-  return new Response(
-    JSON.stringify({ error: `Not enough credits. Need ${cost}, have ${remaining}.` }),
-    { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-  );
-}
-
-// ... nach erfolgreicher Analyse:
-await supabase
-  .from("user_credits")
-  .update({ credits_used: (credits?.credits_used ?? 0) + cost })
-  .eq("user_id", user.id);
+// Header-Bereich wird vereinfacht (kein grosser Ring mehr)
+// Alle Scores werden als gleichgrosse Ringe (size=42) in einer Reihe dargestellt
 ```
 
-### Constants Update
+### add-github-analysis/index.ts -- SEO-Score im Prompt
 
-```typescript
-export const MODEL_CREDIT_COSTS = {
-  chat: { ... },
-  analysis: { ... },
-  codeAnalysis: {
-    "gemini-flash": 8,
-    "gpt-mini": 8,
-    "gpt": 12,
-    "claude-sonnet": 12,
-    "perplexity": 15,
-  },
-} as const;
-
-export function getCodeAnalysisCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 8;
+```json
+"seo": {
+  "score": 0-100,
+  "codeIssues": ["SEO-related code issues found"],
+  "recommendations": ["specific SEO improvements to implement in code"]
 }
 ```
 
-### Betroffene Dateien
-1. `src/lib/constants.ts` -- Neue Credit-Kosten
-2. `supabase/functions/add-github-analysis/index.ts` -- Premium-Gate durch Credit-System ersetzen
-3. `src/components/chat/ChatInput.tsx` -- GitHub-Button fuer alle sichtbar
-4. `src/pages/Chat.tsx` -- Premium-Bedingung bei GitHub-URL-Erkennung entfernen
+### add-github-analysis/index.ts -- Validierungsfunktion
+
+```typescript
+function validateCodeAnalysis(raw: any): Record<string, unknown> {
+  const clamp = (v: unknown, fallback = 50) => {
+    const n = Number(v);
+    return isNaN(n) ? fallback : Math.max(0, Math.min(100, Math.round(n)));
+  };
+  const ensureArr = (v: unknown) =>
+    Array.isArray(v) ? v.filter(i => typeof i === "string") : [];
+  const ensureSub = (obj: any) => ({
+    score: clamp(obj?.score),
+    issues: ensureArr(obj?.issues),
+    recommendations: ensureArr(obj?.recommendations),
+  });
+
+  return {
+    summary: typeof raw?.summary === "string" ? raw.summary : "",
+    techStack: ensureArr(raw?.techStack),
+    codeQuality: {
+      score: clamp(raw?.codeQuality?.score ?? raw?.codeQuality),
+      strengths: ensureArr(raw?.codeQuality?.strengths),
+      weaknesses: ensureArr(raw?.codeQuality?.weaknesses),
+    },
+    security: ensureSub(raw?.security),
+    performance: ensureSub(raw?.performance),
+    accessibility: ensureSub(raw?.accessibility),
+    maintainability: ensureSub(raw?.maintainability),
+    seo: {
+      score: clamp(raw?.seo?.score),
+      codeIssues: ensureArr(raw?.seo?.codeIssues ?? raw?.seo?.issues),
+      recommendations: ensureArr(raw?.seo?.recommendations),
+    },
+    strengths: ensureArr(raw?.strengths ?? raw?.codeQuality?.strengths),
+    weaknesses: ensureArr(raw?.weaknesses ?? raw?.codeQuality?.weaknesses),
+    securityIssues: ensureArr(raw?.securityIssues ?? raw?.security?.issues),
+    recommendations: ensureArr(raw?.recommendations),
+  };
+}
+
+// Zeile 311 aendern:
+const rawAnalysis = await routeAnalysis(selectedModel, aiPrompt);
+const codeAnalysis = validateCodeAnalysis(rawAnalysis);
+```
+
+## Betroffene Dateien
+
+| Datei | Aenderung |
+|-------|-----------|
+| `src/components/dashboard/CodeAnalysisCard.tsx` | Code Quality in Sub-Score-Reihe, alle gleich gross |
+| `supabase/functions/add-github-analysis/index.ts` | SEO-Score im Prompt + Validierungsfunktion |
+

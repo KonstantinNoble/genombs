@@ -1,64 +1,114 @@
 
+# Code-Analyse Pipeline vereinheitlichen
 
-# Firecrawl Scrape Timeout beheben
+## Gefundene Probleme
 
-## Problem
+### Problem 1: Zwei inkompatible Code-Analyse-Formate
+Der `process-analysis-queue` Worker benutzt den alten `ANALYSIS_SYSTEM_PROMPT`, der fuer `codeAnalysis` nur ein primitives Format anfordert:
+- `codeQuality`: eine einzelne Zahl (kein Objekt)
+- `securityFlags` / `performanceFlags` statt Sub-Scores mit `score`, `issues`, `recommendations`
+- Keine Kategorien fuer Security, Performance, Accessibility, Maintainability, SEO
 
-Die Firecrawl Scrape-Anfrage hat keinen expliziten `timeout`-Parameter. Bei Websites mit viel JavaScript oder langsamer Antwortzeit laeuft der Scrape in ein Timeout, und der Fehler wird direkt an den User weitergegeben. Der `waitFor: 2000` (2 Sekunden fuer JS-Rendering) ist zwar gesetzt, aber es fehlt ein hoeherer Gesamttimeout fuer die HTTP-Anfrage selbst.
+Der `add-github-analysis` Endpunkt benutzt dagegen `buildCodeAnalysisPrompt` mit dem detaillierten 6-Kategorien-Format.
+
+**Auswirkung:** Wenn ein User bei der Erstanalyse eine GitHub-URL angibt, kommen die Code-Analyse-Daten im alten Format. Das Frontend zeigt dann Security=0, Performance=0, Accessibility=0, Maintainability=0, SEO=0.
+
+### Problem 2: Keine Validierung im Queue-Pfad
+`process-analysis-queue` speichert `analysisResult.codeAnalysis` direkt ohne Validierung (Zeile 697). Der `add-github-analysis` hat bereits `validateCodeAnalysis()`, aber der Queue-Pfad nutzt diese nicht.
+
+### Problem 3: Doppelter Code
+Beide Edge Functions duplizieren den gesamten Model-Router (analyzeWithGemini, analyzeWithOpenAI, etc.) und parseJsonResponse. Das ist wartungsintensiv und fehleranfaellig.
 
 ## Loesung
 
-### 1. `supabase/functions/process-analysis-queue/index.ts`
+### Aenderung 1: `process-analysis-queue/index.ts` -- Code-Analyse-Prompt aktualisieren
 
-**a) Firecrawl-Anfrage mit `timeout`-Parameter erweitern (Zeile 514-519):**
+Den `ANALYSIS_SYSTEM_PROMPT` so aendern, dass er bei vorhandenem Source Code das gleiche detaillierte Format wie `add-github-analysis` anfordert. Konkret den Abschnitt ab Zeile 173 ersetzen:
 
-Firecrawl unterstuetzt einen `timeout`-Parameter in Millisekunden. Den Wert auf 30000 (30 Sekunden) setzen, um langsamen Websites mehr Zeit zu geben:
-
-```typescript
-body: JSON.stringify({
-  url: job.url,
-  formats: ["markdown", "rawHtml", "links", "screenshot"],
-  onlyMainContent: false,
-  waitFor: 2000,
-  timeout: 30000,
-}),
+**Vorher (Zeilen 173-186):**
 ```
-
-**b) Fetch-Anfrage mit AbortController absichern (Zeile 508-520):**
-
-Falls Firecrawl selbst nicht antwortet, wird die fetch-Anfrage ueber einen AbortController nach 45 Sekunden abgebrochen. So bleibt der Worker nicht endlos haengen:
-
-```typescript
-const crawlController = new AbortController();
-const crawlTimeout = setTimeout(() => crawlController.abort(), 45000);
-
-const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
-  method: "POST",
-  headers: { ... },
-  body: JSON.stringify({ ... }),
-  signal: crawlController.signal,
-}).finally(() => clearTimeout(crawlTimeout));
-```
-
-**c) Bessere Fehlermeldung bei Timeout (Zeile 552-571):**
-
-Wenn der Fehler ein Timeout ist, wird eine benutzerfreundliche Meldung gespeichert statt des rohen API-Fehlers:
-
-```typescript
-if (!crawlResp.ok) {
-  const errorMsg = crawlData.error || "Crawl failed";
-  const userMessage = errorMsg.toLowerCase().includes("timeout")
-    ? "The website took too long to load. Please try again or check if the site is accessible."
-    : errorMsg;
-  // ... update mit userMessage statt errorMsg
+If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key:
+{
+  "codeAnalysis": {
+    "codeQuality": N,
+    "techStack": ["React", "Tailwind", "TypeScript"],
+    "securityFlags": ["No CSP header configured", "API keys in client code"],
+    "performanceFlags": ["Large bundle size", "No code splitting"]
+  }
 }
 ```
 
-Zusaetzlich einen Catch-Block fuer AbortError hinzufuegen, der greift wenn der AbortController ausloest.
+**Nachher:**
+```
+If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key with this exact structure:
+{
+  "codeAnalysis": {
+    "summary": "Brief overall assessment (2-3 sentences)",
+    "techStack": ["detected technologies"],
+    "codeQuality": {
+      "score": 0-100,
+      "strengths": ["specific positive findings"],
+      "weaknesses": ["specific issues found"]
+    },
+    "security": {
+      "score": 0-100,
+      "issues": ["security concerns found"],
+      "recommendations": ["actionable fixes"]
+    },
+    "performance": {
+      "score": 0-100,
+      "issues": ["performance anti-patterns"],
+      "recommendations": ["optimization suggestions"]
+    },
+    "accessibility": {
+      "score": 0-100,
+      "issues": ["accessibility problems"],
+      "recommendations": ["improvements"]
+    },
+    "maintainability": {
+      "score": 0-100,
+      "issues": ["maintainability concerns"],
+      "recommendations": ["refactoring suggestions"]
+    },
+    "seo": {
+      "score": 0-100,
+      "codeIssues": ["SEO-related code issues"],
+      "recommendations": ["SEO improvements"]
+    }
+  }
+}
+```
+
+### Aenderung 2: `process-analysis-queue/index.ts` -- Validierung hinzufuegen
+
+Die gleiche `validateCodeAnalysis()` Funktion aus `add-github-analysis` in den Queue-Worker uebernehmen. An Zeile 696-698 aendern:
+
+**Vorher:**
+```typescript
+if (githubData && analysisResult.codeAnalysis) {
+  updatePayload.code_analysis = analysisResult.codeAnalysis;
+}
+```
+
+**Nachher:**
+```typescript
+if (githubData && analysisResult.codeAnalysis) {
+  updatePayload.code_analysis = validateCodeAnalysis(analysisResult.codeAnalysis);
+}
+```
+
+Plus die `validateCodeAnalysis`-Funktion (identisch zu der in `add-github-analysis`) vor der `processQueue`-Funktion einfuegen.
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `supabase/functions/process-analysis-queue/index.ts` | Timeout-Parameter, AbortController, bessere Fehlermeldung |
+| `supabase/functions/process-analysis-queue/index.ts` | Code-Analyse-Prompt vereinheitlichen + Validierung |
 
+## Was sich NICHT aendert
+- `add-github-analysis/index.ts` -- bereits korrekt mit neuem Format + Validierung
+- `CodeAnalysisCard.tsx` -- bereits korrekt, erwartet das neue Format
+- Bestehende Analysen aus Weg 2 bleiben korrekt
+
+## Hinweis
+Bereits gespeicherte Analysen, die ueber Weg 1 (Queue) erstellt wurden, behalten ihr altes Format. Nur neue Analysen werden das korrekte Format haben.

@@ -52,10 +52,10 @@ const ScoreRing = ({ score, size = 52 }: { score: number; size?: number }) => {
 const PlaceholderCard = ({ title, description, buttonLabel, onAction }: { title: string; description: string; buttonLabel?: string; onAction?: () => void }) => (
   <Card className="border-dashed border-border bg-card/50">
     <CardContent className="p-8 flex flex-col items-center text-center gap-3">
-      <h4 className="text-sm font-semibold text-foreground">{title}</h4>
-      <p className="text-xs text-muted-foreground max-w-xs">{description}</p>
+      <h4 className="text-base font-semibold text-foreground">{title}</h4>
+      <p className="text-sm text-muted-foreground max-w-xs">{description}</p>
       {onAction && buttonLabel && (
-        <Button variant="outline" size="sm" onClick={onAction}>
+        <Button variant="default" size="sm" onClick={onAction}>
           {buttonLabel}
         </Button>
       )}
@@ -77,7 +77,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
     <div className="space-y-6">
       {/* ── WEBSITE ANALYSIS BLOCK ── */}
       <div className="space-y-4">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Website Analysis</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Website Analysis</h2>
 
         {hasWebsiteData ? (
           <div className="space-y-8">
@@ -227,7 +227,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
 
       {/* ── CODE ANALYSIS BLOCK ── */}
       <div className="space-y-4">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Code Analysis</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Code Analysis</h2>
 
         {hasCodeData ? (
           <section id="section-code-quality" className="scroll-mt-16 space-y-3">

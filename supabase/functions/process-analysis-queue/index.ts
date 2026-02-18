@@ -505,6 +505,9 @@ async function processQueue() {
         ? fetchPageSpeedData(job.url, pagespeedApiKey)
         : Promise.resolve(null);
 
+      const crawlController = new AbortController();
+      const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 45000);
+
       const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
         headers: {
@@ -516,8 +519,10 @@ async function processQueue() {
           formats: ["markdown", "rawHtml", "links", "screenshot"],
           onlyMainContent: false,
           waitFor: 2000,
+          timeout: 30000,
         }),
-      });
+        signal: crawlController.signal,
+      }).finally(() => clearTimeout(crawlAbortTimeout));
 
       // Fetch GitHub repo code if URL is provided (for own websites only)
       const githubRepoUrl = job.github_repo_url;
@@ -551,11 +556,16 @@ async function processQueue() {
 
       if (!crawlResp.ok) {
         console.error("Firecrawl error for job", job.id, crawlData);
+        const rawError = crawlData.error || "Crawl failed";
+        const userMessage = rawError.toLowerCase().includes("timeout")
+          ? "The website took too long to load. Please try again or check if the site is accessible."
+          : rawError;
+
         await supabaseAdmin
           .from("analysis_queue")
           .update({
             status: "error",
-            error_message: crawlData.error || "Crawl failed",
+            error_message: userMessage,
             completed_at: new Date().toISOString(),
           })
           .eq("id", job.id);
@@ -564,7 +574,7 @@ async function processQueue() {
           .from("website_profiles")
           .update({
             status: "error",
-            error_message: crawlData.error || "Crawl failed",
+            error_message: userMessage,
           })
           .eq("id", job.profile_id);
 
@@ -704,7 +714,10 @@ async function processQueue() {
       console.log(`Job ${job.id} completed successfully`);
     } catch (err) {
       console.error(`Error processing job ${job.id}:`, err);
-      const errorMsg = err instanceof Error ? err.message : String(err);
+      const isAbort = err instanceof DOMException && err.name === "AbortError";
+      const errorMsg = isAbort
+        ? "The website took too long to load. Please try again or check if the site is accessible."
+        : err instanceof Error ? err.message : String(err);
 
       await supabaseAdmin
         .from("analysis_queue")

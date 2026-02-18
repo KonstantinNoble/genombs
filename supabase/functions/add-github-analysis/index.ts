@@ -60,6 +60,7 @@ Return a structured JSON analysis with exactly this format:
     "recommendations": ["concrete refactoring suggestions"]
   },
   "seo": {
+    "score": 0-100,
     "codeIssues": ["SEO-related code issues found"],
     "recommendations": ["specific SEO improvements to implement in code"]
   }
@@ -189,6 +190,58 @@ async function routeAnalysis(model: ModelId, prompt: string): Promise<unknown> {
   }
 }
 
+// ─── Validation ───
+
+function validateCodeAnalysis(raw: unknown): Record<string, unknown> {
+  const obj = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
+  const clamp = (v: unknown, fallback = 50): number => {
+    const n = Number(v);
+    return isNaN(n) ? fallback : Math.max(0, Math.min(100, Math.round(n)));
+  };
+  const ensureArr = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((i) => typeof i === "string") : [];
+  const ensureSub = (o: unknown) => {
+    const s = (typeof o === "object" && o !== null ? o : {}) as Record<string, unknown>;
+    return {
+      score: clamp(s.score),
+      issues: ensureArr(s.issues),
+      recommendations: ensureArr(s.recommendations),
+    };
+  };
+
+  const cq = (typeof obj.codeQuality === "object" && obj.codeQuality !== null
+    ? obj.codeQuality
+    : {}) as Record<string, unknown>;
+
+  return {
+    summary: typeof obj.summary === "string" ? obj.summary : "",
+    techStack: ensureArr(obj.techStack),
+    codeQuality: {
+      score: clamp(cq.score ?? obj.codeQuality),
+      strengths: ensureArr(cq.strengths),
+      weaknesses: ensureArr(cq.weaknesses),
+    },
+    security: ensureSub(obj.security),
+    performance: ensureSub(obj.performance),
+    accessibility: ensureSub(obj.accessibility),
+    maintainability: ensureSub(obj.maintainability),
+    seo: {
+      score: clamp((obj.seo as Record<string, unknown>)?.score),
+      codeIssues: ensureArr(
+        (obj.seo as Record<string, unknown>)?.codeIssues ??
+        (obj.seo as Record<string, unknown>)?.issues
+      ),
+      recommendations: ensureArr((obj.seo as Record<string, unknown>)?.recommendations),
+    },
+    strengths: ensureArr(obj.strengths ?? cq.strengths),
+    weaknesses: ensureArr(obj.weaknesses ?? cq.weaknesses),
+    securityIssues: ensureArr(
+      obj.securityIssues ?? (obj.security as Record<string, unknown>)?.issues
+    ),
+    recommendations: ensureArr(obj.recommendations),
+  };
+}
+
 // ─── Main Handler ───
 
 serve(async (req) => {
@@ -307,8 +360,9 @@ serve(async (req) => {
 
     const aiPrompt = buildCodeAnalysisPrompt(repoData.repo, profile.url, repoData.fileTree, codeContext);
 
-    // 3. Call AI via model router
-    const codeAnalysis = await routeAnalysis(selectedModel, aiPrompt);
+    // 3. Call AI via model router + validate
+    const rawAnalysis = await routeAnalysis(selectedModel, aiPrompt);
+    const codeAnalysis = validateCodeAnalysis(rawAnalysis);
 
     // 4. Save to profile
     const { error: updateError } = await supabase

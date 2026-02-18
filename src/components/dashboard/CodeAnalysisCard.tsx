@@ -55,14 +55,16 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
     ? safeNum((ca.codeQuality as any).score)
     : safeNum(ca.codeQuality);
 
+  const seoScore = safeNum(ca.seo?.score);
+
   const subScores = [
+    { label: "Code Quality", score: overallScore },
     { label: "Security", score: extractScore(ca.security) },
     { label: "Performance", score: extractScore(ca.performance) },
     { label: "Accessibility", score: extractScore(ca.accessibility) },
     { label: "Maintainability", score: extractScore(ca.maintainability) },
+    { label: "SEO", score: seoScore },
   ];
-
-  const seoScore = safeNum(ca.seo?.score);
   const strengths = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).strengths : null) ?? ca.strengths ?? []).filter((s: unknown) => typeof s === "string");
   const weaknesses = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).weaknesses : null) ?? ca.weaknesses ?? []).filter((w: unknown) => typeof w === "string");
   // Aggregate security issues from sub-category object + legacy flat array
@@ -86,14 +88,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {/* Overall Score + Sub-Scores */}
       <Card className="border-border bg-card">
         <CardContent className="p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ScoreRing score={overallScore} size={56} />
-              <div>
-                <h4 className="text-base font-semibold text-foreground">Code Quality</h4>
-                <p className="text-sm text-muted-foreground">Deep Analysis Score</p>
-              </div>
-            </div>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-base font-semibold text-foreground">Code Analysis</h4>
             {githubUrl && (
               <a href={githubUrl} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-1 text-xs text-primary hover:underline">
@@ -102,12 +98,11 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
             )}
           </div>
 
-          {/* Sub-scores row */}
+          {/* All scores in equal-sized row */}
           <div className="flex items-center justify-between gap-2">
             {subScores.map(({ label, score }) => (
               <ScoreRing key={label} score={score} size={42} label={label} />
             ))}
-            <ScoreRing score={seoScore} size={42} label="SEO" />
           </div>
         </CardContent>
       </Card>

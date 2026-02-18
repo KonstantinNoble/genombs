@@ -59,7 +59,7 @@ export interface CodeAnalysisSubCategory {
 }
 
 export interface CodeAnalysis {
-  codeQuality: number;
+  codeQuality: number | { score: number; strengths?: string[]; weaknesses?: string[] };
   security: number | CodeAnalysisSubCategory;
   performance: number | CodeAnalysisSubCategory;
   accessibility: number | CodeAnalysisSubCategory;

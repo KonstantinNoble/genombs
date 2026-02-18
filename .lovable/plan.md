@@ -1,112 +1,64 @@
 
 
-# Code Analysis Bugs beheben
+# Firecrawl Scrape Timeout beheben
 
-## Bug 1 (Kosmetisch): Code Quality Score gleich gross wie Sub-Scores
+## Problem
 
-Der grosse Score-Ring fuer "Code Quality" ist nicht falsch, aber irrefuehrend weil er groesser dargestellt wird als die anderen Scores. 
+Die Firecrawl Scrape-Anfrage hat keinen expliziten `timeout`-Parameter. Bei Websites mit viel JavaScript oder langsamer Antwortzeit laeuft der Scrape in ein Timeout, und der Fehler wird direkt an den User weitergegeben. Der `waitFor: 2000` (2 Sekunden fuer JS-Rendering) ist zwar gesetzt, aber es fehlt ein hoeherer Gesamttimeout fuer die HTTP-Anfrage selbst.
 
-**Loesung:** Code Quality wird in die Sub-Scores-Reihe aufgenommen und hat die gleiche Groesse (42px statt 56px). Der separate grosse Ring und der Header-Bereich werden entfernt -- alle 6 Scores stehen gleichberechtigt nebeneinander.
+## Loesung
 
-**Datei:** `src/components/dashboard/CodeAnalysisCard.tsx`
+### 1. `supabase/functions/process-analysis-queue/index.ts`
 
-## Bug 2 (Echt): SEO Score ist immer 0
+**a) Firecrawl-Anfrage mit `timeout`-Parameter erweitern (Zeile 514-519):**
 
-Der AI-Prompt fordert fuer SEO kein `score`-Feld an. Das Frontend liest `ca.seo?.score`, bekommt `undefined` und zeigt 0.
-
-**Loesung:** Im Prompt `"score": 0-100` zum SEO-Objekt hinzufuegen.
-
-**Datei:** `supabase/functions/add-github-analysis/index.ts` (Zeilen 62-65)
-
-## Bug 3 (Echt): Keine Validierung der AI-Antwort
-
-Die AI-Antwort wird direkt in die Datenbank geschrieben ohne zu pruefen ob Scores numerisch sind, Felder fehlen oder das Format stimmt.
-
-**Loesung:** Eine `validateCodeAnalysis()`-Funktion einbauen, die:
-- Alle Scores auf Zahlen 0-100 clamped (fehlende Werte bekommen Default 50)
-- Arrays validiert (nicht-String-Eintraege entfernt)
-- Fehlende Objekte mit leeren Defaults auffuellt
-
-**Datei:** `supabase/functions/add-github-analysis/index.ts` (vor Zeile 314)
-
-## Technische Details
-
-### CodeAnalysisCard.tsx -- Alle Scores gleich gross
+Firecrawl unterstuetzt einen `timeout`-Parameter in Millisekunden. Den Wert auf 30000 (30 Sekunden) setzen, um langsamen Websites mehr Zeit zu geben:
 
 ```typescript
-// Code Quality wird Teil der subScores-Reihe
-const subScores = [
-  { label: "Code Quality", score: overallScore },
-  { label: "Security", score: extractScore(ca.security) },
-  { label: "Performance", score: extractScore(ca.performance) },
-  { label: "Accessibility", score: extractScore(ca.accessibility) },
-  { label: "Maintainability", score: extractScore(ca.maintainability) },
-  { label: "SEO", score: seoScore },
-];
-
-// Header-Bereich wird vereinfacht (kein grosser Ring mehr)
-// Alle Scores werden als gleichgrosse Ringe (size=42) in einer Reihe dargestellt
+body: JSON.stringify({
+  url: job.url,
+  formats: ["markdown", "rawHtml", "links", "screenshot"],
+  onlyMainContent: false,
+  waitFor: 2000,
+  timeout: 30000,
+}),
 ```
 
-### add-github-analysis/index.ts -- SEO-Score im Prompt
+**b) Fetch-Anfrage mit AbortController absichern (Zeile 508-520):**
 
-```json
-"seo": {
-  "score": 0-100,
-  "codeIssues": ["SEO-related code issues found"],
-  "recommendations": ["specific SEO improvements to implement in code"]
+Falls Firecrawl selbst nicht antwortet, wird die fetch-Anfrage ueber einen AbortController nach 45 Sekunden abgebrochen. So bleibt der Worker nicht endlos haengen:
+
+```typescript
+const crawlController = new AbortController();
+const crawlTimeout = setTimeout(() => crawlController.abort(), 45000);
+
+const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
+  method: "POST",
+  headers: { ... },
+  body: JSON.stringify({ ... }),
+  signal: crawlController.signal,
+}).finally(() => clearTimeout(crawlTimeout));
+```
+
+**c) Bessere Fehlermeldung bei Timeout (Zeile 552-571):**
+
+Wenn der Fehler ein Timeout ist, wird eine benutzerfreundliche Meldung gespeichert statt des rohen API-Fehlers:
+
+```typescript
+if (!crawlResp.ok) {
+  const errorMsg = crawlData.error || "Crawl failed";
+  const userMessage = errorMsg.toLowerCase().includes("timeout")
+    ? "The website took too long to load. Please try again or check if the site is accessible."
+    : errorMsg;
+  // ... update mit userMessage statt errorMsg
 }
 ```
 
-### add-github-analysis/index.ts -- Validierungsfunktion
-
-```typescript
-function validateCodeAnalysis(raw: any): Record<string, unknown> {
-  const clamp = (v: unknown, fallback = 50) => {
-    const n = Number(v);
-    return isNaN(n) ? fallback : Math.max(0, Math.min(100, Math.round(n)));
-  };
-  const ensureArr = (v: unknown) =>
-    Array.isArray(v) ? v.filter(i => typeof i === "string") : [];
-  const ensureSub = (obj: any) => ({
-    score: clamp(obj?.score),
-    issues: ensureArr(obj?.issues),
-    recommendations: ensureArr(obj?.recommendations),
-  });
-
-  return {
-    summary: typeof raw?.summary === "string" ? raw.summary : "",
-    techStack: ensureArr(raw?.techStack),
-    codeQuality: {
-      score: clamp(raw?.codeQuality?.score ?? raw?.codeQuality),
-      strengths: ensureArr(raw?.codeQuality?.strengths),
-      weaknesses: ensureArr(raw?.codeQuality?.weaknesses),
-    },
-    security: ensureSub(raw?.security),
-    performance: ensureSub(raw?.performance),
-    accessibility: ensureSub(raw?.accessibility),
-    maintainability: ensureSub(raw?.maintainability),
-    seo: {
-      score: clamp(raw?.seo?.score),
-      codeIssues: ensureArr(raw?.seo?.codeIssues ?? raw?.seo?.issues),
-      recommendations: ensureArr(raw?.seo?.recommendations),
-    },
-    strengths: ensureArr(raw?.strengths ?? raw?.codeQuality?.strengths),
-    weaknesses: ensureArr(raw?.weaknesses ?? raw?.codeQuality?.weaknesses),
-    securityIssues: ensureArr(raw?.securityIssues ?? raw?.security?.issues),
-    recommendations: ensureArr(raw?.recommendations),
-  };
-}
-
-// Zeile 311 aendern:
-const rawAnalysis = await routeAnalysis(selectedModel, aiPrompt);
-const codeAnalysis = validateCodeAnalysis(rawAnalysis);
-```
+Zusaetzlich einen Catch-Block fuer AbortError hinzufuegen, der greift wenn der AbortController ausloest.
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/components/dashboard/CodeAnalysisCard.tsx` | Code Quality in Sub-Score-Reihe, alle gleich gross |
-| `supabase/functions/add-github-analysis/index.ts` | SEO-Score im Prompt + Validierungsfunktion |
+| `supabase/functions/process-analysis-queue/index.ts` | Timeout-Parameter, AbortController, bessere Fehlermeldung |
 

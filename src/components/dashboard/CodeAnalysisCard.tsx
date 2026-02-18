@@ -49,7 +49,9 @@ const ScoreRing = ({ score, size = 48, label }: { score: number; size?: number; 
 
 const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) => {
   const ca = codeAnalysis;
-  const overallScore = ca.codeQuality ?? 0;
+  const overallScore = typeof ca.codeQuality === "object" && ca.codeQuality !== null
+    ? (ca.codeQuality as any).score ?? 0
+    : (ca.codeQuality as number) ?? 0;
 
   const subScores = [
     { label: "Security", score: extractScore(ca.security), icon: Shield },
@@ -59,8 +61,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
   ];
 
   const seoScore = ca.seo?.score ?? 0;
-  const strengths = ca.strengths ?? [];
-  const weaknesses = ca.weaknesses ?? [];
+  const strengths = (typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).strengths : null) ?? ca.strengths ?? [];
+  const weaknesses = (typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).weaknesses : null) ?? ca.weaknesses ?? [];
   // Aggregate security issues from sub-category object + legacy flat array
   const securityIssues = [
     ...extractIssues(ca.security),

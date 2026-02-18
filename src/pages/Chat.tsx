@@ -387,7 +387,7 @@ const Chat = () => {
 
     // Check if the message contains a GitHub URL — always recognize for premium users
     const githubMatch = content.match(/https?:\/\/github\.com\/[\w.-]+\/[\w.-]+/i);
-    if (githubMatch && isPremium) {
+    if (githubMatch) {
       // Save the user message first
       const userMsg = await saveMessage(activeId, "user", content);
       setMessages((prev) => [...prev, userMsg]);

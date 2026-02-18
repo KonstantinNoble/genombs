@@ -1,114 +1,48 @@
 
-# Code-Analyse Pipeline vereinheitlichen
 
-## Gefundene Probleme
+# Duplicate Key Bug in CodeAnalysisCard beheben
 
-### Problem 1: Zwei inkompatible Code-Analyse-Formate
-Der `process-analysis-queue` Worker benutzt den alten `ANALYSIS_SYSTEM_PROMPT`, der fuer `codeAnalysis` nur ein primitives Format anfordert:
-- `codeQuality`: eine einzelne Zahl (kein Objekt)
-- `securityFlags` / `performanceFlags` statt Sub-Scores mit `score`, `issues`, `recommendations`
-- Keine Kategorien fuer Security, Performance, Accessibility, Maintainability, SEO
+## Problem
 
-Der `add-github-analysis` Endpunkt benutzt dagegen `buildCodeAnalysisPrompt` mit dem detaillierten 6-Kategorien-Format.
+Die Console-Logs zeigen: **"Encountered two children with the same key"** in `CodeAnalysisCard.tsx`. 
 
-**Auswirkung:** Wenn ein User bei der Erstanalyse eine GitHub-URL angibt, kommen die Code-Analyse-Daten im alten Format. Das Frontend zeigt dann Security=0, Performance=0, Accessibility=0, Maintainability=0, SEO=0.
+Das passiert, weil Listen-Items (strengths, weaknesses, securityIssues, recommendations, techStack, seoIssues) ihren Text als React `key` verwenden. Wenn die AI zwei identische Eintraege liefert (z.B. zwei gleiche Security Issues), erzeugt React doppelte Keys.
 
-### Problem 2: Keine Validierung im Queue-Pfad
-`process-analysis-queue` speichert `analysisResult.codeAnalysis` direkt ohne Validierung (Zeile 697). Der `add-github-analysis` hat bereits `validateCodeAnalysis()`, aber der Queue-Pfad nutzt diese nicht.
+## Was bereits korrekt funktioniert
 
-### Problem 3: Doppelter Code
-Beide Edge Functions duplizieren den gesamten Model-Router (analyzeWithGemini, analyzeWithOpenAI, etc.) und parseJsonResponse. Das ist wartungsintensiv und fehleranfaellig.
+- Der Prompt in `process-analysis-queue` fordert das richtige 6-Kategorien-Format an
+- `validateCodeAnalysis()` ist in beiden Edge Functions vorhanden und wird angewendet
+- Realtime-Subscription in `Chat.tsx` laedt Profile automatisch neu bei Aenderungen
+- Scores werden korrekt extrahiert und angezeigt (Code Quality, Security, Performance, Accessibility, Maintainability, SEO)
+- Die Validierung clamped alle Scores auf 0-100
 
-## Loesung
+## Fix: Duplicate Keys
 
-### Aenderung 1: `process-analysis-queue/index.ts` -- Code-Analyse-Prompt aktualisieren
+**Datei:** `src/components/dashboard/CodeAnalysisCard.tsx`
 
-Den `ANALYSIS_SYSTEM_PROMPT` so aendern, dass er bei vorhandenem Source Code das gleiche detaillierte Format wie `add-github-analysis` anfordert. Konkret den Abschnitt ab Zeile 173 ersetzen:
+Alle `.map()`-Aufrufe verwenden aktuell den Item-Text als Key (`key={s}`, `key={w}`, `key={issue}`, `key={r}`, `key={t}`). Stattdessen den Index als Teil des Keys verwenden, um Duplikate zu vermeiden:
 
-**Vorher (Zeilen 173-186):**
-```
-If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key:
-{
-  "codeAnalysis": {
-    "codeQuality": N,
-    "techStack": ["React", "Tailwind", "TypeScript"],
-    "securityFlags": ["No CSP header configured", "API keys in client code"],
-    "performanceFlags": ["Large bundle size", "No code splitting"]
-  }
-}
-```
-
-**Nachher:**
-```
-If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key with this exact structure:
-{
-  "codeAnalysis": {
-    "summary": "Brief overall assessment (2-3 sentences)",
-    "techStack": ["detected technologies"],
-    "codeQuality": {
-      "score": 0-100,
-      "strengths": ["specific positive findings"],
-      "weaknesses": ["specific issues found"]
-    },
-    "security": {
-      "score": 0-100,
-      "issues": ["security concerns found"],
-      "recommendations": ["actionable fixes"]
-    },
-    "performance": {
-      "score": 0-100,
-      "issues": ["performance anti-patterns"],
-      "recommendations": ["optimization suggestions"]
-    },
-    "accessibility": {
-      "score": 0-100,
-      "issues": ["accessibility problems"],
-      "recommendations": ["improvements"]
-    },
-    "maintainability": {
-      "score": 0-100,
-      "issues": ["maintainability concerns"],
-      "recommendations": ["refactoring suggestions"]
-    },
-    "seo": {
-      "score": 0-100,
-      "codeIssues": ["SEO-related code issues"],
-      "recommendations": ["SEO improvements"]
-    }
-  }
-}
-```
-
-### Aenderung 2: `process-analysis-queue/index.ts` -- Validierung hinzufuegen
-
-Die gleiche `validateCodeAnalysis()` Funktion aus `add-github-analysis` in den Queue-Worker uebernehmen. An Zeile 696-698 aendern:
-
-**Vorher:**
 ```typescript
-if (githubData && analysisResult.codeAnalysis) {
-  updatePayload.code_analysis = analysisResult.codeAnalysis;
-}
+// Vorher:
+{strengths.slice(0, 5).map((s) => (
+  <div key={s} ...>
+
+// Nachher:
+{strengths.slice(0, 5).map((s, i) => (
+  <div key={`strength-${i}`} ...>
 ```
 
-**Nachher:**
-```typescript
-if (githubData && analysisResult.codeAnalysis) {
-  updatePayload.code_analysis = validateCodeAnalysis(analysisResult.codeAnalysis);
-}
-```
-
-Plus die `validateCodeAnalysis`-Funktion (identisch zu der in `add-github-analysis`) vor der `processQueue`-Funktion einfuegen.
+Betrifft 6 Stellen in der Datei:
+1. `techStack.map((t) => ...)` -- Zeile 117
+2. `strengths.slice(0, 5).map((s) => ...)` -- Zeile 133
+3. `weaknesses.slice(0, 5).map((w) => ...)` -- Zeile 146
+4. `securityIssues.map((issue) => ...)` -- Zeile 166
+5. `seoIssues.map((issue) => ...)` -- Zeile 183
+6. `recommendations.slice(0, 5).map((r) => ...)` -- Zeile 200
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `supabase/functions/process-analysis-queue/index.ts` | Code-Analyse-Prompt vereinheitlichen + Validierung |
+| `src/components/dashboard/CodeAnalysisCard.tsx` | Alle `.map()` Keys auf Index-basiert umstellen |
 
-## Was sich NICHT aendert
-- `add-github-analysis/index.ts` -- bereits korrekt mit neuem Format + Validierung
-- `CodeAnalysisCard.tsx` -- bereits korrekt, erwartet das neue Format
-- Bestehende Analysen aus Weg 2 bleiben korrekt
-
-## Hinweis
-Bereits gespeicherte Analysen, die ueber Weg 1 (Queue) erstellt wurden, behalten ihr altes Format. Nur neue Analysen werden das korrekte Format haben.

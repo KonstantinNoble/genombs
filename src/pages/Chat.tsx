@@ -523,6 +523,11 @@ const Chat = () => {
     // Pause realtime during delete+insert cycle
     realtimePausedRef.current = true;
 
+    // Preserve code_analysis from existing own-website profile before cleanup
+    const existingOwnProfile = profiles.find(p => p.is_own_website && p.code_analysis);
+    const preservedCodeAnalysis = existingOwnProfile?.code_analysis ?? null;
+    const preservedGithubUrl = existingOwnProfile?.github_repo_url ?? null;
+
     // Clean up old profiles and tasks before starting new analysis
     try {
       const result = await deleteProfilesForConversation(activeId, token);
@@ -566,9 +571,15 @@ const Chat = () => {
     }
 
     try {
+      let ownProfileId: string | null = null;
       await Promise.all(
-        allUrls.map(({ url, isOwn }) =>
-          analyzeWebsite(url, activeId, isOwn, token, model, isOwn ? githubRepoUrl : undefined).catch((e) => {
+        allUrls.map(async ({ url, isOwn }) => {
+          try {
+            const result = await analyzeWebsite(url, activeId, isOwn, token, model, isOwn ? githubRepoUrl : undefined);
+            if (isOwn && result?.profileId) {
+              ownProfileId = result.profileId;
+            }
+          } catch (e: any) {
             const msg = e.message || "Analysis failed";
             if (msg === "premium_model_required") {
               toast.error("Dieses Modell ist nur für Premium-Nutzer verfügbar.");
@@ -578,9 +589,25 @@ const Chat = () => {
             } else {
               toast.error(`Analysis failed for ${url}: ${msg}`);
             }
-          }),
-        ),
+          }
+        }),
       );
+
+      // Restore preserved code_analysis on the new own-website profile
+      if (preservedCodeAnalysis && ownProfileId) {
+        try {
+          await supabase
+            .from("website_profiles")
+            .update({
+              code_analysis: preservedCodeAnalysis as any,
+              github_repo_url: preservedGithubUrl,
+            })
+            .eq("id", ownProfileId);
+          console.log("Restored preserved code_analysis to new profile");
+        } catch (e) {
+          console.error("Failed to restore code_analysis:", e);
+        }
+      }
       toast.success("Analysis started! Results will appear in the dashboard.");
 
       // Set expected count so realtime subscription triggers summary when all done

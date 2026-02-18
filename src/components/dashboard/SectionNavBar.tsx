@@ -15,18 +15,22 @@ interface SectionNavBarProps {
 }
 
 const SectionNavBar = ({ hasCodeAnalysis = false, hasWebsiteAnalysis = true }: SectionNavBarProps) => {
-  const websiteSections = hasWebsiteAnalysis ? BASE_SECTIONS : [];
-  const codeSections = hasCodeAnalysis ? [CODE_QUALITY_SECTION] : [];
-  const sections = [...websiteSections, ...codeSections];
+  const allWebsiteSections = BASE_SECTIONS;
+  const allCodeSections = [CODE_QUALITY_SECTION];
 
-  const [activeSection, setActiveSection] = useState(sections[0]?.id ?? "");
+  const activeSections = [
+    ...(hasWebsiteAnalysis ? BASE_SECTIONS : []),
+    ...(hasCodeAnalysis ? [CODE_QUALITY_SECTION] : []),
+  ];
+
+  const [activeSection, setActiveSection] = useState(activeSections[0]?.id ?? "");
 
   const updateActive = useCallback(() => {
-    if (sections.length === 0) return;
-    let closest = sections[0].id;
+    if (activeSections.length === 0) return;
+    let closest = activeSections[0].id;
     let closestDist = Infinity;
 
-    for (const s of sections) {
+    for (const s of activeSections) {
       const el = document.getElementById(s.id);
       if (!el) continue;
       const rect = el.getBoundingClientRect();
@@ -71,24 +75,53 @@ const SectionNavBar = ({ hasCodeAnalysis = false, hasWebsiteAnalysis = true }: S
     }
   };
 
-  if (sections.length === 0) return null;
-
   return (
     <nav className="sticky top-0 z-10 bg-card border-b border-border px-4 py-2">
-      <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-        {sections.map((section) => (
-          <button
-            key={section.id}
-            onClick={() => scrollTo(section.id)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
-              activeSection === section.id
-                ? "bg-primary/15 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          >
-            {section.label}
-          </button>
-        ))}
+      <div className="flex gap-1 items-center overflow-x-auto scrollbar-hide">
+        {/* Website tabs */}
+        {allWebsiteSections.map((section) => {
+          const isDisabled = !hasWebsiteAnalysis;
+          return (
+            <button
+              key={section.id}
+              onClick={() => !isDisabled && scrollTo(section.id)}
+              disabled={isDisabled}
+              className={`whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                isDisabled
+                  ? "opacity-40 cursor-default text-muted-foreground"
+                  : activeSection === section.id
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              {section.label}
+            </button>
+          );
+        })}
+
+        {/* Vertical divider */}
+        <div className="w-px h-4 bg-border mx-1 shrink-0" />
+
+        {/* Code tab */}
+        {allCodeSections.map((section) => {
+          const isDisabled = !hasCodeAnalysis;
+          return (
+            <button
+              key={section.id}
+              onClick={() => !isDisabled && scrollTo(section.id)}
+              disabled={isDisabled}
+              className={`whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                isDisabled
+                  ? "opacity-40 cursor-default text-muted-foreground"
+                  : activeSection === section.id
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              {section.label}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

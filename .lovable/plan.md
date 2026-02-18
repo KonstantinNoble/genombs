@@ -1,69 +1,97 @@
 
-
-# Website- und Code-Analyse gleichzeitig im Dashboard
-
-## Uebersicht
-Beide Analyse-Bereiche werden immer im Dashboard angezeigt -- untereinander, klar getrennt. Wenn fuer einen Bereich keine Daten vorliegen, erscheint ein Platzhalter-Hinweis statt der Ergebnisse.
+# Dashboard ueberarbeiten: Buttons in Platzhalter + Emojis/Icons entfernen
 
 ## Aenderungen
 
 ### 1. `src/components/dashboard/AnalysisTabs.tsx`
 
-**Aktuelle Logik:** Zeigt Website-Sektionen nur wenn `profile_data` existiert, Code-Sektion nur wenn `code_analysis` existiert. Wenn keins vorhanden, wird nichts gezeigt.
+**Buttons in Platzhalter-Cards:**
+- `PlaceholderCard` bekommt neue optionale Props: `buttonLabel` (string) und `onAction` (callback)
+- Wenn `onAction` gesetzt ist, wird ein `Button` im Platzhalter gerendert
+- Website-Platzhalter: Button "Start Website Scan" -- loest `onOpenUrlDialog` aus
+- Code-Platzhalter: Button "Start Code Analysis" -- loest `onOpenGithubDialog` aus
+- AnalysisTabsContent bekommt zwei neue optionale Props: `onOpenUrlDialog?: () => void` und `onOpenGithubDialog?: () => void`
 
-**Neue Logik:**
-- Die fruehe `if (!ownSite) return null` Pruefung bleibt -- ohne Profil kein Dashboard
-- Immer zwei klar getrennte Bloecke rendern:
-  - **Block 1: "Website Analysis"** (mit Globe-Icon als Header)
-    - Wenn `profile_data` vorhanden: Overview, Positioning, Offers, Trust wie bisher
-    - Wenn nicht: Ein Platzhalter-Card mit Globe-Icon, Titel "Scan your website" und Beschreibung "Analyze your website URL to unlock positioning, trust, and conversion insights."
-  - **Separator** (horizontale Trennlinie via `Separator`-Komponente)
-  - **Block 2: "Code Analysis"** (mit Code-Icon als Header)
-    - Wenn `code_analysis` vorhanden: CodeAnalysisCard wie bisher
-    - Wenn nicht: Ein Platzhalter-Card mit Code-Icon, Titel "Analyze your repository" und Beschreibung "Connect a GitHub repository to unlock code quality, security, and performance insights."
+**Emojis/Icons aus Sektions-Headern entfernen:**
+- Zeile 77: `<Globe>` Icon vor "Website Analysis" entfernen -- nur Text bleibt
+- Zeile 231: `<Code2>` Icon vor "Code Analysis" entfernen -- nur Text bleibt
+- Import von `Globe` und `Code2` aus lucide-react entfernen (falls nicht anderweitig genutzt)
+- Auch `PlaceholderCard` bekommt kein Icon mehr -- der `icon` Prop wird entfernt, stattdessen nur Titel + Beschreibung + Button
 
-### 2. `src/components/dashboard/SectionNavBar.tsx`
+### 2. `src/pages/Chat.tsx`
 
-**Aktuelle Logik:** Zeigt nur Tabs fuer vorhandene Daten.
+- Zwei State-Handler erstellen:
+  - `handleOpenUrlDialog`: setzt den URL-Dialog-State (dieselbe Logik wie der Plus-Button in ChatInput -- muss den Dialog in ChatInput oeffnen)
+  - `handleOpenGithubDialog`: oeffnet den GitHub-Popover (dieselbe Logik wie der GitHub-Button in ChatInput)
+- Da die Dialoge in `ChatInput` leben, wird die einfachste Loesung sein, Refs oder Callbacks hochzureichen:
+  - Neue Props an `ChatInput`: `urlDialogRef` und `githubDialogRef` (oder einfacher: `ChatInput` exportiert imperative handles)
+  - Alternativ (einfacher): Zwei neue State-Variablen in Chat.tsx (`urlDialogOpen`, `githubDialogOpen`), die als Props an ChatInput durchgereicht werden und dort den Dialog/Popover steuern
+- `AnalysisTabsContent` bekommt `onOpenUrlDialog` und `onOpenGithubDialog` als Props durchgereicht
 
-**Neue Logik:**
-- Immer alle Tabs anzeigen (Overview, Positioning, Offers, Trust, Code Quality)
-- Vertikaler Trenner (`w-px h-4 bg-border`) zwischen den Website-Tabs und dem Code-Tab
-- Tabs ohne zugehoerige Daten werden ausgegraut: `opacity-40 pointer-events-none cursor-default`
-- Props bleiben gleich (`hasCodeAnalysis`, `hasWebsiteAnalysis`), aber statt Tabs auszublenden, werden sie nur deaktiviert
+### 3. `src/components/chat/ChatInput.tsx`
 
-### 3. `src/components/dashboard/CodeAnalysisCard.tsx`
+- Neuer optionaler Prop: `externalDialogOpen?: boolean` und `onExternalDialogChange?: (open: boolean) => void`
+- Neuer optionaler Prop: `externalGithubOpen?: boolean` und `onExternalGithubChange?: (open: boolean) => void`
+- Die bestehenden `dialogOpen` und `githubPopoverOpen` States werden mit den externen Props synchronisiert (controlled/uncontrolled Pattern)
 
-**Zusaetzliche Absicherung gegen React Error #31:**
-- `overallScore` wird durch `Math.round(Number(...))` geprueft, Fallback auf `0` bei `NaN`
-- Gleiche Absicherung fuer alle Sub-Scores in `extractScore`
-- `strengths` und `weaknesses` Arrays werden mit `.filter(item => typeof item === "string")` gefiltert, damit keine verschachtelten Objekte durchrutschen
+### 4. `src/components/dashboard/CodeAnalysisCard.tsx`
+
+**Icons aus Labels entfernen:**
+- Zeile 137: `<CheckCircle2>` Icon vor "Strengths" entfernen
+- Zeile 152: `<XCircle>` Icon vor "Weaknesses" entfernen
+- Zeile 174: `<Shield>` Icon vor "Security Issues" entfernen
+- Zeile 193: `<Search>` Icon vor "SEO Code Issues" entfernen
+- SubScores-Row (Zeile 59-63): Die `icon` Property aus den subScores-Objekten entfernen (sie werden ohnehin nicht gerendert, nur definiert)
+- Import-Zeile bereinigen: Nur `ExternalLink` behalten (wird fuer den Repo-Link benoetigt)
 
 ---
 
 ## Technische Details
 
-### Platzhalter-Card Komponente (inline in AnalysisTabs.tsx)
+### PlaceholderCard (neue Signatur)
 
-```text
-+-------------------------------------------+
-|  [Icon]                                   |
-|  Scan your website / Analyze your repo    |
-|  Beschreibung was enthalten waere         |
-+-------------------------------------------+
+```typescript
+const PlaceholderCard = ({ 
+  title, 
+  description, 
+  buttonLabel, 
+  onAction 
+}: { 
+  title: string; 
+  description: string; 
+  buttonLabel?: string; 
+  onAction?: () => void; 
+}) => (
+  <Card className="border-dashed border-border bg-card/50">
+    <CardContent className="p-8 flex flex-col items-center text-center gap-3">
+      <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+      <p className="text-xs text-muted-foreground max-w-xs">{description}</p>
+      {onAction && buttonLabel && (
+        <Button variant="outline" size="sm" onClick={onAction}>
+          {buttonLabel}
+        </Button>
+      )}
+    </CardContent>
+  </Card>
+);
 ```
 
-Gestaltet als Card mit `border-dashed border-border`, zentriertem Icon (Globe oder Code), Titel und kurzer Beschreibung in `text-muted-foreground`.
+### Dialog-Steuerung (Chat.tsx -> ChatInput.tsx)
 
-### Nav-Bar Layout
+Chat.tsx haelt zwei States:
+- `urlDialogOpen` / `setUrlDialogOpen`
+- `githubDialogOpen` / `setGithubDialogOpen`
 
-```text
-[ Overview | Positioning | Offers | Trust ]  |  [ Code Quality ]
-  (aktiv/normal)                (grau)           (aktiv/normal oder grau)
+Diese werden als Props an ChatInput weitergegeben. ChatInput merged sie mit seinem internen State ueber `useEffect`:
+```typescript
+useEffect(() => {
+  if (externalDialogOpen) setDialogOpen(true);
+}, [externalDialogOpen]);
 ```
+Und ruft `onExternalDialogChange(false)` auf wenn der Dialog geschlossen wird.
 
-### Betroffene Dateien
-1. `src/components/dashboard/AnalysisTabs.tsx` -- Beide Sektionen immer rendern, Platzhalter bei fehlenden Daten
-2. `src/components/dashboard/SectionNavBar.tsx` -- Alle Tabs immer zeigen, inaktive ausgegraut, visueller Trenner
-3. `src/components/dashboard/CodeAnalysisCard.tsx` -- Robustere Score-Extraktion mit NaN-Schutz
-
+### Dateien
+1. `src/components/dashboard/AnalysisTabs.tsx` -- Buttons + Icons entfernen
+2. `src/components/dashboard/CodeAnalysisCard.tsx` -- Icons entfernen
+3. `src/components/chat/ChatInput.tsx` -- Externe Dialog-Steuerung
+4. `src/pages/Chat.tsx` -- State-Weiterleitung

@@ -1,70 +1,69 @@
 
 
-# Website- und Code-Analyse: Immer beide Sektionen zeigen mit Hinweisen
+# Website- und Code-Analyse gleichzeitig im Dashboard
 
-## Konzept
-Das Dashboard zeigt immer **zwei klar getrennte Bereiche** -- unabhaengig davon, ob Daten vorhanden sind oder nicht:
-
-1. **Website Analysis** -- Zeigt die Analyse-Ergebnisse wenn eine URL gescannt wurde. Wenn nicht: Platzhalter-Hinweis "Scan your website to see results here".
-2. **Code Analysis** -- Zeigt die Code-Qualitaet wenn ein GitHub-Repo gescannt wurde. Wenn nicht: Platzhalter-Hinweis "Scan your GitHub repository to see results here".
-
-Beide Bereiche sind durch eine Trennlinie (`Separator`) visuell abgegrenzt.
-
----
+## Uebersicht
+Beide Analyse-Bereiche werden immer im Dashboard angezeigt -- untereinander, klar getrennt. Wenn fuer einen Bereich keine Daten vorliegen, erscheint ein Platzhalter-Hinweis statt der Ergebnisse.
 
 ## Aenderungen
 
 ### 1. `src/components/dashboard/AnalysisTabs.tsx`
 
-- Die fruehe `if (!ownSite) return null` Pruefung entfernen -- stattdessen wird das Dashboard immer gerendert wenn mindestens 1 Profil existiert
-- **Website Analysis Sektion**: 
-  - Wenn `profile_data` vorhanden: Sektionen wie bisher (Overview, Positioning, Offers, Trust)
-  - Wenn nicht vorhanden: Ein Platzhalter-Card mit Globe-Icon und Text "Scan your website to unlock this section" + kurze Beschreibung was enthalten waere
-- **Code Analysis Sektion** (unterhalb, nach Separator):
-  - Wenn `code_analysis` vorhanden: CodeAnalysisCard wie bisher
-  - Wenn nicht vorhanden: Ein Platzhalter-Card mit Code-Icon und Text "Analyze your GitHub repository to unlock this section" + kurze Beschreibung
-- Jeder Bereich bekommt einen eigenen Sektions-Header mit Icon (Globe fuer Website, Code fuer GitHub)
+**Aktuelle Logik:** Zeigt Website-Sektionen nur wenn `profile_data` existiert, Code-Sektion nur wenn `code_analysis` existiert. Wenn keins vorhanden, wird nichts gezeigt.
+
+**Neue Logik:**
+- Die fruehe `if (!ownSite) return null` Pruefung bleibt -- ohne Profil kein Dashboard
+- Immer zwei klar getrennte Bloecke rendern:
+  - **Block 1: "Website Analysis"** (mit Globe-Icon als Header)
+    - Wenn `profile_data` vorhanden: Overview, Positioning, Offers, Trust wie bisher
+    - Wenn nicht: Ein Platzhalter-Card mit Globe-Icon, Titel "Scan your website" und Beschreibung "Analyze your website URL to unlock positioning, trust, and conversion insights."
+  - **Separator** (horizontale Trennlinie via `Separator`-Komponente)
+  - **Block 2: "Code Analysis"** (mit Code-Icon als Header)
+    - Wenn `code_analysis` vorhanden: CodeAnalysisCard wie bisher
+    - Wenn nicht: Ein Platzhalter-Card mit Code-Icon, Titel "Analyze your repository" und Beschreibung "Connect a GitHub repository to unlock code quality, security, and performance insights."
 
 ### 2. `src/components/dashboard/SectionNavBar.tsx`
 
-- Beide Tab-Gruppen (Website + Code) werden **immer** angezeigt
-- Visueller Trenner (duenne vertikale Linie) zwischen den Website-Tabs und dem Code-Tab
-- Tabs ohne Daten werden leicht ausgegraut dargestellt (z.B. `opacity-50 pointer-events-none`) damit klar ist, dass sie noch nicht verfuegbar sind, aber existieren
+**Aktuelle Logik:** Zeigt nur Tabs fuer vorhandene Daten.
 
-### 3. `src/pages/Chat.tsx`
+**Neue Logik:**
+- Immer alle Tabs anzeigen (Overview, Positioning, Offers, Trust, Code Quality)
+- Vertikaler Trenner (`w-px h-4 bg-border`) zwischen den Website-Tabs und dem Code-Tab
+- Tabs ohne zugehoerige Daten werden ausgegraut: `opacity-40 pointer-events-none cursor-default`
+- Props bleiben gleich (`hasCodeAnalysis`, `hasWebsiteAnalysis`), aber statt Tabs auszublenden, werden sie nur deaktiviert
 
-- `SectionNavBar` wird immer angezeigt wenn mindestens ein Profil existiert (keine Aenderung noetig, ist bereits so)
-- `AnalysisTabsContent` wird immer gerendert wenn Profile existieren (keine Aenderung noetig)
+### 3. `src/components/dashboard/CodeAnalysisCard.tsx`
+
+**Zusaetzliche Absicherung gegen React Error #31:**
+- `overallScore` wird durch `Math.round(Number(...))` geprueft, Fallback auf `0` bei `NaN`
+- Gleiche Absicherung fuer alle Sub-Scores in `extractScore`
+- `strengths` und `weaknesses` Arrays werden mit `.filter(item => typeof item === "string")` gefiltert, damit keine verschachtelten Objekte durchrutschen
 
 ---
 
-## Visuelle Struktur
+## Technische Details
+
+### Platzhalter-Card Komponente (inline in AnalysisTabs.tsx)
 
 ```text
-+------------------------------------------+
-|  Nav: Overview | Positioning | ... | Code |
-|         (aktiv)              (grau wenn   |
-|                               keine Daten)|
-+------------------------------------------+
-|                                          |
-|  --- WEBSITE ANALYSIS (Globe Icon) ---   |
-|                                          |
-|  [Analyse-Ergebnisse]                    |
-|  ODER                                    |
-|  [Platzhalter: "Scan your website..."]   |
-|                                          |
-|  ──────── Separator ─────────            |
-|                                          |
-|  --- CODE ANALYSIS (Code Icon) ---       |
-|                                          |
-|  [Code-Analyse-Ergebnisse]               |
-|  ODER                                    |
-|  [Platzhalter: "Analyze your repo..."]   |
-|                                          |
-+------------------------------------------+
++-------------------------------------------+
+|  [Icon]                                   |
+|  Scan your website / Analyze your repo    |
+|  Beschreibung was enthalten waere         |
++-------------------------------------------+
 ```
 
-### Dateien
+Gestaltet als Card mit `border-dashed border-border`, zentriertem Icon (Globe oder Code), Titel und kurzer Beschreibung in `text-muted-foreground`.
+
+### Nav-Bar Layout
+
+```text
+[ Overview | Positioning | Offers | Trust ]  |  [ Code Quality ]
+  (aktiv/normal)                (grau)           (aktiv/normal oder grau)
+```
+
+### Betroffene Dateien
 1. `src/components/dashboard/AnalysisTabs.tsx` -- Beide Sektionen immer rendern, Platzhalter bei fehlenden Daten
-2. `src/components/dashboard/SectionNavBar.tsx` -- Alle Tabs immer zeigen, inaktive ausgegraut
+2. `src/components/dashboard/SectionNavBar.tsx` -- Alle Tabs immer zeigen, inaktive ausgegraut, visueller Trenner
+3. `src/components/dashboard/CodeAnalysisCard.tsx` -- Robustere Score-Extraktion mit NaN-Schutz
 

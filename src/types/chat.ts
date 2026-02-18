@@ -52,13 +52,19 @@ export interface PageSpeedData {
   };
 }
 
+export interface CodeAnalysisSubCategory {
+  score: number;
+  issues: string[];
+  recommendations: string[];
+}
+
 export interface CodeAnalysis {
   codeQuality: number;
-  security: number;
-  performance: number;
-  accessibility: number;
-  maintainability: number;
-  seo: { score: number; issues: string[] };
+  security: number | CodeAnalysisSubCategory;
+  performance: number | CodeAnalysisSubCategory;
+  accessibility: number | CodeAnalysisSubCategory;
+  maintainability: number | CodeAnalysisSubCategory;
+  seo: { score: number; issues?: string[]; codeIssues?: string[] };
   techStack: string[];
   strengths: string[];
   weaknesses: string[];

@@ -1,7 +1,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, Shield, Zap, Eye, Wrench, Search, ExternalLink } from "lucide-react";
-import type { CodeAnalysis } from "@/types/chat";
+import type { CodeAnalysis, CodeAnalysisSubCategory } from "@/types/chat";
+
+/** Safely extract a numeric score from a field that may be a number or sub-category object */
+const extractScore = (val: number | CodeAnalysisSubCategory | undefined | null): number =>
+  typeof val === "object" && val !== null ? (val as CodeAnalysisSubCategory).score ?? 0 : (val as number) ?? 0;
+
+const extractIssues = (val: number | CodeAnalysisSubCategory | undefined | null): string[] =>
+  typeof val === "object" && val !== null ? (val as CodeAnalysisSubCategory).issues ?? [] : [];
+
+const extractRecs = (val: number | CodeAnalysisSubCategory | undefined | null): string[] =>
+  typeof val === "object" && val !== null ? (val as CodeAnalysisSubCategory).recommendations ?? [] : [];
 
 interface CodeAnalysisCardProps {
   codeAnalysis: CodeAnalysis;
@@ -42,19 +52,30 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
   const overallScore = ca.codeQuality ?? 0;
 
   const subScores = [
-    { label: "Security", score: ca.security ?? 0, icon: Shield },
-    { label: "Performance", score: ca.performance ?? 0, icon: Zap },
-    { label: "Accessibility", score: ca.accessibility ?? 0, icon: Eye },
-    { label: "Maintainability", score: ca.maintainability ?? 0, icon: Wrench },
+    { label: "Security", score: extractScore(ca.security), icon: Shield },
+    { label: "Performance", score: extractScore(ca.performance), icon: Zap },
+    { label: "Accessibility", score: extractScore(ca.accessibility), icon: Eye },
+    { label: "Maintainability", score: extractScore(ca.maintainability), icon: Wrench },
   ];
 
   const seoScore = ca.seo?.score ?? 0;
   const strengths = ca.strengths ?? [];
   const weaknesses = ca.weaknesses ?? [];
-  const securityIssues = ca.securityIssues ?? ca.securityFlags ?? [];
-  const recommendations = ca.recommendations ?? [];
+  // Aggregate security issues from sub-category object + legacy flat array
+  const securityIssues = [
+    ...extractIssues(ca.security),
+    ...(ca.securityIssues ?? ca.securityFlags ?? []),
+  ];
+  // Aggregate recommendations from all sub-categories + top-level
+  const recommendations = [
+    ...(ca.recommendations ?? []),
+    ...extractRecs(ca.security),
+    ...extractRecs(ca.performance),
+    ...extractRecs(ca.accessibility),
+    ...extractRecs(ca.maintainability),
+  ];
   const techStack = ca.techStack ?? [];
-  const seoIssues = ca.seo?.issues ?? [];
+  const seoIssues = ca.seo?.issues ?? ca.seo?.codeIssues ?? [];
 
   return (
     <div className="space-y-3">

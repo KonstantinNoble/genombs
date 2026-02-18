@@ -70,6 +70,8 @@ const Chat = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showInlineUrlPrompt, setShowInlineUrlPrompt] = useState(false);
+  const [urlDialogOpen, setUrlDialogOpen] = useState(false);
+  const [githubDialogOpen, setGithubDialogOpen] = useState(false);
 
   const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({
     isOpen: false,
@@ -767,6 +769,10 @@ const Chat = () => {
           hasOwnProfile={true}
           initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}
           initialCompetitorUrls={profiles.filter((p) => !p.is_own_website).map((p) => p.url)}
+          externalDialogOpen={urlDialogOpen}
+          onExternalDialogChange={setUrlDialogOpen}
+          externalGithubOpen={githubDialogOpen}
+          onExternalGithubChange={setGithubDialogOpen}
         />
       </div>
     </div>
@@ -826,7 +832,7 @@ const Chat = () => {
                 </div>
               ))}
 
-            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} />}
+            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} onOpenUrlDialog={() => setUrlDialogOpen(true)} onOpenGithubDialog={() => setGithubDialogOpen(true)} />}
 
             {!hasProfiles &&
               pendingProfiles.length === 0 &&
@@ -883,7 +889,7 @@ const Chat = () => {
                 </div>
               ))}
 
-            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} />}
+            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} onOpenUrlDialog={() => setUrlDialogOpen(true)} onOpenGithubDialog={() => setGithubDialogOpen(true)} />}
 
             {!hasProfiles &&
               pendingProfiles.length === 0 &&

@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Shield, Zap, Eye, Wrench, Search, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import type { CodeAnalysis, CodeAnalysisSubCategory } from "@/types/chat";
 
 /** Safely extract a numeric score from a field that may be a number or sub-category object */
@@ -56,10 +56,10 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
     : safeNum(ca.codeQuality);
 
   const subScores = [
-    { label: "Security", score: extractScore(ca.security), icon: Shield },
-    { label: "Performance", score: extractScore(ca.performance), icon: Zap },
-    { label: "Accessibility", score: extractScore(ca.accessibility), icon: Eye },
-    { label: "Maintainability", score: extractScore(ca.maintainability), icon: Wrench },
+    { label: "Security", score: extractScore(ca.security) },
+    { label: "Performance", score: extractScore(ca.performance) },
+    { label: "Accessibility", score: extractScore(ca.accessibility) },
+    { label: "Maintainability", score: extractScore(ca.maintainability) },
   ];
 
   const seoScore = safeNum(ca.seo?.score);
@@ -133,9 +133,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
             <div className="grid grid-cols-2 gap-4">
               {strengths.length > 0 && (
                 <div>
-                  <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-chart-6" /> Strengths
-                  </p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-2">Strengths</p>
                   <div className="space-y-1.5">
                     {strengths.slice(0, 5).map((s) => (
                       <div key={s} className="flex items-start gap-1.5">
@@ -148,9 +146,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
               )}
               {weaknesses.length > 0 && (
                 <div>
-                  <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <XCircle className="w-4 h-4 text-destructive" /> Weaknesses
-                  </p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-2">Weaknesses</p>
                   <div className="space-y-1.5">
                     {weaknesses.slice(0, 5).map((w) => (
                       <div key={w} className="flex items-start gap-1.5">
@@ -170,9 +166,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {securityIssues.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2 flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-destructive" /> Security Issues
-            </p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">Security Issues</p>
             <div className="space-y-1.5">
               {securityIssues.map((issue) => (
                 <div key={issue} className="flex items-start gap-1.5">
@@ -189,9 +183,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
       {seoIssues.length > 0 && (
         <Card className="border-border bg-card">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2 flex items-center gap-1.5">
-              <Search className="w-3.5 h-3.5 text-primary" /> SEO Code Issues
-            </p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-2">SEO Code Issues</p>
             <div className="space-y-1.5">
               {seoIssues.map((issue) => (
                 <div key={issue} className="flex items-start gap-1.5">

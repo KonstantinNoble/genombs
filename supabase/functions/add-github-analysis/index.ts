@@ -249,21 +249,34 @@ serve(async (req) => {
       );
     }
 
-    // Check premium status
+    // Credit check
+    const CODE_ANALYSIS_COSTS: Record<string, number> = {
+      "gemini-flash": 8,
+      "gpt-mini": 8,
+      "gpt": 12,
+      "claude-sonnet": 12,
+      "perplexity": 15,
+    };
+
     const { data: credits } = await supabase
       .from("user_credits")
-      .select("is_premium")
+      .select("credits_used, daily_credits_limit")
       .eq("user_id", user.id)
       .single();
 
-    if (!credits?.is_premium) {
+    const creditsUsed = credits?.credits_used ?? 0;
+    const creditsLimit = credits?.daily_credits_limit ?? 20;
+    const remaining = creditsLimit - creditsUsed;
+    const selectedModel: ModelId = (model as ModelId) || "gemini-flash";
+    const cost = CODE_ANALYSIS_COSTS[selectedModel] ?? 8;
+
+    if (remaining < cost) {
       return new Response(
-        JSON.stringify({ error: "Deep Analysis is a premium feature" }),
+        JSON.stringify({ error: `Not enough credits. Need ${cost}, have ${remaining}.` }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const selectedModel: ModelId = (model as ModelId) || "gemini-flash";
     console.log(`Starting GitHub analysis for profile ${profileId}, repo: ${githubRepoUrl}, model: ${selectedModel}`);
 
     // 1. Fetch GitHub repo code
@@ -314,7 +327,13 @@ serve(async (req) => {
       );
     }
 
-    console.log(`GitHub analysis complete for profile ${profileId} using model ${selectedModel}`);
+    // 5. Deduct credits
+    await supabase
+      .from("user_credits")
+      .update({ credits_used: creditsUsed + cost, updated_at: new Date().toISOString() })
+      .eq("user_id", user.id);
+
+    console.log(`GitHub analysis complete for profile ${profileId} using model ${selectedModel}, deducted ${cost} credits`);
 
     return new Response(
       JSON.stringify({ success: true, codeAnalysis }),

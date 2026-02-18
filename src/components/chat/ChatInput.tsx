@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, getCodeAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -300,55 +300,65 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
               )}
             </Tooltip>
           </TooltipProvider>
-          {/* GitHub Deep Analysis Button (Premium only, always visible) */}
-          {isPremium && (
-            <Popover open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={disabled}
-                  className="shrink-0 h-[44px] w-[44px]"
-                  title="Add GitHub repo for Deep Analysis"
-                >
-                  <Github className="w-4 h-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-80 p-3">
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium">GitHub Repository URL</Label>
-                  <p className="text-[10px] text-muted-foreground">
-                    Add a public repo to run a Deep Code Analysis on your website's source code.
-                  </p>
-                  <Input
-                    value={githubInput}
-                    onChange={(e) => setGithubInput(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
-                    placeholder="https://github.com/user/repo"
-                    className="h-8 text-sm"
-                    maxLength={GITHUB_MAX_LENGTH}
-                  />
-                  {githubInput.trim() && !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim())) && (
-                    <p className="text-[10px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
-                  )}
-                  {githubInput.trim() && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()) && (
-                    <p className="text-[10px] text-chart-6">✓ Valid GitHub URL</p>
-                  )}
+          {/* GitHub Deep Analysis Button */}
+          {(() => {
+            const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel);
+            const notEnoughForCode = remainingCredits < codeAnalysisCost;
+            return (
+              <Popover open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
+                <PopoverTrigger asChild>
                   <Button
-                    size="sm"
-                    className="w-full"
-                    disabled={!githubInput.trim() || !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()))}
-                    onClick={() => {
-                      onGithubAnalysis?.(githubInput.trim(), selectedModel);
-                      setGithubInput("");
-                      setGithubPopoverOpen(false);
-                    }}
+                    variant="outline"
+                    size="icon"
+                    disabled={disabled}
+                    className="shrink-0 h-[44px] w-[44px]"
+                    title="Add GitHub repo for Deep Analysis"
                   >
-                    Start Deep Analysis
+                    <Github className="w-4 h-4" />
                   </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80 p-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">GitHub Repository URL</Label>
+                    <p className="text-[10px] text-muted-foreground">
+                      Add a public repo to run a Deep Code Analysis on your website's source code.
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Costs <span className="font-semibold text-foreground">{codeAnalysisCost} credits</span> with {currentModel.label}
+                    </p>
+                    <Input
+                      value={githubInput}
+                      onChange={(e) => setGithubInput(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
+                      placeholder="https://github.com/user/repo"
+                      className="h-8 text-sm"
+                      maxLength={GITHUB_MAX_LENGTH}
+                    />
+                    {githubInput.trim() && !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim())) && (
+                      <p className="text-[10px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+                    )}
+                    {githubInput.trim() && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()) && (
+                      <p className="text-[10px] text-chart-6">✓ Valid GitHub URL</p>
+                    )}
+                    {notEnoughForCode && (
+                      <p className="text-[10px] text-destructive">Not enough credits ({codeAnalysisCost} needed, {remainingCredits} remaining)</p>
+                    )}
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      disabled={notEnoughForCode || !githubInput.trim() || !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()))}
+                      onClick={() => {
+                        onGithubAnalysis?.(githubInput.trim(), selectedModel);
+                        setGithubInput("");
+                        setGithubPopoverOpen(false);
+                      }}
+                    >
+                      Start Deep Analysis ({codeAnalysisCost} Credits)
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            );
+          })()}
           <Button
             onClick={() => {
               if (notEnoughForChat) {

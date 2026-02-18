@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Globe, Code2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import type { WebsiteProfile, ImprovementTask } from "@/types/chat";
 import PageSpeedCard from "./PageSpeedCard";
 import WebsiteGrid from "./WebsiteGrid";
@@ -12,6 +12,8 @@ import CodeAnalysisCard from "./CodeAnalysisCard";
 interface AnalysisTabsContentProps {
   profiles: WebsiteProfile[];
   tasks: ImprovementTask[];
+  onOpenUrlDialog?: () => void;
+  onOpenGithubDialog?: () => void;
 }
 
 const getScoreColor = (score: number) =>
@@ -47,19 +49,21 @@ const ScoreRing = ({ score, size = 52 }: { score: number; size?: number }) => {
   );
 };
 
-const PlaceholderCard = ({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) => (
+const PlaceholderCard = ({ title, description, buttonLabel, onAction }: { title: string; description: string; buttonLabel?: string; onAction?: () => void }) => (
   <Card className="border-dashed border-border bg-card/50">
     <CardContent className="p-8 flex flex-col items-center text-center gap-3">
-      <Icon className="w-10 h-10 text-muted-foreground/40" />
-      <div>
-        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
-        <p className="text-xs text-muted-foreground mt-1 max-w-xs">{description}</p>
-      </div>
+      <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+      <p className="text-xs text-muted-foreground max-w-xs">{description}</p>
+      {onAction && buttonLabel && (
+        <Button variant="outline" size="sm" onClick={onAction}>
+          {buttonLabel}
+        </Button>
+      )}
     </CardContent>
   </Card>
 );
 
-const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
+const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDialog }: AnalysisTabsContentProps) => {
   const ownSite = profiles.find((p) => p.is_own_website);
   const competitors = profiles.filter((p) => !p.is_own_website);
   const hasMultiple = profiles.length >= 2;
@@ -73,10 +77,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
     <div className="space-y-6">
       {/* ── WEBSITE ANALYSIS BLOCK ── */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Globe className="w-4 h-4 text-primary" />
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Website Analysis</h2>
-        </div>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Website Analysis</h2>
 
         {hasWebsiteData ? (
           <div className="space-y-8">
@@ -181,8 +182,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                            <CheckCircle2 className="w-4 h-4 text-chart-6" /> Strengths
+            <p className="text-sm font-semibold text-muted-foreground mb-2">Strengths
                           </p>
                           <div className="space-y-1.5">
                             {(profile.profile_data.strengths || []).slice(0, 5).map((s) => (
@@ -194,8 +194,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
                           </div>
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                            <XCircle className="w-4 h-4 text-destructive" /> Weaknesses
+            <p className="text-sm font-semibold text-muted-foreground mb-2">Weaknesses
                           </p>
                           <div className="space-y-1.5">
                             {(profile.profile_data.weaknesses || []).slice(0, 5).map((w) => (
@@ -215,9 +214,10 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
           </div>
         ) : (
           <PlaceholderCard
-            icon={Globe}
             title="Scan your website"
             description="Analyze your website URL to unlock positioning, trust, and conversion insights."
+            buttonLabel="Start Website Scan"
+            onAction={onOpenUrlDialog}
           />
         )}
       </div>
@@ -227,10 +227,7 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
 
       {/* ── CODE ANALYSIS BLOCK ── */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Code2 className="w-4 h-4 text-primary" />
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Code Analysis</h2>
-        </div>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Code Analysis</h2>
 
         {hasCodeData ? (
           <section id="section-code-quality" className="scroll-mt-16 space-y-3">
@@ -241,9 +238,10 @@ const AnalysisTabsContent = ({ profiles, tasks }: AnalysisTabsContentProps) => {
           </section>
         ) : (
           <PlaceholderCard
-            icon={Code2}
             title="Analyze your repository"
             description="Connect a GitHub repository to unlock code quality, security, and performance insights."
+            buttonLabel="Start Code Analysis"
+            onAction={onOpenGithubDialog}
           />
         )}
       </div>

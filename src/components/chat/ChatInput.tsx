@@ -49,9 +49,13 @@ interface ChatInputProps {
   hasOwnProfile?: boolean;
   initialOwnUrl?: string;
   initialCompetitorUrls?: string[];
+  externalDialogOpen?: boolean;
+  onExternalDialogChange?: (open: boolean) => void;
+  externalGithubOpen?: boolean;
+  onExternalGithubChange?: (open: boolean) => void;
 }
 
-const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl, disabled, hasProfiles = true, hasOwnProfile = false, initialOwnUrl, initialCompetitorUrls }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl, disabled, hasProfiles = true, hasOwnProfile = false, initialOwnUrl, initialCompetitorUrls, externalDialogOpen, onExternalDialogChange, externalGithubOpen, onExternalGithubChange }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const CHAT_MAX_LENGTH = 300;
@@ -64,6 +68,21 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
   const [githubPopoverOpen, setGithubPopoverOpen] = useState(false);
   const [githubInput, setGithubInput] = useState("");
   const [showHint, setShowHint] = useState(false);
+
+  // Sync external dialog open triggers
+  useEffect(() => {
+    if (externalDialogOpen) {
+      setDialogOpen(true);
+      onExternalDialogChange?.(false);
+    }
+  }, [externalDialogOpen]);
+
+  useEffect(() => {
+    if (externalGithubOpen) {
+      setGithubPopoverOpen(true);
+      onExternalGithubChange?.(false);
+    }
+  }, [externalGithubOpen]);
   const [ownUrl, setOwnUrl] = useState("");
   const [comp1, setComp1] = useState("");
   const [comp2, setComp2] = useState("");

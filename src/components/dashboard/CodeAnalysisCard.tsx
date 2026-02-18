@@ -113,8 +113,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
           <CardContent className="p-4">
             <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Tech Stack</p>
             <div className="flex flex-wrap gap-1.5">
-              {techStack.map((t) => (
-                <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
+              {techStack.map((t, i) => (
+                <Badge key={`tech-${i}`} variant="secondary" className="text-xs">{t}</Badge>
               ))}
             </div>
           </CardContent>
@@ -130,8 +130,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground mb-2">Strengths</p>
                   <div className="space-y-1.5">
-                    {strengths.slice(0, 5).map((s) => (
-                      <div key={s} className="flex items-start gap-1.5">
+                    {strengths.slice(0, 5).map((s, i) => (
+                      <div key={`strength-${i}`} className="flex items-start gap-1.5">
                         <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
                         <span className="text-sm text-foreground leading-tight">{s}</span>
                       </div>
@@ -143,8 +143,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground mb-2">Weaknesses</p>
                   <div className="space-y-1.5">
-                    {weaknesses.slice(0, 5).map((w) => (
-                      <div key={w} className="flex items-start gap-1.5">
+                    {weaknesses.slice(0, 5).map((w, i) => (
+                      <div key={`weakness-${i}`} className="flex items-start gap-1.5">
                         <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
                         <span className="text-sm text-foreground leading-tight">{w}</span>
                       </div>
@@ -163,8 +163,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
           <CardContent className="p-4">
             <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Security Issues</p>
             <div className="space-y-1.5">
-              {securityIssues.map((issue) => (
-                <div key={issue} className="flex items-start gap-1.5">
+              {securityIssues.map((issue, i) => (
+                <div key={`sec-${i}`} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
                   <span className="text-sm text-foreground leading-tight">{issue}</span>
                 </div>
@@ -180,8 +180,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
           <CardContent className="p-4">
             <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">SEO Code Issues</p>
             <div className="space-y-1.5">
-              {seoIssues.map((issue) => (
-                <div key={issue} className="flex items-start gap-1.5">
+              {seoIssues.map((issue, i) => (
+                <div key={`seo-${i}`} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-primary shrink-0" />
                   <span className="text-sm text-foreground leading-tight">{issue}</span>
                 </div>
@@ -197,8 +197,8 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
           <CardContent className="p-4">
             <p className="text-sm uppercase tracking-wider text-muted-foreground/60 mb-2">Recommendations</p>
             <div className="space-y-1.5">
-              {recommendations.slice(0, 5).map((r) => (
-                <div key={r} className="flex items-start gap-1.5">
+              {recommendations.slice(0, 5).map((r, i) => (
+                <div key={`rec-${i}`} className="flex items-start gap-1.5">
                   <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-primary shrink-0" />
                   <span className="text-sm text-foreground leading-tight">{r}</span>
                 </div>

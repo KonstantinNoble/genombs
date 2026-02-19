@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 14, 2026 | Version 7.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 19, 2026 | Version 8.0</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -655,6 +655,72 @@ const PrivacyPolicy = () => {
               <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
               (providing the website analysis service you requested).
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.3 GitHub Repository Code Analysis</h3>
+            <p className="text-muted-foreground mb-4">
+              Users may submit a public GitHub repository URL to perform an AI-powered code analysis 
+              ("Deep Code Analysis"). This feature evaluates the source code of a publicly accessible 
+              repository in combination with the associated website analysis.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to GitHub</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The repository URL (accessed via the public GitHub API without authentication)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Received from GitHub</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>File tree of the repository (up to 100 files)</li>
+              <li>Source code of selected files (up to 15 files, max. 30,000 characters total)</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transmitted to AI Providers</h4>
+            <p className="text-muted-foreground mb-4">
+              The following data is sent to the selected AI provider (same providers as listed in Section 9) 
+              for code evaluation:
+            </p>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Repository name</li>
+              <li>Associated website URL</li>
+              <li>File tree structure</li>
+              <li>Source code snippets from selected files</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Stored</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>AI-generated code analysis results, including scores for: Code Quality, Security, Performance, Accessibility, Maintainability, and SEO</li>
+              <li>Detected technologies, strengths, weaknesses, and recommendations</li>
+              <li>The GitHub repository URL</li>
+            </ul>
+            <p className="text-muted-foreground mb-4">
+              <strong>Note:</strong> Only publicly accessible repository data is retrieved. Private repositories 
+              cannot be analyzed. No GitHub authentication tokens or credentials are used or stored.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Provider Information</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Provider:</strong> GitHub, Inc. (a subsidiary of Microsoft Corporation)
+              <br />
+              <strong>Location:</strong> 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA
+              <br />
+              <strong>Privacy Policy:</strong>{" "}
+              <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                GitHub Privacy Statement
+              </a>
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Transfer to Third Countries</h4>
+            <p className="text-muted-foreground mb-4">
+              GitHub, Inc. is based in the United States. Data transfers are conducted in compliance with 
+              GDPR requirements based on the EU-U.S. Data Privacy Framework (DPF) — GitHub/Microsoft is 
+              certified under the DPF (adequacy decision pursuant to Art. 45 GDPR).
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (providing the code analysis service you requested).
+            </p>
           </section>
 
           {/* Section 9: AI-Powered Data Processing */}
@@ -893,7 +959,7 @@ const PrivacyPolicy = () => {
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Analysis Data</strong></td>
-                    <td className="border border-border p-3">Submitted URLs, crawled website content, AI-generated scores and profiles, screenshots</td>
+                    <td className="border border-border p-3">Submitted URLs, crawled website content, AI-generated scores and profiles, screenshots, GitHub repository source code, AI-generated code analysis scores</td>
                     <td className="border border-border p-3">Website analysis and scoring service</td>
                   </tr>
                   <tr>
@@ -971,6 +1037,12 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Payment processing</td>
                     <td className="border border-border p-3">Email, payment details</td>
                     <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>GitHub, Inc. (Microsoft)</strong></td>
+                    <td className="border border-border p-3">Code repository access for analysis</td>
+                    <td className="border border-border p-3">Repository URLs</td>
+                    <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                 </tbody>
               </table>
@@ -1194,6 +1266,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 8.0 (February 19, 2026):</strong> Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation (Section 8.3). Added GitHub, Inc. (Microsoft) as data recipient. Updated analysis data categories to include source code and code analysis scores.</li>
               <li><strong>Version 7.0 (February 14, 2026):</strong> Added sections for Website Crawling (Firecrawl), AI-Powered Data Processing (Google Gemini, OpenAI, Anthropic, Perplexity), and Google PageSpeed Insights. Updated recipients and data categories tables. Corrected automated decision-making section to reflect active AI usage. Removed non-existent marketing emails section. Renumbered all sections.</li>
               <li><strong>Version 6.0 (February 8, 2026):</strong> Platform update – removed feature-specific sections (Multi-AI Validation, Team Workspaces, Business Context, Dashboard Statistics, Decision Audit Records, Experiment Workflow) pending new service implementation. Simplified data categories, recipients, and retention tables accordingly. Renumbered all sections.</li>
               <li><strong>Version 5.9 (February 1, 2026):</strong> Corrected Business Context section – basic profile fields available to all registered users; only Website URL input and website scanning via Firecrawl is Premium-exclusive.</li>
@@ -1204,7 +1277,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: February 14, 2026
+              Last updated: February 19, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

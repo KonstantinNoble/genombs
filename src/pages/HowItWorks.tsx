@@ -1,3 +1,4 @@
+import { useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -81,6 +82,34 @@ const HowItWorks = () => {
   const { user } = useAuth();
   const isLoggedIn = !!user;
 
+  // Scroll reveal observer (same pattern as Homepage)
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const setupObserver = useCallback(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observerRef.current?.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" },
+    );
+
+    document
+      .querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale, .stagger-reveal, .step-circle-pulse")
+      .forEach((el) => {
+        observerRef.current?.observe(el);
+      });
+  }, []);
+
+  useEffect(() => {
+    setupObserver();
+    return () => observerRef.current?.disconnect();
+  }, [setupObserver]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
@@ -94,12 +123,15 @@ const HowItWorks = () => {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 dot-grid">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.08] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-[1.08] mb-6 animate-fade-in">
               How Synvertas works
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p
+              className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in-up"
+              style={{ animationDelay: "0.15s", animationFillMode: "both" }}
+            >
               From URL to actionable insights in under 60 seconds.
             </p>
           </div>
@@ -108,7 +140,7 @@ const HowItWorks = () => {
         {/* Analysis Process */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16 scroll-reveal">
               <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-5">
                 Website Analysis
               </h2>
@@ -117,17 +149,23 @@ const HowItWorks = () => {
               </p>
             </div>
 
-            <div className="space-y-0">
+            <div className="relative space-y-0">
+              {/* Vertical connecting line */}
+              <div className="absolute left-[1.65rem] top-14 bottom-14 w-px bg-primary/20 hidden md:block" />
+
               {steps.map((step, i) => (
                 <div
                   key={step.step}
-                  className={`flex flex-col md:flex-row items-start gap-6 md:gap-10 py-10 ${
+                  className={`flex flex-col md:flex-row items-start gap-6 md:gap-10 py-10 accent-stripe stagger-reveal ${
                     i < steps.length - 1 ? "border-b border-border" : ""
                   }`}
+                  style={{ animationDelay: `${i * 0.15}s` }}
                 >
-                  <span className="text-5xl font-semibold text-primary font-mono leading-none shrink-0">
-                    {step.step}
-                  </span>
+                  <div className="step-circle-pulse w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center shrink-0 relative z-10">
+                    <span className="text-lg font-medium text-primary font-mono">
+                      {step.step}
+                    </span>
+                  </div>
                   <div className="space-y-3">
                     <h3 className="text-xl font-medium text-foreground">
                       {step.title}
@@ -145,7 +183,7 @@ const HowItWorks = () => {
         {/* Code Analysis */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16 scroll-reveal">
               <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-5">
                 Code Analysis
               </h2>
@@ -154,7 +192,7 @@ const HowItWorks = () => {
               </p>
             </div>
 
-            <div className="border border-border bg-card rounded-lg p-8 sm:p-10 space-y-8">
+            <div className="border border-border bg-card rounded-lg p-8 sm:p-10 space-y-8 scroll-reveal-scale">
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-foreground">
                   How it works
@@ -169,10 +207,11 @@ const HowItWorks = () => {
                   Scoring categories
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {codeCategories.map((cat) => (
+                  {codeCategories.map((cat, i) => (
                     <div
                       key={cat}
-                      className="border border-border rounded-lg px-4 py-3 text-sm text-foreground font-medium text-center"
+                      className="accent-stripe border border-border rounded-lg px-4 py-3 text-sm text-foreground font-medium text-center stagger-reveal"
+                      style={{ animationDelay: `${i * 0.08}s` }}
                     >
                       {cat}
                     </div>
@@ -186,7 +225,7 @@ const HowItWorks = () => {
         {/* AI Models */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16 scroll-reveal">
               <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-5">
                 5 AI Models
               </h2>
@@ -196,10 +235,11 @@ const HowItWorks = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {aiModels.map((model) => (
+              {aiModels.map((model, i) => (
                 <div
                   key={model.name}
-                  className="border border-border bg-card rounded-lg p-6 space-y-4 hover:border-primary/40 transition-colors duration-200"
+                  className="border border-border bg-card rounded-lg p-6 space-y-4 hover-lift hover:border-primary/40 stagger-reveal"
+                  style={{ animationDelay: `${i * 0.1}s` }}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="text-lg font-medium text-foreground">
@@ -227,7 +267,7 @@ const HowItWorks = () => {
         {/* AI Chat */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16 scroll-reveal">
               <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-5">
                 AI Chat
               </h2>
@@ -236,10 +276,10 @@ const HowItWorks = () => {
               </p>
             </div>
 
-            <div className="border border-border bg-card rounded-lg p-8 sm:p-10">
+            <div className="border border-border bg-card rounded-lg p-8 sm:p-10 scroll-reveal-scale">
               <ul className="space-y-4">
                 {chatCapabilities.map((cap, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm">
+                  <li key={i} className="flex items-start gap-3 text-sm stagger-reveal" style={{ animationDelay: `${i * 0.08}s` }}>
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
                     <span className="text-foreground leading-relaxed">{cap}</span>
                   </li>
@@ -253,8 +293,8 @@ const HowItWorks = () => {
         </section>
 
         {/* CTA */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
-          <div className="max-w-2xl mx-auto text-center">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border dot-grid">
+          <div className="max-w-2xl mx-auto text-center scroll-reveal-scale">
             <div className="border border-border rounded-xl p-10 sm:p-14 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-semibold text-foreground">
                 Ready to analyze your website?
@@ -265,7 +305,7 @@ const HowItWorks = () => {
               <div className="pt-2">
                 <Button
                   size="lg"
-                  className="px-10 h-13"
+                  className="px-10 h-13 btn-glow"
                   asChild
                 >
                   <Link to={isLoggedIn ? "/chat" : "/auth"}>

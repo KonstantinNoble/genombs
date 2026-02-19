@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 19, 2026 | Version 8.0</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 19, 2026 | Version 8.1</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -335,8 +335,8 @@ const PrivacyPolicy = () => {
               with GDPR requirements using appropriate safeguards:
             </p>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li>Standard Contractual Clauses (SCCs) pursuant to Art. 46(2)(c) GDPR</li>
-              <li>EU-U.S. Data Privacy Framework (DPF) certification where applicable</li>
+              <li>EU-U.S. Data Privacy Framework (DPF) pursuant to Art. 45 GDPR (Resend is DPF-certified)</li>
+              <li>Standard Contractual Clauses (SCCs) pursuant to Art. 46(2)(c) GDPR as supplementary safeguard</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
@@ -758,7 +758,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>OpenAI, Inc.</strong></td>
                     <td className="border border-border p-3">GPT-4o-mini, GPT-4o</td>
                     <td className="border border-border p-3">USA</td>
-                    <td className="border border-border p-3">DPF (Art. 45 GDPR)</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c) GDPR)</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Anthropic, PBC</strong></td>
@@ -1000,7 +1000,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>OpenAI, Inc.</strong></td>
                     <td className="border border-border p-3">AI-powered website analysis and chat</td>
                     <td className="border border-border p-3">Website content, chat messages</td>
-                    <td className="border border-border p-3">DPF (Art. 45)</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Anthropic, PBC</strong></td>
@@ -1030,7 +1030,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>Resend, Inc.</strong></td>
                     <td className="border border-border p-3">Transactional emails</td>
                     <td className="border border-border p-3">Email address</td>
-                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
+                    <td className="border border-border p-3">DPF (Art. 45)</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Freemius, Inc.</strong></td>
@@ -1266,6 +1266,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF.</li>
               <li><strong>Version 8.0 (February 19, 2026):</strong> Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation (Section 8.3). Added GitHub, Inc. (Microsoft) as data recipient. Updated analysis data categories to include source code and code analysis scores.</li>
               <li><strong>Version 7.0 (February 14, 2026):</strong> Added sections for Website Crawling (Firecrawl), AI-Powered Data Processing (Google Gemini, OpenAI, Anthropic, Perplexity), and Google PageSpeed Insights. Updated recipients and data categories tables. Corrected automated decision-making section to reflect active AI usage. Removed non-existent marketing emails section. Renumbered all sections.</li>
               <li><strong>Version 6.0 (February 8, 2026):</strong> Platform update – removed feature-specific sections (Multi-AI Validation, Team Workspaces, Business Context, Dashboard Statistics, Decision Audit Records, Experiment Workflow) pending new service implementation. Simplified data categories, recipients, and retention tables accordingly. Renumbered all sections.</li>

@@ -328,15 +328,39 @@ serve(async (req) => {
 
     const { data: credits } = await supabase
       .from("user_credits")
-      .select("credits_used, daily_credits_limit")
+      .select("credits_used, daily_credits_limit, credits_reset_at, is_premium")
       .eq("user_id", user.id)
       .single();
 
-    const creditsUsed = credits?.credits_used ?? 0;
-    const creditsLimit = credits?.daily_credits_limit ?? 20;
-    const remaining = creditsLimit - creditsUsed;
     const selectedModel: ModelId = (model as ModelId) || "gemini-flash";
     const cost = CODE_ANALYSIS_COSTS[selectedModel] ?? 8;
+
+    // Premium model gating
+    const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
+    if (EXPENSIVE_MODELS.includes(selectedModel) && !credits?.is_premium) {
+      return new Response(
+        JSON.stringify({ error: "premium_model_required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Credit reset check
+    let creditsUsed = credits?.credits_used ?? 0;
+    const creditsLimit = credits?.daily_credits_limit ?? 20;
+    const resetAt = credits?.credits_reset_at ? new Date(credits.credits_reset_at) : new Date();
+
+    if (resetAt < new Date()) {
+      creditsUsed = 0;
+      await supabase
+        .from("user_credits")
+        .update({
+          credits_used: 0,
+          credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        })
+        .eq("user_id", user.id);
+    }
+
+    const remaining = creditsLimit - creditsUsed;
 
     if (remaining < cost) {
       return new Response(

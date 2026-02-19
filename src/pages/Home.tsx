@@ -266,7 +266,7 @@ const Home = () => {
     {
       question: "What AI models are available?",
       answer:
-        "Free users have access to Gemini Flash and GPT Mini. Premium users unlock all 5 models: Gemini Flash, GPT Mini, GPT-4o, Claude Sonnet, and Perplexity.",
+        "Free users get Gemini Flash (fast, great for quick questions) and GPT Mini (solid quality at low credit cost). Premium unlocks three additional models: GPT-4o (precise analysis and detailed answers), Claude Sonnet (nuanced reasoning and deep analysis), and Perplexity (real-time web search for current info).",
     },
     {
       question: "How long does a scan take?",

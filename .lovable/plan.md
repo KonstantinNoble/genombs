@@ -1,63 +1,80 @@
 
 
-## Neue "How It Works" Seite
+## Homepage und How It Works -- Animationen und Aesthetik verbessern
 
 ### Zusammenfassung
-Eine separate `/how-it-works` Seite, die professionell und ueberzeugend erklaert, wie Synvertas funktioniert: URL- und Code-Analyse, die 5 KI-Modelle mit ihren individuellen Staerken, und der interaktive AI-Chat. Design konsistent mit den bestehenden Seiten (Navbar, Footer, SEOHead, gleiche Typografie und Farben).
+Die Homepage hat bereits einige Animationen (scroll-reveal, count-up, typing-effect), aber die How It Works Seite ist komplett statisch. Beide Seiten werden mit konsistenten, professionellen Animationen aufgewertet, die das bestehende Animations-System (scroll-reveal, stagger-reveal, scroll-reveal-scale) nutzen.
 
-### Seitenstruktur
+### Aenderungen
 
-Die Seite besteht aus 5 Sektionen:
+#### 1. How It Works -- Animationen hinzufuegen (`src/pages/HowItWorks.tsx`)
 
-**1. Hero**
-- Ueberschrift: "How Synvertas works"
-- Untertitel: kurzer Einzeiler, z.B. "From URL to actionable insights in under 60 seconds."
+Die Seite ist aktuell vollstaendig statisch. Folgende Animationen werden ergaenzt:
 
-**2. Analyse-Prozess (3 Schritte)**
-Horizontale Timeline (wie auf der Homepage), aber detaillierter:
-- Step 01: "Paste your URL" -- Beschreibung, dass die Website gecrawlt und strukturiert erfasst wird (Content, CTAs, Trust-Signale, Offers)
-- Step 02: "AI analyzes everything" -- Beschreibung der 5 Scoring-Kategorien, PageSpeed-Integration und Competitor-Vergleich
-- Step 03: "Get scores, tasks & insights" -- Dashboard mit Scores, Improvement Plan und exportierbaren Ergebnissen
+- **Hero**: `animate-fade-in` auf Ueberschrift, `animate-fade-in-up` mit Delay auf Untertitel (wie Homepage)
+- **Analysis Steps**: Jeder Schritt erhaelt `stagger-reveal` mit gestaffeltem `animationDelay`, die Step-Nummern bekommen `scroll-reveal-scale`
+- **Code Analysis Sektion**: Header mit `scroll-reveal`, Card mit `scroll-reveal-scale`, Kategorie-Grid-Items mit `stagger-reveal`
+- **AI Models Sektion**: Header mit `scroll-reveal`, Model-Karten mit `stagger-reveal` und gestaffeltem Delay
+- **AI Chat Sektion**: Header mit `scroll-reveal`, Capabilities-Card mit `scroll-reveal-scale`
+- **CTA**: `scroll-reveal-scale` auf den gesamten CTA-Block
 
-**3. Code Analysis**
-Eigene Sektion, die erklaert:
-- Oeffentliches GitHub-Repository verbinden
-- Code wird ueber 6 Kategorien bewertet (Quality, Security, Performance, Accessibility, Maintainability, SEO)
-- Ergebnisse werden neben den Website-Scores angezeigt
+Zusaetzlich wird der IntersectionObserver aus der Homepage uebernommen (gleicher `setupObserver` Pattern), damit die scroll-basierten Klassen funktionieren.
 
-**4. Die 5 KI-Modelle**
-Grid mit 5 Karten, jede mit:
-- Modellname, kurzer Vorteil, Credit-Kosten, Free/Premium-Badge
-- Gemini Flash: "Fast responses for quick questions" (1 Credit, Free)
-- GPT Mini: "Solid quality at low credit cost" (1 Credit, Free)
-- GPT-4o: "Precise analysis and detailed answers" (4 Credits, Premium)
-- Claude Sonnet: "Nuanced reasoning and deep analysis" (5 Credits, Premium)
-- Perplexity: "Real-time web search for current info" (5 Credits, Premium)
+#### 2. How It Works -- Visuelle Verbesserungen (`src/pages/HowItWorks.tsx`)
 
-**5. AI Chat**
-Erklaerung, dass man nach der Analyse den KI-Modellen gezielte Fragen stellen kann:
-- Fragen ueber die eigene Website oder den Code
-- Vergleichsfragen zu Wettbewerbern
-- Konkrete Verbesserungsvorschlaege anfordern
-- Jedes Modell bringt eigene Staerken mit
+- **Step-Nummern**: `accent-stripe` auf die Step-Container und `step-circle-pulse` fuer die Nummern (wie Homepage "How it works" Timeline)
+- **Connecting Line**: Vertikale Linie zwischen den Steps (border-left mit primary-Akzent)
+- **Code Categories**: `accent-stripe` auf die Kategorie-Karten
+- **AI Model Cards**: Dezenter hover-lift-Effekt (scale + border-color transition)
+- **Chat Capabilities**: Bullet-Punkte mit `stagger-reveal` einzeln einblenden
+- **Sektions-Header**: `dot-grid` Hintergrund auf Hero und CTA Sektionen (wie Homepage)
 
-**6. CTA**
-- "Ready to analyze your website?" mit Button zu /auth oder /chat
+#### 3. Homepage -- Kleinere Verbesserungen (`src/pages/Home.tsx`)
+
+- **Feature Cards**: Hover-Effekt `translate-y` hinzufuegen (leichtes Anheben beim Hover)
+- **Use Cases**: `scroll-reveal-left` fuer Badge-Spalte, `scroll-reveal-right` fuer Content-Spalte (statt nur `stagger-reveal`)
+- **Comparison Table Rows**: Zeilen einzeln mit `stagger-reveal` einblenden statt die ganze Tabelle auf einmal
+- **CTA Button**: `btn-glow` Sweep-Effekt hinzufuegen
+
+#### 4. Neue CSS-Animation (`src/index.css`)
+
+Eine neue `animate-fade-in-up` Keyframe-Animation hinzufuegen (wird im Hero der HowItWorks-Seite gebraucht):
+
+```css
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+```
+
+Ausserdem ein dezenter Hover-Lift fuer Karten:
+
+```css
+.hover-lift {
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+```
 
 ### Technische Details
 
-**Neue Dateien:**
-- `src/pages/HowItWorks.tsx` -- neue Seite mit denselben Patterns wie Home/Pricing (Navbar, Footer, SEOHead, Container-Klassen, Border-Styles)
-
 **Geaenderte Dateien:**
-- `src/App.tsx` -- neue Route `/how-it-works` hinzufuegen (lazy loaded)
-- `src/components/Navbar.tsx` -- "How It Works" Link in Desktop- und Mobile-Navigation einfuegen (zwischen Home und Pricing)
+- `src/pages/HowItWorks.tsx` -- IntersectionObserver hinzufuegen, Animations-Klassen auf alle Sektionen, dot-grid auf Hero/CTA
+- `src/pages/Home.tsx` -- Kleinere Animations-Ergaenzungen (hover-lift, scroll-reveal-left/right, btn-glow)
+- `src/index.css` -- 2 neue Utility-Klassen (animate-fade-in-up, hover-lift)
 
-### Design-Richtlinien
-- Schwarzer Hintergrund, Orange-Akzente (#F97316)
-- Keine Icons oder Emojis in Sektions-Headern
-- Font-Weights: Ueberschriften `font-semibold`, Body `font-normal/medium`
-- Karten: `border border-border bg-card rounded-lg`
-- Sektionen getrennt durch `border-t border-border`
-- Monospace fuer Nummern und technische Werte (`font-mono`)
+**Keine neuen Abhaengigkeiten.** Alle Animationen nutzen das bestehende CSS-Animations-System.
 

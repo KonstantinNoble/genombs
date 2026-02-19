@@ -149,14 +149,7 @@ const Home = () => {
 
   const handleAnalyze = () => {
     const trimmed = urlInput.trim();
-    if (!trimmed || !trimmed.includes(".")) {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid website URL.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!trimmed) return;
     if (isLoggedIn) {
       navigate("/chat?url=" + encodeURIComponent(trimmed));
     } else {

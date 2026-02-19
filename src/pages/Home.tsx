@@ -408,7 +408,7 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover:border-primary/40 transition-colors duration-200"
+                className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover-lift hover:border-primary/40"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
                 <span className="text-4xl font-semibold text-primary font-mono leading-none block">{feature.num}</span>
@@ -430,17 +430,17 @@ const Home = () => {
             {useCases.map((uc, i) => (
               <div
                 key={uc.title}
-                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 stagger-reveal ${
+                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 scroll-reveal ${
                   i < useCases.length - 1 ? "border-b border-border" : ""
                 }`}
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
-                <div className="md:w-1/4 shrink-0">
+                <div className="md:w-1/4 shrink-0 scroll-reveal-left" style={{ transitionDelay: `${i * 0.1}s` }}>
                   <span className="text-xs uppercase tracking-widest text-primary font-semibold font-mono">
                     {uc.badge}
                   </span>
                 </div>
-                <div className="md:w-3/4 space-y-3">
+                <div className="md:w-3/4 space-y-3 scroll-reveal-right" style={{ transitionDelay: `${i * 0.1}s` }}>
                   <h3 className="text-xl font-medium text-foreground">{uc.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{uc.description}</p>
                 </div>
@@ -498,7 +498,7 @@ const Home = () => {
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
-                    <tr key={row.feature} className={`alt-row ${i < comparisonRows.length - 1 ? "border-b border-border" : ""}`}>
+                    <tr key={row.feature} className={`alt-row stagger-reveal ${i < comparisonRows.length - 1 ? "border-b border-border" : ""}`} style={{ animationDelay: `${i * 0.08}s` }}>
                       <td className="py-3.5 px-5 text-sm text-foreground font-medium">{row.feature}</td>
                       <td className="py-3.5 px-5 text-center">
                         <span
@@ -541,7 +541,7 @@ const Home = () => {
             asChild
             className="text-base px-10 h-13"
           >
-            <Link to={isLoggedIn ? "/chat" : "/auth"}>Get Started</Link>
+            <Link to={isLoggedIn ? "/chat" : "/auth"} className="btn-glow">Get Started</Link>
           </Button>
         </div>
       </section>

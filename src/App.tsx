@@ -25,6 +25,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Chat = lazy(() => import("./pages/Chat"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ const App = () => (
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/update-password" element={<UpdatePassword />} />
                   <Route path="/chat" element={<Chat />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

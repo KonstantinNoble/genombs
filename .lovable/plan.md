@@ -1,53 +1,63 @@
 
 
-## KI-Modell-Vorteile auf Homepage und Pricing subtil erwaehnen
+## Neue "How It Works" Seite
 
 ### Zusammenfassung
-Die individuellen Staerken der 5 KI-Modelle werden auf der Homepage und Pricing-Seite erwaehnt -- dezent und informativ, ohne aufdringlich zu wirken.
+Eine separate `/how-it-works` Seite, die professionell und ueberzeugend erklaert, wie Synvertas funktioniert: URL- und Code-Analyse, die 5 KI-Modelle mit ihren individuellen Staerken, und der interaktive AI-Chat. Design konsistent mit den bestehenden Seiten (Navbar, Footer, SEOHead, gleiche Typografie und Farben).
 
-### Aenderungen
+### Seitenstruktur
 
-#### 1. Homepage FAQ (`src/pages/Home.tsx`, Zeile 267-270)
+Die Seite besteht aus 5 Sektionen:
 
-Die bestehende FAQ-Antwort "What AI models are available?" wird erweitert, um die Vorteile jedes Modells kurz zu nennen:
+**1. Hero**
+- Ueberschrift: "How Synvertas works"
+- Untertitel: kurzer Einzeiler, z.B. "From URL to actionable insights in under 60 seconds."
 
-**Aktuell:**
-"Free users have access to Gemini Flash and GPT Mini. Premium users unlock all 5 models: Gemini Flash, GPT Mini, GPT-4o, Claude Sonnet, and Perplexity."
+**2. Analyse-Prozess (3 Schritte)**
+Horizontale Timeline (wie auf der Homepage), aber detaillierter:
+- Step 01: "Paste your URL" -- Beschreibung, dass die Website gecrawlt und strukturiert erfasst wird (Content, CTAs, Trust-Signale, Offers)
+- Step 02: "AI analyzes everything" -- Beschreibung der 5 Scoring-Kategorien, PageSpeed-Integration und Competitor-Vergleich
+- Step 03: "Get scores, tasks & insights" -- Dashboard mit Scores, Improvement Plan und exportierbaren Ergebnissen
 
-**Neu:**
-"Free users get Gemini Flash (fast, great for quick questions) and GPT Mini (solid quality at low credit cost). Premium unlocks three additional models: GPT-4o (precise analysis and detailed answers), Claude Sonnet (nuanced reasoning and deep analysis), and Perplexity (real-time web search for current info)."
+**3. Code Analysis**
+Eigene Sektion, die erklaert:
+- Oeffentliches GitHub-Repository verbinden
+- Code wird ueber 6 Kategorien bewertet (Quality, Security, Performance, Accessibility, Maintainability, SEO)
+- Ergebnisse werden neben den Website-Scores angezeigt
 
-#### 2. Pricing -- Feature-Listen (`src/pages/Pricing.tsx`)
+**4. Die 5 KI-Modelle**
+Grid mit 5 Karten, jede mit:
+- Modellname, kurzer Vorteil, Credit-Kosten, Free/Premium-Badge
+- Gemini Flash: "Fast responses for quick questions" (1 Credit, Free)
+- GPT Mini: "Solid quality at low credit cost" (1 Credit, Free)
+- GPT-4o: "Precise analysis and detailed answers" (4 Credits, Premium)
+- Claude Sonnet: "Nuanced reasoning and deep analysis" (5 Credits, Premium)
+- Perplexity: "Real-time web search for current info" (5 Credits, Premium)
 
-Die Modell-Eintraege in den Feature-Listen werden um kurze Klammerzusaetze ergaenzt:
+**5. AI Chat**
+Erklaerung, dass man nach der Analyse den KI-Modellen gezielte Fragen stellen kann:
+- Fragen ueber die eigene Website oder den Code
+- Vergleichsfragen zu Wettbewerbern
+- Konkrete Verbesserungsvorschlaege anfordern
+- Jedes Modell bringt eigene Staerken mit
 
-**Free Plan (Zeile 42):**
-- Aktuell: "2 AI models (Gemini Flash, GPT Mini)"
-- Neu: "2 AI models — Gemini Flash (fast) & GPT Mini (solid quality)"
-
-**Free Plan (Zeile 48):**
-- Aktuell: "Premium AI models (GPT-4o, Claude, Perplexity)"
-- Neu: "Premium AI models (GPT-4o, Claude, Perplexity)" -- bleibt gleich (ist durchgestrichen, kein Platz fuer Details)
-
-**Premium Plan (Zeile 55):**
-- Aktuell: "All 5 AI models"
-- Neu: "All 5 AI models — including GPT-4o, Claude & Perplexity"
-
-#### 3. Feature-Vergleichstabelle (`src/components/genome/FeatureComparisonTable.tsx`)
-
-Die Zeile fuer "Premium models" (Zeile 19) wird leicht ergaenzt:
-
-- Aktuell: "Premium models (GPT-4o, Claude, Perplexity)"
-- Neu: "Premium models (GPT-4o, Claude, Perplexity)" -- bleibt hier gleich, da die Tabelle kompakt bleiben soll
-
-Stattdessen wird die Zeile "AI models" (Zeile 13) im Free-Wert angepasst:
-- Aktuell: "2 (Gemini Flash, GPT Mini)"
-- Neu: "2 (Flash, Mini)"
-- Premium bleibt: "All 5"
+**6. CTA**
+- "Ready to analyze your website?" mit Button zu /auth oder /chat
 
 ### Technische Details
 
-- Nur Text-Aenderungen in 2 Dateien: `src/pages/Home.tsx` und `src/pages/Pricing.tsx`
-- Keine Aenderung an `FeatureComparisonTable.tsx` -- Tabelle bleibt kompakt
-- Kein Backend, keine neuen Komponenten, keine Layout-Aenderungen
+**Neue Dateien:**
+- `src/pages/HowItWorks.tsx` -- neue Seite mit denselben Patterns wie Home/Pricing (Navbar, Footer, SEOHead, Container-Klassen, Border-Styles)
+
+**Geaenderte Dateien:**
+- `src/App.tsx` -- neue Route `/how-it-works` hinzufuegen (lazy loaded)
+- `src/components/Navbar.tsx` -- "How It Works" Link in Desktop- und Mobile-Navigation einfuegen (zwischen Home und Pricing)
+
+### Design-Richtlinien
+- Schwarzer Hintergrund, Orange-Akzente (#F97316)
+- Keine Icons oder Emojis in Sektions-Headern
+- Font-Weights: Ueberschriften `font-semibold`, Body `font-normal/medium`
+- Karten: `border border-border bg-card rounded-lg`
+- Sektionen getrennt durch `border-t border-border`
+- Monospace fuer Nummern und technische Werte (`font-mono`)
 

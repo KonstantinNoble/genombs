@@ -183,6 +183,12 @@ const Home = () => {
       title: "Improvement Plan",
       description: "Concrete, prioritized optimization tasks based on the analysis. Ready to execute.",
     },
+    {
+      num: "04",
+      title: "Code Analysis",
+      description:
+        "Connect a public GitHub repository and get your source code scored across six categories: quality, security, performance, accessibility, maintainability, and SEO.",
+    },
   ];
 
   const steps = [
@@ -229,6 +235,12 @@ const Home = () => {
         "Track your PageSpeed scores and Core Web Vitals. Understand how technical performance impacts your user experience.",
       badge: "Performance",
     },
+    {
+      title: "Code Analysis",
+      description:
+        "Link your public GitHub repository and get your code scored across six categories — from security to maintainability.",
+      badge: "Code Review",
+    },
   ];
 
   const comparisonRows = [
@@ -265,6 +277,11 @@ const Home = () => {
       question: "Is my data secure?",
       answer:
         "We only analyze publicly available website data. Your account data is encrypted and stored securely. We are GDPR compliant and do not sell or share your analysis data with third parties.",
+    },
+    {
+      question: "What is the Code Analysis?",
+      answer:
+        "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: code quality, security, performance, accessibility, maintainability, and SEO. The results are included alongside your website scores.",
     },
   ];
 
@@ -372,7 +389,7 @@ const Home = () => {
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal" style={{ transitionDelay: "0.3s" }}>
               <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono">Incl.</p>
-              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed Data</p>
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed & Code Analysis</p>
             </div>
           </div>
         </div>
@@ -387,7 +404,7 @@ const Home = () => {
               Scores, comparisons, and a concrete fix list for your website.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
             {features.map((feature, i) => (
               <div
                 key={feature.title}

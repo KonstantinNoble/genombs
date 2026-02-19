@@ -44,6 +44,7 @@ const PricingPage = () => {
     { text: "5 scoring categories", included: true },
     { text: "PageSpeed Insights", included: true },
     { text: "AI Chat", included: true },
+    { text: "GitHub Code Analysis", included: true },
     { text: "Premium AI models (GPT-4o, Claude, Perplexity)", included: false },
     { text: "Up to 3 competitor URLs", included: false },
   ];
@@ -56,6 +57,7 @@ const PricingPage = () => {
     { text: "5 scoring categories", included: true },
     { text: "PageSpeed Insights", included: true },
     { text: "AI Chat with all models", included: true },
+    { text: "GitHub Code Analysis", included: true },
   ];
 
   const pricingFAQ = [

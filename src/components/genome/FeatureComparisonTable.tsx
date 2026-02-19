@@ -15,6 +15,7 @@ const features: Feature[] = [
   { name: "Scoring categories", free: "5", premium: "5" },
   { name: "PageSpeed Insights", free: true, premium: true },
   { name: "AI Chat", free: true, premium: true },
+  { name: "GitHub Code Analysis", free: true, premium: true },
   { name: "Premium models (GPT-4o, Claude, Perplexity)", free: false, premium: true },
 ];
 

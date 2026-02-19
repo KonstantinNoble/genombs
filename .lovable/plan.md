@@ -1,82 +1,97 @@
 
+# Bugfixes fuer `add-github-analysis` Edge Function
 
-# Code-Analyse wird bei URL-Neuanalyse geloescht -- Fix
+## Gefundene Bugs
 
-## Problem
+### Bug 1: Fehlender Credit-Reset-Check (Kritisch)
 
-Wenn eine neue URL-Analyse gestartet wird, ruft `Chat.tsx` (Zeile 528) `deleteProfilesForConversation()` auf. Diese Funktion loescht **alle** `website_profiles` fuer die Konversation -- einschliesslich des Profils mit vorhandener `code_analysis`. Die neue Analyse erstellt dann ein frisches Profil ohne Code-Analyse-Daten.
+**Datei:** `supabase/functions/add-github-analysis/index.ts`, Zeilen 329-346
 
-```text
-Ablauf aktuell:
-1. User hat Profil mit code_analysis (von add-github-analysis)
-2. User startet neue URL-Analyse
-3. deleteProfilesForConversation() loescht ALLE Profile
-4. Neues Profil wird erstellt -- code_analysis = null
-5. Queue-Worker analysiert URL, aber ohne GitHub-Daten = kein code_analysis
-```
+Die Funktion liest nur `credits_used` und `daily_credits_limit`, ignoriert aber `credits_reset_at`. Wenn die 24-Stunden-Periode abgelaufen ist, werden die Credits nicht zurueckgesetzt -- der User wird faelschlicherweise blockiert.
 
-## Loesung
+**Vergleich:** `analyze-website` hat die korrekte Logik in `checkAndDeductAnalysisCredits()` (Zeilen 420-428), die `credits_reset_at` prueft und bei Ablauf `credits_used` auf 0 setzt.
 
-Vor dem Loeschen der alten Profile die `code_analysis` und `github_repo_url` Daten sichern und nach dem Erstellen der neuen Profile auf das "eigene Website"-Profil uebertragen.
+**Fix:** Die Credit-Pruefung in `add-github-analysis` erweitern:
+- `credits_reset_at` aus der DB lesen
+- Pruefen ob `credits_reset_at < now()` -- wenn ja, `credits_used` auf 0 zuruecksetzen und neuen Reset-Zeitpunkt setzen
+- Dann erst den Vergleich `remaining < cost` durchfuehren
 
-### Aenderung in `src/pages/Chat.tsx`
+### Bug 2: Fehlende Premium-Model-Pruefung (Mittel)
 
-Im `handleStartScan`-Flow (ca. Zeile 523-536) die Logik erweitern:
+**Datei:** `supabase/functions/add-github-analysis/index.ts`, Zeilen 338-346
 
-1. **Vor dem Loeschen**: Die `code_analysis` und `github_repo_url` aus dem bestehenden "eigenen" Profil zwischenspeichern (aus dem aktuellen `profiles` State).
+Free-User koennen teure Modelle (`gpt`, `claude-sonnet`, `perplexity`) fuer die Code-Analyse auswaehlen -- das Backend blockiert sie nicht. In `analyze-website` ist diese Pruefung korrekt implementiert (Zeile 504: `isExpensiveModel(model)` + Premium-Check).
 
-2. **Nach dem Erstellen neuer Profile**: Wenn gespeicherte Code-Analyse-Daten vorhanden sind, diese per Supabase-Update auf das neu erstellte eigene Profil uebertragen.
+**Fix:** Vor dem Credit-Check pruefen ob das gewaehlte Modell ein "expensive model" ist und der User kein Premium-Abo hat. Falls ja, mit `403` und `"premium_model_required"` antworten.
 
-```text
-Ablauf neu:
-1. User hat Profil mit code_analysis
-2. User startet neue URL-Analyse
-3. code_analysis + github_repo_url werden aus State gesichert
-4. deleteProfilesForConversation() loescht alte Profile
-5. Neue Profile werden erstellt
-6. Gesicherte code_analysis wird auf neues eigenes Profil geschrieben
-7. Queue-Worker analysiert URL und ueberschreibt code_analysis NUR wenn GitHub-Daten vorhanden
-```
+## Keine weiteren Bugs gefunden
 
-### Technische Details
+Die restliche Pipeline ist korrekt:
+- `process-analysis-queue`: Credit-System wird nicht benoetigt (Credits werden bereits in `analyze-website` abgezogen), Model-Routing und JSON-Parsing funktionieren korrekt
+- `analyze-website`: Credit-Reset, Premium-Gating, Queue-Erstellung -- alles korrekt
+- `fetch-github-repo`: Public-API-Zugriff, Datei-Filterung, Limits -- alles korrekt
+- Frontend (`Chat.tsx`): Model-Weitergabe an beide Analysen korrekt
 
-**Datei:** `src/pages/Chat.tsx`
+## Technische Umsetzung
 
-Vor dem `deleteProfilesForConversation`-Aufruf (Zeile 526-528):
+**Datei:** `supabase/functions/add-github-analysis/index.ts`
+
+Aenderung 1 -- Credit-Abfrage erweitern (Zeile 331):
 
 ```typescript
-// Preserve code_analysis from existing own-website profile
-const existingOwnProfile = profiles.find(p => p.is_own_website && p.code_analysis);
-const preservedCodeAnalysis = existingOwnProfile?.code_analysis ?? null;
-const preservedGithubUrl = existingOwnProfile?.github_repo_url ?? null;
+// Vorher:
+.select("credits_used, daily_credits_limit")
+
+// Nachher:
+.select("credits_used, daily_credits_limit, credits_reset_at, is_premium")
 ```
 
-Nach dem `analyzeWebsite`-Aufruf fuer die eigene URL (ca. Zeile 570-580), wenn `preservedCodeAnalysis` vorhanden ist, das neue Profil updaten:
+Aenderung 2 -- Premium-Gating hinzufuegen (nach Zeile 338):
 
 ```typescript
-if (preservedCodeAnalysis && result?.profileId) {
-  await supabase
-    .from("website_profiles")
-    .update({
-      code_analysis: preservedCodeAnalysis,
-      github_repo_url: preservedGithubUrl,
-    })
-    .eq("id", result.profileId);
+const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
+if (EXPENSIVE_MODELS.includes(selectedModel) && !credits?.is_premium) {
+  return new Response(
+    JSON.stringify({ error: "premium_model_required" }),
+    { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
 }
 ```
 
-**Datei:** `supabase/functions/process-analysis-queue/index.ts`
+Aenderung 3 -- Credit-Reset-Logik hinzufuegen (Zeilen 335-337 ersetzen):
 
-In der Update-Logik (Zeile 772-775) sicherstellen, dass `code_analysis` nur ueberschrieben wird, wenn tatsaechlich neue GitHub-Daten analysiert wurden (bereits korrekt -- die Bedingung `if (githubData && analysisResult.codeAnalysis)` prueft dies).
+```typescript
+let creditsUsed = credits?.credits_used ?? 0;
+const creditsLimit = credits?.daily_credits_limit ?? 20;
+const resetAt = credits?.credits_reset_at ? new Date(credits.credits_reset_at) : new Date();
+
+// Reset credits if period expired
+if (resetAt < new Date()) {
+  creditsUsed = 0;
+  await supabase
+    .from("user_credits")
+    .update({
+      credits_used: 0,
+      credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    })
+    .eq("user_id", user.id);
+}
+
+const remaining = creditsLimit - creditsUsed;
+```
+
+Aenderung 4 -- Credit-Abzug mit korrektem Wert (Zeile 419):
+
+```typescript
+// Vorher:
+.update({ credits_used: creditsUsed + cost, ... })
+
+// Nachher (nutzt den ggf. zurueckgesetzten Wert):
+.update({ credits_used: creditsUsed + cost, updated_at: new Date().toISOString() })
+```
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/pages/Chat.tsx` | Code-Analyse-Daten vor Loeschung sichern und nach Neuanlage wiederherstellen |
-
-## Was sich nicht aendert
-- `delete-profiles/index.ts` -- bleibt wie es ist (loescht alle Profile)
-- `process-analysis-queue/index.ts` -- bereits korrekt, ueberschreibt code_analysis nur bei vorhandenen GitHub-Daten
-- `add-github-analysis/index.ts` -- unberuehrt
-
+| `supabase/functions/add-github-analysis/index.ts` | Credit-Reset + Premium-Gating hinzufuegen |

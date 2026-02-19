@@ -1,36 +1,42 @@
 
-# Credit-Anzeige und GitHub-Dialog Anpassungen
+# Datenschutzerklaerung Update: GitHub Code Analysis
 
 ## Zusammenfassung
-Zwei Aenderungen in `src/components/chat/ChatInput.tsx`:
-1. Credit-Kosten in der URL-Analyse-Dialog anzeigen (wie bei GitHub)
-2. GitHub-Analyse von Popover zu Dialog umbauen (wie URL-Analyse)
+Die neue "Deep Code Analysis"-Funktion (GitHub-Repository-Analyse) muss in der Datenschutzerklaerung dokumentiert werden. Dabei werden drei Stellen im Dokument angepasst und die Version auf 8.0 hochgesetzt.
 
-## Aenderung 1: Credit-Kosten im URL-Analyse-Dialog
+## Aenderung 1: Neuer Abschnitt 8.3 - GitHub Code Analysis
 
-Im bestehenden Dialog "Add Websites to Analyze" wird unter dem Titel ein Hinweis ergaenzt, der die Kosten pro URL mit dem aktuell gewaehlten Modell anzeigt:
+Nach dem bestehenden Abschnitt 8.2 (Data Stored from Analysis) wird ein neuer Unterabschnitt eingefuegt:
 
-> Costs **X credits per URL** with [Model Name]
+**8.3 GitHub Repository Code Analysis**
 
-Dies wird direkt unter der DialogHeader-Beschreibung eingefuegt, analog zum GitHub-Popup.
+Inhalt:
+- Beschreibung: Nutzer koennen eine oeffentliche GitHub-Repository-URL einreichen, um eine KI-gestuetzte Code-Analyse durchzufuehren
+- **Daten an GitHub uebermittelt:** Die Repository-URL (Zugriff ueber die oeffentliche GitHub API ohne Authentifizierung)
+- **Daten von GitHub empfangen:** Dateibaum (bis zu 100 Dateien), Quellcode ausgewaehlter Dateien (bis zu 15 Dateien, max. 30.000 Zeichen)
+- **Daten an KI-Provider uebermittelt:** Repository-Name, zugehoerige Website-URL, Dateibaum, Quellcode-Ausschnitte (gleiche Provider wie in Abschnitt 9)
+- **Gespeicherte Daten:** KI-generierte Code-Analyse (Scores fuer Code-Qualitaet, Sicherheit, Performance, Barrierefreiheit, Wartbarkeit, SEO; erkannte Technologien, Staerken, Schwaechen, Empfehlungen)
+- **Hinweis:** Es werden nur oeffentlich zugaengliche Repository-Daten abgerufen. Private Repositories koennen nicht analysiert werden.
+- **Rechtsgrundlage:** Art. 6(1)(b) DSGVO (Vertragsdurchfuehrung)
+- **Provider:** GitHub, Inc. (Microsoft), USA, DPF (Art. 45 DSGVO)
+- Link zur GitHub Privacy Policy
 
-## Aenderung 2: GitHub-Analyse als Dialog statt Popover
+## Aenderung 2: GitHub in Empfaengertabelle (Abschnitt 14)
 
-Der GitHub-Bereich wird von einem `Popover` (kleines Dropdown) zu einem vollwertigen `Dialog` umgebaut -- identisch zum URL-Analyse-Dialog:
+Neue Zeile in der Tabelle "Recipients of Personal Data":
 
-- Gleiche Groesse und Layout (`sm:max-w-md`)
-- DialogHeader mit Titel "Deep Code Analysis"
-- Beschreibungstext und Credit-Kosten bleiben erhalten
-- Input-Feld, Validierung und Start-Button bleiben funktional identisch
-- Der GitHub-Button in der Toolbar oeffnet jetzt den Dialog statt des Popovers
+| GitHub, Inc. (Microsoft) | Code repository access for analysis | Repository URLs | DPF (Art. 45) |
 
-## Technische Details
+## Aenderung 3: Analyse-Daten-Kategorie aktualisieren (Abschnitt 13)
 
-**Datei:** `src/components/chat/ChatInput.tsx`
+In der Zeile "Analysis Data" die Beispiele ergaenzen um: "GitHub repository source code, AI-generated code analysis scores"
 
-- Zeilen 308-361: `Popover`/`PopoverContent`/`PopoverTrigger` durch `Dialog`/`DialogContent`/`DialogHeader`/`DialogTitle` ersetzen
-- State-Variable `githubPopoverOpen` wird zu `githubDialogOpen` umbenannt (oder beibehalten, nur die Komponente aendern)
-- Zeilen 382-387: Unter der DialogHeader im URL-Dialog eine neue Zeile ergaenzen mit Credit-Kosten pro URL
-- Der bestehende GitHub-Button (Zeile 310-318) wird zum einfachen `onClick`-Trigger statt `PopoverTrigger`
+## Aenderung 4: Version und Datum
 
-**Keine weiteren Dateien betroffen** -- die externen Dialog-Trigger (`externalGithubOpen`) funktionieren weiterhin, da sie nur den State setzen.
+- Version: 7.0 -> 8.0
+- Effective Date: February 19, 2026
+- "Last updated" Datum anpassen
+- Version History Eintrag: "Version 8.0 (February 19, 2026): Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation. Added GitHub, Inc. as data recipient. Updated analysis data categories."
+
+## Betroffene Datei
+`src/pages/PrivacyPolicy.tsx` -- nur diese eine Datei wird geaendert.

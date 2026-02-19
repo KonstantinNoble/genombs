@@ -1,42 +1,47 @@
 
-# Datenschutzerklaerung Update: GitHub Code Analysis
 
-## Zusammenfassung
-Die neue "Deep Code Analysis"-Funktion (GitHub-Repository-Analyse) muss in der Datenschutzerklaerung dokumentiert werden. Dabei werden drei Stellen im Dokument angepasst und die Version auf 8.0 hochgesetzt.
+## GitHub Code Analysis als Feature auf Home und Pricing erwähnen
 
-## Aenderung 1: Neuer Abschnitt 8.3 - GitHub Code Analysis
+### Zusammenfassung
+Die Deep Code Analysis (GitHub-Repository-Analyse) wird als zusätzliches Feature auf der Homepage und der Pricing-Seite sichtbar gemacht.
 
-Nach dem bestehenden Abschnitt 8.2 (Data Stored from Analysis) wird ein neuer Unterabschnitt eingefuegt:
+### Änderungen
 
-**8.3 GitHub Repository Code Analysis**
+#### 1. Homepage (`src/pages/Home.tsx`)
 
-Inhalt:
-- Beschreibung: Nutzer koennen eine oeffentliche GitHub-Repository-URL einreichen, um eine KI-gestuetzte Code-Analyse durchzufuehren
-- **Daten an GitHub uebermittelt:** Die Repository-URL (Zugriff ueber die oeffentliche GitHub API ohne Authentifizierung)
-- **Daten von GitHub empfangen:** Dateibaum (bis zu 100 Dateien), Quellcode ausgewaehlter Dateien (bis zu 15 Dateien, max. 30.000 Zeichen)
-- **Daten an KI-Provider uebermittelt:** Repository-Name, zugehoerige Website-URL, Dateibaum, Quellcode-Ausschnitte (gleiche Provider wie in Abschnitt 9)
-- **Gespeicherte Daten:** KI-generierte Code-Analyse (Scores fuer Code-Qualitaet, Sicherheit, Performance, Barrierefreiheit, Wartbarkeit, SEO; erkannte Technologien, Staerken, Schwaechen, Empfehlungen)
-- **Hinweis:** Es werden nur oeffentlich zugaengliche Repository-Daten abgerufen. Private Repositories koennen nicht analysiert werden.
-- **Rechtsgrundlage:** Art. 6(1)(b) DSGVO (Vertragsdurchfuehrung)
-- **Provider:** GitHub, Inc. (Microsoft), USA, DPF (Art. 45 DSGVO)
-- Link zur GitHub Privacy Policy
+**Features-Sektion** -- Neues viertes Feature-Karten hinzufügen:
+- Nummer: "04"
+- Titel: "Code Analysis"
+- Beschreibung: "Connect a public GitHub repository and get your source code scored across six categories: quality, security, performance, accessibility, maintainability, and SEO."
 
-## Aenderung 2: GitHub in Empfaengertabelle (Abschnitt 14)
+**Social Proof Stats** -- Neuen Stat-Eintrag hinzufuegen:
+- Den vierten Stat ("Incl. / PageSpeed Data") anpassen oder einen fuenften Eintrag "Code Analysis" ergaenzen, um die GitHub-Analyse zu erwaehnen.
 
-Neue Zeile in der Tabelle "Recipients of Personal Data":
+**Use Cases** -- Neuen Use Case hinzufuegen:
+- Badge: "Code Review"
+- Titel: "Code Analysis"
+- Beschreibung: "Link your public GitHub repository and get your code scored across six categories -- from security to maintainability."
 
-| GitHub, Inc. (Microsoft) | Code repository access for analysis | Repository URLs | DPF (Art. 45) |
+**FAQ** -- Neuen FAQ-Eintrag:
+- Frage: "What is the Code Analysis?"
+- Antwort: Erklaert, dass ein oeffentliches GitHub-Repository verknuepft werden kann und der Code in sechs Kategorien bewertet wird.
 
-## Aenderung 3: Analyse-Daten-Kategorie aktualisieren (Abschnitt 13)
+#### 2. Pricing-Seite (`src/pages/Pricing.tsx`)
 
-In der Zeile "Analysis Data" die Beispiele ergaenzen um: "GitHub repository source code, AI-generated code analysis scores"
+**Feature-Listen** -- In beide Plans (Free und Premium) einen Eintrag hinzufuegen:
+- Free: "GitHub Code Analysis" (included: true)
+- Premium: "GitHub Code Analysis" (included: true)
 
-## Aenderung 4: Version und Datum
+#### 3. Feature-Vergleichstabelle (`src/components/genome/FeatureComparisonTable.tsx`)
 
-- Version: 7.0 -> 8.0
-- Effective Date: February 19, 2026
-- "Last updated" Datum anpassen
-- Version History Eintrag: "Version 8.0 (February 19, 2026): Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation. Added GitHub, Inc. as data recipient. Updated analysis data categories."
+**Neue Zeile** in der `features`-Liste:
+- Name: "GitHub Code Analysis"
+- Free: true (Yes)
+- Premium: true (Yes)
 
-## Betroffene Datei
-`src/pages/PrivacyPolicy.tsx` -- nur diese eine Datei wird geaendert.
+### Technische Details
+
+- Alle Aenderungen sind rein im Frontend (keine Backend-Aenderungen noetig)
+- Das Feature-Grid auf der Homepage wird von 3 auf 4 Spalten erweitert (mit `md:grid-cols-4` oder bleibt bei 3 Spalten wobei die vierte Karte darunter erscheint -- je nach Design-Praeferenz wird `md:grid-cols-2 lg:grid-cols-4` verwendet)
+- Die bestehende Reihenfolge und Nummerierung der Features bleibt konsistent
+

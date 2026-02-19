@@ -1024,7 +1024,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3"><strong>Supabase, Inc.</strong></td>
                     <td className="border border-border p-3">Hosting, database, authentication (with DPA per Art. 28 GDPR)</td>
                     <td className="border border-border p-3">All stored data</td>
-                    <td className="border border-border p-3">DPF (Art. 45)</td>
+                    <td className="border border-border p-3">SCCs (Art. 46(2)(c))</td>
                   </tr>
                   <tr>
                     <td className="border border-border p-3"><strong>Resend, Inc.</strong></td>
@@ -1266,7 +1266,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
-              <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF.</li>
+              <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF. Corrected Supabase transfer basis to SCCs.</li>
               <li><strong>Version 8.0 (February 19, 2026):</strong> Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation (Section 8.3). Added GitHub, Inc. (Microsoft) as data recipient. Updated analysis data categories to include source code and code analysis scores.</li>
               <li><strong>Version 7.0 (February 14, 2026):</strong> Added sections for Website Crawling (Firecrawl), AI-Powered Data Processing (Google Gemini, OpenAI, Anthropic, Perplexity), and Google PageSpeed Insights. Updated recipients and data categories tables. Corrected automated decision-making section to reflect active AI usage. Removed non-existent marketing emails section. Renumbered all sections.</li>
               <li><strong>Version 6.0 (February 8, 2026):</strong> Platform update – removed feature-specific sections (Multi-AI Validation, Team Workspaces, Business Context, Dashboard Statistics, Decision Audit Records, Experiment Workflow) pending new service implementation. Simplified data categories, recipients, and retention tables accordingly. Renumbered all sections.</li>

@@ -305,58 +305,63 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
             const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel);
             const notEnoughForCode = remainingCredits < codeAnalysisCost;
             return (
-              <Popover open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    disabled={disabled}
-                    className="shrink-0 h-[44px] w-[44px]"
-                    title="Add GitHub repo for Deep Analysis"
-                  >
-                    <Github className="w-4 h-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-80 p-3">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium">GitHub Repository URL</Label>
-                    <p className="text-[10px] text-muted-foreground">
-                      Add a public repo to run a Deep Code Analysis on your website's source code.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Costs <span className="font-semibold text-foreground">{codeAnalysisCost} credits</span> with {currentModel.label}
-                    </p>
-                    <Input
-                      value={githubInput}
-                      onChange={(e) => setGithubInput(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
-                      placeholder="https://github.com/user/repo"
-                      className="h-8 text-sm"
-                      maxLength={GITHUB_MAX_LENGTH}
-                    />
-                    {githubInput.trim() && !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim())) && (
-                      <p className="text-[10px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
-                    )}
-                    {githubInput.trim() && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()) && (
-                      <p className="text-[10px] text-chart-6">✓ Valid GitHub URL</p>
-                    )}
-                    {notEnoughForCode && (
-                      <p className="text-[10px] text-destructive">Not enough credits ({codeAnalysisCost} needed, {remainingCredits} remaining)</p>
-                    )}
-                    <Button
-                      size="sm"
-                      className="w-full"
-                      disabled={notEnoughForCode || !githubInput.trim() || !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()))}
-                      onClick={() => {
-                        onGithubAnalysis?.(githubInput.trim(), selectedModel);
-                        setGithubInput("");
-                        setGithubPopoverOpen(false);
-                      }}
-                    >
-                      Start Deep Analysis ({codeAnalysisCost} Credits)
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={disabled}
+                  className="shrink-0 h-[44px] w-[44px]"
+                  title="Add GitHub repo for Deep Analysis"
+                  onClick={() => setGithubPopoverOpen(true)}
+                >
+                  <Github className="w-4 h-4" />
+                </Button>
+                <Dialog open={githubPopoverOpen} onOpenChange={setGithubPopoverOpen}>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Deep Code Analysis</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3 mt-2">
+                      <p className="text-sm text-muted-foreground">
+                        Add a public GitHub repo to run a Deep Code Analysis on your website's source code.
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Costs <span className="font-semibold text-foreground">{codeAnalysisCost} credits</span> with {currentModel.label}
+                      </p>
+                      <div className="space-y-1.5">
+                        <Label className="text-sm font-medium">GitHub Repository URL</Label>
+                        <Input
+                          value={githubInput}
+                          onChange={(e) => setGithubInput(e.target.value.slice(0, GITHUB_MAX_LENGTH))}
+                          placeholder="https://github.com/user/repo"
+                          className="text-sm"
+                          maxLength={GITHUB_MAX_LENGTH}
+                        />
+                      </div>
+                      {githubInput.trim() && !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim())) && (
+                        <p className="text-[11px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
+                      )}
+                      {githubInput.trim() && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()) && (
+                        <p className="text-[11px] text-chart-6">✓ Valid GitHub URL</p>
+                      )}
+                      {notEnoughForCode && (
+                        <p className="text-[11px] text-destructive">Not enough credits ({codeAnalysisCost} needed, {remainingCredits} remaining)</p>
+                      )}
+                      <Button
+                        className="w-full mt-2"
+                        disabled={notEnoughForCode || !githubInput.trim() || !(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+/.test(githubInput.trim()))}
+                        onClick={() => {
+                          onGithubAnalysis?.(githubInput.trim(), selectedModel);
+                          setGithubInput("");
+                          setGithubPopoverOpen(false);
+                        }}
+                      >
+                        Start Deep Analysis ({codeAnalysisCost} Credits)
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </>
             );
           })()}
           <Button
@@ -386,6 +391,9 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
               </p>
             )}
           </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Costs <span className="font-semibold text-foreground">{costPerUrl} credits per URL</span> with {currentModel.label}
+          </p>
           <div className="flex flex-col gap-4 mt-2">
             <div className={`space-y-1.5 ${isOwnUrlDisabled ? "opacity-50" : ""}`}>
               <Label htmlFor="own-url" className="text-sm font-medium flex items-center gap-1.5">

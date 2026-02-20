@@ -1,67 +1,41 @@
 
 
-## Credits bei Fehlern zurueckerstatten
+## Credit-Refund: 3 logische Fehler beheben
 
-### Problem
-Wenn eine Analyse oder Chat-Anfrage fehlschlaegt (z.B. Website-Timeout, AI-Service-Fehler), werden die Credits trotzdem abgezogen, obwohl kein Ergebnis geliefert wurde.
+### Gefundene Probleme
 
-### Loesung
-Credits werden weiterhin vorher abgezogen (um Missbrauch durch parallele Anfragen zu verhindern), aber bei einem Fehler automatisch zurueckerstattet.
+Die Refund-Logik ist in `process-analysis-queue` korrekt implementiert (Timeout, Crawl-Fehler, Job-Fehler). Aber in den anderen zwei Dateien fehlen Refunds an wichtigen Stellen:
 
-### Aenderungen
+#### Problem 1: `analyze-website` -- Profile-Insert-Fehler
+Credits werden abgezogen (Zeile 533), aber wenn danach der `website_profiles`-Insert fehlschlaegt (Zeile 566), werden die Credits nicht zurueckerstattet. Nur der Queue-Insert-Fehler (Zeile 593) hat einen Refund.
 
-#### 1. `supabase/functions/analyze-website/index.ts`
+**Fix:** Refund in den Profile-Insert-Fehlerblock einfuegen (Zeile 566-572).
 
-Die Credits werden aktuell in Zeile 505 abgezogen, bevor der Job in die Queue kommt. Wenn danach ein Fehler passiert (Queue-Insert fehlgeschlagen, oder spaeter im Worker), gibt es keine Erstattung.
+#### Problem 2: `analyze-website` -- Aeusserer Catch-Block
+Der aeussere `catch`-Block (Zeile 635-641) faengt unerwartete Fehler ab, die nach dem Credit-Abzug passieren koennten. Kein Refund dort.
 
-**Loesung:** Eine Refund-Funktion einbauen, die bei Queue-Insert-Fehlern sofort die Credits zurueckgibt. Fuer Fehler waehrend der Verarbeitung (im Worker) wird der Refund im Worker selbst eingebaut.
+**Fix:** Refund im aeusseren Catch-Block. Da wir nicht sicher wissen ob Credits bereits abgezogen wurden, merken wir uns nach dem Abzug eine Flag-Variable (`creditsDeducted = true`) und pruefen diese im Catch.
 
-#### 2. `supabase/functions/process-analysis-queue/index.ts`
+#### Problem 3: `chat` -- Aeusserer Catch-Block
+Credits werden abgezogen (Zeile 469), danach kann ein Fehler beim Profile-Fetch oder der Stream-Transformation auftreten. Der aeussere Catch-Block (Zeile 569-575) erstattet keine Credits.
 
-Der Worker verarbeitet Jobs und markiert Fehler (Firecrawl-Timeout, AI-Fehler). Aktuell werden dabei keine Credits zurueckerstattet.
-
-**Loesung:** Im `catch`-Block (Zeile 792) und bei Firecrawl-Fehlern (Zeile 634) werden die Credits des Users zurueckerstattet:
-- Credit-Kosten des Jobs berechnen (basierend auf `job.model`)
-- `credits_used` um den Betrag reduzieren
-- Log-Nachricht: "Credits refunded for failed job"
-
-Gleiches gilt fuer den Timeout-Cleanup (Zeile 527-532): Wenn ein Job wegen Timeout abgebrochen wird, werden die Credits ebenfalls zurueckerstattet.
-
-#### 3. `supabase/functions/chat/index.ts`
-
-Credits werden in Zeile 441 abgezogen. Wenn der AI-Provider einen Fehler zurueckgibt (Zeile 508), sind die Credits verloren.
-
-**Loesung:** Im Fehlerfall (Provider antwortet mit `!ok`) die Credits zurueckerstatten:
-- Nach der Credit-Abzugs-Stelle den `credits`-Record merken (ID und aktuellen Stand)
-- Bei AI-Provider-Fehler: `credits_used` um den Chat-Kosten-Betrag reduzieren
-- Refund-Log schreiben
+**Fix:** Gleiche Loesung wie bei analyze-website: Flag-Variable nach Credit-Abzug setzen, im Catch pruefen und Refund ausfuehren.
 
 ### Technische Details
 
-**Refund-Logik (wird in alle 3 Dateien eingebaut):**
+**`supabase/functions/analyze-website/index.ts`:**
+- Nach `checkAndDeductAnalysisCredits` (Zeile 533): Variable `let creditsDeducted = false;` davor, `creditsDeducted = true;` danach setzen
+- Zeile 566-572 (Profile-Insert-Fehler): `await refundCredits(...)` hinzufuegen
+- Zeile 635-641 (aeusserer Catch): `if (creditsDeducted) await refundCredits(...)` hinzufuegen
 
-```
-async function refundCredits(supabaseAdmin, userId, cost) {
-  const { data } = await supabaseAdmin
-    .from("user_credits")
-    .select("id, credits_used")
-    .eq("user_id", userId)
-    .single();
+**`supabase/functions/chat/index.ts`:**
+- Nach `checkAndDeductCredits` (Zeile 469): Variable `let creditsDeducted = false;` davor, `creditsDeducted = true;` danach setzen
+- Zeile 569-575 (aeusserer Catch): `if (creditsDeducted) await refundCredits(...)` hinzufuegen
 
-  if (data) {
-    const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
-    await supabaseAdmin
-      .from("user_credits")
-      .update({ credits_used: newUsed })
-      .eq("id", data.id);
-  }
-}
-```
+**`supabase/functions/process-analysis-queue/index.ts`:**
+- Keine Aenderungen noetig -- die Implementierung ist korrekt.
 
-**Geaenderte Dateien:**
-- `supabase/functions/analyze-website/index.ts` -- Refund bei Queue-Insert-Fehler
-- `supabase/functions/process-analysis-queue/index.ts` -- Refund bei Crawl-Fehler, AI-Fehler, und Timeout-Cleanup
-- `supabase/functions/chat/index.ts` -- Refund bei AI-Provider-Fehler
-
-**Keine Datenbank-Aenderungen noetig.** Die bestehende `credits_used`-Spalte wird einfach wieder reduziert.
+### Geaenderte Dateien
+- `supabase/functions/analyze-website/index.ts` -- 3 Stellen: Flag-Variable, Profile-Insert-Refund, Catch-Refund
+- `supabase/functions/chat/index.ts` -- 2 Stellen: Flag-Variable, Catch-Refund
 

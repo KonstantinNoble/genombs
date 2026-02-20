@@ -323,7 +323,11 @@ const Home = () => {
             ))}
             <span
               className="inline-block text-primary opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.45s", animationFillMode: "both" }}
+              style={{
+                animationDelay: "0.45s",
+                animationFillMode: "both",
+                textShadow: "0 0 20px hsl(25 95% 53% / 0.5), 0 0 40px hsl(25 95% 53% / 0.25), 0 0 60px hsl(25 95% 53% / 0.1)",
+              }}
             >
               website
             </span>{" "}

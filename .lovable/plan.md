@@ -1,16 +1,41 @@
 
-# GitHub-Feld aus dem Website-Modus entfernen
+# Credit-Kosten erhoehen (+4 Credits Analyse, +2 Credits Chat)
 
-## Problem
-Im "Website Analysis"-Tab wird das GitHub-Repository-Feld weiterhin angezeigt (Zeilen 130-167 in InlineUrlPrompt.tsx). Dadurch wirkt es so, als waeren die beiden Analysearten immer noch gemischt.
+## Neue Werte
 
-## Loesung
-Den gesamten GitHub-Repository-Abschnitt (Zeilen 130-167) aus dem Website-Modus (`mode === "website"`) entfernen. Das GitHub-Feld existiert dann nur noch im Code-Modus (`mode === "code"`).
+### Chat (+2 Credits)
+| Modell | Aktuell | Neu |
+|--------|---------|-----|
+| gemini-flash | 1 | 3 |
+| gpt-mini | 1 | 3 |
+| gpt | 4 | 6 |
+| claude-sonnet | 4 | 6 |
+| perplexity | 5 | 7 |
 
-## Technische Aenderungen
+### Website-Analyse (+4 Credits)
+| Modell | Aktuell | Neu |
+|--------|---------|-----|
+| gemini-flash | 5 | 9 |
+| gpt-mini | 5 | 9 |
+| gpt | 8 | 12 |
+| claude-sonnet | 8 | 12 |
+| perplexity | 10 | 14 |
 
-### `src/components/chat/InlineUrlPrompt.tsx`
-- **Entfernen**: Den Block von Zeile 130-167 (GitHub Repository im Website-Modus) komplett loeschen
-- **Anpassen**: In `handleStart` die GitHub-URL-Referenz entfernen, da im Website-Modus kein GitHub-Feld mehr existiert -- `ghUrl` wird immer `undefined`
-- **Anpassen**: Die `allUrlsValid`-Berechnung (Zeile 54) muss die `isValidGithubUrl(githubUrl)`-Pruefung nur im Code-Modus beruecksichtigen
-- Der Erklaerungstext "The website URL is used for live performance..." (Zeile 105) wird vereinfacht, da der GitHub-Hinweis dort nicht mehr relevant ist
+### Code-Analyse (+4 Credits)
+| Modell | Aktuell | Neu |
+|--------|---------|-----|
+| gemini-flash | 8 | 12 |
+| gpt-mini | 8 | 12 |
+| gpt | 12 | 16 |
+| claude-sonnet | 12 | 16 |
+| perplexity | 15 | 19 |
+
+## Betroffene Dateien (4 Stellen)
+
+1. **`src/lib/constants.ts`** -- Frontend-Konstanten (alle 3 Kategorien)
+2. **`supabase/functions/chat/index.ts`** -- Backend Chat-Abrechnung
+3. **`supabase/functions/analyze-website/index.ts`** -- Backend URL-Analyse-Abrechnung + Refund
+4. **`supabase/functions/process-analysis-queue/index.ts`** -- Backend Queue-Refund-Logik
+5. **`supabase/functions/add-github-analysis/index.ts`** -- Backend Code-Analyse-Abrechnung
+
+Alle 5 Stellen muessen synchron aktualisiert werden, damit UI-Anzeige und Abrechnung uebereinstimmen. Die Default-Fallback-Werte in den Funktionen werden ebenfalls angepasst.

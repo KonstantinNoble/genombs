@@ -513,15 +513,15 @@ function validateCodeAnalysis(raw: unknown): Record<string, unknown> {
 // ─── Credit refund helper ───
 
 const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
-  "gemini-flash": 5,
-  "gpt-mini": 5,
-  "gpt": 8,
-  "claude-sonnet": 8,
-  "perplexity": 10,
+  "gemini-flash": 9,
+  "gpt-mini": 9,
+  "gpt": 12,
+  "claude-sonnet": 12,
+  "perplexity": 14,
 };
 
 function getAnalysisCreditCost(modelKey: string): number {
-  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 5;
+  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 9;
 }
 
 async function refundCredits(

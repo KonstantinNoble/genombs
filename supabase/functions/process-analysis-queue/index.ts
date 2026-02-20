@@ -510,6 +510,46 @@ function validateCodeAnalysis(raw: unknown): Record<string, unknown> {
   };
 }
 
+// ─── Credit refund helper ───
+
+const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
+  "gemini-flash": 5,
+  "gpt-mini": 5,
+  "gpt": 8,
+  "claude-sonnet": 8,
+  "perplexity": 10,
+};
+
+function getAnalysisCreditCost(modelKey: string): number {
+  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 5;
+}
+
+async function refundCredits(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  userId: string,
+  cost: number,
+  reason: string
+): Promise<void> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("user_credits")
+      .select("id, credits_used")
+      .eq("user_id", userId)
+      .single();
+
+    if (data) {
+      const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
+      await supabaseAdmin
+        .from("user_credits")
+        .update({ credits_used: newUsed })
+        .eq("id", data.id);
+      console.log(`Credits refunded: ${cost} for user ${userId} (${reason})`);
+    }
+  } catch (e) {
+    console.error("Credit refund failed:", e);
+  }
+}
+
 // ─── Queue Processing ───
 
 async function processQueue() {
@@ -523,13 +563,29 @@ async function processQueue() {
 
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-  // 1. Mark jobs stuck for 5+ minutes as error
+  // 1. Mark jobs stuck for 5+ minutes as error and refund credits
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-  await supabaseAdmin
+
+  // Fetch timed-out jobs first so we can refund credits
+  const { data: timedOutJobs } = await supabaseAdmin
     .from("analysis_queue")
-    .update({ status: "error", error_message: "Job timeout (5+ minutes)" })
+    .select("id, user_id, model")
     .eq("status", "processing")
     .lt("started_at", fiveMinutesAgo);
+
+  if (timedOutJobs && timedOutJobs.length > 0) {
+    await supabaseAdmin
+      .from("analysis_queue")
+      .update({ status: "error", error_message: "Job timeout (5+ minutes)" })
+      .eq("status", "processing")
+      .lt("started_at", fiveMinutesAgo);
+
+    // Refund credits for each timed-out job
+    for (const tj of timedOutJobs) {
+      const cost = getAnalysisCreditCost(tj.model);
+      await refundCredits(supabaseAdmin, tj.user_id, cost, "job timeout");
+    }
+  }
 
   // 2. Count current processing jobs
   const { count: processingCount, error: countError } = await supabaseAdmin
@@ -654,6 +710,10 @@ async function processQueue() {
             error_message: userMessage,
           })
           .eq("id", job.profile_id);
+
+        // Refund credits for failed crawl
+        const cost = getAnalysisCreditCost(job.model);
+        await refundCredits(supabaseAdmin, job.user_id, cost, "crawl failed");
 
         return;
       }
@@ -812,6 +872,10 @@ async function processQueue() {
           error_message: errorMsg,
         })
         .eq("id", job.profile_id);
+
+      // Refund credits for failed job
+      const cost = getAnalysisCreditCost(job.model);
+      await refundCredits(supabaseAdmin, job.user_id, cost, `job error: ${errorMsg.substring(0, 50)}`);
     }
   });
 

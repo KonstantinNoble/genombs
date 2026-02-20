@@ -327,6 +327,34 @@ function transformPerplexityStream(body: ReadableStream<Uint8Array>): ReadableSt
   });
 }
 
+// ─── Credit refund helper ───
+
+async function refundCredits(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  userId: string,
+  cost: number,
+  reason: string
+): Promise<void> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("user_credits")
+      .select("id, credits_used")
+      .eq("user_id", userId)
+      .single();
+
+    if (data) {
+      const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
+      await supabaseAdmin
+        .from("user_credits")
+        .update({ credits_used: newUsed })
+        .eq("id", data.id);
+      console.log(`Credits refunded: ${cost} for user ${userId} (${reason})`);
+    }
+  } catch (e) {
+    console.error("Credit refund failed:", e);
+  }
+}
+
 // ─── Credit check helper ───
 
 async function checkAndDeductCredits(
@@ -508,6 +536,10 @@ serve(async (req) => {
     if (!providerResp.ok) {
       const errText = await providerResp.text();
       console.error(`${config.provider} error:`, providerResp.status, errText);
+
+      // Refund credits since AI provider failed
+      const chatCost = getChatCreditCost(resolvedModelKey);
+      await refundCredits(supabaseAdmin, user.id, chatCost, `AI provider error (${config.provider})`);
 
       return new Response(JSON.stringify({ error: `AI service error (${config.provider})` }), {
         status: 500,

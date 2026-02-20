@@ -376,6 +376,34 @@ function getAnalysisCreditCost(modelKey: string): number {
   return ANALYSIS_CREDIT_COSTS[modelKey] ?? 5;
 }
 
+// ─── Credit refund helper ───
+
+async function refundCredits(
+  supabaseAdmin: ReturnType<typeof createClient>,
+  userId: string,
+  cost: number,
+  reason: string
+): Promise<void> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("user_credits")
+      .select("id, credits_used")
+      .eq("user_id", userId)
+      .single();
+
+    if (data) {
+      const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
+      await supabaseAdmin
+        .from("user_credits")
+        .update({ credits_used: newUsed })
+        .eq("id", data.id);
+      console.log(`Credits refunded: ${cost} for user ${userId} (${reason})`);
+    }
+  } catch (e) {
+    console.error("Credit refund failed:", e);
+  }
+}
+
 function isExpensiveModel(modelKey: string): boolean {
   return EXPENSIVE_MODELS.includes(modelKey);
 }
@@ -561,6 +589,8 @@ serve(async (req) => {
 
     if (queueError) {
       console.error("Queue insert error:", queueError);
+      // Refund credits since the job never entered the queue
+      await refundCredits(supabaseAdmin, user.id, getAnalysisCreditCost(model), "queue insert failed");
       return new Response(
         JSON.stringify({ error: "Failed to queue analysis" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

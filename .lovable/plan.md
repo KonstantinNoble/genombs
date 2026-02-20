@@ -1,27 +1,16 @@
 
-
-# InlineUrlPrompt: Website- und Code-Analyse trennen
+# GitHub-Feld aus dem Website-Modus entfernen
 
 ## Problem
-Aktuell werden Website-URL-Felder und GitHub-Repository-Feld in einem einzigen Formular vermischt. Der Nutzer soll sich klar fuer **einen** Modus entscheiden:
-- **Website-Analyse**: URL + optionales GitHub-Repo + Competitors
-- **Code-Analyse**: Nur GitHub-Repository
+Im "Website Analysis"-Tab wird das GitHub-Repository-Feld weiterhin angezeigt (Zeilen 130-167 in InlineUrlPrompt.tsx). Dadurch wirkt es so, als waeren die beiden Analysearten immer noch gemischt.
 
-## Wichtig: Code-Analyse ist NICHT Premium-only
-Die GitHub Code Analysis ist fuer alle Nutzer verfuegbar (Free und Premium). Im aktuellen Code ist der GitHub-only-Button faelschlicherweise auf `isPremium` beschraenkt -- das wird korrigiert.
+## Loesung
+Den gesamten GitHub-Repository-Abschnitt (Zeilen 130-167) aus dem Website-Modus (`mode === "website"`) entfernen. Das GitHub-Feld existiert dann nur noch im Code-Modus (`mode === "code"`).
 
-## Aenderungen
+## Technische Aenderungen
 
 ### `src/components/chat/InlineUrlPrompt.tsx`
-1. **Mode-State hinzufuegen**: `mode: "website" | "code"` (Default: `"website"`)
-2. **Zwei Tab-Buttons** oben im Formular: "Website Analysis" und "Code Analysis"
-3. **Website-Modus**: Zeigt die bestehenden Felder (eigene URL, optionales GitHub-Repo, Competitor-URLs, "Start Analysis"-Button)
-4. **Code-Modus**: Zeigt nur das GitHub-URL-Feld und einen "Analyze Code"-Button
-5. **Premium-Check entfernen**: Die Bedingung `isPremium` bei `canStartGithubOnly` (Zeile 57) wird entfernt, damit alle Nutzer die Code-Analyse nutzen koennen
-6. Der Erklaerungstext oben passt sich je nach Modus an:
-   - Website: "Enter your website URL and competitor URLs..."
-   - Code: "Enter a GitHub repository URL to analyze the source code"
-
-### Keine weiteren Dateien betroffen
-Die Props und Callbacks (`onStartAnalysis`, `onGithubOnlyAnalysis`) bleiben identisch. Keine Aenderungen an `Chat.tsx` oder anderen Dateien noetig.
-
+- **Entfernen**: Den Block von Zeile 130-167 (GitHub Repository im Website-Modus) komplett loeschen
+- **Anpassen**: In `handleStart` die GitHub-URL-Referenz entfernen, da im Website-Modus kein GitHub-Feld mehr existiert -- `ghUrl` wird immer `undefined`
+- **Anpassen**: Die `allUrlsValid`-Berechnung (Zeile 54) muss die `isValidGithubUrl(githubUrl)`-Pruefung nur im Code-Modus beruecksichtigen
+- Der Erklaerungstext "The website URL is used for live performance..." (Zeile 105) wird vereinfacht, da der GitHub-Hinweis dort nicht mehr relevant ist

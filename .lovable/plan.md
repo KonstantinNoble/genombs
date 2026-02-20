@@ -1,38 +1,19 @@
 
-## Navbar-Design aufwerten
+## Navbar beim Scrollen sichtbar halten
 
 ### Problem
-Die Desktop-Navigation (Home, How It Works, Pricing, Contact) steht ohne visuellen Container, in grauer Farbe mit wenig Kontrast -- wirkt trocken und wenig professionell.
+Die Navbar hat zwar `sticky top-0`, aber die Home-Seite verwendet `overflow-x-hidden` auf dem aeusseren Container (Zeile 289 in Home.tsx). Das bricht die `sticky`-Positionierung in Browsern -- die Navbar scrollt mit dem Content weg.
 
 ### Loesung
-Die Nav-Links bekommen einen subtilen, abgerundeten Container (Pill-Form) als Gruppe, und die einzelnen Links erhalten besseren Kontrast und dynamischere Hover-/Active-Effekte.
+Die Navbar von `sticky` auf `fixed` umstellen. Da `fixed` den Platz nicht mehr im Dokumentenfluss reserviert, muss ein Spacer-Element (h-16) unterhalb eingefuegt werden, damit der Seiteninhalt nicht hinter der Navbar verschwindet.
 
-### Aenderungen in `src/components/Navbar.tsx`
+### Aenderungen
 
-#### 1. Nav-Container als Pill
-Die Links-Gruppe (Zeile 138) bekommt einen visuellen Hintergrund-Container:
-- Abgerundete Pill-Form mit `rounded-full`
-- Subtiler Hintergrund: `bg-white/[0.06]` mit `border border-white/[0.08]`
-- Padding innen: `px-2 py-1.5`
-- Das gibt den Links einen klaren, definierten Bereich
+**`src/components/Navbar.tsx`** (2 Stellen):
+1. Zeile 105: `sticky top-0` aendern zu `fixed top-0`
+2. Nach dem schliessenden `</nav>`-Tag: Ein `<div className="h-16" />` Spacer einfuegen, damit der Seiteninhalt korrekt unterhalb der Navbar beginnt
 
-#### 2. Einzelne NavLinks aufwerten
-Die NavLink-Komponente (Zeile 90-107) wird ueberarbeitet:
-- Inaktive Links: Hellere Textfarbe (`text-foreground/70` statt `text-muted-foreground`) fuer besseren Kontrast
-- Hover: Dezenter Hintergrund (`hover:bg-white/[0.08]`) und volle Textfarbe
-- Aktiver Link: `bg-white/[0.10]` Hintergrund-Pill + Primaerfarbe (Orange)
-- Jeder Link bekommt `rounded-full px-4 py-1.5` fuer klickbare Pill-Bereiche
-- Die Underline-Animation wird entfernt zugunsten des Pill-Hintergrund-Effekts
-
-#### 3. Ergebnis
-- Klarer visueller Bereich fuer die Navigation
-- Besserer Kontrast: Links sind heller und besser lesbar
-- Dynamischer: Hover zeigt sofort einen Hintergrund-Wechsel
-- Aktiver Link ist durch Farbe UND Hintergrund klar erkennbar
-- Modernes SaaS-Look (aehnlich wie Linear, Vercel, etc.)
-
-### Technische Details
-- Nur eine Datei wird geaendert: `src/components/Navbar.tsx`
-- NavLink-Komponente: Underline-Span entfernen, Pill-Styling hinzufuegen
-- Nav-Container div (Zeile 138): Pill-Wrapper mit Hintergrund hinzufuegen
-- Keine neuen Abhaengigkeiten noetig
+### Ergebnis
+- Die Navbar bleibt auf allen Seiten beim Scrollen sichtbar
+- Der Seiteninhalt wird nicht von der Navbar verdeckt
+- Keine Aenderungen an den einzelnen Seiten-Dateien noetig

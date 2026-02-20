@@ -102,7 +102,7 @@ const Navbar = () => {
   
   return (
     <>
-      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         scrolled 
           ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
           : "bg-background/60 backdrop-blur-md border-b border-transparent"
@@ -170,6 +170,8 @@ const Navbar = () => {
           </button>
         </div>
       </nav>
+      {/* Spacer to offset fixed navbar */}
+      <div className="h-16" />
 
       {/* Mobile Fullscreen Overlay Menu */}
       {isOpen && (

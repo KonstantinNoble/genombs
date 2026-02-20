@@ -349,7 +349,7 @@ const Home = () => {
             <Button
               onClick={handleAnalyze}
               size="lg"
-              className="text-base px-6 h-11 shrink-0"
+              className="cta-btn-shimmer text-base px-6 h-11 shrink-0"
             >
               Analyze
             </Button>

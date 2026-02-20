@@ -413,6 +413,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let creditsDeducted = false;
+  let refundUserId = "";
+  let refundModelKey = "gemini-flash";
+
   try {
     const { messages, conversationId, model: modelKey } = await req.json();
 
@@ -432,6 +436,7 @@ serve(async (req) => {
     }
 
     const resolvedModelKey = modelKey || "gemini-flash";
+    refundModelKey = resolvedModelKey;
     const config = MODEL_MAP[resolvedModelKey] || MODEL_MAP["gemini-flash"];
 
     const keyInfo = getRequiredKey(config.provider);
@@ -474,6 +479,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    creditsDeducted = true;
+    refundUserId = user.id;
 
     let profileContext = "";
 
@@ -568,6 +575,18 @@ serve(async (req) => {
     });
   } catch (err) {
     console.error("chat error:", err);
+    // Refund credits if they were already deducted
+    if (creditsDeducted && refundUserId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+        const chatCost = getChatCreditCost(refundModelKey);
+        await refundCredits(supabaseAdmin, refundUserId, chatCost, "unexpected error");
+      } catch (refundErr) {
+        console.error("Refund failed in outer catch:", refundErr);
+      }
+    }
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

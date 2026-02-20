@@ -483,8 +483,13 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let creditsDeducted = false;
+  let refundUserId = "";
+  let refundModel = "gemini-flash";
+
   try {
     const { url, conversationId, isOwnWebsite, model = "gemini-flash", githubRepoUrl } = await req.json();
+    refundModel = model;
 
     if (!url || !conversationId) {
       return new Response(
@@ -537,6 +542,8 @@ serve(async (req) => {
         { status: creditResult.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+    creditsDeducted = true;
+    refundUserId = user.id;
 
     // Format URL
     let formattedUrl = url.trim();
@@ -565,6 +572,8 @@ serve(async (req) => {
 
     if (insertError) {
       console.error("Insert error:", insertError);
+      // Refund credits since profile creation failed
+      await refundCredits(supabaseAdmin, user.id, getAnalysisCreditCost(model), "profile insert failed");
       return new Response(
         JSON.stringify({ error: "Failed to create profile record" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -634,6 +643,16 @@ serve(async (req) => {
     );
   } catch (err) {
     console.error("analyze-website error:", err);
+    if (creditsDeducted && refundUserId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+        await refundCredits(supabaseAdmin, refundUserId, getAnalysisCreditCost(refundModel), "unexpected error");
+      } catch (refundErr) {
+        console.error("Refund failed in outer catch:", refundErr);
+      }
+    }
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

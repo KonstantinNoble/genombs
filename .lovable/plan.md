@@ -1,19 +1,27 @@
 
-## Navbar beim Scrollen sichtbar halten
 
-### Problem
-Die Navbar hat zwar `sticky top-0`, aber die Home-Seite verwendet `overflow-x-hidden` auf dem aeusseren Container (Zeile 289 in Home.tsx). Das bricht die `sticky`-Positionierung in Browsern -- die Navbar scrollt mit dem Content weg.
+# InlineUrlPrompt: Website- und Code-Analyse trennen
 
-### Loesung
-Die Navbar von `sticky` auf `fixed` umstellen. Da `fixed` den Platz nicht mehr im Dokumentenfluss reserviert, muss ein Spacer-Element (h-16) unterhalb eingefuegt werden, damit der Seiteninhalt nicht hinter der Navbar verschwindet.
+## Problem
+Aktuell werden Website-URL-Felder und GitHub-Repository-Feld in einem einzigen Formular vermischt. Der Nutzer soll sich klar fuer **einen** Modus entscheiden:
+- **Website-Analyse**: URL + optionales GitHub-Repo + Competitors
+- **Code-Analyse**: Nur GitHub-Repository
 
-### Aenderungen
+## Wichtig: Code-Analyse ist NICHT Premium-only
+Die GitHub Code Analysis ist fuer alle Nutzer verfuegbar (Free und Premium). Im aktuellen Code ist der GitHub-only-Button faelschlicherweise auf `isPremium` beschraenkt -- das wird korrigiert.
 
-**`src/components/Navbar.tsx`** (2 Stellen):
-1. Zeile 105: `sticky top-0` aendern zu `fixed top-0`
-2. Nach dem schliessenden `</nav>`-Tag: Ein `<div className="h-16" />` Spacer einfuegen, damit der Seiteninhalt korrekt unterhalb der Navbar beginnt
+## Aenderungen
 
-### Ergebnis
-- Die Navbar bleibt auf allen Seiten beim Scrollen sichtbar
-- Der Seiteninhalt wird nicht von der Navbar verdeckt
-- Keine Aenderungen an den einzelnen Seiten-Dateien noetig
+### `src/components/chat/InlineUrlPrompt.tsx`
+1. **Mode-State hinzufuegen**: `mode: "website" | "code"` (Default: `"website"`)
+2. **Zwei Tab-Buttons** oben im Formular: "Website Analysis" und "Code Analysis"
+3. **Website-Modus**: Zeigt die bestehenden Felder (eigene URL, optionales GitHub-Repo, Competitor-URLs, "Start Analysis"-Button)
+4. **Code-Modus**: Zeigt nur das GitHub-URL-Feld und einen "Analyze Code"-Button
+5. **Premium-Check entfernen**: Die Bedingung `isPremium` bei `canStartGithubOnly` (Zeile 57) wird entfernt, damit alle Nutzer die Code-Analyse nutzen koennen
+6. Der Erklaerungstext oben passt sich je nach Modus an:
+   - Website: "Enter your website URL and competitor URLs..."
+   - Code: "Enter a GitHub repository URL to analyze the source code"
+
+### Keine weiteren Dateien betroffen
+Die Props und Callbacks (`onStartAnalysis`, `onGithubOnlyAnalysis`) bleiben identisch. Keine Aenderungen an `Chat.tsx` oder anderen Dateien noetig.
+

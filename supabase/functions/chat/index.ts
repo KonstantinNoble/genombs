@@ -28,15 +28,15 @@ const FREE_MODELS = ["gemini-flash", "gpt-mini"];
 
 // Model-specific credit costs for chat
 const CHAT_CREDIT_COSTS: Record<string, number> = {
-  "gemini-flash": 1,
-  "gpt-mini": 1,
-  "gpt": 4,
-  "claude-sonnet": 4,
-  "perplexity": 5,
+  "gemini-flash": 3,
+  "gpt-mini": 3,
+  "gpt": 6,
+  "claude-sonnet": 6,
+  "perplexity": 7,
 };
 
 function getChatCreditCost(modelKey: string): number {
-  return CHAT_CREDIT_COSTS[modelKey] ?? 1;
+  return CHAT_CREDIT_COSTS[modelKey] ?? 3;
 }
 
 function isExpensiveModel(modelKey: string): boolean {

@@ -365,15 +365,15 @@ const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];
 
 // Model-specific credit costs for analysis
 const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
-  "gemini-flash": 5,
-  "gpt-mini": 5,
-  "gpt": 8,
-  "claude-sonnet": 8,
-  "perplexity": 10,
+  "gemini-flash": 9,
+  "gpt-mini": 9,
+  "gpt": 12,
+  "claude-sonnet": 12,
+  "perplexity": 14,
 };
 
 function getAnalysisCreditCost(modelKey: string): number {
-  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 5;
+  return ANALYSIS_CREDIT_COSTS[modelKey] ?? 9;
 }
 
 // ─── Credit refund helper ───

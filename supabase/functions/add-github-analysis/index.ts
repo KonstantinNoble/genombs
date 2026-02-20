@@ -319,11 +319,11 @@ serve(async (req) => {
 
     // Credit check
     const CODE_ANALYSIS_COSTS: Record<string, number> = {
-      "gemini-flash": 8,
-      "gpt-mini": 8,
-      "gpt": 12,
-      "claude-sonnet": 12,
-      "perplexity": 15,
+      "gemini-flash": 12,
+      "gpt-mini": 12,
+      "gpt": 16,
+      "claude-sonnet": 16,
+      "perplexity": 19,
     };
 
     const { data: credits } = await supabase
@@ -333,7 +333,7 @@ serve(async (req) => {
       .single();
 
     const selectedModel: ModelId = (model as ModelId) || "gemini-flash";
-    const cost = CODE_ANALYSIS_COSTS[selectedModel] ?? 8;
+    const cost = CODE_ANALYSIS_COSTS[selectedModel] ?? 12;
 
     // Premium model gating
     const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"];

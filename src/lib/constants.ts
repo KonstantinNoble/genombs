@@ -5,25 +5,25 @@
 // Model-specific credit costs
 export const MODEL_CREDIT_COSTS = {
   chat: {
-    "gemini-flash": 1,
-    "gpt-mini": 1,
-    "gpt": 4,
-    "claude-sonnet": 4,
-    "perplexity": 5,
+    "gemini-flash": 3,
+    "gpt-mini": 3,
+    "gpt": 6,
+    "claude-sonnet": 6,
+    "perplexity": 7,
   },
   analysis: {
-    "gemini-flash": 5,
-    "gpt-mini": 5,
-    "gpt": 8,
-    "claude-sonnet": 8,
-    "perplexity": 10,
-  },
-  codeAnalysis: {
-    "gemini-flash": 8,
-    "gpt-mini": 8,
+    "gemini-flash": 9,
+    "gpt-mini": 9,
     "gpt": 12,
     "claude-sonnet": 12,
-    "perplexity": 15,
+    "perplexity": 14,
+  },
+  codeAnalysis: {
+    "gemini-flash": 12,
+    "gpt-mini": 12,
+    "gpt": 16,
+    "claude-sonnet": 16,
+    "perplexity": 19,
   },
 } as const;
 
@@ -41,13 +41,13 @@ export function isExpensiveModel(modelId: string): boolean {
 }
 
 export function getChatCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.chat as Record<string, number>)[modelId] ?? 1;
+  return (MODEL_CREDIT_COSTS.chat as Record<string, number>)[modelId] ?? 3;
 }
 
 export function getAnalysisCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.analysis as Record<string, number>)[modelId] ?? 5;
+  return (MODEL_CREDIT_COSTS.analysis as Record<string, number>)[modelId] ?? 9;
 }
 
 export function getCodeAnalysisCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 8;
+  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
 }

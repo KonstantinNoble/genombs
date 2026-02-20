@@ -90,19 +90,13 @@ const Navbar = () => {
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link 
       to={to} 
-      className={`relative text-base font-medium transition-all duration-200 py-1.5 group active:scale-95 ${
+      className={`text-sm font-medium transition-all duration-200 rounded-full px-4 py-1.5 active:scale-95 ${
         isActive(to) 
-          ? "text-primary" 
-          : "text-muted-foreground hover:text-primary"
+          ? "text-primary bg-white/[0.10]" 
+          : "text-foreground/70 hover:text-foreground hover:bg-white/[0.08]"
       }`}
     >
       {children}
-      {/* Green underline effect */}
-      <span 
-        className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
-          isActive(to) ? "w-full" : "w-0 group-hover:w-full"
-        }`} 
-      />
     </Link>
   );
   
@@ -135,12 +129,14 @@ const Navbar = () => {
           </div>
           
           {/* Desktop Navigation - Center */}
-          <div className="hidden md:flex flex-1 items-center justify-center gap-7">
+          <div className="hidden md:flex flex-1 items-center justify-center">
+            <div className="flex items-center gap-1 rounded-full bg-white/[0.06] border border-white/[0.08] px-2 py-1.5">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/how-it-works">How It Works</NavLink>
             {user && <NavLink to="/chat">Analyse</NavLink>}
             <NavLink to="/pricing">Pricing</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            </div>
           </div>
           
           {/* CTA Button - Right */}

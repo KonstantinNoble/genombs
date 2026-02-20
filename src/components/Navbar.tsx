@@ -130,7 +130,7 @@ const Navbar = () => {
           
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center">
-            <div className="flex items-center gap-1 rounded-full bg-white/[0.06] border border-white/[0.08] px-2 py-1.5">
+            <div className="flex items-center gap-1 rounded-full bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/how-it-works">How It Works</NavLink>
             {user && <NavLink to="/chat">Analyse</NavLink>}

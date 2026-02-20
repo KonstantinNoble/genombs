@@ -310,8 +310,29 @@ const Home = () => {
       {/* Hero */}
       <section className="relative flex items-center justify-center py-32 sm:py-40 overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-[1.08] mb-6 animate-fade-in">
-            What's holding your <span className="text-primary">website</span> back?
+          {/* Word-by-word reveal headline */}
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-[1.08] mb-6">
+            {["What's", "holding", "your"].map((word, i) => (
+              <span
+                key={word}
+                className="inline-block opacity-0 animate-fade-in-up"
+                style={{ animationDelay: `${i * 0.15}s`, animationFillMode: "both" }}
+              >
+                {word}&nbsp;
+              </span>
+            ))}
+            <span
+              className="inline-block text-primary opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "0.45s", animationFillMode: "both" }}
+            >
+              website
+            </span>{" "}
+            <span
+              className="inline-block opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "0.6s", animationFillMode: "both" }}
+            >
+              back?
+            </span>
           </h1>
           <p
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 animate-fade-in-up"

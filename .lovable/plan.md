@@ -1,41 +1,38 @@
 
+## Navbar-Design aufwerten
 
-## Credit-Refund: 3 logische Fehler beheben
+### Problem
+Die Desktop-Navigation (Home, How It Works, Pricing, Contact) steht ohne visuellen Container, in grauer Farbe mit wenig Kontrast -- wirkt trocken und wenig professionell.
 
-### Gefundene Probleme
+### Loesung
+Die Nav-Links bekommen einen subtilen, abgerundeten Container (Pill-Form) als Gruppe, und die einzelnen Links erhalten besseren Kontrast und dynamischere Hover-/Active-Effekte.
 
-Die Refund-Logik ist in `process-analysis-queue` korrekt implementiert (Timeout, Crawl-Fehler, Job-Fehler). Aber in den anderen zwei Dateien fehlen Refunds an wichtigen Stellen:
+### Aenderungen in `src/components/Navbar.tsx`
 
-#### Problem 1: `analyze-website` -- Profile-Insert-Fehler
-Credits werden abgezogen (Zeile 533), aber wenn danach der `website_profiles`-Insert fehlschlaegt (Zeile 566), werden die Credits nicht zurueckerstattet. Nur der Queue-Insert-Fehler (Zeile 593) hat einen Refund.
+#### 1. Nav-Container als Pill
+Die Links-Gruppe (Zeile 138) bekommt einen visuellen Hintergrund-Container:
+- Abgerundete Pill-Form mit `rounded-full`
+- Subtiler Hintergrund: `bg-white/[0.06]` mit `border border-white/[0.08]`
+- Padding innen: `px-2 py-1.5`
+- Das gibt den Links einen klaren, definierten Bereich
 
-**Fix:** Refund in den Profile-Insert-Fehlerblock einfuegen (Zeile 566-572).
+#### 2. Einzelne NavLinks aufwerten
+Die NavLink-Komponente (Zeile 90-107) wird ueberarbeitet:
+- Inaktive Links: Hellere Textfarbe (`text-foreground/70` statt `text-muted-foreground`) fuer besseren Kontrast
+- Hover: Dezenter Hintergrund (`hover:bg-white/[0.08]`) und volle Textfarbe
+- Aktiver Link: `bg-white/[0.10]` Hintergrund-Pill + Primaerfarbe (Orange)
+- Jeder Link bekommt `rounded-full px-4 py-1.5` fuer klickbare Pill-Bereiche
+- Die Underline-Animation wird entfernt zugunsten des Pill-Hintergrund-Effekts
 
-#### Problem 2: `analyze-website` -- Aeusserer Catch-Block
-Der aeussere `catch`-Block (Zeile 635-641) faengt unerwartete Fehler ab, die nach dem Credit-Abzug passieren koennten. Kein Refund dort.
-
-**Fix:** Refund im aeusseren Catch-Block. Da wir nicht sicher wissen ob Credits bereits abgezogen wurden, merken wir uns nach dem Abzug eine Flag-Variable (`creditsDeducted = true`) und pruefen diese im Catch.
-
-#### Problem 3: `chat` -- Aeusserer Catch-Block
-Credits werden abgezogen (Zeile 469), danach kann ein Fehler beim Profile-Fetch oder der Stream-Transformation auftreten. Der aeussere Catch-Block (Zeile 569-575) erstattet keine Credits.
-
-**Fix:** Gleiche Loesung wie bei analyze-website: Flag-Variable nach Credit-Abzug setzen, im Catch pruefen und Refund ausfuehren.
+#### 3. Ergebnis
+- Klarer visueller Bereich fuer die Navigation
+- Besserer Kontrast: Links sind heller und besser lesbar
+- Dynamischer: Hover zeigt sofort einen Hintergrund-Wechsel
+- Aktiver Link ist durch Farbe UND Hintergrund klar erkennbar
+- Modernes SaaS-Look (aehnlich wie Linear, Vercel, etc.)
 
 ### Technische Details
-
-**`supabase/functions/analyze-website/index.ts`:**
-- Nach `checkAndDeductAnalysisCredits` (Zeile 533): Variable `let creditsDeducted = false;` davor, `creditsDeducted = true;` danach setzen
-- Zeile 566-572 (Profile-Insert-Fehler): `await refundCredits(...)` hinzufuegen
-- Zeile 635-641 (aeusserer Catch): `if (creditsDeducted) await refundCredits(...)` hinzufuegen
-
-**`supabase/functions/chat/index.ts`:**
-- Nach `checkAndDeductCredits` (Zeile 469): Variable `let creditsDeducted = false;` davor, `creditsDeducted = true;` danach setzen
-- Zeile 569-575 (aeusserer Catch): `if (creditsDeducted) await refundCredits(...)` hinzufuegen
-
-**`supabase/functions/process-analysis-queue/index.ts`:**
-- Keine Aenderungen noetig -- die Implementierung ist korrekt.
-
-### Geaenderte Dateien
-- `supabase/functions/analyze-website/index.ts` -- 3 Stellen: Flag-Variable, Profile-Insert-Refund, Catch-Refund
-- `supabase/functions/chat/index.ts` -- 2 Stellen: Flag-Variable, Catch-Refund
-
+- Nur eine Datei wird geaendert: `src/components/Navbar.tsx`
+- NavLink-Komponente: Underline-Span entfernen, Pill-Styling hinzufuegen
+- Nav-Container div (Zeile 138): Pill-Wrapper mit Hintergrund hinzufuegen
+- Keine neuen Abhaengigkeiten noetig

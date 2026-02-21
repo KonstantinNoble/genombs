@@ -14,15 +14,26 @@ export function StreakBadge({ streak, userId }: StreakBadgeProps) {
   return (
     <Link
       to="/achievements"
-      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 hover:bg-secondary ${
-        currentStreak > 0 
-          ? 'text-primary' 
-          : 'text-muted-foreground'
-      } ${isNewRecord ? 'animate-pulse-subtle' : ''}`}
+      className={`group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300
+        border
+        ${currentStreak > 0
+          ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10'
+          : 'border-border bg-secondary/50 text-muted-foreground hover:bg-secondary hover:border-border'
+        }
+        ${isNewRecord ? 'animate-pulse' : ''}
+      `}
       aria-label={`Streak: ${currentStreak} days`}
     >
-      <Flame className={`w-4 h-4 ${currentStreak > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
-      <span>{currentStreak}</span>
+      {/* Glow behind the icon when streak is active */}
+      {currentStreak > 0 && (
+        <span className="absolute left-3 w-5 h-5 rounded-full bg-primary/20 blur-sm group-hover:bg-primary/30 transition-colors" />
+      )}
+      <Flame
+        className={`relative w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${currentStreak > 0 ? 'text-primary' : 'text-muted-foreground'
+          }`}
+      />
+      <span className="relative tabular-nums">{currentStreak}</span>
+      <span className="relative text-xs font-normal opacity-60 hidden sm:inline">day streak</span>
     </Link>
   );
 }

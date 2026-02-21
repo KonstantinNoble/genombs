@@ -209,17 +209,22 @@ const Profile = () => {
             </Card>
 
             {/* Achievements Card */}
-            <Card className="bg-card border-border shadow-lg">
+            <Card className="bg-card border-border shadow-lg transition-all duration-300 hover:border-primary/30 hover:shadow-primary/5">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-xl">Progress & Achievements</CardTitle>
                     <CardDescription className="mt-1">Your badges, streaks, and analysis history</CardDescription>
                   </div>
+                  {/* Outline button – arrow slides right on hover */}
                   <Link to="/achievements">
-                    <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 shrink-0 group transition-colors duration-200 hover:border-primary/50"
+                    >
                       View all
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </Button>
                   </Link>
                 </div>
@@ -227,10 +232,13 @@ const Profile = () => {
               <CardContent className="pt-0">
                 <BadgeGallery userId={user.id} size="sm" />
                 <div className="mt-4 px-4">
-                  <Link to="/achievements" className="block">
-                    <Button className="w-full gap-2">
+                  {/* Primary button – scale + arrow slide + subtle shimmer on hover */}
+                  <Link to="/achievements" className="block group">
+                    <Button className="w-full gap-2 relative overflow-hidden transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:shadow-primary/20 active:scale-[0.98]">
+                      {/* Shimmer overlay */}
+                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
                       Open Achievements
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                     </Button>
                   </Link>
                 </div>

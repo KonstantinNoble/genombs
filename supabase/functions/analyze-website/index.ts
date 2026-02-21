@@ -408,7 +408,7 @@ function isExpensiveModel(modelKey: string): boolean {
   return EXPENSIVE_MODELS.includes(modelKey);
 }
 
-async function checkAndDeductAnalysisCredits(
+async function checkAnalysisCredits(
   supabaseAdmin: ReturnType<typeof createClient>,
   userId: string,
   modelKey: string,
@@ -464,11 +464,7 @@ async function checkAndDeductAnalysisCredits(
       return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
     }
 
-    await supabaseAdmin
-      .from("user_credits")
-      .update({ credits_used: creditsUsed + cost })
-      .eq("id", credits.id);
-
+    // Credits are sufficient — do NOT deduct here. Deduction happens on success in process-analysis-queue.
     return { ok: true };
   } catch (e) {
     console.warn("Credit check failed unexpectedly, allowing request:", e);
@@ -483,13 +479,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  let creditsDeducted = false;
-  let refundUserId = "";
-  let refundModel = "gemini-flash";
-
   try {
     const { url, conversationId, isOwnWebsite, model = "gemini-flash", githubRepoUrl } = await req.json();
-    refundModel = model;
 
     if (!url || !conversationId) {
       return new Response(
@@ -533,17 +524,15 @@ serve(async (req) => {
     // Admin client for DB writes
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // ─── Credit check ───
+    // ─── Credit check (no deduction — deduction happens on success in process-analysis-queue) ───
     const isPremiumModel = isExpensiveModel(model);
-    const creditResult = await checkAndDeductAnalysisCredits(supabaseAdmin, user.id, model, isPremiumModel);
+    const creditResult = await checkAnalysisCredits(supabaseAdmin, user.id, model, isPremiumModel);
     if (!creditResult.ok) {
       return new Response(
         JSON.stringify({ error: creditResult.error }),
         { status: creditResult.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    creditsDeducted = true;
-    refundUserId = user.id;
 
     // Format URL
     let formattedUrl = url.trim();
@@ -572,8 +561,6 @@ serve(async (req) => {
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      // Refund credits since profile creation failed
-      await refundCredits(supabaseAdmin, user.id, getAnalysisCreditCost(model), "profile insert failed");
       return new Response(
         JSON.stringify({ error: "Failed to create profile record" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -598,8 +585,6 @@ serve(async (req) => {
 
     if (queueError) {
       console.error("Queue insert error:", queueError);
-      // Refund credits since the job never entered the queue
-      await refundCredits(supabaseAdmin, user.id, getAnalysisCreditCost(model), "queue insert failed");
       return new Response(
         JSON.stringify({ error: "Failed to queue analysis" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -643,16 +628,6 @@ serve(async (req) => {
     );
   } catch (err) {
     console.error("analyze-website error:", err);
-    if (creditsDeducted && refundUserId) {
-      try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-        await refundCredits(supabaseAdmin, refundUserId, getAnalysisCreditCost(refundModel), "unexpected error");
-      } catch (refundErr) {
-        console.error("Refund failed in outer catch:", refundErr);
-      }
-    }
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

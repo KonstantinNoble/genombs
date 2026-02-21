@@ -37,13 +37,6 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     condition: 'Score ≥ 80 in any analysis',
   },
   {
-    id: 'tasks_10',
-    name: 'Task Crusher',
-    description: 'Completed 10 improvement tasks',
-    icon: 'CheckCircle',
-    condition: 'Complete 10 tasks',
-  },
-  {
     id: 'scans_5',
     name: 'Scanner Pro',
     description: 'Ran 5 website analyses',

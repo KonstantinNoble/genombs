@@ -580,11 +580,7 @@ async function processQueue() {
       .eq("status", "processing")
       .lt("started_at", fiveMinutesAgo);
 
-    // Refund credits for each timed-out job
-    for (const tj of timedOutJobs) {
-      const cost = getAnalysisCreditCost(tj.model);
-      await refundCredits(supabaseAdmin, tj.user_id, cost, "job timeout");
-    }
+    // No credit refund needed — credits are only deducted on success
   }
 
   // 2. Count current processing jobs
@@ -711,9 +707,7 @@ async function processQueue() {
           })
           .eq("id", job.profile_id);
 
-        // Refund credits for failed crawl
-        const cost = getAnalysisCreditCost(job.model);
-        await refundCredits(supabaseAdmin, job.user_id, cost, "crawl failed");
+        // No credit refund needed — credits were never deducted
 
         return;
       }
@@ -849,7 +843,26 @@ async function processQueue() {
         .eq("id", job.id);
 
       console.log(`Job ${job.id} completed successfully`);
-    } catch (err) {
+
+      // Deduct credits only on successful completion
+      const cost = getAnalysisCreditCost(job.model);
+      try {
+        const { data: creditData } = await supabaseAdmin
+          .from("user_credits")
+          .select("id, credits_used")
+          .eq("user_id", job.user_id)
+          .single();
+
+        if (creditData) {
+          await supabaseAdmin
+            .from("user_credits")
+            .update({ credits_used: (creditData.credits_used ?? 0) + cost })
+            .eq("id", creditData.id);
+          console.log(`Credits deducted: ${cost} for user ${job.user_id}`);
+        }
+      } catch (creditErr) {
+        console.error("Credit deduction failed (non-blocking):", creditErr);
+      }
       console.error(`Error processing job ${job.id}:`, err);
       const isAbort = err instanceof DOMException && err.name === "AbortError";
       const errorMsg = isAbort
@@ -873,9 +886,7 @@ async function processQueue() {
         })
         .eq("id", job.profile_id);
 
-      // Refund credits for failed job
-      const cost = getAnalysisCreditCost(job.model);
-      await refundCredits(supabaseAdmin, job.user_id, cost, `job error: ${errorMsg.substring(0, 50)}`);
+      // No credit refund needed — credits were never deducted
     }
   });
 

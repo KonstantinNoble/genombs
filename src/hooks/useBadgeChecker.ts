@@ -10,14 +10,12 @@ const BADGE_ICON_MAP: Record<string, string> = {
   'Trophy': '🏆',
   'Crown': '👑',
   'Star': '⭐',
-  'CheckCircle': '✅',
   'BarChart': '📊',
 };
 
 export function useBadgeChecker(userId: string | null) {
   const checkAndUnlockBadges = useCallback(async (context: {
     streak?: StreakData | null;
-    completedTasksCount?: number;
     scanCount?: number;
     highestScore?: number;
   }) => {
@@ -54,9 +52,6 @@ export function useBadgeChecker(userId: string | null) {
             break;
           case 'score_80':
             earned = (context.highestScore ?? 0) >= 80;
-            break;
-          case 'tasks_10':
-            earned = (context.completedTasksCount ?? 0) >= 10;
             break;
           case 'scans_5':
             earned = (context.scanCount ?? 0) >= 5;

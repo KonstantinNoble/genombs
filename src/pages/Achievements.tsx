@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStreak } from '@/hooks/useStreak';
@@ -13,12 +13,19 @@ const Achievements = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { streak } = useStreak(user?.id ?? null, true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!isLoading && !user) {
       navigate('/auth');
     }
   }, [user, isLoading, navigate]);
+
+  useEffect(() => {
+    const onFocus = () => setRefreshKey(k => k + 1);
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
 
   if (isLoading || !user) return null;
 
@@ -79,7 +86,7 @@ const Achievements = () => {
         {/* Analytics Overview */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-foreground mb-6">Analytics Overview</h2>
-          <AnalyticsOverview userId={user.id} />
+          <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />
         </section>
 
         {/* Badges Section */}

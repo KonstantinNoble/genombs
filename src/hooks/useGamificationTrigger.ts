@@ -12,7 +12,7 @@ import { generateTasksFromScores } from '@/lib/task-generator';
 import type { WebsiteProfile } from '@/types/chat';
 
 export function useGamificationTrigger(userId: string | null) {
-  const { streak, updateStreak } = useStreak(userId);
+  const { streak, updateStreak } = useStreak(userId, true);
   const { checkAndUnlockBadges } = useBadgeChecker(userId);
 
   const triggerAfterAnalysis = useCallback(async (completedProfiles: WebsiteProfile[]) => {

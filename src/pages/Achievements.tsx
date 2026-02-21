@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 const Achievements = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { streak } = useStreak(user?.id ?? null);
+  const { streak } = useStreak(user?.id ?? null, true);
   const [completedTasks, setCompletedTasks] = useState(0);
 
   useEffect(() => {

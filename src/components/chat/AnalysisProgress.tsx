@@ -7,17 +7,17 @@ interface AnalysisProgressProps {
 }
 
 const STATUS_CONFIG: Record<string, { percent: number; label: string; color: string }> = {
-  pending: { percent: 10, label: "In queue...", color: "text-muted-foreground" },
-  queued: { percent: 10, label: "In queue...", color: "text-muted-foreground" },
-  crawling: { percent: 33, label: "Crawling website...", color: "text-primary" },
-  analyzing: { percent: 66, label: "AI analyzing...", color: "text-primary" },
-  completed: { percent: 100, label: "Done", color: "text-chart-6" },
-  error: { percent: 100, label: "Failed", color: "text-destructive" },
+  pending: { percent: 10, label: "Initializing...", color: "text-muted-foreground" },
+  queued: { percent: 10, label: "Queued...", color: "text-muted-foreground" },
+  crawling: { percent: 33, label: "Indexing Site Content...", color: "text-primary" },
+  analyzing: { percent: 66, label: "Running AI Evaluation...", color: "text-primary" },
+  completed: { percent: 100, label: "Evaluation Complete", color: "text-chart-6" },
+  error: { percent: 100, label: "Evaluation Failed", color: "text-destructive" },
 };
 
 const AnalysisProgress = ({ profiles }: AnalysisProgressProps) => {
   const activeProfiles = profiles.filter(
-    (p) => p.status !== "completed" || Date.now() - new Date(p.created_at).getTime() < 10000
+    (p) => p.status !== "completed" || Date.now() - new Date(p.created_at).getTime() < 10000,
   );
 
   if (activeProfiles.length === 0) return null;

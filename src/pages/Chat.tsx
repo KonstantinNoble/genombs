@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import SectionNavBar from "@/components/dashboard/SectionNavBar";
-import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessage from "@/components/chat/ChatMessage";
@@ -27,621 +26,110 @@ import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase/external-client";
-import {
-  loadConversations,
-  createConversation,
-  loadMessages,
-  saveMessage,
-  loadProfiles,
-  loadTasks,
-  analyzeWebsite,
-  streamChat,
-  deleteProfilesForConversation,
-  deleteConversation,
-  updateConversationTitle,
-  addGithubAnalysis,
-} from "@/lib/api/chat-api";
-import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
-import { useGamificationTrigger } from "@/hooks/useGamificationTrigger";
-const MAX_CONVERSATIONS = 20;
+
+// Import Custom Hooks
+import { useChatConversations } from "@/hooks/useChatConversations";
+import { useChatAnalysis } from "@/hooks/useChatAnalysis";
+import { useChatMessages } from "@/hooks/useChatMessages";
+
+import { saveMessage } from "@/lib/api/chat-api";
+import type { WebsiteProfile } from "@/types/chat";
 
 const Chat = () => {
   const isMobile = useIsMobile();
+  const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, refreshCredits } = useAuth();
+
+  // 1. Conversation Management
   const {
-    user,
-    isLoading: authLoading,
-    remainingCredits,
-    creditsLimit,
-    creditsResetAt,
-    isPremium,
+    conversations,
+    setConversations,
+    activeId,
+    setActiveId,
+    deleteDialogState,
+    setDeleteDialogState,
+    handleNewConversation,
+    handleOpenDeleteDialog,
+    handleConfirmDelete,
+    getAccessToken,
+  } = useChatConversations(user?.id);
+
+  // 2. We need to define onSummaryRequired for the Analysis hook
+  // which will actually call generateSummary from the Messages hook.
+  // Since they depend on each other, we pass a callback.
+  const [triggerSummaryTask, setTriggerSummaryTask] = useState<{
+    completed: WebsiteProfile[];
+    accessToken: string;
+    model?: string;
+  } | null>(null);
+
+  // 3. Analysis Management
+  const {
+    profiles,
+    setProfiles,
+    tasks,
+    isAnalyzing,
+    showInlineUrlPrompt,
+    setShowInlineUrlPrompt,
+    deduplicateProfiles,
+    handleScan,
+    loadProfiles,
+  } = useChatAnalysis({
+    activeId,
+    userId: user?.id,
+    getAccessToken,
+    setConversations,
+    onSummaryRequired: (completed, token, model) => {
+      setTriggerSummaryTask({ completed, accessToken: token, model });
+    },
+  });
+
+  // 4. Message Management
+  const {
+    messages,
+    setMessages,
+    isStreaming,
+    scrollRef,
+    handleSend,
+    handleGithubDeepAnalysis,
+    generateSummary,
+  } = useChatMessages({
+    activeId,
+    getAccessToken,
+    profiles,
+    setProfiles,
     refreshCredits,
-  } = useAuth();
+    deduplicateProfiles,
+    loadProfiles,
+  });
 
-  const { triggerAfterAnalysis } = useGamificationTrigger(user?.id ?? null);
+  // Call generateSummary when triggered
+  if (triggerSummaryTask) {
+    generateSummary(triggerSummaryTask.completed, triggerSummaryTask.accessToken, triggerSummaryTask.model);
+    setTriggerSummaryTask(null);
+  }
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [profiles, setProfiles] = useState<WebsiteProfile[]>([]);
-  const [tasks, setTasks] = useState<ImprovementTask[]>([]);
-
+  // UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
-  
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showInlineUrlPrompt, setShowInlineUrlPrompt] = useState(false);
   const [urlDialogOpen, setUrlDialogOpen] = useState(false);
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
 
-  const [deleteDialogState, setDeleteDialogState] = useState<{ isOpen: boolean; conversationId: string | null }>({
-    isOpen: false,
-    conversationId: null,
-  });
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const expectedProfileCountRef = useRef<number>(0);
-  const summaryModelRef = useRef<string | undefined>(undefined);
-  const summaryTokenRef = useRef<string>("");
-
-  // ─── Load conversations on mount ───
-  useEffect(() => {
-    if (!user) return;
-    loadConversations(user.id)
-      .then(async (convs) => {
-        if (convs.length > 0) {
-          setConversations(convs);
-          setActiveId(convs[0].id);
-        } else {
-          // Auto-create first conversation
-          try {
-            const conv = await createConversation(user.id);
-            setConversations([conv]);
-            setActiveId(conv.id);
-          } catch (e) {
-            console.error("Failed to auto-create conversation:", e);
-          }
-        }
-      })
-      .catch((e) => console.error("Failed to load conversations:", e));
-  }, [user]);
-
-  // ─── Load messages + profiles when active conversation changes ───
-  useEffect(() => {
-    if (!activeId) {
-      setMessages([]);
-      setProfiles([]);
-      setTasks([]);
-      setShowInlineUrlPrompt(false);
-      return;
-    }
-
-    loadMessages(activeId)
-      .then(setMessages)
-      .catch((e) => console.error("Failed to load messages:", e));
-
-    loadProfiles(activeId)
-      .then((ps) => {
-        setProfiles(ps);
-        if (ps.length > 0) setShowInlineUrlPrompt(false);
-        const completedIds = ps.filter((p) => p.status === "completed").map((p) => p.id);
-        if (completedIds.length > 0) {
-          loadTasks(completedIds).then(setTasks).catch(console.error);
-        } else {
-          setTasks([]);
-        }
-      })
-      .catch((e) => console.error("Failed to load profiles:", e));
-  }, [activeId]);
-
-  // ─── Realtime pause flag ───
-  const realtimePausedRef = useRef(false);
-
-  // ─── Deduplicate profiles by URL (keep newest) ───
-  const deduplicateProfiles = useCallback((ps: WebsiteProfile[]): WebsiteProfile[] => {
-    const byUrl = new Map<string, WebsiteProfile>();
-    for (const p of ps) {
-      const existing = byUrl.get(p.url);
-      if (!existing || new Date(p.created_at) > new Date(existing.created_at)) {
-        byUrl.set(p.url, p);
-      }
-    }
-    return Array.from(byUrl.values());
-  }, []);
-
-  // ─── Realtime subscription for website_profiles ───
-  useEffect(() => {
-    if (!activeId || !user) return;
-
-    const channel = supabase
-      .channel(`profiles_${activeId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "website_profiles",
-          filter: `conversation_id=eq.${activeId}`,
-        },
-        () => {
-          if (realtimePausedRef.current) return;
-          // Reload profiles on any change
-          loadProfiles(activeId).then(async (ps) => {
-            const deduped = deduplicateProfiles(ps);
-            setProfiles(deduped);
-            const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
-            if (completedIds.length > 0) {
-              loadTasks(completedIds).then(setTasks).catch(console.error);
-            }
-
-            // Check if all expected profiles are done → trigger summary
-            const expected = expectedProfileCountRef.current;
-            if (expected > 0) {
-              const doneCount = deduped.filter((p) => p.status === "completed" || p.status === "error").length;
-              if (doneCount >= expected) {
-                expectedProfileCountRef.current = 0;
-                const completed = deduped.filter((p) => p.status === "completed");
-                if (completed.length > 0) {
-                  generateSummary(completed, summaryTokenRef.current, summaryModelRef.current);
-                  // Trigger gamification side-effects
-                  triggerAfterAnalysis(completed);
-                }
-              }
-            }
-          });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [activeId, user]); // Removed deduplicateProfiles - it's stable with empty deps
-
-  // ─── Scroll to bottom on initial messages load only ───
-  useEffect(() => {
-    if (messages.length === 0) return;
-    // Only scroll on initial load, not on every message update
-    const timer = setTimeout(() => {
-      scrollRef.current?.scrollIntoView({ behavior: "auto" });
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [activeId]);
-
-  // ─── Scroll to bottom when streaming starts ───
-  useEffect(() => {
-    if (isStreaming) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [isStreaming]);
-
-  // ─── Get access token ───
-  const getAccessToken = useCallback(async () => {
-    const { data } = await supabase.auth.getSession();
-    return data.session?.access_token ?? "";
-  }, []);
-
-  // ─── New conversation ───
-  const handleNewConversation = async () => {
-    if (!user) return;
-    try {
-      const conv = await createConversation(user.id);
-      const updated = [conv, ...conversations];
-      setConversations(updated);
-      setActiveId(conv.id);
-      setSidebarOpen(false);
-
-      // Enforce max 20 conversations: delete oldest if exceeded
-      if (updated.length > MAX_CONVERSATIONS) {
-        const oldest = updated[updated.length - 1]; // sorted by updated_at desc
-        try {
-          const token = await getAccessToken();
-          await deleteConversation(oldest.id, token);
-          setConversations((prev) => prev.filter((c) => c.id !== oldest.id));
-          console.log(`Auto-deleted oldest conversation: ${oldest.id}`);
-        } catch (delErr) {
-          console.error("Failed to auto-delete oldest conversation:", delErr);
-        }
-      }
-    } catch (e) {
-      toast.error("Failed to create conversation");
-      console.error(e);
-    }
+  // Handlers for UI to use
+  const onStartScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string) => {
+    await handleScan(
+      ownUrl,
+      competitorUrls,
+      model,
+      githubRepoUrl,
+      async (content) => {
+        if (!activeId) return;
+        const msg = await saveMessage(activeId, "user", content);
+        setMessages((prev) => [...prev, msg]);
+      },
+      refreshCredits
+    );
   };
 
-  // ─── Delete conversation manually ───
-  const handleOpenDeleteDialog = (id: string) => {
-    setDeleteDialogState({ isOpen: true, conversationId: id });
-  };
-
-  const handleConfirmDelete = async () => {
-    const id = deleteDialogState.conversationId;
-    setDeleteDialogState({ isOpen: false, conversationId: null });
-    if (!id) return;
-    try {
-      const token = await getAccessToken();
-      await deleteConversation(id, token);
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (activeId === id) {
-        const remaining = conversations.filter((c) => c.id !== id);
-        setActiveId(remaining.length > 0 ? remaining[0].id : null);
-      }
-      toast.success("Conversation deleted");
-    } catch (e) {
-      toast.error("Failed to delete conversation");
-      console.error(e);
-    }
-  };
-
-  // ─── GitHub Deep Analysis handler ───
-  const handleGithubDeepAnalysis = async (githubUrl: string, model?: string) => {
-    if (!activeId || !user) return;
-
-    // Validate GitHub URL format
-    const ghMatch = githubUrl.match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)/);
-    if (!ghMatch) {
-      const errorMsg = await saveMessage(activeId, "assistant", "❌ Invalid GitHub URL. Please use the format: `https://github.com/owner/repo`");
-      setMessages((prev) => [...prev, errorMsg]);
-      return;
-    }
-
-    const token = await getAccessToken();
-
-    // Find or create the user's own website profile
-    let ownProfile = profiles.find((p) => p.is_own_website && p.status === "completed");
-    
-    if (!ownProfile) {
-      // Create a minimal GitHub-only profile as container for code_analysis
-      try {
-        const { data: newProfile, error } = await supabase
-          .from("website_profiles")
-          .insert({
-            url: githubUrl,
-            user_id: user.id,
-            conversation_id: activeId,
-            is_own_website: true,
-            status: "completed",
-            github_repo_url: githubUrl,
-          })
-          .select()
-          .single();
-        
-        if (error || !newProfile) {
-          const errorMsg = await saveMessage(activeId, "assistant", "❌ Failed to create profile for GitHub analysis.");
-          setMessages((prev) => [...prev, errorMsg]);
-          return;
-        }
-        ownProfile = { ...newProfile, pagespeed_data: null } as unknown as WebsiteProfile;
-        setProfiles((prev) => [...prev, ownProfile!]);
-      } catch (e) {
-        console.error("Failed to create GitHub-only profile:", e);
-        const errorMsg = await saveMessage(activeId, "assistant", "❌ Failed to create profile for GitHub analysis.");
-        setMessages((prev) => [...prev, errorMsg]);
-        return;
-      }
-    }
-
-    // Validate repo existence before starting
-    try {
-      const checkRes = await fetch(`https://api.github.com/repos/${ghMatch[1]}/${ghMatch[2]}`, { method: "HEAD" });
-      if (!checkRes.ok) {
-        const errorMsg = await saveMessage(activeId, "assistant", `❌ Repository not found: \`${githubUrl}\`. Make sure the repository is public and the URL is correct.`);
-        setMessages((prev) => [...prev, errorMsg]);
-        return;
-      }
-    } catch {
-      // Network error — proceed anyway, edge function will handle it
-    }
-
-    // Show confirmation in chat only after validation passes
-    const confirmMsg = await saveMessage(activeId, "assistant", `🔍 Starting Deep Analysis with GitHub repo: ${githubUrl}...`);
-    setMessages((prev) => [...prev, confirmMsg]);
-
-    try {
-      const result = await addGithubAnalysis(ownProfile.id, githubUrl, token, model);
-      
-      // Reload profiles to pick up updated code_analysis
-      const updatedProfiles = await loadProfiles(activeId);
-      setProfiles(deduplicateProfiles(updatedProfiles));
-
-      // Generate a summary of the code analysis
-      if (result.codeAnalysis) {
-        const summaryPrompt = `A Deep Code Analysis was just completed for the GitHub repository linked to ${ownProfile.url}. Here are the results:\n\n${JSON.stringify(result.codeAnalysis, null, 2)}\n\nGive a brief, actionable summary of the code quality findings. Focus on the top 3 most important issues and recommendations. Be conversational and direct.`;
-
-        let assistantContent = "";
-        const tempId = `temp-github-${Date.now()}`;
-        setMessages((prev) => [
-          ...prev,
-          { id: tempId, conversation_id: activeId, role: "assistant", content: "", created_at: new Date().toISOString() },
-        ]);
-        setIsStreaming(true);
-
-        await streamChat({
-          messages: [{ role: "user", content: summaryPrompt }],
-          conversationId: activeId,
-          accessToken: token,
-          onDelta: (delta) => {
-            assistantContent += delta;
-            setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
-          },
-          onDone: () => {},
-        });
-
-        const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
-        setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
-        setIsStreaming(false);
-      }
-
-      toast.success("Deep Analysis complete!");
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Deep Analysis failed";
-      // Show error in chat instead of just a toast
-      const errorMsg = await saveMessage(activeId, "assistant", `❌ Deep Analysis failed: ${msg}`);
-      setMessages((prev) => [...prev, errorMsg]);
-      console.error("GitHub deep analysis failed:", e);
-    } finally {
-      refreshCredits();
-    }
-  };
-
-  // ─── Send message + stream response ───
-  const handleSend = async (content: string, model?: string) => {
-    if (!activeId || !user || isStreaming) return;
-
-    // Check if the message contains a GitHub URL — always recognize for premium users
-    const githubMatch = content.match(/https?:\/\/github\.com\/[\w.-]+\/[\w.-]+/i);
-    if (githubMatch) {
-      // Save the user message first
-      const userMsg = await saveMessage(activeId, "user", content);
-      setMessages((prev) => [...prev, userMsg]);
-      // Trigger deep analysis with the selected model
-      await handleGithubDeepAnalysis(githubMatch[0], model);
-      return;
-    }
-
-    try {
-      // Save user message to DB
-      const userMsg = await saveMessage(activeId, "user", content);
-      setMessages((prev) => [...prev, userMsg]);
-
-      // Start streaming
-      setIsStreaming(true);
-      const token = await getAccessToken();
-
-      const chatHistory = [...messages, userMsg].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
-
-      let assistantContent = "";
-
-      // Add placeholder assistant message
-      const tempId = `temp-${Date.now()}`;
-      setMessages((prev) => [
-        ...prev,
-        { id: tempId, conversation_id: activeId, role: "assistant", content: "", created_at: new Date().toISOString() },
-      ]);
-
-      await streamChat({
-        messages: chatHistory,
-        conversationId: activeId,
-        accessToken: token,
-        model,
-        onDelta: (delta) => {
-          assistantContent += delta;
-          setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
-        },
-        onDone: () => {},
-      });
-
-      // Save final assistant message to DB
-      const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
-      // Replace temp message with saved one
-      setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Chat failed";
-      if (msg === "premium_model_required") {
-        toast.error("This model is only available for Premium users.");
-      } else if (msg.startsWith("insufficient_credits:")) {
-        const hours = msg.split(":")[1];
-        toast.error(`No credits left — resets in ${hours}h.`);
-      } else {
-        toast.error(msg);
-      }
-      console.error(e);
-    } finally {
-      setIsStreaming(false);
-      refreshCredits();
-    }
-  };
-
-  // ─── Generate AI summary after all profiles complete ───
-  const generateSummary = useCallback(
-    async (completed: WebsiteProfile[], accessToken: string, model?: string) => {
-      if (!activeId) return;
-      try {
-        const summaryLines = completed.map((p) => {
-          const pd = p.profile_data;
-          const scores = p.category_scores;
-          return `- ${p.url} (Score: ${p.overall_score}/100)${p.is_own_website ? " [OWN WEBSITE]" : ""}\n  Strengths: ${pd?.strengths?.join(", ") || "N/A"}\n  Weaknesses: ${pd?.weaknesses?.join(", ") || "N/A"}\n  Categories: Findability ${scores?.findability ?? "?"}, Mobile ${scores?.mobileUsability ?? "?"}, Offer ${scores?.offerClarity ?? "?"}, Trust ${scores?.trustProof ?? "?"}, Conversion ${scores?.conversionReadiness ?? "?"}`;
-        });
-
-        const summaryPrompt = `Analysis data:\n\n${summaryLines.join("\n\n")}\n\nBased on these results, give a brief actionable overview. Focus on the most important finding and the top 3 action items. Do NOT repeat all scores or list all data — be conversational and direct. Do NOT introduce yourself or say "I've reviewed the data".`;
-
-        const chatHistory = [{ role: "user", content: summaryPrompt }];
-
-        let assistantContent = "";
-        const tempId = `temp-summary-${Date.now()}`;
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: tempId,
-            conversation_id: activeId,
-            role: "assistant" as const,
-            content: "",
-            created_at: new Date().toISOString(),
-          },
-        ]);
-        setIsStreaming(true);
-
-        await streamChat({
-          messages: chatHistory,
-          conversationId: activeId,
-          accessToken,
-          model,
-          onDelta: (delta) => {
-            assistantContent += delta;
-            setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, content: assistantContent } : m)));
-          },
-          onDone: () => {},
-        });
-
-        const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
-        setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
-        setIsStreaming(false);
-      } catch (e) {
-        console.error("Summary generation failed:", e);
-        setIsStreaming(false);
-      }
-    },
-    [activeId],
-  );
-
-  // ─── Start analysis (scan) ───
-  const handleScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string) => {
-    if (!activeId || !user) return;
-
-    setIsAnalyzing(true);
-    const token = await getAccessToken();
-
-    // Add a user message describing the scan
-    const content = `Analyze my site ${ownUrl} vs competitors: ${competitorUrls.join(", ")}`;
-    try {
-      const userMsg = await saveMessage(activeId, "user", content);
-      setMessages((prev) => [...prev, userMsg]);
-    } catch (e) {
-      console.error("Failed to save scan message:", e);
-    }
-
-    // Pause realtime during delete+insert cycle
-    realtimePausedRef.current = true;
-
-    // Preserve code_analysis from existing own-website profile before cleanup
-    const existingOwnProfile = profiles.find(p => p.is_own_website && p.code_analysis);
-    const preservedCodeAnalysis = existingOwnProfile?.code_analysis ?? null;
-    const preservedGithubUrl = existingOwnProfile?.github_repo_url ?? null;
-
-    // Clean up old profiles and tasks before starting new analysis
-    try {
-      const result = await deleteProfilesForConversation(activeId, token);
-      console.log(`Cleanup complete: ${result.deletedProfiles} profiles, ${result.deletedTasks} task groups removed`);
-    } catch (e) {
-      console.error("Failed to delete old profiles:", e);
-      toast.error("Failed to delete old analysis data. Please try again.");
-      realtimePausedRef.current = false;
-      setIsAnalyzing(false);
-      return; // Stop — don't continue with new analysis
-    }
-    setProfiles([]);
-    setTasks([]);
-
-    // Resume realtime after a short delay to let inserts settle
-    setTimeout(() => {
-      realtimePausedRef.current = false;
-      // Reload profiles to catch any inserts missed during the pause
-      loadProfiles(activeId)
-        .then((ps) => {
-          const deduped = deduplicateProfiles(ps);
-          setProfiles(deduped);
-          const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
-          if (completedIds.length > 0) {
-            loadTasks(completedIds).then(setTasks).catch(console.error);
-          }
-
-          // Check if all expected profiles completed during the pause → trigger summary
-          const expected = expectedProfileCountRef.current;
-          if (expected > 0) {
-            const doneCount = deduped.filter((p) => p.status === "completed" || p.status === "error").length;
-            if (doneCount >= expected) {
-              expectedProfileCountRef.current = 0;
-              const completed = deduped.filter((p) => p.status === "completed");
-              if (completed.length > 0) {
-                generateSummary(completed, summaryTokenRef.current, summaryModelRef.current);
-                triggerAfterAnalysis(completed);
-              }
-            }
-          }
-        })
-        .catch(console.error);
-    }, 2000);
-
-    // Fire all analysis requests in parallel
-    const allUrls = [{ url: ownUrl, isOwn: true }, ...competitorUrls.map((u) => ({ url: u, isOwn: false }))];
-
-    // Update conversation title to the domain of the own website
-    try {
-      const domain = new URL(ownUrl.startsWith("http") ? ownUrl : `https://${ownUrl}`).hostname.replace(/^www\./, "");
-      await updateConversationTitle(activeId, domain);
-      setConversations((prev) => prev.map((c) => (c.id === activeId ? { ...c, title: domain } : c)));
-    } catch (e) {
-      console.error("Failed to update conversation title:", e);
-    }
-
-    try {
-      let ownProfileId: string | null = null;
-      await Promise.all(
-        allUrls.map(async ({ url, isOwn }) => {
-          try {
-            const result = await analyzeWebsite(url, activeId, isOwn, token, model, isOwn ? githubRepoUrl : undefined);
-            if (isOwn && result?.profileId) {
-              ownProfileId = result.profileId;
-            }
-          } catch (e: any) {
-            const msg = e.message || "Analysis failed";
-            if (msg === "premium_model_required") {
-              toast.error("This model is only available for Premium users.");
-            } else if (msg.startsWith("insufficient_credits:")) {
-              const hours = msg.split(":")[1];
-              toast.error(`No credits left – resets in ${hours}h.`);
-            } else {
-              toast.error(`Analysis failed for ${url}: ${msg}`);
-            }
-          }
-        }),
-      );
-
-      // Restore preserved code_analysis on the new own-website profile
-      if (preservedCodeAnalysis && ownProfileId) {
-        try {
-          await supabase
-            .from("website_profiles")
-            .update({
-              code_analysis: preservedCodeAnalysis as any,
-              github_repo_url: preservedGithubUrl,
-            })
-            .eq("id", ownProfileId);
-          console.log("Restored preserved code_analysis to new profile");
-        } catch (e) {
-          console.error("Failed to restore code_analysis:", e);
-        }
-      }
-      toast.success("Analysis started! Results will appear in the dashboard.");
-
-      // Set expected count so realtime subscription triggers summary when all done
-      expectedProfileCountRef.current = allUrls.length;
-      summaryTokenRef.current = token;
-      summaryModelRef.current = model;
-    } catch (e) {
-      toast.error("Analysis request failed");
-      console.error(e);
-    } finally {
-      setIsAnalyzing(false);
-      refreshCredits();
-    }
-  };
-
-  // ─── Sidebar data mapping ───
   const sidebarConversations = conversations.map((c) => ({
     id: c.id,
     title: c.title,
@@ -652,7 +140,7 @@ const Chat = () => {
   const activeConversation = conversations.find((c) => c.id === activeId) || null;
   const completedProfiles = profiles.filter((p) => p.status === "completed");
   const hasProfiles = completedProfiles.length > 0;
-  
+  const pendingProfiles = profiles.filter((p) => p.status !== "completed" && p.status !== "error");
 
   if (isMobile) {
     return <MobileBlocker />;
@@ -710,7 +198,6 @@ const Chat = () => {
           </p>
         )}
       </div>
-      {/* Credit indicator */}
       <div className="shrink-0 flex items-center gap-3 ml-auto">
         <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
           <span className="hidden sm:inline text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
@@ -769,11 +256,11 @@ const Chat = () => {
               <InlineUrlPrompt
                 onStartAnalysis={(ownUrl, competitorUrls, model) => {
                   setShowInlineUrlPrompt(false);
-                  handleScan(ownUrl, competitorUrls, model);
+                  onStartScan(ownUrl, competitorUrls, model);
                 }}
                 onGithubOnlyAnalysis={(githubUrl, model) => {
                   setShowInlineUrlPrompt(false);
-                  handleGithubDeepAnalysis(githubUrl, model);
+                  handleGithubDeepAnalysis(githubUrl, user?.id, model);
                 }}
                 selectedModel="gemini-flash"
               />
@@ -796,9 +283,9 @@ const Chat = () => {
       )}
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
-          onSend={handleSend}
-          onScan={handleScan}
-          onGithubAnalysis={handleGithubDeepAnalysis}
+          onSend={(content, model) => handleSend(content, user?.id, model)}
+          onScan={(ownUrl, compUrls, model, repo) => onStartScan(ownUrl, compUrls, model, repo)}
+          onGithubAnalysis={(url, model) => handleGithubDeepAnalysis(url, user?.id, model)}
           onPromptUrl={async (message) => {
             if (!activeId) return;
             try {
@@ -823,9 +310,6 @@ const Chat = () => {
     </div>
   );
 
-  // ─── Pending/analyzing profiles for status display ───
-  const pendingProfiles = profiles.filter((p) => p.status !== "completed" && p.status !== "error");
-
   const dashboardPanel = (
     <div className="h-full flex flex-col">
       <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-2">
@@ -838,121 +322,54 @@ const Chat = () => {
           hasWebsiteAnalysis={completedProfiles.some((p) => p.is_own_website && !!p.profile_data)}
         />
       )}
-      {isMobile ? (
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="p-4 space-y-6">
-            {/* Show pending/analyzing profiles */}
-            {pendingProfiles.length > 0 && (
-              <div className="space-y-2">
-                {pendingProfiles.map((p) => (
-                  <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
-                    <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                      <p className="text-[11px] text-muted-foreground capitalize">
-                        {p.status === "crawling"
-                          ? "Crawling website..."
-                          : p.status === "analyzing"
-                            ? "AI analyzing..."
-                            : p.status}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
 
-            {/* Error profiles */}
-            {profiles
-              .filter((p) => p.status === "error")
-              .map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
-                >
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-6">
+          {pendingProfiles.length > 0 && (
+            <div className="space-y-2">
+              {pendingProfiles.map((p) => (
+                <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+                  <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                    <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
+                    <p className="text-[11px] text-muted-foreground capitalize">
+                      {p.status === "crawling" ? "Crawling website..." : p.status === "analyzing" ? "AI analyzing..." : p.status}
+                    </p>
                   </div>
                 </div>
               ))}
+            </div>
+          )}
 
-            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} onOpenUrlDialog={() => setUrlDialogOpen(true)} onOpenGithubDialog={() => setGithubDialogOpen(true)} />}
+          {profiles
+            .filter((p) => p.status === "error")
+            .map((p) => (
+              <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
+                  <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
+                </div>
+              </div>
+            ))}
 
-            {!hasProfiles &&
-              pendingProfiles.length === 0 &&
-              profiles.filter((p) => p.status === "error").length === 0 &&
-              (isAnalyzing ? (
-                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                  <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
-                  <p className="text-sm">Start an analysis to see results here</p>
-                </div>
-              ))}
-          </div>
+          {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} onOpenUrlDialog={() => setUrlDialogOpen(true)} onOpenGithubDialog={() => setGithubDialogOpen(true)} />}
+
+          {!hasProfiles &&
+            pendingProfiles.length === 0 &&
+            profiles.filter((p) => p.status === "error").length === 0 &&
+            (isAnalyzing ? (
+              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
+                <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
+                <p className="text-sm">Start an analysis to see results here</p>
+              </div>
+            ))}
         </div>
-      ) : (
-        <ScrollArea className="flex-1">
-          <div className="p-4 space-y-6">
-            {/* Show pending/analyzing profiles */}
-            {pendingProfiles.length > 0 && (
-              <div className="space-y-2">
-                {pendingProfiles.map((p) => (
-                  <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
-                    <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                      <p className="text-[11px] text-muted-foreground capitalize">
-                        {p.status === "crawling"
-                          ? "Crawling website..."
-                          : p.status === "analyzing"
-                            ? "AI analyzing..."
-                            : p.status}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Error profiles */}
-            {profiles
-              .filter((p) => p.status === "error")
-              .map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{p.url}</p>
-                    <p className="text-[11px] text-destructive">{p.error_message || "Analysis failed"}</p>
-                  </div>
-                </div>
-              ))}
-
-            {hasProfiles && <AnalysisTabsContent profiles={completedProfiles} tasks={tasks} onOpenUrlDialog={() => setUrlDialogOpen(true)} onOpenGithubDialog={() => setGithubDialogOpen(true)} />}
-
-            {!hasProfiles &&
-              pendingProfiles.length === 0 &&
-              profiles.filter((p) => p.status === "error").length === 0 &&
-              (isAnalyzing ? (
-                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <p className="text-sm animate-pulse-subtle">Preparing analysis...</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
-                  <LayoutDashboard className="w-8 h-8 text-muted-foreground/30" />
-                  <p className="text-sm">Start an analysis to see results here</p>
-                </div>
-              ))}
-          </div>
-        </ScrollArea>
-      )}
+      </ScrollArea>
     </div>
   );
 
@@ -965,8 +382,11 @@ const Chat = () => {
           <ChatSidebar
             conversations={sidebarConversations}
             activeId={activeId}
-            onSelect={(id) => setActiveId(id)}
-            onNew={handleNewConversation}
+            onSelect={(id) => {
+              setActiveId(id);
+              if (isMobile) setSidebarOpen(false);
+            }}
+            onNew={() => handleNewConversation(() => setSidebarOpen(false))}
             onDelete={handleOpenDeleteDialog}
           />
         </div>
@@ -983,7 +403,7 @@ const Chat = () => {
                   setActiveId(id);
                   setSidebarOpen(false);
                 }}
-                onNew={handleNewConversation}
+                onNew={() => handleNewConversation(() => setSidebarOpen(false))}
                 onDelete={handleOpenDeleteDialog}
               />
             </div>

@@ -69,7 +69,13 @@ const Achievements = () => {
   const longestStreak = streak?.longest_streak ?? 0;
   const totalDays = streak?.total_active_days ?? 0;
 
-  const streakCards = [
+  const streakCards: {
+    label: string;
+    value: number;
+    unit: string;
+    highlight: string | null;
+    subtext: string | null;
+  }[] = [
     {
       label: "Current Streak",
       value: currentStreak,

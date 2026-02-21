@@ -558,6 +558,20 @@ const Chat = () => {
           if (completedIds.length > 0) {
             loadTasks(completedIds).then(setTasks).catch(console.error);
           }
+
+          // Check if all expected profiles completed during the pause → trigger summary
+          const expected = expectedProfileCountRef.current;
+          if (expected > 0) {
+            const doneCount = deduped.filter((p) => p.status === "completed" || p.status === "error").length;
+            if (doneCount >= expected) {
+              expectedProfileCountRef.current = 0;
+              const completed = deduped.filter((p) => p.status === "completed");
+              if (completed.length > 0) {
+                generateSummary(completed, summaryTokenRef.current, summaryModelRef.current);
+                triggerAfterAnalysis(completed);
+              }
+            }
+          }
         })
         .catch(console.error);
     }, 2000);

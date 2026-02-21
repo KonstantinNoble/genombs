@@ -19,30 +19,25 @@ const TASK_POOL: Record<string, TaskSuggestion[]> = {
     { task_text: 'Add structured data (Schema.org) to your most important page', category: 'findability' },
     { task_text: 'Review and optimize your H1 heading for your main keyword', category: 'findability' },
   ],
-  trust: [
-    { task_text: 'Add customer reviews or testimonials to your homepage', category: 'trust' },
-    { task_text: 'Place trust badges (SSL, payment providers) in a visible area', category: 'trust' },
-    { task_text: 'Add a complete imprint and privacy policy page', category: 'trust' },
+  trustproof: [
+    { task_text: 'Add customer reviews or testimonials to your homepage', category: 'trustProof' },
+    { task_text: 'Place trust badges (SSL, payment providers) in a visible area', category: 'trustProof' },
+    { task_text: 'Add a complete imprint and privacy policy page', category: 'trustProof' },
   ],
-  conversion: [
-    { task_text: 'Place a clear call-to-action above the fold', category: 'conversion' },
-    { task_text: 'Reduce your form fields to the absolute minimum', category: 'conversion' },
-    { task_text: 'Add social proof directly next to your CTA button', category: 'conversion' },
+  conversionreadiness: [
+    { task_text: 'Place a clear call-to-action above the fold', category: 'conversionReadiness' },
+    { task_text: 'Reduce your form fields to the absolute minimum', category: 'conversionReadiness' },
+    { task_text: 'Add social proof directly next to your CTA button', category: 'conversionReadiness' },
   ],
-  design: [
-    { task_text: 'Increase the color contrast of your primary CTA button', category: 'design' },
-    { task_text: 'Optimize the mobile layout of your navigation', category: 'design' },
-    { task_text: 'Unify spacing and font sizes on your homepage', category: 'design' },
+  mobileusability: [
+    { task_text: 'Optimize the mobile layout of your navigation', category: 'mobileUsability' },
+    { task_text: 'Ensure all buttons are at least 44x44px for touch targets', category: 'mobileUsability' },
+    { task_text: 'Test and fix horizontal scrolling issues on mobile devices', category: 'mobileUsability' },
   ],
-  performance: [
-    { task_text: 'Compress images on your homepage (use WebP format)', category: 'performance' },
-    { task_text: 'Enable browser caching for static assets', category: 'performance' },
-    { task_text: 'Remove unused CSS and JavaScript files', category: 'performance' },
-  ],
-  content: [
-    { task_text: 'Rewrite your homepage headline: communicate benefits, not features', category: 'content' },
-    { task_text: 'Add an FAQ section with the 5 most common customer questions', category: 'content' },
-    { task_text: 'Add alt text to all images on your homepage', category: 'content' },
+  offerclarity: [
+    { task_text: 'Rewrite your homepage headline: communicate benefits, not features', category: 'offerClarity' },
+    { task_text: 'Add an FAQ section with the 5 most common customer questions', category: 'offerClarity' },
+    { task_text: 'Make your unique value proposition visible within 3 seconds', category: 'offerClarity' },
   ],
 };
 

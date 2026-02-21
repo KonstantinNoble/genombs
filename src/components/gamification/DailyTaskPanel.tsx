@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/external-client';
 import { CheckCircle, Circle, ListTodo } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { useBadgeChecker } from '@/hooks/useBadgeChecker';
 import type { DailyTask } from '@/types/gamification';
 
 interface DailyTaskPanelProps {
@@ -13,6 +14,7 @@ interface DailyTaskPanelProps {
 export function DailyTaskPanel({ userId, onTaskCompleted, showEmpty = false }: DailyTaskPanelProps) {
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { checkAndUnlockBadges } = useBadgeChecker(userId);
 
   const fetchTasks = useCallback(async () => {
     if (!userId) return;
@@ -56,6 +58,13 @@ export function DailyTaskPanel({ userId, onTaskCompleted, showEmpty = false }: D
 
       if (!completed) {
         onTaskCompleted?.();
+        // Check if tasks_10 badge should be unlocked
+        const { count } = await supabase
+          .from('daily_tasks' as any)
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('completed', true);
+        checkAndUnlockBadges({ completedTasksCount: (count ?? 0) + 1 });
       }
     } catch (err) {
       console.error('Toggle task error:', err);

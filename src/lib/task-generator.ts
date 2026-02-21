@@ -15,34 +15,34 @@ interface TaskSuggestion {
 
 const TASK_POOL: Record<string, TaskSuggestion[]> = {
   findability: [
-    { task_text: 'Optimiere deine Meta-Description auf unter 160 Zeichen mit einem klaren Call-to-Action', category: 'findability' },
-    { task_text: 'Füge strukturierte Daten (Schema.org) für deine wichtigste Seite hinzu', category: 'findability' },
-    { task_text: 'Überprüfe und optimiere deine H1-Überschrift für das Haupt-Keyword', category: 'findability' },
+    { task_text: 'Optimize your meta description to under 160 characters with a clear call-to-action', category: 'findability' },
+    { task_text: 'Add structured data (Schema.org) to your most important page', category: 'findability' },
+    { task_text: 'Review and optimize your H1 heading for your main keyword', category: 'findability' },
   ],
   trust: [
-    { task_text: 'Füge Kundenbewertungen oder Testimonials auf deiner Startseite hinzu', category: 'trust' },
-    { task_text: 'Platziere Trust-Badges (SSL, Zahlungsanbieter) im sichtbaren Bereich', category: 'trust' },
-    { task_text: 'Ergänze ein vollständiges Impressum und eine Datenschutzerklärung', category: 'trust' },
+    { task_text: 'Add customer reviews or testimonials to your homepage', category: 'trust' },
+    { task_text: 'Place trust badges (SSL, payment providers) in a visible area', category: 'trust' },
+    { task_text: 'Add a complete imprint and privacy policy page', category: 'trust' },
   ],
   conversion: [
-    { task_text: 'Platziere einen klaren Call-to-Action oberhalb des Folds', category: 'conversion' },
-    { task_text: 'Reduziere die Formularfelder auf das absolute Minimum', category: 'conversion' },
-    { task_text: 'Füge Social Proof direkt neben deinem CTA-Button ein', category: 'conversion' },
+    { task_text: 'Place a clear call-to-action above the fold', category: 'conversion' },
+    { task_text: 'Reduce your form fields to the absolute minimum', category: 'conversion' },
+    { task_text: 'Add social proof directly next to your CTA button', category: 'conversion' },
   ],
   design: [
-    { task_text: 'Erhöhe den Farbkontrast deines primären CTA-Buttons', category: 'design' },
-    { task_text: 'Optimiere die mobile Darstellung deiner Navigation', category: 'design' },
-    { task_text: 'Vereinheitliche Abstände und Schriftgrößen auf der Startseite', category: 'design' },
+    { task_text: 'Increase the color contrast of your primary CTA button', category: 'design' },
+    { task_text: 'Optimize the mobile layout of your navigation', category: 'design' },
+    { task_text: 'Unify spacing and font sizes on your homepage', category: 'design' },
   ],
   performance: [
-    { task_text: 'Komprimiere Bilder auf deiner Startseite (WebP-Format verwenden)', category: 'performance' },
-    { task_text: 'Aktiviere Browser-Caching für statische Assets', category: 'performance' },
-    { task_text: 'Entferne nicht verwendete CSS- und JavaScript-Dateien', category: 'performance' },
+    { task_text: 'Compress images on your homepage (use WebP format)', category: 'performance' },
+    { task_text: 'Enable browser caching for static assets', category: 'performance' },
+    { task_text: 'Remove unused CSS and JavaScript files', category: 'performance' },
   ],
   content: [
-    { task_text: 'Überarbeite deine Startseiten-Headline: Nutzen statt Feature kommunizieren', category: 'content' },
-    { task_text: 'Füge einen FAQ-Bereich mit den 5 häufigsten Kundenfragen hinzu', category: 'content' },
-    { task_text: 'Ergänze Alt-Texte für alle Bilder auf der Startseite', category: 'content' },
+    { task_text: 'Rewrite your homepage headline: communicate benefits, not features', category: 'content' },
+    { task_text: 'Add an FAQ section with the 5 most common customer questions', category: 'content' },
+    { task_text: 'Add alt text to all images on your homepage', category: 'content' },
   ],
 };
 
@@ -55,7 +55,6 @@ export function generateTasksFromScores(
 ): TaskSuggestion[] {
   if (!categoryScores) return [];
 
-  // Convert to array and sort ascending by score
   const sorted: CategoryScore[] = Object.entries(categoryScores)
     .map(([category, score]) => ({ category: category.toLowerCase(), score: typeof score === 'number' ? score : 0 }))
     .sort((a, b) => a.score - b.score);
@@ -63,13 +62,11 @@ export function generateTasksFromScores(
   const tasks: TaskSuggestion[] = [];
   const today = new Date().toISOString().split('T')[0];
 
-  // Take the 2 weakest categories
   for (let i = 0; i < Math.min(2, sorted.length); i++) {
     const cat = sorted[i].category;
     const pool = TASK_POOL[cat];
     if (!pool || pool.length === 0) continue;
 
-    // Simple deterministic selection based on date + category
     const seed = today.split('-').reduce((a, b) => a + parseInt(b), 0) + i;
     const index = seed % pool.length;
     tasks.push(pool[index]);

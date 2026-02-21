@@ -7,9 +7,10 @@ import type { DailyTask } from '@/types/gamification';
 interface DailyTaskPanelProps {
   userId: string | null;
   onTaskCompleted?: () => void;
+  showEmpty?: boolean;
 }
 
-export function DailyTaskPanel({ userId, onTaskCompleted }: DailyTaskPanelProps) {
+export function DailyTaskPanel({ userId, onTaskCompleted, showEmpty = false }: DailyTaskPanelProps) {
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,7 +74,17 @@ export function DailyTaskPanel({ userId, onTaskCompleted }: DailyTaskPanelProps)
     );
   }
 
-  if (tasks.length === 0) return null;
+  if (tasks.length === 0) {
+    if (!showEmpty) return null;
+    return (
+      <div className="rounded-lg border border-border bg-card p-6 text-center">
+        <ListTodo className="w-8 h-8 text-muted-foreground/40 mx-auto mb-3" />
+        <p className="text-sm text-muted-foreground">
+          No tasks yet — run an analysis to get personalized improvement tasks.
+        </p>
+      </div>
+    );
+  }
 
   const completedCount = tasks.filter(t => t.completed).length;
   const progress = (completedCount / tasks.length) * 100;
@@ -82,7 +93,7 @@ export function DailyTaskPanel({ userId, onTaskCompleted }: DailyTaskPanelProps)
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center gap-2 mb-3">
         <ListTodo className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-medium text-foreground">Heutige Aufgaben</h3>
+        <h3 className="text-sm font-medium text-foreground">Today's Tasks</h3>
         <span className="ml-auto text-xs text-muted-foreground">
           {completedCount}/{tasks.length}
         </span>

@@ -89,7 +89,7 @@ export function useBadgeChecker(userId: string | null) {
           const def = BADGE_DEFINITIONS.find(b => b.id === badgeId);
           if (def) {
             const emoji = BADGE_ICON_MAP[def.icon] || '🎖️';
-            toast.success(`${emoji} Badge freigeschaltet: ${def.name}!`, {
+            toast.success(`${emoji} Badge Unlocked: ${def.name}!`, {
               description: def.description,
               duration: 5000,
             });

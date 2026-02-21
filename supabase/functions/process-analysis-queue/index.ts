@@ -863,6 +863,7 @@ async function processQueue() {
       } catch (creditErr) {
         console.error("Credit deduction failed (non-blocking):", creditErr);
       }
+    } catch (err) {
       console.error(`Error processing job ${job.id}:`, err);
       const isAbort = err instanceof DOMException && err.name === "AbortError";
       const errorMsg = isAbort

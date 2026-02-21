@@ -2,13 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useStreak } from "@/hooks/useStreak";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { StreakBadge } from "@/components/gamification/StreakBadge";
 
 import logo from "@/assets/synvertas-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { streak } = useStreak(user?.id ?? null);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
@@ -140,7 +143,8 @@ const Navbar = () => {
           </div>
           
           {/* CTA Button - Right */}
-          <div className="hidden md:flex items-center shrink-0">
+          <div className="hidden md:flex items-center shrink-0 gap-2">
+            {user && <StreakBadge streak={streak} userId={user.id} />}
             {user ? (
                 <Link 
                 to="/profile"

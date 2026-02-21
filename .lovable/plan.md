@@ -1,44 +1,57 @@
 
-# Fix: Falsche Werte und fehlende Kategorien in Analytics Overview
+
+# Fix: Analytics Dashboard aktualisiert sich nicht nach Loeschung
 
 ## Problem
-Die Kategorie-Schluessel im Code stimmen nicht mit den Schluesseln in der Datenbank ueberein:
+Die `AnalyticsOverview`-Komponente laedt Daten nur einmalig beim Rendern. Wenn ein Benutzer eine Konversation loescht (und damit die zugehoerigen Website-Profile aus der Datenbank entfernt werden), zeigt das Dashboard weiterhin die alten, inzwischen geloeschten Daten an.
 
-| Code (falsch, snake_case) | Datenbank (richtig, camelCase) |
-|---|---|
-| `findability` | `findability` (einziger Treffer) |
-| `mobile_usability` | `mobileUsability` |
-| `offer_clarity` | `offerClarity` |
-| `trust_proof` | `trustProof` |
-| `conversion_readiness` | `conversionReadiness` |
+Die Daten werden korrekt aus der Datenbank geloescht -- das Problem ist rein clientseitig (kein Refetch).
 
-Deshalb werden nur 1 von 5 Kategorien angezeigt und die Durchschnittswerte sind dadurch verfaelscht.
+## Zur Datenschutzerklaerung
+Keine Aenderung noetig. Das Analytics-Dashboard zeigt nur bereits erhobene Daten an (Website-Profile, Scores aus Sektion 8.2). Es findet keine neue Datenverarbeitung oder Weitergabe statt.
 
 ## Loesung
-Die Schluessel in `CATEGORY_LABELS` und `CATEGORY_COLORS` auf camelCase umstellen, sodass sie mit den tatsaechlichen Datenbank-Werten uebereinstimmen.
+Einen `refreshKey`-Mechanismus einfuehren: Die Achievements-Seite uebergibt einen Zaehler an `AnalyticsOverview`, der sich erh oeht, wenn die Seite fokussiert wird (z.B. nach Rueckkehr vom Chat). So werden die Daten automatisch neu geladen.
 
 ## Technische Details
 
-**Datei:** `src/components/gamification/AnalyticsOverview.tsx`
+### Datei 1: `src/components/gamification/AnalyticsOverview.tsx`
 
-Aenderung der Maps (Zeilen 20-34):
+- Neue optionale Prop `refreshKey` zum Interface hinzufuegen
+- `refreshKey` als Dependency im `useEffect` ergaenzen, damit bei Aenderung ein Refetch erfolgt
 
 ```typescript
-// Vorher (falsch)
-const CATEGORY_LABELS = {
-  findability: 'Findability',
-  mobile_usability: 'Mobile Usability',
-  ...
-};
+interface AnalyticsOverviewProps {
+  userId: string;
+  refreshKey?: number;  // NEU
+}
 
-// Nachher (richtig)
-const CATEGORY_LABELS = {
-  findability: 'Findability',
-  mobileUsability: 'Mobile Usability',
-  offerClarity: 'Offer Clarity',
-  trustProof: 'Trust Proof',
-  conversionReadiness: 'Conversion Readiness',
-};
+// Im useEffect:
+useEffect(() => {
+  const fetchProfiles = async () => { ... };
+  fetchProfiles();
+}, [userId, refreshKey]);  // refreshKey hinzugefuegt
 ```
 
-Gleiche Aenderung fuer `CATEGORY_COLORS`. Sonst keine weiteren Aenderungen noetig -- die Berechnungslogik ist korrekt, sie bekommt nur die falschen Schluessel nicht zugeordnet.
+### Datei 2: `src/pages/Achievements.tsx`
+
+- `useState` fuer einen `refreshKey`-Zaehler einfuehren
+- Per `useEffect` + `window.addEventListener('focus', ...)` den Zaehler bei jedem Tab-/Seitenfokus erhoehen
+- `refreshKey` an `AnalyticsOverview` uebergeben
+
+```typescript
+const [refreshKey, setRefreshKey] = useState(0);
+
+useEffect(() => {
+  const onFocus = () => setRefreshKey(k => k + 1);
+  window.addEventListener('focus', onFocus);
+  return () => window.removeEventListener('focus', onFocus);
+}, []);
+
+// JSX:
+<AnalyticsOverview userId={user.id} refreshKey={refreshKey} />
+```
+
+### Ergebnis
+Wenn der Benutzer eine Analyse im Chat loescht und dann zur Achievements-Seite zurueckkehrt (oder den Tab wechselt), werden die Dashboard-Daten automatisch neu aus der Datenbank geladen und zeigen den aktuellen Stand an.
+

@@ -1,47 +1,48 @@
 
 
-# Remove Daily Tasks Feature
+# 1. Remove "Task Crusher" Badge
 
-The Daily Tasks system (generation, display, toggling) will be completely removed. The AI analysis summary and other gamification features (streaks, badges) remain untouched.
+The `tasks_10` badge definition and its check logic will be removed from three files:
 
-## What gets removed
-
-- **DailyTaskPanel component** -- the "Today's Tasks" card shown on the Achievements page
-- **Task generator** -- the deterministic task generation from category scores
-- **Task generation in useGamificationTrigger** -- the daily_tasks insert logic (steps 2 of the hook)
-- **Daily Tasks section on Achievements page** -- the entire section including the "Tasks Completed" stat card
-- **DailyTask type** -- the TypeScript interface
-- **Badge check for completedTasksCount** -- references to daily_tasks count in badge checking
-
-## What stays
-
-- AI analysis summary (generateSummary) -- this is unrelated to daily tasks
-- Streaks, badges, and all other gamification
-- Improvement tasks (improvement_tasks table) shown in the analysis tabs -- these are different from daily tasks
-- loadTasks in Chat.tsx -- this loads improvement_tasks, not daily_tasks
-
-## Files to change
-
-| File | Action |
+| File | Change |
 |------|--------|
-| `src/components/gamification/DailyTaskPanel.tsx` | **Delete** entire file |
-| `src/lib/task-generator.ts` | **Delete** entire file |
-| `src/hooks/useGamificationTrigger.ts` | Remove daily_tasks generation logic (keep streak update + badge check), remove completedTasksCount query |
-| `src/pages/Achievements.tsx` | Remove DailyTaskPanel import, remove "Today's Tasks" section, remove completedTasks state + fetch, remove "Tasks Completed" stat card |
-| `src/types/gamification.ts` | Remove `DailyTask` interface |
+| `src/lib/badges.ts` | Remove the `tasks_10` entry from `BADGE_DEFINITIONS` |
+| `src/hooks/useBadgeChecker.ts` | Remove the `case 'tasks_10'` block and `completedTasksCount` from the context type |
 
-## Technical Details
+---
 
-### useGamificationTrigger.ts changes
-- Remove import of `generateTasksFromScores`
-- Remove step 2 entirely (lines 25-58: daily task generation)
-- Remove `completedTasksCount` query (lines 75-79)
-- Pass `completedTasksCount: 0` to `checkAndUnlockBadges` (or remove it from the call)
+# 2. Credits: Deduct Only on Success
 
-### Achievements.tsx changes
-- Remove `DailyTaskPanel` import
-- Remove `completedTasks` state and `fetchCompletedCount` effect
-- Remove the "Tasks Completed" stat card (third card in the grid)
-- Change grid from `grid-cols-3` to `grid-cols-2`
-- Remove the "Today's Tasks" section at the bottom
+Currently credits are deducted upfront in `analyze-website` and refunded on error in `process-analysis-queue`. This creates a window where credits appear used even though the analysis hasn't finished, and refunds can fail silently.
+
+The new approach: **check** credit availability in `analyze-website` (to block requests when credits are insufficient) but **deduct** only in `process-analysis-queue` when the analysis completes successfully.
+
+### Changes to `analyze-website` Edge Function
+
+- `checkAndDeductAnalysisCredits` becomes `checkAnalysisCredits` -- it still validates premium status, checks remaining credits, but **no longer calls** the `credits_used` update
+- Remove the `creditsDeducted` / refund logic in the outer catch block (no longer needed)
+- Remove the `refundCredits` calls for profile insert and queue insert failures
+- Keep the `refundCredits` function definition (still used by process-analysis-queue via its own copy)
+
+### Changes to `process-analysis-queue` Edge Function
+
+- After the successful `website_profiles` update (line 837-840, status = "completed"), add a credit deduction step that increments `credits_used` by the job's cost
+- Remove the `refundCredits` calls on error paths (lines 716, 878) since credits were never deducted
+- Remove the timeout refund logic (lines 584-587) since credits were never deducted
+- Keep the `refundCredits` function for safety but it won't be called in normal flow
+
+### Flow Summary
+
+```text
+Before:
+  analyze-website: CHECK + DEDUCT -> queue job
+  process-analysis-queue: on error -> REFUND
+
+After:
+  analyze-website: CHECK only (reserve nothing) -> queue job
+  process-analysis-queue: on success -> DEDUCT
+                          on error -> nothing (no credits were taken)
+```
+
+This ensures users are never charged for failed analyses -- no reliance on refund logic.
 

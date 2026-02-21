@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 19, 2026 | Version 8.1</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 21, 2026 | Version 8.2</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -721,6 +721,36 @@ const PrivacyPolicy = () => {
               <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
               (providing the code analysis service you requested).
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.4 Gamification and Activity Tracking</h3>
+            <p className="text-muted-foreground mb-4">
+              Our platform includes gamification features to encourage regular engagement with the service. 
+              These features track your activity and reward consistent usage with visual achievements.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Collected</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Streak Data:</strong> Current streak count, longest streak, last active day, total number of active days</li>
+              <li><strong>Badge Data:</strong> Unlocked achievement badges with the timestamp of when each badge was earned</li>
+            </ul>
+
+            <p className="text-muted-foreground mb-4">
+              This data is stored in dedicated database tables (<code>user_streaks</code> and <code>user_badges</code>) 
+              and is associated with your user account. Streaks are updated only when you successfully complete a 
+              website analysis, not on every page visit.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Deletion</h4>
+            <p className="text-muted-foreground mb-4">
+              All gamification data is permanently deleted when you delete your account. The deletion is performed 
+              as part of the cascading account deletion process described in Section 12.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (gamification features are an integral part of the service).
+            </p>
           </section>
 
           {/* Section 9: AI-Powered Data Processing */}
@@ -967,6 +997,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Chat messages, conversation history</td>
                     <td className="border border-border p-3">AI-powered contextual assistance</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3"><strong>Gamification Data</strong></td>
+                    <td className="border border-border p-3">Activity streaks, unlocked badges, active day counts</td>
+                    <td className="border border-border p-3">User engagement tracking and achievement system</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1148,6 +1183,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Indefinitely (deduplication)</td>
                     <td className="border border-border p-3">Fraud prevention and duplicate payment detection</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3">Gamification data</td>
+                    <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">User-initiated deletion</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1266,6 +1306,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 8.2 (February 21, 2026):</strong> Added Gamification and Activity Tracking section (Section 8.4) covering streaks and badges. Updated data categories table (Section 13) and storage duration table (Section 17) with gamification data.</li>
               <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF. Corrected Supabase transfer basis to SCCs.</li>
               <li><strong>Version 8.0 (February 19, 2026):</strong> Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation (Section 8.3). Added GitHub, Inc. (Microsoft) as data recipient. Updated analysis data categories to include source code and code analysis scores.</li>
               <li><strong>Version 7.0 (February 14, 2026):</strong> Added sections for Website Crawling (Firecrawl), AI-Powered Data Processing (Google Gemini, OpenAI, Anthropic, Perplexity), and Google PageSpeed Insights. Updated recipients and data categories tables. Corrected automated decision-making section to reflect active AI usage. Removed non-existent marketing emails section. Renumbered all sections.</li>
@@ -1278,7 +1319,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: February 19, 2026
+              Last updated: February 21, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

@@ -11,7 +11,7 @@ import logo from "@/assets/synvertas-logo.png";
 const Navbar = () => {
   const location = useLocation();
   const { user } = useAuth();
-  const { streak } = useStreak(user?.id ?? null);
+  const { streak } = useStreak(user?.id ?? null, true);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   

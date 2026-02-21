@@ -43,7 +43,7 @@ import {
   addGithubAnalysis,
 } from "@/lib/api/chat-api";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
-
+import { useGamificationTrigger } from "@/hooks/useGamificationTrigger";
 const MAX_CONVERSATIONS = 20;
 
 const Chat = () => {
@@ -57,6 +57,8 @@ const Chat = () => {
     isPremium,
     refreshCredits,
   } = useAuth();
+
+  const { triggerAfterAnalysis } = useGamificationTrigger(user?.id ?? null);
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -182,6 +184,8 @@ const Chat = () => {
                 const completed = deduped.filter((p) => p.status === "completed");
                 if (completed.length > 0) {
                   generateSummary(completed, summaryTokenRef.current, summaryModelRef.current);
+                  // Trigger gamification side-effects
+                  triggerAfterAnalysis(completed);
                 }
               }
             }

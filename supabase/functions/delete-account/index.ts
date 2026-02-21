@@ -76,6 +76,36 @@ serve(async (req) => {
       console.error('Failed to delete improvement_tasks:', tasksError);
     }
 
+    // 1a. Delete daily_tasks (GDPR - gamification)
+    console.log('Deleting daily_tasks for user:', userId);
+    const { error: dailyTasksError } = await adminClient
+      .from('daily_tasks')
+      .delete()
+      .eq('user_id', userId);
+    if (dailyTasksError) {
+      console.error('Failed to delete daily_tasks:', dailyTasksError);
+    }
+
+    // 1b. Delete user_badges (GDPR - gamification)
+    console.log('Deleting user_badges for user:', userId);
+    const { error: badgesError } = await adminClient
+      .from('user_badges')
+      .delete()
+      .eq('user_id', userId);
+    if (badgesError) {
+      console.error('Failed to delete user_badges:', badgesError);
+    }
+
+    // 1c. Delete user_streaks (GDPR - gamification)
+    console.log('Deleting user_streaks for user:', userId);
+    const { error: streaksError } = await adminClient
+      .from('user_streaks')
+      .delete()
+      .eq('user_id', userId);
+    if (streaksError) {
+      console.error('Failed to delete user_streaks:', streaksError);
+    }
+
     // 2. Fetch conversation IDs for message deletion
     const { data: convData } = await adminClient
       .from('conversations')

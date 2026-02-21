@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,22 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { BadgeGallery } from "@/components/gamification/BadgeGallery";
+import { ArrowRight } from "lucide-react";
 
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -41,18 +53,20 @@ const Profile = () => {
 
       if (session.user) {
         const { data } = await supabase
-          .from('user_credits')
-          .select('is_premium, premium_since, subscription_end_date, next_payment_date, auto_renew')
-          .eq('user_id', session.user.id)
+          .from("user_credits")
+          .select("is_premium, premium_since, subscription_end_date, next_payment_date, auto_renew")
+          .eq("user_id", session.user.id)
           .maybeSingle();
-        
+
         setCredits(data);
       }
     };
 
     getProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
         navigate("/auth");
       }
@@ -81,7 +95,7 @@ const Profile = () => {
         method: "POST",
         body: {},
       });
-      
+
       if (error) throw error;
 
       await supabase.auth.signOut();
@@ -117,141 +131,161 @@ const Profile = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-semibold text-primary mb-2">
-              Profile Settings
-            </h1>
-            <p className="text-muted-foreground">Manage your account and preferences</p>
-          </div>
-          <Card className="bg-card border-border shadow-lg transition-shadow duration-300">
-            <CardHeader>
-              <CardTitle className="text-2xl">Account Information</CardTitle>
-              <CardDescription>
-                Your registered email and account details
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={user.email || ""}
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Your registered email address
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Premium Status</Label>
-                <div className="p-3 bg-muted rounded-md border border-border">
-                  {credits?.is_premium ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-green-600 dark:text-green-500 font-medium">Premium Active</span>
-                        {credits.premium_since && (
-                          <span className="text-xs text-muted-foreground">
-                            Since {new Date(credits.premium_since).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {credits.subscription_end_date && (
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Valid until: </span>
-                          <span className="font-medium">
-                            {new Date(credits.subscription_end_date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {credits.auto_renew === null ? (
-                          <span className="text-muted-foreground text-sm">
-                            Status unknown — sync may be pending
-                          </span>
-                        ) : credits.auto_renew ? (
-                          <>
-                            <span className="text-green-600 dark:text-green-500 text-sm">
-                              Auto-renewal active
-                            </span>
-                            {credits.next_payment_date && (
-                              <span className="text-xs text-muted-foreground">
-                                Next payment: {new Date(credits.next_payment_date).toLocaleDateString()}
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <span className="text-orange-600 dark:text-orange-500 text-sm">
-                            Auto-renewal canceled — expires on {credits.subscription_end_date
-                              ? new Date(credits.subscription_end_date).toLocaleDateString() 
-                              : 'subscription end'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <span className="text-muted-foreground">Free Plan</span>
-                      <Button
-                        onClick={() => openCheckout(user.email || undefined)}
-                        className="w-full"
-                      >
-                        Upgrade to Premium
-                      </Button>
-                    </div>
-                  )}
+          <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-semibold text-primary mb-2">Profile Settings</h1>
+              <p className="text-muted-foreground">Manage your account and preferences</p>
+            </div>
+            <Card className="bg-card border-border shadow-lg transition-shadow duration-300">
+              <CardHeader>
+                <CardTitle className="text-2xl">Account Information</CardTitle>
+                <CardDescription>Your registered email and account details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={user.email || ""} disabled className="bg-muted" />
+                  <p className="text-xs text-muted-foreground">Your registered email address</p>
                 </div>
-              </div>
 
-              <div className="pt-6 border-t border-border space-y-4">
-                <Button
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="w-full hover:scale-105 transition-transform duration-300"
-                >
-                  Sign Out
-                </Button>
+                <div className="space-y-2">
+                  <Label>Premium Status</Label>
+                  <div className="p-3 bg-muted rounded-md border border-border">
+                    {credits?.is_premium ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-green-600 dark:text-green-500 font-medium">Premium Active</span>
+                          {credits.premium_since && (
+                            <span className="text-xs text-muted-foreground">
+                              Since {new Date(credits.premium_since).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      className="w-full"
-                    >
-                      Delete Account
+                        {credits.subscription_end_date && (
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">Valid until: </span>
+                            <span className="font-medium">
+                              {new Date(credits.subscription_end_date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {credits.auto_renew === null ? (
+                            <span className="text-muted-foreground text-sm">Status unknown — sync may be pending</span>
+                          ) : credits.auto_renew ? (
+                            <>
+                              <span className="text-green-600 dark:text-green-500 text-sm">Auto-renewal active</span>
+                              {credits.next_payment_date && (
+                                <span className="text-xs text-muted-foreground">
+                                  Next payment: {new Date(credits.next_payment_date).toLocaleDateString()}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-orange-600 dark:text-orange-500 text-sm">
+                              Auto-renewal canceled — expires on{" "}
+                              {credits.subscription_end_date
+                                ? new Date(credits.subscription_end_date).toLocaleDateString()
+                                : "subscription end"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <span className="text-muted-foreground">Free Plan</span>
+                        <Button onClick={() => openCheckout(user.email || undefined)} className="w-full">
+                          Upgrade to Premium
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-border" />
+              </CardContent>
+            </Card>
+
+            {/* Achievements Card */}
+            <Card className="bg-card border-border shadow-lg">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl">Progress & Achievements</CardTitle>
+                    <CardDescription className="mt-1">Your badges, streaks, and analysis history</CardDescription>
+                  </div>
+                  <Link to="/achievements">
+                    <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
+                      View all
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your
-                        account and remove all your data from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                      <AlertDialogCancel className="w-full sm:w-auto min-h-[44px] sm:min-h-0">Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDeleteAccount}
-                        disabled={deleting}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
-                      >
-                        {deleting ? "Deleting..." : "Delete Account"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </CardContent>
-          </Card>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <BadgeGallery userId={user.id} size="sm" />
+                <div className="mt-4 px-4">
+                  <Link to="/achievements" className="block">
+                    <Button className="w-full gap-2">
+                      Open Achievements
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Danger Zone Card */}
+            <Card className="bg-card border-border shadow-lg transition-shadow duration-300">
+              <CardHeader>
+                <CardTitle className="text-xl">Account Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full hover:scale-105 transition-transform duration-300"
+                  >
+                    Sign Out
+                  </Button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="w-full">
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete your account and remove all your
+                          data from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        <AlertDialogCancel className="w-full sm:w-auto min-h-[44px] sm:min-h-0">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          disabled={deleting}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto min-h-[44px] sm:min-h-0"
+                        >
+                          {deleting ? "Deleting..." : "Delete Account"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

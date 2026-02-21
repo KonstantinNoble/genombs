@@ -1,85 +1,47 @@
 
 
-# Fix: Daily Tasks not generated + AI Summary not appearing
+# Remove Daily Tasks Feature
 
-## Root Cause Analysis
+The Daily Tasks system (generation, display, toggling) will be completely removed. The AI analysis summary and other gamification features (streaks, badges) remain untouched.
 
-### Bug 1: Task categories don't match actual analysis scores (CRITICAL)
+## What gets removed
 
-The `TASK_POOL` in `src/lib/task-generator.ts` uses these keys:
-- `findability`, `trust`, `conversion`, `design`, `performance`, `content`
+- **DailyTaskPanel component** -- the "Today's Tasks" card shown on the Achievements page
+- **Task generator** -- the deterministic task generation from category scores
+- **Task generation in useGamificationTrigger** -- the daily_tasks insert logic (steps 2 of the hook)
+- **Daily Tasks section on Achievements page** -- the entire section including the "Tasks Completed" stat card
+- **DailyTask type** -- the TypeScript interface
+- **Badge check for completedTasksCount** -- references to daily_tasks count in badge checking
 
-But the actual `category_scores` from the analysis pipeline (defined in `supabase/functions/process-analysis-queue/index.ts`) use:
-- `findability`, `mobileUsability`, `offerClarity`, `trustProof`, `conversionReadiness`
+## What stays
 
-Only `findability` matches. When `generateTasksFromScores()` picks the 2 lowest-scoring categories and looks them up in `TASK_POOL`, it finds no matching pool for keys like `mobileUsability` or `trustProof` -- so zero tasks are generated.
+- AI analysis summary (generateSummary) -- this is unrelated to daily tasks
+- Streaks, badges, and all other gamification
+- Improvement tasks (improvement_tasks table) shown in the analysis tabs -- these are different from daily tasks
+- loadTasks in Chat.tsx -- this loads improvement_tasks, not daily_tasks
 
-**Fix**: Rewrite `TASK_POOL` to use the actual category score keys: `findability`, `mobileUsability`, `offerClarity`, `trustProof`, `conversionReadiness`.
+## Files to change
 
-### Bug 2: AI Summary -- realtime race condition
-
-The summary generation depends on the realtime subscription detecting when all profiles are done. The flow is:
-
-1. `handleScan` pauses realtime (`realtimePausedRef = true`)
-2. After 2 seconds, realtime resumes (`realtimePausedRef = false`)
-3. The resume callback loads profiles, but does NOT check `expectedProfileCountRef` to trigger summary
-4. Only subsequent realtime events (profile status changes) trigger the summary check
-
-If all profiles complete DURING the 2-second pause window, the realtime events are missed. When realtime resumes at line 553, it loads profiles but never checks if `doneCount >= expected` -- so `generateSummary` is never called.
-
-**Fix**: Add the same summary-trigger check in the 2-second resume callback (lines 553-562), identical to the one in the realtime handler (lines 178-191).
-
----
-
-## Implementation Steps
-
-### Step 1: Fix task-generator.ts category keys
-
-Update `TASK_POOL` keys from `trust`/`conversion`/`design`/`performance`/`content` to `trustProof`/`conversionReadiness`/`mobileUsability`/`offerClarity` with appropriate task suggestions for each real category.
-
-**File:** `src/lib/task-generator.ts`
-
-| Old Key | New Key | Task Focus |
-|---------|---------|------------|
-| findability | findability (keep) | SEO, meta tags |
-| trust | trustProof | Reviews, trust signals |
-| conversion | conversionReadiness | CTAs, forms |
-| design | mobileUsability | Mobile layout, responsive |
-| performance | (remove - not a category) | -- |
-| content | offerClarity | Headlines, value propositions |
-
-### Step 2: Add summary-trigger check in realtime resume callback
-
-In `src/pages/Chat.tsx`, lines 553-562: after loading profiles in the setTimeout resume block, add the same logic that checks `expectedProfileCountRef.current > 0` and `doneCount >= expected`, then calls `generateSummary()` and `triggerAfterAnalysis()`.
-
-**File:** `src/pages/Chat.tsx`
-
-This ensures that even if all analysis results arrive during the 2-second pause, the summary and gamification triggers still fire.
-
----
+| File | Action |
+|------|--------|
+| `src/components/gamification/DailyTaskPanel.tsx` | **Delete** entire file |
+| `src/lib/task-generator.ts` | **Delete** entire file |
+| `src/hooks/useGamificationTrigger.ts` | Remove daily_tasks generation logic (keep streak update + badge check), remove completedTasksCount query |
+| `src/pages/Achievements.tsx` | Remove DailyTaskPanel import, remove "Today's Tasks" section, remove completedTasks state + fetch, remove "Tasks Completed" stat card |
+| `src/types/gamification.ts` | Remove `DailyTask` interface |
 
 ## Technical Details
 
-### task-generator.ts new TASK_POOL structure:
-```text
-TASK_POOL keys:
-  findability -> SEO tasks (keep existing)
-  mobileUsability -> Mobile/responsive tasks (replaces "design")
-  offerClarity -> Clarity of value proposition tasks (replaces "content")
-  trustProof -> Trust signals tasks (replaces "trust")
-  conversionReadiness -> CTA/conversion tasks (replaces "conversion")
-```
+### useGamificationTrigger.ts changes
+- Remove import of `generateTasksFromScores`
+- Remove step 2 entirely (lines 25-58: daily task generation)
+- Remove `completedTasksCount` query (lines 75-79)
+- Pass `completedTasksCount: 0` to `checkAndUnlockBadges` (or remove it from the call)
 
-### Chat.tsx resume callback addition:
-```text
-Current (line 553-562):
-  loadProfiles -> dedup -> setProfiles -> loadTasks
+### Achievements.tsx changes
+- Remove `DailyTaskPanel` import
+- Remove `completedTasks` state and `fetchCompletedCount` effect
+- Remove the "Tasks Completed" stat card (third card in the grid)
+- Change grid from `grid-cols-3` to `grid-cols-2`
+- Remove the "Today's Tasks" section at the bottom
 
-New:
-  loadProfiles -> dedup -> setProfiles -> loadTasks
-  THEN check if expectedProfileCountRef > 0
-    AND doneCount >= expected
-    -> call generateSummary(completed, summaryTokenRef, summaryModelRef)
-    -> call triggerAfterAnalysis(completed)
-    -> reset expectedProfileCountRef to 0
-```

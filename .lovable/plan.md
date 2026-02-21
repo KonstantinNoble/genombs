@@ -1,48 +1,52 @@
 
 
-# 1. Remove "Task Crusher" Badge
+# Analytics Overview on Achievements Page
 
-The `tasks_10` badge definition and its check logic will be removed from three files:
+A new "Analytics Overview" section will be added to the Achievements page, giving users a quick summary of their analysis activity and website data -- all on the same page below the existing Badges section.
 
-| File | Change |
-|------|--------|
-| `src/lib/badges.ts` | Remove the `tasks_10` entry from `BADGE_DEFINITIONS` |
-| `src/hooks/useBadgeChecker.ts` | Remove the `case 'tasks_10'` block and `completedTasksCount` from the context type |
+## What will be shown
 
----
+The section will query the user's `website_profiles` and `conversations` tables to display:
 
-# 2. Credits: Deduct Only on Success
+**Top-level stat cards (4-column grid):**
+1. **Total Analyses** -- count of all completed website profiles
+2. **Websites Analyzed** -- count of distinct URLs analyzed
+3. **Average Score** -- average `overall_score` across all completed profiles
+4. **Best Score** -- highest `overall_score` achieved
 
-Currently credits are deducted upfront in `analyze-website` and refunded on error in `process-analysis-queue`. This creates a window where credits appear used even though the analysis hasn't finished, and refunds can fail silently.
+**Category Breakdown (bar/radar or simple list):**
+- Average scores per category (Findability, Mobile Usability, Offer Clarity, Trust Proof, Conversion Readiness) across all completed analyses, shown as a simple horizontal bar chart or progress bars -- no extra dependency needed.
 
-The new approach: **check** credit availability in `analyze-website` (to block requests when credits are insufficient) but **deduct** only in `process-analysis-queue` when the analysis completes successfully.
+**Recent Analyses (compact list):**
+- Last 5 completed analyses showing URL, score, and date -- gives quick access to recent activity.
 
-### Changes to `analyze-website` Edge Function
+## Technical Details
 
-- `checkAndDeductAnalysisCredits` becomes `checkAnalysisCredits` -- it still validates premium status, checks remaining credits, but **no longer calls** the `credits_used` update
-- Remove the `creditsDeducted` / refund logic in the outer catch block (no longer needed)
-- Remove the `refundCredits` calls for profile insert and queue insert failures
-- Keep the `refundCredits` function definition (still used by process-analysis-queue via its own copy)
+### New component: `src/components/gamification/AnalyticsOverview.tsx`
+- Accepts `userId` as prop
+- On mount, fetches from `website_profiles` where `user_id = userId` and `status = 'completed'`
+- Computes: total count, distinct URLs, average score, best score, per-category averages
+- Renders stat cards + category progress bars + recent analyses list
+- Uses existing UI components (Card, Progress) -- no new dependencies
 
-### Changes to `process-analysis-queue` Edge Function
+### Changes to `src/pages/Achievements.tsx`
+- Import and render `<AnalyticsOverview userId={user.id} />` as a new section between Stats Cards and Badges
+- Section heading: "Analytics Overview"
 
-- After the successful `website_profiles` update (line 837-840, status = "completed"), add a credit deduction step that increments `credits_used` by the job's cost
-- Remove the `refundCredits` calls on error paths (lines 716, 878) since credits were never deducted
-- Remove the timeout refund logic (lines 584-587) since credits were never deducted
-- Keep the `refundCredits` function for safety but it won't be called in normal flow
-
-### Flow Summary
-
-```text
-Before:
-  analyze-website: CHECK + DEDUCT -> queue job
-  process-analysis-queue: on error -> REFUND
-
-After:
-  analyze-website: CHECK only (reserve nothing) -> queue job
-  process-analysis-queue: on success -> DEDUCT
-                          on error -> nothing (no credits were taken)
+### Data queries (all client-side via Supabase SDK)
 ```
+-- All completed profiles for this user
+SELECT id, url, overall_score, category_scores, created_at
+FROM website_profiles
+WHERE user_id = :userId AND status = 'completed'
+ORDER BY created_at DESC
+```
+No new tables, no migrations, no edge functions needed. All data already exists and is protected by existing RLS policies.
 
-This ensures users are never charged for failed analyses -- no reliance on refund logic.
+## Files to create/modify
+
+| File | Action |
+|------|--------|
+| `src/components/gamification/AnalyticsOverview.tsx` | **Create** -- new component with stat cards, category bars, recent list |
+| `src/pages/Achievements.tsx` | **Edit** -- add import + render `<AnalyticsOverview />` section |
 

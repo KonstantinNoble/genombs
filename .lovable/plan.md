@@ -1,57 +1,42 @@
 
 
-# Fix: Analytics Dashboard aktualisiert sich nicht nach Loeschung
+# Datenschutzerklaerung: Gamification-Daten ergaenzen
 
-## Problem
-Die `AnalyticsOverview`-Komponente laedt Daten nur einmalig beim Rendern. Wenn ein Benutzer eine Konversation loescht (und damit die zugehoerigen Website-Profile aus der Datenbank entfernt werden), zeigt das Dashboard weiterhin die alten, inzwischen geloeschten Daten an.
+## Ausgangslage
+Die Gamification-Funktionen (Streaks, Badges, Analytics Overview) speichern personenbezogene Daten in den Tabellen `user_badges` und `user_streaks`. Diese Daten sind in der aktuellen Datenschutzerklaerung (v8.1) **nicht erwaehnt**.
 
-Die Daten werden korrekt aus der Datenbank geloescht -- das Problem ist rein clientseitig (kein Refetch).
+Die **technische Loeschung ist korrekt** implementiert -- beide Tabellen werden bei Account-Loeschung kaskadierend entfernt.
 
-## Zur Datenschutzerklaerung
-Keine Aenderung noetig. Das Analytics-Dashboard zeigt nur bereits erhobene Daten an (Website-Profile, Scores aus Sektion 8.2). Es findet keine neue Datenverarbeitung oder Weitergabe statt.
+## Was wird ergaenzt
 
-## Loesung
-Einen `refreshKey`-Mechanismus einfuehren: Die Achievements-Seite uebergibt einen Zaehler an `AnalyticsOverview`, der sich erh oeht, wenn die Seite fokussiert wird (z.B. nach Rueckkehr vom Chat). So werden die Daten automatisch neu geladen.
+### 1. Neue Sektion "Gamification and Activity Tracking" (nach Sektion 8.3)
+Beschreibung der erhobenen Daten:
+- Streak-Daten: aktuelle Serie, laengste Serie, letzter aktiver Tag, Gesamtanzahl aktiver Tage
+- Badge-Daten: freigeschaltete Abzeichen mit Zeitstempel
+- Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragsdurchfuehrung -- Teil des Dienstes)
+
+### 2. Eintrag in Datenkategorien-Tabelle (Sektion 13)
+Neue Zeile:
+| Gamification Data | Activity streaks, unlocked badges, active day counts | User engagement tracking and achievement system |
+
+### 3. Eintrag in Storage-Duration-Tabelle (Sektion 17)
+Neue Zeile:
+| Gamification data | Until account deletion | User-initiated deletion |
+
+### 4. Versionsnummer aktualisieren
+- Version 8.1 auf **Version 8.2** erhoehen
+- Datum auf **February 21, 2026** setzen
+- Changelog-Eintrag: "Added Gamification and Activity Tracking section (streaks, badges). Updated data categories and retention tables."
 
 ## Technische Details
 
-### Datei 1: `src/components/gamification/AnalyticsOverview.tsx`
+**Datei:** `src/pages/PrivacyPolicy.tsx`
 
-- Neue optionale Prop `refreshKey` zum Interface hinzufuegen
-- `refreshKey` als Dependency im `useEffect` ergaenzen, damit bei Aenderung ein Refetch erfolgt
+Aenderungen an 4 Stellen:
+1. **Zeile 17**: Version und Datum aktualisieren
+2. **Nach Sektion 8.3**: Neue Sektion 8.4 einfuegen mit Beschreibung der Gamification-Daten
+3. **Sektion 13 Tabelle** (ca. Zeile 964): Neue Tabellenzeile fuer "Gamification Data"
+4. **Sektion 17 Tabelle** (ca. Zeile 1140): Neue Tabellenzeile fuer Gamification Retention
+5. **Changelog** (ca. Zeile 1268): Neuen Eintrag fuer Version 8.2
 
-```typescript
-interface AnalyticsOverviewProps {
-  userId: string;
-  refreshKey?: number;  // NEU
-}
-
-// Im useEffect:
-useEffect(() => {
-  const fetchProfiles = async () => { ... };
-  fetchProfiles();
-}, [userId, refreshKey]);  // refreshKey hinzugefuegt
-```
-
-### Datei 2: `src/pages/Achievements.tsx`
-
-- `useState` fuer einen `refreshKey`-Zaehler einfuehren
-- Per `useEffect` + `window.addEventListener('focus', ...)` den Zaehler bei jedem Tab-/Seitenfokus erhoehen
-- `refreshKey` an `AnalyticsOverview` uebergeben
-
-```typescript
-const [refreshKey, setRefreshKey] = useState(0);
-
-useEffect(() => {
-  const onFocus = () => setRefreshKey(k => k + 1);
-  window.addEventListener('focus', onFocus);
-  return () => window.removeEventListener('focus', onFocus);
-}, []);
-
-// JSX:
-<AnalyticsOverview userId={user.id} refreshKey={refreshKey} />
-```
-
-### Ergebnis
-Wenn der Benutzer eine Analyse im Chat loescht und dann zur Achievements-Seite zurueckkehrt (oder den Tab wechselt), werden die Dashboard-Daten automatisch neu aus der Datenbank geladen und zeigen den aktuellen Stand an.
-
+Keine weiteren Dateien betroffen. Die technische Implementierung (Loeschkaskade, RLS, Datenspeicherung) ist bereits korrekt.

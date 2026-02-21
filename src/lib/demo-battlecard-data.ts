@@ -13,7 +13,7 @@ export const demoBattleCards: BattleCard[] = [
     competitor: "PayPal",
     domain: "paypal.com",
     howWeWin: [
-      "Developer experience is significantly superior — our API documentation, SDKs, and developer tools are industry-leading, reducing integration time by 60%.",
+      "Developer experience is significantly superior -- our API documentation, SDKs, and developer tools are industry-leading, reducing integration time by 60%.",
       "Modern, composable architecture allows businesses to customize every part of their payment stack, while PayPal offers rigid, one-size-fits-all solutions.",
       "Transparent, predictable pricing without hidden fees — PayPal's pricing structure is notoriously complex with currency conversion markups and cross-border surcharges.",
       "Faster innovation cycle: we ship new features monthly while PayPal's legacy infrastructure slows their product development.",

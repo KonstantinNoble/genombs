@@ -45,11 +45,10 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
               <span
                 key={badge.id}
                 title={isUnlocked ? badge.description : badge.condition}
-                className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
-                  isUnlocked
+                className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium border transition-colors ${isUnlocked
                     ? "border-primary/30 bg-primary/8 text-primary"
                     : "border-border bg-muted/30 text-muted-foreground/40"
-                }`}
+                  }`}
               >
                 {badge.name}
               </span>
@@ -92,10 +91,10 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                     <span className="w-2 h-2 rounded-full bg-primary animate-[pulse_3s_ease-in-out_infinite]" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground leading-tight">{badge.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{badge.description}</p>
+                    <p className="text-base font-semibold text-foreground leading-tight">{badge.name}</p>
+                    <p className="text-sm text-muted-foreground mt-1 leading-snug">{badge.description}</p>
                     {unlockedAt && (
-                      <p className="text-[10px] text-primary/70 mt-1.5 font-medium">
+                      <p className="text-xs text-primary/70 mt-2 font-medium">
                         {new Date(unlockedAt).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
@@ -133,8 +132,8 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                   <Lock className="w-3.5 h-3.5 text-muted-foreground/50" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground/60 leading-tight">{badge.name}</p>
-                  <p className="text-xs text-muted-foreground/60 mt-0.5 leading-snug">{badge.condition}</p>
+                  <p className="text-base font-semibold text-foreground/60 leading-tight">{badge.name}</p>
+                  <p className="text-sm text-muted-foreground/60 mt-1 leading-snug">{badge.condition}</p>
                 </div>
               </div>
             ))}

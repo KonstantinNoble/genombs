@@ -13,16 +13,6 @@ export interface UserBadge {
   unlocked_at: string;
 }
 
-export interface DailyTask {
-  id: string;
-  user_id: string;
-  website_profile_id: string;
-  task_text: string;
-  category: string | null;
-  completed: boolean;
-  created_at: string;
-}
-
 export interface BadgeDefinition {
   id: string;
   name: string;

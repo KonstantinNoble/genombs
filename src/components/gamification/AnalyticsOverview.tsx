@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase/external-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -24,9 +24,60 @@ const CATEGORY_LABELS: Record<string, string> = {
   conversionReadiness: "Conversion Readiness",
 };
 
+/** Animates a number from 0 to `target` over `duration` ms */
+function useCountUp(target: number, duration = 800, enabled = true) {
+  const [value, setValue] = useState(0);
+  const raf = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (target === 0) {
+      setValue(0);
+      return;
+    }
+    const start = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) raf.current = requestAnimationFrame(animate);
+    };
+    raf.current = requestAnimationFrame(animate);
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, [target, duration, enabled]);
+
+  return value;
+}
+
+/** Animated progress bar that slides in from 0 */
+function AnimatedBar({ value, delay = 0 }: { value: number; delay?: number }) {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => setWidth(value), delay + 100);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+
+  return (
+    <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+      <div
+        className="h-full rounded-full bg-primary"
+        style={{
+          width: `${width}%`,
+          transition: `width 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms`,
+        }}
+      />
+    </div>
+  );
+}
+
 export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps) => {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -46,6 +97,14 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
     fetchProfiles();
   }, [userId, refreshKey]);
 
+  // Trigger entrance animation after data loads
+  useEffect(() => {
+    if (!loading) {
+      const t = setTimeout(() => setVisible(true), 80);
+      return () => clearTimeout(t);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
       <div className="space-y-3 animate-pulse">
@@ -61,7 +120,10 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
 
   if (profiles.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-card p-8 text-center">
+      <div
+        className="rounded-xl border border-border bg-card p-8 text-center transition-all duration-500"
+        style={{ opacity: visible ? 1 : 0 }}
+      >
         <p className="text-sm text-muted-foreground">
           No completed analyses yet. Run your first analysis to see stats here.
         </p>
@@ -111,41 +173,40 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   };
 
   const statCards = [
-    { label: "Total Analyses", value: totalAnalyses },
-    { label: "Websites Analyzed", value: uniqueUrls },
-    { label: "Average Score", value: `${avgScore}` },
-    { label: "Best Score", value: `${bestScore}` },
+    { label: "Total Analyses", value: totalAnalyses, isScore: false },
+    { label: "Websites Analyzed", value: uniqueUrls, isScore: false },
+    { label: "Average Score", value: avgScore, isScore: true },
+    { label: "Best Score", value: bestScore, isScore: true },
   ];
 
   return (
     <div className="space-y-4">
-      {/* Stat Cards — data-first, no icons */}
+      {/* Stat Cards — staggered fade-up + count-up */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {statCards.map(({ label, value }) => (
-          <div key={label} className="rounded-xl border border-border bg-card p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">{label}</p>
-            <p className="text-2xl font-bold text-foreground tabular-nums leading-none">{value}</p>
-          </div>
+        {statCards.map(({ label, value, isScore }, i) => (
+          <StatCard key={label} label={label} value={value} isScore={isScore} index={i} visible={visible} />
         ))}
       </div>
 
-      {/* Category Breakdown */}
+      {/* Category Breakdown — progress bars animate in */}
       {categoryAverages.length > 0 && (
-        <Card className="border-border bg-card">
+        <Card
+          className="border-border bg-card transition-all duration-700"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(12px)",
+            transitionDelay: "280ms",
+          }}
+        >
           <CardContent className="p-5">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
               Category Averages
             </p>
             <div className="space-y-3">
-              {categoryAverages.map(({ key, label, avg }) => (
+              {categoryAverages.map(({ key, label, avg }, i) => (
                 <div key={key} className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground w-36 shrink-0">{label}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-700"
-                      style={{ width: `${avg}%` }}
-                    />
-                  </div>
+                  <AnimatedBar value={avg} delay={visible ? 300 + i * 80 : 99999} />
                   <span className="text-sm font-semibold text-foreground tabular-nums w-8 text-right">{avg}</span>
                 </div>
               ))}
@@ -154,15 +215,30 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
         </Card>
       )}
 
-      {/* Recent Analyses */}
-      <Card className="border-border bg-card">
+      {/* Recent Analyses — staggered list items */}
+      <Card
+        className="border-border bg-card transition-all duration-700"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(12px)",
+          transitionDelay: "380ms",
+        }}
+      >
         <CardContent className="p-5">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Recent Analyses
           </p>
           <div className="divide-y divide-border">
-            {recentProfiles.map((p) => (
-              <div key={p.id} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
+            {recentProfiles.map((p, i) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 transition-all duration-500"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateX(0)" : "translateX(-8px)",
+                  transitionDelay: `${420 + i * 60}ms`,
+                }}
+              >
                 <span className="text-sm text-foreground truncate max-w-[200px]">{shortenUrl(p.url)}</span>
                 <div className="flex items-center gap-4 shrink-0">
                   <span className="text-sm font-semibold text-foreground tabular-nums">
@@ -179,3 +255,37 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
     </div>
   );
 };
+
+/** Stat card with count-up */
+function StatCard({
+  label,
+  value,
+  isScore,
+  index,
+  visible,
+}: {
+  label: string;
+  value: number;
+  isScore: boolean;
+  index: number;
+  visible: boolean;
+}) {
+  const animated = useCountUp(value, 800, visible);
+
+  return (
+    <div
+      className="rounded-xl border border-border bg-card p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-sm hover:-translate-y-0.5"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transitionDelay: `${index * 70}ms`,
+      }}
+    >
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">{label}</p>
+      <p className="text-2xl font-bold text-foreground tabular-nums leading-none">
+        {animated}
+        {isScore && <span className="text-sm font-normal text-muted-foreground">/100</span>}
+      </p>
+    </div>
+  );
+}

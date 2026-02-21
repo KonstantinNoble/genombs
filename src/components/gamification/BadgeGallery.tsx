@@ -11,6 +11,7 @@ interface BadgeGalleryProps {
 
 export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
   const [unlockedBadges, setUnlockedBadges] = useState<Map<string, string>>(new Map());
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -24,6 +25,8 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
         (data as any[]).forEach((b) => map.set(b.badge_id, b.unlocked_at));
         setUnlockedBadges(map);
       }
+      // Trigger animation after fetch
+      setTimeout(() => setVisible(true), 80);
     };
     fetchBadges();
   }, [userId]);
@@ -69,12 +72,24 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
             Unlocked · {unlocked.length}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {unlocked.map((badge) => {
+            {unlocked.map((badge, i) => {
               const unlockedAt = unlockedBadges.get(badge.id);
               return (
-                <div key={badge.id} className="flex items-start gap-4 rounded-xl border border-border bg-card p-4">
-                  <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
+                <div
+                  key={badge.id}
+                  className="flex items-start gap-4 rounded-xl border border-border bg-card p-4
+                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-0.5 hover:shadow-sm
+                    transition-all duration-300 cursor-default"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(14px)",
+                    transition: `opacity 500ms ease ${i * 60}ms, transform 500ms ease ${i * 60}ms,
+                      border-color 200ms, background-color 200ms, box-shadow 200ms, translate 200ms`,
+                  }}
+                >
+                  {/* Animated indicator dot */}
+                  <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5 group-hover:bg-primary/20 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-[pulse_3s_ease-in-out_infinite]" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground leading-tight">{badge.name}</p>
@@ -102,10 +117,17 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
             Locked · {locked.length}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {locked.map((badge) => (
+            {locked.map((badge, i) => (
               <div
                 key={badge.id}
-                className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 p-4 opacity-50"
+                className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 p-4
+                  hover:border-border hover:bg-muted/20 transition-all duration-300 cursor-default"
+                style={{
+                  opacity: visible ? 0.45 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(14px)",
+                  transition: `opacity 500ms ease ${(unlocked.length + i) * 60}ms, transform 500ms ease ${(unlocked.length + i) * 60}ms,
+                    border-color 200ms, background-color 200ms`,
+                }}
               >
                 <div className="shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center mt-0.5">
                   <Lock className="w-3.5 h-3.5 text-muted-foreground/50" />

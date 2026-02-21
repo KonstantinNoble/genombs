@@ -1,20 +1,44 @@
 
-
-# Fix: Analytics Overview zeigt keine Daten an
+# Fix: Falsche Werte und fehlende Kategorien in Analytics Overview
 
 ## Problem
-Die `AnalyticsOverview`-Komponente verwendet den falschen Datenbank-Client. Sie fragt die leere Lovable Cloud Datenbank ab, statt die externe Datenbank, in der alle Website-Analysen gespeichert sind.
+Die Kategorie-Schluessel im Code stimmen nicht mit den Schluesseln in der Datenbank ueberein:
+
+| Code (falsch, snake_case) | Datenbank (richtig, camelCase) |
+|---|---|
+| `findability` | `findability` (einziger Treffer) |
+| `mobile_usability` | `mobileUsability` |
+| `offer_clarity` | `offerClarity` |
+| `trust_proof` | `trustProof` |
+| `conversion_readiness` | `conversionReadiness` |
+
+Deshalb werden nur 1 von 5 Kategorien angezeigt und die Durchschnittswerte sind dadurch verfaelscht.
 
 ## Loesung
-Eine einzige Zeile aendern: Den Import in `src/components/gamification/AnalyticsOverview.tsx` von `@/integrations/supabase/client` auf `@/lib/supabase/external-client` umstellen -- genau wie es alle anderen Dateien im Projekt bereits tun.
+Die Schluessel in `CATEGORY_LABELS` und `CATEGORY_COLORS` auf camelCase umstellen, sodass sie mit den tatsaechlichen Datenbank-Werten uebereinstimmen.
 
 ## Technische Details
 
 **Datei:** `src/components/gamification/AnalyticsOverview.tsx`
 
-Zeile 2 aendern:
-- Vorher: `import { supabase } from '@/integrations/supabase/client';`
-- Nachher: `import { supabase } from '@/lib/supabase/external-client';`
+Aenderung der Maps (Zeilen 20-34):
 
-Keine weiteren Aenderungen noetig. Die Abfrage-Logik, RLS-Policies und alles andere sind bereits korrekt.
+```typescript
+// Vorher (falsch)
+const CATEGORY_LABELS = {
+  findability: 'Findability',
+  mobile_usability: 'Mobile Usability',
+  ...
+};
 
+// Nachher (richtig)
+const CATEGORY_LABELS = {
+  findability: 'Findability',
+  mobileUsability: 'Mobile Usability',
+  offerClarity: 'Offer Clarity',
+  trustProof: 'Trust Proof',
+  conversionReadiness: 'Conversion Readiness',
+};
+```
+
+Gleiche Aenderung fuer `CATEGORY_COLORS`. Sonst keine weiteren Aenderungen noetig -- die Berechnungslogik ist korrekt, sie bekommt nur die falschen Schluessel nicht zugeordnet.

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStreak } from '@/hooks/useStreak';
 import { BadgeGallery } from '@/components/gamification/BadgeGallery';
+import { AnalyticsOverview } from '@/components/gamification/AnalyticsOverview';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Flame, Trophy, Calendar, ArrowLeft } from 'lucide-react';
@@ -74,6 +75,12 @@ const Achievements = () => {
             <p className="text-sm text-muted-foreground">Total Active Days</p>
           </div>
         </div>
+
+        {/* Analytics Overview */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-foreground mb-6">Analytics Overview</h2>
+          <AnalyticsOverview userId={user.id} />
+        </section>
 
         {/* Badges Section */}
         <section className="mb-12">

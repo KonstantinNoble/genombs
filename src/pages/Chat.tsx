@@ -586,10 +586,10 @@ const Chat = () => {
           } catch (e: any) {
             const msg = e.message || "Analysis failed";
             if (msg === "premium_model_required") {
-              toast.error("Dieses Modell ist nur für Premium-Nutzer verfügbar.");
+              toast.error("This model is only available for Premium users.");
             } else if (msg.startsWith("insufficient_credits:")) {
               const hours = msg.split(":")[1];
-              toast.error(`Keine Credits mehr – regeneriert sich in ${hours}h.`);
+              toast.error(`No credits left – resets in ${hours}h.`);
             } else {
               toast.error(`Analysis failed for ${url}: ${msg}`);
             }

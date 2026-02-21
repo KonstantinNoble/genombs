@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 
 interface AnalyticsOverviewProps {
   userId: string;
+  refreshKey?: number;
 }
 
 interface ProfileData {
@@ -33,7 +34,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   conversionReadiness: 'bg-rose-500',
 };
 
-export const AnalyticsOverview = ({ userId }: AnalyticsOverviewProps) => {
+export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps) => {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +54,7 @@ export const AnalyticsOverview = ({ userId }: AnalyticsOverviewProps) => {
     };
 
     fetchProfiles();
-  }, [userId]);
+  }, [userId, refreshKey]);
 
   if (loading) {
     return (

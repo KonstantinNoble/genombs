@@ -1,8 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+<<<<<<< HEAD
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import type { WebsiteProfile, ImprovementTask } from "@/types/chat";
+=======
+import { ShieldCheck, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import type { WebsiteProfile } from "@/types/chat";
+>>>>>>> aea93bd (feat(ui): professionalize dashboard design and refine components)
 import PageSpeedCard from "./PageSpeedCard";
 import WebsiteGrid from "./WebsiteGrid";
 import ComparisonTable from "./ComparisonTable";
@@ -70,6 +75,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
 
   if (!ownSite) return null;
 
+<<<<<<< HEAD
   const hasWebsiteData = !!ownSite.profile_data;
   const hasCodeData = !!ownSite.code_analysis;
 
@@ -78,6 +84,85 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
       {/* ── WEBSITE ANALYSIS BLOCK ── */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Website Analysis</h2>
+=======
+  if (tab === "positioning") {
+    return (
+      <div className="space-y-3">
+        {[ownSite, ...competitors].map((profile) => {
+          if (!profile.profile_data) return null;
+          return (
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                  <h4 className="text-base font-bold text-foreground tracking-tight">{profile.profile_data.name}</h4>
+                  <Badge variant={profile.is_own_website ? "default" : "secondary"} className="text-[10px] tracking-wider uppercase font-medium">
+                    {profile.is_own_website ? "Your Site" : "Competitor"}
+                  </Badge>
+                </div>
+                <div className="space-y-4 pt-1">
+                  <div className="border-l-2 border-primary/40 pl-4 py-0.5">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Target Audience</p>
+                    <p className="text-sm text-foreground leading-relaxed">{profile.profile_data.targetAudience}</p>
+                  </div>
+                  <div className="border-l-2 border-chart-4/40 pl-4 py-0.5">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Unique Selling Proposition</p>
+                    <p className="text-sm text-foreground leading-relaxed">{profile.profile_data.usp}</p>
+                  </div>
+                  <div className="pt-2">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Site Structure</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(profile.profile_data.siteStructure || []).map((s) => (
+                        <Badge key={s} variant="outline" className="text-xs bg-muted/30 border-border/50 text-foreground/80">{s}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (tab === "offers") {
+    return (
+      <div className="space-y-3">
+        {[ownSite, ...competitors].map((profile) => {
+          if (!profile.profile_data) return null;
+          return (
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                  <h4 className="text-base font-bold text-foreground tracking-tight">{profile.profile_data.name}</h4>
+                  <Badge variant={profile.is_own_website ? "default" : "secondary"} className="text-[10px] tracking-wider uppercase font-medium">
+                    {profile.is_own_website ? "Your Site" : "Competitor"}
+                  </Badge>
+                </div>
+                <div className="space-y-4 pt-1">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Calls to Action (CTAs)</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(profile.profile_data.ctas || []).map((cta) => (
+                        <Badge key={cta} variant="secondary" className="text-xs px-2.5 py-0.5 bg-primary/10 text-primary hover:bg-primary/20 transition-colors border-0">
+                          {cta}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="border-l-2 border-primary/40 pl-4 py-0.5">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Value Proposition</p>
+                    <p className="text-sm text-foreground leading-relaxed">{profile.profile_data.usp}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  }
+>>>>>>> aea93bd (feat(ui): professionalize dashboard design and refine components)
 
         {hasWebsiteData ? (
           <div className="space-y-8">
@@ -222,6 +307,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
         )}
       </div>
 
+<<<<<<< HEAD
       {/* ── SEPARATOR ── */}
       <Separator className="my-2" />
 
@@ -244,9 +330,67 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
             onAction={onOpenGithubDialog}
           />
         )}
+=======
+  if (tab === "trust") {
+    return (
+      <div className="space-y-3">
+        {[ownSite, ...competitors].map((profile) => {
+          if (!profile.profile_data) return null;
+          const trustScore = profile.category_scores?.trustProof ?? 0;
+          return (
+            <Card key={profile.id} className="border-border bg-card transition-all duration-200 hover:border-primary/20">
+              <CardContent className="p-5 space-y-5">
+                <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                  <div className="flex items-center gap-4">
+                    <ScoreRing score={trustScore} />
+                    <div>
+                      <h4 className="text-base font-bold text-foreground tracking-tight">{profile.profile_data.name}</h4>
+                      <p className="text-xs font-medium text-muted-foreground mt-0.5">Trust & Proof Score</p>
+                    </div>
+                  </div>
+                  <Badge variant={profile.is_own_website ? "default" : "secondary"} className="text-[10px] tracking-wider uppercase font-medium">
+                    {profile.is_own_website ? "Your Site" : "Competitor"}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
+                  <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-chart-6" />
+                      Key Strengths
+                    </p>
+                    <ul className="space-y-2">
+                      {(profile.profile_data.strengths || []).slice(0, 5).map((s) => (
+                        <li key={s} className="flex items-start gap-2 text-sm text-foreground leading-snug">
+                          <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6/40 shrink-0" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-destructive/80" />
+                      Critical Weaknesses
+                    </p>
+                    <ul className="space-y-2">
+                      {(profile.profile_data.weaknesses || []).slice(0, 5).map((w) => (
+                        <li key={w} className="flex items-start gap-2 text-sm text-foreground leading-snug">
+                          <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive/40 shrink-0" />
+                          {w}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+>>>>>>> aea93bd (feat(ui): professionalize dashboard design and refine components)
       </div>
     </div>
   );
 };
 
 export default AnalysisTabsContent;
+

@@ -19,18 +19,18 @@ interface ProfileData {
 
 const CATEGORY_LABELS: Record<string, string> = {
   findability: 'Findability',
-  mobile_usability: 'Mobile Usability',
-  offer_clarity: 'Offer Clarity',
-  trust_proof: 'Trust Proof',
-  conversion_readiness: 'Conversion Readiness',
+  mobileUsability: 'Mobile Usability',
+  offerClarity: 'Offer Clarity',
+  trustProof: 'Trust Proof',
+  conversionReadiness: 'Conversion Readiness',
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
   findability: 'bg-blue-500',
-  mobile_usability: 'bg-emerald-500',
-  offer_clarity: 'bg-amber-500',
-  trust_proof: 'bg-violet-500',
-  conversion_readiness: 'bg-rose-500',
+  mobileUsability: 'bg-emerald-500',
+  offerClarity: 'bg-amber-500',
+  trustProof: 'bg-violet-500',
+  conversionReadiness: 'bg-rose-500',
 };
 
 export const AnalyticsOverview = ({ userId }: AnalyticsOverviewProps) => {

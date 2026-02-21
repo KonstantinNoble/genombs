@@ -25,7 +25,8 @@ export function DailyTaskPanel({ userId, onTaskCompleted, showEmpty = false }: D
         .from('daily_tasks' as any)
         .select('*')
         .eq('user_id', userId)
-        .eq('created_at', today)
+        .gte('created_at', today)
+        .lt('created_at', today + 'T23:59:59.999Z')
         .order('created_at', { ascending: false });
       
       setTasks((data as unknown as DailyTask[]) || []);

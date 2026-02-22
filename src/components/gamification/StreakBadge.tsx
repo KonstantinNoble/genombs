@@ -20,7 +20,7 @@ export function StreakBadge({ streak, userId }: StreakBadgeProps) {
           ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10'
           : 'border-border bg-secondary/50 text-muted-foreground hover:bg-secondary hover:border-border'
         }
-        ${isNewRecord ? 'animate-pulse' : ''}
+        
       `}
       aria-label={`Streak: ${currentStreak} days`}
     >

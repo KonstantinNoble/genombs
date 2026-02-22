@@ -189,6 +189,12 @@ const Home = () => {
       description:
         "Connect a public GitHub repository and get your source code scored across six categories: quality, security, performance, accessibility, maintainability, and SEO.",
     },
+    {
+      num: "05",
+      title: "Auto Competitor Discovery",
+      description:
+        "Don't know your competitors? Let AI find them. Toggle auto-search and we'll identify your top competitors before the analysis even starts.",
+    },
   ];
 
   const steps = [
@@ -241,6 +247,12 @@ const Home = () => {
         "Link your public GitHub repository and get your code scored across six categories — from security to maintainability.",
       badge: "Code Review",
     },
+    {
+      title: "Auto Competitor Discovery",
+      description:
+        "Not sure who you're competing with? Enable AI-powered competitor search and we'll identify relevant competitors for you — no manual URL entry needed.",
+      badge: "AI-Powered",
+    },
   ];
 
   const comparisonRows = [
@@ -250,6 +262,7 @@ const Home = () => {
     { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
     { feature: "Improvement Tasks", genome: "Yes", traditional: "No" },
+    { feature: "Auto Competitor Discovery", genome: "Yes", traditional: "Manual research" },
   ];
 
   const homeFAQ = [
@@ -282,6 +295,11 @@ const Home = () => {
       question: "What is the Code Analysis?",
       answer:
         "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: code quality, security, performance, accessibility, maintainability, and SEO. The results are included alongside your website scores.",
+    },
+    {
+      question: "Can AI find my competitors for me?",
+      answer:
+        "Yes. When starting an analysis, you can toggle 'Find competitors automatically with AI.' Our system uses AI-powered web search to identify your most relevant competitors based on your website's industry and positioning. You then select which ones to include in the analysis.",
     },
   ];
 
@@ -342,7 +360,7 @@ const Home = () => {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 animate-fade-in-up"
             style={{ animationDelay: "0.15s", animationFillMode: "both" }}
           >
-            Paste a URL and get scores across five categories, competitor benchmarks, and a prioritized list of what to
+            Paste a URL and get scores across five categories, AI-powered competitor discovery, and a prioritized list of what to
             fix.
           </p>
 
@@ -413,8 +431,8 @@ const Home = () => {
               <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Per Scan</p>
             </div>
             <div className="text-center py-4 md:py-0 space-y-1 scroll-reveal" style={{ transitionDelay: "0.3s" }}>
-              <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono">Incl.</p>
-              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">PageSpeed & Code Analysis</p>
+              <p className="text-3xl sm:text-4xl font-semibold text-primary font-mono">AI</p>
+              <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">Auto Competitor Search</p>
             </div>
           </div>
         </div>
@@ -429,7 +447,7 @@ const Home = () => {
               Scores, comparisons, and a concrete fix list for your website.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {features.map((feature, i) => (
               <div
                 key={feature.title}

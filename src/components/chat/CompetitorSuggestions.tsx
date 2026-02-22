@@ -68,8 +68,8 @@ const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable
       {maxSelectable !== undefined && (
         <p className="text-[11px] text-muted-foreground text-center">
           {atLimit
-            ? `Limit erreicht: max. ${maxSelectable} Competitor${maxSelectable > 1 ? "s" : ""} auswählbar`
-            : `${selectedCount} / ${maxSelectable} Competitor${maxSelectable > 1 ? "s" : ""} ausgewählt`}
+            ? `Limit reached: max. ${maxSelectable} competitor${maxSelectable > 1 ? "s" : ""} selectable`
+            : `${selectedCount} / ${maxSelectable} competitor${maxSelectable > 1 ? "s" : ""} selected`}
         </p>
       )}
 

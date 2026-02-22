@@ -221,7 +221,6 @@ export function useChatAnalysis({
                             toast.error("Not enough credits", {
                                 description: `Analysis for ${url} requires more credits than you have left. Resets in ${hours}h. Upgrade to Premium for 100 daily credits.`,
                                 duration: 8000,
-                                style: { borderColor: 'hsl(var(--destructive))', background: 'hsl(var(--destructive) / 0.1)' },
                             });
                         } else {
                             toast.error(`Analysis failed for ${url}: ${msg}`);

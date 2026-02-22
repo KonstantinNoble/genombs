@@ -40,7 +40,7 @@ type ModelId = (typeof AI_MODELS)[number]["id"];
 
 interface ChatInputProps {
   onSend: (message: string, model: string) => void;
-  onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
+  onScan?: (ownUrl: string, competitorUrls: string[], model: string, repo?: string) => void | Promise<void>;
   onGithubAnalysis?: (githubUrl: string, model?: string) => void;
   onClearUrls?: () => void;
   onPromptUrl?: (message: string) => void;

@@ -635,7 +635,7 @@ async function processQueue() {
         : Promise.resolve(null);
 
       const crawlController = new AbortController();
-      const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 45000);
+      const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 60000);
 
       const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
@@ -647,8 +647,8 @@ async function processQueue() {
           url: job.url,
           formats: ["markdown", "rawHtml", "links", "screenshot"],
           onlyMainContent: false,
-          waitFor: 2000,
-          timeout: 30000,
+          waitFor: 5000,
+          timeout: 45000,
         }),
         signal: crawlController.signal,
       }).finally(() => clearTimeout(crawlAbortTimeout));

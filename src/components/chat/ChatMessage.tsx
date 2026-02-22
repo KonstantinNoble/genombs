@@ -46,9 +46,9 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser
-            ? "bg-primary text-primary-foreground rounded-br-md"
-            : "bg-card border border-border text-card-foreground rounded-bl-md"
+        className={`max-w-[85%] sm:max-w-[78%] text-sm leading-relaxed ${isUser
+          ? "bg-secondary text-foreground rounded-xl rounded-br-sm px-4 py-3"
+          : "bg-card border-l-2 border-l-primary/50 border border-border/60 text-card-foreground rounded-xl rounded-bl-none px-4 py-3"
           }`}
       >
         {isUser ? (
@@ -70,7 +70,7 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
             </ReactMarkdown>
           </div>
         )}
-        <p className={`text-[10px] mt-1.5 ${isUser ? "text-primary-foreground/60" : "text-muted-foreground/60"}`}>
+        <p className="font-mono text-[10px] mt-2 text-muted-foreground/40 tracking-wide">
           {new Date(message.created_at).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>

@@ -235,42 +235,37 @@ const Chat = () => {
     remainingCredits <= 0 ? "text-destructive" : remainingCredits < 5 ? "text-chart-4" : "text-primary";
 
   const chatHeader = (
-    <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-3">
-      <Button variant="ghost" size="icon" className="md:hidden shrink-0" onClick={() => setSidebarOpen(true)}>
-        {sidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
+    <div className="border-b border-border/60 bg-card px-4 py-2.5 flex items-center gap-3">
+      <Button variant="ghost" size="icon" className="md:hidden shrink-0 h-7 w-7" onClick={() => setSidebarOpen(true)}>
+        {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
       </Button>
       {isMobile && (
         <Button
           variant="ghost"
           size="icon"
-          className="shrink-0"
+          className="shrink-0 h-7 w-7"
           onClick={() => setMobileView(mobileView === "chat" ? "dashboard" : "chat")}
         >
-          {mobileView === "chat" ? <LayoutDashboard className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+          {mobileView === "chat" ? <LayoutDashboard className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
         </Button>
       )}
       <div className="min-w-0 flex-1">
-        <h2 className="text-sm font-medium text-foreground truncate">
+        <h2 className="text-[13px] font-semibold tracking-tight text-foreground truncate">
           {activeConversation?.title || "Select a conversation"}
         </h2>
         {activeConversation && (
-          <p className="text-xs text-muted-foreground">
-            {messages.length} messages
-            {isAnalyzing && " · Analyzing..."}
+          <p className="text-[10px] font-mono text-muted-foreground/50 tracking-wide mt-0.5">
+            {messages.length} messages{isAnalyzing && " · analyzing..."}
           </p>
         )}
       </div>
       <div className="shrink-0 flex items-center gap-3 ml-auto">
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border border-border/50 bg-muted/30">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-            Credits
-          </span>
-          <span className={`text-xs font-bold ${creditColor}`}>
-            {remainingCredits}/{creditsLimit}
-          </span>
-          <Progress value={creditPercent} className="hidden sm:block w-14 h-1.5 rounded-full" />
-          <CreditResetTimer creditsResetAt={creditsResetAt} />
-        </div>
+        <span className={`font-mono text-xs ${creditColor} tabular-nums`}>
+          <span className="text-muted-foreground/40 mr-0.5">[</span>
+          {remainingCredits}<span className="text-muted-foreground/50">/</span>{creditsLimit}
+          <span className="text-muted-foreground/40 ml-0.5">cr]</span>
+        </span>
+        <CreditResetTimer creditsResetAt={creditsResetAt} />
       </div>
     </div>
   );
@@ -382,9 +377,11 @@ const Chat = () => {
 
   const dashboardPanel = (
     <div className="h-full flex flex-col">
-      <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-2">
-        <LayoutDashboard className="w-4 h-4 text-primary" />
-        <h2 className="text-sm font-medium text-foreground">Workspace</h2>
+      <div className="border-b border-border/60 bg-card px-4 py-2.5 flex items-center justify-between">
+        <span className="text-[10px] font-mono font-semibold tracking-[0.18em] text-muted-foreground/50 uppercase select-none">Workspace</span>
+        {completedProfiles.length > 0 && (
+          <span className="font-mono text-[10px] text-muted-foreground/40">{completedProfiles.length} url{completedProfiles.length > 1 ? "s" : ""} analyzed</span>
+        )}
       </div>
       {hasProfiles && (
         <SectionNavBar

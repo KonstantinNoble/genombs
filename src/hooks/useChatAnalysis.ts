@@ -218,7 +218,10 @@ export function useChatAnalysis({
                             toast.error("This model is only available for Premium users.");
                         } else if (msg.startsWith("insufficient_credits:")) {
                             const hours = msg.split(":")[1];
-                            toast.error(`No credits left – resets in ${hours}h.`);
+                            toast.error("Not enough credits", {
+                                description: `Analysis for ${url} requires more credits than you have left. Resets in ${hours}h. Upgrade to Premium for 100 daily credits.`,
+                                duration: 8000,
+                            });
                         } else {
                             toast.error(`Analysis failed for ${url}: ${msg}`);
                         }

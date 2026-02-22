@@ -134,7 +134,10 @@ const Chat = () => {
       const msg = e.message || "Competitor search failed";
       if (msg.startsWith("insufficient_credits:")) {
         const hours = msg.split(":")[1];
-        toast.error(`No credits left – resets in ${hours}h.`);
+        toast.error("Not enough credits", {
+          description: `Competitor search costs 7 credits. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
+          duration: 8000,
+        });
       } else {
         toast.error(msg);
       }
@@ -157,7 +160,10 @@ const Chat = () => {
       const msg = e.message || "Analysis failed";
       if (msg.startsWith("insufficient_credits:")) {
         const hours = msg.split(":")[1];
-        toast.error(`No credits left – resets in ${hours}h.`);
+        toast.error("Not enough credits", {
+          description: `Website analysis requires more credits than you have left. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
+          duration: 8000,
+        });
       } else {
         toast.error(msg);
       }

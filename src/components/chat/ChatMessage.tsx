@@ -46,9 +46,9 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] sm:max-w-[78%] text-sm leading-relaxed ${isUser
-          ? "bg-secondary text-foreground rounded-xl rounded-br-sm px-4 py-3"
-          : "bg-card border-l-2 border-l-primary/50 border border-border/60 text-card-foreground rounded-xl rounded-bl-none px-4 py-3"
+        className={`max-w-[85%] sm:max-w-[78%] text-[15px] leading-7 ${isUser
+            ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-5 py-3.5"
+            : "bg-card border-l-[3px] border-l-primary/60 border border-border/60 text-card-foreground rounded-2xl rounded-bl-none px-5 py-4"
           }`}
       >
         {isUser ? (
@@ -64,13 +64,13 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
             />
           </div>
         ) : (
-          <div className="prose prose-invert prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-td:text-muted-foreground prose-th:text-foreground prose-a:text-primary">
+          <div className="prose prose-invert prose-base max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-td:text-muted-foreground prose-th:text-foreground prose-a:text-primary">
             <ReactMarkdown remarkPlugins={plugins}>
               {message.content}
             </ReactMarkdown>
           </div>
         )}
-        <p className="font-mono text-[10px] mt-2 text-muted-foreground/40 tracking-wide">
+        <p className="text-xs mt-2 text-muted-foreground/50">
           {new Date(message.created_at).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>

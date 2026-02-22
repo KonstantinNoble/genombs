@@ -250,17 +250,17 @@ const Chat = () => {
         </Button>
       )}
       <div className="min-w-0 flex-1">
-        <h2 className="text-[13px] font-semibold tracking-tight text-foreground truncate">
+        <h2 className="text-base font-semibold tracking-tight text-foreground truncate">
           {activeConversation?.title || "Select a conversation"}
         </h2>
         {activeConversation && (
-          <p className="text-[10px] font-mono text-muted-foreground/50 tracking-wide mt-0.5">
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
             {messages.length} messages{isAnalyzing && " · analyzing..."}
           </p>
         )}
       </div>
       <div className="shrink-0 flex items-center gap-3 ml-auto">
-        <span className={`font-mono text-xs ${creditColor} tabular-nums`}>
+        <span className={`font-mono text-sm ${creditColor} tabular-nums`}>
           <span className="text-muted-foreground/40 mr-0.5">[</span>
           {remainingCredits}<span className="text-muted-foreground/50">/</span>{creditsLimit}
           <span className="text-muted-foreground/40 ml-0.5">cr]</span>
@@ -378,9 +378,9 @@ const Chat = () => {
   const dashboardPanel = (
     <div className="h-full flex flex-col">
       <div className="border-b border-border/60 bg-card px-4 py-2.5 flex items-center justify-between">
-        <span className="text-[10px] font-mono font-semibold tracking-[0.18em] text-muted-foreground/50 uppercase select-none">Workspace</span>
+        <span className="text-xs font-semibold tracking-widest text-muted-foreground/50 uppercase select-none">Workspace</span>
         {completedProfiles.length > 0 && (
-          <span className="font-mono text-[10px] text-muted-foreground/40">{completedProfiles.length} url{completedProfiles.length > 1 ? "s" : ""} analyzed</span>
+          <span className="text-xs text-muted-foreground/40">{completedProfiles.length} url{completedProfiles.length > 1 ? "s" : ""} analyzed</span>
         )}
       </div>
       {hasProfiles && (

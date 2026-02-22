@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, Search } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -26,14 +26,16 @@ import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 // Import Custom Hooks
 import { useChatConversations } from "@/hooks/useChatConversations";
 import { useChatAnalysis } from "@/hooks/useChatAnalysis";
 import { useChatMessages } from "@/hooks/useChatMessages";
 
-import { saveMessage } from "@/lib/api/chat-api";
+import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
+import { COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -113,6 +115,52 @@ const Chat = () => {
   const [mobileView, setMobileView] = useState<"chat" | "dashboard">("chat");
   const [urlDialogOpen, setUrlDialogOpen] = useState(false);
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
+  const [isFindingCompetitors, setIsFindingCompetitors] = useState(false);
+
+  // Handler: Find competitors via Perplexity
+  const handleFindCompetitors = async () => {
+    if (!activeId || !user) return;
+    setIsFindingCompetitors(true);
+    try {
+      const token = await getAccessToken();
+      await findCompetitors(activeId, token);
+      // Reload messages to show the new competitor_suggestions message
+      const updatedMessages = await loadMessages(activeId);
+      setMessages(updatedMessages);
+      refreshCredits();
+    } catch (e: any) {
+      const msg = e.message || "Competitor search failed";
+      if (msg.startsWith("insufficient_credits:")) {
+        const hours = msg.split(":")[1];
+        toast.error(`No credits left – resets in ${hours}h.`);
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setIsFindingCompetitors(false);
+    }
+  };
+
+  // Handler: Analyze selected competitors from suggestions
+  const handleAnalyzeSelectedCompetitors = async (urls: string[]) => {
+    if (!activeId || !user || urls.length === 0) return;
+    const token = await getAccessToken();
+    try {
+      await Promise.all(
+        urls.map((url) => analyzeWebsite(url, activeId, false, token))
+      );
+      toast.success(`Analyzing ${urls.length} competitor${urls.length > 1 ? "s" : ""}...`);
+      refreshCredits();
+    } catch (e: any) {
+      const msg = e.message || "Analysis failed";
+      if (msg.startsWith("insufficient_credits:")) {
+        const hours = msg.split(":")[1];
+        toast.error(`No credits left – resets in ${hours}h.`);
+      } else {
+        toast.error(msg);
+      }
+    }
+  };
 
   // Handlers for UI to use
   const onStartScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string) => {
@@ -226,7 +274,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} />
             ))}
             {isStreaming && (
               <div className="flex justify-start">
@@ -250,7 +298,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} />
             ))}
             {showInlineUrlPrompt && !hasProfiles && (
               <InlineUrlPrompt
@@ -264,6 +312,34 @@ const Chat = () => {
                 }}
                 selectedModel="gemini-flash"
               />
+            )}
+            {/* Find Competitors button - shows when own site scanned but no competitors */}
+            {hasProfiles &&
+              completedProfiles.some((p) => p.is_own_website) &&
+              !completedProfiles.some((p) => !p.is_own_website) &&
+              !messages.some((m) => (m.metadata as Record<string, unknown>)?.type === "competitor_suggestions") &&
+              !isAnalyzing &&
+              !isFindingCompetitors && (
+                <div className="flex justify-start">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleFindCompetitors}
+                    className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
+                  >
+                    <Search className="w-4 h-4" />
+                    Find competitors automatically
+                    <span className="text-[10px] text-muted-foreground ml-1">({COMPETITOR_SEARCH_COST} Credits)</span>
+                  </Button>
+                </div>
+              )}
+            {isFindingCompetitors && (
+              <div className="flex justify-start">
+                <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                  <span className="text-sm text-muted-foreground">Searching for competitors...</span>
+                </div>
+              </div>
             )}
             {isStreaming && (
               <div className="flex justify-start">

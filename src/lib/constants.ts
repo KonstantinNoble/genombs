@@ -30,6 +30,8 @@ export const MODEL_CREDIT_COSTS = {
 export const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"] as const;
 export const FREE_MODELS = ["gemini-flash", "gpt-mini"] as const;
 
+export const COMPETITOR_SEARCH_COST = 7;
+
 export const FREE_DAILY_CREDITS = 20;
 export const PREMIUM_DAILY_CREDITS = 100;
 

@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import type { Message } from "@/types/chat";
 import ReactMarkdown from "react-markdown";
+import CompetitorSuggestions from "./CompetitorSuggestions";
+import type { CompetitorSuggestion } from "./CompetitorSuggestions";
 
 interface ChatMessageProps {
   message: Message;
+  onAnalyzeCompetitors?: (urls: string[]) => void;
+  competitorAnalysisDisabled?: boolean;
 }
 
 // Dynamisch laden, da remark-gfm auf alten mobilen Browsern crasht
-// (Named Capture Groups in Regex werden nicht unterstuetzt)
 let remarkGfmPlugin: any = null;
 let pluginLoadAttempted = false;
 
@@ -22,7 +25,7 @@ const loadRemarkGfm = async () => {
   }
 };
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
+const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled }: ChatMessageProps) => {
   const isUser = message.role === "user";
   const [pluginReady, setPluginReady] = useState(!!remarkGfmPlugin);
 
@@ -33,6 +36,11 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   }, []);
 
   const plugins = remarkGfmPlugin ? [remarkGfmPlugin] : [];
+
+  // Check for competitor suggestions metadata
+  const metadata = message.metadata as Record<string, unknown> | null;
+  const isCompetitorSuggestions = metadata?.type === "competitor_suggestions";
+  const competitors = (metadata?.competitors as CompetitorSuggestion[]) || [];
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -45,6 +53,15 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       >
         {isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
+        ) : isCompetitorSuggestions && competitors.length > 0 ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">{message.content}</p>
+            <CompetitorSuggestions
+              competitors={competitors}
+              onAnalyze={(urls) => onAnalyzeCompetitors?.(urls)}
+              disabled={competitorAnalysisDisabled}
+            />
+          </div>
         ) : (
           <div className="prose prose-invert prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-td:text-muted-foreground prose-th:text-foreground prose-a:text-primary">
             <ReactMarkdown remarkPlugins={plugins}>

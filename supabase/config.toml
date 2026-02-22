@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.add-github-analysis]
 verify_jwt = false
+
+[functions.find-competitors]
+verify_jwt = false

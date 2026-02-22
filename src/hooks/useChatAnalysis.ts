@@ -17,12 +17,14 @@ export function useChatAnalysis({
     getAccessToken,
     setConversations,
     onSummaryRequired,
+    onCompetitorSearchRequired,
 }: {
     activeId: string | null;
     userId: string | undefined;
     getAccessToken: () => Promise<string>;
     setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
     onSummaryRequired: (completed: WebsiteProfile[], token: string, model?: string) => void;
+    onCompetitorSearchRequired?: () => void;
 }) {
     const [profiles, setProfiles] = useState<WebsiteProfile[]>([]);
     const [tasks, setTasks] = useState<ImprovementTask[]>([]);
@@ -35,6 +37,7 @@ export function useChatAnalysis({
     const expectedProfileCountRef = useRef<number>(0);
     const summaryModelRef = useRef<string | undefined>(undefined);
     const summaryTokenRef = useRef<string>("");
+    const autoFindRef = useRef(false);
 
     const deduplicateProfiles = useCallback((ps: WebsiteProfile[]): WebsiteProfile[] => {
         const byUrl = new Map<string, WebsiteProfile>();
@@ -98,7 +101,12 @@ export function useChatAnalysis({
                                 expectedProfileCountRef.current = 0;
                                 const completed = deduped.filter((p) => p.status === "completed");
                                 if (completed.length > 0) {
-                                    onSummaryRequired(completed, summaryTokenRef.current, summaryModelRef.current);
+                                    if (autoFindRef.current) {
+                                        autoFindRef.current = false;
+                                        onCompetitorSearchRequired?.();
+                                    } else {
+                                        onSummaryRequired(completed, summaryTokenRef.current, summaryModelRef.current);
+                                    }
                                     triggerAfterAnalysis(completed);
                                 }
                             }
@@ -119,15 +127,19 @@ export function useChatAnalysis({
         model?: string,
         githubRepoUrl?: string,
         saveUserMessage?: (content: string) => Promise<void>,
-        onComplete?: () => void
+        onComplete?: () => void,
+        autoFindCompetitors?: boolean
     ) => {
         if (!activeId || !userId) return;
 
         setIsAnalyzing(true);
+        autoFindRef.current = !!autoFindCompetitors;
         const token = await getAccessToken();
 
         if (saveUserMessage) {
-            const content = `Analyze my site ${ownUrl} vs competitors: ${competitorUrls.join(", ")}`;
+            const content = autoFindCompetitors
+                ? `Analyze my site ${ownUrl} (auto-finding competitors)`
+                : `Analyze my site ${ownUrl} vs competitors: ${competitorUrls.join(", ")}`;
             try {
                 await saveUserMessage(content);
             } catch (e) {

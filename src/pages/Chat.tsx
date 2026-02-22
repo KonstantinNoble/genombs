@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, Search } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -35,7 +35,6 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 
 import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
-import { COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -82,6 +81,9 @@ const Chat = () => {
     setConversations,
     onSummaryRequired: (completed, token, model) => {
       setTriggerSummaryTask({ completed, accessToken: token, model });
+    },
+    onCompetitorSearchRequired: () => {
+      handleFindCompetitors();
     },
   });
 
@@ -163,7 +165,7 @@ const Chat = () => {
   };
 
   // Handlers for UI to use
-  const onStartScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string) => {
+  const onStartScan = async (ownUrl: string, competitorUrls: string[], model?: string, githubRepoUrl?: string, autoFindCompetitors?: boolean) => {
     await handleScan(
       ownUrl,
       competitorUrls,
@@ -174,7 +176,8 @@ const Chat = () => {
         const msg = await saveMessage(activeId, "user", content);
         setMessages((prev) => [...prev, msg]);
       },
-      refreshCredits
+      refreshCredits,
+      autoFindCompetitors
     );
   };
 
@@ -302,9 +305,9 @@ const Chat = () => {
             ))}
             {showInlineUrlPrompt && !hasProfiles && (
               <InlineUrlPrompt
-                onStartAnalysis={(ownUrl, competitorUrls, model) => {
+                onStartAnalysis={(ownUrl, competitorUrls, model, _ghUrl, autoFindCompetitors) => {
                   setShowInlineUrlPrompt(false);
-                  onStartScan(ownUrl, competitorUrls, model);
+                  onStartScan(ownUrl, competitorUrls, model, undefined, autoFindCompetitors);
                 }}
                 onGithubOnlyAnalysis={(githubUrl, model) => {
                   setShowInlineUrlPrompt(false);
@@ -313,26 +316,6 @@ const Chat = () => {
                 selectedModel="gemini-flash"
               />
             )}
-            {/* Find Competitors button - shows when own site scanned but no competitors */}
-            {hasProfiles &&
-              completedProfiles.some((p) => p.is_own_website) &&
-              !completedProfiles.some((p) => !p.is_own_website) &&
-              !messages.some((m) => (m.metadata as Record<string, unknown>)?.type === "competitor_suggestions") &&
-              !isAnalyzing &&
-              !isFindingCompetitors && (
-                <div className="flex justify-start">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleFindCompetitors}
-                    className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
-                  >
-                    <Search className="w-4 h-4" />
-                    Find competitors automatically
-                    <span className="text-[10px] text-muted-foreground ml-1">({COMPETITOR_SEARCH_COST} Credits)</span>
-                  </Button>
-                </div>
-              )}
             {isFindingCompetitors && (
               <div className="flex justify-start">
                 <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-2">
@@ -360,7 +343,7 @@ const Chat = () => {
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
           onSend={(content, model) => handleSend(content, user?.id, model)}
-          onScan={(ownUrl, compUrls, model, repo) => onStartScan(ownUrl, compUrls, model, repo)}
+          onScan={(ownUrl, compUrls, model, repo, autoFind) => onStartScan(ownUrl, compUrls, model, repo, autoFind)}
           onGithubAnalysis={(url, model) => handleGithubDeepAnalysis(url, user?.id, model)}
           onPromptUrl={async (message) => {
             if (!activeId) return;

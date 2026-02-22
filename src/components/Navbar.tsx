@@ -14,7 +14,7 @@ const Navbar = () => {
   const { streak } = useStreak(user?.id ?? null, true);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  
+
   const isActive = (path: string) => location.pathname === path;
 
   // Track scroll for header styling
@@ -48,7 +48,7 @@ const Navbar = () => {
     const touch = e.changedTouches[0];
     const startX = Number((e.currentTarget as HTMLElement).dataset.touchStartX || 0);
     const diffX = touch.clientX - startX;
-    
+
     // If swiped right by more than 100px, close menu
     if (diffX > 100) {
       setIsOpen(false);
@@ -91,33 +91,31 @@ const Navbar = () => {
 
   // Desktop NavLink with green hover and click animation
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <Link 
-      to={to} 
-      className={`text-sm font-medium transition-all duration-200 rounded-full px-4 py-1.5 active:scale-95 ${
-        isActive(to) 
-          ? "text-primary bg-white/[0.10]" 
+    <Link
+      to={to}
+      className={`text-sm font-medium transition-all duration-200 rounded-full px-4 py-1.5 active:scale-95 ${isActive(to)
+          ? "text-primary bg-white/[0.10]"
           : "text-foreground/70 hover:text-foreground hover:bg-white/[0.08]"
-      }`}
+        }`}
     >
       {children}
     </Link>
   );
-  
+
   return (
     <>
-      <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled 
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
+      <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled
+          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
           : "bg-background/60 backdrop-blur-md border-b border-transparent"
-      }`}>
+        }`}>
         <div className="container mx-auto flex h-16 items-center px-4">
           {/* Logo - Left */}
           <div className="flex items-center shrink-0">
             <Link to="/" className="flex items-center gap-2.5 pr-6 border-r border-border">
               <div className="w-10 h-10 overflow-hidden rounded-lg">
-                <img 
-                  src={logo} 
-                  alt="Synvertas Logo" 
+                <img
+                  src={logo}
+                  alt="Synvertas Logo"
                   className="w-full h-full object-cover"
                   loading="eager"
                   fetchPriority="high"
@@ -130,31 +128,31 @@ const Navbar = () => {
               </div>
             </Link>
           </div>
-          
+
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center">
             <div className="flex items-center gap-1 rounded-full bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/how-it-works">How It Works</NavLink>
-            {user && <NavLink to="/chat">Analyse</NavLink>}
-            <NavLink to="/pricing">Pricing</NavLink>
-            
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/how-it-works">How It Works</NavLink>
+              {user && <NavLink to="/chat">Analyze</NavLink>}
+              <NavLink to="/pricing">Pricing</NavLink>
+
             </div>
           </div>
-          
+
           {/* CTA Button - Right */}
           <div className="hidden md:flex items-center shrink-0 gap-2">
             {user && <StreakBadge streak={streak} userId={user.id} />}
             {user ? (
-                <Link 
+              <Link
                 to="/profile"
                 className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
-              Profile
+                Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             ) : (
-              <Link 
+              <Link
                 to="/auth"
                 className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
@@ -179,17 +177,17 @@ const Navbar = () => {
 
       {/* Mobile Fullscreen Overlay Menu */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] md:hidden"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-background/98 backdrop-blur-xl animate-fade-in"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Menu Content */}
           <div className="relative h-full flex flex-col safe-bottom">
             {/* Close Button - Top Right */}
@@ -202,13 +200,13 @@ const Navbar = () => {
                 <X className="w-8 h-8" />
               </button>
             </div>
-            
+
             {/* Logo - Centered */}
             <div className="flex flex-col items-center pt-4 pb-8 animate-fade-in">
               <div className="w-16 h-16 overflow-hidden rounded-2xl mb-3">
-                <img 
-                  src={logo} 
-                  alt="Synvertas Logo" 
+                <img
+                  src={logo}
+                  alt="Synvertas Logo"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -216,10 +214,10 @@ const Navbar = () => {
                 Synvertas
               </span>
             </div>
-            
+
             {/* Separator */}
             <div className="w-24 h-px bg-border mx-auto mb-8" />
-            
+
             {/* Navigation Links - Centered */}
             <div className="flex-1 flex flex-col items-center justify-start gap-2 px-8">
               <MobileNavLink to="/" onClick={() => setIsOpen(false)} delay={0}>
@@ -230,21 +228,21 @@ const Navbar = () => {
               </MobileNavLink>
               {user && (
                 <MobileNavLink to="/chat" onClick={() => setIsOpen(false)} delay={2}>
-                  Analyse
+                  Analyze
                 </MobileNavLink>
               )}
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={3}>
                 Pricing
               </MobileNavLink>
             </div>
-            
+
             {/* Separator */}
             <div className="w-24 h-px bg-border mx-auto my-6" />
-            
+
             {/* CTA Button - Bottom */}
             <div className="px-6 pb-8 animate-fade-in" style={{ animationDelay: '200ms' }}>
               {user ? (
-                <Link 
+                <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
                   className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-normal flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
@@ -253,7 +251,7 @@ const Navbar = () => {
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               ) : (
-                <Link 
+                <Link
                   to="/auth"
                   onClick={() => setIsOpen(false)}
                   className="w-full bg-foreground text-background rounded-2xl py-4 text-lg font-normal flex items-center justify-center gap-2 group hover:bg-foreground/90 transition-all duration-200 min-h-[56px]"
@@ -271,28 +269,27 @@ const Navbar = () => {
 };
 
 // Mobile NavLink with staggered animation
-const MobileNavLink = ({ 
-  to, 
-  onClick, 
+const MobileNavLink = ({
+  to,
+  onClick,
   children,
   delay = 0
-}: { 
-  to: string; 
-  onClick: () => void; 
+}: {
+  to: string;
+  onClick: () => void;
   children: React.ReactNode;
   delay?: number;
 }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
-  
+
   return (
     <Link
       to={to}
-      className={`text-2xl font-normal py-4 px-6 rounded-xl transition-all duration-200 animate-fade-in min-h-[56px] flex items-center justify-center ${
-        isActive 
-          ? "text-foreground bg-muted/50" 
+      className={`text-2xl font-normal py-4 px-6 rounded-xl transition-all duration-200 animate-fade-in min-h-[56px] flex items-center justify-center ${isActive
+          ? "text-foreground bg-muted/50"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-      }`}
+        }`}
       style={{ animationDelay: `${delay * 50}ms` }}
       onClick={onClick}
     >

@@ -263,7 +263,7 @@ const Chat = () => {
         <span className={`font-mono text-sm ${creditColor} tabular-nums`}>
           <span className="text-muted-foreground/40 mr-0.5">[</span>
           {remainingCredits}<span className="text-muted-foreground/50">/</span>{creditsLimit}
-          <span className="text-muted-foreground/40 ml-0.5">cr]</span>
+          <span className="text-muted-foreground/40 ml-0.5"> credits]</span>
         </span>
         <CreditResetTimer creditsResetAt={creditsResetAt} />
       </div>

@@ -23,8 +23,12 @@ import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Progress } from "@/components/ui/progress";
+import CreditResetTimer from "@/components/chat/CreditResetTimer";
 
 const Profile = () => {
+  const { remainingCredits, creditsLimit, creditsResetAt } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [credits, setCredits] = useState<{
@@ -205,6 +209,30 @@ const Profile = () => {
                 </div>
 
                 <div className="pt-6 border-t border-border" />
+              </CardContent>
+            </Card>
+
+            {/* Credits Card */}
+            <Card className="bg-card border-border shadow-lg transition-shadow duration-300">
+              <CardHeader>
+                <CardTitle className="text-2xl">Credits</CardTitle>
+                <CardDescription>Your daily analysis credits and reset schedule</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">Remaining today</span>
+                  <span className="font-semibold text-foreground tabular-nums">
+                    {remainingCredits} <span className="text-muted-foreground font-normal">/ {creditsLimit} credits</span>
+                  </span>
+                </div>
+                <Progress
+                  value={creditsLimit > 0 ? (remainingCredits / creditsLimit) * 100 : 0}
+                  className="h-2"
+                />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Resets in</span>
+                  <CreditResetTimer creditsResetAt={creditsResetAt} />
+                </div>
               </CardContent>
             </Card>
 

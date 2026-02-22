@@ -635,7 +635,7 @@ async function processQueue() {
         : Promise.resolve(null);
 
       const crawlController = new AbortController();
-      const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 60000);
+      const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 120000);
 
       const crawlPromise = fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
@@ -647,8 +647,8 @@ async function processQueue() {
           url: job.url,
           formats: ["markdown", "rawHtml", "links", "screenshot"],
           onlyMainContent: false,
-          waitFor: 5000,
-          timeout: 45000,
+          waitFor: 8000,
+          timeout: 90000,
         }),
         signal: crawlController.signal,
       }).finally(() => clearTimeout(crawlAbortTimeout));
@@ -683,9 +683,46 @@ async function processQueue() {
 
       const crawlData = await crawlResp.json();
 
-      if (!crawlResp.ok) {
-        console.error("Firecrawl error for job", job.id, crawlData);
-        const rawError = crawlData.error || "Crawl failed";
+      let finalCrawlData = crawlData;
+      let finalCrawlOk = crawlResp.ok;
+
+      // Retry on SCRAPE_TIMEOUT with reduced formats and onlyMainContent
+      if (!crawlResp.ok && crawlData.code === "SCRAPE_TIMEOUT") {
+        console.warn(`SCRAPE_TIMEOUT for job ${job.id}, retrying with onlyMainContent...`);
+        try {
+          const retryController = new AbortController();
+          const retryTimeout = setTimeout(() => retryController.abort(), 120000);
+          const retryResp = await fetch("https://api.firecrawl.dev/v1/scrape", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${firecrawlKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              url: job.url,
+              formats: ["markdown", "links"],
+              onlyMainContent: true,
+              waitFor: 8000,
+              timeout: 90000,
+            }),
+            signal: retryController.signal,
+          }).finally(() => clearTimeout(retryTimeout));
+          const retryData = await retryResp.json();
+          if (retryResp.ok) {
+            console.log(`Retry succeeded for job ${job.id}`);
+            finalCrawlData = retryData;
+            finalCrawlOk = true;
+          } else {
+            console.error(`Retry also failed for job ${job.id}`, retryData);
+          }
+        } catch (retryErr) {
+          console.error(`Retry fetch error for job ${job.id}:`, retryErr);
+        }
+      }
+
+      if (!finalCrawlOk) {
+        console.error("Firecrawl error for job", job.id, finalCrawlData);
+        const rawError = finalCrawlData.error || "Crawl failed";
         const userMessage = rawError.toLowerCase().includes("timeout")
           ? "The website took too long to load. Please try again or check if the site is accessible."
           : rawError;
@@ -712,10 +749,10 @@ async function processQueue() {
         return;
       }
 
-      const markdown = crawlData.data?.markdown || crawlData.markdown || "";
-      const html = crawlData.data?.rawHtml || crawlData.rawHtml || "";
-      const screenshotBase64 = crawlData.data?.screenshot || crawlData.screenshot || "";
-      const crawlLinks = crawlData.data?.links || crawlData.links || [];
+      const markdown = finalCrawlData.data?.markdown || finalCrawlData.markdown || "";
+      const html = finalCrawlData.data?.rawHtml || finalCrawlData.rawHtml || "";
+      const screenshotBase64 = finalCrawlData.data?.screenshot || finalCrawlData.screenshot || "";
+      const crawlLinks = finalCrawlData.data?.links || finalCrawlData.links || [];
 
       // Update website_profile status to crawling
       await supabaseAdmin

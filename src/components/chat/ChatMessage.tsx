@@ -8,6 +8,7 @@ interface ChatMessageProps {
   message: Message;
   onAnalyzeCompetitors?: (urls: string[]) => void;
   competitorAnalysisDisabled?: boolean;
+  maxCompetitorSelectable?: number;
 }
 
 // Dynamisch laden, da remark-gfm auf alten mobilen Browsern crasht
@@ -25,7 +26,7 @@ const loadRemarkGfm = async () => {
   }
 };
 
-const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled }: ChatMessageProps) => {
+const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled, maxCompetitorSelectable }: ChatMessageProps) => {
   const isUser = message.role === "user";
   const [pluginReady, setPluginReady] = useState(!!remarkGfmPlugin);
 
@@ -45,11 +46,10 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-          isUser
+        className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser
             ? "bg-primary text-primary-foreground rounded-br-md"
             : "bg-card border border-border text-card-foreground rounded-bl-md"
-        }`}
+          }`}
       >
         {isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
@@ -60,6 +60,7 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
               competitors={competitors}
               onAnalyze={(urls) => onAnalyzeCompetitors?.(urls)}
               disabled={competitorAnalysisDisabled}
+              maxSelectable={maxCompetitorSelectable}
             />
           </div>
         ) : (

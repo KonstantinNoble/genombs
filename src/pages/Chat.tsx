@@ -35,10 +35,11 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 
 import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
+import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
 
 const Chat = () => {
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, refreshCredits } = useAuth();
+  const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, refreshCredits, isPremium } = useAuth();
 
   // 1. Conversation Management
   const {
@@ -119,6 +120,9 @@ const Chat = () => {
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
   const [isFindingCompetitors, setIsFindingCompetitors] = useState(false);
 
+  // Competitor URL limits: free→1, premium→3
+  const maxCompetitorSelectable = isPremium ? PREMIUM_MAX_URL_FIELDS - 1 : FREE_MAX_URL_FIELDS - 1;
+
   // Handler: Find competitors via Perplexity
   const handleFindCompetitors = async () => {
     if (!activeId || !user) return;
@@ -149,12 +153,13 @@ const Chat = () => {
   // Handler: Analyze selected competitors from suggestions
   const handleAnalyzeSelectedCompetitors = async (urls: string[]) => {
     if (!activeId || !user || urls.length === 0) return;
+    const limitedUrls = urls.slice(0, maxCompetitorSelectable);
     const token = await getAccessToken();
     try {
       await Promise.all(
-        urls.map((url) => analyzeWebsite(url, activeId, false, token))
+        limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token))
       );
-      toast.success(`Analyzing ${urls.length} competitor${urls.length > 1 ? "s" : ""}...`);
+      toast.success(`Analyzing ${limitedUrls.length} competitor${limitedUrls.length > 1 ? "s" : ""}...`);
       refreshCredits();
     } catch (e: any) {
       const msg = e.message || "Analysis failed";
@@ -283,7 +288,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} />
             ))}
             {isStreaming && (
               <div className="flex justify-start">
@@ -307,7 +312,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} />
             ))}
             {showInlineUrlPrompt && !hasProfiles && (
               <InlineUrlPrompt

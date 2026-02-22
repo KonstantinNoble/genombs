@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 export interface CompetitorSuggestion {
   url: string;
@@ -13,48 +12,66 @@ interface CompetitorSuggestionsProps {
   competitors: CompetitorSuggestion[];
   onAnalyze: (selectedUrls: string[]) => void;
   disabled?: boolean;
+  maxSelectable?: number;
 }
 
-const CompetitorSuggestions = ({ competitors, onAnalyze, disabled }: CompetitorSuggestionsProps) => {
+const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable }: CompetitorSuggestionsProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const toggle = (url: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(url)) next.delete(url);
-      else next.add(url);
+      if (next.has(url)) {
+        next.delete(url);
+      } else if (maxSelectable === undefined || next.size < maxSelectable) {
+        next.add(url);
+      }
       return next;
     });
   };
 
   const selectedCount = selected.size;
+  const atLimit = maxSelectable !== undefined && selectedCount >= maxSelectable;
 
   return (
     <div className="space-y-3">
-      {competitors.map((c) => (
-        <label
-          key={c.url}
-          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-            selected.has(c.url)
-              ? "border-primary/50 bg-primary/5"
-              : "border-border bg-card hover:border-border/80"
-          } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
-        >
-          <Checkbox
-            checked={selected.has(c.url)}
-            onCheckedChange={() => toggle(c.url)}
-            disabled={disabled}
-            className="mt-0.5"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-foreground">{c.name}</p>
-            <p className="text-xs text-primary/80 truncate">{c.url}</p>
-            {c.description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{c.description}</p>
-            )}
-          </div>
-        </label>
-      ))}
+      {competitors.map((c) => {
+        const isChecked = selected.has(c.url);
+        const isDisabledByLimit = atLimit && !isChecked;
+        return (
+          <label
+            key={c.url}
+            className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${isChecked
+                ? "border-primary/50 bg-primary/5 cursor-pointer"
+                : isDisabledByLimit
+                  ? "border-border bg-card opacity-40 cursor-not-allowed"
+                  : "border-border bg-card hover:border-border/80 cursor-pointer"
+              } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <Checkbox
+              checked={isChecked}
+              onCheckedChange={() => toggle(c.url)}
+              disabled={disabled || isDisabledByLimit}
+              className="mt-0.5"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground">{c.name}</p>
+              <p className="text-xs text-primary/80 truncate">{c.url}</p>
+              {c.description && (
+                <p className="text-xs text-muted-foreground mt-0.5">{c.description}</p>
+              )}
+            </div>
+          </label>
+        );
+      })}
+
+      {maxSelectable !== undefined && (
+        <p className="text-[11px] text-muted-foreground text-center">
+          {atLimit
+            ? `Limit erreicht: max. ${maxSelectable} Competitor${maxSelectable > 1 ? "s" : ""} auswählbar`
+            : `${selectedCount} / ${maxSelectable} Competitor${maxSelectable > 1 ? "s" : ""} ausgewählt`}
+        </p>
+      )}
 
       <Button
         onClick={() => onAnalyze(Array.from(selected))}

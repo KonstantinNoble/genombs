@@ -149,11 +149,11 @@ const Home = () => {
 
   const handleAnalyze = () => {
     const trimmed = urlInput.trim();
-    if (!trimmed) return;
     if (isLoggedIn) {
-      navigate("/chat?url=" + encodeURIComponent(trimmed));
+      navigate(trimmed ? "/chat?url=" + encodeURIComponent(trimmed) : "/chat");
     } else {
-      navigate("/auth?redirect=" + encodeURIComponent("/chat?url=" + encodeURIComponent(trimmed)));
+      const destination = trimmed ? "/chat?url=" + encodeURIComponent(trimmed) : "/chat";
+      navigate("/auth?redirect=" + encodeURIComponent(destination));
     }
   };
 
@@ -455,9 +455,8 @@ const Home = () => {
             {useCases.map((uc, i) => (
               <div
                 key={uc.title}
-                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 scroll-reveal ${
-                  i < useCases.length - 1 ? "border-b border-border" : ""
-                }`}
+                className={`flex flex-col md:flex-row items-start gap-6 md:gap-12 py-10 scroll-reveal ${i < useCases.length - 1 ? "border-b border-border" : ""
+                  }`}
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="md:w-1/4 shrink-0 scroll-reveal-left" style={{ transitionDelay: `${i * 0.1}s` }}>

@@ -137,6 +137,7 @@ const Chat = () => {
         toast.error("Not enough credits", {
           description: `Competitor search costs 7 credits. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
           duration: 8000,
+          style: { borderColor: 'hsl(var(--destructive))', background: 'hsl(var(--destructive) / 0.1)' },
         });
       } else {
         toast.error(msg);
@@ -163,6 +164,7 @@ const Chat = () => {
         toast.error("Not enough credits", {
           description: `Website analysis requires more credits than you have left. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
           duration: 8000,
+          style: { borderColor: 'hsl(var(--destructive))', background: 'hsl(var(--destructive) / 0.1)' },
         });
       } else {
         toast.error(msg);

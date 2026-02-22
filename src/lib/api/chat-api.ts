@@ -274,3 +274,27 @@ export async function streamChat({
 
   onDone();
 }
+
+// ─── Find Competitors (Edge Function) ───
+
+export async function findCompetitors(
+  conversationId: string,
+  accessToken: string
+): Promise<{ competitors: { url: string; name: string; description: string }[] }> {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/find-competitors`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ conversationId }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(err.error || "Competitor search failed");
+  }
+
+  return resp.json();
+}

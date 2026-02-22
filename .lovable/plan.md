@@ -1,54 +1,46 @@
 
-# Fix: Build-Fehler und Firecrawl-Timeout bei langsamen Websites
 
-## 3 Probleme zu beheben
+# Fix: Firecrawl SCRAPE_TIMEOUT fuer langsame Websites
 
-### 1. TypeScript Build-Fehler in Chat.tsx (Zeile 287)
-Die `onScan`-Prop in `ChatInputProps` erwartet eine Funktion die `void` zurueckgibt, aber `onStartScan` ist `async` und gibt `Promise<void>` zurueck.
+## Problem
+Der Fehler `SCRAPE_TIMEOUT` kommt direkt von der Firecrawl-API. Der Parameter `timeout: 45000` wird an Firecrawl gesendet, aber Firecrawl schafft es nicht, ithy.com innerhalb von 45 Sekunden zu scrapen. Unser AbortController (60s) ist irrelevant, da Firecrawl vorher abbricht.
 
-**Loesung:** Den Typ von `onScan` in `ChatInput.tsx` auf `Promise<void>` aendern:
-```typescript
-onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void | Promise<void>;
-```
+## Loesung
+Die Timeout-Werte weiter erhoehen und einen Retry-Mechanismus mit Fallback hinzufuegen:
 
-### 2. Edge Function Build-Fehler (Supabase Realtime)
-Der Fehler `Could not find a matching package for 'npm:@supabase/realtime-js@2.97.0'` kommt von einer inkompatiblen Supabase-JS-Version in den Edge Functions. Die Edge Functions verwenden `https://esm.sh/@supabase/supabase-js@2` -- das ist korrekt und sollte eigentlich funktionieren. Dieser Fehler stammt vermutlich von der Lovable Cloud Auto-Compilation und nicht vom eigentlichen Code. Da die Edge Functions auf der externen Supabase-Instanz laufen, ist dieser Fehler nicht blockierend.
+### 1. Firecrawl-Timeout erhoehen
+- `timeout`: 45000 auf **90000** (90 Sekunden)
+- `waitFor`: 5000 auf **8000** (mehr JS-Rendering-Zeit)
+- AbortController: 60000 auf **120000** (muss groesser als Firecrawl-Timeout sein)
 
-### 3. Firecrawl-Timeout bei ithy.com
-Die Fehlermeldung "The website took too long to load" wird angezeigt, wenn Firecrawl die Website nicht innerhalb von 30 Sekunden scrapen kann. Einige Websites (wie ithy.com) sind stark JS-basiert und brauchen laenger.
-
-**Loesung in `supabase/functions/process-analysis-queue/index.ts`:**
-- `waitFor` von 2000ms auf 5000ms erhoehen (mehr Zeit fuer JS-Rendering)
-- `timeout` von 30000ms auf 45000ms erhoehen
-- `AbortController`-Timeout von 45s auf 60s erhoehen (muss immer groesser als Firecrawl-Timeout sein)
+### 2. Retry bei SCRAPE_TIMEOUT (optional aber empfohlen)
+Bei einem `SCRAPE_TIMEOUT` automatisch einen zweiten Versuch mit `onlyMainContent: true` starten. Weniger Daten = schneller = hoehere Erfolgschance. Der Screenshot wird dann beim Retry weggelassen.
 
 ## Technische Details
 
-### Datei 1: `src/components/chat/ChatInput.tsx` (Zeile 43)
+**Datei:** `supabase/functions/process-analysis-queue/index.ts`
+
+### Aenderung 1: Timeout-Werte (Zeilen 638, 650-651)
 ```typescript
 // Vorher
-onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void;
-
-// Nachher
-onScan?: (ownUrl: string, competitorUrls: string[], model: string) => void | Promise<void>;
-```
-
-### Datei 2: `supabase/functions/process-analysis-queue/index.ts` (Zeilen 638, 648-651)
-```typescript
-// Vorher
-const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 45000);
-// ...
-waitFor: 2000,
-timeout: 30000,
-
-// Nachher
 const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 60000);
 // ...
 waitFor: 5000,
 timeout: 45000,
+
+// Nachher
+const crawlAbortTimeout = setTimeout(() => crawlController.abort(), 120000);
+// ...
+waitFor: 8000,
+timeout: 90000,
 ```
 
-### Ergebnis
-- Build-Fehler in Chat.tsx wird behoben
-- JS-lastige Websites wie ithy.com haben mehr Zeit zum Laden und werden seltener als Timeout gemeldet
-- Der Realtime-Fehler betrifft nur die Lovable Cloud Compilation und blockiert die eigentliche Funktionalitaet nicht
+### Aenderung 2: Retry-Logik nach dem Firecrawl-Aufruf
+Nach dem bestehenden Firecrawl-Fehlerhandling wird geprueft, ob der Fehler `SCRAPE_TIMEOUT` ist. Falls ja, wird ein zweiter Versuch mit reduzierten Formaten (`markdown` und `links` nur) und `onlyMainContent: true` gestartet. Das erhoet die Chance, dass auch JS-lastige Websites erfolgreich gescrapt werden.
+
+### Wichtig
+Da die Edge Functions auf der externen Supabase-Instanz laufen, muss nach der Code-Aenderung erneut deployed werden:
+```
+supabase functions deploy process-analysis-queue --project-ref xnkspttfhcnqzhmazggn
+```
+

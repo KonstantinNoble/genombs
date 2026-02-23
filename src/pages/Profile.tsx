@@ -245,7 +245,7 @@ const Profile = () => {
                     <CardDescription className="mt-1">Your badges, streaks, and analysis history</CardDescription>
                   </div>
                   {/* Outline button – arrow slides right on hover */}
-                  <Link to="/achievements">
+                  <Link to="/dashboard">
                     <Button
                       variant="outline"
                       size="sm"
@@ -261,7 +261,7 @@ const Profile = () => {
                 <BadgeGallery userId={user.id} size="sm" />
                 <div className="mt-4 px-4">
                   {/* Primary button – scale + arrow slide + subtle shimmer on hover */}
-                  <Link to="/achievements" className="block group">
+                  <Link to="/dashboard" className="block group">
                     <Button className="w-full gap-2 relative overflow-hidden transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-md group-hover:shadow-primary/20 active:scale-[0.98]">
                       {/* Shimmer overlay */}
                       <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />

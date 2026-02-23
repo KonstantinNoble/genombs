@@ -39,7 +39,7 @@ function useCountUp(target: number, duration = 900, enabled = true) {
   return value;
 }
 
-const Achievements = () => {
+const Dashboard = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { streak } = useStreak(user?.id ?? null, true);
@@ -109,8 +109,8 @@ const Achievements = () => {
             transform: mounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Achievements</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your progress and milestones.</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">Your performance at a glance.</p>
         </div>
 
         {/* Streak Stats — staggered slide-up */}
@@ -198,4 +198,4 @@ function StreakCard({
   );
 }
 
-export default Achievements;
+export default Dashboard;

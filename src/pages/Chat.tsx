@@ -378,7 +378,10 @@ const Chat = () => {
   const dashboardPanel = (
     <div className="h-full flex flex-col">
       <div className="border-b border-border/60 bg-card px-4 py-2.5 flex items-center justify-between">
-        <span className="text-xs font-semibold tracking-widest text-muted-foreground/50 uppercase select-none">Workspace</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold tracking-widest text-muted-foreground/50 uppercase select-none">Workspace</span>
+          <a href="/dashboard" className="text-[10px] text-primary hover:underline font-medium tracking-wide uppercase">View Dashboard</a>
+        </div>
         {completedProfiles.length > 0 && (
           <span className="text-xs text-muted-foreground/40">{completedProfiles.length} url{completedProfiles.length > 1 ? "s" : ""} analyzed</span>
         )}

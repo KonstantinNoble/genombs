@@ -76,7 +76,7 @@ const UpdatePassword = () => {
 
   if (!sessionChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background/80">
+      <div className="min-h-screen flex items-center justify-center bg-background/60">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );

@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 
 const TermsOfService = () => {
   return (
-    <div className="min-h-screen bg-background/80 flex flex-col">
+    <div className="min-h-screen bg-background/60 flex flex-col">
       <div className="container mx-auto px-4 py-8 flex-grow">
         <Link
           to="/"

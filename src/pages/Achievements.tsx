@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStreak } from "@/hooks/useStreak";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
 import { AnalyticsOverview } from "@/components/gamification/AnalyticsOverview";
+import { TodayVsAverage } from "@/components/gamification/TodayVsAverage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ArrowLeft } from "lucide-react";
@@ -118,6 +119,19 @@ const Achievements = () => {
             <StreakCard key={card.label} card={card} index={i} mounted={mounted} />
           ))}
         </div>
+
+        {/* Today vs Average */}
+        <section
+          className="mb-12 transition-all duration-700"
+          style={{
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(16px)",
+            transitionDelay: "300ms",
+          }}
+        >
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-5">Today vs Average</h2>
+          <TodayVsAverage userId={user.id} refreshKey={refreshKey} />
+        </section>
 
         {/* Analytics Overview */}
         <section

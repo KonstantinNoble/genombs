@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -14,17 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface Snapshot {
-    url: string;
+    hostname: string;
     overall_score: number;
     scanned_at: string;
 }
 
-function getHostname(url: string): string {
-    try {
-        return new URL(url).hostname.replace(/^www\./, "");
-    } catch {
-        return url;
-    }
+interface DomainInfo {
+    hostname: string;
+    count: number;
 }
 
 function formatDate(iso: string): string {
@@ -32,68 +29,89 @@ function formatDate(iso: string): string {
     return `${d.getDate().toString().padStart(2, "0")}.${(d.getMonth() + 1).toString().padStart(2, "0")}`;
 }
 
+/**
+ * ScoreHistory — shows a line chart of the user's overall score over time.
+ *
+ * Data flow:
+ * 1. Fetch all unique hostnames the user has scanned (with scan count)
+ * 2. User selects a domain (or the most-scanned domain is auto-selected)
+ * 3. Fetch snapshots only for that domain
+ *
+ * This uses the `hostname` column from the DB — no client-side URL parsing needed.
+ */
 export const ScoreHistory = () => {
     const { user } = useAuth();
+    const [domains, setDomains] = useState<DomainInfo[]>([]);
+    const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
     const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
+    // Step 1: Fetch all hostnames the user has scanned
     useEffect(() => {
         if (!user) return;
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any)
             .from("analysis_snapshots")
-            .select("url, overall_score, scanned_at")
+            .select("hostname")
             .eq("user_id", user.id)
-            .order("scanned_at", { ascending: true })
-            .limit(100)
-            .then(({ data }: { data: Snapshot[] | null }) => {
-                setSnapshots(data ?? []);
+            .then(({ data }: { data: { hostname: string }[] | null }) => {
+                if (!data || data.length === 0) {
+                    setLoading(false);
+                    return;
+                }
+
+                // Count scans per hostname
+                const counts: Record<string, number> = {};
+                for (const row of data) {
+                    counts[row.hostname] = (counts[row.hostname] || 0) + 1;
+                }
+
+                // Sort by count descending, cap at 10
+                const sorted = Object.entries(counts)
+                    .filter(([, count]) => count >= 2)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([hostname, count]) => ({ hostname, count }));
+
+                setDomains(sorted);
+
+                // Auto-select the most-scanned domain
+                if (sorted.length > 0) {
+                    setSelectedDomain(sorted[0].hostname);
+                }
+
                 setLoading(false);
             });
     }, [user]);
 
-    // Group snapshots by domain, sorted by scan count descending
-    const domainGroups = useMemo(() => {
-        const groups: Record<string, Snapshot[]> = {};
-        for (const s of snapshots) {
-            const domain = getHostname(s.url);
-            if (!groups[domain]) groups[domain] = [];
-            groups[domain].push(s);
-        }
-        return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
-    }, [snapshots]);
-
-    // Only domains with >=2 scans, capped at 10 for the tab bar
-    const tabbableDomains = domainGroups
-        .filter(([, snaps]) => snaps.length >= 2)
-        .slice(0, 10);
-    const hasEnoughData = tabbableDomains.length > 0;
-
-    // Auto-select the domain with the most qualified scans on first load
+    // Step 2: Fetch snapshots for the selected domain
     useEffect(() => {
-        if (tabbableDomains.length > 0 && !selectedDomain) {
-            setSelectedDomain(tabbableDomains[0][0]);
-        }
-    }, [tabbableDomains, selectedDomain]);
+        if (!user || !selectedDomain) return;
 
-    if (loading || !hasEnoughData || !selectedDomain) return null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase as any)
+            .from("analysis_snapshots")
+            .select("hostname, overall_score, scanned_at")
+            .eq("user_id", user.id)
+            .eq("hostname", selectedDomain)
+            .order("scanned_at", { ascending: true })
+            .limit(50)
+            .then(({ data }: { data: Snapshot[] | null }) => {
+                setSnapshots(data ?? []);
+            });
+    }, [user, selectedDomain]);
 
-    // Find the active domain's snapshots; fall back to first tabbable domain if needed
-    const displaySnaps =
-        tabbableDomains.find(([d]) => d === selectedDomain)?.[1]
-        ?? tabbableDomains[0][1];
-    const displayDomain =
-        tabbableDomains.find(([d]) => d === selectedDomain)?.[0]
-        ?? tabbableDomains[0][0];
+    // Don't render until we have data
+    if (loading || domains.length === 0 || snapshots.length < 2) return null;
 
-    const chartData = displaySnaps.map((s) => ({
+    const chartData = snapshots.map((s) => ({
         date: formatDate(s.scanned_at),
         score: s.overall_score,
     }));
 
-    const firstScore = displaySnaps[0].overall_score;
-    const latestScore = displaySnaps[displaySnaps.length - 1].overall_score;
+    const firstScore = snapshots[0].overall_score;
+    const latestScore = snapshots[snapshots.length - 1].overall_score;
     const delta = latestScore - firstScore;
 
     return (
@@ -103,8 +121,8 @@ export const ScoreHistory = () => {
                     <div>
                         <CardTitle className="text-lg">Score History</CardTitle>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                            {displaySnaps.length} scans for{" "}
-                            <span className="font-mono text-foreground">{displayDomain}</span>
+                            {snapshots.length} scans for{" "}
+                            <span className="font-mono text-foreground">{selectedDomain}</span>
                         </p>
                     </div>
                     {delta !== 0 && (
@@ -118,18 +136,18 @@ export const ScoreHistory = () => {
                 </div>
 
                 {/* Domain selector — only shown when user has multiple domains with ≥2 scans */}
-                {tabbableDomains.length > 1 && (
+                {domains.length > 1 && (
                     <div className="flex gap-1.5 flex-wrap mt-2">
-                        {tabbableDomains.map(([domain, snaps]) => (
+                        {domains.map((d) => (
                             <Button
-                                key={domain}
+                                key={d.hostname}
                                 size="sm"
-                                variant={displayDomain === domain ? "default" : "outline"}
+                                variant={selectedDomain === d.hostname ? "default" : "outline"}
                                 className="h-7 text-xs px-2.5"
-                                onClick={() => setSelectedDomain(domain)}
+                                onClick={() => setSelectedDomain(d.hostname)}
                             >
-                                {domain}
-                                <span className="ml-1.5 opacity-60">{snaps.length}×</span>
+                                {d.hostname}
+                                <span className="ml-1.5 opacity-60">{d.count}×</span>
                             </Button>
                         ))}
                     </div>

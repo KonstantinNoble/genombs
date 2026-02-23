@@ -40,13 +40,14 @@ export const ScoreHistory = () => {
 
     useEffect(() => {
         if (!user) return;
-        supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase as any)
             .from("analysis_snapshots")
             .select("url, overall_score, scanned_at")
             .eq("user_id", user.id)
             .order("scanned_at", { ascending: true })
             .limit(100)
-            .then(({ data }) => {
+            .then(({ data }: { data: Snapshot[] | null }) => {
                 setSnapshots(data ?? []);
                 setLoading(false);
             });
@@ -63,30 +64,28 @@ export const ScoreHistory = () => {
         return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
     }, [snapshots]);
 
-    // Auto-select the domain with the most scans on first load
-    useEffect(() => {
-        if (domainGroups.length > 0 && !selectedDomain) {
-            setSelectedDomain(domainGroups[0][0]);
-        }
-    }, [domainGroups, selectedDomain]);
-
-    // Only render if at least one domain has 2+ scans
-    const tabbableDomains = domainGroups.filter(([, snaps]) => snaps.length >= 2);
+    // Only domains with >=2 scans, capped at 10 for the tab bar
+    const tabbableDomains = domainGroups
+        .filter(([, snaps]) => snaps.length >= 2)
+        .slice(0, 10);
     const hasEnoughData = tabbableDomains.length > 0;
+
+    // Auto-select the domain with the most qualified scans on first load
+    useEffect(() => {
+        if (tabbableDomains.length > 0 && !selectedDomain) {
+            setSelectedDomain(tabbableDomains[0][0]);
+        }
+    }, [tabbableDomains, selectedDomain]);
 
     if (loading || !hasEnoughData || !selectedDomain) return null;
 
-    const activeSnaps = domainGroups.find(([d]) => d === selectedDomain)?.[1] ?? [];
-
-    // If the selected domain has only 1 scan, fall back to first tabbable domain
+    // Find the active domain's snapshots; fall back to first tabbable domain if needed
     const displaySnaps =
-        activeSnaps.length >= 2
-            ? activeSnaps
-            : (tabbableDomains[0]?.[1] ?? []);
+        tabbableDomains.find(([d]) => d === selectedDomain)?.[1]
+        ?? tabbableDomains[0][1];
     const displayDomain =
-        activeSnaps.length >= 2
-            ? selectedDomain
-            : tabbableDomains[0]?.[0] ?? selectedDomain;
+        tabbableDomains.find(([d]) => d === selectedDomain)?.[0]
+        ?? tabbableDomains[0][0];
 
     const chartData = displaySnaps.map((s) => ({
         date: formatDate(s.scanned_at),

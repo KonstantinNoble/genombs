@@ -20,19 +20,12 @@ interface RawRow {
     scanned_at: string;
 }
 
-interface Snapshot {
-    hostname: string;
-    overall_score: number;
-    scanned_at: string;
-}
-
 interface DomainInfo {
     hostname: string;
     count: number;
 }
 
 function extractHostname(row: { url: string; hostname: string | null }): string {
-    // Prefer the stored hostname column; fall back to parsing the URL
     if (row.hostname) return row.hostname;
     try {
         return new URL(row.url).hostname.replace(/^www\./, "");
@@ -46,63 +39,16 @@ function formatDate(iso: string): string {
     return `${d.getDate().toString().padStart(2, "0")}.${(d.getMonth() + 1).toString().padStart(2, "0")}`;
 }
 
-/**
- * ScoreHistory — shows a line chart of the user's overall score over time, per domain.
- *
- * Data flow:
- * 1. Fetch all rows (url + hostname) to build the domain tab list (max 10)
- * 2. User selects a domain (most-scanned is auto-selected)
- * 3. Fetch snapshots only for that domain from the DB
- * 4. Render chart if ≥2 scans, otherwise show a "scan again" placeholder
- *
- * Falls back to URL parsing if the hostname column is NULL (old rows before backfill).
- */
 export const ScoreHistory = () => {
     const { user } = useAuth();
-    const [domains, setDomains] = useState<DomainInfo[]>([]);
+    const [allRows, setAllRows] = useState<RawRow[]>([]);
     const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-    const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Step 1: Fetch all rows to build domain tab list
+    // Single query: fetch all snapshots once, group in JS
     useEffect(() => {
         if (!user) return;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase as any)
-            .from("analysis_snapshots")
-            .select("url, hostname")
-            .eq("user_id", user.id)
-            .then(({ data }: { data: { url: string; hostname: string | null }[] | null }) => {
-                if (!data || data.length === 0) {
-                    setLoading(false);
-                    return;
-                }
-
-                // Count scans per hostname (with URL fallback)
-                const counts: Record<string, number> = {};
-                for (const row of data) {
-                    const host = extractHostname(row);
-                    counts[host] = (counts[host] || 0) + 1;
-                }
-
-                // Sort by count descending, cap at 10
-                const sorted = Object.entries(counts)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 10)
-                    .map(([hostname, count]) => ({ hostname, count }));
-
-                setDomains(sorted);
-                if (sorted.length > 0) {
-                    setSelectedDomain(sorted[0].hostname);
-                }
-                setLoading(false);
-            });
-    }, [user]);
-
-    // Step 2: Fetch snapshots for the selected domain
-    useEffect(() => {
-        if (!user || !selectedDomain) return;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any)
@@ -111,30 +57,49 @@ export const ScoreHistory = () => {
             .eq("user_id", user.id)
             .order("scanned_at", { ascending: true })
             .limit(200)
-            .then(({ data }: { data: RawRow[] | null }) => {
-                if (!data) { setSnapshots([]); return; }
-                // Filter client-side by hostname (handles both old and new rows)
-                const filtered = data
-                    .filter(row => extractHostname(row) === selectedDomain)
-                    .slice(0, 50)
-                    .map(row => ({
-                        hostname: extractHostname(row),
-                        overall_score: row.overall_score,
-                        scanned_at: row.scanned_at,
-                    }));
-                setSnapshots(filtered);
+            .then(({ data, error: queryErr }: { data: RawRow[] | null; error: unknown }) => {
+                if (queryErr) {
+                    console.error("ScoreHistory query failed:", queryErr);
+                    setError("Failed to load score history");
+                    setLoading(false);
+                    return;
+                }
+                setAllRows(data ?? []);
+                setLoading(false);
             });
-    }, [user, selectedDomain]);
+    }, [user]);
+
+    // Build domain list from all rows
+    const domainMap = new Map<string, RawRow[]>();
+    for (const row of allRows) {
+        const host = extractHostname(row);
+        if (!domainMap.has(host)) domainMap.set(host, []);
+        domainMap.get(host)!.push(row);
+    }
+    const domains: DomainInfo[] = Array.from(domainMap.entries())
+        .sort((a, b) => b[1].length - a[1].length)
+        .slice(0, 10)
+        .map(([hostname, rows]) => ({ hostname, count: rows.length }));
+
+    // Auto-select on first load
+    useEffect(() => {
+        if (domains.length > 0 && !selectedDomain) {
+            setSelectedDomain(domains[0].hostname);
+        }
+    }, [domains.length, selectedDomain]);
 
     if (loading || domains.length === 0) return null;
+    if (error) return null; // Fail silently in UI
+
+    // Get snapshots for selected domain
+    const activeDomain = selectedDomain ?? domains[0].hostname;
+    const snapshots = (domainMap.get(activeDomain) ?? []).map(row => ({
+        date: formatDate(row.scanned_at),
+        score: row.overall_score,
+    }));
 
     const hasTrend = snapshots.length >= 2;
-    const chartData = hasTrend
-        ? snapshots.map(s => ({ date: formatDate(s.scanned_at), score: s.overall_score }))
-        : [];
-    const delta = hasTrend
-        ? snapshots[snapshots.length - 1].overall_score - snapshots[0].overall_score
-        : 0;
+    const delta = hasTrend ? snapshots[snapshots.length - 1].score - snapshots[0].score : 0;
 
     return (
         <Card className="border-border/50">
@@ -144,7 +109,7 @@ export const ScoreHistory = () => {
                         <CardTitle className="text-lg">Score History</CardTitle>
                         <p className="text-xs text-muted-foreground mt-0.5">
                             {snapshots.length} scan{snapshots.length !== 1 ? "s" : ""} for{" "}
-                            <span className="font-mono text-foreground">{selectedDomain}</span>
+                            <span className="font-mono text-foreground">{activeDomain}</span>
                         </p>
                     </div>
                     {delta !== 0 && (
@@ -160,7 +125,7 @@ export const ScoreHistory = () => {
                             <Button
                                 key={d.hostname}
                                 size="sm"
-                                variant={selectedDomain === d.hostname ? "default" : "outline"}
+                                variant={activeDomain === d.hostname ? "default" : "outline"}
                                 className="h-7 text-xs px-2.5"
                                 onClick={() => setSelectedDomain(d.hostname)}
                             >
@@ -174,7 +139,7 @@ export const ScoreHistory = () => {
             <CardContent>
                 {hasTrend ? (
                     <ResponsiveContainer width="100%" height={200}>
-                        <LineChart data={chartData}>
+                        <LineChart data={snapshots}>
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                             <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
                             <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={30} />
@@ -196,7 +161,7 @@ export const ScoreHistory = () => {
                         <div>
                             <p className="text-sm font-medium text-foreground">No trend data yet</p>
                             <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
-                                Scan <span className="font-mono text-foreground/70">{selectedDomain}</span> at least twice to start tracking your score over time.
+                                Scan <span className="font-mono text-foreground/70">{activeDomain}</span> at least twice to start tracking your score over time.
                             </p>
                         </div>
                     </div>

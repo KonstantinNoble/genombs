@@ -870,39 +870,45 @@ async function processQueue() {
         .update(updatePayload)
         .eq("id", job.profile_id);
 
-      // --- Score History Snapshot (non-blocking, own website only, with dedup) ---
+      // --- Score History Snapshot (own website only, with dedup) ---
       if (job.is_own_website) {
-        let snapshotHostname = job.url;
         try {
-          snapshotHostname = new URL(job.url).hostname.replace(/^www\./, "");
-        } catch { /* keep raw url */ }
+          let snapshotHostname = job.url;
+          try {
+            snapshotHostname = new URL(job.url).hostname.replace(/^www\./, "");
+          } catch { /* keep raw url */ }
 
-        // Dedup: skip if a snapshot for this user+url was created in the last 2 minutes
-        const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-        const { data: recentSnap } = await supabaseAdmin
-          .from("analysis_snapshots")
-          .select("id")
-          .eq("user_id", job.user_id)
-          .eq("url", job.url)
-          .gte("scanned_at", twoMinAgo)
-          .limit(1);
-
-        if (recentSnap && recentSnap.length > 0) {
-          console.log(`Snapshot dedup: skipping duplicate for ${snapshotHostname}`);
-        } else {
-          supabaseAdmin
+          // Dedup: skip if a snapshot for this user+url was created in the last 2 minutes
+          const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+          const { data: recentSnap } = await supabaseAdmin
             .from("analysis_snapshots")
-            .insert({
-              user_id: job.user_id,
-              url: job.url,
-              hostname: snapshotHostname,
-              overall_score: analysisResult.overallScore,
-              category_scores: analysisResult.categoryScores,
-            })
-            .then(({ error: snapErr }) => {
-              if (snapErr) console.warn("Snapshot insert failed (non-critical):", snapErr);
-              else console.log(`Score snapshot saved for ${snapshotHostname}`);
-            });
+            .select("id")
+            .eq("user_id", job.user_id)
+            .eq("url", job.url)
+            .gte("scanned_at", twoMinAgo)
+            .limit(1);
+
+          if (recentSnap && recentSnap.length > 0) {
+            console.log(`Snapshot dedup: skipping duplicate for ${snapshotHostname}`);
+          } else {
+            const { error: snapErr } = await supabaseAdmin
+              .from("analysis_snapshots")
+              .insert({
+                user_id: job.user_id,
+                url: job.url,
+                hostname: snapshotHostname,
+                overall_score: analysisResult.overallScore,
+                category_scores: analysisResult.categoryScores,
+              });
+
+            if (snapErr) {
+              console.error("Snapshot insert FAILED:", snapErr);
+            } else {
+              console.log(`Score snapshot saved for ${snapshotHostname} (score: ${analysisResult.overallScore})`);
+            }
+          }
+        } catch (snapError) {
+          console.error("Snapshot error (non-critical):", snapError);
         }
       }
 

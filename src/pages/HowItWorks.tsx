@@ -111,7 +111,7 @@ const HowItWorks = () => {
   }, [setupObserver]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background/80 flex flex-col">
       <SEOHead
         title="How It Works – Scan, Score, Improve"
         description="Paste your URL, get AI-powered scores across 5 categories, and receive a prioritized improvement plan. Three steps, under 60 seconds, no setup needed."

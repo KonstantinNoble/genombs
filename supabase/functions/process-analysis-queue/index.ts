@@ -870,25 +870,27 @@ async function processQueue() {
         .update(updatePayload)
         .eq("id", job.profile_id);
 
-      // --- Score History Snapshot (non-blocking) ---
-      let snapshotHostname = job.url;
-      try {
-        snapshotHostname = new URL(job.url).hostname.replace(/^www\./, "");
-      } catch { /* keep raw url */ }
+      // --- Score History Snapshot (non-blocking, own website only) ---
+      if (job.is_own_website) {
+        let snapshotHostname = job.url;
+        try {
+          snapshotHostname = new URL(job.url).hostname.replace(/^www\./, "");
+        } catch { /* keep raw url */ }
 
-      supabaseAdmin
-        .from("analysis_snapshots")
-        .insert({
-          user_id: job.user_id,
-          url: job.url,
-          hostname: snapshotHostname,
-          overall_score: analysisResult.overallScore,
-          category_scores: analysisResult.categoryScores,
-        })
-        .then(({ error: snapErr }) => {
-          if (snapErr) console.warn("Snapshot insert failed (non-critical):", snapErr);
-          else console.log(`Score snapshot saved for ${snapshotHostname}`);
-        });
+        supabaseAdmin
+          .from("analysis_snapshots")
+          .insert({
+            user_id: job.user_id,
+            url: job.url,
+            hostname: snapshotHostname,
+            overall_score: analysisResult.overallScore,
+            category_scores: analysisResult.categoryScores,
+          })
+          .then(({ error: snapErr }) => {
+            if (snapErr) console.warn("Snapshot insert failed (non-critical):", snapErr);
+            else console.log(`Score snapshot saved for ${snapshotHostname}`);
+          });
+      }
 
       // Mark queue job as completed
       await supabaseAdmin

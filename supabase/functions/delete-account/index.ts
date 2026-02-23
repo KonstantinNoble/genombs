@@ -106,16 +106,6 @@ serve(async (req) => {
       console.error('Failed to delete user_streaks:', streaksError);
     }
 
-    // 1d. Delete analysis_snapshots (GDPR - score history)
-    console.log('Deleting analysis_snapshots for user:', userId);
-    const { error: snapshotsError } = await adminClient
-      .from('analysis_snapshots')
-      .delete()
-      .eq('user_id', userId);
-    if (snapshotsError) {
-      console.error('Failed to delete analysis_snapshots:', snapshotsError);
-    }
-
     // 2. Fetch conversation IDs for message deletion
     const { data: convData } = await adminClient
       .from('conversations')

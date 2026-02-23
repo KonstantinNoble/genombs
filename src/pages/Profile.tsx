@@ -26,7 +26,6 @@ import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
-import { ScoreHistory } from "@/components/profile/ScoreHistory";
 
 const Profile = () => {
   const { remainingCredits, creditsLimit, creditsResetAt } = useAuth();
@@ -236,9 +235,6 @@ const Profile = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Score History Chart */}
-            <ScoreHistory />
 
             {/* Achievements Card */}
             <Card className="bg-card border-border shadow-lg transition-all duration-300 hover:border-primary/30 hover:shadow-primary/5">

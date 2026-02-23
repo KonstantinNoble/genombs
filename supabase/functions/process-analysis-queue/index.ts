@@ -657,26 +657,26 @@ async function processQueue() {
       const githubRepoUrl = job.github_repo_url;
       const githubPromise = githubRepoUrl
         ? (async () => {
-          try {
-            const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${supabaseServiceKey}`,
-              },
-              body: JSON.stringify({ repoUrl: githubRepoUrl }),
-            });
-            if (!ghResp.ok) {
-              console.warn("GitHub fetch failed:", await ghResp.text());
+            try {
+              const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${supabaseServiceKey}`,
+                },
+                body: JSON.stringify({ repoUrl: githubRepoUrl }),
+              });
+              if (!ghResp.ok) {
+                console.warn("GitHub fetch failed:", await ghResp.text());
+                return null;
+              }
+              const ghData = await ghResp.json();
+              return ghData.success ? ghData.data : null;
+            } catch (err) {
+              console.warn("GitHub fetch error (non-blocking):", err);
               return null;
             }
-            const ghData = await ghResp.json();
-            return ghData.success ? ghData.data : null;
-          } catch (err) {
-            console.warn("GitHub fetch error (non-blocking):", err);
-            return null;
-          }
-        })()
+          })()
         : Promise.resolve(null);
 
       const [crawlResp, pagespeedData, githubData] = await Promise.all([crawlPromise, pagespeedPromise, githubPromise]);
@@ -869,48 +869,6 @@ async function processQueue() {
         .from("website_profiles")
         .update(updatePayload)
         .eq("id", job.profile_id);
-
-      // --- Score History Snapshot (own website only, with dedup) ---
-      if (job.is_own_website) {
-        try {
-          let snapshotHostname = job.url;
-          try {
-            snapshotHostname = new URL(job.url).hostname.replace(/^www\./, "");
-          } catch { /* keep raw url */ }
-
-          // Dedup: skip if a snapshot for this user+url was created in the last 2 minutes
-          const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-          const { data: recentSnap } = await supabaseAdmin
-            .from("analysis_snapshots")
-            .select("id")
-            .eq("user_id", job.user_id)
-            .eq("url", job.url)
-            .gte("scanned_at", twoMinAgo)
-            .limit(1);
-
-          if (recentSnap && recentSnap.length > 0) {
-            console.log(`Snapshot dedup: skipping duplicate for ${snapshotHostname}`);
-          } else {
-            const { error: snapErr } = await supabaseAdmin
-              .from("analysis_snapshots")
-              .insert({
-                user_id: job.user_id,
-                url: job.url,
-                hostname: snapshotHostname,
-                overall_score: analysisResult.overallScore,
-                category_scores: analysisResult.categoryScores,
-              });
-
-            if (snapErr) {
-              console.error("Snapshot insert FAILED:", snapErr);
-            } else {
-              console.log(`Score snapshot saved for ${snapshotHostname} (score: ${analysisResult.overallScore})`);
-            }
-          }
-        } catch (snapError) {
-          console.error("Snapshot error (non-critical):", snapError);
-        }
-      }
 
       // Mark queue job as completed
       await supabaseAdmin

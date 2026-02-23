@@ -13,7 +13,7 @@ export function StreakBadge({ streak, userId }: StreakBadgeProps) {
 
   return (
     <Link
-      to="/achievements"
+      to="/dashboard"
       className={`group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300
         border
         ${currentStreak > 0

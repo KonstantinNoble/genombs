@@ -16,7 +16,7 @@ export const SEOHead = ({
   keywords = "website scoring tool, website audit, competitor benchmarking, conversion optimization, PageSpeed analysis, website improvement plan, site analyzer",
   canonical,
   ogType = "website",
-  ogImage = "https://synvertas.com/favicon.png",
+  ogImage = "https://synvertas.com/synvertas-logo.png",
   noindex = false
 }: SEOHeadProps) => {
   const siteUrl = "https://synvertas.com";
@@ -33,7 +33,7 @@ export const SEOHead = ({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {!noindex && <meta name="robots" content="index, follow" />}
       <link rel="canonical" href={canonicalUrl} />
-      
+
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
@@ -42,7 +42,7 @@ export const SEOHead = ({
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content="Synvertas" />
       <meta property="og:locale" content="en_US" />
-      
+
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={canonicalUrl} />

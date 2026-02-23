@@ -296,9 +296,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
-        title="Website Scoring & Competitor Analysis Tool"
-        description="Scan your website and get scores across 5 categories, compare against competitors, and receive a step-by-step improvement plan. Results in under 60 seconds. Free to start."
-        keywords="website scoring, website audit tool, competitor analysis, conversion optimization, PageSpeed insights, website improvement plan, SEO audit, site analyzer"
+        title="AI Website Audit & Competitor Analysis Tool"
+        description="Get an AI-powered website audit in under 60 seconds. Score your site across 5 categories, benchmark against competitors, and get a prioritized improvement plan. Free to start."
+        keywords="website audit tool, website scoring, competitor analysis, conversion optimization, PageSpeed insights, website improvement plan, SEO audit, site analyzer"
         canonical="/"
         ogImage="https://synvertas.com/synvertas-logo.png"
       />

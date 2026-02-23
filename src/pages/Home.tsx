@@ -9,6 +9,7 @@ import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/S
 import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
 import { Button } from "@/components/ui/button";
+import { BarChart3, Users, ListChecks, ArrowRight } from "lucide-react";
 
 // Counter hook: animates from 0 to target when visible
 function useCountUp(target: number, duration = 1500) {
@@ -167,33 +168,22 @@ const Home = () => {
 
   const features = [
     {
-      num: "01",
-      title: "Website Scoring",
+      icon: BarChart3,
+      title: "Website Scoring & Insights",
       description:
-        "Your website is scored across five categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness.",
+        "Your website is scored across five categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness. Optionally connect a public GitHub repo for a deep code analysis across security, performance, and more.",
     },
     {
-      num: "02",
-      title: "Competitor Analysis",
+      icon: Users,
+      title: "Competitor Intelligence",
       description:
-        "Compare your website against up to 3 competitors. See strengths, weaknesses, and score differences side by side.",
+        "Compare your website side-by-side with up to 3 competitors. See score differences, strengths, and weaknesses — or let AI automatically discover your most relevant competitors.",
     },
     {
-      num: "03",
-      title: "Improvement Plan",
-      description: "Concrete, prioritized optimization tasks based on the analysis. Ready to execute.",
-    },
-    {
-      num: "04",
-      title: "Code Analysis",
+      icon: ListChecks,
+      title: "Actionable Improvement Plan",
       description:
-        "Connect a public GitHub repository and get your source code scored across six categories: quality, security, performance, accessibility, maintainability, and SEO.",
-    },
-    {
-      num: "05",
-      title: "Auto Competitor Discovery",
-      description:
-        "Don't know your competitors? Let AI find them. Toggle auto-search and we'll identify your top competitors before the analysis even starts.",
+        "Receive a prioritized list of concrete optimization tasks based on your analysis. Each task is categorized and ready to execute — so you know exactly what to fix first.",
     },
   ];
 
@@ -448,18 +438,34 @@ const Home = () => {
               Scores, comparisons, and a concrete fix list for your website.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-            {features.map((feature, i) => (
-              <div
-                key={feature.title}
-                className="accent-stripe border border-border bg-card rounded-lg p-8 space-y-5 stagger-reveal hover-lift hover:border-primary/40"
-                style={{ animationDelay: `${i * 0.15}s` }}
-              >
-                <span className="text-4xl font-semibold text-primary font-mono leading-none block">{feature.num}</span>
-                <h3 className="text-xl font-medium text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, i) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.title}
+                  className="group accent-stripe border border-border bg-card rounded-lg p-10 space-y-5 stagger-reveal hover-lift hover:border-primary/40 transition-all duration-300"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* How it Works link */}
+          <div className="text-center mt-14 scroll-reveal">
+            <p className="text-muted-foreground mb-4">Want to see the full process?</p>
+            <Button variant="outline" asChild className="group">
+              <Link to="/how-it-works">
+                See How it Works
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

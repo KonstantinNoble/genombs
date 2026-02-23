@@ -187,12 +187,18 @@ export const ScoreHistory = () => {
                         </LineChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-[200px] text-center gap-2">
-                        <p className="text-2xl">📈</p>
-                        <p className="text-sm font-medium text-foreground">Score trend starts after your next scan</p>
-                        <p className="text-xs text-muted-foreground">
-                            Scan <span className="font-mono">{selectedDomain}</span> again to track your progress
-                        </p>
+                    <div className="flex flex-col items-center justify-center h-[200px] text-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-foreground">No trend data yet</p>
+                            <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
+                                Scan <span className="font-mono text-foreground/70">{selectedDomain}</span> at least twice to start tracking your score over time.
+                            </p>
+                        </div>
                     </div>
                 )}
             </CardContent>

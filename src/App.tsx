@@ -44,6 +44,16 @@ const PageLoader = () => (
 const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
+      <div 
+        className="fixed inset-0 z-0 opacity-20 blur-xl"
+        style={{
+          backgroundImage: 'url(/images/bg-waves.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+        }}
+        aria-hidden="true"
+      />
       <div className="relative z-10">
         {children}
       </div>

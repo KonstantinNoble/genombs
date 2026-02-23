@@ -1,59 +1,69 @@
 
-# Hintergrundbild auf allen Seiten sichtbar machen
+# Navbar Redesign -- Professionell & Dynamisch
 
-## Problem
-Der `BackgroundWrapper` in `App.tsx` zeigt das Wellenbild zwar global an, aber fast jede Seite hat ein eigenes `bg-background` (= undurchsichtiges Schwarz), das das Bild komplett verdeckt. Nur die Homepage funktioniert, weil dort der oberste Container keinen eigenen Hintergrund hat.
+## Ueberblick
+Der Header wird zu einem modernen, technisch anmutenden Navbar umgebaut mit subtilen animierten Akzenten, die an professionelle SaaS-/Tech-Webseiten erinnern.
 
-## Loesung
-Alle Seiten-Container von `bg-background` auf `bg-transparent` umstellen. Fuer die Homepage bleibt die aktuelle Staerke (opacity-40), auf allen anderen Seiten wird das Bild etwas dezenter.
-
-### Ansatz: Seitenspezifische Opazitaet
-Da `BackgroundWrapper` global ist und nicht wissen kann, welche Seite gerade aktiv ist, wird stattdessen auf den Nicht-Homepage-Seiten ein halbtransparentes Overlay ergaenzt, das den Effekt daempft. Das heisst:
-- Homepage: Wellen mit voller Staerke (opacity-40)
-- Alle anderen Seiten: Die Seiten-Container bekommen `bg-background/80` statt `bg-background`, sodass das Bild dezent durchscheint
+## Designkonzept
+- Subtile, animierte Linie am unteren Rand des Headers (gradient shimmer)
+- Logo mit dezent leuchtendem Orange-Glow beim Hover
+- Navigation-Links mit animierter Underline statt Pill-Hintergrund
+- "Get Started" Button mit animiertem Gradient-Border (tech-look)
+- Kleiner animierter Status-Indikator (pulsierender Punkt) neben dem Logo fuer einen "live system" Look
+- Beim Scrollen: kompakterer Header mit staerkerem Glaseffekt
 
 ## Aenderungen
 
-### Seiten mit `bg-background` -> `bg-background/80` (dezent durchscheinend)
+### 1. `src/index.css` -- Neue Animationen und Styles
 
-| Datei | Zeile(n) | Aenderung |
-|---|---|---|
-| `src/pages/Pricing.tsx` | Z.21, Z.90 | `bg-background` -> `bg-background/80` |
-| `src/pages/HowItWorks.tsx` | Z.114 | `bg-background` -> `bg-background/80` |
-| `src/pages/Contact.tsx` | Container | `bg-background` -> `bg-background/80` (pruefen) |
-| `src/pages/Imprint.tsx` | Z.7 | `bg-background` -> `bg-background/80` |
-| `src/pages/PrivacyPolicy.tsx` | Z.7 | `bg-background` -> `bg-background/80` |
-| `src/pages/TermsOfService.tsx` | Z.6 | `bg-background` -> `bg-background/80` |
-| `src/pages/Achievements.tsx` | Z.91 | `bg-background` -> `bg-background/80` |
-| `src/pages/Profile.tsx` | Z.135 | `bg-background` -> `bg-background/80` |
-| `src/pages/Chat.tsx` | Z.213, Z.221, Z.444 | `bg-background` -> `bg-background/80` |
-| `src/pages/AuthCallback.tsx` | Z.126 | `bg-background` -> `bg-background/80` |
+Neue CSS-Klassen fuer den Header:
 
-### Seiten die bereits transparent/halbtransparent sind (keine Aenderung noetig)
+- **`@keyframes gradient-slide`**: Animierter Gradient-Streifen, der horizontal entlang der unteren Header-Kante gleitet (orange zu transparent)
+- **`@keyframes pulse-dot`**: Sanft pulsierender Kreis als "Live"-Indikator
+- **`.navbar-gradient-line`**: Ein 1px hoher animierter Gradient-Streifen am unteren Rand des Headers
+- **`.nav-link-tech`**: Links mit animierter Underline von links nach rechts beim Hover
+- **`.btn-tech-border`**: CTA-Button mit animiertem, leuchtendem Border-Gradient
 
-| Datei | Aktueller Wert |
-|---|---|
-| `src/pages/Auth.tsx` | `bg-background/80` (passt bereits) |
-| `src/pages/ResetPassword.tsx` | `bg-background/80` (passt bereits) |
-| `src/pages/UpdatePassword.tsx` | `bg-background/80` (Hauptcontainer, passt) + Loading-State -> auch `bg-background/80` |
+### 2. `src/components/Navbar.tsx` -- Kompletter Desktop-Header Umbau
 
-### Ergebnis
-- Homepage: Wellen wie bisher (opacity-40, blur-lg)
-- Alle anderen Seiten: Wellen scheinen sanft durch (20% sichtbar, da 80% vom Seitenhintergrund ueberlagert)
-- Kein Layout-Bruch, da nur die Hintergrundfarbe transparent wird
+**Logo-Bereich:**
+- Pulsierender orangefarbener Punkt neben dem Logo (signalisiert "System aktiv")
+- Logo-Container mit dezent leuchtendem Hover-Effekt
+- Entfernung des vertikalen Trennstrichs (border-r) -- wirkt moderner
 
-## Betroffene Dateien
+**Navigation (Desktop):**
+- Weg vom Pill-Container-Design (bg-white/[0.03])
+- Stattdessen einzelne Links mit animierter Underline (orange, von links nach rechts)
+- Aktiver Link bekommt dauerhaft sichtbare Underline + leicht hellere Textfarbe
+
+**CTA-Button (Desktop):**
+- Animierter Gradient-Border (orange shimmer)
+- Leichter Glow-Effekt beim Hover
+- Etwas mehr Praesenz durch subtilen Schatten
+
+**Untere Linie:**
+- Animierter Gradient-Streifen (orange) der langsam horizontal gleitet
+- Ersetzt die statische border-b
+- Wird beim Scrollen intensiver
+
+**Scroll-Verhalten:**
+- Header wird beim Scrollen minimal kompakter (h-16 -> h-14)
+- Staerkerer Backdrop-Blur und Hintergrund-Opazitaet
+- Die animierte Linie wird heller/sichtbarer
+
+**Mobile Menu:**
+- Keine Aenderungen am Mobile Menu (bleibt wie bisher)
+
+## Technische Details
 
 | Datei | Aenderung |
 |---|---|
-| `src/pages/Pricing.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/HowItWorks.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/Imprint.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/PrivacyPolicy.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/TermsOfService.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/Achievements.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/Profile.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/Chat.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/AuthCallback.tsx` | `bg-background` -> `bg-background/80` |
-| `src/pages/UpdatePassword.tsx` | Loading-State `bg-background` -> `bg-background/80` |
-| `src/pages/Contact.tsx` | Pruefen und ggf. anpassen |
+| `src/index.css` | 3 neue Keyframes + 4 neue Utility-Klassen (~40 Zeilen) |
+| `src/components/Navbar.tsx` | Desktop-Navbar-Bereich umgebaut (Logo, Links, CTA, animierte Linie) |
+
+### Visuelles Ergebnis
+- Subtil animierte orange Linie am unteren Rand des Headers
+- Pulsierender "Live"-Punkt beim Logo
+- Elegante Underline-Animationen bei den Links
+- Leuchtender CTA-Button mit Gradient-Border
+- Kompakterer Header beim Scrollen mit verstaerktem Glaseffekt

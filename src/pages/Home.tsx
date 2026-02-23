@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { WebPageSchema, OrganizationSchema } from "@/components/seo/StructuredData";
+import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
 import { Button } from "@/components/ui/button";
@@ -306,9 +306,9 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
-        title="Synvertas – Turn your website into a growth engine"
-        description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
-        keywords="website analysis, website scoring, competitor analysis, PageSpeed insights, conversion optimization, SEO audit"
+        title="Website Scoring & Competitor Analysis Tool"
+        description="Scan your website and get scores across 5 categories, compare against competitors, and receive a step-by-step improvement plan. Results in under 60 seconds. Free to start."
+        keywords="website scoring, website audit tool, competitor analysis, conversion optimization, PageSpeed insights, website improvement plan, SEO audit, site analyzer"
         canonical="/"
         ogImage="https://synvertas.com/synvertas-logo.png"
       />
@@ -330,6 +330,7 @@ const Home = () => {
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
           {/* Word-by-word reveal headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-[1.08] mb-6">
+            <span className="sr-only">Website Scoring and Competitor Analysis Tool – </span>
             {["What's", "holding", "your"].map((word, i) => (
               <span
                 key={word}
@@ -571,6 +572,7 @@ const Home = () => {
           <FAQSection items={homeFAQ} />
         </div>
       </section>
+      <FAQSchema faqs={homeFAQ} />
 
       {/* CTA */}
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">

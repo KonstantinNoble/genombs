@@ -9,7 +9,7 @@ const Contact = () => {
       <SEOHead
         title="Contact – We're Happy to Help"
         description="Got a question? Running into something? Drop us a line. We usually reply within a day."
-        keywords="contact, support, help, feedback"
+        keywords="contact synvertas, website analysis support, help, feedback"
         canonical="/contact"
       />
       <WebPageSchema

@@ -13,7 +13,7 @@ interface SEOHeadProps {
 export const SEOHead = ({
   title,
   description,
-  keywords = "website analysis, website scoring, AI website audit, competitor analysis, conversion optimization, PageSpeed insights",
+  keywords = "website scoring tool, website audit, competitor benchmarking, conversion optimization, PageSpeed analysis, website improvement plan, site analyzer",
   canonical,
   ogType = "website",
   ogImage = "https://synvertas.com/favicon.png",

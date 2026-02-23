@@ -89,8 +89,9 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="Pricing – Synvertas"
-        description="Simple, transparent pricing. Start free with 20 daily credits. Upgrade for 100 credits and all AI models."
+        title="Pricing – Free & Premium Plans"
+        description="Start with 20 free credits per day. Upgrade to Premium for 100 daily credits, 5 AI models, and up to 3 competitor URLs. Plans start at $14.99/month."
+        keywords="website analysis pricing, website audit cost, free website scanner, premium website tool"
         canonical="/pricing"
       />
 

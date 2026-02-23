@@ -113,9 +113,9 @@ const HowItWorks = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
-        title="How It Works – Synvertas"
-        description="Learn how Synvertas analyzes your website and code with 5 AI models. From URL to actionable insights in under 60 seconds."
-        keywords="website analysis, how it works, AI models, code analysis, website scoring"
+        title="How It Works – Scan, Score, Improve"
+        description="Paste your URL, get AI-powered scores across 5 categories, and receive a prioritized improvement plan. Three steps, under 60 seconds, no setup needed."
+        keywords="how website analysis works, website scoring process, AI website audit steps"
         canonical="/how-it-works"
       />
 

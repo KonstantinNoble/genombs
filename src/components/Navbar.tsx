@@ -89,13 +89,13 @@ const Navbar = () => {
     return () => subscription.unsubscribe();
   }, [user]);
 
-  // Desktop NavLink with animated underline
+  // Desktop NavLink with green hover and click animation
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link
       to={to}
-      className={`nav-link-tech text-sm font-medium transition-all duration-200 px-3 py-1.5 active:scale-95 ${isActive(to)
-          ? "active text-foreground"
-          : "text-foreground/60 hover:text-foreground"
+      className={`text-sm font-medium transition-all duration-200 rounded-full px-4 py-1.5 active:scale-95 ${isActive(to)
+          ? "text-primary bg-white/[0.10]"
+          : "text-foreground/70 hover:text-foreground hover:bg-white/[0.08]"
         }`}
     >
       {children}
@@ -105,53 +105,48 @@ const Navbar = () => {
   return (
     <>
       <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled
-          ? "bg-background/80 backdrop-blur-xl shadow-sm"
-          : "bg-background/60 backdrop-blur-md"
+          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
+          : "bg-background/60 backdrop-blur-md border-b border-transparent"
         }`}>
-        {/* Animated gradient line at bottom */}
-        <div className={`navbar-gradient-line ${scrolled ? 'scrolled' : ''}`} />
-
-        <div className={`container mx-auto flex items-center px-4 transition-all duration-300 ${scrolled ? 'h-14' : 'h-16'}`}>
+        <div className="container mx-auto flex h-16 items-center px-4">
           {/* Logo - Left */}
           <div className="flex items-center shrink-0">
-            <Link to="/" className="flex items-center gap-2.5 pr-6 group">
-              <div className="relative">
-                <div className="w-10 h-10 overflow-hidden rounded-lg transition-shadow duration-300 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)]">
-                  <img
-                    src={logo}
-                    alt="Synvertas Logo"
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    fetchPriority="high"
-                  />
-                </div>
+            <Link to="/" className="flex items-center gap-2.5 pr-6 border-r border-border">
+              <div className="w-10 h-10 overflow-hidden rounded-lg">
+                <img
+                  src={logo}
+                  alt="Synvertas Logo"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col">
                 <span className="text-lg font-medium tracking-tight text-foreground">
                   Synvertas
                 </span>
-                <div className="live-dot" title="System aktiv" />
               </div>
             </Link>
           </div>
 
           {/* Desktop Navigation - Center */}
           <div className="hidden md:flex flex-1 items-center justify-center">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-1 rounded-full bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
               <NavLink to="/">Home</NavLink>
               <NavLink to="/how-it-works">How It Works</NavLink>
               {user && <NavLink to="/chat">Analyze</NavLink>}
               <NavLink to="/pricing">Pricing</NavLink>
+
             </div>
           </div>
 
           {/* CTA Button - Right */}
-          <div className="hidden md:flex items-center shrink-0 gap-3">
+          <div className="hidden md:flex items-center shrink-0 gap-2">
             {user && <StreakBadge streak={streak} userId={user.id} />}
             {user ? (
               <Link
                 to="/profile"
-                className="btn-tech-border bg-background text-foreground rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:text-primary transition-colors duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
                 Profile
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -159,7 +154,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/auth"
-                className="btn-tech-border bg-background text-foreground rounded-lg px-5 py-2 text-sm font-medium flex items-center gap-2 group hover:text-primary transition-colors duration-200 min-h-[44px]"
+                className="bg-foreground text-background rounded-lg px-5 py-2 text-sm font-normal flex items-center gap-2 group hover:bg-foreground/90 transition-colors duration-200 min-h-[44px]"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -178,7 +173,7 @@ const Navbar = () => {
         </div>
       </nav>
       {/* Spacer to offset fixed navbar */}
-      <div className={`transition-all duration-300 ${scrolled ? 'h-14' : 'h-16'}`} />
+      <div className="h-16" />
 
       {/* Mobile Fullscreen Overlay Menu */}
       {isOpen && (

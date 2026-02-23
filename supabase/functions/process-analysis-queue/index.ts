@@ -657,26 +657,26 @@ async function processQueue() {
       const githubRepoUrl = job.github_repo_url;
       const githubPromise = githubRepoUrl
         ? (async () => {
-            try {
-              const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${supabaseServiceKey}`,
-                },
-                body: JSON.stringify({ repoUrl: githubRepoUrl }),
-              });
-              if (!ghResp.ok) {
-                console.warn("GitHub fetch failed:", await ghResp.text());
-                return null;
-              }
-              const ghData = await ghResp.json();
-              return ghData.success ? ghData.data : null;
-            } catch (err) {
-              console.warn("GitHub fetch error (non-blocking):", err);
+          try {
+            const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${supabaseServiceKey}`,
+              },
+              body: JSON.stringify({ repoUrl: githubRepoUrl }),
+            });
+            if (!ghResp.ok) {
+              console.warn("GitHub fetch failed:", await ghResp.text());
               return null;
             }
-          })()
+            const ghData = await ghResp.json();
+            return ghData.success ? ghData.data : null;
+          } catch (err) {
+            console.warn("GitHub fetch error (non-blocking):", err);
+            return null;
+          }
+        })()
         : Promise.resolve(null);
 
       const [crawlResp, pagespeedData, githubData] = await Promise.all([crawlPromise, pagespeedPromise, githubPromise]);
@@ -869,6 +869,20 @@ async function processQueue() {
         .from("website_profiles")
         .update(updatePayload)
         .eq("id", job.profile_id);
+
+      // --- Score History Snapshot (non-blocking) ---
+      supabaseAdmin
+        .from("analysis_snapshots")
+        .insert({
+          user_id: job.user_id,
+          url: job.url,
+          overall_score: analysisResult.overallScore,
+          category_scores: analysisResult.categoryScores,
+        })
+        .then(({ error: snapErr }) => {
+          if (snapErr) console.warn("Snapshot insert failed (non-critical):", snapErr);
+          else console.log(`Score snapshot saved for ${job.url}`);
+        });
 
       // Mark queue job as completed
       await supabaseAdmin

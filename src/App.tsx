@@ -45,7 +45,7 @@ const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
       <div 
-        className="fixed inset-0 z-0 opacity-20 blur-xl"
+        className="fixed inset-0 z-0 opacity-40 blur-lg"
         style={{
           backgroundImage: 'url(/images/bg-waves.png)',
           backgroundSize: 'cover',

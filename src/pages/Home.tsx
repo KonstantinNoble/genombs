@@ -9,7 +9,7 @@ import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/S
 import { useAuth } from "@/contexts/AuthContext";
 import FAQSection from "@/components/genome/FAQSection";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Users, ListChecks, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 // Counter hook: animates from 0 to target when visible
 function useCountUp(target: number, duration = 1500) {
@@ -168,19 +168,19 @@ const Home = () => {
 
   const features = [
     {
-      icon: BarChart3,
+      num: "01",
       title: "Website Scoring & Insights",
       description:
         "Your website is scored across five categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness. Optionally connect a public GitHub repo for a deep code analysis across security, performance, and more.",
     },
     {
-      icon: Users,
+      num: "02",
       title: "Competitor Intelligence",
       description:
         "Compare your website side-by-side with up to 3 competitors. See score differences, strengths, and weaknesses — or let AI automatically discover your most relevant competitors.",
     },
     {
-      icon: ListChecks,
+      num: "03",
       title: "Actionable Improvement Plan",
       description:
         "Receive a prioritized list of concrete optimization tasks based on your analysis. Each task is categorized and ready to execute — so you know exactly what to fix first.",
@@ -439,22 +439,17 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, i) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={feature.title}
-                  className="group accent-stripe border border-border bg-card rounded-lg p-10 space-y-5 stagger-reveal hover-lift hover:border-primary/40 transition-all duration-300"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                >
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </div>
-              );
-            })}
+            {features.map((feature, i) => (
+              <div
+                key={feature.title}
+                className="group accent-stripe border border-border bg-card rounded-lg p-10 space-y-5 stagger-reveal hover-lift hover:border-primary/40 transition-all duration-300"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              >
+                <span className="text-4xl font-semibold text-primary font-mono leading-none block">{feature.num}</span>
+                <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
           </div>
 
           {/* How it Works link */}

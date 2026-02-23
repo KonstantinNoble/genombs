@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -11,6 +11,7 @@ import {
     CartesianGrid,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Snapshot {
     url: string;
@@ -18,67 +19,122 @@ interface Snapshot {
     scanned_at: string;
 }
 
+function getHostname(url: string): string {
+    try {
+        return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+        return url;
+    }
+}
+
+function formatDate(iso: string): string {
+    const d = new Date(iso);
+    return `${d.getDate().toString().padStart(2, "0")}.${(d.getMonth() + 1).toString().padStart(2, "0")}`;
+}
+
 export const ScoreHistory = () => {
     const { user } = useAuth();
     const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) return;
-
         supabase
             .from("analysis_snapshots")
             .select("url, overall_score, scanned_at")
             .eq("user_id", user.id)
             .order("scanned_at", { ascending: true })
-            .limit(30)
+            .limit(100)
             .then(({ data }) => {
                 setSnapshots(data ?? []);
                 setLoading(false);
             });
     }, [user]);
 
-    // Don't render anything while loading or if fewer than 2 snapshots
-    if (loading || snapshots.length < 2) return null;
-
-    const chartData = snapshots.map((s) => {
-        let hostname = s.url;
-        try {
-            hostname = new URL(s.url).hostname;
-        } catch {
-            // keep raw url as fallback
+    // Group snapshots by domain, sorted by scan count descending
+    const domainGroups = useMemo(() => {
+        const groups: Record<string, Snapshot[]> = {};
+        for (const s of snapshots) {
+            const domain = getHostname(s.url);
+            if (!groups[domain]) groups[domain] = [];
+            groups[domain].push(s);
         }
+        return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+    }, [snapshots]);
 
-        const date = new Date(s.scanned_at);
-        return {
-            date: `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}`,
-            score: s.overall_score,
-            url: hostname,
-        };
-    });
+    // Auto-select the domain with the most scans on first load
+    useEffect(() => {
+        if (domainGroups.length > 0 && !selectedDomain) {
+            setSelectedDomain(domainGroups[0][0]);
+        }
+    }, [domainGroups, selectedDomain]);
 
-    // Calculate score delta: latest vs first
-    const firstScore = snapshots[0].overall_score;
-    const latestScore = snapshots[snapshots.length - 1].overall_score;
+    // Only render if at least one domain has 2+ scans
+    const tabbableDomains = domainGroups.filter(([, snaps]) => snaps.length >= 2);
+    const hasEnoughData = tabbableDomains.length > 0;
+
+    if (loading || !hasEnoughData || !selectedDomain) return null;
+
+    const activeSnaps = domainGroups.find(([d]) => d === selectedDomain)?.[1] ?? [];
+
+    // If the selected domain has only 1 scan, fall back to first tabbable domain
+    const displaySnaps =
+        activeSnaps.length >= 2
+            ? activeSnaps
+            : (tabbableDomains[0]?.[1] ?? []);
+    const displayDomain =
+        activeSnaps.length >= 2
+            ? selectedDomain
+            : tabbableDomains[0]?.[0] ?? selectedDomain;
+
+    const chartData = displaySnaps.map((s) => ({
+        date: formatDate(s.scanned_at),
+        score: s.overall_score,
+    }));
+
+    const firstScore = displaySnaps[0].overall_score;
+    const latestScore = displaySnaps[displaySnaps.length - 1].overall_score;
     const delta = latestScore - firstScore;
 
     return (
         <Card className="border-border/50">
             <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Score History</CardTitle>
+                <div className="flex items-start justify-between gap-2">
+                    <div>
+                        <CardTitle className="text-lg">Score History</CardTitle>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                            {displaySnaps.length} scans for{" "}
+                            <span className="font-mono text-foreground">{displayDomain}</span>
+                        </p>
+                    </div>
                     {delta !== 0 && (
                         <span
-                            className={`text-sm font-mono font-semibold ${delta > 0 ? "text-green-500" : "text-red-400"
+                            className={`text-sm font-mono font-semibold shrink-0 ${delta > 0 ? "text-green-500" : "text-red-400"
                                 }`}
                         >
                             {delta > 0 ? "↑" : "↓"} {Math.abs(delta)} pts
                         </span>
                     )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                    Overall score across your last {snapshots.length} scans
-                </p>
+
+                {/* Domain selector — only shown when user has multiple domains with ≥2 scans */}
+                {tabbableDomains.length > 1 && (
+                    <div className="flex gap-1.5 flex-wrap mt-2">
+                        {tabbableDomains.map(([domain, snaps]) => (
+                            <Button
+                                key={domain}
+                                size="sm"
+                                variant={displayDomain === domain ? "default" : "outline"}
+                                className="h-7 text-xs px-2.5"
+                                onClick={() => setSelectedDomain(domain)}
+                            >
+                                {domain}
+                                <span className="ml-1.5 opacity-60">{snaps.length}×</span>
+                            </Button>
+                        ))}
+                    </div>
+                )}
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={200}>

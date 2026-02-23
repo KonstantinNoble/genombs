@@ -451,17 +451,6 @@ const Home = () => {
               </div>
             ))}
           </div>
-
-          {/* How it Works link */}
-          <div className="text-center mt-14 scroll-reveal">
-            <p className="text-muted-foreground mb-4">Want to see the full process?</p>
-            <Button variant="outline" asChild className="group">
-              <Link to="/how-it-works">
-                See How it Works
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 

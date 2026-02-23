@@ -30,14 +30,15 @@ function formatDate(iso: string): string {
 }
 
 /**
- * ScoreHistory — shows a line chart of the user's overall score over time.
+ * ScoreHistory — shows a line chart of the user's overall score over time, per domain.
  *
  * Data flow:
- * 1. Fetch all unique hostnames the user has scanned (with scan count)
- * 2. User selects a domain (or the most-scanned domain is auto-selected)
- * 3. Fetch snapshots only for that domain
+ * 1. Fetch all unique hostnames the user has scanned (with scan count), max 10
+ * 2. User selects a domain (most-scanned is auto-selected)
+ * 3. Fetch snapshots only for that domain from the DB
+ * 4. Render chart if ≥2 scans, otherwise show a "scan again" placeholder
  *
- * This uses the `hostname` column from the DB — no client-side URL parsing needed.
+ * All snapshots are the PRIMARY URL the user entered — competitors are never stored.
  */
 export const ScoreHistory = () => {
     const { user } = useAuth();
@@ -46,7 +47,7 @@ export const ScoreHistory = () => {
     const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Step 1: Fetch all hostnames the user has scanned
+    // Step 1: Fetch all hostnames the user has scanned (to build domain tabs)
     useEffect(() => {
         if (!user) return;
 
@@ -67,9 +68,8 @@ export const ScoreHistory = () => {
                     counts[row.hostname] = (counts[row.hostname] || 0) + 1;
                 }
 
-                // Sort by count descending, cap at 10
+                // Sort by count descending, show all domains (even 1 scan), cap at 10
                 const sorted = Object.entries(counts)
-                    .filter(([, count]) => count >= 2)
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, 10)
                     .map(([hostname, count]) => ({ hostname, count }));
@@ -85,7 +85,7 @@ export const ScoreHistory = () => {
             });
     }, [user]);
 
-    // Step 2: Fetch snapshots for the selected domain
+    // Step 2: Fetch snapshots for the selected domain only
     useEffect(() => {
         if (!user || !selectedDomain) return;
 
@@ -102,17 +102,22 @@ export const ScoreHistory = () => {
             });
     }, [user, selectedDomain]);
 
-    // Don't render until we have data
-    if (loading || domains.length === 0 || snapshots.length < 2) return null;
+    // Don't render until data is loaded and at least one domain exists
+    if (loading || domains.length === 0) return null;
 
-    const chartData = snapshots.map((s) => ({
-        date: formatDate(s.scanned_at),
-        score: s.overall_score,
-    }));
+    const hasTrend = snapshots.length >= 2;
 
-    const firstScore = snapshots[0].overall_score;
-    const latestScore = snapshots[snapshots.length - 1].overall_score;
-    const delta = latestScore - firstScore;
+    const chartData = hasTrend
+        ? snapshots.map((s) => ({
+            date: formatDate(s.scanned_at),
+            score: s.overall_score,
+        }))
+        : [];
+
+    const delta =
+        hasTrend
+            ? snapshots[snapshots.length - 1].overall_score - snapshots[0].overall_score
+            : 0;
 
     return (
         <Card className="border-border/50">
@@ -121,7 +126,7 @@ export const ScoreHistory = () => {
                     <div>
                         <CardTitle className="text-lg">Score History</CardTitle>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                            {snapshots.length} scans for{" "}
+                            {snapshots.length} scan{snapshots.length !== 1 ? "s" : ""} for{" "}
                             <span className="font-mono text-foreground">{selectedDomain}</span>
                         </p>
                     </div>
@@ -135,7 +140,7 @@ export const ScoreHistory = () => {
                     )}
                 </div>
 
-                {/* Domain selector — only shown when user has multiple domains with ≥2 scans */}
+                {/* Domain selector — shown when user has multiple domains */}
                 {domains.length > 1 && (
                     <div className="flex gap-1.5 flex-wrap mt-2">
                         {domains.map((d) => (
@@ -154,46 +159,60 @@ export const ScoreHistory = () => {
                 )}
             </CardHeader>
             <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={chartData}>
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="hsl(var(--border))"
-                            opacity={0.5}
-                        />
-                        <XAxis
-                            dataKey="date"
-                            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                            tickLine={false}
-                            axisLine={false}
-                        />
-                        <YAxis
-                            domain={[0, 100]}
-                            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                            tickLine={false}
-                            axisLine={false}
-                            width={30}
-                        />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: "hsl(var(--card))",
-                                border: "1px solid hsl(var(--border))",
-                                borderRadius: "8px",
-                                fontSize: "12px",
-                            }}
-                            formatter={(val: number) => [`${val}/100`, "Score"]}
-                            labelFormatter={(label) => `Date: ${label}`}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="score"
-                            stroke="hsl(var(--primary))"
-                            strokeWidth={2}
-                            dot={{ r: 3, fill: "hsl(var(--primary))" }}
-                            activeDot={{ r: 5 }}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
+                {hasTrend ? (
+                    <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={chartData}>
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="hsl(var(--border))"
+                                opacity={0.5}
+                            />
+                            <XAxis
+                                dataKey="date"
+                                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                                tickLine={false}
+                                axisLine={false}
+                            />
+                            <YAxis
+                                domain={[0, 100]}
+                                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                                tickLine={false}
+                                axisLine={false}
+                                width={30}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: "hsl(var(--card))",
+                                    border: "1px solid hsl(var(--border))",
+                                    borderRadius: "8px",
+                                    fontSize: "12px",
+                                }}
+                                formatter={(val: number) => [`${val}/100`, "Score"]}
+                                labelFormatter={(label) => `Date: ${label}`}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="score"
+                                stroke="hsl(var(--primary))"
+                                strokeWidth={2}
+                                dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                                activeDot={{ r: 5 }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-[200px] text-center gap-2">
+                        <p className="text-2xl">📈</p>
+                        <p className="text-sm font-medium text-foreground">
+                            Score trend starts after your next scan
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Scan{" "}
+                            <span className="font-mono">{selectedDomain}</span>{" "}
+                            again to start tracking your progress over time
+                        </p>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );

@@ -1,42 +1,66 @@
 
-# Homepage Feature-Sektion Redesign
 
-## Was sich aendert
+# Today Score vs Average Score -- Achievements Page
 
-### 1. Features: Von 5 Karten auf 3 umfassende Karten
+## Uebersicht
 
-Die aktuellen 5 einzelnen Feature-Karten werden zu 3 groesseren, inhaltlich staerkeren Karten zusammengefasst:
+Neue Sektion auf der Achievements-Seite, die den heutigen Score der eigenen Website mit dem historischen Durchschnitt vergleicht. Nur eigene Websites (`is_own_website = true`) werden beruecksichtigt. Die Darstellung zeigt Verbesserung oder Verschlechterung in Prozentpunkten -- sowohl fuer den Gesamtscore als auch fuer jede einzelne Kategorie.
 
-| Neue Karte | Inhalt (zusammengefasst aus) |
-|---|---|
-| **Website Scoring & Insights** | "Website Scoring" + "Code Analysis" -- Scoring ueber 5 Kategorien plus optionale Code-Analyse via GitHub |
-| **Competitor Intelligence** | "Competitor Analysis" + "Auto Competitor Discovery" -- Vergleich mit bis zu 3 Wettbewerbern, mit optionaler KI-gesteutzter automatischer Erkennung |
-| **Actionable Improvement Plan** | "Improvement Plan" -- Priorisierte, konkrete Optimierungsaufgaben basierend auf der Analyse |
+## Datenlogik
 
-### 2. Verbessertes Karten-Design
+- **Datenquelle**: Tabelle `website_profiles` mit Filter `is_own_website = true` und `status = 'completed'`
+- **Today Score**: Die neueste Analyse von heute (UTC). Falls heute keine Analyse vorliegt, wird "No analysis today" angezeigt
+- **Average Score**: Durchschnitt aller bisherigen eigenen Website-Analysen (exklusive heute, um einen fairen Vergleich zu ermoeglichen)
+- **Delta**: `today_score - average_score` in Prozentpunkten (positiv = Verbesserung, negativ = Verschlechterung)
+- Gleiche Logik fuer alle 5 Kategorien: Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness
 
-- Groessere Karten mit mehr Padding und visueller Praesenz
-- Jede Karte bekommt ein Lucide-Icon (z.B. `BarChart3`, `Users`, `ListChecks`)
-- Subtiler Gradient-Border beim Hover (orange Akzent)
-- Die 3 Karten werden in einer gleichmaessigen 3-Spalten-Reihe dargestellt (sauberes Grid)
+## Design
 
-### 3. "How it Works" Verweis unterhalb der Features
+Technisch-futuristisch, passend zum bestehenden Stil:
 
-Direkt unter dem Feature-Grid wird ein kompakter Call-to-Action-Bereich eingefuegt:
-- Text: "Want to see the full process?"
-- Link-Button: "See How it Works" mit Pfeil-Icon, verlinkt auf `/how-it-works`
-- Dezent gestaltet, passt zum bestehenden Design
+- Dunkle Card mit `border-border bg-card`, monospaced Zahlen (`font-mono`, `tabular-nums`)
+- Obere Reihe: Gesamtscore-Vergleich -- drei Spalten: "TODAY", "AVERAGE", "DELTA"
+- Delta-Wert farblich kodiert: `text-emerald-400` bei Verbesserung, `text-red-400` bei Verschlechterung, `text-muted-foreground` bei Gleichstand
+- Delta-Prafix: `+` oder `-` vor den Prozentpunkten, Suffix `pp` (percentage points)
+- Darunter: Kategorie-Breakdown als kompakte Zeilen mit gleicher Logik
+- Kein Einsatz von Emojis oder Lucide-Icons
+- Sektion-Header: `text-[10px] uppercase tracking-widest` (wie bereits bei "Category Averages" und "Recent Analyses")
 
-## Betroffene Datei
+## Technische Umsetzung
 
-| Datei | Aenderung |
-|---|---|
-| `src/pages/Home.tsx` | `features`-Array von 5 auf 3 Eintraege reduzieren, Icons hinzufuegen, "How it Works"-Link unter dem Grid, Karten-Styling verbessern |
+### Neue Datei: `src/components/gamification/TodayVsAverage.tsx`
 
-## Technische Details
+- Props: `userId: string`, `refreshKey?: number`
+- Eigener `useEffect` fuer Datenabfrage ueber den externen Supabase-Client
+- Query: `website_profiles` WHERE `user_id`, `is_own_website = true`, `status = 'completed'`, sortiert nach `created_at desc`
+- Berechnung im Frontend:
+  - Filtern nach heutigem Datum (UTC)
+  - Durchschnitt ueber alle aelteren Eintraege berechnen
+  - Delta pro Kategorie und Gesamt
+- Loading-Skeleton und Empty-State analog zu `AnalyticsOverview`
+- Count-Up-Animation fuer die Zahlen (gleiche `useCountUp`-Logik)
 
-- Das `features`-Array wird auf 3 Objekte reduziert, jeweils mit einem zusaetzlichen `icon`-Feld (Lucide-Icon-Komponente)
-- Das Grid bleibt `grid-cols-1 md:grid-cols-3` (kein `lg:grid-cols-3` noetig, da 3 Karten immer gleichmaessig aufgehen)
-- Karten bekommen mehr `p-10` statt `p-8`, groessere Ueberschriften
-- Unterhalb des Grids wird ein zentrierter Link-Block mit `Link to="/how-it-works"` eingefuegt
-- Keine neuen Dateien oder Abhaengigkeiten noetig
+### Aenderung: `src/pages/Achievements.tsx`
+
+- Import der neuen `TodayVsAverage`-Komponente
+- Einfuegen als neue Sektion zwischen den Streak-Cards und der Analytics-Sektion
+- Sektion-Header: "Today vs Average"
+- Gleiche Entrance-Animation (fade-up mit Delay)
+
+## Visuelles Layout (vereinfacht)
+
+```text
++--------------------------------------------------+
+|  TODAY VS AVERAGE                                 |
++--------------------------------------------------+
+|  TODAY        AVERAGE        DELTA                |
+|  78           72             +6 pp                |
++--------------------------------------------------+
+|  Findability         82    75    +7 pp            |
+|  Mobile Usability    71    70    +1 pp            |
+|  Offer Clarity       80    74    +6 pp            |
+|  Trust & Proof       68    72    -4 pp            |
+|  Conversion Ready    89    69    +20 pp           |
++--------------------------------------------------+
+```
+

@@ -210,7 +210,7 @@ const Chat = () => {
 
   if (authLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-background/80">
+      <div className="h-screen flex items-center justify-center bg-background/60">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -218,7 +218,7 @@ const Chat = () => {
 
   if (!user) {
     return (
-      <div className="h-screen flex flex-col bg-background/80">
+      <div className="h-screen flex flex-col bg-background/60">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
@@ -441,7 +441,7 @@ const Chat = () => {
   );
 
   return (
-    <div className="h-screen flex flex-col bg-background/80">
+    <div className="h-screen flex flex-col bg-background/60">
       <Navbar />
       <div className="flex-1 flex overflow-hidden">
         {/* Desktop Sidebar */}

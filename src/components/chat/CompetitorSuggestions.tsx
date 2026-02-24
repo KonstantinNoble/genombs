@@ -14,12 +14,15 @@ interface CompetitorSuggestionsProps {
   onAnalyze: (selectedUrls: string[]) => void;
   disabled?: boolean;
   maxSelectable?: number;
+  initialSelectedUrls?: string[];
+  onSelected?: (urls: string[]) => void;
 }
 
-const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable }: CompetitorSuggestionsProps) => {
+const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable, initialSelectedUrls, onSelected }: CompetitorSuggestionsProps) => {
+  const alreadySubmitted = !!initialSelectedUrls && initialSelectedUrls.length > 0;
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [submitted, setSubmitted] = useState(false);
-  const [submittedUrls, setSubmittedUrls] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState(alreadySubmitted);
+  const [submittedUrls, setSubmittedUrls] = useState<string[]>(initialSelectedUrls || []);
 
   const toggle = (url: string) => {
     setSelected((prev) => {
@@ -38,6 +41,7 @@ const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable
     setSubmittedUrls(urls);
     setSubmitted(true);
     onAnalyze(urls);
+    onSelected?.(urls);
   };
 
   if (submitted) {

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Message } from "@/types/chat";
 import ReactMarkdown from "react-markdown";
 import CompetitorSuggestions from "./CompetitorSuggestions";
 import type { CompetitorSuggestion } from "./CompetitorSuggestions";
+import { supabase } from "@/lib/supabase/external-client";
 
 interface ChatMessageProps {
   message: Message;
@@ -42,6 +43,15 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
   const metadata = message.metadata as Record<string, unknown> | null;
   const isCompetitorSuggestions = metadata?.type === "competitor_suggestions";
   const competitors = (metadata?.competitors as CompetitorSuggestion[]) || [];
+  const initialSelectedUrls = (metadata?.selected_urls as string[]) || [];
+
+  const handleCompetitorsSelected = useCallback(async (urls: string[]) => {
+    const updatedMetadata = { ...metadata, selected_urls: urls };
+    await supabase
+      .from("messages")
+      .update({ metadata: updatedMetadata })
+      .eq("id", message.id);
+  }, [message.id, metadata]);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -61,6 +71,8 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
               onAnalyze={(urls) => onAnalyzeCompetitors?.(urls)}
               disabled={competitorAnalysisDisabled}
               maxSelectable={maxCompetitorSelectable}
+              initialSelectedUrls={initialSelectedUrls}
+              onSelected={handleCompetitorsSelected}
             />
           </div>
         ) : (

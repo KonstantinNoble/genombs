@@ -86,6 +86,7 @@ const Chat = () => {
     onCompetitorSearchRequired: () => {
       handleFindCompetitors();
     },
+    isPremium,
   });
 
   // 4. Message Management
@@ -105,6 +106,7 @@ const Chat = () => {
     refreshCredits,
     deduplicateProfiles,
     loadProfiles,
+    isPremium,
   });
 
   // Call generateSummary when triggered
@@ -138,10 +140,21 @@ const Chat = () => {
       const msg = e.message || "Competitor search failed";
       if (msg.startsWith("insufficient_credits:")) {
         const hours = msg.split(":")[1];
-        toast.error("Not enough credits", {
-          description: `Competitor search costs 7 credits. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
-          duration: 8000,
-        });
+        if (isPremium) {
+          toast.error("Daily credit limit reached", {
+            description: `Competitor search requires more credits. Resets in ${hours}h.`,
+            duration: 6000,
+          });
+        } else {
+          toast.error("Daily credit limit reached", {
+            description: `AI-powered competitor discovery finds your top rivals and analyzes their strengths. Upgrade to Premium for 100 daily credits. Resets in ${hours}h.`,
+            duration: 10000,
+            action: {
+              label: "View Plans",
+              onClick: () => window.location.href = "/pricing",
+            },
+          });
+        }
       } else {
         toast.error(msg);
       }
@@ -165,10 +178,21 @@ const Chat = () => {
       const msg = e.message || "Analysis failed";
       if (msg.startsWith("insufficient_credits:")) {
         const hours = msg.split(":")[1];
-        toast.error("Not enough credits", {
-          description: `Website analysis requires more credits than you have left. Your credits reset in ${hours}h. Upgrade to Premium for 100 daily credits.`,
-          duration: 8000,
-        });
+        if (isPremium) {
+          toast.error("Daily credit limit reached", {
+            description: `Competitor analysis requires more credits. Resets in ${hours}h.`,
+            duration: 6000,
+          });
+        } else {
+          toast.error("Daily credit limit reached", {
+            description: `Competitor analysis reveals how rivals compare on SEO, mobile, trust & more. Upgrade to Premium for 100 daily credits. Resets in ${hours}h.`,
+            duration: 10000,
+            action: {
+              label: "View Plans",
+              onClick: () => window.location.href = "/pricing",
+            },
+          });
+        }
       } else {
         toast.error(msg);
       }

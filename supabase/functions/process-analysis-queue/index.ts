@@ -140,84 +140,46 @@ Analyze all provided data and return a JSON object with exactly this structure:
 
 CRITICAL SCORING RULES:
 - Scores MUST reflect the ACTUAL quality of the website based on the evidence provided.
-- Use the additive point system strictly -- only award points when an element is genuinely present and well-executed.
-- Let the math speak: if a website earns 85 points because it genuinely meets most criteria, score it 85. If it earns 20 because it lacks most elements, score it 20.
+- Use your expert judgment to evaluate each category holistically. Consider ALL relevant factors and weigh them based on their real-world impact.
 - Do NOT artificially cluster scores into any range. Excellent websites should score high. Poor websites should score low. The full 0-100 range exists to differentiate quality.
 - overallScore MUST equal the mathematical average of all 5 category scores (rounded to nearest integer), not a separate estimate.
-- CONSISTENCY CHECK: Ensure you apply the same quality standard across all categories. If you are strict in one category, be equally strict in others. Large gaps between categories are acceptable when the data supports them.
+- CONSISTENCY CHECK: Ensure you apply the same quality standard across all categories. If you are strict in one category, be equally strict in others.
 
-SCORING GUIDELINES -- use ADDITIVE scoring (start from 0, add points for each element found):
+SCORING GUIDELINES — evaluate each category holistically:
 
-**findability** (Technical SEO -- score based on VERIFIABLE data only):
-Start from 0, add points for each element found:
-- Title tag present and well-crafted (under 60 chars, contains keywords): +15
-- Meta description present and compelling (under 160 chars): +15
-- Open Graph tags present (og:title, og:description, og:image -- all three): +15
-- Structured data / JSON-LD present with valid types: +10
-- Canonical URL set: +5
-- Robots meta properly configured: +5
-- Good internal linking (10+ internal links): +10
-- External links present (3+): +5
-- Content quality and keyword relevance: up to +20
-- HARD CAP: If title AND meta description are BOTH missing -- maximum 35
-- HARD CAP: If title, meta description, AND OG tags are all missing -- maximum 25
+**findability** (Technical SEO):
+Evaluate the website's discoverability based on the provided SEO metadata.
+Consider: title tag quality, meta description, Open Graph tags, structured data, canonical URL, robots configuration, internal/external linking, content relevance.
+SCORING GUIDE: 80-100 = comprehensive SEO setup with all major elements present and well-crafted. 60-79 = good foundation but missing some elements. 40-59 = basic presence but significant gaps. 20-39 = minimal SEO effort. 0-19 = virtually no SEO optimization.
+IMPORTANT: If title AND meta description are both missing, score should generally not exceed 35. If title, description, AND OG tags are all missing, score should generally not exceed 25. Missing elements are real weaknesses.
 
-**mobileUsability** (Mobile readiness -- score conservatively):
-Start from 0, add points:
-- Viewport meta tag present with proper value ("width=device-width"): +25
-- Clear heading hierarchy (h1, h2, h3 properly nested): +15
-- Well-structured text with short, readable paragraphs: +15
-- No wide fixed-width tables or layout indicators: +10
-- Navigation appears mobile-friendly (hamburger menu, collapsible): +10
-- Images/media appear responsive: +10
-- Touch-friendly elements implied (adequate spacing/sizing): +15
-- HARD CAP: If viewport meta is NOT FOUND in HTML -- maximum 55 (some frameworks inject via JS, but cannot be verified)
-- HARD CAP: If viewport missing AND poor content structure -- maximum 35
+**mobileUsability** (Mobile readiness):
+Assess how well the site is prepared for mobile users based on available data.
+Consider: viewport configuration, heading hierarchy, content structure, navigation patterns, responsive indicators, touch-friendliness.
+SCORING GUIDE: 80-100 = clearly mobile-optimized with proper viewport and excellent structure. 60-79 = good mobile readiness with minor gaps. 40-59 = basic mobile support but notable issues. 20-39 = poor mobile experience likely. 0-19 = no mobile consideration evident.
+IMPORTANT: If viewport meta is not found in the HTML, be cautious — score should generally stay below 60 unless content structure is exceptional. Some frameworks inject viewport via JS, but this cannot be verified from static HTML.
 
-**offerClarity** (Value proposition -- holistic quality assessment):
-Evaluate the overall clarity and persuasiveness of the website's offer by considering these factors:
-- How quickly can a visitor understand what the company does? (Within 5 seconds = excellent, requires scrolling = mediocre, unclear after reading = poor)
-- Is the target audience explicitly defined or obvious?
-- Are benefits communicated as concrete user outcomes (e.g. "Save 10 hours/week") rather than vague feature lists?
-- Is pricing or a pricing model visible?
-- Are real use cases, examples, or demonstrations shown?
-- Is there a clear differentiator vs alternatives?
-- Is the product/service scope unambiguous?
-- Is the copywriting professional and persuasive?
+**offerClarity** (Value proposition):
+Evaluate the overall clarity and persuasiveness of the website's offer.
+Consider: How quickly can a visitor understand what the company does? Is the target audience explicitly defined? Are benefits communicated as concrete outcomes rather than vague feature lists? Is pricing visible? Are real use cases shown? Is there a clear differentiator? Is the copywriting professional?
 SCORING GUIDE: 80-100 = instantly clear offer with specific benefits, pricing, and differentiator. 60-79 = clear offer but missing some elements (e.g. no pricing, vague benefits). 40-59 = somewhat understandable but vague or generic. 20-39 = confusing or lacking core information. 0-19 = impossible to determine what is offered.
 DEDUCTION: Generic buzzwords without substance ("innovative solutions", "world-class service") indicate poor clarity and should lower the score.
 
-**trustProof** (Trust signals -- holistic assessment accounting for extraction limitations):
-IMPORTANT CONTEXT: You are analyzing TEXT extracted from a website. Many trust signals are VISUAL (partner logos, certification badges, star rating icons, trust seals) and do NOT appear in the extracted text. Therefore, evaluate trust based on what IS available in the text, and do not assume a site lacks trust just because visual elements are missing.
-Consider these factors when scoring:
-- Does the text reference customers, reviews, or testimonials? (Even "Join 500+ businesses" counts)
-- Are there case studies, portfolio items, or work examples described?
-- Does the text mention certifications, partnerships, or awards? (e.g. "Google Partner", "ISO certified")
-- Is there a team/founder section with real names or bios?
-- Is company information visible (address, registration, founding year)?
-- Are privacy policy / terms of service linked?
-- Does the content demonstrate expertise through detailed, knowledgeable writing?
-- Does the overall tone and content depth suggest an established, professional business?
-SCORING GUIDE: 70-100 = multiple explicit trust signals in text (testimonials, numbers, team, certifications, company history). 50-69 = some trust signals present (e.g. about section, professional tone, some social proof). 30-49 = minimal trust signals but professional content suggests legitimate business. 15-29 = very few signals and content feels thin or generic. 0-14 = actively suspicious or completely anonymous with zero trust indicators.
+**trustProof** (Trust signals):
+IMPORTANT CONTEXT: You are analyzing TEXT extracted from a website. Many trust signals are VISUAL (partner logos, certification badges, star rating icons) and do NOT appear in extracted text. Evaluate based on what IS available.
+Consider: customer references or testimonials, case studies or portfolio, certifications/partnerships/awards mentioned, team/founder info with real names, company information (address, founding year), privacy policy/terms linked, expertise demonstrated through detailed writing, professional tone and depth.
+SCORING GUIDE: 70-100 = multiple explicit trust signals in text. 50-69 = some trust signals present. 30-49 = minimal trust signals but professional content. 15-29 = very few signals, thin content. 0-14 = suspicious or completely anonymous.
 
-**conversionReadiness** (Conversion optimization -- holistic assessment):
-Evaluate how well the website guides visitors toward taking action:
-- Is there a clear primary CTA above the fold?
-- Is the CTA text action-oriented and specific?
-- Are there multiple CTAs throughout the page?
-- Are contact options available (form, phone, email, chat)?
-- Is there a booking or scheduling system?
-- Is there a low-friction entry point (free trial, demo)?
-- Does the site explain what happens after clicking the CTA?
-- Are there urgency or social proof elements near CTAs?
-SCORING GUIDE: 80-100 = clear CTAs, multiple contact channels, low-friction entry, strong guidance. 60-79 = decent CTAs and contact options but missing some elements. 40-59 = basic CTA exists but not optimized. 20-39 = minimal conversion elements. 0-19 = no clear way to take action.
+**conversionReadiness** (Conversion optimization):
+Evaluate how well the website guides visitors toward taking action.
+Consider: clear primary CTA above the fold, action-oriented CTA text, multiple CTAs throughout page, contact options (form, phone, email, chat), booking/scheduling system, low-friction entry (free trial, demo), explanation of what happens after CTA click, urgency/social proof near CTAs.
+SCORING GUIDE: 80-100 = clear CTAs, multiple contact channels, low-friction entry, strong guidance. 60-79 = decent CTAs and contact options but missing elements. 40-59 = basic CTA exists but not optimized. 20-39 = minimal conversion elements. 0-19 = no clear way to take action.
 
-PAGESPEED ANCHORING (MANDATORY when Google PageSpeed data is provided):
-When the context includes "GOOGLE PAGESPEED DATA", apply these HARD CONSTRAINTS:
-- findability: Your score MUST be within +/-8 points of Google's SEO score. Google's measurement is authoritative and overrides your content-based estimate.
-- mobileUsability: Your score MUST NOT exceed Google's Performance score by more than 10 points. If Google Performance < 50, your mobileUsability MUST be below 55.
-- Reference specific PageSpeed metrics (LCP, CLS, FCP, TBT) in strengths/weaknesses.
-- These are hard constraints that override content-based assessment.
+PAGESPEED ANCHORING (when Google PageSpeed data is provided):
+When the context includes "GOOGLE PAGESPEED DATA", strongly consider the PageSpeed metrics:
+- findability: Google's SEO score is an authoritative reference. Your score should be close to it (generally within +/-10 points) unless your content analysis reveals significant factors Google doesn't measure.
+- mobileUsability: Google's Performance score is an important anchor. If Google Performance < 50, your mobileUsability should generally stay below 60.
+- Reference specific PageSpeed metrics (LCP, CLS, FCP, TBT) in strengths/weaknesses when available.
 
 If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key with this exact structure:
 {
@@ -575,6 +537,30 @@ function getAnalysisCreditCost(modelKey: string): number {
   return ANALYSIS_CREDIT_COSTS[modelKey] ?? 9;
 }
 
+// ─── Score Validation ───
+
+function validateAndNormalizeScores(result: Record<string, unknown>): void {
+  const clamp = (v: unknown): number => {
+    const n = Number(v);
+    return isNaN(n) ? 50 : Math.max(0, Math.min(100, Math.round(n)));
+  };
+
+  const cs = (result.categoryScores ?? {}) as Record<string, unknown>;
+  const validated = {
+    findability: clamp(cs.findability),
+    mobileUsability: clamp(cs.mobileUsability),
+    offerClarity: clamp(cs.offerClarity),
+    trustProof: clamp(cs.trustProof),
+    conversionReadiness: clamp(cs.conversionReadiness),
+  };
+
+  result.categoryScores = validated;
+
+  // overallScore = true mathematical average (never trust AI's number)
+  const values = Object.values(validated);
+  result.overallScore = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+}
+
 // ─── Queue Processing ───
 
 async function processQueue() {
@@ -878,6 +864,9 @@ async function processQueue() {
         job.model as ModelId,
         enrichedContent
       )) as Record<string, unknown>;
+
+      // Validate and normalize scores server-side
+      validateAndNormalizeScores(analysisResult);
 
       // Update website_profile with results
       const updatePayload: Record<string, unknown> = {

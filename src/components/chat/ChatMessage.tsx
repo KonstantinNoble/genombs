@@ -47,8 +47,8 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
         className={`max-w-[85%] sm:max-w-[78%] text-[15px] leading-7 ${isUser
-            ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-5 py-3.5"
-            : "bg-card border-l-[3px] border-l-primary/60 border border-border/60 text-card-foreground rounded-2xl rounded-bl-none px-5 py-4"
+          ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-5 py-3.5"
+          : "bg-card border-l-[3px] border-l-primary/60 border border-border/60 text-card-foreground rounded-2xl rounded-bl-none px-5 py-4"
           }`}
       >
         {isUser ? (
@@ -64,7 +64,7 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
             />
           </div>
         ) : (
-          <div className="prose prose-invert prose-base max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-td:text-muted-foreground prose-th:text-foreground prose-a:text-primary">
+          <div className="prose prose-invert prose-base max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-td:text-muted-foreground prose-th:text-foreground prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline prose-a:font-medium">
             <ReactMarkdown remarkPlugins={plugins}>
               {message.content}
             </ReactMarkdown>

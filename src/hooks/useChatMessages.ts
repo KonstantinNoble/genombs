@@ -178,7 +178,23 @@ export function useChatMessages({
                 setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
                 setIsStreaming(false);
             }
-            toast.success("Deep Analysis complete!");
+            toast.success("Deep Analysis complete!", {
+                description: "The source code analysis is ready. Scroll down in the dashboard to view the full report.",
+                duration: 8000,
+                action: {
+                    label: "View Results",
+                    onClick: () => {
+                        const el = document.getElementById("section-code-quality");
+                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                    },
+                },
+            });
+
+            // Automatically scroll to the section after a short delay
+            setTimeout(() => {
+                const el = document.getElementById("section-code-quality");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            }, 1000);
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Deep Analysis failed";
             const errorMsg = await saveMessage(activeId, "assistant", `❌ Deep Analysis failed: ${msg}`);
@@ -237,7 +253,7 @@ export function useChatMessages({
                 const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
                 setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
                 setIsStreaming(false);
-        } catch (e) {
+            } catch (e) {
                 setIsStreaming(false);
                 const errMsg = e instanceof Error ? e.message : "";
 
@@ -247,17 +263,19 @@ export function useChatMessages({
                 if (errMsg.startsWith("insufficient_credits:")) {
                     const hours = errMsg.split(":")[1];
                     const creditNoticeContent = isPremium
-                        ? "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
-                          + `The AI-powered summary could not be generated because your daily credit limit has been reached. Your credits will reset in **${hours} hour(s)**.`
-                        : "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
-                          + "However, the **AI Chat Summary** could not be generated because your daily credit limit has been reached. "
-                          + "This feature provides a concise, AI-powered breakdown of your analysis — highlighting key strengths, critical weaknesses, "
-                          + `and actionable next steps you can take right away.\n\nYour credits will reset in **${hours} hour(s)**.\n\n`
-                          + "🚀 **Upgrade to Premium** to unlock 100 daily credits and never miss out on AI-powered insights. [View Plans](/pricing)";
+                        ? "**Auto-Summary Skipped — Premium Credit Limit Reached**\n\n"
+                        + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+                        + `The AI-powered summary could not be generated because your daily premium credit limit has been reached. Your credits will reset in **${hours} hour(s)**.`
+                        : "**Auto-Summary Skipped — Credit Limit Reached**\n\n"
+                        + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+                        + "However, the AI Chat Summary could not be generated because your daily credit limit has been reached. "
+                        + "This feature provides a concise, AI-powered breakdown of your analysis, highlighting key strengths, critical weaknesses, "
+                        + `and actionable next steps.\n\nYour credits will reset in **${hours} hour(s)**.\n\n`
+                        + "**Upgrade to Premium** to unlock 100 daily credits and never miss out on AI-powered insights. [View Plans](/pricing)";
                     const creditNotice = await saveMessage(
                         activeId,
                         "assistant",
-                        "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n" + creditNoticeContent
+                        creditNoticeContent
                     );
                     setMessages((prev) => [...prev, creditNotice]);
                 } else {

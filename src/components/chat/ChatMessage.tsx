@@ -4,12 +4,14 @@ import ReactMarkdown from "react-markdown";
 import CompetitorSuggestions from "./CompetitorSuggestions";
 import type { CompetitorSuggestion } from "./CompetitorSuggestions";
 import { supabase } from "@/lib/supabase/external-client";
+import { toast } from "sonner";
 
 interface ChatMessageProps {
   message: Message;
   onAnalyzeCompetitors?: (urls: string[]) => void;
   competitorAnalysisDisabled?: boolean;
   maxCompetitorSelectable?: number;
+  onMetadataUpdate?: (messageId: string, metadata: Record<string, unknown>) => void;
 }
 
 // Dynamisch laden, da remark-gfm auf alten mobilen Browsern crasht
@@ -27,7 +29,7 @@ const loadRemarkGfm = async () => {
   }
 };
 
-const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled, maxCompetitorSelectable }: ChatMessageProps) => {
+const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled, maxCompetitorSelectable, onMetadataUpdate }: ChatMessageProps) => {
   const isUser = message.role === "user";
   const [pluginReady, setPluginReady] = useState(!!remarkGfmPlugin);
 
@@ -47,11 +49,18 @@ const ChatMessage = ({ message, onAnalyzeCompetitors, competitorAnalysisDisabled
 
   const handleCompetitorsSelected = useCallback(async (urls: string[]) => {
     const updatedMetadata = { ...metadata, selected_urls: urls };
-    await supabase
+    // Optimistic: patch parent state immediately so card stays closed
+    onMetadataUpdate?.(message.id, updatedMetadata);
+    // Persist to DB
+    const { error } = await supabase
       .from("messages")
       .update({ metadata: updatedMetadata })
       .eq("id", message.id);
-  }, [message.id, metadata]);
+    if (error) {
+      console.error("Failed to persist competitor selection:", error);
+      toast.error("Failed to save selection. Please try again.");
+    }
+  }, [message.id, metadata, onMetadataUpdate]);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>

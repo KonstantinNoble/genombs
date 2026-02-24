@@ -148,6 +148,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [user, calculatePremiumStatus, updateCreditsFromData]);
 
+  // Polling fallback for credit refresh (every 30s)
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      refreshCredits();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [user, refreshCredits]);
+
   useEffect(() => {
     const initAuth = async () => {
       try {

@@ -19,6 +19,7 @@ export function useChatAnalysis({
     onSummaryRequired,
     onCompetitorSearchRequired,
     isPremium,
+    refreshCredits,
 }: {
     activeId: string | null;
     userId: string | undefined;
@@ -27,6 +28,7 @@ export function useChatAnalysis({
     onSummaryRequired: (completed: WebsiteProfile[], token: string, model?: string) => void;
     onCompetitorSearchRequired?: () => void;
     isPremium: boolean;
+    refreshCredits: () => Promise<void>;
 }) {
     const [profiles, setProfiles] = useState<WebsiteProfile[]>([]);
     const [tasks, setTasks] = useState<ImprovementTask[]>([]);
@@ -94,6 +96,12 @@ export function useChatAnalysis({
                         const completedIds = deduped.filter((p) => p.status === "completed").map((p) => p.id);
                         if (completedIds.length > 0) {
                             loadTasks(completedIds).then(setTasks).catch(console.error);
+                        }
+
+                        // Refresh credits when any profile reaches completed/error (credits were deducted)
+                        const hasFinished = deduped.some((p) => p.status === "completed" || p.status === "error");
+                        if (hasFinished) {
+                            refreshCredits();
                         }
 
                         const expected = expectedProfileCountRef.current;

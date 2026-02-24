@@ -87,6 +87,7 @@ const Chat = () => {
       handleFindCompetitors();
     },
     isPremium,
+    refreshCredits,
   });
 
   // 4. Message Management

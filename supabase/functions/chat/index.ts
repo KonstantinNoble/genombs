@@ -419,7 +419,7 @@ serve(async (req) => {
   let refundModelKey = "gemini-flash";
 
   try {
-    const { messages, conversationId, model: modelKey } = await req.json();
+    const { messages, conversationId, model: modelKey, skipCredits } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages array is required" }), {
@@ -472,16 +472,18 @@ serve(async (req) => {
 
     const isPremiumModel = isExpensiveModel(resolvedModelKey);
 
-    const creditResult = await checkAndDeductCredits(supabaseAdmin, user.id, resolvedModelKey, isPremiumModel);
+    if (!skipCredits) {
+      const creditResult = await checkAndDeductCredits(supabaseAdmin, user.id, resolvedModelKey, isPremiumModel);
 
-    if (!creditResult.ok) {
-      return new Response(JSON.stringify({ error: creditResult.error }), {
-        status: creditResult.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (!creditResult.ok) {
+        return new Response(JSON.stringify({ error: creditResult.error }), {
+          status: creditResult.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      creditsDeducted = true;
+      refundUserId = user.id;
     }
-    creditsDeducted = true;
-    refundUserId = user.id;
 
     let profileContext = "";
 

@@ -27,7 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, getCodeAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, getCodeAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST, getAutoFindUpfrontCost } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -113,6 +113,10 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
   const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
   const notEnoughCredits = affordableUrls < maxUrlFields;
 
+  // Auto-find requires: 7 (Perplexity search) + own website analysis cost
+  const autoFindUpfrontCost = getAutoFindUpfrontCost(selectedModel);
+  const canAutoFind = remainingCredits >= autoFindUpfrontCost;
+
   // Sync initial URLs from props (loaded from profiles)
   useEffect(() => {
     if (initialOwnUrl !== undefined) setOwnUrl(initialOwnUrl);
@@ -161,8 +165,13 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
 
   const competitorUrls = autoFind ? [] : [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
   const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u));
-  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
-  
+  const canStartAnalysis =
+    ownUrl.trim() &&
+    allUrlsValid &&
+    (autoFind
+      ? canAutoFind  // must afford search + own website upfront
+      : affordableUrls >= 1 && competitorUrls.length > 0);
+
   const isOwnUrlDisabled = affordableUrls < 1;
 
   const handleStartAnalysis = () => {
@@ -214,13 +223,12 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
                             setSelectedModel(model.id);
                             setModelOpen(false);
                           }}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${
-                            isDisabled
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${isDisabled
                               ? "opacity-50 cursor-not-allowed"
                               : isActive
-                              ? "bg-primary/10 text-primary"
-                              : "hover:bg-muted text-foreground"
-                          }`}
+                                ? "bg-primary/10 text-primary"
+                                : "hover:bg-muted text-foreground"
+                            }`}
                         >
                           <Icon className="w-4 h-4 shrink-0" />
                           <div className="min-w-0 flex-1">
@@ -421,21 +429,28 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
             </div>
             {/* Auto-find toggle */}
             <div
-              className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border bg-muted/30 cursor-pointer"
-              onClick={() => setAutoFind(!autoFind)}
+              className={`flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border bg-muted/30 ${canAutoFind ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+                }`}
+              onClick={() => canAutoFind && setAutoFind(!autoFind)}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Search className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="text-xs font-medium text-foreground">Find competitors automatically with AI</span>
-                <span className="text-[10px] text-muted-foreground shrink-0">(+{COMPETITOR_SEARCH_COST} Credits)</span>
+                <span className="text-[10px] text-muted-foreground shrink-0">(+{autoFindUpfrontCost} Credits + {costPerUrl} per competitor)</span>
               </div>
               <Switch
                 checked={autoFind}
-                onCheckedChange={setAutoFind}
+                onCheckedChange={(v) => canAutoFind && setAutoFind(v)}
                 onClick={(e) => e.stopPropagation()}
                 className="shrink-0"
+                disabled={!canAutoFind}
               />
             </div>
+            {!canAutoFind && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                Not enough credits for auto-find ({autoFindUpfrontCost} needed, {remainingCredits} remaining)
+              </p>
+            )}
 
             {/* Competitor fields - hidden when autoFind is active */}
             {!autoFind && (

@@ -1,48 +1,71 @@
 
-# Revert: Code-Analyse-Kosten wiederherstellen + Chat.tsx fixen
 
-## Was ist passiert?
+# Umfassender Fix: Verbleibende Credit-Diskrepanzen
 
-Der letzte Fix war falsch. Die Code-Analyse laeuft ueber `add-github-analysis` (eigener Edge Function Flow), **nicht** ueber `process-analysis-queue`. Das Backend zieht dort tatsaechlich 12/12/16/16/19 Credits ab. Durch den letzten Fix zeigt das Frontend jetzt nur 9/9/12/12/14 an -- der User sieht also weniger als er zahlt.
+## Status nach den bisherigen Fixes
+
+| Komponente | Status |
+|---|---|
+| `src/lib/constants.ts` | OK -- `codeAnalysis` (12/12/16/16/19) und `getCodeAnalysisCreditCost` vorhanden |
+| `src/components/chat/ChatInput.tsx` | OK -- verwendet `getCodeAnalysisCreditCost` fuer GitHub Deep Analysis Dialog |
+| `src/pages/Chat.tsx` | OK -- uebergibt dynamisches `selectedModel` an InlineUrlPrompt |
+| `supabase/functions/add-github-analysis/index.ts` | OK -- Backend hat 12/12/16/16/19 (Frontend passt sich an) |
+
+## Verbleibendes Problem: InlineUrlPrompt "Code Analysis" Tab
+
+Die Komponente `src/components/chat/InlineUrlPrompt.tsx` hat einen **Code Analysis** Tab (Zeile 89-99), der folgende Probleme hat:
+
+### Problem 1: Keine Kostenanzeige
+
+Der Code Analysis Tab zeigt dem User **nicht**, wie viele Credits die Analyse kostet. Der Button sagt nur "Analyze Code" ohne Creditangabe. Der Website Analysis Tab zeigt dagegen korrekt die Kosten pro URL.
+
+### Problem 2: Keine Credit-Pruefung
+
+Die Variable `canStartGithubOnly` (Zeile 60) prueft nur ob die URL gueltig ist -- **nicht** ob der User genuegend Credits hat:
+
+```text
+const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && ... ;
+```
+
+Das heisst: Ein User mit 0 Credits kann den Button klicken und bekommt erst einen Backend-Fehler.
+
+### Problem 3: Falscher Import
+
+`InlineUrlPrompt` importiert nur `getAnalysisCreditCost` (9/9/12/12/14), aber fuer Code-Analyse muss `getCodeAnalysisCreditCost` (12/12/16/16/19) verwendet werden.
+
+---
 
 ## Aenderungen
 
-### 1. `src/lib/constants.ts` -- Code-Analyse-Kosten wiederherstellen
+### `src/components/chat/InlineUrlPrompt.tsx`
 
-Die `codeAnalysis`-Eintraege und die Funktion `getCodeAnalysisCreditCost` muessen zurueck:
+1. **Import erweitern**: `getCodeAnalysisCreditCost` zusaetzlich importieren
+2. **Credit-Kosten berechnen**: `const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel)` hinzufuegen
+3. **Credit-Pruefung**: `canStartGithubOnly` um Credit-Check erweitern:
+   ```text
+   const notEnoughForCode = remainingCredits < codeAnalysisCost;
+   const canStartGithubOnly = ... && !notEnoughForCode;
+   ```
+4. **Kostenanzeige im UI**: Text hinzufuegen der die Kosten anzeigt (analog zum ChatInput Dialog):
+   ```text
+   "Costs X credits with [Model]"
+   ```
+5. **Credit-Warnung**: Wenn nicht genug Credits, Warnung anzeigen:
+   ```text
+   "Not enough credits (X needed, Y remaining)"
+   ```
+6. **Button-Text**: Credits im Button anzeigen:
+   ```text
+   "Analyze Code (X Credits)"
+   ```
 
-```typescript
-export const MODEL_CREDIT_COSTS = {
-  chat: { ... },        // bleibt
-  analysis: { ... },    // bleibt
-  codeAnalysis: {       // WIEDERHERSTELLEN
-    "gemini-flash": 12,
-    "gpt-mini": 12,
-    "gpt": 16,
-    "claude-sonnet": 16,
-    "perplexity": 19,
-  },
-} as const;
-
-// WIEDERHERSTELLEN
-export function getCodeAnalysisCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
-}
-```
-
-### 2. `src/components/chat/ChatInput.tsx` -- getCodeAnalysisCreditCost zurueck
-
-- Import von `getCodeAnalysisCreditCost` wieder hinzufuegen
-- `getAnalysisCreditCost(selectedModel)` in Zeile 314 zurueck aendern zu `getCodeAnalysisCreditCost(selectedModel)`
-
-### 3. `src/pages/Chat.tsx` -- Hartkodiertes Modell fixen
-
-Zeile 362: `selectedModel="gemini-flash"` aendern zu `selectedModel={selectedModel}`, damit InlineUrlPrompt die korrekten Kosten fuer das aktuell gewaehlte Modell anzeigt.
+---
 
 ## Zusammenfassung
 
 | Datei | Aenderung |
 |---|---|
-| `src/lib/constants.ts` | `codeAnalysis`-Block und `getCodeAnalysisCreditCost` wiederherstellen |
-| `src/components/chat/ChatInput.tsx` | `getCodeAnalysisCreditCost` Import + Verwendung wiederherstellen |
-| `src/pages/Chat.tsx` | `selectedModel={selectedModel}` statt `"gemini-flash"` |
+| `src/components/chat/InlineUrlPrompt.tsx` | `getCodeAnalysisCreditCost` importieren, Credit-Check + Kostenanzeige + Warnung fuer Code Analysis Tab |
+
+Es ist nur eine Datei betroffen. Alle anderen Dateien sind bereits korrekt.
+

@@ -114,7 +114,7 @@ function buildEnrichedContext(
   return sections.join("\n");
 }
 
-const ANALYSIS_SYSTEM_PROMPT = `You are an expert website analyst. You receive both the website's text content AND its technical SEO metadata (title tag, meta description, viewport, robots, Open Graph tags, structured data, link counts).
+const ANALYSIS_SYSTEM_PROMPT = `You are a strict, evidence-based website analyst. You receive both the website's text content AND its technical SEO metadata (title tag, meta description, viewport, robots, Open Graph tags, structured data, link counts).
 
 Analyze all provided data and return a JSON object with exactly this structure:
 
@@ -138,37 +138,94 @@ Analyze all provided data and return a JSON object with exactly this structure:
   "overallScore": N
 }
 
-SCORING GUIDELINES (0-100 for each category):
+CRITICAL SCORING RULES:
+- Be strict and realistic. The average website scores 40-65 across categories.
+- Scores above 80 mean genuinely exceptional quality in that category — most sites do NOT reach this.
+- Scores above 90 are extremely rare and reserved for best-in-class examples only.
+- Do NOT default to generous scores. When in doubt, score LOWER.
+- Every score MUST be justified by specific evidence found (or NOT found) in the provided data.
+- overallScore MUST equal the mathematical average of all 5 category scores (rounded to nearest integer), not a separate estimate.
 
-**findability**: Base this on the ACTUAL technical data provided:
-- Is there a title tag? Is it well-crafted (under 60 chars, contains keywords)?
-- Is there a meta description? Is it compelling (under 160 chars)?
-- Are Open Graph tags present for social sharing?
-- Is there structured data (JSON-LD)? What types?
-- How many internal vs external links are there?
-- Each MISSING element (title, description, OG tags, structured data) should lower the score by 5-15 points depending on importance.
-- A site with all technical tags present AND good content: 80-100.
-- A site missing some tags but with strong content and structure: 50-75.
-- A site missing most tags: 30-50 regardless of content quality.
+SCORING GUIDELINES — use ADDITIVE scoring (start from 0, add points for each element found):
 
-**mobileUsability**: Evaluate mobile responsiveness:
-- Viewport meta tag present ("width=device-width, initial-scale=1"): strong positive signal (+20 points baseline).
-- Viewport meta NOT FOUND: note as a weakness. Deduct 15-25 points, but do not cap at 40 since some frameworks inject it via JavaScript.
-- Content structure: headings, readability, text blocks, content organization.
-- Score 70-100: viewport present AND good content structure.
-- Score 45-70: viewport missing BUT content structure suggests responsive design.
-- Score 20-45: viewport missing AND poor content structure.
+**findability** (Technical SEO — score based on VERIFIABLE data only):
+Start from 0, add points for each element found:
+- Title tag present and well-crafted (under 60 chars, contains keywords): +15
+- Meta description present and compelling (under 160 chars): +15
+- Open Graph tags present (og:title, og:description, og:image — all three): +15
+- Structured data / JSON-LD present with valid types: +10
+- Canonical URL set: +5
+- Robots meta properly configured: +5
+- Good internal linking (10+ internal links): +10
+- External links present (3+): +5
+- Content quality and keyword relevance: up to +20
+- HARD CAP: If title AND meta description are BOTH missing -- maximum 35
+- HARD CAP: If title, meta description, AND OG tags are all missing -- maximum 25
 
-**offerClarity**: How clear is the value proposition and offer based on the content?
+**mobileUsability** (Mobile readiness -- score conservatively):
+Start from 0, add points:
+- Viewport meta tag present with proper value ("width=device-width"): +25
+- Clear heading hierarchy (h1, h2, h3 properly nested): +15
+- Well-structured text with short, readable paragraphs: +15
+- No wide fixed-width tables or layout indicators: +10
+- Navigation appears mobile-friendly (hamburger menu, collapsible): +10
+- Images/media appear responsive: +10
+- Touch-friendly elements implied (adequate spacing/sizing): +15
+- HARD CAP: If viewport meta is NOT FOUND in HTML -- maximum 55 (some frameworks inject via JS, but cannot be verified)
+- HARD CAP: If viewport missing AND poor content structure -- maximum 35
 
-**trustProof**: Trust signals like reviews, certifications, testimonials, about page, team info.
+**offerClarity** (Value proposition — count specific elements):
+Start from 0, add points for each element explicitly found in the content:
+- Clear headline stating what the company does (understandable in 5 seconds): +20
+- Specific target audience mentioned or clearly implied: +10
+- Benefits listed (not just features — actual outcomes for the user): +15
+- Pricing or pricing model visible on the page: +15
+- Specific use cases or concrete examples shown: +10
+- Differentiator vs competitors explicitly stated: +10
+- Service/product scope is unambiguous (you know exactly what is offered): +10
+- Professional copywriting (clear language, no grammar issues, persuasive): +10
+- HARD CAP: If you cannot determine what the company sells/offers from the content → maximum 30
+- HARD CAP: If the page is vague or generic with no clear value proposition → maximum 40
 
-**conversionReadiness**: CTAs, booking forms, contact options, clear next steps.
+**trustProof** (Trust signals — count ONLY concrete evidence visible in the content):
+Start from 0, add points for each element explicitly found:
+- Customer testimonials with names or company names: +15
+- Star ratings or review scores displayed: +10
+- Case studies or portfolio with specific details: +10
+- Trust badges visible (certifications, awards, partner logos, security seals): +10
+- Team or founder info with real names: +10
+- Company address or legal registration info visible: +10
+- Privacy policy and/or terms of service linked: +5
+- Social proof numbers (e.g. "500+ customers", "10 years experience"): +10
+- Media mentions or press logos: +5
+- Money-back guarantee or risk-reduction offer: +5
+- Active social media links: +5
+- HARD CAP: If ZERO trust signals are found → maximum 15
+- HARD CAP: If only 1-2 basic signals (e.g. just a privacy link) → maximum 35
+- Do NOT infer or assume trust signals that are not explicitly visible in the content
 
-If Google PageSpeed data is provided in the context, use it to anchor your scores:
-- findability: Weight Google's SEO score heavily (within +/-10 points of Google's value)
-- mobileUsability: Factor in Performance score and Core Web Vitals (LCP < 2.5s = good, > 4s = poor)
-- Reference these objective metrics in the strengths/weaknesses where relevant
+**conversionReadiness** (Conversion optimization — count specific elements):
+Start from 0, add points for each element explicitly found:
+- Primary CTA visible in the first section / above the fold: +20
+- CTA uses clear, action-oriented text (not just "Submit" or "Click here"): +10
+- Multiple CTAs distributed throughout the page: +10
+- Contact form present and functional: +10
+- Phone number or direct contact method visible: +10
+- Live chat or chatbot indicator: +5
+- Email signup or newsletter form: +5
+- Booking or scheduling system: +10
+- Clear next-step guidance (explains what happens after clicking): +5
+- Low-friction entry point (free trial, demo, no credit card required): +10
+- Urgency or scarcity elements (limited offer, countdown, etc.): +5
+- HARD CAP: If NO CTA is found anywhere on the page → maximum 20
+- HARD CAP: If only a single generic CTA exists → maximum 45
+
+PAGESPEED ANCHORING (MANDATORY when Google PageSpeed data is provided):
+When the context includes "GOOGLE PAGESPEED DATA", apply these HARD CONSTRAINTS:
+- findability: Your score MUST be within +/-8 points of Google's SEO score. Google's measurement is authoritative and overrides your content-based estimate.
+- mobileUsability: Your score MUST NOT exceed Google's Performance score by more than 10 points. If Google Performance < 50, your mobileUsability MUST be below 55.
+- Reference specific PageSpeed metrics (LCP, CLS, FCP, TBT) in strengths/weaknesses.
+- These are hard constraints that override content-based assessment.
 
 If SOURCE CODE data is provided (from a GitHub repository), also evaluate and add a "codeAnalysis" key with this exact structure:
 {
@@ -233,7 +290,7 @@ async function analyzeWithGemini(content: string, apiKey: string): Promise<unkno
         ],
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 4096,
+          maxOutputTokens: 8192,
           responseMimeType: "application/json",
         },
       }),
@@ -265,7 +322,7 @@ async function analyzeWithOpenAI(content: string, apiKey: string, modelName: str
       ],
       response_format: { type: "json_object" },
       temperature: 0.2,
-      max_tokens: 4096,
+      max_tokens: 8192,
     }),
   });
 
@@ -321,7 +378,7 @@ async function analyzeWithPerplexity(content: string, apiKey: string): Promise<u
         { role: "user", content },
       ],
       temperature: 0.2,
-      max_tokens: 4096,
+      max_tokens: 8192,
     }),
   });
 
@@ -657,26 +714,26 @@ async function processQueue() {
       const githubRepoUrl = job.github_repo_url;
       const githubPromise = githubRepoUrl
         ? (async () => {
-            try {
-              const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${supabaseServiceKey}`,
-                },
-                body: JSON.stringify({ repoUrl: githubRepoUrl }),
-              });
-              if (!ghResp.ok) {
-                console.warn("GitHub fetch failed:", await ghResp.text());
-                return null;
-              }
-              const ghData = await ghResp.json();
-              return ghData.success ? ghData.data : null;
-            } catch (err) {
-              console.warn("GitHub fetch error (non-blocking):", err);
+          try {
+            const ghResp = await fetch(`${supabaseUrl}/functions/v1/fetch-github-repo`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${supabaseServiceKey}`,
+              },
+              body: JSON.stringify({ repoUrl: githubRepoUrl }),
+            });
+            if (!ghResp.ok) {
+              console.warn("GitHub fetch failed:", await ghResp.text());
               return null;
             }
-          })()
+            const ghData = await ghResp.json();
+            return ghData.success ? ghData.data : null;
+          } catch (err) {
+            console.warn("GitHub fetch error (non-blocking):", err);
+            return null;
+          }
+        })()
         : Promise.resolve(null);
 
       const [crawlResp, pagespeedData, githubData] = await Promise.all([crawlPromise, pagespeedPromise, githubPromise]);

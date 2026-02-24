@@ -44,7 +44,7 @@ const PageLoader = () => (
 const BackgroundWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen relative">
-      <div 
+      <div
         className="fixed inset-0 z-0 opacity-40 blur-lg"
         style={{
           backgroundImage: 'url(/images/bg-waves.png)',
@@ -68,7 +68,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          
+
           <ScrollToTop />
           <BackgroundWrapper>
             <ErrorBoundary>
@@ -88,17 +88,16 @@ const App = () => (
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route path="/dashboard" element={<Dashboard />} />
-                  
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </ErrorBoundary>
-          </BackgroundWrapper>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+                </Routes >
+              </Suspense >
+            </ErrorBoundary >
+          </BackgroundWrapper >
+        </AuthProvider >
+      </BrowserRouter >
+    </TooltipProvider >
+  </QueryClientProvider >
 );
 
 export default App;

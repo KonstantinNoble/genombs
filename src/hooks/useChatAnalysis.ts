@@ -39,6 +39,7 @@ export function useChatAnalysis({
 
     const realtimePausedRef = useRef(false);
     const expectedProfileCountRef = useRef<number>(0);
+    const expectedCompetitorCountRef = useRef<number>(0);
     const summaryModelRef = useRef<string | undefined>(undefined);
     const summaryTokenRef = useRef<string>("");
     const autoFindRef = useRef(false);
@@ -119,6 +120,17 @@ export function useChatAnalysis({
                                     }
                                     triggerAfterAnalysis(completed);
                                 }
+                            }
+                        }
+
+                        // Competitor-only analysis completion check
+                        const expectedComp = expectedCompetitorCountRef.current;
+                        if (expectedComp > 0) {
+                            const competitorProfiles = deduped.filter((p) => !p.is_own_website);
+                            const doneCompetitors = competitorProfiles.filter((p) => p.status === "completed" || p.status === "error").length;
+                            if (doneCompetitors >= expectedComp) {
+                                expectedCompetitorCountRef.current = 0;
+                                toast.success("Competitor analysis complete!");
                             }
                         }
                     });
@@ -278,6 +290,10 @@ export function useChatAnalysis({
         }
     };
 
+    const trackCompetitorAnalysis = useCallback((count: number) => {
+        expectedCompetitorCountRef.current = count;
+    }, []);
+
     return {
         profiles,
         setProfiles,
@@ -288,5 +304,6 @@ export function useChatAnalysis({
         deduplicateProfiles,
         handleScan,
         loadProfiles,
+        trackCompetitorAnalysis,
     };
 }

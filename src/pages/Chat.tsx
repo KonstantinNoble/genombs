@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
@@ -40,6 +41,7 @@ import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } fr
 const Chat = () => {
   const isMobile = useIsMobile();
   const { user, isLoading: authLoading, remainingCredits, creditsLimit, creditsResetAt, refreshCredits, isPremium } = useAuth();
+  const navigate = useNavigate();
 
   // 1. Conversation Management
   const {
@@ -314,6 +316,16 @@ const Chat = () => {
           <span className="text-muted-foreground/40 ml-0.5"> credits]</span>
         </span>
         <CreditResetTimer creditsResetAt={creditsResetAt} />
+        {!isPremium && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs px-2.5 border-primary/30 text-primary hover:bg-primary/10"
+            onClick={() => navigate("/pricing")}
+          >
+            Upgrade
+          </Button>
+        )}
       </div>
     </div>
   );

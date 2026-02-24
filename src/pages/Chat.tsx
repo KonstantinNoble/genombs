@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2 } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -98,6 +98,7 @@ const Chat = () => {
     handleSend,
     handleGithubDeepAnalysis,
     generateSummary,
+    codeAnalysisProgress,
   } = useChatMessages({
     activeId,
     getAccessToken,
@@ -369,6 +370,32 @@ const Chat = () => {
       )}
       {profiles.some((p) => p.status !== "completed" && p.status !== "error") && (
         <AnalysisProgress profiles={profiles} />
+      )}
+      {codeAnalysisProgress && (
+        <div className="mx-auto max-w-3xl w-full px-4 pb-3">
+          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              {codeAnalysisProgress.phase === "Done" ? (
+                <CheckCircle2 className="w-4 h-4 text-chart-6" />
+              ) : (
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+              )}
+              Deep Code Analysis
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5">
+                  <Code className="w-3 h-3 text-muted-foreground" />
+                  GitHub Repository
+                </span>
+                <span className={codeAnalysisProgress.phase === "Done" ? "text-chart-6" : "text-primary"}>
+                  {codeAnalysisProgress.phase}
+                </span>
+              </div>
+              <Progress value={codeAnalysisProgress.percent} className="h-1.5" />
+            </div>
+          </div>
+        </div>
       )}
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput

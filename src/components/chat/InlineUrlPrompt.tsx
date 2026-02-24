@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, getCodeAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 interface InlineUrlPromptProps {
   onStartAnalysis: (ownUrl: string, competitorUrls: string[], model: string, githubRepoUrl?: string, autoFindCompetitors?: boolean) => void;
@@ -57,7 +57,9 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
   const canAffordAutoFind = autoFind ? remainingCredits >= (costPerUrl + COMPETITOR_SEARCH_COST) : true;
   const canStartAnalysis = affordableUrls >= 1 && canAffordAutoFind && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 
-  const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && !isValidGithubUrl("") && onGithubOnlyAnalysis;
+  const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel);
+  const notEnoughForCode = remainingCredits < codeAnalysisCost;
+  const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && !isValidGithubUrl("") && onGithubOnlyAnalysis && !notEnoughForCode;
 
   const handleStart = () => {
     if (!canStartAnalysis) return;
@@ -238,10 +240,20 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
               {githubUrl.trim() && !isValidGithubUrl(githubUrl) && (
                 <p className="text-[11px] text-destructive">Must be a valid GitHub URL (https://github.com/owner/repo)</p>
               )}
-              {githubUrl.trim() && isValidGithubUrl(githubUrl) && (
+            {githubUrl.trim() && isValidGithubUrl(githubUrl) && (
                 <p className="text-[11px] text-chart-6">✓ Valid GitHub URL</p>
               )}
             </div>
+
+            <p className="text-[10px] text-muted-foreground/70">
+              Costs <span className="font-semibold text-foreground">{codeAnalysisCost} credits</span> with current model
+            </p>
+
+            {notEnoughForCode && (
+              <p className="text-[11px] text-destructive font-medium">
+                Not enough credits ({codeAnalysisCost} needed, {remainingCredits} remaining)
+              </p>
+            )}
 
             <Button
               onClick={handleGithubOnly}
@@ -250,7 +262,7 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
               size="sm"
             >
               <Github className="w-3.5 h-3.5 mr-1.5" />
-              Analyze Code
+              Analyze Code ({codeAnalysisCost} Credits)
             </Button>
           </>
         )}

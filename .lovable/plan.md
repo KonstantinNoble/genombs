@@ -1,96 +1,60 @@
 
 
-# Deep Code Analysis: Ladebalken + Auto-Scroll bei Fertigstellung
+# Fix: Credit-Vorabpruefung fuer "Find Competitors with AI"
 
-## Uebersicht
+## Problem
 
-Die Deep Code Analysis bekommt einen Fortschrittsbalken im Chat (analog zur URL-Analyse) und scrollt nach Abschluss automatisch zur Code-Quality-Sektion im Dashboard.
+Wenn "Find competitors automatically with AI" aktiviert ist, zeigt das UI korrekt "+7 Credits" an. Allerdings prueft die `canStartAnalysis`-Logik nur, ob genug Credits fuer den Website-Scan vorhanden sind (`affordableUrls >= 1`). Die 7 zusaetzlichen Credits fuer die Konkurrentensuche werden ignoriert.
 
-## Aktuelle Situation
-
-- URL-Analyse: Hat Fortschrittsbalken via `AnalysisProgress`-Komponente (nutzt `profile.status` aus der Queue)
-- Deep Code Analysis: Kein visueller Fortschritt -- nur eine Chat-Nachricht "Starting Deep Analysis..." und dann Warten bis fertig
-- Der Deep-Code-Analysis-Aufruf ist synchron (`addGithubAnalysis` wartet auf die Edge Function Response), es gibt keine Queue-Status-Updates
+**Beispiel:** User hat 8 Credits, Scan kostet 7 Credits (Gemini Flash).
+- `affordableUrls = 1` -- Button ist aktiviert
+- Eigener Scan startet (7 Credits) -- Erfolg, 1 Credit uebrig
+- Automatische Konkurrentensuche (7 Credits) -- **Fehlermeldung**, nur 1 Credit
 
 ## Loesung
 
-Da die Deep Code Analysis synchron ablaeuft (kein Queue-System), wird ein **lokaler State-basierter Fortschrittsbalken** im Chat angezeigt, der die Phasen simuliert:
+Wenn `autoFind` aktiviert ist, muss geprueft werden ob `remainingCredits >= costPerUrl + COMPETITOR_SEARCH_COST` (z.B. 7 + 7 = 14 Credits bei Gemini Flash).
 
-1. **Fetching repository** (0-33%)
-2. **Analyzing code** (33-66%)  
-3. **Generating results** (66-90%)
-4. **Done** (100%)
+## Technische Aenderungen
 
-### Aenderung 1: Neuer State `codeAnalysisProgress` in `useChatMessages.ts`
-
-- Neuer State: `codeAnalysisProgress: { active: boolean; phase: string; percent: number } | null`
-- Wird beim Start auf Phase 1 gesetzt und automatisch per Timer hochgestuft
-- Bei Abschluss/Fehler auf `null` zurueckgesetzt
-- Wird als Return-Wert des Hooks exportiert
-
-### Aenderung 2: `handleGithubDeepAnalysis` erweitern
+### 1. `src/components/chat/ChatInput.tsx` (Zeile 164)
 
 ```text
-// Vor addGithubAnalysis:
-setCodeAnalysisProgress({ active: true, phase: "Fetching repository...", percent: 15 });
+// Vorher:
+const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 
-// Timer: nach ~3s auf "Analyzing code..." (45%), nach ~8s auf "Generating results..." (75%)
-
-// Nach erfolgreichem Abschluss:
-setCodeAnalysisProgress({ active: true, phase: "Done", percent: 100 });
-// Nach 2s: setCodeAnalysisProgress(null);
-
-// + Auto-Scroll zur Code-Quality-Sektion im Dashboard:
-setTimeout(() => {
-  document.getElementById("section-code-quality")?.scrollIntoView({ behavior: "smooth" });
-}, 500);
+// Nachher:
+const canAffordAutoFind = autoFind ? remainingCredits >= (costPerUrl + COMPETITOR_SEARCH_COST) : true;
+const canStartAnalysis = affordableUrls >= 1 && canAffordAutoFind && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 ```
 
-### Aenderung 3: Fortschrittsbalken im Chat rendern (`Chat.tsx`)
+`COMPETITOR_SEARCH_COST` ist bereits importiert (Zeile 30).
 
-Direkt unter dem bestehenden `AnalysisProgress` (fuer URL-Analysen) wird ein neuer Block fuer die Code-Analyse angezeigt, wenn `codeAnalysisProgress` aktiv ist:
+### 2. `src/components/chat/InlineUrlPrompt.tsx` (Zeile 57)
+
+Identische Aenderung:
 
 ```text
-{codeAnalysisProgress && (
-  <div className="mx-auto max-w-3xl w-full px-4 pb-3">
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
-      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-        {codeAnalysisProgress.phase === "Done" ? (
-          <CheckCircle2 className="w-4 h-4 text-chart-6" />
-        ) : (
-          <Loader2 className="w-4 h-4 animate-spin text-primary" />
-        )}
-        Deep Code Analysis
-      </div>
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="flex items-center gap-1.5">
-            <Code className="w-3 h-3 text-muted-foreground" />
-            GitHub Repository
-          </span>
-          <span className={config.color}>{codeAnalysisProgress.phase}</span>
-        </div>
-        <Progress value={codeAnalysisProgress.percent} className="h-1.5" />
-      </div>
-    </div>
-  </div>
-)}
+// Vorher:
+const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
+
+// Nachher:
+const canAffordAutoFind = autoFind ? remainingCredits >= (costPerUrl + COMPETITOR_SEARCH_COST) : true;
+const canStartAnalysis = affordableUrls >= 1 && canAffordAutoFind && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 ```
 
-### Aenderung 4: Erfolgs-Toast mit Hinweis
+`COMPETITOR_SEARCH_COST` ist bereits importiert (Zeile 10).
 
-Nach Abschluss wird der bestehende Toast erweitert:
+## Ergebnis
 
-```text
-toast.success("Deep Code Analysis complete!", {
-  description: "Results are now available in the Code Quality section.",
-});
-```
+- `autoFind` aus: Verhalten bleibt identisch
+- `autoFind` an: Button wird erst aktiviert, wenn Credits fuer Scan + Konkurrentensuche reichen
+- Kein abgebrochener Flow mehr
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `src/hooks/useChatMessages.ts` | Neuer State `codeAnalysisProgress`, Timer-Logik in `handleGithubDeepAnalysis`, Auto-Scroll, Export |
-| `src/pages/Chat.tsx` | `codeAnalysisProgress` aus Hook lesen, Fortschrittsbalken-UI rendern |
+| `src/components/chat/ChatInput.tsx` | `canStartAnalysis` um `canAffordAutoFind`-Check erweitern |
+| `src/components/chat/InlineUrlPrompt.tsx` | Identische Aenderung |
 

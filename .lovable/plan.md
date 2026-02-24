@@ -1,77 +1,96 @@
 
 
-# AI Summary ohne Credit-Abzug: Inklusiv bei jeder Analyse
+# Deep Code Analysis: Ladebalken + Auto-Scroll bei Fertigstellung
 
 ## Uebersicht
 
-Die AI Summary (automatische Zusammenfassung nach jeder Website- oder Code-Analyse) soll kuenftig **keine Credits mehr kosten**. Sie ist im Analyse-Preis inbegriffen. Normale Chat-Nachrichten kosten weiterhin Credits.
+Die Deep Code Analysis bekommt einen Fortschrittsbalken im Chat (analog zur URL-Analyse) und scrollt nach Abschluss automatisch zur Code-Quality-Sektion im Dashboard.
 
-## Technische Umsetzung
+## Aktuelle Situation
 
-### 1. Chat Edge Function: `skipCredits`-Flag akzeptieren
+- URL-Analyse: Hat Fortschrittsbalken via `AnalysisProgress`-Komponente (nutzt `profile.status` aus der Queue)
+- Deep Code Analysis: Kein visueller Fortschritt -- nur eine Chat-Nachricht "Starting Deep Analysis..." und dann Warten bis fertig
+- Der Deep-Code-Analysis-Aufruf ist synchron (`addGithubAnalysis` wartet auf die Edge Function Response), es gibt keine Queue-Status-Updates
 
-**Datei:** `supabase/functions/chat/index.ts`
+## Loesung
 
-- In der Main-Handler-Funktion (Zeile ~422) wird ein neues optionales Feld `skipCredits` aus dem Request-Body gelesen
-- Wenn `skipCredits === true`, wird `checkAndDeductCredits()` komplett uebersprungen
-- `creditsDeducted` bleibt `false`, sodass bei Fehlern kein Refund versucht wird
-- Sicherheitsmassnahme: `skipCredits` wird nur erlaubt, wenn der User authentifiziert ist (Token wird wie bisher geprueft)
+Da die Deep Code Analysis synchron ablaeuft (kein Queue-System), wird ein **lokaler State-basierter Fortschrittsbalken** im Chat angezeigt, der die Phasen simuliert:
 
-```text
-// Zeile ~422: Body-Parsing erweitern
-const { messages, conversationId, model: modelKey, skipCredits } = await req.json();
+1. **Fetching repository** (0-33%)
+2. **Analyzing code** (33-66%)  
+3. **Generating results** (66-90%)
+4. **Done** (100%)
 
-// Zeile ~475: Credit-Check nur wenn nicht skipCredits
-if (!skipCredits) {
-  const creditResult = await checkAndDeductCredits(...);
-  if (!creditResult.ok) { return ... }
-  creditsDeducted = true;
-  refundUserId = user.id;
-}
-```
+### Aenderung 1: Neuer State `codeAnalysisProgress` in `useChatMessages.ts`
 
-### 2. streamChat API: `skipCredits`-Parameter durchreichen
+- Neuer State: `codeAnalysisProgress: { active: boolean; phase: string; percent: number } | null`
+- Wird beim Start auf Phase 1 gesetzt und automatisch per Timer hochgestuft
+- Bei Abschluss/Fehler auf `null` zurueckgesetzt
+- Wird als Return-Wert des Hooks exportiert
 
-**Datei:** `src/lib/api/chat-api.ts`
-
-- `streamChat()` bekommt einen neuen optionalen Parameter `skipCredits?: boolean`
-- Dieser wird im Request-Body an die Edge Function weitergegeben
+### Aenderung 2: `handleGithubDeepAnalysis` erweitern
 
 ```text
-export async function streamChat({
-  messages, conversationId, accessToken, model, onDelta, onDone,
-  skipCredits,  // NEU
-}: {
-  // ...existing types...
-  skipCredits?: boolean;  // NEU
-}) {
-  body: JSON.stringify({ messages, conversationId, model, skipCredits }),
-}
+// Vor addGithubAnalysis:
+setCodeAnalysisProgress({ active: true, phase: "Fetching repository...", percent: 15 });
+
+// Timer: nach ~3s auf "Analyzing code..." (45%), nach ~8s auf "Generating results..." (75%)
+
+// Nach erfolgreichem Abschluss:
+setCodeAnalysisProgress({ active: true, phase: "Done", percent: 100 });
+// Nach 2s: setCodeAnalysisProgress(null);
+
+// + Auto-Scroll zur Code-Quality-Sektion im Dashboard:
+setTimeout(() => {
+  document.getElementById("section-code-quality")?.scrollIntoView({ behavior: "smooth" });
+}, 500);
 ```
 
-### 3. generateSummary: `skipCredits: true` setzen
+### Aenderung 3: Fortschrittsbalken im Chat rendern (`Chat.tsx`)
 
-**Datei:** `src/hooks/useChatMessages.ts`
+Direkt unter dem bestehenden `AnalysisProgress` (fuer URL-Analysen) wird ein neuer Block fuer die Code-Analyse angezeigt, wenn `codeAnalysisProgress` aktiv ist:
 
-- In der `generateSummary`-Funktion (Zeile ~223) wird `skipCredits: true` an `streamChat()` uebergeben
-- Der gesamte `insufficient_credits`-Error-Handler fuer die Summary (Zeilen 247-262) kann entfernt werden, da dieser Fall nicht mehr eintreten kann
-- Ein einfacher `catch`-Block fuer unerwartete Fehler bleibt bestehen
+```text
+{codeAnalysisProgress && (
+  <div className="mx-auto max-w-3xl w-full px-4 pb-3">
+    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+        {codeAnalysisProgress.phase === "Done" ? (
+          <CheckCircle2 className="w-4 h-4 text-chart-6" />
+        ) : (
+          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+        )}
+        Deep Code Analysis
+      </div>
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-1.5">
+            <Code className="w-3 h-3 text-muted-foreground" />
+            GitHub Repository
+          </span>
+          <span className={config.color}>{codeAnalysisProgress.phase}</span>
+        </div>
+        <Progress value={codeAnalysisProgress.percent} className="h-1.5" />
+      </div>
+    </div>
+  </div>
+)}
+```
 
-### 4. handleGithubDeepAnalysis: Summary ebenfalls kostenlos
+### Aenderung 4: Erfolgs-Toast mit Hinweis
 
-In derselben Datei wird die GitHub-Deep-Analysis-Summary (falls vorhanden) ebenfalls mit `skipCredits: true` aufgerufen, da die Summary Teil der Analyse ist.
+Nach Abschluss wird der bestehende Toast erweitert:
 
-## Was sich NICHT aendert
-
-- Normale Chat-Nachrichten (`handleSend`) kosten weiterhin Credits
-- Die Analyse selbst (Website/Code) kostet weiterhin Credits (in analyze-website/process-analysis-queue)
-- Die Credit-Fehlermeldungen fuer normale Chat-Nachrichten bleiben wie zuletzt implementiert (Free vs Premium differenziert)
+```text
+toast.success("Deep Code Analysis complete!", {
+  description: "Results are now available in the Code Quality section.",
+});
+```
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `supabase/functions/chat/index.ts` | `skipCredits`-Flag aus Body lesen, Credit-Check bedingt ueberspringen |
-| `src/lib/api/chat-api.ts` | `skipCredits`-Parameter an `streamChat()` hinzufuegen |
-| `src/hooks/useChatMessages.ts` | `skipCredits: true` bei `generateSummary` setzen, unnoetigen Error-Handler entfernen |
+| `src/hooks/useChatMessages.ts` | Neuer State `codeAnalysisProgress`, Timer-Logik in `handleGithubDeepAnalysis`, Auto-Scroll, Export |
+| `src/pages/Chat.tsx` | `codeAnalysisProgress` aus Hook lesen, Fortschrittsbalken-UI rendern |
 

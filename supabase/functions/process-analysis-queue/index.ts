@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 /**
  * process-analysis-queue
@@ -398,24 +398,26 @@ function parseJsonResponse(text: string): unknown {
     return JSON.parse(text);
   } catch { /* continue */ }
 
-  // 2. Markdown code block
-  const jsonMatch = text.match(/```json?\s*([\s\S]*?)\s*```/);
-  if (jsonMatch) {
-    try {
-      return JSON.parse(jsonMatch[1]);
-    } catch { /* continue */ }
-  }
+  // 2. Markdown code block extraction
+  const jsonMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (jsonMatch) { try { return JSON.parse(jsonMatch[1].trim()); } catch { /* continue */ } }
 
-  // 3. Extract first { ... last }
+  // 3. Extract between first { and last }
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
   if (firstBrace !== -1 && lastBrace > firstBrace) {
-    try {
-      return JSON.parse(text.substring(firstBrace, lastBrace + 1));
-    } catch { /* continue */ }
+    const extracted = text.substring(firstBrace, lastBrace + 1);
+    try { return JSON.parse(extracted); } catch { /* continue */ }
+
+    // 4. Try fixing trailing commas (common AI mistake)
+    const cleaned = extracted
+      .replace(/,\s*([\]}])/g, "$1")           // trailing commas
+      .replace(/(['"])?(\w+)(['"])?\s*:/g, '"$2":') // unquoted keys
+      .replace(/:\s*'([^']*)'/g, ': "$1"');     // single-quoted values
+    try { return JSON.parse(cleaned); } catch { /* continue */ }
   }
 
-  console.error("Failed to parse AI response. First 500 chars:", text.substring(0, 500));
+  console.error("Failed to parse AI response. Length:", text.length, "First 500 chars:", text.substring(0, 500));
   throw new Error("Could not parse AI response as JSON");
 }
 
@@ -567,7 +569,7 @@ function validateCodeAnalysis(raw: unknown): Record<string, unknown> {
   };
 }
 
-// ─── Credit refund helper ───
+// ─── Credit costs ───
 
 const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
   "gemini-flash": 9,
@@ -579,32 +581,6 @@ const ANALYSIS_CREDIT_COSTS: Record<string, number> = {
 
 function getAnalysisCreditCost(modelKey: string): number {
   return ANALYSIS_CREDIT_COSTS[modelKey] ?? 9;
-}
-
-async function refundCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
-  userId: string,
-  cost: number,
-  reason: string
-): Promise<void> {
-  try {
-    const { data } = await supabaseAdmin
-      .from("user_credits")
-      .select("id, credits_used")
-      .eq("user_id", userId)
-      .single();
-
-    if (data) {
-      const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
-      await supabaseAdmin
-        .from("user_credits")
-        .update({ credits_used: newUsed })
-        .eq("id", data.id);
-      console.log(`Credits refunded: ${cost} for user ${userId} (${reason})`);
-    }
-  } catch (e) {
-    console.error("Credit refund failed:", e);
-  }
 }
 
 // ─── Queue Processing ───
@@ -879,15 +855,22 @@ async function processQueue() {
         console.warn("PAGESPEED_GOOGLE secret NOT FOUND -- skipping PageSpeed");
       }
 
-      // Append GitHub source code data if available
+      // Append GitHub source code data if available (with truncation to prevent token overflow)
       if (githubData) {
         console.log(`GitHub data: ${githubData.fetchedFiles} files, ${githubData.totalChars} chars from ${githubData.repo}`);
         enrichedContent += `\n\n=== SOURCE CODE ANALYSIS (from GitHub: ${githubData.repo}) ===`;
         enrichedContent += `\nRepository: ${githubData.repo}`;
         enrichedContent += `\nTotal relevant files: ${githubData.totalRelevantFiles}`;
         enrichedContent += `\n\n--- File Tree ---\n${githubData.fileTree}`;
+        const MAX_CODE_CHARS = 80000;
+        let codeChars = 0;
         for (const file of githubData.files) {
+          if (codeChars + file.content.length > MAX_CODE_CHARS) {
+            console.warn(`Truncating GitHub code at ${codeChars} chars (limit: ${MAX_CODE_CHARS})`);
+            break;
+          }
           enrichedContent += `\n\n--- ${file.path} ---\n${file.content}`;
+          codeChars += file.content.length;
         }
       }
 

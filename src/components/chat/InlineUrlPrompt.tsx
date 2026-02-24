@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST, getAutoFindUpfrontCost } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 interface InlineUrlPromptProps {
   onStartAnalysis: (ownUrl: string, competitorUrls: string[], model: string, githubRepoUrl?: string, autoFindCompetitors?: boolean) => void;
@@ -46,10 +46,6 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
   const effectiveCompetitorFields = Math.max(0, effectiveMaxFields - 1);
   const isOwnUrlDisabled = affordableUrls < 1;
 
-  // Auto-find requires: 7 (Perplexity search) + own website analysis cost
-  const autoFindUpfrontCost = getAutoFindUpfrontCost(selectedModel);
-  const canAutoFind = remainingCredits >= autoFindUpfrontCost;
-
   const competitorFields = [
     { label: "Competitor 1", value: comp1, set: setComp1 },
     { label: "Competitor 2", value: comp2, set: setComp2 },
@@ -58,12 +54,7 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
 
   const competitorUrls = autoFind ? [] : [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
   const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u)) && (mode === "code" ? isValidGithubUrl(githubUrl) : true);
-  const canStartAnalysis =
-    ownUrl.trim() &&
-    allUrlsValid &&
-    (autoFind
-      ? canAutoFind  // must afford search + own website
-      : affordableUrls >= 1 && competitorUrls.length > 0);
+  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 
   const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && !isValidGithubUrl("") && onGithubOnlyAnalysis;
 
@@ -85,20 +76,22 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
         <div className="flex gap-1 p-1 bg-muted rounded-lg">
           <button
             onClick={() => setMode("website")}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === "website"
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              mode === "website"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
-              }`}
+            }`}
           >
             <Globe className="w-3.5 h-3.5" />
             Website Analysis
           </button>
           <button
             onClick={() => setMode("code")}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === "code"
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              mode === "code"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
-              }`}
+            }`}
           >
             <Code className="w-3.5 h-3.5" />
             Code Analysis
@@ -138,28 +131,21 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
 
             {/* Auto-find toggle */}
             <div
-              className={`flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border bg-muted/30 ${canAutoFind ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
-                }`}
-              onClick={() => canAutoFind && setAutoFind(!autoFind)}
+              className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border bg-muted/30 cursor-pointer"
+              onClick={() => setAutoFind(!autoFind)}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Search className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="text-xs font-medium text-foreground">Find competitors automatically with AI</span>
-                <span className="text-[10px] text-muted-foreground shrink-0">(+{autoFindUpfrontCost} Credits + {costPerUrl} per competitor)</span>
+                <span className="text-[10px] text-muted-foreground shrink-0">(+{COMPETITOR_SEARCH_COST} Credits)</span>
               </div>
               <Switch
                 checked={autoFind}
-                onCheckedChange={(v) => canAutoFind && setAutoFind(v)}
+                onCheckedChange={setAutoFind}
                 onClick={(e) => e.stopPropagation()}
                 className="shrink-0"
-                disabled={!canAutoFind}
               />
             </div>
-            {!canAutoFind && (
-              <p className="text-[11px] text-destructive">
-                Not enough credits for auto-find ({autoFindUpfrontCost} needed, {remainingCredits} remaining)
-              </p>
-            )}
 
             {/* Competitor fields - hidden when autoFind is active */}
             {!autoFind && (

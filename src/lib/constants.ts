@@ -53,9 +53,3 @@ export function getAnalysisCreditCost(modelId: string): number {
 export function getCodeAnalysisCreditCost(modelId: string): number {
   return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
 }
-
-// Total upfront cost for "Find competitors automatically":
-// = Perplexity search cost + own website analysis cost
-export function getAutoFindUpfrontCost(modelId: string): number {
-  return COMPETITOR_SEARCH_COST + getAnalysisCreditCost(modelId);
-}

@@ -8,10 +8,6 @@ const corsHeaders = {
 };
 
 const COMPETITOR_SEARCH_COST = 7;
-// Minimum credits needed for at least one website analysis (cheapest model)
-// so we don't let users start auto-find if they can't afford a single competitor analysis afterwards
-const MIN_ANALYSIS_COST = 9;
-const REQUIRED_CREDITS = COMPETITOR_SEARCH_COST + MIN_ANALYSIS_COST; // = 16
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -86,7 +82,7 @@ serve(async (req) => {
       }
       const limit = credits.daily_credits_limit ?? 20;
       const remaining = limit - creditsUsed;
-      if (remaining < REQUIRED_CREDITS) {
+      if (remaining < COMPETITOR_SEARCH_COST) {
         const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
         return new Response(JSON.stringify({ error: `insufficient_credits:${hoursLeft}` }), {
           status: 403,
@@ -138,37 +134,22 @@ Rules:
 - Do NOT include the original website
 - Return ONLY valid JSON, no markdown, no explanation`;
 
-    // Call Perplexity sonar-pro (with 30s timeout)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
-    let ppxResp: Response;
-    try {
-      ppxResp = await fetch("https://api.perplexity.ai/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${perplexityKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "sonar-pro",
-          messages: [
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.1,
-          max_tokens: 2048,
-        }),
-        signal: controller.signal,
-      });
-    } catch (fetchErr: any) {
-      clearTimeout(timeoutId);
-      const isTimeout = fetchErr?.name === "AbortError";
-      console.error("Perplexity fetch error:", fetchErr);
-      return new Response(JSON.stringify({ error: isTimeout ? "Competitor search timed out" : "Competitor search unavailable" }), {
-        status: 503,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    clearTimeout(timeoutId);
+    // Call Perplexity sonar-pro
+    const ppxResp = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${perplexityKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "sonar-pro",
+        messages: [
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.1,
+        max_tokens: 2048,
+      }),
+    });
 
     const ppxData = await ppxResp.json();
     if (!ppxResp.ok) {

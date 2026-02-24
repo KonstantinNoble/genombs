@@ -1,71 +1,63 @@
 
+# Fix: Echtzeit-Credit-Aktualisierung
 
-# Umfassender Fix: Verbleibende Credit-Diskrepanzen
+## Problem
 
-## Status nach den bisherigen Fixes
+Credits werden erst nach Seiten-Reload korrekt angezeigt, weil:
 
-| Komponente | Status |
-|---|---|
-| `src/lib/constants.ts` | OK -- `codeAnalysis` (12/12/16/16/19) und `getCodeAnalysisCreditCost` vorhanden |
-| `src/components/chat/ChatInput.tsx` | OK -- verwendet `getCodeAnalysisCreditCost` fuer GitHub Deep Analysis Dialog |
-| `src/pages/Chat.tsx` | OK -- uebergibt dynamisches `selectedModel` an InlineUrlPrompt |
-| `supabase/functions/add-github-analysis/index.ts` | OK -- Backend hat 12/12/16/16/19 (Frontend passt sich an) |
+1. **Analyse-Credits werden asynchron abgezogen**: Die `process-analysis-queue` Edge Function laeuft per Cron (alle 30s). Wenn der User eine Analyse startet, wird `refreshCredits()` sofort aufgerufen -- aber die Credits werden erst spaeter abgezogen. Das Realtime-Event fuer `user_credits` kommt nicht zuverlaessig an.
 
-## Verbleibendes Problem: InlineUrlPrompt "Code Analysis" Tab
+2. **Kein refreshCredits bei Profil-Completion**: Die Realtime-Subscription fuer `website_profiles` in `useChatAnalysis.ts` laedt zwar Profile neu, ruft aber NICHT `refreshCredits()` auf, obwohl genau zu diesem Zeitpunkt Credits abgezogen wurden.
 
-Die Komponente `src/components/chat/InlineUrlPrompt.tsx` hat einen **Code Analysis** Tab (Zeile 89-99), der folgende Probleme hat:
+3. **Kein Fallback-Polling**: Wenn die Realtime-Verbindung fuer `user_credits` fehlschlaegt (z.B. Netzwerkprobleme), gibt es keinen Fallback.
 
-### Problem 1: Keine Kostenanzeige
+## Loesung
 
-Der Code Analysis Tab zeigt dem User **nicht**, wie viele Credits die Analyse kostet. Der Button sagt nur "Analyze Code" ohne Creditangabe. Der Website Analysis Tab zeigt dagegen korrekt die Kosten pro URL.
+### 1. `src/hooks/useChatAnalysis.ts` -- refreshCredits bei Profil-Completion
 
-### Problem 2: Keine Credit-Pruefung
+In der Realtime-Subscription fuer `website_profiles` (Zeile 89-117) wird `refreshCredits()` aufgerufen, sobald ein Profil den Status "completed" oder "error" erhaelt. Das ist genau der Zeitpunkt, an dem `process-analysis-queue` die Credits abgezogen hat.
 
-Die Variable `canStartGithubOnly` (Zeile 60) prueft nur ob die URL gueltig ist -- **nicht** ob der User genuegend Credits hat:
+**Aenderungen:**
+- `refreshCredits` als Parameter zum Hook hinzufuegen (Interface + Destrukturierung)
+- Im Realtime-Callback (Zeile 89-116): nach dem Laden der Profile `refreshCredits()` aufrufen, wenn sich der Status eines Profils auf "completed" oder "error" geaendert hat
 
-```text
-const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && ... ;
+```typescript
+// Im Realtime-Callback nach loadProfiles:
+refreshCredits(); // Credits nach jeder Profil-Aenderung aktualisieren
 ```
 
-Das heisst: Ein User mit 0 Credits kann den Button klicken und bekommt erst einen Backend-Fehler.
+### 2. `src/contexts/AuthContext.tsx` -- Polling-Fallback hinzufuegen
 
-### Problem 3: Falscher Import
+Ein Intervall-basierter Fallback, der alle 30 Sekunden die Credits abfragt, solange der User eingeloggt ist. Das faengt Faelle ab, in denen Realtime nicht zuverlaessig funktioniert (Netzwerkprobleme, externe Supabase-Instanz).
 
-`InlineUrlPrompt` importiert nur `getAnalysisCreditCost` (9/9/12/12/14), aber fuer Code-Analyse muss `getCodeAnalysisCreditCost` (12/12/16/16/19) verwendet werden.
+**Neuer useEffect:**
 
----
+```typescript
+// Polling fallback for credit refresh (every 30s)
+useEffect(() => {
+  if (!user) return;
+  const interval = setInterval(() => {
+    refreshCredits();
+  }, 30000);
+  return () => clearInterval(interval);
+}, [user, refreshCredits]);
+```
 
-## Aenderungen
+### 3. `src/pages/Chat.tsx` -- refreshCredits an useChatAnalysis weitergeben
 
-### `src/components/chat/InlineUrlPrompt.tsx`
-
-1. **Import erweitern**: `getCodeAnalysisCreditCost` zusaetzlich importieren
-2. **Credit-Kosten berechnen**: `const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel)` hinzufuegen
-3. **Credit-Pruefung**: `canStartGithubOnly` um Credit-Check erweitern:
-   ```text
-   const notEnoughForCode = remainingCredits < codeAnalysisCost;
-   const canStartGithubOnly = ... && !notEnoughForCode;
-   ```
-4. **Kostenanzeige im UI**: Text hinzufuegen der die Kosten anzeigt (analog zum ChatInput Dialog):
-   ```text
-   "Costs X credits with [Model]"
-   ```
-5. **Credit-Warnung**: Wenn nicht genug Credits, Warnung anzeigen:
-   ```text
-   "Not enough credits (X needed, Y remaining)"
-   ```
-6. **Button-Text**: Credits im Button anzeigen:
-   ```text
-   "Analyze Code (X Credits)"
-   ```
-
----
+Der `refreshCredits`-Parameter muss an den `useChatAnalysis`-Hook durchgereicht werden, damit dieser ihn im Realtime-Callback verwenden kann.
 
 ## Zusammenfassung
 
 | Datei | Aenderung |
 |---|---|
-| `src/components/chat/InlineUrlPrompt.tsx` | `getCodeAnalysisCreditCost` importieren, Credit-Check + Kostenanzeige + Warnung fuer Code Analysis Tab |
+| `src/hooks/useChatAnalysis.ts` | `refreshCredits` als Parameter + Aufruf im Realtime-Callback bei Profil-Completion |
+| `src/contexts/AuthContext.tsx` | 30-Sekunden Polling-Fallback fuer Credit-Refresh |
+| `src/pages/Chat.tsx` | `refreshCredits` an `useChatAnalysis` Hook uebergeben |
 
-Es ist nur eine Datei betroffen. Alle anderen Dateien sind bereits korrekt.
+## Warum diese Loesung?
 
+- **Realtime + Polling = Zuverlaessigkeit**: Realtime gibt sofortige Updates wenn es funktioniert, Polling faengt Ausfaelle ab
+- **Profil-Completion-Trigger**: Genau zum richtigen Zeitpunkt (wenn Credits tatsaechlich abgezogen wurden) wird `refreshCredits()` aufgerufen
+- **Minimale Aenderungen**: Nur 3 Dateien, keine neuen Abhaengigkeiten
+- **30s Intervall**: Genuegend fuer zeitnahe Updates, ohne die Datenbank zu ueberlasten

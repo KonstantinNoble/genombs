@@ -35,7 +35,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 
 import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
-import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS } from "@/lib/constants";
+import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } from "@/lib/constants";
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -122,6 +122,7 @@ const Chat = () => {
   const [urlDialogOpen, setUrlDialogOpen] = useState(false);
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
   const [isFindingCompetitors, setIsFindingCompetitors] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("gemini-flash");
 
   // Competitor URL limits: free→1, premium→3
   const maxCompetitorSelectable = isPremium ? PREMIUM_MAX_URL_FIELDS - 1 : FREE_MAX_URL_FIELDS - 1;
@@ -168,10 +169,24 @@ const Chat = () => {
   const handleAnalyzeSelectedCompetitors = async (urls: string[]) => {
     if (!activeId || !user || urls.length === 0) return;
     const limitedUrls = urls.slice(0, maxCompetitorSelectable);
+
+    // Pre-validate credits before starting any scans
+    const costPerUrl = getAnalysisCreditCost(selectedModel);
+    const totalCost = limitedUrls.length * costPerUrl;
+
+    if (remainingCredits < totalCost) {
+      const affordable = Math.floor(remainingCredits / costPerUrl);
+      toast.error("Not enough credits", {
+        description: `You need ${totalCost} credits for ${limitedUrls.length} scans, but only have ${remainingCredits}. You can afford ${affordable} scan${affordable !== 1 ? "s" : ""}.`,
+        duration: 6000,
+      });
+      return;
+    }
+
     const token = await getAccessToken();
     try {
       await Promise.all(
-        limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token))
+        limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token, selectedModel))
       );
       toast.success(`Analyzing ${limitedUrls.length} competitor${limitedUrls.length > 1 ? "s" : ""}...`);
       refreshCredits();
@@ -402,6 +417,7 @@ const Chat = () => {
           onSend={(content, model) => handleSend(content, user?.id, model)}
           onScan={(ownUrl, compUrls, model, repo, autoFind) => onStartScan(ownUrl, compUrls, model, repo, autoFind)}
           onGithubAnalysis={(url, model) => handleGithubDeepAnalysis(url, user?.id, model)}
+          onModelChange={(model) => setSelectedModel(model)}
           onPromptUrl={async (message) => {
             if (!activeId) return;
             try {

@@ -45,6 +45,7 @@ interface ChatInputProps {
   onGithubAnalysis?: (githubUrl: string, model?: string) => void;
   onClearUrls?: () => void;
   onPromptUrl?: (message: string) => void;
+  onModelChange?: (model: string) => void;
   disabled?: boolean;
   hasProfiles?: boolean;
   hasOwnProfile?: boolean;
@@ -56,7 +57,7 @@ interface ChatInputProps {
   onExternalGithubChange?: (open: boolean) => void;
 }
 
-const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl, disabled, hasProfiles = true, hasOwnProfile = false, initialOwnUrl, initialCompetitorUrls, externalDialogOpen, onExternalDialogChange, externalGithubOpen, onExternalGithubChange }: ChatInputProps) => {
+const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl, onModelChange, disabled, hasProfiles = true, hasOwnProfile = false, initialOwnUrl, initialCompetitorUrls, externalDialogOpen, onExternalDialogChange, externalGithubOpen, onExternalGithubChange }: ChatInputProps) => {
   const { isPremium, remainingCredits } = useAuth();
   const navigate = useNavigate();
   const CHAT_MAX_LENGTH = 300;
@@ -98,7 +99,10 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
       const affordable = AI_MODELS.find(
         (m) => (isPremium || !isExpensiveModel(m.id)) && remainingCredits >= getChatCreditCost(m.id)
       );
-      if (affordable) setSelectedModel(affordable.id);
+      if (affordable) {
+        setSelectedModel(affordable.id);
+        onModelChange?.(affordable.id);
+      }
     }
   }, [remainingCredits, selectedModel, isPremium]);
 
@@ -213,6 +217,7 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
                           onClick={() => {
                             if (isDisabled) return;
                             setSelectedModel(model.id);
+                            onModelChange?.(model.id);
                             setModelOpen(false);
                           }}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-sm transition-colors ${

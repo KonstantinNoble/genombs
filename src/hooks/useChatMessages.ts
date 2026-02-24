@@ -235,9 +235,31 @@ export function useChatMessages({
                 const savedAssistant = await saveMessage(activeId, "assistant", assistantContent);
                 setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
                 setIsStreaming(false);
-            } catch (e) {
-                console.error("Summary generation failed:", e);
+        } catch (e) {
                 setIsStreaming(false);
+                const errMsg = e instanceof Error ? e.message : "";
+
+                // Remove the temporary streaming message if it exists
+                setMessages((prev) => prev.filter((m) => !m.id.startsWith("temp-summary-")));
+
+                if (errMsg.startsWith("insufficient_credits:")) {
+                    const hours = errMsg.split(":")[1];
+                    const creditNotice = await saveMessage(
+                        activeId,
+                        "assistant",
+                        "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n"
+                        + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+                        + "However, generating the AI-powered summary in this chat requires additional credits, "
+                        + `and your daily limit has been reached. Your credits will reset in **${hours} hour(s)**.\n\n`
+                        + "**What you can do:**\n"
+                        + "- Review your full analysis results in the dashboard panels\n"
+                        + "- Come back after your credits reset to ask follow-up questions\n"
+                        + "- Upgrade to Premium for a higher daily credit limit"
+                    );
+                    setMessages((prev) => [...prev, creditNotice]);
+                } else {
+                    console.error("Summary generation failed:", e);
+                }
             }
         },
         [activeId]

@@ -29,6 +29,7 @@ export function useChatMessages({
 }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
+    const [analyzingGithubUrl, setAnalyzingGithubUrl] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Load messages on activeId change
@@ -142,6 +143,7 @@ export function useChatMessages({
         setMessages((prev) => [...prev, confirmMsg]);
 
         try {
+            setAnalyzingGithubUrl(githubUrl);
             const result = await addGithubAnalysis(ownProfile.id, githubUrl, token, model);
             const updatedProfiles = await loadProfiles(activeId);
             setProfiles(deduplicateProfiles(updatedProfiles));
@@ -201,6 +203,7 @@ export function useChatMessages({
             setMessages((prev) => [...prev, errorMsg]);
             console.error("GitHub deep analysis failed:", e);
         } finally {
+            setAnalyzingGithubUrl(null);
             refreshCredits();
         }
     };
@@ -366,6 +369,7 @@ export function useChatMessages({
         messages,
         setMessages,
         isStreaming,
+        analyzingGithubUrl,
         scrollRef,
         handleSend,
         handleGithubDeepAnalysis,

@@ -1,9 +1,11 @@
-import { Globe, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Globe, CheckCircle2, AlertCircle, Loader2, Github } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { WebsiteProfile } from "@/types/chat";
 
 interface AnalysisProgressProps {
   profiles: WebsiteProfile[];
+  githubAnalysisUrl?: string | null;
 }
 
 const STATUS_CONFIG: Record<string, { percent: number; label: string; color: string }> = {
@@ -15,14 +17,32 @@ const STATUS_CONFIG: Record<string, { percent: number; label: string; color: str
   error: { percent: 100, label: "Failed", color: "text-destructive" },
 };
 
-const AnalysisProgress = ({ profiles }: AnalysisProgressProps) => {
+const AnalysisProgress = ({ profiles, githubAnalysisUrl }: AnalysisProgressProps) => {
+  const [githubProgress, setGithubProgress] = useState(10);
+
+  useEffect(() => {
+    if (!githubAnalysisUrl) {
+      setGithubProgress(10);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setGithubProgress((prev) => {
+        if (prev >= 90) return prev; // Hold at 90% until done
+        return prev + Math.floor(Math.random() * 5) + 1; // Increase by 1-5%
+      });
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, [githubAnalysisUrl]);
+
   const activeProfiles = profiles.filter(
     (p) => p.status !== "completed" || Date.now() - new Date(p.created_at).getTime() < 10000
   );
 
-  if (activeProfiles.length === 0) return null;
+  if (activeProfiles.length === 0 && !githubAnalysisUrl) return null;
 
-  const hasActive = profiles.some((p) => p.status !== "completed" && p.status !== "error");
+  const hasActive = profiles.some((p) => p.status !== "completed" && p.status !== "error") || !!githubAnalysisUrl;
 
   return (
     <div className="mx-auto max-w-3xl w-full px-4 pb-3">
@@ -33,7 +53,7 @@ const AnalysisProgress = ({ profiles }: AnalysisProgressProps) => {
           ) : (
             <CheckCircle2 className="w-4 h-4 text-chart-6" />
           )}
-          {hasActive ? "Analyzing websites..." : "Analysis complete"}
+          {hasActive ? "Analyzing..." : "Analysis complete"}
         </div>
 
         {activeProfiles.map((profile) => {
@@ -61,6 +81,21 @@ const AnalysisProgress = ({ profiles }: AnalysisProgressProps) => {
             </div>
           );
         })}
+
+        {githubAnalysisUrl && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <Github className="w-3 h-3 text-muted-foreground shrink-0" />
+                <span className="truncate text-foreground">{githubAnalysisUrl}</span>
+              </div>
+              <div className="flex items-center gap-1 shrink-0 text-primary">
+                <span>AI analyzing code...</span>
+              </div>
+            </div>
+            <Progress value={githubProgress} className="h-1.5" />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -200,7 +200,7 @@ const Chat = () => {
         limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token, selectedModel))
       );
       toast.success(`Analyzing ${limitedUrls.length} competitor${limitedUrls.length > 1 ? "s" : ""}...`);
-      trackCompetitorAnalysis(limitedUrls.length);
+      trackCompetitorAnalysis(limitedUrls);
       refreshCredits();
     } catch (e: any) {
       const msg = e.message || "Analysis failed";

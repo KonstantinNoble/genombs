@@ -138,7 +138,7 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
               <div className="flex items-center gap-2 min-w-0">
                 <Search className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="text-xs font-medium text-foreground">Find competitors automatically with AI</span>
-                <span className="text-[10px] text-muted-foreground shrink-0">(+{COMPETITOR_SEARCH_COST} Credits)</span>
+                <span className="text-[10px] text-muted-foreground shrink-0">({costPerUrl + COMPETITOR_SEARCH_COST} Credits total)</span>
               </div>
               <Switch
                 checked={autoFind}

@@ -1,68 +1,92 @@
 
 
-# Fix: Informative Fehlermeldung bei fehlenden Credits fuer Auto-Summary
+# Scoring-Prompts ueberarbeiten: Mehr KI-Einfluss, weniger starre Mathematik
 
 ## Problem
 
-Wenn nach einer Analyse die automatische Zusammenfassung wegen fehlender Credits fehlschlaegt, sieht der Nutzer **keine Erklaerung** -- der Fehler wird nur in der Konsole geloggt. Das wirkt, als waere die Analyse abgebrochen.
+Die Kategorien `findability` und `mobileUsability` verwenden starre additive Punktesysteme ("+15 fuer Title Tag", "+25 fuer Viewport"), die die KI zwingen, mechanisch Punkte zu zaehlen statt die tatsaechliche Qualitaet zu bewerten. Die drei anderen Kategorien (`offerClarity`, `trustProof`, `conversionReadiness`) nutzen bereits holistische Scoring-Guides -- und genau das soll fuer ALLE Kategorien gelten.
+
+Zusaetzlich gibt es keine Server-seitige Validierung: Der `overallScore` wird blind von der KI uebernommen statt als Durchschnitt berechnet.
 
 ## Loesung
 
-Im `generateSummary` catch-Block (Zeile 238-241 in `useChatMessages.ts`) wird der `insufficient_credits`-Fehler erkannt und eine **ausfuehrliche, englische Chat-Nachricht** als Assistant-Message angezeigt. So weiss der Nutzer genau, was passiert ist.
+### 1. Prompt ueberarbeiten (beide Dateien)
 
-## Aenderung
+Alle 5 Kategorien bekommen **holistische Scoring-Guides** (wie offerClarity bereits hat). Die KI erhaelt Orientierungspunkte und Faktoren, aber keine starren "+X Punkte"-Formeln. Die HARD CAPs und PageSpeed-Anchoring bleiben als Leitplanken bestehen, aber weicher formuliert.
 
-**Datei:** `src/hooks/useChatMessages.ts` -- `generateSummary` catch-Block (Zeilen 238-241)
-
-Vorher:
+**Neuer Prompt-Stil fuer findability (Beispiel):**
 ```text
-} catch (e) {
-    console.error("Summary generation failed:", e);
-    setIsStreaming(false);
+**findability** (Technical SEO):
+Evaluate the website's discoverability based on the provided SEO metadata.
+Consider: title tag quality, meta description, Open Graph tags, structured data,
+canonical URL, robots configuration, internal/external linking, content relevance.
+SCORING GUIDE: 80-100 = comprehensive SEO setup with all major elements present
+and well-crafted. 60-79 = good foundation but missing some elements.
+40-59 = basic presence but significant gaps. 20-39 = minimal SEO effort.
+0-19 = virtually no SEO optimization.
+IMPORTANT: If title AND meta description are both missing, score should
+generally not exceed 35. Missing elements are real weaknesses.
+```
+
+**Neuer Prompt-Stil fuer mobileUsability (Beispiel):**
+```text
+**mobileUsability** (Mobile readiness):
+Assess how well the site is prepared for mobile users based on available data.
+Consider: viewport configuration, heading hierarchy, content structure,
+navigation patterns, responsive indicators, touch-friendliness.
+SCORING GUIDE: 80-100 = clearly mobile-optimized with proper viewport and
+excellent structure. 60-79 = good mobile readiness with minor gaps.
+40-59 = basic mobile support but notable issues. 20-39 = poor mobile
+experience likely. 0-19 = no mobile consideration evident.
+IMPORTANT: If viewport meta is not found in the HTML, be cautious --
+score should generally stay below 60 unless content structure is exceptional.
+```
+
+### 2. Server-seitige Score-Validierung (process-analysis-queue)
+
+Nach der KI-Antwort wird eine `validateAndNormalizeScores()` Funktion eingefuegt:
+
+```text
+function validateAndNormalizeScores(result) {
+  const clamp = (v) => {
+    const n = Number(v);
+    return isNaN(n) ? 50 : Math.max(0, Math.min(100, Math.round(n)));
+  };
+
+  const cs = result.categoryScores ?? {};
+  result.categoryScores = {
+    findability: clamp(cs.findability),
+    mobileUsability: clamp(cs.mobileUsability),
+    offerClarity: clamp(cs.offerClarity),
+    trustProof: clamp(cs.trustProof),
+    conversionReadiness: clamp(cs.conversionReadiness),
+  };
+
+  // overallScore = true mathematical average (never trust AI's number)
+  const values = Object.values(result.categoryScores);
+  result.overallScore = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+
+  return result;
 }
 ```
 
-Nachher:
-```text
-} catch (e) {
-    setIsStreaming(false);
-    const errMsg = e instanceof Error ? e.message : "";
+Dies wird in Zeile ~877 (nach `routeAnalysis()`) aufgerufen, BEVOR die Daten in die DB geschrieben werden.
 
-    // Remove the temporary streaming message if it exists
-    setMessages((prev) => prev.filter((m) => !m.id.startsWith("temp-summary-")));
+### 3. PageSpeed-Anchoring beibehalten aber entschaerfen
 
-    if (errMsg.startsWith("insufficient_credits:")) {
-        const hours = errMsg.split(":")[1];
-        const creditNotice = await saveMessage(
-            activeId,
-            "assistant",
-            "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n"
-            + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
-            + "However, generating the AI-powered summary in this chat requires additional credits, "
-            + `and your daily limit has been reached. Your credits will reset in **${hours} hour(s)**.\n\n`
-            + "**What you can do:**\n"
-            + "- Review your full analysis results in the dashboard panels\n"
-            + "- Come back after your credits reset to ask follow-up questions\n"
-            + "- Upgrade to Premium for a higher daily credit limit"
-        );
-        setMessages((prev) => [...prev, creditNotice]);
-    } else {
-        console.error("Summary generation failed:", e);
-    }
-}
-```
+Statt "MUST be within +/-8 points" wird es zu "should strongly consider" -- die KI bekommt die PageSpeed-Daten als Referenz, wird aber nicht mechanisch daran gebunden.
 
-Zusaetzlich wird in `chat/index.ts` der `hoursLeft`-Bug gefixt (Zeilen ca. 382-398), sodass nach einem Credit-Reset der neue `resetAt`-Wert verwendet wird:
+## Betroffene Dateien
 
-**Datei:** `supabase/functions/chat/index.ts` -- `checkAndDeductCredits`
+| Datei | Aenderung |
+|---|---|
+| `supabase/functions/process-analysis-queue/index.ts` | Prompt holistic umschreiben, `validateAndNormalizeScores()` einfuegen nach AI-Response |
+| `supabase/functions/analyze-website/index.ts` | Gleicher Prompt (Kopie synchron halten) |
 
-- Eine Variable `currentResetAt` wird eingefuehrt
-- Nach dem Reset-Block wird `currentResetAt` auf den neuen Zeitstempel gesetzt
-- `hoursLeft` wird mit `currentResetAt` statt dem alten `resetAt` berechnet
+## Was sich NICHT aendert
 
-## Ergebnis
-
-- Analyse-Ergebnisse bleiben im Dashboard sichtbar
-- Der Nutzer sieht eine klare, englische Erklaerung im Chat
-- Die Stunden-Angabe bis zum Reset ist korrekt (dank `hoursLeft`-Fix)
+- Die JSON-Ausgabestruktur bleibt identisch
+- Die PageSpeed-Daten werden weiterhin an den Prompt angehaengt
+- Die codeAnalysis-Validierung bleibt
+- Die Credit-Logik bleibt unveraendert
 

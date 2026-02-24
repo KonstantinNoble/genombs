@@ -174,56 +174,43 @@ Start from 0, add points:
 - HARD CAP: If viewport meta is NOT FOUND in HTML -- maximum 55 (some frameworks inject via JS, but cannot be verified)
 - HARD CAP: If viewport missing AND poor content structure -- maximum 35
 
-**offerClarity** (Value proposition -- assess QUALITY, not just presence):
-Start from 0. Award points ONLY when the element is genuinely well-executed, not merely present:
-- Specific headline that clearly communicates what the company does AND for whom (a generic tagline like "Welcome" or "We help businesses grow" does NOT qualify): +15
-- Target audience explicitly named or clearly defined (not just vaguely implied): +10
-- Concrete benefits expressed as user outcomes (NOT just a feature bullet list -- "Save 10 hours/week" qualifies, "Advanced analytics" does not): +12
-- Pricing or pricing model clearly visible on the page: +15
-- Real-world use cases, detailed examples, or demo content shown: +8
-- Explicit competitive differentiator stated (why choose THIS over alternatives): +10
-- Product/service scope is completely unambiguous (reader knows exactly what is offered and what is not): +10
-- Professional, persuasive copywriting without grammar issues or filler: +8
-- Above-the-fold clarity -- the offer is immediately understandable without scrolling: +12
-- DEDUCTION: Generic buzzwords without substance (e.g. "innovative solutions", "world-class service", "cutting-edge technology") each deduct -5 points (max deduction: -15)
-- IMPORTANT: Most websites have SOME headline and SOME description. Having "something" is not enough -- it must be specific and compelling to earn points.
-- HARD CAP: Cannot determine what is offered from the content -- maximum 30
-- HARD CAP: Vague or generic with no specific value proposition -- maximum 40
-- HARD CAP: Basic homepage with only general company info but no detailed offer -- maximum 50
+**offerClarity** (Value proposition -- holistic quality assessment):
+Evaluate the overall clarity and persuasiveness of the website's offer by considering these factors:
+- How quickly can a visitor understand what the company does? (Within 5 seconds = excellent, requires scrolling = mediocre, unclear after reading = poor)
+- Is the target audience explicitly defined or obvious?
+- Are benefits communicated as concrete user outcomes (e.g. "Save 10 hours/week") rather than vague feature lists?
+- Is pricing or a pricing model visible?
+- Are real use cases, examples, or demonstrations shown?
+- Is there a clear differentiator vs alternatives?
+- Is the product/service scope unambiguous?
+- Is the copywriting professional and persuasive?
+SCORING GUIDE: 80-100 = instantly clear offer with specific benefits, pricing, and differentiator. 60-79 = clear offer but missing some elements (e.g. no pricing, vague benefits). 40-59 = somewhat understandable but vague or generic. 20-39 = confusing or lacking core information. 0-19 = impossible to determine what is offered.
+DEDUCTION: Generic buzzwords without substance ("innovative solutions", "world-class service") indicate poor clarity and should lower the score.
 
-**trustProof** (Trust signals -- assess what is visible or referenced in the content):
-Start from 0, add points for each element found or clearly referenced:
-- Customer testimonials or reviews (with or without specific names): +12
-- Star ratings, review scores, or customer satisfaction metrics: +10
-- Case studies, portfolio items, or detailed work examples: +10
-- Trust badges, certifications, or partner mentions (NOTE: badges and logos are often images that do not appear in text extraction -- award points if the TEXT references them, e.g. "ISO 9001 certified", "Google Partner", "AWS certified"): +10
-- Team or founder section with names or professional bios: +10
-- Company address, registration info, or "About Us" section with company history: +10
-- Privacy policy and/or Terms of Service linked in footer or navigation: +8
-- Social proof numbers (e.g. "500+ clients", "Since 2010", "4.8/5 rating"): +10
-- Media mentions, press coverage, blog section, or thought leadership content: +8
-- Money-back guarantee, free trial, or risk-reduction language: +8
-- Professional and consistent branding (cohesive design language implies established business): +5
-- NOTE: Many trust signals are VISUAL (partner logos, badge images, star icons, certification seals). These often do not survive Markdown text extraction. Do not penalize a site if trust signals might exist as images. Instead, look for any textual references to partnerships, certifications, awards, or customer counts.
-- HARD CAP: If ZERO trust signals are found in the text -- maximum 25 (visual signals may exist but are not extractable)
-- HARD CAP: If only 1-2 basic signals (e.g. just a privacy policy link) -- maximum 40
+**trustProof** (Trust signals -- holistic assessment accounting for extraction limitations):
+IMPORTANT CONTEXT: You are analyzing TEXT extracted from a website. Many trust signals are VISUAL (partner logos, certification badges, star rating icons, trust seals) and do NOT appear in the extracted text. Therefore, evaluate trust based on what IS available in the text, and do not assume a site lacks trust just because visual elements are missing.
+Consider these factors when scoring:
+- Does the text reference customers, reviews, or testimonials? (Even "Join 500+ businesses" counts)
+- Are there case studies, portfolio items, or work examples described?
+- Does the text mention certifications, partnerships, or awards? (e.g. "Google Partner", "ISO certified")
+- Is there a team/founder section with real names or bios?
+- Is company information visible (address, registration, founding year)?
+- Are privacy policy / terms of service linked?
+- Does the content demonstrate expertise through detailed, knowledgeable writing?
+- Does the overall tone and content depth suggest an established, professional business?
+SCORING GUIDE: 70-100 = multiple explicit trust signals in text (testimonials, numbers, team, certifications, company history). 50-69 = some trust signals present (e.g. about section, professional tone, some social proof). 30-49 = minimal trust signals but professional content suggests legitimate business. 15-29 = very few signals and content feels thin or generic. 0-14 = actively suspicious or completely anonymous with zero trust indicators.
 
-**conversionReadiness** (Conversion optimization -- count specific elements):
-Start from 0, add points for each element explicitly found:
-- Primary CTA visible in the first section / above the fold: +15
-- CTA uses clear, action-oriented text (not just "Submit" or "Click here"): +10
-- Multiple CTAs distributed throughout the page: +8
-- Contact form present: +10
-- Phone number or direct contact method visible: +10
-- Live chat or chatbot indicator: +5
-- Email signup or newsletter form: +5
-- Booking or scheduling system: +10
-- Clear next-step guidance (explains what happens after clicking): +5
-- Low-friction entry point (free trial, demo, no credit card required): +10
-- Urgency or scarcity elements (limited offer, countdown, etc.): +5
-- Multiple contact channels available (form + phone + email = strong): +7
-- HARD CAP: If NO CTA is found anywhere on the page -- maximum 20
-- HARD CAP: If only a single generic CTA exists -- maximum 45
+**conversionReadiness** (Conversion optimization -- holistic assessment):
+Evaluate how well the website guides visitors toward taking action:
+- Is there a clear primary CTA above the fold?
+- Is the CTA text action-oriented and specific?
+- Are there multiple CTAs throughout the page?
+- Are contact options available (form, phone, email, chat)?
+- Is there a booking or scheduling system?
+- Is there a low-friction entry point (free trial, demo)?
+- Does the site explain what happens after clicking the CTA?
+- Are there urgency or social proof elements near CTAs?
+SCORING GUIDE: 80-100 = clear CTAs, multiple contact channels, low-friction entry, strong guidance. 60-79 = decent CTAs and contact options but missing some elements. 40-59 = basic CTA exists but not optimized. 20-39 = minimal conversion elements. 0-19 = no clear way to take action.
 
 PAGESPEED ANCHORING (MANDATORY when Google PageSpeed data is provided):
 When the context includes "GOOGLE PAGESPEED DATA", apply these HARD CONSTRAINTS:

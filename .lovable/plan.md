@@ -1,85 +1,53 @@
 
-## Ziel
-Die Competitor-Karte soll nach der Auswahl **dauerhaft geschlossen bleiben** (auch nach Conversation-Wechsel, Reload, erneutem Öffnen), damit kein erneutes Klicken mehr möglich ist.
 
-## Was ich im Code gesehen habe
-- `CompetitorSuggestions` hat bereits `submitted` + `initialSelectedUrls`.
-- `ChatMessage` versucht die Auswahl in `messages.metadata.selected_urls` zu speichern.
-- Der Persist-Write passiert aktuell **ohne Fehlerbehandlung** und ohne lokale State-Synchronisierung.
-- Dadurch kann es passieren, dass der Write fehlschlägt (z. B. Berechtigungs-/Client-Thema) und die Karte später wieder offen erscheint.
+## Problem
+Beim Upgrade von Free auf Premium wird `daily_credits_limit` korrekt von 20 auf 100 erhoeht (ueber den DB-Trigger `sync_credits_limit`), aber `credits_used` wird **nicht zurueckgesetzt**. Dadurch bleiben bereits verbrauchte Credits bestehen und der User startet mit weniger als 100 Credits.
 
-## Geplanter Fix (robust, dauerhaft)
+**Beispiel:** User hatte 36 von 20 Credits verbraucht -> nach Upgrade: `credits_used=36`, `daily_credits_limit=100` -> Anzeige: 64/100 statt 100/100.
 
-### 1) Persistenz-Write zuverlässig machen (mit sichtbarem Fehlerfall)
-**Datei:** `src/components/chat/ChatMessage.tsx`
-- `handleCompetitorsSelected` so umbauen, dass:
-  - das Update-Ergebnis geprüft wird (`error` abfangen),
-  - bei Fehler ein klarer Log + Toast kommt,
-  - optional der aktualisierte Datensatz zurückgelesen wird (`select().single()`), damit wir sicher wissen, dass `selected_urls` wirklich gespeichert wurde.
+## Loesung
 
-**Nutzen:** Wir sehen sofort, ob die Datenbank-Aktualisierung tatsächlich klappt oder still scheitert.
+### 1) DB-Trigger `sync_credits_limit` erweitern
+**Datei:** Datenbank-Migration
 
----
+Den bestehenden Trigger so aendern, dass beim Wechsel von `is_premium=false` auf `is_premium=true`:
+- `credits_used` auf `0` zurueckgesetzt wird
+- `credits_reset_at` auf `now() + 24h` zurueckgesetzt wird
 
-### 2) UI-Status nicht nur lokal halten, sondern auch Parent-State sofort patchen
-**Datei:** `src/pages/Chat.tsx` (oder alternativ `useChatMessages.ts`)
-- Beim Klick auf „Analyze“ zusätzlich die betroffene Message in `messages` lokal patchen:
-  - `metadata.selected_urls = urls`
-- Damit bleibt die Karte sofort geschlossen, selbst wenn kurz danach Navigation/Reload passiert.
-- Danach weiterhin persistentes DB-Update ausführen (aus Schritt 1).
+Damit startet der User mit einem vollen Credit-Budget (100/100).
 
-**Nutzen:** Kein „wieder offen“-Flackern durch Timing/Race-Conditions.
-
----
-
-### 3) Prop-Änderungen in `CompetitorSuggestions` aktiv synchronisieren
-**Datei:** `src/components/chat/CompetitorSuggestions.tsx`
-- Ergänzend `useEffect` einbauen:
-  - Wenn `initialSelectedUrls` nachträglich ankommt/ändert, dann:
-    - `submitted=true`
-    - `submittedUrls=initialSelectedUrls`
-- Der aktuelle `useState(alreadySubmitted)` gilt nur beim ersten Mount; mit `useEffect` reagieren wir auch auf spätere Daten-Updates.
-
-**Nutzen:** Komponente bleibt korrekt, auch wenn `message.metadata` asynchron nachgeladen oder lokal gepatcht wird.
-
----
-
-### 4) Architektur-Konsistenz für Backend-Client prüfen und vereinheitlichen
-**Dateien:** `ChatMessage.tsx` + bestehende API-Schicht
-- Sicherstellen, dass Lesen/Schreiben derselben Messages über denselben Backend-Client/Scope läuft.
-- Falls nötig, den Metadata-Write in die bestehende API-Schicht (`chat-api.ts`) verschieben, damit alle Message-Operationen zentral und konsistent sind.
-
-**Nutzen:** Vermeidet Fälle, in denen Read und Update auf unterschiedlichen Konfigurationen landen.
-
----
-
-### 5) DB-Sicherheitsregel (nur falls wirklich erforderlich) verifizieren
-- Die Update-Regel für Messages in eigener Conversation ist in der aktuellen Cloud-Config sichtbar.
-- Ich prüfe trotzdem beim Implementieren, ob der Update-Fehler aus RLS kommt (über konkrete Fehlermeldung).
-- Nur wenn nötig, passe ich die Policy minimal und sicher an.
-
-**Nutzen:** Keine unnötigen DB-Änderungen; nur gezielt, falls tatsächlich blocker.
-
-## Validierung (nach Umsetzung)
-1. Competitor-Karte öffnen, 1–3 URLs wählen, „Analyze“ klicken.
-2. Prüfen: Karte wird zur read-only Zusammenfassung.
-3. Zu anderer Conversation wechseln und zurück.
-4. Hard Reload der Seite.
-5. Erneut prüfen: Karte bleibt geschlossen, keine Checkboxen mehr klickbar.
-6. Negativtest: Bei absichtlich fehlgeschlagenem Write muss sichtbarer Fehler erscheinen (statt still wieder offen).
-
-## Erwartetes Ergebnis
-- Nach erster Analyse-Auswahl bleibt die Karte dauerhaft im „submitted/read-only“-Zustand.
-- Kein erneutes Analyzieren über dieselbe Suggestion-Karte.
-- Fehler sind transparent sichtbar statt still zu scheitern.
-
-## Technischer Abschnitt (kurz)
 ```text
-CompetitorSuggestions (UI state)
-   ↑ initialSelectedUrls (from message.metadata)
-ChatMessage
-   ├─ optimistic local message patch (selected_urls)
-   └─ persistent update messages.metadata.selected_urls
-Chat reload / conversation switch
-   └─ loadMessages -> metadata.selected_urls vorhanden -> Karte bleibt geschlossen
+Vorher (Trigger):
+  is_premium false -> true:  daily_credits_limit = 100
+
+Nachher (Trigger):
+  is_premium false -> true:  daily_credits_limit = 100
+                              credits_used = 0
+                              credits_reset_at = now() + 24h
 ```
+
+### 2) Gleiche Logik fuer Downgrade (Premium -> Free)
+Beim Wechsel von `is_premium=true` auf `is_premium=false`:
+- `credits_used` auf `0` zuruecksetzen
+- `credits_reset_at` auf `now() + 24h` zuruecksetzen
+
+Damit bekommt der User auch beim Downgrade ein frisches Budget (20/20).
+
+### Kein Code-Aenderung noetig
+Da die gesamte Logik im DB-Trigger liegt und die Webhook-/Frontend-Logik `is_premium` bereits korrekt setzt, sind keine Aenderungen an Edge Functions oder Frontend-Code noetig.
+
+## Technischer Abschnitt
+
+Angepasste Trigger-Funktion:
+```text
+sync_credits_limit():
+  IF is_premium changed (false->true OR true->false):
+    - Set daily_credits_limit (100 or 20)
+    - Reset credits_used = 0
+    - Reset credits_reset_at = now() + interval '24 hours'
+```
+
+## Validierung
+1. Free User mit teilweise verbrauchten Credits upgraded -> sollte 100/100 haben.
+2. Premium User downgraded -> sollte 20/20 haben.
+3. Normaler Credit-Verbrauch nach Upgrade funktioniert wie erwartet.

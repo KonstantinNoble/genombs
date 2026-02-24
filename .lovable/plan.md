@@ -1,119 +1,75 @@
 
+# Fix: hoursLeft-Bug in analyze-website
 
-# Verbesserte Credit-Fehlermeldungen: Free vs. Premium differenzieren
+## Problem
 
-## Uebersicht
+In `supabase/functions/analyze-website/index.ts` (Zeile 464-480) gibt es denselben `hoursLeft`-Bug, der bereits in `chat/index.ts` gefixt wurde:
 
-Alle 5 Stellen mit `insufficient_credits`-Fehlermeldungen werden ueberarbeitet:
-- **Free User**: Ueberzeugender Hinweis auf Premium-Upgrade mit Link zur Pricing-Seite + Erklaerung was die Chat/Summary-Funktion kann
-- **Premium User**: Normale Fehlermeldung ohne Upgrade-Hinweis
+Nach einem Credit-Reset wird `credits_reset_at` auf einen neuen Wert 24h in der Zukunft gesetzt, aber die Variable `resetAt` (Zeile 464) zeigt noch auf den **alten** abgelaufenen Zeitstempel. Wenn dann `hoursLeft` berechnet wird (Zeile 479), ergibt das `0` statt der korrekten Stundenzahl.
 
-## Betroffene Stellen
+## Loesung
 
-| # | Datei | Zeilen | Kontext |
-|---|---|---|---|
-| 1 | `src/hooks/useChatMessages.ts` | 245-259 | Auto-Summary nach Analyse (Chat-Nachricht) |
-| 2 | `src/hooks/useChatMessages.ts` | 317-319 | Normale Chat-Nachricht senden (Toast) |
-| 3 | `src/hooks/useChatAnalysis.ts` | 219-224 | Website-Analyse starten (Toast) |
-| 4 | `src/pages/Chat.tsx` | 139-144 | Konkurrentensuche (Toast) |
-| 5 | `src/pages/Chat.tsx` | 166-171 | Konkurrenten-Analyse (Toast) |
+Eine Variable `currentResetAt` einfuehren, die nach dem Reset-Block den neuen Wert erhaelt -- identisch zum Fix in `chat/index.ts`.
 
-## Aenderungen
+## Technische Aenderung
 
-### 1. Auto-Summary (useChatMessages.ts, Zeile 245-259)
+**Datei:** `supabase/functions/analyze-website/index.ts` (Zeilen 464-480)
 
-Die Chat-Nachricht wird je nach `isPremium`-Status differenziert:
-
-**Free User** -- ausfuehrlich mit Upgrade-Pitch:
+Vorher:
 ```text
-"Your website analysis completed successfully and the results are available 
-in the dashboard on the right.
+const resetAt = new Date(credits.credits_reset_at);
+let creditsUsed = credits.credits_used ?? 0;
+if (resetAt < new Date()) {
+  creditsUsed = 0;
+  await supabaseAdmin
+    .from("user_credits")
+    .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+    .eq("id", credits.id);
+}
 
-However, the AI Chat Summary could not be generated because your daily 
-credit limit has been reached. This feature provides a concise, 
-AI-powered breakdown of your analysis — highlighting key strengths, 
-critical weaknesses, and actionable next steps you can take right away.
+const cost = getAnalysisCreditCost(modelKey);
+const limit = credits.daily_credits_limit ?? 20;
+const remaining = limit - creditsUsed;
 
-Your credits will reset in X hour(s).
-
-Upgrade to Premium to unlock 100 daily credits and never miss out on 
-AI-powered insights. [View Plans](/pricing)"
+if (remaining < cost) {
+  const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+  return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+}
 ```
 
-**Premium User** -- sachlich:
+Nachher:
 ```text
-"Your website analysis completed successfully and the results are available 
-in the dashboard on the right.
+let currentResetAt = new Date(credits.credits_reset_at);
+let creditsUsed = credits.credits_used ?? 0;
+if (currentResetAt < new Date()) {
+  creditsUsed = 0;
+  currentResetAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await supabaseAdmin
+    .from("user_credits")
+    .update({ credits_used: 0, credits_reset_at: currentResetAt.toISOString() })
+    .eq("id", credits.id);
+}
 
-The AI-powered summary could not be generated because your daily credit 
-limit has been reached. Your credits will reset in X hour(s)."
+const cost = getAnalysisCreditCost(modelKey);
+const limit = credits.daily_credits_limit ?? 20;
+const remaining = limit - creditsUsed;
+
+if (remaining < cost) {
+  const hoursLeft = Math.max(0, Math.ceil((currentResetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+  return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+}
 ```
 
-### 2. Chat senden (useChatMessages.ts, Zeile 317-319)
+## Alles andere ist korrekt
 
-**Free User Toast:**
-```text
-Title: "Daily credit limit reached"
-Description: "The AI chat lets you ask follow-up questions, get tailored 
-recommendations, and dive deeper into your analysis. Upgrade to Premium 
-for 100 daily credits. Resets in Xh."
-+ Action-Button: "View Plans" -> /pricing
-```
+- Prompts: Holistische Scoring-Guides sind konsistent und sinnvoll
+- Validierung: `validateAndNormalizeScores` clamped Scores korrekt und berechnet den overallScore als echten Durchschnitt
+- PageSpeed-Anchoring: Weiche Formulierung gibt der KI Spielraum
+- Credit-Deduction: Nur bei erfolgreichem Abschluss -- korrekt
+- Code-Analyse-Validierung: `validateCodeAnalysis` ist robust
 
-**Premium User Toast:**
-```text
-Title: "Daily credit limit reached" 
-Description: "Your credits will reset in Xh."
-```
-
-### 3-5. Analyse/Konkurrenten (useChatAnalysis.ts + Chat.tsx)
-
-Gleiches Muster: Free User bekommen Upgrade-Hinweis mit Link, Premium User nur Reset-Info.
-
-## Technische Umsetzung
-
-- `useChatMessages.ts` braucht Zugriff auf `isPremium` -- wird als neuer Parameter im Hook-Input hinzugefuegt
-- `useChatAnalysis.ts` braucht ebenfalls `isPremium` als Parameter
-- `Chat.tsx` hat bereits `isPremium` aus `useAuth()`
-- Fuer Toast-Actions wird `sonner`'s `action`-Property mit einem Link zur Pricing-Seite genutzt
-
-### Neue Parameter:
-
-**useChatMessages Hook:**
-```typescript
-export function useChatMessages({
-    activeId,
-    getAccessToken,
-    profiles,
-    setProfiles,
-    refreshCredits,
-    deduplicateProfiles,
-    loadProfiles,
-    isPremium,  // NEU
-}: {
-    // ...existing types...
-    isPremium: boolean;  // NEU
-})
-```
-
-**useChatAnalysis Hook:**
-```typescript
-export function useChatAnalysis({
-    // ...existing params...
-    isPremium,  // NEU
-}: {
-    // ...existing types...
-    isPremium: boolean;  // NEU
-})
-```
-
-Beide werden aus `Chat.tsx` mit dem bereits vorhandenen `isPremium`-Wert aufgerufen.
-
-## Betroffene Dateien
+## Betroffene Datei
 
 | Datei | Aenderung |
 |---|---|
-| `src/hooks/useChatMessages.ts` | `isPremium` Parameter + differenzierte Meldungen (Summary + Chat) |
-| `src/hooks/useChatAnalysis.ts` | `isPremium` Parameter + differenzierte Toast-Meldung |
-| `src/pages/Chat.tsx` | `isPremium` an Hooks durchreichen + lokale Toasts differenzieren |
-
+| `supabase/functions/analyze-website/index.ts` | `hoursLeft`-Bug fixen (gleicher Fix wie in chat/index.ts) |

@@ -212,6 +212,7 @@ export async function streamChat({
   model,
   onDelta,
   onDone,
+  skipCredits,
 }: {
   messages: { role: string; content: string }[];
   conversationId: string;
@@ -219,6 +220,7 @@ export async function streamChat({
   model?: string;
   onDelta: (text: string) => void;
   onDone: () => void;
+  skipCredits?: boolean;
 }) {
   const resp = await fetch(`${SUPABASE_URL}/functions/v1/chat`, {
     method: "POST",
@@ -227,7 +229,7 @@ export async function streamChat({
       Authorization: `Bearer ${accessToken}`,
       apikey: SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ messages, conversationId, model }),
+    body: JSON.stringify({ messages, conversationId, model, skipCredits }),
   });
 
   if (!resp.ok || !resp.body) {

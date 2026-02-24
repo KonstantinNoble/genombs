@@ -1,53 +1,52 @@
 
 
-## Problem
-Beim Upgrade von Free auf Premium wird `daily_credits_limit` korrekt von 20 auf 100 erhoeht (ueber den DB-Trigger `sync_credits_limit`), aber `credits_used` wird **nicht zurueckgesetzt**. Dadurch bleiben bereits verbrauchte Credits bestehen und der User startet mit weniger als 100 Credits.
+## Competitor-Vorschlagskarten immer sichtbar lassen
 
-**Beispiel:** User hatte 36 von 20 Credits verbraucht -> nach Upgrade: `credits_used=36`, `daily_credits_limit=100` -> Anzeige: 64/100 statt 100/100.
+Nach dem Klick auf "Analyze" werden die Competitor-Karten aktuell durch eine kompakte Zusammenfassung ersetzt (gruener Haken + URL-Liste). Diese Zusammenfassung soll entfernt werden, sodass die Karten immer in voller Groesse sichtbar bleiben.
 
-## Loesung
+### Aenderung
 
-### 1) DB-Trigger `sync_credits_limit` erweitern
-**Datei:** Datenbank-Migration
+**Datei: `src/components/chat/CompetitorSuggestions.tsx`**
 
-Den bestehenden Trigger so aendern, dass beim Wechsel von `is_premium=false` auf `is_premium=true`:
-- `credits_used` auf `0` zurueckgesetzt wird
-- `credits_reset_at` auf `now() + 24h` zurueckgesetzt wird
+Das Verhalten nach dem Absenden wird angepasst:
 
-Damit startet der User mit einem vollen Credit-Budget (100/100).
+- Die vollstaendigen Karten (Name, URL, Beschreibung) bleiben **immer sichtbar**
+- Nach dem Absenden werden die Checkboxen als **checked und disabled** dargestellt
+- Der "Analyze"-Button wird durch einen Bestaetigungstext ersetzt (z.B. "X competitor(s) selected for analysis")
+- Der kompakte `submitted`-Rueckgabewert (gruener Haken + URL-Liste) wird entfernt
 
+### Visuelles Ergebnis
+
+**Vorher (nach Absenden):**
 ```text
-Vorher (Trigger):
-  is_premium false -> true:  daily_credits_limit = 100
-
-Nachher (Trigger):
-  is_premium false -> true:  daily_credits_limit = 100
-                              credits_used = 0
-                              credits_reset_at = now() + 24h
+[Gruener Haken] 2 competitors selected for analysis:
+  - https://siift.ai
+  - https://prometai.app
 ```
 
-### 2) Gleiche Logik fuer Downgrade (Premium -> Free)
-Beim Wechsel von `is_premium=true` auf `is_premium=false`:
-- `credits_used` auf `0` zuruecksetzen
-- `credits_reset_at` auf `now() + 24h` zuruecksetzen
-
-Damit bekommt der User auch beim Downgrade ein frisches Budget (20/20).
-
-### Kein Code-Aenderung noetig
-Da die gesamte Logik im DB-Trigger liegt und die Webhook-/Frontend-Logik `is_premium` bereits korrekt setzt, sind keine Aenderungen an Edge Functions oder Frontend-Code noetig.
-
-## Technischer Abschnitt
-
-Angepasste Trigger-Funktion:
+**Nachher (nach Absenden):**
 ```text
-sync_credits_limit():
-  IF is_premium changed (false->true OR true->false):
-    - Set daily_credits_limit (100 or 20)
-    - Reset credits_used = 0
-    - Reset credits_reset_at = now() + interval '24 hours'
+[x] Siift.ai           (disabled checkbox, checked)
+    https://siift.ai
+    AI-powered coaching...
+
+[x] PrometAI            (disabled checkbox, checked)
+    https://prometai.app
+    Decision-making tools...
+
+[ ] IdeaProof            (disabled checkbox, unchecked)
+    https://ideaproof.io
+    ...
+
+[Haken] 2 competitors selected for analysis
 ```
 
-## Validierung
-1. Free User mit teilweise verbrauchten Credits upgraded -> sollte 100/100 haben.
-2. Premium User downgraded -> sollte 20/20 haben.
-3. Normaler Credit-Verbrauch nach Upgrade funktioniert wie erwartet.
+### Technischer Abschnitt
+
+- Nur eine Datei betroffen: `src/components/chat/CompetitorSuggestions.tsx`
+- Der fruehe `if (submitted) return (...)` Block wird entfernt
+- Stattdessen werden im `submitted`-Zustand alle Karten mit `disabled`-Checkboxen und den gespeicherten Auswahlen gerendert
+- Nicht ausgewaehlte Karten bekommen reduzierte Opazitaet
+- Der "Analyze"-Button wird durch eine Bestaetigungsanzeige ersetzt
+- Keine Aenderung an der Datenbank oder an anderen Komponenten noetig
+

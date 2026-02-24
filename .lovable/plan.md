@@ -1,42 +1,57 @@
 
 
-# Competitor-Vorschlaege nach Auswahl ausblenden
+# Fix: Competitor-Auswahl dauerhaft beibehalten
 
 ## Problem
 
-Nachdem der User Competitors auswaehlt und auf "Analyze" klickt, bleiben die interaktiven Auswahlkarten dauerhaft im Chat sichtbar. Das ist verwirrend, weil der User denken koennte, er muss erneut auswaehlen, und es nimmt unnoetig Platz ein.
+Der `submitted`-State in `CompetitorSuggestions` ist nur React-State im Arbeitsspeicher. Wenn der User die Conversation wechselt und zurueckkommt, wird die Komponente neu gemountet und `submitted` ist wieder `false` -- die Karten erscheinen erneut.
 
 ## Loesung
 
-Nach dem Klick auf "Analyze" werden die Auswahlkarten durch eine kurze Bestaetigungsnachricht ersetzt, z.B.:
+Nach dem Klick auf "Analyze" wird das Nachrichten-Metadata in der Datenbank aktualisiert, sodass die ausgewaehlten URLs dauerhaft gespeichert sind. Beim naechsten Laden der Nachricht erkennt die Komponente, dass bereits eine Auswahl getroffen wurde.
 
-```text
-"3 competitors selected for analysis: siift.ai, prometai.app, ideaproof.io"
+### 1. `src/components/chat/ChatMessage.tsx`
+
+- Aus dem Message-Metadata pruefen, ob `selected_urls` bereits vorhanden ist
+- Falls ja, diese als `initialSelectedUrls` an `CompetitorSuggestions` weitergeben
+- Neuen Callback `onCompetitorsSelected` implementieren, der nach erfolgreicher Auswahl das Metadata in der Datenbank aktualisiert (via Supabase UPDATE auf `messages`-Tabelle)
+
+### 2. `src/components/chat/CompetitorSuggestions.tsx`
+
+- Neue Props: `initialSelectedUrls?: string[]`
+- Wenn `initialSelectedUrls` vorhanden und nicht leer ist, direkt im "submitted"-Zustand starten (kompakte Zusammenfassung anzeigen)
+- Nach Klick auf "Analyze": `onAnalyze` aufrufen UND zusaetzlich den Parent ueber die Auswahl informieren
+
+### 3. Datenbank-Update in ChatMessage
+
+Nach dem Analyze-Klick wird das Metadata der Nachricht aktualisiert:
+
+```sql
+UPDATE messages 
+SET metadata = jsonb_set(metadata, '{selected_urls}', '["url1","url2"]')
+WHERE id = 'message_id';
 ```
 
-### Aenderung in `src/components/chat/CompetitorSuggestions.tsx`
+Dies geschieht ueber den Supabase-Client direkt in der ChatMessage-Komponente.
 
-1. Neuen State `submitted` hinzufuegen (`useState<boolean>(false)`)
-2. In der `onAnalyze`-Callback: `setSubmitted(true)` setzen
-3. Wenn `submitted === true`: Statt der Karten eine kompakte Bestaetigungsanzeige rendern mit den ausgewaehlten URLs (als einfache Textliste mit Haekchen-Icons)
+## Ablauf
 
-### Visuelles Ergebnis
-
-**Vorher (nach Klick):** Alle 5 Karten bleiben sichtbar mit Checkboxen
-
-**Nachher (nach Klick):** Kompakte Zusammenfassung:
 ```text
-[Checkmark] 3 competitors selected for analysis:
-  - siift.ai
-  - prometai.app
-  - ideaproof.io
+User klickt "Analyze 3 competitors"
+  -> CompetitorSuggestions ruft onAnalyze(urls) auf
+  -> ChatMessage aktualisiert message.metadata.selected_urls in DB
+  -> Komponente zeigt kompakte Zusammenfassung
+
+User wechselt Conversation und kommt zurueck
+  -> Nachricht wird aus DB geladen (mit selected_urls im Metadata)
+  -> CompetitorSuggestions erhaelt initialSelectedUrls
+  -> Komponente startet direkt im "submitted"-Zustand
 ```
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `src/components/chat/CompetitorSuggestions.tsx` | `submitted` State + Bestaetigungsansicht nach Auswahl |
-
-Keine weiteren Dateien betroffen. Die Nachricht bleibt in der Datenbank erhalten (fuer Kontext), aber die UI zeigt nur noch die Zusammenfassung.
+| `src/components/chat/CompetitorSuggestions.tsx` | Neue Prop `initialSelectedUrls`, damit beim Mount direkt der submitted-Zustand gesetzt wird |
+| `src/components/chat/ChatMessage.tsx` | Metadata-Update in DB nach Auswahl, `initialSelectedUrls` aus Metadata lesen und weitergeben |
 

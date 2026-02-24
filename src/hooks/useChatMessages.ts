@@ -16,6 +16,7 @@ export function useChatMessages({
     refreshCredits,
     deduplicateProfiles,
     loadProfiles,
+    isPremium,
 }: {
     activeId: string | null;
     getAccessToken: () => Promise<string>;
@@ -24,6 +25,7 @@ export function useChatMessages({
     refreshCredits: () => void;
     deduplicateProfiles: (ps: WebsiteProfile[]) => WebsiteProfile[];
     loadProfiles: (id: string) => Promise<WebsiteProfile[]>;
+    isPremium: boolean;
 }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
@@ -244,17 +246,18 @@ export function useChatMessages({
 
                 if (errMsg.startsWith("insufficient_credits:")) {
                     const hours = errMsg.split(":")[1];
+                    const creditNoticeContent = isPremium
+                        ? "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+                          + `The AI-powered summary could not be generated because your daily credit limit has been reached. Your credits will reset in **${hours} hour(s)**.`
+                        : "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+                          + "However, the **AI Chat Summary** could not be generated because your daily credit limit has been reached. "
+                          + "This feature provides a concise, AI-powered breakdown of your analysis — highlighting key strengths, critical weaknesses, "
+                          + `and actionable next steps you can take right away.\n\nYour credits will reset in **${hours} hour(s)**.\n\n`
+                          + "🚀 **Upgrade to Premium** to unlock 100 daily credits and never miss out on AI-powered insights. [View Plans](/pricing)";
                     const creditNotice = await saveMessage(
                         activeId,
                         "assistant",
-                        "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n"
-                        + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
-                        + "However, generating the AI-powered summary in this chat requires additional credits, "
-                        + `and your daily limit has been reached. Your credits will reset in **${hours} hour(s)**.\n\n`
-                        + "**What you can do:**\n"
-                        + "- Review your full analysis results in the dashboard panels\n"
-                        + "- Come back after your credits reset to ask follow-up questions\n"
-                        + "- Upgrade to Premium for a higher daily credit limit"
+                        "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n" + creditNoticeContent
                     );
                     setMessages((prev) => [...prev, creditNotice]);
                 } else {
@@ -316,7 +319,21 @@ export function useChatMessages({
                 toast.error("This model is only available for Premium users.");
             } else if (msg.startsWith("insufficient_credits:")) {
                 const hours = msg.split(":")[1];
-                toast.error(`No credits left — resets in ${hours}h.`);
+                if (isPremium) {
+                    toast.error("Daily credit limit reached", {
+                        description: `Your credits will reset in ${hours}h.`,
+                        duration: 6000,
+                    });
+                } else {
+                    toast.error("Daily credit limit reached", {
+                        description: `The AI chat lets you ask follow-up questions, get tailored recommendations, and dive deeper into your analysis. Upgrade to Premium for 100 daily credits. Resets in ${hours}h.`,
+                        duration: 10000,
+                        action: {
+                            label: "View Plans",
+                            onClick: () => window.location.href = "/pricing",
+                        },
+                    });
+                }
             } else {
                 toast.error(msg);
             }

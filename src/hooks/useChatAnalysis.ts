@@ -18,6 +18,7 @@ export function useChatAnalysis({
     setConversations,
     onSummaryRequired,
     onCompetitorSearchRequired,
+    isPremium,
 }: {
     activeId: string | null;
     userId: string | undefined;
@@ -25,6 +26,7 @@ export function useChatAnalysis({
     setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
     onSummaryRequired: (completed: WebsiteProfile[], token: string, model?: string) => void;
     onCompetitorSearchRequired?: () => void;
+    isPremium: boolean;
 }) {
     const [profiles, setProfiles] = useState<WebsiteProfile[]>([]);
     const [tasks, setTasks] = useState<ImprovementTask[]>([]);
@@ -218,10 +220,21 @@ export function useChatAnalysis({
                             toast.error("This model is only available for Premium users.");
                         } else if (msg.startsWith("insufficient_credits:")) {
                             const hours = msg.split(":")[1];
-                            toast.error("Not enough credits", {
-                                description: `Analysis for ${url} requires more credits than you have left. Resets in ${hours}h. Upgrade to Premium for 100 daily credits.`,
-                                duration: 8000,
-                            });
+                            if (isPremium) {
+                                toast.error("Daily credit limit reached", {
+                                    description: `Analysis for ${url} requires more credits than you have left. Resets in ${hours}h.`,
+                                    duration: 8000,
+                                });
+                            } else {
+                                toast.error("Daily credit limit reached", {
+                                    description: `Website analysis uncovers SEO gaps, mobile issues, and conversion opportunities — powered by AI. Upgrade to Premium for 100 daily credits. Resets in ${hours}h.`,
+                                    duration: 10000,
+                                    action: {
+                                        label: "View Plans",
+                                        onClick: () => window.location.href = "/pricing",
+                                    },
+                                });
+                            }
                         } else {
                             toast.error(`Analysis failed for ${url}: ${msg}`);
                         }

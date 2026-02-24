@@ -1,52 +1,47 @@
 
-# Dynamische Gesamtkosten-Anzeige fuer "Find Competitors with AI"
+# Problem 4: Pre-Validierung in handleAnalyzeSelectedCompetitors + Modell weiterreichen
 
 ## Problem
 
-Die UI zeigt statisch "+7 Credits" neben dem Auto-Find-Toggle an. Das ist nur der Aufpreis fuer die Konkurrentensuche -- der User sieht nicht die tatsaechlichen Gesamtkosten (Scan + Suche), die je nach Modell variieren.
+In `src/pages/Chat.tsx` (Zeile 168-200) gibt es zwei Fehler:
+
+1. **Keine Vorab-Pruefung der Credits**: Wenn ein Premium-User 3 Konkurrenten auswaehlt, werden alle 3 Scans gleichzeitig per `Promise.all` gestartet. Reichen die Credits nur fuer 1-2 Scans, scheitern die restlichen erst waehrend der Ausfuehrung.
+
+2. **Kein Modell wird uebergeben**: `analyzeWebsite(url, activeId, false, token)` wird ohne `model`-Parameter aufgerufen. Dadurch wird immer der Backend-Default ("gemini-flash") verwendet, egal welches Modell der User in der Chat-Eingabe gewaehlt hat.
 
 ## Loesung
 
-Die Anzeige wird von `(+7 Credits)` auf die dynamischen Gesamtkosten geaendert: `costPerUrl + COMPETITOR_SEARCH_COST`.
+### 1. `selectedModel`-State in Chat.tsx verfuegbar machen
 
-**Beispiele je Modell:**
-- Gemini Flash / GPT Mini: 9 + 7 = **16 Credits**
-- GPT / Claude Sonnet: 12 + 7 = **19 Credits**
-- Perplexity: 14 + 7 = **21 Credits**
+Aktuell lebt `selectedModel` nur im lokalen State von `ChatInput`. Ein neuer State `selectedModel` wird in `Chat.tsx` eingefuehrt und per Callback (`onModelChange`) von `ChatInput` aktualisiert.
 
-## Technische Aenderungen
+### 2. Vorab-Pruefung vor Promise.all
 
-### 1. `src/components/chat/ChatInput.tsx` (Zeile 431)
+Vor dem Start der Scans wird geprueft:
 
-```text
-// Vorher:
-<span className="text-[10px] text-muted-foreground shrink-0">(+{COMPETITOR_SEARCH_COST} Credits)</span>
+```typescript
+const costPerUrl = getAnalysisCreditCost(selectedModel);
+const totalCost = limitedUrls.length * costPerUrl;
 
-// Nachher:
-<span className="text-[10px] text-muted-foreground shrink-0">({costPerUrl + COMPETITOR_SEARCH_COST} Credits total)</span>
+if (remainingCredits < totalCost) {
+  const affordable = Math.floor(remainingCredits / costPerUrl);
+  toast.error(`Not enough credits`, {
+    description: `You need ${totalCost} credits for ${limitedUrls.length} scans, but only have ${remainingCredits}. You can afford ${affordable} scan${affordable !== 1 ? 's' : ''}.`,
+    duration: 6000,
+  });
+  return;
+}
 ```
 
-### 2. `src/components/chat/InlineUrlPrompt.tsx` (Zeile 141)
+### 3. Modell an analyzeWebsite weiterreichen
 
-```text
-// Vorher:
-<span className="text-[10px] text-muted-foreground shrink-0">(+{COMPETITOR_SEARCH_COST} Credits)</span>
-
-// Nachher:
-<span className="text-[10px] text-muted-foreground shrink-0">({costPerUrl + COMPETITOR_SEARCH_COST} Credits total)</span>
+```typescript
+limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token, selectedModel))
 ```
-
-`costPerUrl` ist in beiden Dateien bereits berechnet (Zeile 110 bzw. 43).
-
-## Ergebnis
-
-- User sieht die echten Gesamtkosten, die tatsaechlich abgezogen werden
-- Kosten passen sich dynamisch an das gewaehlte Modell an
-- Keine Ueberraschungen mehr bei der Credit-Abbuchung
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `src/components/chat/ChatInput.tsx` | Credit-Anzeige auf dynamische Gesamtkosten aendern |
-| `src/components/chat/InlineUrlPrompt.tsx` | Identische Aenderung |
+| `src/pages/Chat.tsx` | Neuer State `selectedModel`, Vorab-Credit-Pruefung, Modell an `analyzeWebsite` uebergeben |
+| `src/components/chat/ChatInput.tsx` | Neue Prop `onModelChange` aufrufen bei Modellwechsel |

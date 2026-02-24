@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code } from "lucide-react";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
@@ -127,6 +127,13 @@ const Chat = () => {
 
   // Competitor URL limits: free→1, premium→3
   const maxCompetitorSelectable = isPremium ? PREMIUM_MAX_URL_FIELDS - 1 : FREE_MAX_URL_FIELDS - 1;
+
+  // Optimistic metadata update for messages (e.g. competitor selection persistence)
+  const handleMetadataUpdate = useCallback((messageId: string, metadata: Record<string, unknown>) => {
+    setMessages((prev) =>
+      prev.map((m) => m.id === messageId ? { ...m, metadata } : m)
+    );
+  }, [setMessages]);
 
   // Handler: Find competitors via Perplexity
   const handleFindCompetitors = async () => {
@@ -324,7 +331,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} onMetadataUpdate={handleMetadataUpdate} />
             ))}
             {isStreaming && (
               <div className="flex justify-start">
@@ -348,7 +355,7 @@ const Chat = () => {
               </div>
             )}
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} />
+              <ChatMessage key={msg.id} message={msg} onAnalyzeCompetitors={handleAnalyzeSelectedCompetitors} competitorAnalysisDisabled={isAnalyzing} maxCompetitorSelectable={maxCompetitorSelectable} onMetadataUpdate={handleMetadataUpdate} />
             ))}
             {showInlineUrlPrompt && !hasProfiles && (
               <InlineUrlPrompt

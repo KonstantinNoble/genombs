@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2 } from "lucide-react";
@@ -23,6 +23,14 @@ const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitted, setSubmitted] = useState(alreadySubmitted);
   const [submittedUrls, setSubmittedUrls] = useState<string[]>(initialSelectedUrls || []);
+
+  // Sync when initialSelectedUrls changes after mount (e.g. optimistic patch or async load)
+  useEffect(() => {
+    if (initialSelectedUrls && initialSelectedUrls.length > 0) {
+      setSubmitted(true);
+      setSubmittedUrls(initialSelectedUrls);
+    }
+  }, [initialSelectedUrls]);
 
   const toggle = (url: string) => {
     setSelected((prev) => {

@@ -1,37 +1,45 @@
 
 
-## "Analysis complete" Meldung fuer Competitor-Analyse
+## Fix: "Competitor analysis complete!" erscheint zu frueh
 
 ### Problem
-Wenn User ueber die Competitor-Vorschlagskarten eine Analyse starten, erscheint nur "Analyzing X competitors..." -- aber keine Bestaetigung, wenn die Analyse tatsaechlich fertig ist.
+Die aktuelle Implementierung zaehlt einfach **alle** Competitor-Profile (`is_own_website === false`) im gesamten Gespraech. Wenn bereits abgeschlossene Competitor-Profile aus frueheren Analysen existieren, wird die Bedingung sofort beim naechsten Realtime-Event erfuellt -- noch bevor die neuen Analysen ueberhaupt gestartet sind.
 
 ### Loesung
-Eine Completion-Erkennung fuer Competitor-Analysen einbauen, die einen Toast "Competitor analysis complete" anzeigt, sobald alle gestarteten Competitor-Profile den Status `completed` erreichen.
+Statt nur die **Anzahl** zu tracken, werden die **konkreten URLs** gespeichert, die gerade analysiert werden. Der Realtime-Handler prueft dann nur diese spezifischen Profile auf Completion.
 
 ### Aenderungen
 
 **Datei: `src/hooks/useChatAnalysis.ts`**
 
-1. Neuen Ref `expectedCompetitorCountRef` hinzufuegen (analog zu `expectedProfileCountRef`)
-2. Neue Funktion `trackCompetitorAnalysis(count: number)` exportieren, die den Ref setzt
-3. Im Realtime-Handler (Zeilen 107-123): Zusaetzliche Pruefung fuer Competitor-Profile einfuegen -- wenn `expectedCompetitorCountRef > 0` und genug non-own profiles fertig sind, einen `toast.success("Competitor analysis complete!")` anzeigen und den Ref zuruecksetzen
+1. `expectedCompetitorCountRef` aendern von `useRef<number>(0)` zu `useRef<string[]>([])` -- speichert die URLs statt einer Zahl
+2. `trackCompetitorAnalysis` aendern: nimmt jetzt `urls: string[]` statt `count: number`
+3. Im Realtime-Handler (Zeilen 126-135): Statt alle Competitor-Profile zu zaehlen, nur die Profile filtern, deren URL in der tracked-Liste enthalten ist
 
 **Datei: `src/pages/Chat.tsx`**
 
-1. `trackCompetitorAnalysis` aus `useChatAnalysis` importieren
-2. In `handleAnalyzeSelectedCompetitors` (nach dem erfolgreichen `Promise.all`): `trackCompetitorAnalysis(limitedUrls.length)` aufrufen, damit der Realtime-Handler weiss, wie viele Competitor-Profile er erwarten soll
-
-### Visuelles Ergebnis
-
-1. User klickt "Analyze 2 competitors" -> Toast: "Analyzing 2 competitors..."
-2. Profile werden im Hintergrund erstellt und analysiert
-3. Sobald beide fertig -> Toast: "Competitor analysis complete!"
+1. Den Aufruf von `trackCompetitorAnalysis(limitedUrls.length)` aendern zu `trackCompetitorAnalysis(limitedUrls)` -- uebergibt die URL-Liste statt der Anzahl
 
 ### Technischer Abschnitt
 
-- Zwei Dateien betroffen: `useChatAnalysis.ts` und `Chat.tsx`
-- Der Mechanismus nutzt die bestehende Realtime-Subscription, die bereits Profile-Status-Aenderungen ueberwacht
-- Es wird ein separater Ref verwendet (`expectedCompetitorCountRef`), um Konflikte mit dem bestehenden `expectedProfileCountRef` (fuer den Haupt-Scan) zu vermeiden
-- Die Completion-Erkennung zaehlt Profile mit `is_own_website === false` und Status `completed` oder `error`
-- Kein Datenbank-Aenderung noetig
+Aenderung im Realtime-Handler:
+```text
+// Vorher (fehlerhaft):
+const competitorProfiles = deduped.filter(p => !p.is_own_website);
+const doneCompetitors = competitorProfiles.filter(p => p.status === "completed" || p.status === "error").length;
+if (doneCompetitors >= expectedComp) { ... }
+
+// Nachher (korrekt):
+const trackedUrls = expectedCompetitorUrlsRef.current;
+if (trackedUrls.length > 0) {
+    const trackedProfiles = deduped.filter(p => trackedUrls.includes(p.url));
+    const doneCount = trackedProfiles.filter(p => p.status === "completed" || p.status === "error").length;
+    if (doneCount >= trackedUrls.length) {
+        expectedCompetitorUrlsRef.current = [];
+        toast.success("Competitor analysis complete!");
+    }
+}
+```
+
+So wird der Toast nur ausgeloest, wenn genau die gerade gestarteten Competitor-URLs fertig sind -- nicht irgendwelche alten.
 

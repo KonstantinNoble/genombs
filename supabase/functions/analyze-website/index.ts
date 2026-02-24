@@ -154,13 +154,12 @@ Analyze all provided data and return a JSON object with exactly this structure:
 }
 
 CRITICAL SCORING RULES:
-- Be strict and realistic. The average website scores 40-65 across categories.
-- Scores above 80 mean genuinely exceptional quality in that category -- most sites do NOT reach this.
-- Scores above 90 are extremely rare and reserved for best-in-class examples only.
-- Do NOT default to generous scores. When in doubt, score LOWER.
-- Every score MUST be justified by specific evidence found (or NOT found) in the provided data.
+- Scores MUST reflect the ACTUAL quality of the website based on the evidence provided.
+- Use the additive point system strictly -- only award points when an element is genuinely present and well-executed.
+- Let the math speak: if a website earns 85 points because it genuinely meets most criteria, score it 85. If it earns 20 because it lacks most elements, score it 20.
+- Do NOT artificially cluster scores into any range. Excellent websites should score high. Poor websites should score low. The full 0-100 range exists to differentiate quality.
 - overallScore MUST equal the mathematical average of all 5 category scores (rounded to nearest integer), not a separate estimate.
-- BALANCE CHECK: A gap of more than 40 points between any two category scores is unusual and requires strong justification. If your scores have extreme spreads (e.g. one category at 90 and another at 15), re-examine whether you are applying consistent quality standards across all categories.
+- CONSISTENCY CHECK: Ensure you apply the same quality standard across all categories. If you are strict in one category, be equally strict in others. Large gaps between categories are acceptable when the data supports them.
 
 SCORING GUIDELINES -- use ADDITIVE scoring (start from 0, add points for each element found):
 

@@ -1,4 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+
+export type CodeAnalysisProgress = {
+    active: boolean;
+    phase: string;
+    percent: number;
+} | null;
 import { toast } from "sonner";
 import {
     loadMessages,
@@ -29,7 +35,9 @@ export function useChatMessages({
 }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
+    const [codeAnalysisProgress, setCodeAnalysisProgress] = useState<CodeAnalysisProgress>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const codeAnalysisTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
     // Load messages on activeId change
     useEffect(() => {
@@ -141,8 +149,23 @@ export function useChatMessages({
         );
         setMessages((prev) => [...prev, confirmMsg]);
 
+        // Start progress bar
+        codeAnalysisTimersRef.current.forEach(clearTimeout);
+        codeAnalysisTimersRef.current = [];
+        setCodeAnalysisProgress({ active: true, phase: "Fetching repository...", percent: 15 });
+        const t1 = setTimeout(() => setCodeAnalysisProgress({ active: true, phase: "Analyzing code...", percent: 45 }), 3000);
+        const t2 = setTimeout(() => setCodeAnalysisProgress({ active: true, phase: "Generating results...", percent: 75 }), 8000);
+        codeAnalysisTimersRef.current = [t1, t2];
+
         try {
             const result = await addGithubAnalysis(ownProfile.id, githubUrl, token, model);
+
+            // Progress: done
+            codeAnalysisTimersRef.current.forEach(clearTimeout);
+            setCodeAnalysisProgress({ active: true, phase: "Done", percent: 100 });
+            const t3 = setTimeout(() => setCodeAnalysisProgress(null), 2000);
+            codeAnalysisTimersRef.current = [t3];
+
             const updatedProfiles = await loadProfiles(activeId);
             setProfiles(deduplicateProfiles(updatedProfiles));
 
@@ -179,8 +202,17 @@ export function useChatMessages({
                 setMessages((prev) => prev.map((m) => (m.id === tempId ? savedAssistant : m)));
                 setIsStreaming(false);
             }
-            toast.success("Deep Analysis complete!");
+            toast.success("Deep Code Analysis complete!", {
+                description: "Results are now available in the Code Quality section.",
+            });
+
+            // Auto-scroll to code quality section
+            setTimeout(() => {
+                document.getElementById("section-code-quality")?.scrollIntoView({ behavior: "smooth" });
+            }, 500);
         } catch (e) {
+            codeAnalysisTimersRef.current.forEach(clearTimeout);
+            setCodeAnalysisProgress(null);
             const msg = e instanceof Error ? e.message : "Deep Analysis failed";
             const errorMsg = await saveMessage(activeId, "assistant", `❌ Deep Analysis failed: ${msg}`);
             setMessages((prev) => [...prev, errorMsg]);
@@ -333,5 +365,6 @@ export function useChatMessages({
         handleSend,
         handleGithubDeepAnalysis,
         generateSummary,
+        codeAnalysisProgress,
     };
 }

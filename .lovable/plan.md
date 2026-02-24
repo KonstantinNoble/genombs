@@ -1,75 +1,77 @@
 
-# Fix: hoursLeft-Bug in analyze-website
 
-## Problem
+# AI Summary ohne Credit-Abzug: Inklusiv bei jeder Analyse
 
-In `supabase/functions/analyze-website/index.ts` (Zeile 464-480) gibt es denselben `hoursLeft`-Bug, der bereits in `chat/index.ts` gefixt wurde:
+## Uebersicht
 
-Nach einem Credit-Reset wird `credits_reset_at` auf einen neuen Wert 24h in der Zukunft gesetzt, aber die Variable `resetAt` (Zeile 464) zeigt noch auf den **alten** abgelaufenen Zeitstempel. Wenn dann `hoursLeft` berechnet wird (Zeile 479), ergibt das `0` statt der korrekten Stundenzahl.
+Die AI Summary (automatische Zusammenfassung nach jeder Website- oder Code-Analyse) soll kuenftig **keine Credits mehr kosten**. Sie ist im Analyse-Preis inbegriffen. Normale Chat-Nachrichten kosten weiterhin Credits.
 
-## Loesung
+## Technische Umsetzung
 
-Eine Variable `currentResetAt` einfuehren, die nach dem Reset-Block den neuen Wert erhaelt -- identisch zum Fix in `chat/index.ts`.
+### 1. Chat Edge Function: `skipCredits`-Flag akzeptieren
 
-## Technische Aenderung
+**Datei:** `supabase/functions/chat/index.ts`
 
-**Datei:** `supabase/functions/analyze-website/index.ts` (Zeilen 464-480)
+- In der Main-Handler-Funktion (Zeile ~422) wird ein neues optionales Feld `skipCredits` aus dem Request-Body gelesen
+- Wenn `skipCredits === true`, wird `checkAndDeductCredits()` komplett uebersprungen
+- `creditsDeducted` bleibt `false`, sodass bei Fehlern kein Refund versucht wird
+- Sicherheitsmassnahme: `skipCredits` wird nur erlaubt, wenn der User authentifiziert ist (Token wird wie bisher geprueft)
 
-Vorher:
 ```text
-const resetAt = new Date(credits.credits_reset_at);
-let creditsUsed = credits.credits_used ?? 0;
-if (resetAt < new Date()) {
-  creditsUsed = 0;
-  await supabaseAdmin
-    .from("user_credits")
-    .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
-    .eq("id", credits.id);
-}
+// Zeile ~422: Body-Parsing erweitern
+const { messages, conversationId, model: modelKey, skipCredits } = await req.json();
 
-const cost = getAnalysisCreditCost(modelKey);
-const limit = credits.daily_credits_limit ?? 20;
-const remaining = limit - creditsUsed;
-
-if (remaining < cost) {
-  const hoursLeft = Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
-  return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+// Zeile ~475: Credit-Check nur wenn nicht skipCredits
+if (!skipCredits) {
+  const creditResult = await checkAndDeductCredits(...);
+  if (!creditResult.ok) { return ... }
+  creditsDeducted = true;
+  refundUserId = user.id;
 }
 ```
 
-Nachher:
+### 2. streamChat API: `skipCredits`-Parameter durchreichen
+
+**Datei:** `src/lib/api/chat-api.ts`
+
+- `streamChat()` bekommt einen neuen optionalen Parameter `skipCredits?: boolean`
+- Dieser wird im Request-Body an die Edge Function weitergegeben
+
 ```text
-let currentResetAt = new Date(credits.credits_reset_at);
-let creditsUsed = credits.credits_used ?? 0;
-if (currentResetAt < new Date()) {
-  creditsUsed = 0;
-  currentResetAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  await supabaseAdmin
-    .from("user_credits")
-    .update({ credits_used: 0, credits_reset_at: currentResetAt.toISOString() })
-    .eq("id", credits.id);
-}
-
-const cost = getAnalysisCreditCost(modelKey);
-const limit = credits.daily_credits_limit ?? 20;
-const remaining = limit - creditsUsed;
-
-if (remaining < cost) {
-  const hoursLeft = Math.max(0, Math.ceil((currentResetAt.getTime() - Date.now()) / (1000 * 60 * 60)));
-  return { ok: false, status: 403, error: `insufficient_credits:${hoursLeft}` };
+export async function streamChat({
+  messages, conversationId, accessToken, model, onDelta, onDone,
+  skipCredits,  // NEU
+}: {
+  // ...existing types...
+  skipCredits?: boolean;  // NEU
+}) {
+  body: JSON.stringify({ messages, conversationId, model, skipCredits }),
 }
 ```
 
-## Alles andere ist korrekt
+### 3. generateSummary: `skipCredits: true` setzen
 
-- Prompts: Holistische Scoring-Guides sind konsistent und sinnvoll
-- Validierung: `validateAndNormalizeScores` clamped Scores korrekt und berechnet den overallScore als echten Durchschnitt
-- PageSpeed-Anchoring: Weiche Formulierung gibt der KI Spielraum
-- Credit-Deduction: Nur bei erfolgreichem Abschluss -- korrekt
-- Code-Analyse-Validierung: `validateCodeAnalysis` ist robust
+**Datei:** `src/hooks/useChatMessages.ts`
 
-## Betroffene Datei
+- In der `generateSummary`-Funktion (Zeile ~223) wird `skipCredits: true` an `streamChat()` uebergeben
+- Der gesamte `insufficient_credits`-Error-Handler fuer die Summary (Zeilen 247-262) kann entfernt werden, da dieser Fall nicht mehr eintreten kann
+- Ein einfacher `catch`-Block fuer unerwartete Fehler bleibt bestehen
+
+### 4. handleGithubDeepAnalysis: Summary ebenfalls kostenlos
+
+In derselben Datei wird die GitHub-Deep-Analysis-Summary (falls vorhanden) ebenfalls mit `skipCredits: true` aufgerufen, da die Summary Teil der Analyse ist.
+
+## Was sich NICHT aendert
+
+- Normale Chat-Nachrichten (`handleSend`) kosten weiterhin Credits
+- Die Analyse selbst (Website/Code) kostet weiterhin Credits (in analyze-website/process-analysis-queue)
+- Die Credit-Fehlermeldungen fuer normale Chat-Nachrichten bleiben wie zuletzt implementiert (Free vs Premium differenziert)
+
+## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `supabase/functions/analyze-website/index.ts` | `hoursLeft`-Bug fixen (gleicher Fix wie in chat/index.ts) |
+| `supabase/functions/chat/index.ts` | `skipCredits`-Flag aus Body lesen, Credit-Check bedingt ueberspringen |
+| `src/lib/api/chat-api.ts` | `skipCredits`-Parameter an `streamChat()` hinzufuegen |
+| `src/hooks/useChatMessages.ts` | `skipCredits: true` bei `generateSummary` setzen, unnoetigen Error-Handler entfernen |
+

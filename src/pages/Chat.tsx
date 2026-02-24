@@ -94,7 +94,6 @@ const Chat = () => {
     messages,
     setMessages,
     isStreaming,
-    analyzingGithubUrl,
     scrollRef,
     handleSend,
     handleGithubDeepAnalysis,
@@ -368,8 +367,8 @@ const Chat = () => {
           </div>
         </ScrollArea>
       )}
-      {(profiles.some((p) => p.status !== "completed" && p.status !== "error") || !!analyzingGithubUrl) && (
-        <AnalysisProgress profiles={profiles} githubAnalysisUrl={analyzingGithubUrl} />
+      {profiles.some((p) => p.status !== "completed" && p.status !== "error") && (
+        <AnalysisProgress profiles={profiles} />
       )}
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput

@@ -39,7 +39,7 @@ export function useChatAnalysis({
 
     const realtimePausedRef = useRef(false);
     const expectedProfileCountRef = useRef<number>(0);
-    const expectedCompetitorCountRef = useRef<number>(0);
+    const expectedCompetitorUrlsRef = useRef<string[]>([]);
     const summaryModelRef = useRef<string | undefined>(undefined);
     const summaryTokenRef = useRef<string>("");
     const autoFindRef = useRef(false);
@@ -124,12 +124,12 @@ export function useChatAnalysis({
                         }
 
                         // Competitor-only analysis completion check
-                        const expectedComp = expectedCompetitorCountRef.current;
-                        if (expectedComp > 0) {
-                            const competitorProfiles = deduped.filter((p) => !p.is_own_website);
-                            const doneCompetitors = competitorProfiles.filter((p) => p.status === "completed" || p.status === "error").length;
-                            if (doneCompetitors >= expectedComp) {
-                                expectedCompetitorCountRef.current = 0;
+                        const trackedUrls = expectedCompetitorUrlsRef.current;
+                        if (trackedUrls.length > 0) {
+                            const trackedProfiles = deduped.filter((p) => trackedUrls.includes(p.url));
+                            const doneCount = trackedProfiles.filter((p) => p.status === "completed" || p.status === "error").length;
+                            if (doneCount >= trackedUrls.length) {
+                                expectedCompetitorUrlsRef.current = [];
                                 toast.success("Competitor analysis complete!");
                             }
                         }
@@ -290,8 +290,8 @@ export function useChatAnalysis({
         }
     };
 
-    const trackCompetitorAnalysis = useCallback((count: number) => {
-        expectedCompetitorCountRef.current = count;
+    const trackCompetitorAnalysis = useCallback((urls: string[]) => {
+        expectedCompetitorUrlsRef.current = urls;
     }, []);
 
     return {

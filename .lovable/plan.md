@@ -1,92 +1,119 @@
 
 
-# Scoring-Prompts ueberarbeiten: Mehr KI-Einfluss, weniger starre Mathematik
+# Verbesserte Credit-Fehlermeldungen: Free vs. Premium differenzieren
 
-## Problem
+## Uebersicht
 
-Die Kategorien `findability` und `mobileUsability` verwenden starre additive Punktesysteme ("+15 fuer Title Tag", "+25 fuer Viewport"), die die KI zwingen, mechanisch Punkte zu zaehlen statt die tatsaechliche Qualitaet zu bewerten. Die drei anderen Kategorien (`offerClarity`, `trustProof`, `conversionReadiness`) nutzen bereits holistische Scoring-Guides -- und genau das soll fuer ALLE Kategorien gelten.
+Alle 5 Stellen mit `insufficient_credits`-Fehlermeldungen werden ueberarbeitet:
+- **Free User**: Ueberzeugender Hinweis auf Premium-Upgrade mit Link zur Pricing-Seite + Erklaerung was die Chat/Summary-Funktion kann
+- **Premium User**: Normale Fehlermeldung ohne Upgrade-Hinweis
 
-Zusaetzlich gibt es keine Server-seitige Validierung: Der `overallScore` wird blind von der KI uebernommen statt als Durchschnitt berechnet.
+## Betroffene Stellen
 
-## Loesung
+| # | Datei | Zeilen | Kontext |
+|---|---|---|---|
+| 1 | `src/hooks/useChatMessages.ts` | 245-259 | Auto-Summary nach Analyse (Chat-Nachricht) |
+| 2 | `src/hooks/useChatMessages.ts` | 317-319 | Normale Chat-Nachricht senden (Toast) |
+| 3 | `src/hooks/useChatAnalysis.ts` | 219-224 | Website-Analyse starten (Toast) |
+| 4 | `src/pages/Chat.tsx` | 139-144 | Konkurrentensuche (Toast) |
+| 5 | `src/pages/Chat.tsx` | 166-171 | Konkurrenten-Analyse (Toast) |
 
-### 1. Prompt ueberarbeiten (beide Dateien)
+## Aenderungen
 
-Alle 5 Kategorien bekommen **holistische Scoring-Guides** (wie offerClarity bereits hat). Die KI erhaelt Orientierungspunkte und Faktoren, aber keine starren "+X Punkte"-Formeln. Die HARD CAPs und PageSpeed-Anchoring bleiben als Leitplanken bestehen, aber weicher formuliert.
+### 1. Auto-Summary (useChatMessages.ts, Zeile 245-259)
 
-**Neuer Prompt-Stil fuer findability (Beispiel):**
+Die Chat-Nachricht wird je nach `isPremium`-Status differenziert:
+
+**Free User** -- ausfuehrlich mit Upgrade-Pitch:
 ```text
-**findability** (Technical SEO):
-Evaluate the website's discoverability based on the provided SEO metadata.
-Consider: title tag quality, meta description, Open Graph tags, structured data,
-canonical URL, robots configuration, internal/external linking, content relevance.
-SCORING GUIDE: 80-100 = comprehensive SEO setup with all major elements present
-and well-crafted. 60-79 = good foundation but missing some elements.
-40-59 = basic presence but significant gaps. 20-39 = minimal SEO effort.
-0-19 = virtually no SEO optimization.
-IMPORTANT: If title AND meta description are both missing, score should
-generally not exceed 35. Missing elements are real weaknesses.
+"Your website analysis completed successfully and the results are available 
+in the dashboard on the right.
+
+However, the AI Chat Summary could not be generated because your daily 
+credit limit has been reached. This feature provides a concise, 
+AI-powered breakdown of your analysis — highlighting key strengths, 
+critical weaknesses, and actionable next steps you can take right away.
+
+Your credits will reset in X hour(s).
+
+Upgrade to Premium to unlock 100 daily credits and never miss out on 
+AI-powered insights. [View Plans](/pricing)"
 ```
 
-**Neuer Prompt-Stil fuer mobileUsability (Beispiel):**
+**Premium User** -- sachlich:
 ```text
-**mobileUsability** (Mobile readiness):
-Assess how well the site is prepared for mobile users based on available data.
-Consider: viewport configuration, heading hierarchy, content structure,
-navigation patterns, responsive indicators, touch-friendliness.
-SCORING GUIDE: 80-100 = clearly mobile-optimized with proper viewport and
-excellent structure. 60-79 = good mobile readiness with minor gaps.
-40-59 = basic mobile support but notable issues. 20-39 = poor mobile
-experience likely. 0-19 = no mobile consideration evident.
-IMPORTANT: If viewport meta is not found in the HTML, be cautious --
-score should generally stay below 60 unless content structure is exceptional.
+"Your website analysis completed successfully and the results are available 
+in the dashboard on the right.
+
+The AI-powered summary could not be generated because your daily credit 
+limit has been reached. Your credits will reset in X hour(s)."
 ```
 
-### 2. Server-seitige Score-Validierung (process-analysis-queue)
+### 2. Chat senden (useChatMessages.ts, Zeile 317-319)
 
-Nach der KI-Antwort wird eine `validateAndNormalizeScores()` Funktion eingefuegt:
-
+**Free User Toast:**
 ```text
-function validateAndNormalizeScores(result) {
-  const clamp = (v) => {
-    const n = Number(v);
-    return isNaN(n) ? 50 : Math.max(0, Math.min(100, Math.round(n)));
-  };
-
-  const cs = result.categoryScores ?? {};
-  result.categoryScores = {
-    findability: clamp(cs.findability),
-    mobileUsability: clamp(cs.mobileUsability),
-    offerClarity: clamp(cs.offerClarity),
-    trustProof: clamp(cs.trustProof),
-    conversionReadiness: clamp(cs.conversionReadiness),
-  };
-
-  // overallScore = true mathematical average (never trust AI's number)
-  const values = Object.values(result.categoryScores);
-  result.overallScore = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
-
-  return result;
-}
+Title: "Daily credit limit reached"
+Description: "The AI chat lets you ask follow-up questions, get tailored 
+recommendations, and dive deeper into your analysis. Upgrade to Premium 
+for 100 daily credits. Resets in Xh."
++ Action-Button: "View Plans" -> /pricing
 ```
 
-Dies wird in Zeile ~877 (nach `routeAnalysis()`) aufgerufen, BEVOR die Daten in die DB geschrieben werden.
+**Premium User Toast:**
+```text
+Title: "Daily credit limit reached" 
+Description: "Your credits will reset in Xh."
+```
 
-### 3. PageSpeed-Anchoring beibehalten aber entschaerfen
+### 3-5. Analyse/Konkurrenten (useChatAnalysis.ts + Chat.tsx)
 
-Statt "MUST be within +/-8 points" wird es zu "should strongly consider" -- die KI bekommt die PageSpeed-Daten als Referenz, wird aber nicht mechanisch daran gebunden.
+Gleiches Muster: Free User bekommen Upgrade-Hinweis mit Link, Premium User nur Reset-Info.
+
+## Technische Umsetzung
+
+- `useChatMessages.ts` braucht Zugriff auf `isPremium` -- wird als neuer Parameter im Hook-Input hinzugefuegt
+- `useChatAnalysis.ts` braucht ebenfalls `isPremium` als Parameter
+- `Chat.tsx` hat bereits `isPremium` aus `useAuth()`
+- Fuer Toast-Actions wird `sonner`'s `action`-Property mit einem Link zur Pricing-Seite genutzt
+
+### Neue Parameter:
+
+**useChatMessages Hook:**
+```typescript
+export function useChatMessages({
+    activeId,
+    getAccessToken,
+    profiles,
+    setProfiles,
+    refreshCredits,
+    deduplicateProfiles,
+    loadProfiles,
+    isPremium,  // NEU
+}: {
+    // ...existing types...
+    isPremium: boolean;  // NEU
+})
+```
+
+**useChatAnalysis Hook:**
+```typescript
+export function useChatAnalysis({
+    // ...existing params...
+    isPremium,  // NEU
+}: {
+    // ...existing types...
+    isPremium: boolean;  // NEU
+})
+```
+
+Beide werden aus `Chat.tsx` mit dem bereits vorhandenen `isPremium`-Wert aufgerufen.
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `supabase/functions/process-analysis-queue/index.ts` | Prompt holistic umschreiben, `validateAndNormalizeScores()` einfuegen nach AI-Response |
-| `supabase/functions/analyze-website/index.ts` | Gleicher Prompt (Kopie synchron halten) |
-
-## Was sich NICHT aendert
-
-- Die JSON-Ausgabestruktur bleibt identisch
-- Die PageSpeed-Daten werden weiterhin an den Prompt angehaengt
-- Die codeAnalysis-Validierung bleibt
-- Die Credit-Logik bleibt unveraendert
+| `src/hooks/useChatMessages.ts` | `isPremium` Parameter + differenzierte Meldungen (Summary + Chat) |
+| `src/hooks/useChatAnalysis.ts` | `isPremium` Parameter + differenzierte Toast-Meldung |
+| `src/pages/Chat.tsx` | `isPremium` an Hooks durchreichen + lokale Toasts differenzieren |
 

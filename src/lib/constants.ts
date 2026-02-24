@@ -18,13 +18,6 @@ export const MODEL_CREDIT_COSTS = {
     "claude-sonnet": 12,
     "perplexity": 14,
   },
-  codeAnalysis: {
-    "gemini-flash": 12,
-    "gpt-mini": 12,
-    "gpt": 16,
-    "claude-sonnet": 16,
-    "perplexity": 19,
-  },
 } as const;
 
 export const EXPENSIVE_MODELS = ["gpt", "claude-sonnet", "perplexity"] as const;
@@ -50,6 +43,3 @@ export function getAnalysisCreditCost(modelId: string): number {
   return (MODEL_CREDIT_COSTS.analysis as Record<string, number>)[modelId] ?? 9;
 }
 
-export function getCodeAnalysisCreditCost(modelId: string): number {
-  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
-}

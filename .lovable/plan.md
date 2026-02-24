@@ -1,47 +1,44 @@
 
-# Problem 4: Pre-Validierung in handleAnalyzeSelectedCompetitors + Modell weiterreichen
+
+# Fix 5: Frontend-Kostenanzeige fuer Code-Analyse an Backend anpassen
 
 ## Problem
 
-In `src/pages/Chat.tsx` (Zeile 168-200) gibt es zwei Fehler:
+Das Backend (`process-analysis-queue`, Zeile 906) zieht bei **jeder** Analyse -- egal ob mit oder ohne GitHub-Repo -- immer `getAnalysisCreditCost(model)` ab:
 
-1. **Keine Vorab-Pruefung der Credits**: Wenn ein Premium-User 3 Konkurrenten auswaehlt, werden alle 3 Scans gleichzeitig per `Promise.all` gestartet. Reichen die Credits nur fuer 1-2 Scans, scheitern die restlichen erst waehrend der Ausfuehrung.
+| Modell | Backend zieht ab | Frontend zeigt an |
+|---|---|---|
+| gemini-flash | 9 | 12 |
+| gpt-mini | 9 | 12 |
+| gpt | 12 | 16 |
+| claude-sonnet | 12 | 16 |
+| perplexity | 14 | 19 |
 
-2. **Kein Modell wird uebergeben**: `analyzeWebsite(url, activeId, false, token)` wird ohne `model`-Parameter aufgerufen. Dadurch wird immer der Backend-Default ("gemini-flash") verwendet, egal welches Modell der User in der Chat-Eingabe gewaehlt hat.
+Der User sieht hoehere Kosten als tatsaechlich abgezogen werden.
 
 ## Loesung
 
-### 1. `selectedModel`-State in Chat.tsx verfuegbar machen
+**Frontend an Backend anpassen**: Die Code-Analyse (GitHub Deep Analysis) kostet im Backend genau so viel wie eine normale Analyse. Also soll das Frontend auch `getAnalysisCreditCost` verwenden statt `getCodeAnalysisCreditCost`.
 
-Aktuell lebt `selectedModel` nur im lokalen State von `ChatInput`. Ein neuer State `selectedModel` wird in `Chat.tsx` eingefuehrt und per Callback (`onModelChange`) von `ChatInput` aktualisiert.
+## Aenderungen
 
-### 2. Vorab-Pruefung vor Promise.all
+### `src/components/chat/ChatInput.tsx`
 
-Vor dem Start der Scans wird geprueft:
+- Import von `getCodeAnalysisCreditCost` entfernen
+- Zeile 314: `getCodeAnalysisCreditCost(selectedModel)` ersetzen durch `getAnalysisCreditCost(selectedModel)`
 
-```typescript
-const costPerUrl = getAnalysisCreditCost(selectedModel);
-const totalCost = limitedUrls.length * costPerUrl;
+Das betrifft 3 Stellen in der UI:
+1. Tooltip-Text ("Costs X credits with ...")
+2. Credit-Warnung ("Not enough credits (X needed, ...)")
+3. Button-Text ("Start Deep Analysis (X Credits)")
 
-if (remainingCredits < totalCost) {
-  const affordable = Math.floor(remainingCredits / costPerUrl);
-  toast.error(`Not enough credits`, {
-    description: `You need ${totalCost} credits for ${limitedUrls.length} scans, but only have ${remainingCredits}. You can afford ${affordable} scan${affordable !== 1 ? 's' : ''}.`,
-    duration: 6000,
-  });
-  return;
-}
-```
+### `src/lib/constants.ts` (optional, Aufraeum-Arbeit)
 
-### 3. Modell an analyzeWebsite weiterreichen
-
-```typescript
-limitedUrls.map((url) => analyzeWebsite(url, activeId, false, token, selectedModel))
-```
+Die Funktion `getCodeAnalysisCreditCost` und die `codeAnalysis`-Eintraege in `MODEL_CREDIT_COSTS` werden nicht mehr verwendet und koennen entfernt werden, um Verwirrung zu vermeiden.
 
 ## Betroffene Dateien
 
 | Datei | Aenderung |
 |---|---|
-| `src/pages/Chat.tsx` | Neuer State `selectedModel`, Vorab-Credit-Pruefung, Modell an `analyzeWebsite` uebergeben |
-| `src/components/chat/ChatInput.tsx` | Neue Prop `onModelChange` aufrufen bei Modellwechsel |
+| `src/components/chat/ChatInput.tsx` | `getCodeAnalysisCreditCost` durch `getAnalysisCreditCost` ersetzen |
+| `src/lib/constants.ts` | Unbenutzten `codeAnalysis`-Block und `getCodeAnalysisCreditCost` entfernen |

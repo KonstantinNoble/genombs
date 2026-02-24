@@ -54,7 +54,8 @@ const InlineUrlPrompt = ({ onStartAnalysis, onGithubOnlyAnalysis, selectedModel 
 
   const competitorUrls = autoFind ? [] : [comp1, comp2, comp3].slice(0, effectiveCompetitorFields).filter((u) => u.trim());
   const allUrlsValid = isValidUrl(ownUrl) && competitorUrls.every((u) => isValidUrl(u)) && (mode === "code" ? isValidGithubUrl(githubUrl) : true);
-  const canStartAnalysis = affordableUrls >= 1 && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
+  const canAffordAutoFind = autoFind ? remainingCredits >= (costPerUrl + COMPETITOR_SEARCH_COST) : true;
+  const canStartAnalysis = affordableUrls >= 1 && canAffordAutoFind && ownUrl.trim() && (autoFind || competitorUrls.length > 0) && allUrlsValid;
 
   const canStartGithubOnly = githubUrl.trim() && isValidGithubUrl(githubUrl) && !isValidGithubUrl("") && onGithubOnlyAnalysis;
 

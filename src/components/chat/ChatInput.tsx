@@ -27,7 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
-import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, getCodeAnalysisCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
+import { isExpensiveModel, getAnalysisCreditCost, getChatCreditCost, FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, COMPETITOR_SEARCH_COST } from "@/lib/constants";
 
 const AI_MODELS = [
   { id: "gemini-flash", label: "Gemini Flash", description: "Fast & efficient", icon: GoogleIcon },
@@ -311,7 +311,7 @@ const ChatInput = ({ onSend, onScan, onGithubAnalysis, onClearUrls, onPromptUrl,
           </TooltipProvider>
           {/* GitHub Deep Analysis Button */}
           {(() => {
-            const codeAnalysisCost = getCodeAnalysisCreditCost(selectedModel);
+            const codeAnalysisCost = getAnalysisCreditCost(selectedModel);
             const notEnoughForCode = remainingCredits < codeAnalysisCost;
             return (
               <>

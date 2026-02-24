@@ -155,76 +155,81 @@ Analyze all provided data and return a JSON object with exactly this structure:
 
 CRITICAL SCORING RULES:
 - Be strict and realistic. The average website scores 40-65 across categories.
-- Scores above 80 mean genuinely exceptional quality in that category — most sites do NOT reach this.
+- Scores above 80 mean genuinely exceptional quality in that category -- most sites do NOT reach this.
 - Scores above 90 are extremely rare and reserved for best-in-class examples only.
 - Do NOT default to generous scores. When in doubt, score LOWER.
 - Every score MUST be justified by specific evidence found (or NOT found) in the provided data.
 - overallScore MUST equal the mathematical average of all 5 category scores (rounded to nearest integer), not a separate estimate.
+- BALANCE CHECK: A gap of more than 40 points between any two category scores is unusual and requires strong justification. If your scores have extreme spreads (e.g. one category at 90 and another at 15), re-examine whether you are applying consistent quality standards across all categories.
 
-SCORING GUIDELINES — use ADDITIVE scoring (start from 0, add points for each element found):
+SCORING GUIDELINES -- use ADDITIVE scoring (start from 0, add points for each element found):
 
-**findability** (Technical SEO — score based on VERIFIABLE data only):
+**findability** (Technical SEO -- score based on VERIFIABLE data only):
 Start from 0, add points for each element found:
 - Title tag present and well-crafted (under 60 chars, contains keywords): +15
 - Meta description present and compelling (under 160 chars): +15
-- Open Graph tags present (og:title, og:description, og:image — all three): +15
+- Open Graph tags present (og:title, og:description, og:image -- all three): +15
 - Structured data / JSON-LD present with valid types: +10
 - Canonical URL set: +5
 - Robots meta properly configured: +5
 - Good internal linking (10+ internal links): +10
 - External links present (3+): +5
 - Content quality and keyword relevance: up to +20
-- HARD CAP: If title AND meta description are BOTH missing → maximum 35
-- HARD CAP: If title, meta description, AND OG tags are all missing → maximum 25
+- HARD CAP: If title AND meta description are BOTH missing -- maximum 35
+- HARD CAP: If title, meta description, AND OG tags are all missing -- maximum 25
 
-**mobileUsability** (Mobile readiness — score conservatively):
+**mobileUsability** (Mobile readiness -- score conservatively):
 Start from 0, add points:
 - Viewport meta tag present with proper value ("width=device-width"): +25
-- Clear heading hierarchy (h1 → h2 → h3): +15
+- Clear heading hierarchy (h1, h2, h3 properly nested): +15
 - Well-structured text with short, readable paragraphs: +15
 - No wide fixed-width tables or layout indicators: +10
 - Navigation appears mobile-friendly (hamburger menu, collapsible): +10
 - Images/media appear responsive: +10
 - Touch-friendly elements implied (adequate spacing/sizing): +15
-- HARD CAP: If viewport meta is NOT FOUND in HTML → maximum 55 (some frameworks inject via JS, but cannot be verified)
-- HARD CAP: If viewport missing AND poor content structure → maximum 35
+- HARD CAP: If viewport meta is NOT FOUND in HTML -- maximum 55 (some frameworks inject via JS, but cannot be verified)
+- HARD CAP: If viewport missing AND poor content structure -- maximum 35
 
-**offerClarity** (Value proposition — count specific elements):
-Start from 0, add points for each element explicitly found in the content:
-- Clear headline stating what the company does (understandable in 5 seconds): +20
-- Specific target audience mentioned or clearly implied: +10
-- Benefits listed (not just features — actual outcomes for the user): +15
-- Pricing or pricing model visible on the page: +15
-- Specific use cases or concrete examples shown: +10
-- Differentiator vs competitors explicitly stated: +10
-- Service/product scope is unambiguous (you know exactly what is offered): +10
-- Professional copywriting (clear language, no grammar issues, persuasive): +10
-- HARD CAP: If you cannot determine what the company sells/offers from the content → maximum 30
-- HARD CAP: If the page is vague or generic with no clear value proposition → maximum 40
+**offerClarity** (Value proposition -- assess QUALITY, not just presence):
+Start from 0. Award points ONLY when the element is genuinely well-executed, not merely present:
+- Specific headline that clearly communicates what the company does AND for whom (a generic tagline like "Welcome" or "We help businesses grow" does NOT qualify): +15
+- Target audience explicitly named or clearly defined (not just vaguely implied): +10
+- Concrete benefits expressed as user outcomes (NOT just a feature bullet list -- "Save 10 hours/week" qualifies, "Advanced analytics" does not): +12
+- Pricing or pricing model clearly visible on the page: +15
+- Real-world use cases, detailed examples, or demo content shown: +8
+- Explicit competitive differentiator stated (why choose THIS over alternatives): +10
+- Product/service scope is completely unambiguous (reader knows exactly what is offered and what is not): +10
+- Professional, persuasive copywriting without grammar issues or filler: +8
+- Above-the-fold clarity -- the offer is immediately understandable without scrolling: +12
+- DEDUCTION: Generic buzzwords without substance (e.g. "innovative solutions", "world-class service", "cutting-edge technology") each deduct -5 points (max deduction: -15)
+- IMPORTANT: Most websites have SOME headline and SOME description. Having "something" is not enough -- it must be specific and compelling to earn points.
+- HARD CAP: Cannot determine what is offered from the content -- maximum 30
+- HARD CAP: Vague or generic with no specific value proposition -- maximum 40
+- HARD CAP: Basic homepage with only general company info but no detailed offer -- maximum 50
 
-**trustProof** (Trust signals — count ONLY concrete evidence visible in the content):
+**trustProof** (Trust signals -- assess what is visible or referenced in the content):
+Start from 0, add points for each element found or clearly referenced:
+- Customer testimonials or reviews (with or without specific names): +12
+- Star ratings, review scores, or customer satisfaction metrics: +10
+- Case studies, portfolio items, or detailed work examples: +10
+- Trust badges, certifications, or partner mentions (NOTE: badges and logos are often images that do not appear in text extraction -- award points if the TEXT references them, e.g. "ISO 9001 certified", "Google Partner", "AWS certified"): +10
+- Team or founder section with names or professional bios: +10
+- Company address, registration info, or "About Us" section with company history: +10
+- Privacy policy and/or Terms of Service linked in footer or navigation: +8
+- Social proof numbers (e.g. "500+ clients", "Since 2010", "4.8/5 rating"): +10
+- Media mentions, press coverage, blog section, or thought leadership content: +8
+- Money-back guarantee, free trial, or risk-reduction language: +8
+- Professional and consistent branding (cohesive design language implies established business): +5
+- NOTE: Many trust signals are VISUAL (partner logos, badge images, star icons, certification seals). These often do not survive Markdown text extraction. Do not penalize a site if trust signals might exist as images. Instead, look for any textual references to partnerships, certifications, awards, or customer counts.
+- HARD CAP: If ZERO trust signals are found in the text -- maximum 25 (visual signals may exist but are not extractable)
+- HARD CAP: If only 1-2 basic signals (e.g. just a privacy policy link) -- maximum 40
+
+**conversionReadiness** (Conversion optimization -- count specific elements):
 Start from 0, add points for each element explicitly found:
-- Customer testimonials with names or company names: +15
-- Star ratings or review scores displayed: +10
-- Case studies or portfolio with specific details: +10
-- Trust badges visible (certifications, awards, partner logos, security seals): +10
-- Team or founder info with real names: +10
-- Company address or legal registration info visible: +10
-- Privacy policy and/or terms of service linked: +5
-- Social proof numbers (e.g. "500+ customers", "10 years experience"): +10
-- Media mentions or press logos: +5
-- Money-back guarantee or risk-reduction offer: +5
-- Active social media links: +5
-- HARD CAP: If ZERO trust signals are found → maximum 15
-- HARD CAP: If only 1-2 basic signals (e.g. just a privacy link) → maximum 35
-- Do NOT infer or assume trust signals that are not explicitly visible in the content
-
-**conversionReadiness** (Conversion optimization — count specific elements):
-Start from 0, add points for each element explicitly found:
-- Primary CTA visible in the first section / above the fold: +20
+- Primary CTA visible in the first section / above the fold: +15
 - CTA uses clear, action-oriented text (not just "Submit" or "Click here"): +10
-- Multiple CTAs distributed throughout the page: +10
-- Contact form present and functional: +10
+- Multiple CTAs distributed throughout the page: +8
+- Contact form present: +10
 - Phone number or direct contact method visible: +10
 - Live chat or chatbot indicator: +5
 - Email signup or newsletter form: +5
@@ -232,8 +237,9 @@ Start from 0, add points for each element explicitly found:
 - Clear next-step guidance (explains what happens after clicking): +5
 - Low-friction entry point (free trial, demo, no credit card required): +10
 - Urgency or scarcity elements (limited offer, countdown, etc.): +5
-- HARD CAP: If NO CTA is found anywhere on the page → maximum 20
-- HARD CAP: If only a single generic CTA exists → maximum 45
+- Multiple contact channels available (form + phone + email = strong): +7
+- HARD CAP: If NO CTA is found anywhere on the page -- maximum 20
+- HARD CAP: If only a single generic CTA exists -- maximum 45
 
 PAGESPEED ANCHORING (MANDATORY when Google PageSpeed data is provided):
 When the context includes "GOOGLE PAGESPEED DATA", apply these HARD CONSTRAINTS:

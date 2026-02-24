@@ -1,44 +1,48 @@
 
+# Revert: Code-Analyse-Kosten wiederherstellen + Chat.tsx fixen
 
-# Fix 5: Frontend-Kostenanzeige fuer Code-Analyse an Backend anpassen
+## Was ist passiert?
 
-## Problem
-
-Das Backend (`process-analysis-queue`, Zeile 906) zieht bei **jeder** Analyse -- egal ob mit oder ohne GitHub-Repo -- immer `getAnalysisCreditCost(model)` ab:
-
-| Modell | Backend zieht ab | Frontend zeigt an |
-|---|---|---|
-| gemini-flash | 9 | 12 |
-| gpt-mini | 9 | 12 |
-| gpt | 12 | 16 |
-| claude-sonnet | 12 | 16 |
-| perplexity | 14 | 19 |
-
-Der User sieht hoehere Kosten als tatsaechlich abgezogen werden.
-
-## Loesung
-
-**Frontend an Backend anpassen**: Die Code-Analyse (GitHub Deep Analysis) kostet im Backend genau so viel wie eine normale Analyse. Also soll das Frontend auch `getAnalysisCreditCost` verwenden statt `getCodeAnalysisCreditCost`.
+Der letzte Fix war falsch. Die Code-Analyse laeuft ueber `add-github-analysis` (eigener Edge Function Flow), **nicht** ueber `process-analysis-queue`. Das Backend zieht dort tatsaechlich 12/12/16/16/19 Credits ab. Durch den letzten Fix zeigt das Frontend jetzt nur 9/9/12/12/14 an -- der User sieht also weniger als er zahlt.
 
 ## Aenderungen
 
-### `src/components/chat/ChatInput.tsx`
+### 1. `src/lib/constants.ts` -- Code-Analyse-Kosten wiederherstellen
 
-- Import von `getCodeAnalysisCreditCost` entfernen
-- Zeile 314: `getCodeAnalysisCreditCost(selectedModel)` ersetzen durch `getAnalysisCreditCost(selectedModel)`
+Die `codeAnalysis`-Eintraege und die Funktion `getCodeAnalysisCreditCost` muessen zurueck:
 
-Das betrifft 3 Stellen in der UI:
-1. Tooltip-Text ("Costs X credits with ...")
-2. Credit-Warnung ("Not enough credits (X needed, ...)")
-3. Button-Text ("Start Deep Analysis (X Credits)")
+```typescript
+export const MODEL_CREDIT_COSTS = {
+  chat: { ... },        // bleibt
+  analysis: { ... },    // bleibt
+  codeAnalysis: {       // WIEDERHERSTELLEN
+    "gemini-flash": 12,
+    "gpt-mini": 12,
+    "gpt": 16,
+    "claude-sonnet": 16,
+    "perplexity": 19,
+  },
+} as const;
 
-### `src/lib/constants.ts` (optional, Aufraeum-Arbeit)
+// WIEDERHERSTELLEN
+export function getCodeAnalysisCreditCost(modelId: string): number {
+  return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
+}
+```
 
-Die Funktion `getCodeAnalysisCreditCost` und die `codeAnalysis`-Eintraege in `MODEL_CREDIT_COSTS` werden nicht mehr verwendet und koennen entfernt werden, um Verwirrung zu vermeiden.
+### 2. `src/components/chat/ChatInput.tsx` -- getCodeAnalysisCreditCost zurueck
 
-## Betroffene Dateien
+- Import von `getCodeAnalysisCreditCost` wieder hinzufuegen
+- `getAnalysisCreditCost(selectedModel)` in Zeile 314 zurueck aendern zu `getCodeAnalysisCreditCost(selectedModel)`
+
+### 3. `src/pages/Chat.tsx` -- Hartkodiertes Modell fixen
+
+Zeile 362: `selectedModel="gemini-flash"` aendern zu `selectedModel={selectedModel}`, damit InlineUrlPrompt die korrekten Kosten fuer das aktuell gewaehlte Modell anzeigt.
+
+## Zusammenfassung
 
 | Datei | Aenderung |
 |---|---|
-| `src/components/chat/ChatInput.tsx` | `getCodeAnalysisCreditCost` durch `getAnalysisCreditCost` ersetzen |
-| `src/lib/constants.ts` | Unbenutzten `codeAnalysis`-Block und `getCodeAnalysisCreditCost` entfernen |
+| `src/lib/constants.ts` | `codeAnalysis`-Block und `getCodeAnalysisCreditCost` wiederherstellen |
+| `src/components/chat/ChatInput.tsx` | `getCodeAnalysisCreditCost` Import + Verwendung wiederherstellen |
+| `src/pages/Chat.tsx` | `selectedModel={selectedModel}` statt `"gemini-flash"` |

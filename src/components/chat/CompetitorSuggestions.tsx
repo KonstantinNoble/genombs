@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckCircle2 } from "lucide-react";
 
 export interface CompetitorSuggestion {
   url: string;
@@ -17,6 +18,8 @@ interface CompetitorSuggestionsProps {
 
 const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable }: CompetitorSuggestionsProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedUrls, setSubmittedUrls] = useState<string[]>([]);
 
   const toggle = (url: string) => {
     setSelected((prev) => {
@@ -29,6 +32,31 @@ const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable
       return next;
     });
   };
+
+  const handleAnalyze = () => {
+    const urls = Array.from(selected);
+    setSubmittedUrls(urls);
+    setSubmitted(true);
+    onAnalyze(urls);
+  };
+
+  if (submitted) {
+    return (
+      <div className="flex items-start gap-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
+        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground">
+            {submittedUrls.length} competitor{submittedUrls.length > 1 ? "s" : ""} selected for analysis:
+          </p>
+          <ul className="mt-1 space-y-0.5">
+            {submittedUrls.map((url) => (
+              <li key={url} className="text-xs text-muted-foreground">{url}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
 
   const selectedCount = selected.size;
   const atLimit = maxSelectable !== undefined && selectedCount >= maxSelectable;
@@ -74,7 +102,7 @@ const CompetitorSuggestions = ({ competitors, onAnalyze, disabled, maxSelectable
       )}
 
       <Button
-        onClick={() => onAnalyze(Array.from(selected))}
+        onClick={handleAnalyze}
         disabled={disabled || selectedCount === 0}
         className="w-full"
         size="sm"

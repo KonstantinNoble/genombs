@@ -1,43 +1,68 @@
 
-# Achievements zu Dashboard umwandeln
 
-## Aenderungen
+# Fix: Informative Fehlermeldung bei fehlenden Credits fuer Auto-Summary
 
-### 1. Route umbenennen: `/achievements` wird zu `/dashboard`
+## Problem
 
-In `src/App.tsx` wird die Route von `/achievements` auf `/dashboard` geaendert. Der Import bleibt auf die gleiche Datei (die wird umbenannt).
+Wenn nach einer Analyse die automatische Zusammenfassung wegen fehlender Credits fehlschlaegt, sieht der Nutzer **keine Erklaerung** -- der Fehler wird nur in der Konsole geloggt. Das wirkt, als waere die Analyse abgebrochen.
 
-### 2. Seiten-Datei umbenennen
+## Loesung
 
-`src/pages/Achievements.tsx` wird zu `src/pages/Dashboard.tsx` (neue Datei erstellen, alte loeschen). Inhalt bleibt identisch, nur:
-- Page Header: "Achievements" wird zu "Dashboard"
-- Beschreibungstext: "Track your progress and milestones." wird zu "Your performance at a glance."
-- Back-Link zu `/chat` bleibt bestehen
+Im `generateSummary` catch-Block (Zeile 238-241 in `useChatMessages.ts`) wird der `insufficient_credits`-Fehler erkannt und eine **ausfuehrliche, englische Chat-Nachricht** als Assistant-Message angezeigt. So weiss der Nutzer genau, was passiert ist.
 
-### 3. Navbar: "Dashboard" Link hinzufuegen
+## Aenderung
 
-In `src/components/Navbar.tsx` wird ein neuer NavLink fuer eingeloggte User hinzugefuegt:
-- Desktop: `<NavLink to="/dashboard">Dashboard</NavLink>` neben "Analyze"
-- Mobile: `<MobileNavLink to="/dashboard">Dashboard</MobileNavLink>` neben "Analyze"
-- Nur sichtbar wenn `user` eingeloggt ist (gleiche Bedingung wie "Analyze")
+**Datei:** `src/hooks/useChatMessages.ts` -- `generateSummary` catch-Block (Zeilen 238-241)
 
-### 4. Link in der Analyse-Seite (Chat)
+Vorher:
+```text
+} catch (e) {
+    console.error("Summary generation failed:", e);
+    setIsStreaming(false);
+}
+```
 
-Im Dashboard-Panel der Chat-Seite (`src/pages/Chat.tsx`) wird im Header-Bereich ("Workspace") ein dezenter Link zum Dashboard eingefuegt. Konkret neben dem bestehenden "Workspace"-Label ein kleiner Link-Text "View Dashboard" der auf `/dashboard` verweist.
+Nachher:
+```text
+} catch (e) {
+    setIsStreaming(false);
+    const errMsg = e instanceof Error ? e.message : "";
 
-## Betroffene Dateien
+    // Remove the temporary streaming message if it exists
+    setMessages((prev) => prev.filter((m) => !m.id.startsWith("temp-summary-")));
 
-| Datei | Aenderung |
-|---|---|
-| `src/App.tsx` | Route `/achievements` zu `/dashboard`, Import anpassen |
-| `src/pages/Achievements.tsx` | Wird geloescht |
-| `src/pages/Dashboard.tsx` | Neue Datei (Kopie von Achievements mit angepasstem Titel) |
-| `src/components/Navbar.tsx` | "Dashboard" NavLink hinzufuegen (Desktop + Mobile, nur eingeloggt) |
-| `src/pages/Chat.tsx` | Link zum Dashboard im Workspace-Header |
+    if (errMsg.startsWith("insufficient_credits:")) {
+        const hours = errMsg.split(":")[1];
+        const creditNotice = await saveMessage(
+            activeId,
+            "assistant",
+            "⚠️ **Auto-Summary Skipped — Not Enough Credits**\n\n"
+            + "Your website analysis completed successfully and the results are available in the dashboard on the right.\n\n"
+            + "However, generating the AI-powered summary in this chat requires additional credits, "
+            + `and your daily limit has been reached. Your credits will reset in **${hours} hour(s)**.\n\n`
+            + "**What you can do:**\n"
+            + "- Review your full analysis results in the dashboard panels\n"
+            + "- Come back after your credits reset to ask follow-up questions\n"
+            + "- Upgrade to Premium for a higher daily credit limit"
+        );
+        setMessages((prev) => [...prev, creditNotice]);
+    } else {
+        console.error("Summary generation failed:", e);
+    }
+}
+```
 
-## Technische Details
+Zusaetzlich wird in `chat/index.ts` der `hoursLeft`-Bug gefixt (Zeilen ca. 382-398), sodass nach einem Credit-Reset der neue `resetAt`-Wert verwendet wird:
 
-- Der lazy import in `App.tsx` aendert sich zu `lazy(() => import("./pages/Dashboard"))`
-- In `Navbar.tsx` wird der Dashboard-Link direkt nach dem "Analyze"-Link platziert, innerhalb des gleichen `{user && ...}` Blocks
-- In `Chat.tsx` wird im `dashboardPanel`-Header (Zeile ~381) ein `Link to="/dashboard"` als kleiner Text-Link eingefuegt
-- Alle bestehenden Links die auf `/achievements` verweisen (z.B. in `StreakBadge`) muessen auf `/dashboard` aktualisiert werden
+**Datei:** `supabase/functions/chat/index.ts` -- `checkAndDeductCredits`
+
+- Eine Variable `currentResetAt` wird eingefuehrt
+- Nach dem Reset-Block wird `currentResetAt` auf den neuen Zeitstempel gesetzt
+- `hoursLeft` wird mit `currentResetAt` statt dem alten `resetAt` berechnet
+
+## Ergebnis
+
+- Analyse-Ergebnisse bleiben im Dashboard sichtbar
+- Der Nutzer sieht eine klare, englische Erklaerung im Chat
+- Die Stunden-Angabe bis zum Reset ist korrekt (dank `hoursLeft`-Fix)
+

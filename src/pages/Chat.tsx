@@ -359,7 +359,7 @@ const Chat = () => {
                   setShowInlineUrlPrompt(false);
                   handleGithubDeepAnalysis(githubUrl, user?.id, model);
                 }}
-                selectedModel="gemini-flash"
+                selectedModel={selectedModel}
               />
             )}
             {isFindingCompetitors && (

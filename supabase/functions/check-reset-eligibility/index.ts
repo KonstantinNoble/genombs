@@ -44,17 +44,12 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    // Step 1: Check if email exists in auth.users
-    const { data: usersData, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-    
-    if (listError) {
-      console.error("Error listing users:", listError);
-      throw new Error("Failed to check user existence");
-    }
+    // Step 1: Check if email exists in auth.users (O(1) indexed lookup)
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserByEmail(
+      email.toLowerCase()
+    );
 
-    const user = usersData.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
-
-    if (!user) {
+    if (userError || !userData?.user) {
       console.log(`No account found for email: ${email}`);
       return new Response(
         JSON.stringify({ 
@@ -65,6 +60,8 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
+
+    const user = userData.user;
 
     // Check if user only has OAuth providers (no email/password)
     const providers = user.app_metadata?.providers || [];

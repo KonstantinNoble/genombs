@@ -141,29 +141,24 @@ serve(async (req) => {
       }
     }
 
-    // Check if email exists in auth.users (O(1) indexed lookup)
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(
-      validatedEmail.toLowerCase().trim()
+    // Check if email exists in auth.users (O(1) indexed lookup via DB function)
+    const { data: authUsers, error: queryError } = await supabase.rpc(
+      'get_auth_user_by_email',
+      { lookup_email: validatedEmail.toLowerCase().trim() }
     );
 
-    // getUserByEmail throws error when user doesn't exist
-    // In that case, the email is available
-    if (userError || !userData?.user) {
+    if (queryError || !authUsers || authUsers.length === 0) {
       return new Response(
         JSON.stringify({ available: true }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    const existingUser = userData.user;
-
-    if (!existingUser) {
-      // Email is available for registration (attempt already logged at the beginning)
-      return new Response(
-        JSON.stringify({ available: true }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+    const existingUser = {
+      id: authUsers[0].id,
+      email: authUsers[0].email,
+      app_metadata: authUsers[0].raw_app_meta_data || {}
+    };
 
     // User exists - check what providers they use
     const providers = existingUser.app_metadata?.providers || [];

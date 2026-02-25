@@ -1,50 +1,104 @@
 
 
-## Dashboard Design-Upgrade: Professioneller und dynamischer
+## Fix: Skalierbare User-Lookups mit korrektem Error-Handling
 
-### Ueberblick
-Das aktuelle Dashboard ist funktional, aber visuell etwas flach -- alle Karten sehen identisch aus, es fehlen visuelle Hierarchien und subtile Premium-Akzente. Das Upgrade macht das Design dynamischer und professioneller, ohne Emojis oder Icons hinzuzufuegen.
+### Problem
+3 Edge Functions laden alle User via `listUsers()` und filtern per JS. Das skaliert nicht. Die Loesung `getUserByEmail()` erfordert aber korrektes Error-Handling, da die API bei "User nicht gefunden" einen Error wirft statt `null` zurueckzugeben.
 
 ### Aenderungen
 
-**1. Dashboard.tsx -- Verbesserter Page Header und Layout**
-- Groesserer, markanterer Seitentitel mit einem subtilen Gradient-Texteffekt (orange-to-white)
-- Feine horizontale Trennlinie unter dem Header mit animiertem Gradient-Shimmer
-- Groessere Section-Headings mit Nummerierung im Mono-Stil ("01", "02", "03") passend zur Projekt-Aesthetic
-- Leicht erhoehter Abstand zwischen Sektionen fuer bessere visuelle Atmung
+**1. `supabase/functions/check-email-availability/index.ts` (Zeilen 144-156)**
 
-**2. StreakCard -- Premium-Auftritt**
-- Subtiler Gradient-Border-Effekt bei Hover (von border-primary/30 zu einem sichtbaren orange Glow)
-- Groessere Zahlendarstellung (text-4xl statt text-3xl) fuer mehr Impact
-- Ein feiner oberer Akzentstreifen (2px orange Linie) auf der aktiven "Current Streak"-Karte, wenn der Streak > 0 ist
-- "Personal best"-Badge mit einem subtilen Shimmer-Effekt statt einfachem Pulse
+Hier ist "nicht gefunden" der Erfolgsfall (Email ist verfuegbar):
 
-**3. AnalyticsOverview.tsx -- Aufgewertete Stat-Cards und Bars**
-- Stat-Cards erhalten eine subtile Gradient-Hintergrundebene (von card zu leicht aufgehelltem Dunkelton)
-- Score-Werte (Average/Best Score) erhalten eine farbliche Kodierung nach dem bestehenden Ampelsystem (gruen >= 80, orange >= 60, rot < 60)
-- Progress-Bars werden etwas hoeher (h-2 statt h-1.5) mit einem subtilen Glow-Effekt auf dem Fuellbalken
-- "Recent Analyses"-Eintraege erhalten einen dezenten Hover-Effekt mit einem orange Akzent-Punkt links
+```text
+// Vorher:
+const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
+if (listError) { ... }
+const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
 
-**4. TodayVsAverage.tsx -- Klarere visuelle Hierarchie**
-- Die drei Werte (Today / Average / Delta) erhalten einen staerkeren visuellen Unterschied: "Today" bekommt eine groessere, prominentere Darstellung
-- Subtile vertikale Trennlinien (divider) zwischen den drei Spalten
-- Die Category-Breakdown-Zeilen erhalten dezente alternating-row-Tints fuer bessere Lesbarkeit
+// Nachher:
+const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(
+  validatedEmail.toLowerCase().trim()
+);
 
-**5. BadgeGallery.tsx -- Elegantere Badge-Darstellung**
-- Unlocked Badges: Der Indikator-Punkt wird durch einen subtilen pulsierenden Ring ersetzt (doppelter Ring-Effekt)
-- Die Badge-Karten bekommen eine leicht glasige Oberflaeche (backdrop-blur + semi-transparenter Hintergrund)
-- Locked Badges: Leichter Blur-Effekt auf dem Text fuer einen staerkeren "gesperrt"-Eindruck
+// getUserByEmail wirft Error wenn User nicht existiert
+// In diesem Fall ist die Email verfuegbar
+if (userError || !userData?.user) {
+  return new Response(
+    JSON.stringify({ available: true }),
+    { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+  );
+}
+
+const existingUser = userData.user;
+// Ab hier weiter wie bisher mit existingUser (Provider-Check etc.)
+```
+
+**2. `supabase/functions/check-reset-eligibility/index.ts` (Zeilen 47-55)**
+
+Hier ist "nicht gefunden" ein normaler Fall mit spezifischer Antwort:
+
+```text
+// Vorher:
+const { data: usersData, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+if (listError) { throw new Error("Failed to check user existence"); }
+const user = usersData.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+// Nachher:
+const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserByEmail(
+  email.toLowerCase()
+);
+
+if (userError || !userData?.user) {
+  // User nicht gefunden -- gleiche Antwort wie vorher
+  console.log(`No account found for email: ${email}`);
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: "NO_ACCOUNT",
+      message: "No account found with this email address. Please create an account first."
+    }),
+    { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+  );
+}
+
+const user = userData.user;
+// Ab hier weiter wie bisher mit user (Provider-Check, Rate-Limit, Reset-Link etc.)
+```
+
+**3. `supabase/functions/freemius-webhook/index.ts` (Zeilen 165-178)**
+
+Hier ist "nicht gefunden" der Pending-Premium-Fall:
+
+```text
+// Vorher:
+const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+if (usersError) { ... }
+const authUser = users?.find(u => u.email?.toLowerCase() === userEmail);
+const profile = authUser ? { id: authUser.id } : null;
+
+// Nachher:
+const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(userEmail);
+
+// Bei Error oder nicht gefunden: profile bleibt null -> Pending-Premium-Flow
+const authUser = (!userError && userData?.user) ? userData.user : null;
+const profile = authUser ? { id: authUser.id } : null;
+// Ab hier weiter wie bisher (if !profile -> pending_premium Logik)
+```
 
 ### Technischer Abschnitt
 
-Alle Aenderungen sind rein visuell (CSS/Tailwind-Klassen) -- keine Logik- oder Datenbank-Aenderungen.
+Kernpunkt: `getUserByEmail()` hat ein anderes Verhalten als `listUsers().find()`:
+- `listUsers().find()`: gibt `undefined` zurueck wenn kein Match
+- `getUserByEmail()`: gibt einen Error zurueck wenn User nicht existiert
 
-Betroffene Dateien:
-- `src/pages/Dashboard.tsx` -- Header-Redesign, Section-Nummerierung, StreakCard-Styling
-- `src/components/gamification/AnalyticsOverview.tsx` -- Stat-Cards, Bars, Recent-Liste
-- `src/components/gamification/TodayVsAverage.tsx` -- Layout-Verbesserung, Divider, Row-Tints
-- `src/components/gamification/BadgeGallery.tsx` -- Badge-Karten-Upgrade, Glasmorphism
-- `src/index.css` -- Ggf. kleine Keyframe-Animationen (Shimmer, Glow) falls noch nicht vorhanden
+Deshalb pruefen wir immer `if (userError || !userData?.user)` statt nur `if (!user)`.
 
-Keine neuen Abhaengigkeiten noetig. Alles wird mit bestehenden Tailwind-Klassen und CSS umgesetzt.
+Das Error-Handling ist dabei kontextabhaengig:
+- **check-email-availability**: Error = Email verfuegbar (Erfolgsfall)
+- **check-reset-eligibility**: Error = Kein Account gefunden (Fehlermeldung an User)
+- **freemius-webhook**: Error = User noch nicht registriert (Pending-Premium-Flow)
+
+Alle 3 Functions werden nach der Aenderung deployed.
 

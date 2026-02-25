@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background/60">
+      <SEOHead
+        title="Privacy Policy"
+        description="Privacy policy and data protection information."
+        noindex={true}
+      />
       <div className="container mx-auto px-4 py-8">
         <Link to="/">
           <Button variant="ghost" className="mb-8">

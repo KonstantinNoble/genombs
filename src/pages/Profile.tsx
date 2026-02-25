@@ -22,7 +22,7 @@ import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { BadgeGallery } from "@/components/gamification/BadgeGallery";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
@@ -196,6 +196,17 @@ const Profile = () => {
                             </span>
                           )}
                         </div>
+                        <a
+                          href="https://customers.freemius.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block mt-3"
+                        >
+                          <Button variant="outline" className="w-full gap-2">
+                            Manage your subscription
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </a>
                       </div>
                     ) : (
                       <div className="flex flex-col gap-2">

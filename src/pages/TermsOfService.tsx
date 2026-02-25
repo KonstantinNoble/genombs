@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background/60 flex flex-col">
+      <SEOHead
+        title="Terms of Service"
+        description="Terms of service and conditions of use."
+        noindex={true}
+      />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <Link
           to="/"

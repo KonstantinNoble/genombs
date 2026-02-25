@@ -24,6 +24,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   conversionReadiness: "Conversion Readiness",
 };
 
+/** Score color based on traffic-light system */
+function scoreColor(score: number): string {
+  if (score >= 80) return "text-[hsl(var(--chart-6))]";
+  if (score >= 60) return "text-primary";
+  return "text-destructive";
+}
+
 /** Animates a number from 0 to `target` over `duration` ms */
 function useCountUp(target: number, duration = 800, enabled = true) {
   const [value, setValue] = useState(0);
@@ -52,7 +59,7 @@ function useCountUp(target: number, duration = 800, enabled = true) {
   return value;
 }
 
-/** Animated progress bar that slides in from 0 */
+/** Animated progress bar with glow */
 function AnimatedBar({ value, delay = 0 }: { value: number; delay?: number }) {
   const [width, setWidth] = useState(0);
 
@@ -61,10 +68,17 @@ function AnimatedBar({ value, delay = 0 }: { value: number; delay?: number }) {
     return () => clearTimeout(t);
   }, [value, delay]);
 
+  const barColor =
+    value >= 80
+      ? "bg-[hsl(var(--chart-6))]"
+      : value >= 60
+        ? "bg-primary"
+        : "bg-destructive";
+
   return (
-    <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+    <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
       <div
-        className="h-full rounded-full bg-primary"
+        className={`h-full rounded-full ${barColor} dashboard-bar-glow`}
         style={{
           width: `${width}%`,
           transition: `width 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms`,
@@ -207,7 +221,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
                 <div key={key} className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground w-36 shrink-0">{label}</span>
                   <AnimatedBar value={avg} delay={visible ? 300 + i * 80 : 99999} />
-                  <span className="text-sm font-semibold text-foreground tabular-nums w-8 text-right">{avg}</span>
+                  <span className={`text-sm font-semibold tabular-nums w-8 text-right ${scoreColor(avg)}`}>{avg}</span>
                 </div>
               ))}
             </div>
@@ -215,7 +229,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
         </Card>
       )}
 
-      {/* Recent Analyses — staggered list items */}
+      {/* Recent Analyses — staggered list items with accent dots */}
       <Card
         className="border-border bg-card transition-all duration-700"
         style={{
@@ -232,16 +246,19 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
             {recentProfiles.map((p, i) => (
               <div
                 key={p.id}
-                className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 transition-all duration-500"
+                className="group flex items-center justify-between py-2.5 first:pt-0 last:pb-0 transition-all duration-500 hover:bg-secondary/30 -mx-2 px-2 rounded-md"
                 style={{
                   opacity: visible ? 1 : 0,
                   transform: visible ? "translateX(0)" : "translateX(-8px)",
                   transitionDelay: `${420 + i * 60}ms`,
                 }}
               >
-                <span className="text-sm text-foreground truncate max-w-[200px]">{shortenUrl(p.url)}</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary/0 group-hover:bg-primary transition-colors duration-300 shrink-0" />
+                  <span className="text-sm text-foreground truncate max-w-[200px]">{shortenUrl(p.url)}</span>
+                </div>
                 <div className="flex items-center gap-4 shrink-0">
-                  <span className="text-sm font-semibold text-foreground tabular-nums">
+                  <span className={`text-sm font-semibold tabular-nums ${p.overall_score !== null ? scoreColor(p.overall_score) : 'text-foreground'}`}>
                     {p.overall_score !== null ? p.overall_score : "–"}
                     <span className="text-xs text-muted-foreground font-normal">/100</span>
                   </span>
@@ -256,7 +273,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   );
 };
 
-/** Stat card with count-up */
+/** Stat card with count-up and traffic-light coloring */
 function StatCard({
   label,
   value,
@@ -274,7 +291,7 @@ function StatCard({
 
   return (
     <div
-      className="rounded-xl border border-border bg-card p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-sm hover:-translate-y-0.5"
+      className="rounded-xl border border-border bg-card p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 group"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -282,7 +299,7 @@ function StatCard({
       }}
     >
       <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">{label}</p>
-      <p className="text-2xl font-bold text-foreground tabular-nums leading-none">
+      <p className={`text-2xl font-bold tabular-nums leading-none ${isScore ? scoreColor(value) : 'text-foreground'}`}>
         {animated}
         {isScore && <span className="text-sm font-normal text-muted-foreground">/100</span>}
       </p>

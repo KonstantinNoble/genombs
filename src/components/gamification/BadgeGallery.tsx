@@ -59,7 +59,7 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
     );
   }
 
-  // Large variant for the Achievements page
+  // Large variant for the Dashboard page
   const unlocked = BADGE_DEFINITIONS.filter((b) => unlockedBadges.has(b.id));
   const locked = BADGE_DEFINITIONS.filter((b) => !unlockedBadges.has(b.id));
 
@@ -76,8 +76,8 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
               return (
                 <div
                   key={badge.id}
-                  className="flex items-start gap-4 rounded-xl border border-border bg-card p-4
-                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-0.5 hover:shadow-sm
+                  className="flex items-start gap-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4
+                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5
                     transition-all duration-300 cursor-default"
                   style={{
                     opacity: visible ? 1 : 0,
@@ -86,9 +86,10 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                       border-color 200ms, background-color 200ms, box-shadow 200ms, translate 200ms`,
                   }}
                 >
-                  {/* Animated indicator dot */}
-                  <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5 group-hover:bg-primary/20 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-[pulse_3s_ease-in-out_infinite]" />
+                  {/* Pulsing ring indicator */}
+                  <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5 relative">
+                    <span className="absolute w-5 h-5 rounded-full border border-primary/30 animate-[ping_3s_ease-in-out_infinite]" />
+                    <span className="w-2 h-2 rounded-full bg-primary" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-base font-semibold text-foreground leading-tight">{badge.name}</p>
@@ -119,7 +120,7 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
             {locked.map((badge, i) => (
               <div
                 key={badge.id}
-                className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 p-4
+                className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 backdrop-blur-sm p-4
                   hover:border-border hover:bg-muted/20 transition-all duration-300 cursor-default"
                 style={{
                   opacity: visible ? 0.45 : 0,
@@ -132,7 +133,7 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                   <Lock className="w-3.5 h-3.5 text-muted-foreground/50" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-base font-semibold text-foreground/60 leading-tight">{badge.name}</p>
+                  <p className="text-base font-semibold text-foreground/60 leading-tight blur-[0.5px]">{badge.name}</p>
                   <p className="text-sm text-muted-foreground/60 mt-1 leading-snug">{badge.condition}</p>
                 </div>
               </div>

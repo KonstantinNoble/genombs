@@ -1,57 +1,98 @@
 
 
-## Fix: Skalierbare User-Lookups mit korrektem Error-Handling
+## Fix: getUserByEmail existiert nicht -- SQL-basierter Lookup
 
 ### Problem
-3 Edge Functions laden alle User via `listUsers()` und filtern per JS. Das skaliert nicht. Die Loesung `getUserByEmail()` erfordert aber korrektes Error-Handling, da die API bei "User nicht gefunden" einen Error wirft statt `null` zurueckzugeben.
+`supabase.auth.admin.getUserByEmail()` existiert nicht in supabase-js v2. Alle 3 geaenderten Edge Functions crashen mit:
+```
+TypeError: supabase.auth.admin.getUserByEmail is not a function
+```
+
+### Loesung
+Statt der nicht existierenden Methode nutzen wir einen direkten SQL-Query auf die `auth.users` Tabelle. Der Service-Role-Client hat Zugriff darauf, und die Email-Spalte ist indiziert -- also O(1) statt O(n).
 
 ### Aenderungen
 
-**1. `supabase/functions/check-email-availability/index.ts` (Zeilen 144-156)**
+**1. `supabase/functions/check-email-availability/index.ts` (Zeilen 144-166)**
 
-Hier ist "nicht gefunden" der Erfolgsfall (Email ist verfuegbar):
+Ersetze den `getUserByEmail`-Block und den toten Code durch:
 
-```text
-// Vorher:
-const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
-if (listError) { ... }
-const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
+```typescript
+// Check if email exists in auth.users (direct indexed SQL lookup)
+const { data: authUsers, error: queryError } = await supabase
+  .from('auth.users' as any)
+  .select('id, email, raw_app_meta_data')
+  .eq('email', validatedEmail.toLowerCase().trim())
+  .limit(1);
 
-// Nachher:
-const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(
-  validatedEmail.toLowerCase().trim()
+// Falls der from('auth.users') Ansatz nicht funktioniert, nutzen wir rpc oder raw query:
+// Alternativ: direkter SQL-Query ueber die Supabase REST API
+const { data: authUser, error: queryError } = await supabase.rpc('get_user_by_email_lookup', { lookup_email: validatedEmail.toLowerCase().trim() });
+
+// Finale Loesung: Da auth.users nicht direkt per .from() erreichbar ist,
+// verwenden wir listUsers mit perPage:1 und einem Workaround,
+// ODER wir erstellen eine Datenbank-Funktion die den Lookup macht.
+```
+
+Da `auth.users` nicht direkt ueber die PostgREST API erreichbar ist, erstellen wir eine sichere DB-Funktion:
+
+**2. Neue Datenbank-Migration: `get_auth_user_by_email` Funktion**
+
+```sql
+CREATE OR REPLACE FUNCTION public.get_auth_user_by_email(lookup_email text)
+RETURNS TABLE(id uuid, email text, raw_app_meta_data jsonb)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT id, email::text, raw_app_meta_data
+  FROM auth.users
+  WHERE email = lower(lookup_email)
+  LIMIT 1;
+$$;
+```
+
+Diese Funktion:
+- Ist `SECURITY DEFINER` (laeuft mit den Rechten des Erstellers, kann auth.users lesen)
+- Hat `search_path = ''` (Sicherheits-Best-Practice)
+- Nutzt den Index auf `auth.users.email` (O(1))
+- Gibt nur die benoetigten Felder zurueck
+
+**3. `supabase/functions/check-email-availability/index.ts` (Zeilen 144-166)**
+
+```typescript
+// O(1) indexed lookup via DB function
+const { data: authUsers, error: queryError } = await supabase.rpc(
+  'get_auth_user_by_email',
+  { lookup_email: validatedEmail.toLowerCase().trim() }
 );
 
-// getUserByEmail wirft Error wenn User nicht existiert
-// In diesem Fall ist die Email verfuegbar
-if (userError || !userData?.user) {
+if (queryError || !authUsers || authUsers.length === 0) {
   return new Response(
     JSON.stringify({ available: true }),
     { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
   );
 }
 
-const existingUser = userData.user;
-// Ab hier weiter wie bisher mit existingUser (Provider-Check etc.)
+const existingUser = {
+  id: authUsers[0].id,
+  email: authUsers[0].email,
+  app_metadata: authUsers[0].raw_app_meta_data || {}
+};
+
+// User exists - check what providers they use
+const providers = existingUser.app_metadata?.providers || [];
 ```
 
-**2. `supabase/functions/check-reset-eligibility/index.ts` (Zeilen 47-55)**
+**4. `supabase/functions/check-reset-eligibility/index.ts` (Zeilen 47-64)**
 
-Hier ist "nicht gefunden" ein normaler Fall mit spezifischer Antwort:
-
-```text
-// Vorher:
-const { data: usersData, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-if (listError) { throw new Error("Failed to check user existence"); }
-const user = usersData.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
-
-// Nachher:
-const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserByEmail(
-  email.toLowerCase()
+```typescript
+const { data: authUsers, error: queryError } = await supabaseAdmin.rpc(
+  'get_auth_user_by_email',
+  { lookup_email: email.toLowerCase() }
 );
 
-if (userError || !userData?.user) {
-  // User nicht gefunden -- gleiche Antwort wie vorher
+if (queryError || !authUsers || authUsers.length === 0) {
   console.log(`No account found for email: ${email}`);
   return new Response(
     JSON.stringify({
@@ -63,42 +104,31 @@ if (userError || !userData?.user) {
   );
 }
 
-const user = userData.user;
-// Ab hier weiter wie bisher mit user (Provider-Check, Rate-Limit, Reset-Link etc.)
+const user = {
+  id: authUsers[0].id,
+  email: authUsers[0].email,
+  app_metadata: authUsers[0].raw_app_meta_data || {}
+};
 ```
 
-**3. `supabase/functions/freemius-webhook/index.ts` (Zeilen 165-178)**
+**5. `supabase/functions/freemius-webhook/index.ts` (Zeilen 162-167)**
 
-Hier ist "nicht gefunden" der Pending-Premium-Fall:
+```typescript
+const { data: authUsers, error: queryError } = await supabase.rpc(
+  'get_auth_user_by_email',
+  { lookup_email: userEmail }
+);
 
-```text
-// Vorher:
-const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-if (usersError) { ... }
-const authUser = users?.find(u => u.email?.toLowerCase() === userEmail);
+const authUser = (!queryError && authUsers && authUsers.length > 0) ? authUsers[0] : null;
 const profile = authUser ? { id: authUser.id } : null;
-
-// Nachher:
-const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(userEmail);
-
-// Bei Error oder nicht gefunden: profile bleibt null -> Pending-Premium-Flow
-const authUser = (!userError && userData?.user) ? userData.user : null;
-const profile = authUser ? { id: authUser.id } : null;
-// Ab hier weiter wie bisher (if !profile -> pending_premium Logik)
 ```
 
 ### Technischer Abschnitt
 
-Kernpunkt: `getUserByEmail()` hat ein anderes Verhalten als `listUsers().find()`:
-- `listUsers().find()`: gibt `undefined` zurueck wenn kein Match
-- `getUserByEmail()`: gibt einen Error zurueck wenn User nicht existiert
-
-Deshalb pruefen wir immer `if (userError || !userData?.user)` statt nur `if (!user)`.
-
-Das Error-Handling ist dabei kontextabhaengig:
-- **check-email-availability**: Error = Email verfuegbar (Erfolgsfall)
-- **check-reset-eligibility**: Error = Kein Account gefunden (Fehlermeldung an User)
-- **freemius-webhook**: Error = User noch nicht registriert (Pending-Premium-Flow)
-
-Alle 3 Functions werden nach der Aenderung deployed.
+- `auth.users` ist nicht ueber PostgREST (`.from()`) erreichbar, daher brauchen wir eine `SECURITY DEFINER` DB-Funktion
+- Die Funktion wird per `.rpc()` aufgerufen -- das funktioniert in allen supabase-js Versionen
+- `auth.users.email` hat einen Index, daher ist der Lookup O(1)
+- Die DB-Funktion gibt `raw_app_meta_data` zurueck (das ist das Feld in auth.users, das `app_metadata` bei der Admin-API entspricht) -- damit funktioniert der Provider-Check weiterhin
+- Der tote Code in check-email-availability (Zeilen 160-166) wird gleichzeitig entfernt
+- Alle 3 Functions werden nach der Aenderung deployed
 

@@ -54,3 +54,6 @@ export function getCodeAnalysisCreditCost(modelId: string): number {
   return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
 }
 
+// ─── Chat Context ───
+export const MAX_CONTEXT_MESSAGES = 30;
+

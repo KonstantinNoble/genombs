@@ -13,6 +13,7 @@ import {
     addGithubAnalysis,
 } from "@/lib/api/chat-api";
 import type { Message, WebsiteProfile } from "@/types/chat";
+import { MAX_CONTEXT_MESSAGES } from "@/lib/constants";
 
 export function useChatMessages({
     activeId,
@@ -298,7 +299,9 @@ export function useChatMessages({
             setIsStreaming(true);
             const token = await getAccessToken();
 
-            const chatHistory = [...messages, userMsg].map((m) => ({
+            const allMessages = [...messages, userMsg];
+            const recentMessages = allMessages.slice(-MAX_CONTEXT_MESSAGES);
+            const chatHistory = recentMessages.map((m) => ({
                 role: m.role,
                 content: m.content,
             }));

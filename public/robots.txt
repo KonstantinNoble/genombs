@@ -1,5 +1,5 @@
 # Synvertas SEO Configuration
-# Updated: 2026-02-23
+# Updated: 2026-02-25
 
 # Google - Priority Crawler
 User-agent: Googlebot
@@ -10,6 +10,9 @@ Disallow: /achievements
 Disallow: /reset-password
 Disallow: /update-password
 Disallow: /auth-callback
+Disallow: /contact
+Disallow: /imprint
+Disallow: /privacy-policy
 Crawl-delay: 0
 
 # Bing
@@ -21,6 +24,9 @@ Disallow: /achievements
 Disallow: /reset-password
 Disallow: /update-password
 Disallow: /auth-callback
+Disallow: /contact
+Disallow: /imprint
+Disallow: /privacy-policy
 
 # Twitter/X Card Crawler
 User-agent: Twitterbot
@@ -39,6 +45,9 @@ Disallow: /achievements
 Disallow: /reset-password
 Disallow: /update-password
 Disallow: /auth-callback
+Disallow: /contact
+Disallow: /imprint
+Disallow: /privacy-policy
 
 # Sitemap location
 Sitemap: https://synvertas.com/sitemap.xml

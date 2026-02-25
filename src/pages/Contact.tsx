@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { WebPageSchema } from "@/components/seo/StructuredData";
+
 
 const Contact = () => {
   return (
@@ -9,13 +9,8 @@ const Contact = () => {
       <SEOHead
         title="Contact – We're Happy to Help"
         description="Got a question? Running into something? Drop us a line. We usually reply within a day."
-        keywords="contact synvertas, website analysis support, help, feedback"
         canonical="/contact"
-      />
-      <WebPageSchema
-        name="Contact | Synvertas"
-        description="Questions or feedback? We're here to help."
-        url="https://synvertas.com/contact"
+        noindex={true}
       />
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-16 md:py-24">

@@ -13,6 +13,7 @@ Disallow: /auth-callback
 Disallow: /contact
 Disallow: /imprint
 Disallow: /privacy-policy
+Disallow: /terms-of-service
 Crawl-delay: 0
 
 # Bing
@@ -27,6 +28,7 @@ Disallow: /auth-callback
 Disallow: /contact
 Disallow: /imprint
 Disallow: /privacy-policy
+Disallow: /terms-of-service
 
 # Twitter/X Card Crawler
 User-agent: Twitterbot
@@ -48,6 +50,7 @@ Disallow: /auth-callback
 Disallow: /contact
 Disallow: /imprint
 Disallow: /privacy-policy
+Disallow: /terms-of-service
 
 # Sitemap location
 Sitemap: https://synvertas.com/sitemap.xml

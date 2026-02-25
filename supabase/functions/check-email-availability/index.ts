@@ -141,19 +141,21 @@ serve(async (req) => {
       }
     }
 
-    // Check if email exists in auth.users
-    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
-    
-    if (listError) {
-      console.error("Error listing users:", listError);
-      // Fail open
+    // Check if email exists in auth.users (O(1) indexed lookup)
+    const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(
+      validatedEmail.toLowerCase().trim()
+    );
+
+    // getUserByEmail throws error when user doesn't exist
+    // In that case, the email is available
+    if (userError || !userData?.user) {
       return new Response(
         JSON.stringify({ available: true }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    const existingUser = usersData.users.find(u => u.email?.toLowerCase() === validatedEmail.toLowerCase().trim());
+    const existingUser = userData.user;
 
     if (!existingUser) {
       // Email is available for registration (attempt already logged at the beginning)

@@ -159,11 +159,13 @@ serve(async (req) => {
 
     console.log('Processing webhook for email:', userEmail);
 
-    // Find user by email using Auth Admin API (O(1) indexed lookup)
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserByEmail(userEmail);
+    // Find user by email using DB function (O(1) indexed lookup)
+    const { data: authUsers, error: queryError } = await supabase.rpc(
+      'get_auth_user_by_email',
+      { lookup_email: userEmail }
+    );
 
-    // getUserByEmail throws error when user doesn't exist -> pending_premium flow
-    const authUser = (!userError && userData?.user) ? userData.user : null;
+    const authUser = (!queryError && authUsers && authUsers.length > 0) ? authUsers[0] : null;
     const profile = authUser ? { id: authUser.id } : null;
 
     if (!profile) {

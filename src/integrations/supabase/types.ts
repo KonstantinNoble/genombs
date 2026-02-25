@@ -425,6 +425,14 @@ export type Database = {
       cleanup_old_processed_events: { Args: never; Returns: undefined }
       cleanup_unconfirmed_users: { Args: never; Returns: undefined }
       deactivate_expired_subscriptions: { Args: never; Returns: undefined }
+      get_auth_user_by_email: {
+        Args: { lookup_email: string }
+        Returns: {
+          email: string
+          id: string
+          raw_app_meta_data: Json
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

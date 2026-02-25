@@ -54,7 +54,7 @@ function isToday(dateStr: string): boolean {
 function DeltaValue({ value, visible }: { value: number; visible: boolean }) {
   const animated = useCountUp(Math.abs(value), 800, visible);
   const color =
-    value > 0 ? "text-emerald-400" : value < 0 ? "text-red-400" : "text-muted-foreground";
+    value > 0 ? "text-[hsl(var(--chart-6))]" : value < 0 ? "text-destructive" : "text-muted-foreground";
   const prefix = value > 0 ? "+" : value < 0 ? "-" : "";
 
   return (
@@ -177,7 +177,7 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
 
   return (
     <div className="space-y-3">
-      {/* Overall comparison */}
+      {/* Overall comparison — Today is visually prominent */}
       <Card
         className="border-border bg-card transition-all duration-700"
         style={{
@@ -186,14 +186,18 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
         }}
       >
         <CardContent className="p-5">
-          <div className="grid grid-cols-3 text-center">
+          <div className="grid grid-cols-3 text-center items-end">
+            {/* Today — larger & prominent */}
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Today</p>
-              <p className="text-3xl font-bold">
+              <p className="text-4xl font-bold">
                 <ScoreValue value={todayScore} visible={visible} />
               </p>
             </div>
-            <div>
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute left-0 top-2 bottom-2 w-px bg-border" />
+              <div className="absolute right-0 top-2 bottom-2 w-px bg-border" />
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Average</p>
               <p className="text-3xl font-bold">
                 {avgScore !== null ? <ScoreValue value={avgScore} visible={visible} /> : <span className="text-muted-foreground">--</span>}
@@ -209,7 +213,7 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
         </CardContent>
       </Card>
 
-      {/* Category breakdown */}
+      {/* Category breakdown — alternating row tints */}
       <Card
         className="border-border bg-card transition-all duration-700"
         style={{
@@ -222,7 +226,7 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Category Breakdown
           </p>
-          <div className="space-y-2.5">
+          <div className="space-y-0">
             {CATEGORIES.map((cat, i) => {
               const tVal = todayCats[cat.key];
               const aVal = avgCats[cat.key];
@@ -231,7 +235,8 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
               return (
                 <div
                   key={cat.key}
-                  className="flex items-center justify-between py-1 transition-all duration-500"
+                  className={`flex items-center justify-between py-2 px-2 -mx-2 rounded-md transition-all duration-500
+                    ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
                   style={{
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateX(0)" : "translateX(-8px)",

@@ -39,6 +39,12 @@ function useCountUp(target: number, duration = 900, enabled = true) {
   return value;
 }
 
+const SECTIONS = [
+  { num: "01", label: "Today vs Average" },
+  { num: "02", label: "Analytics" },
+  { num: "03", label: "Badges" },
+];
+
 const Dashboard = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -101,63 +107,51 @@ const Dashboard = () => {
           Back to Analysis
         </Link>
 
-        {/* Page Header — fade in */}
+        {/* Page Header — gradient title + shimmer divider */}
         <div
-          className="mb-10 transition-all duration-500"
+          className="mb-12 transition-all duration-500"
           style={{
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Your performance at a glance.</p>
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-foreground bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">Your performance at a glance.</p>
+          {/* Animated shimmer divider */}
+          <div className="mt-6 h-px w-full overflow-hidden rounded-full">
+            <div className="h-full w-full dashboard-shimmer-line" />
+          </div>
         </div>
 
         {/* Streak Stats — staggered slide-up */}
-        <div className="grid grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-3 gap-4 mb-14">
           {streakCards.map((card, i) => (
-            <StreakCard key={card.label} card={card} index={i} mounted={mounted} />
+            <StreakCard key={card.label} card={card} index={i} mounted={mounted} isFirst={i === 0} />
           ))}
         </div>
 
-        {/* Today vs Average */}
-        <section
-          className="mb-12 transition-all duration-700"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(16px)",
-            transitionDelay: "300ms",
-          }}
-        >
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-5">Today vs Average</h2>
-          <TodayVsAverage userId={user.id} refreshKey={refreshKey} />
-        </section>
-
-        {/* Analytics Overview */}
-        <section
-          className="mb-12 transition-all duration-700"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(16px)",
-            transitionDelay: "350ms",
-          }}
-        >
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-5">Analytics</h2>
-          <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />
-        </section>
-
-        {/* Badges Section */}
-        <section
-          className="mb-12 transition-all duration-700"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(16px)",
-            transitionDelay: "500ms",
-          }}
-        >
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-5">Badges</h2>
-          <BadgeGallery userId={user.id} size="lg" />
-        </section>
+        {/* Sections with mono-numbered headings */}
+        {SECTIONS.map((section, sIdx) => (
+          <section
+            key={section.num}
+            className="mb-14 transition-all duration-700"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transform: mounted ? "translateY(0)" : "translateY(16px)",
+              transitionDelay: `${300 + sIdx * 50}ms`,
+            }}
+          >
+            <div className="flex items-baseline gap-3 mb-6">
+              <span className="font-mono text-xs text-primary/40 select-none">{section.num}</span>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{section.label}</h2>
+            </div>
+            {sIdx === 0 && <TodayVsAverage userId={user.id} refreshKey={refreshKey} />}
+            {sIdx === 1 && <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />}
+            {sIdx === 2 && <BadgeGallery userId={user.id} size="lg" />}
+          </section>
+        ))}
       </main>
       <Footer />
     </div>
@@ -169,27 +163,38 @@ function StreakCard({
   card,
   index,
   mounted,
+  isFirst,
 }: {
   card: { label: string; value: number; unit: string; highlight: string | null; subtext: string | null };
   index: number;
   mounted: boolean;
+  isFirst: boolean;
 }) {
   const animated = useCountUp(card.value, 900, mounted);
+  const isActive = isFirst && card.value > 0;
 
   return (
     <div
-      className="rounded-xl border border-border bg-card p-5 transition-all duration-700 hover:border-primary/30 hover:shadow-sm hover:-translate-y-0.5"
+      className={`relative rounded-xl border bg-card p-5 transition-all duration-700 hover:shadow-md hover:-translate-y-0.5 group
+        ${isActive
+          ? 'border-primary/30 hover:border-primary/50 hover:shadow-primary/10'
+          : 'border-border hover:border-primary/30 hover:shadow-sm'
+        }`}
       style={{
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(20px)",
         transitionDelay: `${80 + index * 80}ms`,
       }}
     >
+      {/* Active accent line on top */}
+      {isActive && (
+        <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-primary to-transparent" />
+      )}
       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{card.label}</p>
-      <p className="text-3xl font-bold text-foreground tabular-nums leading-none">{animated}</p>
+      <p className="text-4xl font-bold text-foreground tabular-nums leading-none">{animated}</p>
       <p className="text-xs text-muted-foreground mt-1">{card.unit}</p>
       {card.highlight && (
-        <span className="inline-block mt-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/10 rounded-md animate-pulse">
+        <span className="inline-block mt-3 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/10 rounded-md dashboard-shimmer-badge">
           {card.highlight}
         </span>
       )}

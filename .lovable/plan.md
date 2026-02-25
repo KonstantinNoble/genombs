@@ -1,32 +1,37 @@
 
-## Persoenliche Daten vor Suchmaschinen schuetzen
+## Sliding Window fuer Chat-Kontext
 
 ### Ziel
-Die Seiten Imprint, Contact und Privacy Policy enthalten deinen Namen, deine Adresse und deine Email. Diese sollen von Suchmaschinen nicht indexiert werden, damit man ueber eine Google-Suche nach deinem Namen oder deiner Email nicht auf deine Webseite stoesst.
+Nur die letzten 30 Nachrichten als Kontext an die KI senden, statt den gesamten Verlauf. Das reduziert Token-Kosten und verhindert, dass bei langen Konversationen das Kontext-Fenster der KI ueberschritten wird.
 
-### Aenderungen
+### Aenderung
 
-**1. Imprint-Seite (`src/pages/Imprint.tsx`)**
-- `SEOHead`-Komponente mit `noindex={true}` hinzufuegen
-- Damit wird der Meta-Tag `<meta name="robots" content="noindex, nofollow">` gesetzt
+**Datei: `src/hooks/useChatMessages.ts` (Zeile 301)**
 
-**2. Contact-Seite (`src/pages/Contact.tsx`)**
-- `noindex={true}` zur bestehenden `SEOHead`-Komponente hinzufuegen
-- Structured-Data-Schema (`WebPageSchema`) entfernen, da die Seite nicht mehr indexiert werden soll
+Aktuell:
+```typescript
+const chatHistory = [...messages, userMsg].map((m) => ({
+    role: m.role,
+    content: m.content,
+}));
+```
 
-**3. Privacy-Policy-Seite (`src/pages/PrivacyPolicy.tsx`)**
-- `SEOHead`-Komponente mit `noindex={true}` hinzufuegen
+Neu:
+```typescript
+const MAX_CONTEXT_MESSAGES = 30;
+const allMessages = [...messages, userMsg];
+const recentMessages = allMessages.slice(-MAX_CONTEXT_MESSAGES);
+const chatHistory = recentMessages.map((m) => ({
+    role: m.role,
+    content: m.content,
+}));
+```
 
-**4. Sitemap (`public/sitemap.xml`)**
-- Die Eintraege fuer `/contact`, `/privacy-policy` und `/imprint` entfernen, damit Suchmaschinen diese Seiten nicht ueber die Sitemap finden
+**Datei: `src/lib/constants.ts`**
+- Neue Konstante `MAX_CONTEXT_MESSAGES = 30` hinzufuegen, damit der Wert zentral konfigurierbar ist
 
-**5. robots.txt (`public/robots.txt`)**
-- `Disallow: /contact`, `Disallow: /imprint`, `Disallow: /privacy-policy` zu allen User-Agent-Bloecken hinzufuegen
-
-### Was bleibt SEO-optimiert
-Alle anderen Seiten (Homepage, Chat, Pricing, How It Works) bleiben vollstaendig indexiert und SEO-optimiert. Die Aenderung betrifft ausschliesslich die drei Seiten mit persoenlichen Angaben.
-
-### Technisch
-- 5 Dateien werden geaendert
-- Dreifacher Schutz: Meta-Tag (noindex), robots.txt (Disallow) und Sitemap-Entfernung
-- Bestehende Suchmaschinen-Caches werden nach dem naechsten Crawl aktualisiert (kann einige Tage bis Wochen dauern)
+### Auswirkung
+- Alle Nachrichten bleiben in der Datenbank und im Chat-Verlauf sichtbar
+- Nur der an die KI gesendete Kontext wird auf die letzten 30 Nachrichten begrenzt (ca. 15 User-Nachrichten + 15 Antworten)
+- Token-Kosten bleiben konstant, egal wie lang die Konversation wird
+- Keine Aenderung am Backend/Edge-Function noetig

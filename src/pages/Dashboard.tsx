@@ -7,7 +7,6 @@ import { AnalyticsOverview } from "@/components/gamification/AnalyticsOverview";
 import { TodayVsAverage } from "@/components/gamification/TodayVsAverage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /** Animates a number from 0 to `target` over `duration` ms */
@@ -76,76 +75,105 @@ const Dashboard = () => {
   const longestStreak = streak?.longest_streak ?? 0;
   const totalDays = streak?.total_active_days ?? 0;
 
-  const streakCards: {
-    label: string;
-    value: number;
-    unit: string;
-    highlight: string | null;
-    subtext: string | null;
-  }[] = [
+  const streakStats = [
     {
+      num: "01",
       label: "Current Streak",
       value: currentStreak,
       unit: "days",
       highlight: streak && currentStreak === longestStreak && currentStreak > 1 ? "Personal best" : null,
-      subtext: currentStreak === 0 ? "Run an analysis to start your streak" : null,
     },
-    { label: "Longest Streak", value: longestStreak, unit: "days", highlight: null, subtext: null },
-    { label: "Total Active Days", value: totalDays, unit: "days", highlight: null, subtext: null },
+    { num: "02", label: "Longest Streak", value: longestStreak, unit: "days", highlight: null },
+    { num: "03", label: "Total Active Days", value: totalDays, unit: "days", highlight: null },
   ];
 
   return (
     <div className="min-h-screen bg-background/60">
       <Navbar />
-      <main className="container mx-auto px-4 py-10 max-w-4xl">
+      <main className="container mx-auto px-4 py-10 max-w-5xl">
         {/* Back link */}
         <Link
           to="/chat"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <span className="font-mono">←</span>
           Back to Analysis
         </Link>
 
         {/* Page Header — gradient title + shimmer divider */}
         <div
-          className="mb-12 transition-all duration-500"
+          className="mb-14 transition-all duration-500"
           style={{
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-foreground bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-foreground bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <p className="text-sm text-muted-foreground mt-2">Your performance at a glance.</p>
+          <p className="text-base text-muted-foreground mt-3 max-w-xl">
+            Your performance metrics, streak history, and achievement progress — all in one place.
+          </p>
           {/* Animated shimmer divider */}
-          <div className="mt-6 h-px w-full overflow-hidden rounded-full">
+          <div className="mt-8 h-px w-full overflow-hidden rounded-full">
             <div className="h-full w-full dashboard-shimmer-line" />
           </div>
         </div>
 
-        {/* Streak Stats — staggered slide-up */}
-        <div className="grid grid-cols-3 gap-4 mb-14">
-          {streakCards.map((card, i) => (
-            <StreakCard key={card.label} card={card} index={i} mounted={mounted} isFirst={i === 0} />
-          ))}
+        {/* Streak Stats — single horizontal bar with dividers */}
+        <div
+          className="rounded-xl border border-border bg-card/80 backdrop-blur-sm mb-20 transition-all duration-700"
+          style={{
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(16px)",
+            transitionDelay: "100ms",
+          }}
+        >
+          <div className="grid grid-cols-3 divide-x divide-border">
+            {streakStats.map((stat, i) => {
+              const animated = useCountUp(stat.value, 900, mounted);
+              return (
+                <div
+                  key={stat.label}
+                  className="p-6 text-center"
+                >
+                  <p className="text-xs text-muted-foreground/50 font-mono mb-1">{stat.num}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-3">
+                    {stat.label}
+                  </p>
+                  <p className="text-4xl font-bold font-mono tabular-nums text-foreground leading-none">
+                    {animated}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1.5">{stat.unit}</p>
+                  {stat.highlight && (
+                    <span className="inline-block mt-3 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/10 rounded-md dashboard-shimmer-badge">
+                      {stat.highlight}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Sections with mono-numbered headings */}
         {SECTIONS.map((section, sIdx) => (
           <section
             key={section.num}
-            className="mb-14 transition-all duration-700"
+            className="mb-20 transition-all duration-700"
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? "translateY(0)" : "translateY(16px)",
               transitionDelay: `${300 + sIdx * 50}ms`,
             }}
           >
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="font-mono text-xs text-primary/40 select-none">{section.num}</span>
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="font-mono text-lg text-primary/40 select-none">{section.num}</span>
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{section.label}</h2>
+            </div>
+            {/* Shimmer line under section header */}
+            <div className="mb-6 h-px w-full overflow-hidden rounded-full">
+              <div className="h-full w-full dashboard-shimmer-line" />
             </div>
             {sIdx === 0 && <TodayVsAverage userId={user.id} refreshKey={refreshKey} />}
             {sIdx === 1 && <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />}
@@ -157,50 +185,5 @@ const Dashboard = () => {
     </div>
   );
 };
-
-/** Individual streak card with count-up animation */
-function StreakCard({
-  card,
-  index,
-  mounted,
-  isFirst,
-}: {
-  card: { label: string; value: number; unit: string; highlight: string | null; subtext: string | null };
-  index: number;
-  mounted: boolean;
-  isFirst: boolean;
-}) {
-  const animated = useCountUp(card.value, 900, mounted);
-  const isActive = isFirst && card.value > 0;
-
-  return (
-    <div
-      className={`relative rounded-xl border bg-card p-5 transition-all duration-700 hover:shadow-md hover:-translate-y-0.5 group
-        ${isActive
-          ? 'border-primary/30 hover:border-primary/50 hover:shadow-primary/10'
-          : 'border-border hover:border-primary/30 hover:shadow-sm'
-        }`}
-      style={{
-        opacity: mounted ? 1 : 0,
-        transform: mounted ? "translateY(0)" : "translateY(20px)",
-        transitionDelay: `${80 + index * 80}ms`,
-      }}
-    >
-      {/* Active accent line on top */}
-      {isActive && (
-        <div className="absolute top-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-primary to-transparent" />
-      )}
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{card.label}</p>
-      <p className="text-4xl font-bold text-foreground tabular-nums leading-none">{animated}</p>
-      <p className="text-xs text-muted-foreground mt-1">{card.unit}</p>
-      {card.highlight && (
-        <span className="inline-block mt-3 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/10 rounded-md dashboard-shimmer-badge">
-          {card.highlight}
-        </span>
-      )}
-      {card.subtext && <p className="text-xs text-muted-foreground/60 mt-2">{card.subtext}</p>}
-    </div>
-  );
-}
 
 export default Dashboard;

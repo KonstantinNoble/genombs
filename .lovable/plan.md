@@ -1,74 +1,65 @@
 
 
-## Edge Function Build-Fehler beheben (22 TypeScript-Fehler)
+## Dashboard-Redesign: Hochprofessionelle, technische Webseiten-Aesthetik
 
-### Ursache
-Die Edge Functions verwenden `createClient` ohne generisches Datenbank-Schema. Dadurch ist der Rueckgabetyp von `.from().select().single()` intern `never`, und jeder Property-Zugriff (`data.credits_used`, `credits.id`, etc.) wird als Fehler gemeldet. Die Funktionen laufen zur Laufzeit korrekt -- es sind reine Compile-Zeit-Fehler.
-
-### Loesung
-Explizite Typ-Interfaces fuer die Query-Ergebnisse definieren und die Supabase-Queries entsprechend casten.
+### Ziel
+Das Dashboard wird zu einer klaren, professionellen Webseite umgestaltet. Alle Icons und Emojis werden entfernt. Stattdessen: klare Typografie, grosszuegiger Whitespace, mono-nummerierte Sektionen, Tabellenstrukturen statt Progress-Bars.
 
 ---
 
-### Aenderungen
+### 1. Dashboard Page (`src/pages/Dashboard.tsx`)
 
-#### 1. `supabase/functions/chat/index.ts` (19 Fehler)
+- `ArrowLeft` Icon-Import entfernen, durch Text-Pfeil `←` ersetzen
+- Seitenbreite von `max-w-4xl` auf `max-w-5xl`
+- Titel von `text-4xl` auf `text-5xl`, Untertitel ausfuehrlicher
+- **Streak-Bereich komplett umbauen**: 3 einzelne Cards ersetzen durch eine einzige horizontale Statistik-Leiste mit `divide-x divide-border` Separatoren
+- Sektions-Header: Nummerierung von `text-xs` auf `text-lg`, Trennlinie darunter
+- Abstaende von `mb-14` auf `mb-20`
 
-**Typ-Interfaces hinzufuegen (nach den Imports):**
-```typescript
-interface CreditRow {
-  id: string;
-  credits_used: number;
-}
-interface CreditFullRow {
-  id: string;
-  is_premium: boolean;
-  daily_credits_limit: number;
-  credits_used: number;
-  credits_reset_at: string;
-}
+**Neues Streak-Layout:**
+```text
+   01 Current Streak    |    02 Longest Streak    |    03 Total Active Days
+         12 days               18 days                    42 days
 ```
 
-**`refundCredits` Funktion (Zeile 332-333):**
-- Parameter-Typ von `ReturnType<typeof createClient>` auf `any` aendern
-- Query-Ergebnis casten: `const { data } = ... as { data: CreditRow | null }`
+### 2. StreakBadge (`src/components/gamification/StreakBadge.tsx`)
 
-**`checkAndDeductCredits` Funktion (Zeile 360-361):**
-- Parameter-Typ auf `any` aendern
-- Query-Ergebnis casten: `const { data: credits, ... } = ... as { data: CreditFullRow | null, error: any }`
+- `Flame` Icon-Import komplett entfernen
+- Durch pulsierenden Punkt ersetzen (kleiner orangener Dot mit ping-Animation)
+- `font-mono` fuer die Streak-Zahl
 
-**Aufrufe (Zeilen 476, 552, 588):**
-- `supabaseAdmin as any` entfaellt, da der Parameter jetzt `any` akzeptiert
+### 3. BadgeGallery (`src/components/gamification/BadgeGallery.tsx`)
 
-#### 2. `supabase/functions/analyze-website/index.ts` (11 Fehler)
+- `Lock` Icon-Import entfernen
+- Gesperrte Badges: Lock-Icon durch ein kleines "LOCKED" Text-Label ersetzen
+- Opacity von 0.45 auf 0.3 reduzieren fuer staerkeren Kontrast
+- Unlock-Datum mit `font-mono`
 
-**Gleiche Typ-Interfaces hinzufuegen.**
+### 4. AnalyticsOverview (`src/components/gamification/AnalyticsOverview.tsx`)
 
-**`refundCredits` Funktion (Zeile ~395):**
-- Parameter-Typ auf `any` aendern + Query-Cast
+- `AnimatedBar` Komponente und Progress-Bars komplett entfernen
+- "Category Averages" als HTML-Tabelle mit `thead`/`tbody` und Spalten: Category, Score
+- "Recent Analyses" als HTML-Tabelle mit Spalten: URL, Score, Date
+- `Card`-Import entfernen, native `div` mit `rounded-xl border border-border bg-card/80 backdrop-blur-sm`
+- Alle Zahlen `font-mono tabular-nums`
 
-**`checkAnalysisCredits` Funktion (Zeile ~427):**
-- Parameter-Typ auf `any` aendern
-- `baseCredits` Query casten: `as { data: { id: string; is_premium: boolean } | null, error: any }`
-- `credits` Query casten: `as { data: CreditFullRow | null, error: any }`
+### 5. TodayVsAverage (`src/components/gamification/TodayVsAverage.tsx`)
 
-**Aufruf (Zeile 546):**
-- Kein Cast mehr noetig
-
-#### 3. `supabase/functions/process-analysis-queue/index.ts` (1 Fehler)
-
-**Zeile 608:**
-```typescript
-// Vorher:
-const slotsAvailable = Math.max(0, maxConcurrent - processingCount);
-// Nachher:
-const slotsAvailable = Math.max(0, maxConcurrent - (processingCount ?? 0));
-```
+- `Card`-Import entfernen, native `div` mit gleichen Styles
+- Overall-Vergleich als horizontale Leiste mit `divide-x divide-border`
+- Category Breakdown als HTML-Tabelle mit Spaltenheadern: Category, Today, Average, Delta
+- Alternating row tints beibehalten
 
 ---
 
-### Zusammenfassung
-- 3 Dateien betroffen
-- Keine Logik-Aenderungen, nur Typ-Annotationen und ein Null-Safety-Fix
-- Runtime-Verhalten bleibt identisch
-- Alle 22 Build-Fehler werden behoben
+### Technische Details
+
+Alle Aenderungen folgen den bestehenden Patterns:
+- Mono-Nummerierungen ("01", "02", "03") mit groesserer Schrift
+- Shimmer-Gradient-Linien als Trenner
+- Traffic-Light-Farbsystem (gruen >= 80, orange >= 60, rot < 60)
+- Staggered Fade-In-Animationen bleiben erhalten
+- Keine Emojis, keine dekorativen Icons
+- `font-mono` fuer Zahlen, `tabular-nums` fuer Alignment
+- `bg-card/80 backdrop-blur-sm` fuer Glassmorphism-Effekt
+

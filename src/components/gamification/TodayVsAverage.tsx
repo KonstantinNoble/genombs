@@ -221,42 +221,44 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Category Breakdown
           </p>
-          <table className="w-full">
-            <thead>
-              <tr className="dashboard-table-header">
-                <th className="w-2/5 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
-                <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Today</th>
-                <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Average</th>
-                <th className="w-[30%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Delta</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CATEGORIES.map((cat, i) => {
-                const tVal = todayCats[cat.key];
-                const aVal = avgCats[cat.key];
-                const catDelta = tVal !== undefined && aVal !== undefined ? tVal - aVal : null;
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] table-fixed">
+              <thead>
+                <tr className="dashboard-table-header">
+                  <th className="w-2/5 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
+                  <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 whitespace-nowrap">Today</th>
+                  <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 whitespace-nowrap">Average</th>
+                  <th className="w-[30%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3 whitespace-nowrap">Delta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CATEGORIES.map((cat, i) => {
+                  const tVal = todayCats[cat.key];
+                  const aVal = avgCats[cat.key];
+                  const catDelta = tVal !== undefined && aVal !== undefined ? tVal - aVal : null;
 
-                return (
-                  <tr
-                    key={cat.key}
-                    className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
-                    style={{
-                      opacity: visible ? 1 : 0,
-                      transform: visible ? "scale(1)" : "scale(0.98)",
-                      transitionDelay: `${200 + i * 60}ms`,
-                    }}
-                  >
-                    <td className="w-2/5 text-left text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
-                    <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{tVal ?? "--"}</td>
-                    <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{aVal ?? "--"}</td>
-                    <td className="w-[30%] text-right text-sm py-2.5 pr-3 whitespace-nowrap">
-                      {catDelta !== null ? <DeltaChip value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr
+                      key={cat.key}
+                      className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                      style={{
+                        opacity: visible ? 1 : 0,
+                        transform: visible ? "scale(1)" : "scale(0.98)",
+                        transitionDelay: `${200 + i * 60}ms`,
+                      }}
+                    >
+                      <td className="w-2/5 text-left text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
+                      <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{tVal ?? "--"}</td>
+                      <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{aVal ?? "--"}</td>
+                      <td className="w-[30%] text-right text-sm py-2.5 pr-3 whitespace-nowrap">
+                        {catDelta !== null ? <DeltaChip value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

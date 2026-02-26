@@ -23,11 +23,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   conversionReadiness: "Conversion Readiness",
 };
 
-/** Score color based on traffic-light system */
-function scoreColor(score: number): string {
-  if (score >= 80) return "text-[hsl(var(--chart-6))]";
-  if (score >= 60) return "text-primary";
-  return "text-destructive";
+/** Score chip class based on traffic-light system */
+function scoreChipClass(score: number): string {
+  if (score >= 80) return "dashboard-score-chip dashboard-score-chip-green";
+  if (score >= 60) return "dashboard-score-chip dashboard-score-chip-orange";
+  return "dashboard-score-chip dashboard-score-chip-red";
 }
 
 /** Animates a number from 0 to `target` over `duration` ms */
@@ -81,7 +81,6 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
     fetchProfiles();
   }, [userId, refreshKey]);
 
-  // Trigger entrance animation after data loads
   useEffect(() => {
     if (!loading) {
       const t = setTimeout(() => setVisible(true), 80);
@@ -92,7 +91,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   if (loading) {
     return (
       <div className="space-y-3 animate-pulse">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-20 bg-muted rounded-xl" />
           ))}
@@ -166,13 +165,13 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   return (
     <div className="space-y-4">
       {/* Stat Cards — staggered fade-up + count-up */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map(({ label, value, isScore }, i) => (
           <StatCard key={label} label={label} value={value} isScore={isScore} index={i} visible={visible} />
         ))}
       </div>
 
-      {/* Category Averages — HTML table */}
+      {/* Category Averages — HTML table with score chips */}
       {categoryAverages.length > 0 && (
         <div
           className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
@@ -188,23 +187,25 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
             </p>
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">Category</th>
-                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Score</th>
+                <tr className="dashboard-table-header">
+                  <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Score</th>
                 </tr>
               </thead>
               <tbody>
                 {categoryAverages.map(({ key, label, avg }, i) => (
                   <tr
                     key={key}
-                    className={`transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                    className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
                     style={{
                       opacity: visible ? 1 : 0,
                       transitionDelay: `${300 + i * 60}ms`,
                     }}
                   >
-                    <td className="text-sm text-muted-foreground py-2.5">{label}</td>
-                    <td className={`text-right text-sm font-semibold font-mono tabular-nums py-2.5 ${scoreColor(avg)}`}>{avg}</td>
+                    <td className="text-sm text-muted-foreground py-2.5 pl-3">{label}</td>
+                    <td className="text-right py-2.5 pr-3">
+                      <span className={`text-sm ${scoreChipClass(avg)}`}>{avg}</span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -213,7 +214,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
         </div>
       )}
 
-      {/* Recent Analyses — HTML table */}
+      {/* Recent Analyses — HTML table with score chips */}
       <div
         className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
@@ -228,25 +229,29 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
           </p>
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">URL</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Score</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-28">Date</th>
+              <tr className="dashboard-table-header">
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">URL</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Score</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-28">Date</th>
               </tr>
             </thead>
             <tbody>
               {recentProfiles.map((p, i) => (
                 <tr
                   key={p.id}
-                  className={`transition-all duration-500 hover:bg-secondary/30 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                  className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
                   style={{
                     opacity: visible ? 1 : 0,
                     transitionDelay: `${420 + i * 60}ms`,
                   }}
                 >
-                  <td className="text-sm text-foreground py-2.5 truncate max-w-[200px]">{shortenUrl(p.url)}</td>
-                  <td className={`text-right text-sm font-semibold font-mono tabular-nums py-2.5 ${p.overall_score !== null ? scoreColor(p.overall_score) : 'text-foreground'}`}>
-                    {p.overall_score !== null ? p.overall_score : "–"}
+                  <td className="text-sm text-foreground py-2.5 pl-3 truncate max-w-[200px]">{shortenUrl(p.url)}</td>
+                  <td className="text-right py-2.5 pr-3">
+                    {p.overall_score !== null ? (
+                      <span className={`text-sm ${scoreChipClass(p.overall_score)}`}>{p.overall_score}</span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">–</span>
+                    )}
                   </td>
                   <td className="text-right text-xs text-muted-foreground font-mono py-2.5">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
                 </tr>
@@ -259,7 +264,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   );
 };
 
-/** Stat card with count-up and traffic-light coloring */
+/** Stat card with count-up, hover scale+glow, and traffic-light coloring */
 function StatCard({
   label,
   value,
@@ -277,7 +282,8 @@ function StatCard({
 
   return (
     <div
-      className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 group"
+      className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4 transition-all duration-700
+        hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:scale-[1.02] group"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -285,9 +291,12 @@ function StatCard({
       }}
     >
       <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">{label}</p>
-      <p className={`text-2xl font-bold font-mono tabular-nums leading-none ${isScore ? scoreColor(value) : 'text-foreground'}`}>
-        {animated}
-        {isScore && <span className="text-sm font-normal text-muted-foreground">/100</span>}
+      <p className={`text-2xl font-bold font-mono tabular-nums leading-none ${isScore ? '' : 'text-foreground'}`}>
+        {isScore ? (
+          <span className={scoreChipClass(value).replace('dashboard-score-chip ', '')}>{animated}<span className="text-sm font-normal text-muted-foreground">/100</span></span>
+        ) : (
+          animated
+        )}
       </p>
     </div>
   );

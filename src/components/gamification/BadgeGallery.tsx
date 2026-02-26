@@ -75,7 +75,7 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                 <div
                   key={badge.id}
                   className="flex items-start gap-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4
-                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10
+                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-1
                     transition-all duration-300 cursor-default group"
                   style={{
                     opacity: visible ? 1 : 0,

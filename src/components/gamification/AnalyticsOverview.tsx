@@ -283,7 +283,7 @@ function StatCard({
   return (
     <div
       className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4 transition-all duration-700
-        hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] group"
+        hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:scale-[1.02] group"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(16px)",

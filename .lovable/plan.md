@@ -1,65 +1,77 @@
 
-
-## Dashboard-Redesign: Hochprofessionelle, technische Webseiten-Aesthetik
+## Dashboard dynamischer und aesthetischer gestalten
 
 ### Ziel
-Das Dashboard wird zu einer klaren, professionellen Webseite umgestaltet. Alle Icons und Emojis werden entfernt. Stattdessen: klare Typografie, grosszuegiger Whitespace, mono-nummerierte Sektionen, Tabellenstrukturen statt Progress-Bars.
+Das Dashboard bekommt mehr visuelle Dynamik und Eleganz -- durch subtile Animationen, bessere Raumnutzung, Glow-Effekte und verfeinerte Interaktionen. Alles bleibt konsistent mit der bestehenden technischen Aesthetik (keine Icons/Emojis).
 
 ---
 
 ### 1. Dashboard Page (`src/pages/Dashboard.tsx`)
 
-- `ArrowLeft` Icon-Import entfernen, durch Text-Pfeil `←` ersetzen
-- Seitenbreite von `max-w-4xl` auf `max-w-5xl`
-- Titel von `text-4xl` auf `text-5xl`, Untertitel ausfuehrlicher
-- **Streak-Bereich komplett umbauen**: 3 einzelne Cards ersetzen durch eine einzige horizontale Statistik-Leiste mit `divide-x divide-border` Separatoren
-- Sektions-Header: Nummerierung von `text-xs` auf `text-lg`, Trennlinie darunter
-- Abstaende von `mb-14` auf `mb-20`
+**Hero-Bereich aufwerten:**
+- Titel mit animiertem Gradient-Shift (langsam wechselnder Farbverlauf statt statischem Gradient)
+- Subtitle mit leicht verzoegertem Fade-In fuer gestaffelten Effekt
+- Shimmer-Divider etwas breiter/sichtbarer machen (2px statt 1px)
 
-**Neues Streak-Layout:**
-```text
-   01 Current Streak    |    02 Longest Streak    |    03 Total Active Days
-         12 days               18 days                    42 days
-```
+**Streak-Leiste dynamischer:**
+- Hover-Effekt auf einzelne Stat-Zellen: leichter Glow + Scale-Up
+- Aktive Streak (> 0) bekommt subtilen pulsierenden Border-Glow
+- Zahlen groesser (text-5xl statt text-4xl) fuer mehr Impact
 
-### 2. StreakBadge (`src/components/gamification/StreakBadge.tsx`)
+**Sektions-Uebergaenge verfeinern:**
+- Laengere Stagger-Delays (80ms statt 50ms) fuer eleganteres Einblenden
+- Sektionsheader-Nummer bekommt einen subtilen Glow wenn die Sektion sichtbar wird
 
-- `Flame` Icon-Import komplett entfernen
-- Durch pulsierenden Punkt ersetzen (kleiner orangener Dot mit ping-Animation)
-- `font-mono` fuer die Streak-Zahl
+### 2. AnalyticsOverview (`src/components/gamification/AnalyticsOverview.tsx`)
 
-### 3. BadgeGallery (`src/components/gamification/BadgeGallery.tsx`)
+**Stat-Cards lebendiger:**
+- Hover-Effekt verstaerken: leichter Scale-Up (scale-[1.02]) + staerkerer Glow
+- Score-Werte mit Traffic-Light-Glow (gruener/oranger/roter Schein hinter der Zahl)
+- Mehr Abstand zwischen den Cards (gap-4 statt gap-3)
 
-- `Lock` Icon-Import entfernen
-- Gesperrte Badges: Lock-Icon durch ein kleines "LOCKED" Text-Label ersetzen
-- Opacity von 0.45 auf 0.3 reduzieren fuer staerkeren Kontrast
-- Unlock-Datum mit `font-mono`
+**Tabellen aesthetischer:**
+- Zeilen-Hover mit sanftem linken Border-Akzent in Primaerfarbe
+- Score-Zellen mit rundem Hintergrund-Chip im Traffic-Light-Stil
+- Header-Zeile mit leichtem Gradient statt harter Border
 
-### 4. AnalyticsOverview (`src/components/gamification/AnalyticsOverview.tsx`)
+### 3. TodayVsAverage (`src/components/gamification/TodayVsAverage.tsx`)
 
-- `AnimatedBar` Komponente und Progress-Bars komplett entfernen
-- "Category Averages" als HTML-Tabelle mit `thead`/`tbody` und Spalten: Category, Score
-- "Recent Analyses" als HTML-Tabelle mit Spalten: URL, Score, Date
-- `Card`-Import entfernen, native `div` mit `rounded-xl border border-border bg-card/80 backdrop-blur-sm`
-- Alle Zahlen `font-mono tabular-nums`
+**Overall-Vergleich aufwerten:**
+- Today-Score groesser und mit Glow-Effekt (wie ein Spotlight)
+- Delta-Wert mit animiertem Pfeil-Indikator (reines CSS-Dreieck, kein Icon)
+- Hover auf Zellen zeigt subtilen Hintergrund-Pulse
 
-### 5. TodayVsAverage (`src/components/gamification/TodayVsAverage.tsx`)
+**Tabelle dynamischer:**
+- Delta-Spalte mit farbigem Hintergrund-Chip (gruen/rot/neutral)
+- Sanfte Zeilen-Einblende-Animation beibehalten, aber mit leichtem Scale-Effekt
 
-- `Card`-Import entfernen, native `div` mit gleichen Styles
-- Overall-Vergleich als horizontale Leiste mit `divide-x divide-border`
-- Category Breakdown als HTML-Tabelle mit Spaltenheadern: Category, Today, Average, Delta
-- Alternating row tints beibehalten
+### 4. BadgeGallery (`src/components/gamification/BadgeGallery.tsx`)
+
+**Unlocked Badges lebendiger:**
+- Hover-Effekt: Badge-Karte hebt sich staerker an + Glow-Ring wird intensiver
+- Pulsing-Ring-Animation etwas langsamer und groesser fuer elegantere Wirkung
+- Badge-Name bekommt bei Hover einen subtilen Gradient-Text-Effekt
+
+**Locked Badges interessanter:**
+- Leichter Glassmorphism-Effekt statt komplettem Fade-Out
+- "LOCKED" Label mit animiertem Shimmer-Durchlauf
+- Hover zeigt die Unlock-Bedingung prominenter
+
+### 5. CSS Animationen (`src/index.css`)
+
+**Neue Keyframes und Utilities:**
+- `dashboard-glow-pulse`: Subtiler pulsierender Box-Shadow fuer aktive Elemente
+- `dashboard-gradient-shift`: Langsam wechselnder Hintergrund-Gradient fuer den Titel
+- `dashboard-row-highlight`: Linker Border-Slide-In fuer Tabellen-Hover
+- `dashboard-score-chip`: Runder Hintergrund mit Traffic-Light-Farbe fuer Score-Werte
 
 ---
 
 ### Technische Details
 
-Alle Aenderungen folgen den bestehenden Patterns:
-- Mono-Nummerierungen ("01", "02", "03") mit groesserer Schrift
-- Shimmer-Gradient-Linien als Trenner
-- Traffic-Light-Farbsystem (gruen >= 80, orange >= 60, rot < 60)
-- Staggered Fade-In-Animationen bleiben erhalten
-- Keine Emojis, keine dekorativen Icons
-- `font-mono` fuer Zahlen, `tabular-nums` fuer Alignment
-- `bg-card/80 backdrop-blur-sm` fuer Glassmorphism-Effekt
-
+- Alle neuen Animationen nutzen `will-change: transform, opacity` fuer GPU-Beschleunigung
+- Hover-Effekte nur mit CSS-Transitions, kein JavaScript
+- Bestehende Stagger-Animationen und Count-Up-Logik bleiben erhalten
+- Keine neuen Dependencies noetig
+- Konsistent mit der "No Icons/No Emojis"-Regel
+- Alle Farben aus dem bestehenden Design-System (primary, chart-6, destructive)

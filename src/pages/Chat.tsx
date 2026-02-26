@@ -471,6 +471,9 @@ const Chat = () => {
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold tracking-widest text-muted-foreground/50 uppercase select-none">Workspace</span>
           <a href="/dashboard" className="text-[10px] text-primary hover:underline font-medium tracking-wide uppercase">View Dashboard</a>
+          {completedProfiles.length > 0 && (
+            <PdfDownloadButton profiles={completedProfiles} tasks={tasks} />
+          )}
         </div>
         {completedProfiles.length > 0 && (
           <span className="text-xs text-muted-foreground/40">{completedProfiles.length} url{completedProfiles.length > 1 ? "s" : ""} analyzed</span>

@@ -185,11 +185,15 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
               Category Averages
             </p>
-            <table className="w-full">
+            <table className="w-full table-fixed">
+              <colgroup>
+                <col style={{ width: '70%' }} />
+                <col style={{ width: '30%' }} />
+              </colgroup>
               <thead>
                 <tr className="dashboard-table-header">
                   <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>
-                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Score</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -227,12 +231,17 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Recent Analyses
           </p>
-          <table className="w-full">
+          <table className="w-full table-fixed">
+            <colgroup>
+              <col style={{ width: '50%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '30%' }} />
+            </colgroup>
             <thead>
               <tr className="dashboard-table-header">
                 <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">URL</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Score</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-28">Date</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Score</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Date</th>
               </tr>
             </thead>
             <tbody>

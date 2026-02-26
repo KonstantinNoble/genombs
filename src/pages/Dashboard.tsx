@@ -108,9 +108,6 @@ const Dashboard = () => {
             transform: mounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          <h1 className="text-5xl font-bold tracking-tight dashboard-gradient-title">
-            Dashboard
-          </h1>
           <p
             className="text-base text-muted-foreground mt-3 max-w-xl transition-all duration-700"
             style={{

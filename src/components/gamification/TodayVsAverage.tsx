@@ -221,19 +221,13 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Category Breakdown
           </p>
-          <table className="w-full table-fixed">
-            <colgroup>
-              <col style={{ width: '40%' }} />
-              <col style={{ width: '15%' }} />
-              <col style={{ width: '15%' }} />
-              <col style={{ width: '30%' }} />
-            </colgroup>
+          <table className="w-full">
             <thead>
               <tr className="dashboard-table-header">
-                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Today</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Average</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Delta</th>
+                <th className="w-2/5 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
+                <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Today</th>
+                <th className="w-[15%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Average</th>
+                <th className="w-[30%] text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Delta</th>
               </tr>
             </thead>
             <tbody>
@@ -252,10 +246,10 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
                       transitionDelay: `${200 + i * 60}ms`,
                     }}
                   >
-                    <td className="text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
-                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{tVal ?? "--"}</td>
-                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{aVal ?? "--"}</td>
-                    <td className="text-right text-sm py-2.5 pr-3 whitespace-nowrap">
+                    <td className="w-2/5 text-left text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
+                    <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{tVal ?? "--"}</td>
+                    <td className="w-[15%] text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{aVal ?? "--"}</td>
+                    <td className="w-[30%] text-right text-sm py-2.5 pr-3 whitespace-nowrap">
                       {catDelta !== null ? <DeltaChip value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
                     </td>
                   </tr>

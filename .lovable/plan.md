@@ -1,55 +1,46 @@
 
+Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-## PDF-Export fuer Dashboard-Ergebnisse
+1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
+- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
+  - identische horizontale Padding-Logik für `th` und `td` je Spalte
+  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
+  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
+- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
 
-### Uebersicht
-Ein "Download PDF"-Button wird im Dashboard-Panel (rechte Seite der Chat-Seite) hinzugefuegt. Beim Klick wird ein professionelles PDF mit allen Analyse-Ergebnissen generiert und heruntergeladen. Das Projekt hat bereits `@react-pdf/renderer` installiert.
+2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
+- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
+  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
+  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
+- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
 
----
+3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
+- Tabelle „Category Averages“:
+  - `colgroup` (70/30) behalten
+  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
+- Tabelle „Recent Analyses“:
+  - `colgroup` (50/20/30) behalten
+  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
+  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
 
-### Aenderungen
+4) Stabilitäts-Feinschliff für Tabellen-Rendering
+- Tabellen auf einheitliches Verhalten setzen:
+  - `table-fixed` bleibt aktiv
+  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
+- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
 
-#### 1. Neue Komponente: `src/components/dashboard/PdfReport.tsx`
+5) Validierung nach Umsetzung
+- Desktop prüfen:
+  - Headertext steht exakt über den Werten in jeder Spalte
+  - kein sichtbares „Springen“ bei langen URLs oder Chips
+- Mobile prüfen:
+  - kein unerwarteter Umbruch in numerischen Spalten
+  - Spalten bleiben visuell untereinander
+- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
 
-React-PDF-Dokument, das die Analyse-Daten als gestyltes PDF rendert:
-
-- **Titelseite**: Synvertas-Branding, Datum, analysierte URL
-- **Overview-Sektion**: Overall Score, Kategorie-Scores (Findability, Mobile Usability, Offer Clarity, Trust & Proof, Conversion Readiness) als Balken/Zahlen
-- **Positioning**: Target Audience, USP, Site Structure pro Website
-- **Strengths & Weaknesses**: Auflistung fuer eigene Seite und Konkurrenten
-- **PageSpeed**: Performance, Accessibility, Best Practices, SEO, Core Web Vitals
-- **Code Analysis** (falls vorhanden): Code Quality, Security, Performance Scores + Tech Stack
-- **Comparison Table** (falls Konkurrenten vorhanden): Seite-an-Seite Kategorie-Vergleich
-- **Improvement Tasks** (falls vorhanden): To-Do-Liste mit Prioritaet und Status
-
-Props: `profiles: WebsiteProfile[]`, `tasks: ImprovementTask[]`
-
-#### 2. Neue Komponente: `src/components/dashboard/PdfDownloadButton.tsx`
-
-Button-Komponente die:
-- `@react-pdf/renderer`'s `pdf()` Funktion nutzt um das Dokument zu generieren
-- Einen Blob erstellt und als `.pdf` herunterladet
-- Loading-State mit Spinner waehrend der Generierung zeigt
-- Den Dateinamen aus der URL ableitet (z.B. `synvertas-analysis-2026-02-26.pdf`)
-
-#### 3. Integration in `src/pages/Chat.tsx`
-
-Den PDF-Button im Dashboard-Panel-Header einfuegen (neben "Workspace" / "View Dashboard"):
-- Nur sichtbar wenn mindestens ein abgeschlossenes Profil existiert
-- Kompakter Button mit Download-Icon
-
-```text
-+------------------------------------------+
-| Workspace    View Dashboard   [PDF ↓]    |
-+------------------------------------------+
-```
-
----
-
-### Technische Details
-
-- Nutzt `@react-pdf/renderer` (bereits installiert) fuer serverseitiges PDF-Rendering im Browser
-- Kein externer Service noetig — alles client-seitig
-- PDF-Styling ueber react-pdf's `StyleSheet.create()` (kein Tailwind im PDF moeglich)
-- Farbschema: dunkles Theme passend zum App-Design (dunkler Hintergrund, helle Schrift) oder klassisch hell fuer Druck-Freundlichkeit
-
+Technische Kurzbegründung
+- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
+  1) ungleichen `th`/`td` Innenabständen,
+  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
+  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
+- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.

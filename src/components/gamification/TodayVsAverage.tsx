@@ -230,10 +230,10 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
             </colgroup>
             <thead>
               <tr className="dashboard-table-header">
-                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-16">Today</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-16">Average</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Delta</th>
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Today</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Average</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Delta</th>
               </tr>
             </thead>
             <tbody>
@@ -253,9 +253,9 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
                     }}
                   >
                     <td className="text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
-                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{tVal ?? "--"}</td>
-                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{aVal ?? "--"}</td>
-                    <td className="text-right text-sm py-2.5 pr-3">
+                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{tVal ?? "--"}</td>
+                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5 whitespace-nowrap">{aVal ?? "--"}</td>
+                    <td className="text-right text-sm py-2.5 pr-3 whitespace-nowrap">
                       {catDelta !== null ? <DeltaChip value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
                     </td>
                   </tr>

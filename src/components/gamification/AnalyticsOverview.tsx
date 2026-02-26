@@ -185,31 +185,33 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
               Category Averages
             </p>
-            <table className="w-full">
-              <thead>
-                <tr className="dashboard-table-header">
-                  <th className="w-3/4 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
-                  <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categoryAverages.map(({ key, label, avg }, i) => (
-                  <tr
-                    key={key}
-                    className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
-                    style={{
-                      opacity: visible ? 1 : 0,
-                      transitionDelay: `${300 + i * 60}ms`,
-                    }}
-                  >
-                    <td className="w-3/4 text-left text-sm text-muted-foreground py-2.5 pl-3">{label}</td>
-                    <td className="w-1/4 text-right py-2.5 pr-3">
-                      <span className={`text-sm ${scoreChipClass(avg)}`}>{avg}</span>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] table-fixed">
+                <thead>
+                  <tr className="dashboard-table-header">
+                    <th className="w-3/4 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
+                    <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3 whitespace-nowrap">Score</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {categoryAverages.map(({ key, label, avg }, i) => (
+                    <tr
+                      key={key}
+                      className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                      style={{
+                        opacity: visible ? 1 : 0,
+                        transitionDelay: `${300 + i * 60}ms`,
+                      }}
+                    >
+                      <td className="w-3/4 text-left text-sm text-muted-foreground py-2.5 pl-3">{label}</td>
+                      <td className="w-1/4 text-right py-2.5 pr-3 whitespace-nowrap">
+                        <span className={`text-sm ${scoreChipClass(avg)}`}>{avg}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -227,37 +229,39 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Recent Analyses
           </p>
-          <table className="w-full">
-            <thead>
-              <tr className="dashboard-table-header">
-                <th className="w-1/2 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">URL</th>
-                <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Score</th>
-                <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentProfiles.map((p, i) => (
-                <tr
-                  key={p.id}
-                  className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
-                  style={{
-                    opacity: visible ? 1 : 0,
-                    transitionDelay: `${420 + i * 60}ms`,
-                  }}
-                >
-                  <td className="w-1/2 text-left text-sm text-foreground py-2.5 pl-3 overflow-hidden text-ellipsis whitespace-nowrap">{shortenUrl(p.url)}</td>
-                  <td className="w-1/4 text-right py-2.5 pr-3 whitespace-nowrap">
-                    {p.overall_score !== null ? (
-                      <span className={`text-sm ${scoreChipClass(p.overall_score)}`}>{p.overall_score}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">–</span>
-                    )}
-                  </td>
-                  <td className="w-1/4 text-right text-xs text-muted-foreground font-mono py-2.5 pr-3 whitespace-nowrap">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] table-fixed">
+              <thead>
+                <tr className="dashboard-table-header">
+                  <th className="w-1/2 text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">URL</th>
+                  <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3 whitespace-nowrap">Score</th>
+                  <th className="w-1/4 text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3 whitespace-nowrap">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentProfiles.map((p, i) => (
+                  <tr
+                    key={p.id}
+                    className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                    style={{
+                      opacity: visible ? 1 : 0,
+                      transitionDelay: `${420 + i * 60}ms`,
+                    }}
+                  >
+                    <td className="w-1/2 max-w-0 text-left text-sm text-foreground py-2.5 pl-3 overflow-hidden text-ellipsis whitespace-nowrap">{shortenUrl(p.url)}</td>
+                    <td className="w-1/4 text-right py-2.5 pr-3 whitespace-nowrap">
+                      {p.overall_score !== null ? (
+                        <span className={`text-sm ${scoreChipClass(p.overall_score)}`}>{p.overall_score}</span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">–</span>
+                      )}
+                    </td>
+                    <td className="w-1/4 text-right text-xs text-muted-foreground font-mono py-2.5 pr-3 whitespace-nowrap">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

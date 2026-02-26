@@ -319,7 +319,7 @@ const Home = () => {
       <section className="relative flex items-center justify-center py-32 sm:py-40 overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-3xl relative z-10">
           {/* Word-by-word reveal headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-[1.08] mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-normal text-foreground leading-[1.08] mb-6">
             <span className="sr-only">Website Scoring and Competitor Analysis Tool – </span>
             {["What's", "holding", "your"].map((word, i) => (
               <span
@@ -357,7 +357,7 @@ const Home = () => {
 
           {/* URL Input Container */}
           <div
-            className="url-input-container max-w-xl mx-auto bg-card border border-border rounded-lg p-1.5 flex items-center gap-2 animate-fade-in-up"
+            className="max-w-xl mx-auto bg-card border border-border rounded-lg p-1.5 flex items-center gap-2 animate-fade-in-up transition-[border-color,box-shadow] duration-200 focus-within:border-primary focus-within:shadow-[0_0_0_3px_hsl(var(--primary)/0.12)]"
             style={{ animationDelay: "0.3s", animationFillMode: "both" }}
           >
             <div className="flex-1 relative">
@@ -433,7 +433,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 relative">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">What you get</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">What you get</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Scores, comparisons, and a concrete fix list for your website.
             </p>
@@ -442,12 +442,12 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="group accent-stripe border border-border bg-card rounded-lg p-10 space-y-5 stagger-reveal hover-lift hover:border-primary/40 transition-all duration-300"
+                className="border border-border bg-card rounded-lg p-8 space-y-4 stagger-reveal hover:border-primary/30 transition-colors duration-300"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
-                <span className="text-4xl font-semibold text-primary font-mono leading-none block">{feature.num}</span>
-                <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                <span className="text-sm text-primary font-mono leading-none block">{feature.num}</span>
+                <h3 className="text-lg font-medium text-foreground">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -458,7 +458,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border relative">
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">Use cases</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">Use cases</h2>
           </div>
           <div className="space-y-0">
             {useCases.map((uc, i) => (
@@ -487,24 +487,24 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">How it works</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">How it works</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">Three steps. No setup required.</p>
           </div>
           {/* Horizontal timeline */}
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
             {/* Connecting line */}
-            <div className="hidden md:block absolute top-7 left-[16.67%] right-[16.67%] h-px bg-border" />
+            <div className="hidden md:block absolute top-5 left-[16.67%] right-[16.67%] h-px bg-border" />
             {steps.map((step, i) => (
               <div
                 key={step.step}
-                className="relative text-center md:px-8 space-y-5 scroll-reveal-scale"
+                className="relative text-center md:px-8 space-y-4 scroll-reveal-scale"
                 style={{ transitionDelay: `${i * 0.15}s` }}
               >
-                <div className="step-circle-pulse mx-auto w-14 h-14 rounded-full border-2 border-primary bg-background flex items-center justify-center relative z-10">
-                  <span className="text-lg font-medium text-primary font-mono">{step.step}</span>
+                <div className="mx-auto w-10 h-10 rounded-full border border-primary/40 bg-background flex items-center justify-center relative z-10">
+                  <span className="text-sm text-primary font-mono">{step.step}</span>
                 </div>
-                <h3 className="text-xl font-medium text-foreground">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
+                <h3 className="text-base font-medium text-foreground">{step.title}</h3>
+                <p className="text-sm text-muted-foreground">{step.description}</p>
               </div>
             ))}
           </div>
@@ -515,7 +515,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-14 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-5">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">
               Compared to traditional consulting
             </h2>
           </div>
@@ -567,7 +567,7 @@ const Home = () => {
       {/* CTA */}
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-8">
             See what your website scores
           </h2>
           <Button

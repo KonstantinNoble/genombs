@@ -46,13 +46,13 @@ All colors MUST be HSL.
     --chart-7: 200 70% 50%;
 
     --radius: 0.5rem;
-    
+
     /* Shadows - clean, no glow */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
     --shadow-lift: 0 20px 40px -15px rgb(0 0 0 / 0.5);
-    
+
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease-out;
@@ -132,15 +132,20 @@ All colors MUST be HSL.
   }
 
   /* Typography refinements */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-sans;
     letter-spacing: -0.025em;
   }
-  
+
   h1 {
     letter-spacing: -0.02em;
   }
-  
+
   p {
     line-height: 1.7;
   }
@@ -152,6 +157,7 @@ All colors MUST be HSL.
 
 /* Minimum touch target size for mobile */
 @media (max-width: 767px) {
+
   button:not(.no-touch-optimize),
   [role="button"]:not(.no-touch-optimize),
   a:not(.no-touch-optimize) {
@@ -192,6 +198,7 @@ All colors MUST be HSL.
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -260,18 +267,35 @@ All colors MUST be HSL.
 
 /* Technical Animations */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes progress-stripe {
-  0% { background-position: 0 0; }
-  100% { background-position: 40px 0; }
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 40px 0;
+  }
 }
 
 .animate-shimmer {
@@ -285,29 +309,50 @@ All colors MUST be HSL.
 }
 
 .progress-striped {
-  background-image: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.1) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.1) 75%,
-    transparent 75%,
-    transparent
-  );
+  background-image: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.1) 75%,
+      transparent 75%,
+      transparent);
   background-size: 40px 40px;
   animation: progress-stripe 1s linear infinite;
 }
 
 /* Stagger delays for list items */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
-.stagger-7 { animation-delay: 0.35s; }
-.stagger-8 { animation-delay: 0.4s; }
+.stagger-1 {
+  animation-delay: 0.05s;
+}
+
+.stagger-2 {
+  animation-delay: 0.1s;
+}
+
+.stagger-3 {
+  animation-delay: 0.15s;
+}
+
+.stagger-4 {
+  animation-delay: 0.2s;
+}
+
+.stagger-5 {
+  animation-delay: 0.25s;
+}
+
+.stagger-6 {
+  animation-delay: 0.3s;
+}
+
+.stagger-7 {
+  animation-delay: 0.35s;
+}
+
+.stagger-8 {
+  animation-delay: 0.4s;
+}
 
 /* ============================================
    PROFESSIONAL DESIGN SYSTEM UTILITIES
@@ -386,6 +431,7 @@ All colors MUST be HSL.
    MOBILE PERFORMANCE OPTIMIZATIONS
    ============================================ */
 @media (max-width: 767px) {
+
   /* Disable blur filters on mobile */
   .glass {
     backdrop-filter: none !important;
@@ -485,7 +531,7 @@ All colors MUST be HSL.
 
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 
+  box-shadow:
     0 0 0 2px hsl(var(--background)),
     0 0 0 4px hsl(var(--primary) / 0.5);
 }
@@ -689,9 +735,12 @@ All colors MUST be HSL.
 
 /* Decision flow - subtle pulse kept */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0.1);
   }
+
   50% {
     box-shadow: 0 0 8px 2px hsl(var(--primary) / 0.08);
   }
@@ -711,10 +760,13 @@ All colors MUST be HSL.
 
 /* Border pulse for URL input */
 @keyframes border-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     border-color: hsl(var(--border));
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0), 0 0 20px -5px hsl(var(--primary) / 0);
   }
+
   50% {
     border-color: hsl(var(--primary) / 0.6);
     box-shadow: 0 0 20px 0 hsl(var(--primary) / 0.1), 0 0 40px -10px hsl(var(--primary) / 0.06);
@@ -723,38 +775,44 @@ All colors MUST be HSL.
 
 /* Floating animation for CTA */
 @keyframes cta-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* Shimmer sweep on CTA button */
 @keyframes btn-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
+  0% {
+    background-position: -200% center;
+  }
 
-.url-input-container {
-  animation: border-pulse 3s ease-in-out infinite, cta-float 4s ease-in-out infinite;
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .url-input-container:focus-within {
-  animation: none;
   border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15), 0 0 24px -4px hsl(var(--primary) / 0.12);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* CTA Analyze button shimmer */
 .cta-btn-shimmer {
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(
-    110deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--primary)) 40%,
-    hsl(var(--primary-foreground) / 0.2) 50%,
-    hsl(var(--primary)) 60%,
-    hsl(var(--primary)) 100%
-  );
+  background-image: linear-gradient(110deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--primary)) 40%,
+      hsl(var(--primary-foreground) / 0.2) 50%,
+      hsl(var(--primary)) 60%,
+      hsl(var(--primary)) 100%);
   background-size: 200% 100%;
   animation: btn-shimmer 3s ease-in-out infinite;
   animation-delay: 2s;
@@ -767,8 +825,15 @@ All colors MUST be HSL.
 
 /* Typing cursor blink */
 @keyframes blink-cursor {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .typing-cursor {
@@ -797,6 +862,7 @@ All colors MUST be HSL.
     opacity: 0;
     transform: translateY(24px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -817,9 +883,11 @@ All colors MUST be HSL.
   0% {
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3);
   }
+
   70% {
     box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
   }
@@ -840,6 +908,7 @@ All colors MUST be HSL.
     opacity: 0;
     transform: translateY(16px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -865,9 +934,19 @@ All colors MUST be HSL.
 
 /* Floating orbs */
 @keyframes orb-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(10px, -15px) scale(1.05); }
-  66% { transform: translate(-8px, 10px) scale(0.95); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(10px, -15px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-8px, 10px) scale(0.95);
+  }
 }
 
 .orb-float-1 {
@@ -880,37 +959,117 @@ All colors MUST be HSL.
 
 /* Bar chart fill animations */
 @keyframes bar-fill-anim {
-  from { height: 0; }
+  from {
+    height: 0;
+  }
 }
 
-.bar-fill-1 { animation: bar-fill-anim 0.6s 0.8s ease-out forwards; height: 0; }
-.bar-fill-2 { animation: bar-fill-anim 0.6s 0.95s ease-out forwards; height: 0; }
-.bar-fill-3 { animation: bar-fill-anim 0.6s 1.1s ease-out forwards; height: 0; }
-.bar-fill-4 { animation: bar-fill-anim 0.6s 1.25s ease-out forwards; height: 0; }
-.bar-fill-5 { animation: bar-fill-anim 0.6s 1.4s ease-out forwards; height: 0; }
+.bar-fill-1 {
+  animation: bar-fill-anim 0.6s 0.8s ease-out forwards;
+  height: 0;
+}
 
-.bar-fill-1 { --target-h: 60%; }
-.bar-fill-2 { --target-h: 40%; }
-.bar-fill-3 { --target-h: 85%; }
-.bar-fill-4 { --target-h: 30%; }
-.bar-fill-5 { --target-h: 55%; }
+.bar-fill-2 {
+  animation: bar-fill-anim 0.6s 0.95s ease-out forwards;
+  height: 0;
+}
 
-@keyframes bar-grow-1 { to { height: 60%; } }
-@keyframes bar-grow-2 { to { height: 40%; } }
-@keyframes bar-grow-3 { to { height: 85%; } }
-@keyframes bar-grow-4 { to { height: 30%; } }
-@keyframes bar-grow-5 { to { height: 55%; } }
+.bar-fill-3 {
+  animation: bar-fill-anim 0.6s 1.1s ease-out forwards;
+  height: 0;
+}
 
-.bar-fill-1 { animation: bar-grow-1 0.6s 0.8s ease-out forwards; }
-.bar-fill-2 { animation: bar-grow-2 0.6s 0.95s ease-out forwards; }
-.bar-fill-3 { animation: bar-grow-3 0.6s 1.1s ease-out forwards; }
-.bar-fill-4 { animation: bar-grow-4 0.6s 1.25s ease-out forwards; }
-.bar-fill-5 { animation: bar-grow-5 0.6s 1.4s ease-out forwards; }
+.bar-fill-4 {
+  animation: bar-fill-anim 0.6s 1.25s ease-out forwards;
+  height: 0;
+}
+
+.bar-fill-5 {
+  animation: bar-fill-anim 0.6s 1.4s ease-out forwards;
+  height: 0;
+}
+
+.bar-fill-1 {
+  --target-h: 60%;
+}
+
+.bar-fill-2 {
+  --target-h: 40%;
+}
+
+.bar-fill-3 {
+  --target-h: 85%;
+}
+
+.bar-fill-4 {
+  --target-h: 30%;
+}
+
+.bar-fill-5 {
+  --target-h: 55%;
+}
+
+@keyframes bar-grow-1 {
+  to {
+    height: 60%;
+  }
+}
+
+@keyframes bar-grow-2 {
+  to {
+    height: 40%;
+  }
+}
+
+@keyframes bar-grow-3 {
+  to {
+    height: 85%;
+  }
+}
+
+@keyframes bar-grow-4 {
+  to {
+    height: 30%;
+  }
+}
+
+@keyframes bar-grow-5 {
+  to {
+    height: 55%;
+  }
+}
+
+.bar-fill-1 {
+  animation: bar-grow-1 0.6s 0.8s ease-out forwards;
+}
+
+.bar-fill-2 {
+  animation: bar-grow-2 0.6s 0.95s ease-out forwards;
+}
+
+.bar-fill-3 {
+  animation: bar-grow-3 0.6s 1.1s ease-out forwards;
+}
+
+.bar-fill-4 {
+  animation: bar-grow-4 0.6s 1.25s ease-out forwards;
+}
+
+.bar-fill-5 {
+  animation: bar-grow-5 0.6s 1.4s ease-out forwards;
+}
 
 /* Radar sweep rotation */
 @keyframes radar-sweep {
-  from { transform-origin: 30px 30px; transform: rotate(0deg); }
-  to { transform-origin: 30px 30px; transform: rotate(360deg); }
+  from {
+    transform-origin: 30px 30px;
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform-origin: 30px 30px;
+    transform: rotate(360deg);
+  }
 }
 
 .radar-sweep-line {
@@ -925,8 +1084,17 @@ All colors MUST be HSL.
 
 /* Dot pulse for features */
 @keyframes dot-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.4); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
 }
 
 .dot-pulse-anim {
@@ -935,8 +1103,15 @@ All colors MUST be HSL.
 
 /* Domain glow */
 @keyframes domain-glow-pulse {
-  0%, 100% { text-shadow: 0 0 4px hsl(var(--primary) / 0.3); }
-  50% { text-shadow: 0 0 12px hsl(var(--primary) / 0.5); }
+
+  0%,
+  100% {
+    text-shadow: 0 0 4px hsl(var(--primary) / 0.3);
+  }
+
+  50% {
+    text-shadow: 0 0 12px hsl(var(--primary) / 0.5);
+  }
 }
 
 .domain-glow {
@@ -952,8 +1127,15 @@ All colors MUST be HSL.
 
 /* Scale-in animation */
 @keyframes scale-in-up {
-  from { opacity: 0; transform: scale(0.9) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .animate-scale-in {
@@ -966,8 +1148,13 @@ All colors MUST be HSL.
 
 /* Shimmer line divider */
 @keyframes dashboard-shimmer-sweep {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .dashboard-shimmer-line {

@@ -24,7 +24,6 @@ function useCountUp(target: number, duration = 900, enabled = true) {
     const animate = (now: number) => {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setValue(Math.round(eased * target));
       if (progress < 1) raf.current = requestAnimationFrame(animate);
@@ -74,6 +73,7 @@ const Dashboard = () => {
   const currentStreak = streak?.current_streak ?? 0;
   const longestStreak = streak?.longest_streak ?? 0;
   const totalDays = streak?.total_active_days ?? 0;
+  const hasActiveStreak = currentStreak > 0;
 
   const streakStats = [
     {
@@ -100,7 +100,7 @@ const Dashboard = () => {
           Back to Analysis
         </Link>
 
-        {/* Page Header — gradient title + shimmer divider */}
+        {/* Page Header — animated gradient title + shimmer divider */}
         <div
           className="mb-14 transition-all duration-500"
           style={{
@@ -108,21 +108,28 @@ const Dashboard = () => {
             transform: mounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-foreground to-foreground bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold tracking-tight dashboard-gradient-title">
             Dashboard
           </h1>
-          <p className="text-base text-muted-foreground mt-3 max-w-xl">
+          <p
+            className="text-base text-muted-foreground mt-3 max-w-xl transition-all duration-700"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transform: mounted ? "translateY(0)" : "translateY(6px)",
+              transitionDelay: "200ms",
+            }}
+          >
             Your performance metrics, streak history, and achievement progress — all in one place.
           </p>
-          {/* Animated shimmer divider */}
-          <div className="mt-8 h-px w-full overflow-hidden rounded-full">
+          {/* Animated shimmer divider — 2px */}
+          <div className="mt-8 h-[2px] w-full overflow-hidden rounded-full">
             <div className="h-full w-full dashboard-shimmer-line" />
           </div>
         </div>
 
-        {/* Streak Stats — single horizontal bar with dividers */}
+        {/* Streak Stats — single horizontal bar with hover effects */}
         <div
-          className="rounded-xl border border-border bg-card/80 backdrop-blur-sm mb-20 transition-all duration-700"
+          className={`rounded-xl border border-border bg-card/80 backdrop-blur-sm mb-20 transition-all duration-700 ${hasActiveStreak ? 'dashboard-streak-active' : ''}`}
           style={{
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(16px)",
@@ -135,13 +142,13 @@ const Dashboard = () => {
               return (
                 <div
                   key={stat.label}
-                  className="p-6 text-center"
+                  className="p-6 text-center dashboard-streak-cell"
                 >
                   <p className="text-xs text-muted-foreground/50 font-mono mb-1">{stat.num}</p>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-3">
                     {stat.label}
                   </p>
-                  <p className="text-4xl font-bold font-mono tabular-nums text-foreground leading-none">
+                  <p className="text-5xl font-bold font-mono tabular-nums text-foreground leading-none">
                     {animated}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1.5">{stat.unit}</p>
@@ -164,15 +171,15 @@ const Dashboard = () => {
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? "translateY(0)" : "translateY(16px)",
-              transitionDelay: `${300 + sIdx * 50}ms`,
+              transitionDelay: `${300 + sIdx * 80}ms`,
             }}
           >
             <div className="flex items-baseline gap-3 mb-2">
-              <span className="font-mono text-lg text-primary/40 select-none">{section.num}</span>
+              <span className="font-mono text-lg text-primary/40 select-none dashboard-section-num">{section.num}</span>
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{section.label}</h2>
             </div>
-            {/* Shimmer line under section header */}
-            <div className="mb-6 h-px w-full overflow-hidden rounded-full">
+            {/* Shimmer line under section header — 2px */}
+            <div className="mb-6 h-[2px] w-full overflow-hidden rounded-full">
               <div className="h-full w-full dashboard-shimmer-line" />
             </div>
             {sIdx === 0 && <TodayVsAverage userId={user.id} refreshKey={refreshKey} />}

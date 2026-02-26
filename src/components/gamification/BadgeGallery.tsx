@@ -75,8 +75,8 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                 <div
                   key={badge.id}
                   className="flex items-start gap-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4
-                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5
-                    transition-all duration-300 cursor-default"
+                    hover:border-primary/40 hover:bg-primary/[0.03] hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10
+                    transition-all duration-300 cursor-default group"
                   style={{
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(14px)",
@@ -84,13 +84,13 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                       border-color 200ms, background-color 200ms, box-shadow 200ms, translate 200ms`,
                   }}
                 >
-                  {/* Pulsing ring indicator */}
+                  {/* Pulsing ring indicator — slower + larger */}
                   <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5 relative">
-                    <span className="absolute w-5 h-5 rounded-full border border-primary/30 animate-[ping_3s_ease-in-out_infinite]" />
+                    <span className="absolute w-6 h-6 rounded-full border border-primary/30 animate-[ping_4s_ease-in-out_infinite]" />
                     <span className="w-2 h-2 rounded-full bg-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-base font-semibold text-foreground leading-tight">{badge.name}</p>
+                    <p className="text-base font-semibold text-foreground leading-tight dashboard-badge-hover-gradient">{badge.name}</p>
                     <p className="text-sm text-muted-foreground mt-1 leading-snug">{badge.description}</p>
                     {unlockedAt && (
                       <p className="text-xs text-primary/70 mt-2 font-mono">
@@ -118,23 +118,23 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
             {locked.map((badge, i) => (
               <div
                 key={badge.id}
-                className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 backdrop-blur-sm p-4
-                  hover:border-border hover:bg-muted/20 transition-all duration-300 cursor-default"
+                className="flex items-start gap-4 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm p-4
+                  hover:border-border/70 hover:bg-card/50 transition-all duration-300 cursor-default group"
                 style={{
-                  opacity: visible ? 0.3 : 0,
+                  opacity: visible ? 0.45 : 0,
                   transform: visible ? "translateY(0)" : "translateY(14px)",
                   transition: `opacity 500ms ease ${(unlocked.length + i) * 60}ms, transform 500ms ease ${(unlocked.length + i) * 60}ms,
                     border-color 200ms, background-color 200ms`,
                 }}
               >
-                <div className="shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center mt-0.5">
-                  <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                <div className="shrink-0 w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center mt-0.5">
+                  <span className="text-[8px] font-bold uppercase tracking-widest dashboard-locked-shimmer">
                     LOCKED
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-base font-semibold text-foreground/60 leading-tight blur-[0.5px]">{badge.name}</p>
-                  <p className="text-sm text-muted-foreground/60 mt-1 leading-snug">{badge.condition}</p>
+                  <p className="text-base font-semibold text-foreground/50 leading-tight">{badge.name}</p>
+                  <p className="text-sm text-muted-foreground/40 mt-1 leading-snug group-hover:text-muted-foreground/70 transition-colors duration-300">{badge.condition}</p>
                 </div>
               </div>
             ))}

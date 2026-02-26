@@ -50,15 +50,19 @@ function isToday(dateStr: string): boolean {
   return dateStr.slice(0, 10) === todayUTC();
 }
 
-function DeltaValue({ value, visible }: { value: number; visible: boolean }) {
+function DeltaChip({ value, visible }: { value: number; visible: boolean }) {
   const animated = useCountUp(Math.abs(value), 800, visible);
-  const color =
-    value > 0 ? "text-[hsl(var(--chart-6))]" : value < 0 ? "text-destructive" : "text-muted-foreground";
+  const chipClass =
+    value > 0
+      ? "dashboard-delta-chip dashboard-delta-positive dashboard-arrow-up"
+      : value < 0
+        ? "dashboard-delta-chip dashboard-delta-negative dashboard-arrow-down"
+        : "dashboard-delta-chip dashboard-delta-neutral";
   const prefix = value > 0 ? "+" : value < 0 ? "-" : "";
 
   return (
-    <span className={`font-mono tabular-nums ${color}`}>
-      {prefix}{animated} <span className="text-xs">pp</span>
+    <span className={chipClass}>
+      {prefix}{animated} <span className="text-xs ml-0.5">pp</span>
     </span>
   );
 }
@@ -174,7 +178,7 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
 
   return (
     <div className="space-y-3">
-      {/* Overall comparison — horizontal bar with dividers */}
+      {/* Overall comparison — horizontal bar with spotlight + delta chip */}
       <div
         className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
@@ -183,28 +187,28 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
         }}
       >
         <div className="grid grid-cols-3 divide-x divide-border">
-          <div className="p-5 text-center">
+          <div className="p-5 text-center dashboard-streak-cell">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Today</p>
-            <p className="text-4xl font-bold">
+            <p className="text-5xl font-bold dashboard-score-spotlight">
               <ScoreValue value={todayScore} visible={visible} />
             </p>
           </div>
-          <div className="p-5 text-center">
+          <div className="p-5 text-center dashboard-streak-cell">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Average</p>
             <p className="text-3xl font-bold">
               {avgScore !== null ? <ScoreValue value={avgScore} visible={visible} /> : <span className="text-muted-foreground">--</span>}
             </p>
           </div>
-          <div className="p-5 text-center">
+          <div className="p-5 text-center dashboard-streak-cell">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Delta</p>
             <p className="text-3xl font-bold">
-              {delta !== null ? <DeltaValue value={delta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
+              {delta !== null ? <DeltaChip value={delta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Category breakdown — HTML table with alternating rows */}
+      {/* Category breakdown — HTML table with delta chips + row hover accents */}
       <div
         className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
@@ -219,11 +223,11 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
           </p>
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">Category</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-16">Today</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-16">Average</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Delta</th>
+              <tr className="dashboard-table-header">
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-16">Today</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-16">Average</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 w-24">Delta</th>
               </tr>
             </thead>
             <tbody>
@@ -235,17 +239,18 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
                 return (
                   <tr
                     key={cat.key}
-                    className={`transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                    className={`dashboard-table-row transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
                     style={{
                       opacity: visible ? 1 : 0,
+                      transform: visible ? "scale(1)" : "scale(0.98)",
                       transitionDelay: `${200 + i * 60}ms`,
                     }}
                   >
-                    <td className="text-sm text-muted-foreground py-2.5">{cat.label}</td>
+                    <td className="text-sm text-muted-foreground py-2.5 pl-3">{cat.label}</td>
                     <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{tVal ?? "--"}</td>
                     <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{aVal ?? "--"}</td>
-                    <td className="text-right text-sm py-2.5">
-                      {catDelta !== null ? <DeltaValue value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
+                    <td className="text-right text-sm py-2.5 pr-3">
+                      {catDelta !== null ? <DeltaChip value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
                     </td>
                   </tr>
                 );

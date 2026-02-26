@@ -1,56 +1,46 @@
 
+Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-## Tabellen-Spalten korrekt ausrichten
+1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
+- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
+  - identische horizontale Padding-Logik für `th` und `td` je Spalte
+  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
+  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
+- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
 
-### Problem
-Die Spalten in den Tabellen (Category Breakdown, Category Averages, Recent Analyses) sind nicht korrekt ausgerichtet. Header und Daten-Zellen haben keine konsistenten Breitenangaben, wodurch die Inhalte visuell verschoben erscheinen.
+2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
+- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
+  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
+  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
+- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
 
-### Loesung
-Allen drei Tabellen feste, prozentuale Spaltenbreiten ueber `<colgroup>` zuweisen und die Textausrichtung zwischen Header und Body-Zellen konsistent machen.
+3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
+- Tabelle „Category Averages“:
+  - `colgroup` (70/30) behalten
+  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
+- Tabelle „Recent Analyses“:
+  - `colgroup` (50/20/30) behalten
+  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
+  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
 
----
+4) Stabilitäts-Feinschliff für Tabellen-Rendering
+- Tabellen auf einheitliches Verhalten setzen:
+  - `table-fixed` bleibt aktiv
+  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
+- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
 
-### Aenderungen
+5) Validierung nach Umsetzung
+- Desktop prüfen:
+  - Headertext steht exakt über den Werten in jeder Spalte
+  - kein sichtbares „Springen“ bei langen URLs oder Chips
+- Mobile prüfen:
+  - kein unerwarteter Umbruch in numerischen Spalten
+  - Spalten bleiben visuell untereinander
+- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
 
-#### 1. `src/components/gamification/TodayVsAverage.tsx` — Category Breakdown
-
-`<colgroup>` vor `<thead>` einfuegen:
-```html
-<colgroup>
-  <col style="width: 40%" />
-  <col style="width: 15%" />
-  <col style="width: 15%" />
-  <col style="width: 30%" />
-</colgroup>
-```
-
-Sicherstellen, dass `<td>`-Zellen fuer Today/Average/Delta dieselbe `text-right` Ausrichtung wie die `<th>` Header haben, und die `pr-3`/`pl-3` Paddings konsistent auf beiden Ebenen gesetzt sind.
-
-#### 2. `src/components/gamification/AnalyticsOverview.tsx` — Category Averages
-
-`<colgroup>` einfuegen:
-```html
-<colgroup>
-  <col style="width: 70%" />
-  <col style="width: 30%" />
-</colgroup>
-```
-
-#### 3. `src/components/gamification/AnalyticsOverview.tsx` — Recent Analyses
-
-`<colgroup>` einfuegen:
-```html
-<colgroup>
-  <col style="width: 50%" />
-  <col style="width: 20%" />
-  <col style="width: 30%" />
-</colgroup>
-```
-
----
-
-### Ergebnis
-- Spaltenbreiten sind fest definiert und verrutschen nicht mehr
-- Header und Daten sind exakt untereinander ausgerichtet
-- Keine Logik-Aenderungen, nur Layout-Fixes
-
+Technische Kurzbegründung
+- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
+  1) ungleichen `th`/`td` Innenabständen,
+  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
+  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
+- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.

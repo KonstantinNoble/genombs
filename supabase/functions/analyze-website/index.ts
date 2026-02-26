@@ -395,7 +395,7 @@ function getAnalysisCreditCost(modelKey: string): number {
 // ─── Credit refund helper ───
 
 async function refundCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
   cost: number,
   reason: string
@@ -405,7 +405,7 @@ async function refundCredits(
       .from("user_credits")
       .select("id, credits_used")
       .eq("user_id", userId)
-      .single();
+      .single() as { data: { id: string; credits_used: number } | null };
 
     if (data) {
       const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
@@ -425,7 +425,7 @@ function isExpensiveModel(modelKey: string): boolean {
 }
 
 async function checkAnalysisCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
   modelKey: string,
   isPremiumRequired: boolean
@@ -435,7 +435,7 @@ async function checkAnalysisCredits(
       .from("user_credits")
       .select("id, is_premium")
       .eq("user_id", userId)
-      .maybeSingle();
+      .maybeSingle() as { data: { id: string; is_premium: boolean } | null; error: any };
 
     if (baseError) {
       console.warn("Credits query failed, skipping credit check:", baseError.message);
@@ -454,7 +454,7 @@ async function checkAnalysisCredits(
       .from("user_credits")
       .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
       .eq("user_id", userId)
-      .maybeSingle();
+      .maybeSingle() as { data: { id: string; is_premium: boolean; daily_credits_limit: number; credits_used: number; credits_reset_at: string } | null; error: any };
 
     if (creditsError || !credits) {
       console.warn("Credit columns not available, skipping:", creditsError?.message);

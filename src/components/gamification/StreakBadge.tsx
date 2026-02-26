@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Flame } from 'lucide-react';
 import type { StreakData } from '@/types/gamification';
 
 interface StreakBadgeProps {
@@ -9,7 +8,6 @@ interface StreakBadgeProps {
 
 export function StreakBadge({ streak, userId }: StreakBadgeProps) {
   const currentStreak = streak?.current_streak ?? 0;
-  const isNewRecord = streak && streak.current_streak === streak.longest_streak && streak.current_streak > 1;
 
   return (
     <Link
@@ -20,19 +18,17 @@ export function StreakBadge({ streak, userId }: StreakBadgeProps) {
           ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10'
           : 'border-border bg-secondary/50 text-muted-foreground hover:bg-secondary hover:border-border'
         }
-        
       `}
       aria-label={`Streak: ${currentStreak} days`}
     >
-      {/* Glow behind the icon when streak is active */}
-      {currentStreak > 0 && (
-        <span className="absolute left-3 w-5 h-5 rounded-full bg-primary/20 blur-sm group-hover:bg-primary/30 transition-colors" />
-      )}
-      <Flame
-        className={`relative w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${currentStreak > 0 ? 'text-primary' : 'text-muted-foreground'
-          }`}
-      />
-      <span className="relative tabular-nums">{currentStreak}</span>
+      {/* Pulsing dot indicator */}
+      <span className="relative flex h-2.5 w-2.5">
+        {currentStreak > 0 && (
+          <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+        )}
+        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${currentStreak > 0 ? 'bg-primary' : 'bg-muted-foreground/40'}`} />
+      </span>
+      <span className="relative font-mono tabular-nums">{currentStreak}</span>
       <span className="relative text-xs font-normal opacity-60 hidden sm:inline">day streak</span>
     </Link>
   );

@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase/external-client";
-import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 
 interface AnalyticsOverviewProps {
@@ -59,35 +58,6 @@ function useCountUp(target: number, duration = 800, enabled = true) {
   return value;
 }
 
-/** Animated progress bar with glow */
-function AnimatedBar({ value, delay = 0 }: { value: number; delay?: number }) {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const t = setTimeout(() => setWidth(value), delay + 100);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-
-  const barColor =
-    value >= 80
-      ? "bg-[hsl(var(--chart-6))]"
-      : value >= 60
-        ? "bg-primary"
-        : "bg-destructive";
-
-  return (
-    <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-      <div
-        className={`h-full rounded-full ${barColor} dashboard-bar-glow`}
-        style={{
-          width: `${width}%`,
-          transition: `width 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms`,
-        }}
-      />
-    </div>
-  );
-}
-
 export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps) => {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +105,7 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
   if (profiles.length === 0) {
     return (
       <div
-        className="rounded-xl border border-border bg-card p-8 text-center transition-all duration-500"
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-8 text-center transition-all duration-500"
         style={{ opacity: visible ? 1 : 0 }}
       >
         <p className="text-sm text-muted-foreground">
@@ -202,73 +172,89 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
         ))}
       </div>
 
-      {/* Category Breakdown — progress bars animate in */}
+      {/* Category Averages — HTML table */}
       {categoryAverages.length > 0 && (
-        <Card
-          className="border-border bg-card transition-all duration-700"
+        <div
+          className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(12px)",
             transitionDelay: "280ms",
           }}
         >
-          <CardContent className="p-5">
+          <div className="p-5">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
               Category Averages
             </p>
-            <div className="space-y-3">
-              {categoryAverages.map(({ key, label, avg }, i) => (
-                <div key={key} className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground w-36 shrink-0">{label}</span>
-                  <AnimatedBar value={avg} delay={visible ? 300 + i * 80 : 99999} />
-                  <span className={`text-sm font-semibold tabular-nums w-8 text-right ${scoreColor(avg)}`}>{avg}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">Category</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categoryAverages.map(({ key, label, avg }, i) => (
+                  <tr
+                    key={key}
+                    className={`transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                    style={{
+                      opacity: visible ? 1 : 0,
+                      transitionDelay: `${300 + i * 60}ms`,
+                    }}
+                  >
+                    <td className="text-sm text-muted-foreground py-2.5">{label}</td>
+                    <td className={`text-right text-sm font-semibold font-mono tabular-nums py-2.5 ${scoreColor(avg)}`}>{avg}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
 
-      {/* Recent Analyses — staggered list items with accent dots */}
-      <Card
-        className="border-border bg-card transition-all duration-700"
+      {/* Recent Analyses — HTML table */}
+      <div
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(12px)",
           transitionDelay: "380ms",
         }}
       >
-        <CardContent className="p-5">
+        <div className="p-5">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Recent Analyses
           </p>
-          <div className="divide-y divide-border">
-            {recentProfiles.map((p, i) => (
-              <div
-                key={p.id}
-                className="group flex items-center justify-between py-2.5 first:pt-0 last:pb-0 transition-all duration-500 hover:bg-secondary/30 -mx-2 px-2 rounded-md"
-                style={{
-                  opacity: visible ? 1 : 0,
-                  transform: visible ? "translateX(0)" : "translateX(-8px)",
-                  transitionDelay: `${420 + i * 60}ms`,
-                }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary/0 group-hover:bg-primary transition-colors duration-300 shrink-0" />
-                  <span className="text-sm text-foreground truncate max-w-[200px]">{shortenUrl(p.url)}</span>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className={`text-sm font-semibold tabular-nums ${p.overall_score !== null ? scoreColor(p.overall_score) : 'text-foreground'}`}>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">URL</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Score</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-28">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentProfiles.map((p, i) => (
+                <tr
+                  key={p.id}
+                  className={`transition-all duration-500 hover:bg-secondary/30 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transitionDelay: `${420 + i * 60}ms`,
+                  }}
+                >
+                  <td className="text-sm text-foreground py-2.5 truncate max-w-[200px]">{shortenUrl(p.url)}</td>
+                  <td className={`text-right text-sm font-semibold font-mono tabular-nums py-2.5 ${p.overall_score !== null ? scoreColor(p.overall_score) : 'text-foreground'}`}>
                     {p.overall_score !== null ? p.overall_score : "–"}
-                    <span className="text-xs text-muted-foreground font-normal">/100</span>
-                  </span>
-                  <span className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                  </td>
+                  <td className="text-right text-xs text-muted-foreground font-mono py-2.5">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
@@ -291,7 +277,7 @@ function StatCard({
 
   return (
     <div
-      className="rounded-xl border border-border bg-card p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 group"
+      className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-4 transition-all duration-700 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 group"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -299,7 +285,7 @@ function StatCard({
       }}
     >
       <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">{label}</p>
-      <p className={`text-2xl font-bold tabular-nums leading-none ${isScore ? scoreColor(value) : 'text-foreground'}`}>
+      <p className={`text-2xl font-bold font-mono tabular-nums leading-none ${isScore ? scoreColor(value) : 'text-foreground'}`}>
         {animated}
         {isScore && <span className="text-sm font-normal text-muted-foreground">/100</span>}
       </p>

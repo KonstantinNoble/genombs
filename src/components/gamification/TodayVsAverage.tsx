@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase/external-client";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface TodayVsAverageProps {
   userId: string;
@@ -94,7 +93,6 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
       const todayRows = rows.filter((r) => isToday(r.created_at));
       const olderRows = rows.filter((r) => !isToday(r.created_at));
 
-      // Today: latest entry from today
       if (todayRows.length > 0) {
         const latest = todayRows[0];
         setTodayScore(latest.overall_score);
@@ -111,7 +109,6 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
         setTodayCats({});
       }
 
-      // Average: all older entries
       if (olderRows.length > 0) {
         const scores = olderRows.map((r) => r.overall_score).filter((s): s is number => s !== null);
         setAvgScore(scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null);
@@ -163,7 +160,7 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
   if (todayScore === null) {
     return (
       <div
-        className="rounded-xl border border-border bg-card p-8 text-center transition-all duration-500"
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-8 text-center transition-all duration-500"
         style={{ opacity: visible ? 1 : 0 }}
       >
         <p className="text-sm text-muted-foreground">
@@ -177,86 +174,86 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
 
   return (
     <div className="space-y-3">
-      {/* Overall comparison — Today is visually prominent */}
-      <Card
-        className="border-border bg-card transition-all duration-700"
+      {/* Overall comparison — horizontal bar with dividers */}
+      <div
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(12px)",
         }}
       >
-        <CardContent className="p-5">
-          <div className="grid grid-cols-3 text-center items-end">
-            {/* Today — larger & prominent */}
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Today</p>
-              <p className="text-4xl font-bold">
-                <ScoreValue value={todayScore} visible={visible} />
-              </p>
-            </div>
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute left-0 top-2 bottom-2 w-px bg-border" />
-              <div className="absolute right-0 top-2 bottom-2 w-px bg-border" />
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Average</p>
-              <p className="text-3xl font-bold">
-                {avgScore !== null ? <ScoreValue value={avgScore} visible={visible} /> : <span className="text-muted-foreground">--</span>}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Delta</p>
-              <p className="text-3xl font-bold">
-                {delta !== null ? <DeltaValue value={delta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
-              </p>
-            </div>
+        <div className="grid grid-cols-3 divide-x divide-border">
+          <div className="p-5 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Today</p>
+            <p className="text-4xl font-bold">
+              <ScoreValue value={todayScore} visible={visible} />
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="p-5 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Average</p>
+            <p className="text-3xl font-bold">
+              {avgScore !== null ? <ScoreValue value={avgScore} visible={visible} /> : <span className="text-muted-foreground">--</span>}
+            </p>
+          </div>
+          <div className="p-5 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">Delta</p>
+            <p className="text-3xl font-bold">
+              {delta !== null ? <DeltaValue value={delta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {/* Category breakdown — alternating row tints */}
-      <Card
-        className="border-border bg-card transition-all duration-700"
+      {/* Category breakdown — HTML table with alternating rows */}
+      <div
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm transition-all duration-700"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(12px)",
           transitionDelay: "120ms",
         }}
       >
-        <CardContent className="p-5">
+        <div className="p-5">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Category Breakdown
           </p>
-          <div className="space-y-0">
-            {CATEGORIES.map((cat, i) => {
-              const tVal = todayCats[cat.key];
-              const aVal = avgCats[cat.key];
-              const catDelta = tVal !== undefined && aVal !== undefined ? tVal - aVal : null;
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2">Category</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-16">Today</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-16">Average</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2 w-20">Delta</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CATEGORIES.map((cat, i) => {
+                const tVal = todayCats[cat.key];
+                const aVal = avgCats[cat.key];
+                const catDelta = tVal !== undefined && aVal !== undefined ? tVal - aVal : null;
 
-              return (
-                <div
-                  key={cat.key}
-                  className={`flex items-center justify-between py-2 px-2 -mx-2 rounded-md transition-all duration-500
-                    ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
-                  style={{
-                    opacity: visible ? 1 : 0,
-                    transform: visible ? "translateX(0)" : "translateX(-8px)",
-                    transitionDelay: `${200 + i * 60}ms`,
-                  }}
-                >
-                  <span className="text-sm text-muted-foreground w-40 shrink-0">{cat.label}</span>
-                  <div className="flex items-center gap-6 font-mono text-sm tabular-nums">
-                    <span className="w-8 text-right text-foreground">{tVal ?? "--"}</span>
-                    <span className="w-8 text-right text-foreground">{aVal ?? "--"}</span>
-                    <span className="w-16 text-right">
+                return (
+                  <tr
+                    key={cat.key}
+                    className={`transition-all duration-500 ${i % 2 === 1 ? 'bg-secondary/20' : ''}`}
+                    style={{
+                      opacity: visible ? 1 : 0,
+                      transitionDelay: `${200 + i * 60}ms`,
+                    }}
+                  >
+                    <td className="text-sm text-muted-foreground py-2.5">{cat.label}</td>
+                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{tVal ?? "--"}</td>
+                    <td className="text-right text-sm font-mono tabular-nums text-foreground py-2.5">{aVal ?? "--"}</td>
+                    <td className="text-right text-sm py-2.5">
                       {catDelta !== null ? <DeltaValue value={catDelta} visible={visible} /> : <span className="text-muted-foreground">--</span>}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

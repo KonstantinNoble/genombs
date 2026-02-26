@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/external-client";
 import { BADGE_DEFINITIONS } from "@/lib/badges";
-import { Lock } from "lucide-react";
 import type { UserBadge } from "@/types/gamification";
 
 interface BadgeGalleryProps {
@@ -25,7 +24,6 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
         (data as any[]).forEach((b) => map.set(b.badge_id, b.unlocked_at));
         setUnlockedBadges(map);
       }
-      // Trigger animation after fetch
       setTimeout(() => setVisible(true), 80);
     };
     fetchBadges();
@@ -95,7 +93,7 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                     <p className="text-base font-semibold text-foreground leading-tight">{badge.name}</p>
                     <p className="text-sm text-muted-foreground mt-1 leading-snug">{badge.description}</p>
                     {unlockedAt && (
-                      <p className="text-xs text-primary/70 mt-2 font-medium">
+                      <p className="text-xs text-primary/70 mt-2 font-mono">
                         {new Date(unlockedAt).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
@@ -123,14 +121,16 @@ export function BadgeGallery({ userId, size = "sm" }: BadgeGalleryProps) {
                 className="flex items-start gap-4 rounded-xl border border-border/50 bg-muted/10 backdrop-blur-sm p-4
                   hover:border-border hover:bg-muted/20 transition-all duration-300 cursor-default"
                 style={{
-                  opacity: visible ? 0.45 : 0,
+                  opacity: visible ? 0.3 : 0,
                   transform: visible ? "translateY(0)" : "translateY(14px)",
                   transition: `opacity 500ms ease ${(unlocked.length + i) * 60}ms, transform 500ms ease ${(unlocked.length + i) * 60}ms,
                     border-color 200ms, background-color 200ms`,
                 }}
               >
                 <div className="shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center mt-0.5">
-                  <Lock className="w-3.5 h-3.5 text-muted-foreground/50" />
+                  <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                    LOCKED
+                  </span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-base font-semibold text-foreground/60 leading-tight blur-[0.5px]">{badge.name}</p>

@@ -192,8 +192,8 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
               </colgroup>
               <thead>
                 <tr className="dashboard-table-header">
-                  <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>
-                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Score</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">Category</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -239,9 +239,9 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
             </colgroup>
             <thead>
               <tr className="dashboard-table-header">
-                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">URL</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Score</th>
-                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Date</th>
+                <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pl-3">URL</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Score</th>
+                <th className="text-right text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1 pr-3">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -254,15 +254,15 @@ export const AnalyticsOverview = ({ userId, refreshKey }: AnalyticsOverviewProps
                     transitionDelay: `${420 + i * 60}ms`,
                   }}
                 >
-                  <td className="text-sm text-foreground py-2.5 pl-3 truncate max-w-[200px]">{shortenUrl(p.url)}</td>
-                  <td className="text-right py-2.5 pr-3">
+                  <td className="text-sm text-foreground py-2.5 pl-3 overflow-hidden text-ellipsis whitespace-nowrap">{shortenUrl(p.url)}</td>
+                  <td className="text-right py-2.5 pr-3 whitespace-nowrap">
                     {p.overall_score !== null ? (
                       <span className={`text-sm ${scoreChipClass(p.overall_score)}`}>{p.overall_score}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">–</span>
                     )}
                   </td>
-                  <td className="text-right text-xs text-muted-foreground font-mono py-2.5">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
+                  <td className="text-right text-xs text-muted-foreground font-mono py-2.5 pr-3 whitespace-nowrap">{format(new Date(p.created_at), "dd MMM yyyy")}</td>
                 </tr>
               ))}
             </tbody>

@@ -605,7 +605,7 @@ async function processQueue() {
     return;
   }
   const maxConcurrent = 3;
-  const slotsAvailable = Math.max(0, maxConcurrent - processingCount);
+  const slotsAvailable = Math.max(0, maxConcurrent - (processingCount ?? 0));
 
   if (slotsAvailable === 0) {
     console.log("Max concurrent jobs reached, waiting for next cycle");

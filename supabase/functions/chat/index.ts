@@ -330,7 +330,7 @@ function transformPerplexityStream(body: ReadableStream<Uint8Array>): ReadableSt
 // ─── Credit refund helper ───
 
 async function refundCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
   cost: number,
   reason: string
@@ -340,7 +340,7 @@ async function refundCredits(
       .from("user_credits")
       .select("id, credits_used")
       .eq("user_id", userId)
-      .single();
+      .single() as { data: { id: string; credits_used: number } | null };
 
     if (data) {
       const newUsed = Math.max(0, (data.credits_used ?? 0) - cost);
@@ -358,7 +358,7 @@ async function refundCredits(
 // ─── Credit check helper ───
 
 async function checkAndDeductCredits(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
   modelKey: string,
   isPremiumRequired: boolean,
@@ -367,7 +367,7 @@ async function checkAndDeductCredits(
     .from("user_credits")
     .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
     .eq("user_id", userId)
-    .single();
+    .single() as { data: { id: string; is_premium: boolean; daily_credits_limit: number; credits_used: number; credits_reset_at: string } | null; error: any };
 
   if (creditsError || !credits) {
     return { ok: false, status: 500, error: "Could not load user credits" };

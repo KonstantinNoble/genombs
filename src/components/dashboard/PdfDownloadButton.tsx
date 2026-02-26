@@ -25,7 +25,7 @@ const PdfDownloadButton = ({ profiles, tasks }: PdfDownloadButtonProps) => {
         ? ownUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").substring(0, 30)
         : "analysis";
       a.href = url;
-      a.download = `synvertas-${slug}-${date}.pdf`;
+      a.download = `${slug}-${date}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -39,7 +39,7 @@ const PdfDownloadButton = ({ profiles, tasks }: PdfDownloadButtonProps) => {
     <Button
       variant="ghost"
       size="sm"
-      className="h-7 text-[10px] px-2 gap-1 text-muted-foreground hover:text-foreground"
+      className="h-8 text-xs px-3 gap-1.5 text-muted-foreground hover:text-foreground"
       onClick={handleDownload}
       disabled={loading}
     >

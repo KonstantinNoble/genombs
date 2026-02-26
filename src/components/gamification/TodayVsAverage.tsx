@@ -221,7 +221,13 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Category Breakdown
           </p>
-          <table className="w-full">
+          <table className="w-full table-fixed">
+            <colgroup>
+              <col style={{ width: '40%' }} />
+              <col style={{ width: '15%' }} />
+              <col style={{ width: '15%' }} />
+              <col style={{ width: '30%' }} />
+            </colgroup>
             <thead>
               <tr className="dashboard-table-header">
                 <th className="text-left text-xs font-medium text-muted-foreground/60 uppercase tracking-wider pb-2.5 pt-1">Category</th>

@@ -108,13 +108,13 @@ const PricingPage = () => {
                 Simple, Transparent Pricing
               </p>
             )}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal text-foreground leading-[1.08] mb-5">
-              {isPremium && isLoggedIn ? "You're all set" : "Choose your plan"}
+             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal text-foreground leading-[1.08] mb-5">
+              {isPremium && isLoggedIn ? "You're all set" : "Start improving your website today"}
             </h1>
             <p className="text-lg text-muted-foreground">
               {isPremium && isLoggedIn
                 ? "You have full access to all Premium features."
-                : "Start free with 20 daily credits. Upgrade when you need more."}
+                : "20 free credits per day. Upgrade when you're ready to go deeper."}
             </p>
           </div>
         </section>
@@ -158,7 +158,7 @@ const PricingPage = () => {
               </Badge>
               <div>
                 <h3 className="text-2xl font-medium text-foreground">Premium</h3>
-                <p className="text-muted-foreground mt-1">All features, higher limits</p>
+                <p className="text-muted-foreground mt-1">Full power for serious growth</p>
               </div>
               <div>
                 <span className="text-4xl font-light text-foreground">$14.99</span>
@@ -235,7 +235,7 @@ const PricingPage = () => {
           <div className="max-w-2xl mx-auto text-center">
             <div className="border border-border rounded-lg p-10 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-medium text-foreground">
-                {isPremium && isLoggedIn ? "You're all set" : "Try it now"}
+                {isPremium && isLoggedIn ? "You're all set" : "Stop losing visitors to fixable problems"}
               </h2>
               <p className="text-lg text-muted-foreground">
                 {isPremium && isLoggedIn

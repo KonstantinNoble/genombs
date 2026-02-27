@@ -444,7 +444,7 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="border border-border bg-card rounded-lg p-8 space-y-4 stagger-reveal hover:border-primary/30 hover:scale-[1.02] transition-all duration-300"
+                className="group border border-border bg-card rounded-lg p-8 space-y-4 stagger-reveal hover:border-primary/30 hover:scale-[1.02] transition-all duration-300"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
                 <span className="text-sm text-primary font-mono leading-none block transition-[text-shadow] duration-300 group-hover:drop-shadow-[0_0_6px_hsl(25_95%_53%/0.5)]">{feature.num}</span>

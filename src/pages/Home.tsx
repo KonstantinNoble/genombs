@@ -183,13 +183,7 @@ const Home = () => {
       num: "03",
       title: "Actionable Improvement Plan",
       description:
-        "No more wondering what to fix first. Get a ranked list of concrete tasks — from missing trust signals to weak CTAs — each categorized and ready to hand off to your team or developer.",
-    },
-    {
-      num: "04",
-      title: "PDF Export",
-      description:
-        "Share your results with your team or clients. Download a comprehensive PDF report with all scores, insights, and improvement tasks — ready to present or hand off.",
+        "No more wondering what to fix first. Get a ranked list of concrete tasks — from missing trust signals to weak CTAs — each categorized and ready to hand off to your team or developer. Export everything as a PDF report to share with your team or clients.",
     },
   ];
 

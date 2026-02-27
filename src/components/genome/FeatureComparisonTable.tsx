@@ -10,13 +10,13 @@ interface Feature {
 const features: Feature[] = [
   { name: "Daily credits", free: "20", premium: "100" },
   { name: "Daily credit reset", free: true, premium: true },
-  { name: "AI models", free: "2 (Gemini Flash, GPT Mini)", premium: "All 5" },
+  { name: "AI models", free: "2 (Gemini Flash, ChatGPT Mini)", premium: "All 5" },
   { name: "Competitor URLs", free: "1", premium: "Up to 3" },
   { name: "Scoring categories", free: "5", premium: "5" },
   { name: "PageSpeed Insights", free: true, premium: true },
   { name: "AI Chat", free: true, premium: true },
   { name: "GitHub Code Analysis", free: true, premium: true },
-  { name: "Premium models (GPT-4o, Claude, Perplexity)", free: false, premium: true },
+  { name: "Premium models (ChatGPT, Claude, Perplexity)", free: false, premium: true },
 ];
 
 const renderCell = (value: boolean | string, comingSoon?: boolean) => {

@@ -39,20 +39,20 @@ const PricingPage = () => {
   const freeFeatures = [
     { text: "20 credits per day", included: true },
     { text: "Daily credit reset", included: true },
-    { text: "2 AI models — Gemini Flash (fast) & GPT Mini (solid quality)", included: true },
+    { text: "2 AI models — Gemini Flash (fast) & ChatGPT Mini (solid quality)", included: true },
     { text: "Own website + 1 competitor URL", included: true },
     { text: "5 scoring categories", included: true },
     { text: "PageSpeed Insights", included: true },
     { text: "AI Chat", included: true },
     { text: "GitHub Code Analysis", included: true },
-    { text: "Premium AI models (GPT-4o, Claude, Perplexity)", included: false },
+    { text: "Premium AI models (ChatGPT, Claude, Perplexity)", included: false },
     { text: "Up to 3 competitor URLs", included: false },
   ];
 
   const premiumFeatures = [
     { text: "100 credits per day", included: true },
     { text: "Daily credit reset", included: true },
-    { text: "All 5 AI models — including GPT-4o, Claude & Perplexity", included: true },
+    { text: "All 5 AI models — including ChatGPT, Claude & Perplexity", included: true },
     { text: "Own website + up to 3 competitor URLs", included: true },
     { text: "5 scoring categories", included: true },
     { text: "PageSpeed Insights", included: true },

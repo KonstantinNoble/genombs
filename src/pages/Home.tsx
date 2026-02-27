@@ -264,12 +264,12 @@ const Home = () => {
     {
       question: "How does the credit system work?",
       answer:
-        "You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model, and each chat message costs 1–5 credits. Credits reset automatically every 24 hours.",
+        "You get 20 free credits per day (100 with Premium). Each scan costs 9–14 credits depending on the AI model, and each chat message costs 3–7 credits. Credits reset automatically every 24 hours.",
     },
     {
       question: "What AI models are available?",
       answer:
-        "Free users get Gemini Flash (fast, great for quick questions) and GPT Mini (solid quality at low credit cost). Premium unlocks three additional models: GPT-4o (precise analysis and detailed answers), Claude Sonnet (nuanced reasoning and deep analysis), and Perplexity (real-time web search for current info).",
+        "Free users get Gemini Flash (fast, great for quick questions) and ChatGPT Mini (solid quality at low credit cost). Premium unlocks three additional models: ChatGPT (precise analysis and detailed answers), Claude Sonnet (nuanced reasoning and deep analysis), and Perplexity (real-time web search for current info).",
     },
     {
       question: "How long does a scan take?",
@@ -284,7 +284,7 @@ const Home = () => {
     {
       question: "What is the Code Analysis?",
       answer:
-        "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: code quality, security, performance, accessibility, maintainability, and SEO. The results are included alongside your website scores.",
+        "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: quality, security, performance, accessibility, maintainability, and SEO. The results are included alongside your website scores.",
     },
     {
       question: "Can AI find my competitors for me?",
@@ -298,7 +298,7 @@ const Home = () => {
       <SEOHead
         title="AI Website Audit & Competitor Analysis Tool"
         description="Find out why visitors leave without converting. AI-powered website scoring, competitor benchmarking, and a prioritized improvement plan — in under 60 seconds."
-        keywords="website audit tool, website scoring, competitor analysis, conversion optimization, website improvement plan, SEO audit, site analyzer, code analysis"
+        keywords="website audit tool, website scoring, competitor analysis, conversion optimization, website improvement plan, website scoring tool, site analyzer, code analysis"
         canonical="/"
         ogImage="https://synvertas.com/synvertas-logo.png"
       />
@@ -385,7 +385,7 @@ const Home = () => {
             <Button
               onClick={handleAnalyze}
               size="lg"
-              className="cta-btn-shimmer text-base px-6 h-11 shrink-0"
+              className="cta-btn-shimmer text-base px-8 h-12 shrink-0"
             >
               Analyze
             </Button>
@@ -403,7 +403,7 @@ const Home = () => {
       </section>
 
       {/* Social Proof Stats */}
-      <section className="py-14 border-t border-b border-border bg-muted/20 relative">
+      <section className="py-14 border-t border-b border-border bg-muted/20 relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
             {/* Counter stats */}
@@ -444,10 +444,10 @@ const Home = () => {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="border border-border bg-card rounded-lg p-8 space-y-4 stagger-reveal hover:border-primary/30 transition-colors duration-300"
+                className="border border-border bg-card rounded-lg p-8 space-y-4 stagger-reveal hover:border-primary/30 hover:scale-[1.02] transition-all duration-300"
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
-                <span className="text-sm text-primary font-mono leading-none block">{feature.num}</span>
+                <span className="text-sm text-primary font-mono leading-none block transition-[text-shadow] duration-300 group-hover:drop-shadow-[0_0_6px_hsl(25_95%_53%/0.5)]">{feature.num}</span>
                 <h3 className="text-lg font-medium text-foreground">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
@@ -471,7 +471,8 @@ const Home = () => {
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="md:w-1/4 shrink-0 scroll-reveal-left" style={{ transitionDelay: `${i * 0.1}s` }}>
-                  <span className="text-xs uppercase tracking-widest text-primary font-semibold font-mono">
+                  <span className="text-xs uppercase tracking-widest text-primary font-semibold font-mono flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                     {uc.badge}
                   </span>
                 </div>
@@ -533,7 +534,7 @@ const Home = () => {
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
-                    <tr key={row.feature} className={`alt-row stagger-reveal ${i < comparisonRows.length - 1 ? "border-b border-border" : ""}`} style={{ animationDelay: `${i * 0.08}s` }}>
+                    <tr key={row.feature} className={`alt-row stagger-reveal hover:bg-muted/20 transition-colors duration-200 ${i < comparisonRows.length - 1 ? "border-b border-border" : ""}`} style={{ animationDelay: `${i * 0.08}s` }}>
                       <td className="py-3.5 px-5 text-sm text-foreground font-medium">{row.feature}</td>
                       <td className="py-3.5 px-5 text-center">
                         <span
@@ -575,7 +576,7 @@ const Home = () => {
           <Button
             size="lg"
             asChild
-            className="text-base px-10 h-13"
+            className="text-lg px-12 h-14"
           >
             <Link to={isLoggedIn ? "/chat" : "/auth"} className="btn-glow">Get Started</Link>
           </Button>

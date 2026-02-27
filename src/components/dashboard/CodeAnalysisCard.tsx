@@ -63,7 +63,7 @@ const CodeAnalysisCard = ({ codeAnalysis, githubUrl }: CodeAnalysisCardProps) =>
     { label: "Performance", score: extractScore(ca.performance) },
     { label: "Accessibility", score: extractScore(ca.accessibility) },
     { label: "Maintainability", score: extractScore(ca.maintainability) },
-    { label: "SEO", score: seoScore },
+    { label: "Findability", score: seoScore },
   ];
   const strengths = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).strengths : null) ?? ca.strengths ?? []).filter((s: unknown) => typeof s === "string");
   const weaknesses = ((typeof ca.codeQuality === "object" && ca.codeQuality !== null ? (ca.codeQuality as any).weaknesses : null) ?? ca.weaknesses ?? []).filter((w: unknown) => typeof w === "string");

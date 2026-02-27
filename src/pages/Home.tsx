@@ -185,6 +185,12 @@ const Home = () => {
       description:
         "No more wondering what to fix first. Get a ranked list of concrete tasks — from missing trust signals to weak CTAs — each categorized and ready to hand off to your team or developer.",
     },
+    {
+      num: "04",
+      title: "PDF Export",
+      description:
+        "Share your results with your team or clients. Download a comprehensive PDF report with all scores, insights, and improvement tasks — ready to present or hand off.",
+    },
   ];
 
   const steps = [
@@ -252,6 +258,7 @@ const Home = () => {
     { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
     { feature: "Improvement Tasks", genome: "Yes", traditional: "No" },
+    { feature: "PDF Report Export", genome: "Yes", traditional: "Extra cost" },
     { feature: "Auto Competitor Discovery", genome: "Yes", traditional: "Manual research" },
   ];
 

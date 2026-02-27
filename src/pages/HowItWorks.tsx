@@ -18,7 +18,7 @@ const steps = [
     step: "02",
     title: "AI analyzes everything",
     description:
-      "Your website is scored across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness. PageSpeed data and competitor benchmarks are included automatically.",
+      "Your website is scored across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness. Competitor benchmarks are included automatically when URLs are provided.",
   },
   {
     step: "03",
@@ -71,11 +71,11 @@ const aiModels = [
 ];
 
 const chatCapabilities = [
-  "Ask specific questions about your website's strengths and weaknesses",
-  "Get detailed explanations for any score or category",
-  "Request concrete improvement suggestions with implementation steps",
-  "Compare your website against competitors and ask follow-up questions",
-  "Analyze your code and ask about security, performance, or best practices",
+  "Ask why your conversion score is low — and get specific fixes",
+  "Understand what competitors do better and how to close the gap",
+  "Get step-by-step implementation guidance for each improvement task",
+  "Drill into any category score and learn what drives it",
+  "Analyze your codebase and ask about security risks or performance bottlenecks",
 ];
 
 const HowItWorks = () => {
@@ -126,13 +126,13 @@ const HowItWorks = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 dot-grid">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal text-foreground leading-[1.08] mb-6 animate-fade-in">
-              How Synvertas works
+              How it works
             </h1>
             <p
               className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in-up"
               style={{ animationDelay: "0.15s", animationFillMode: "both" }}
             >
-              From URL to actionable insights in under 60 seconds.
+              From URL to a clear action plan in under 60 seconds. No consultants, no guesswork.
             </p>
           </div>
         </section>
@@ -296,7 +296,7 @@ const HowItWorks = () => {
           <div className="max-w-2xl mx-auto text-center scroll-reveal-scale">
             <div className="border border-border rounded-lg p-10 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-medium text-foreground">
-                Ready to analyze your website?
+                Ready to see where you stand?
               </h2>
               <p className="text-lg text-muted-foreground">
                 Start free with 20 daily credits. No credit card required.

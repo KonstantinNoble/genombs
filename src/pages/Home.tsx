@@ -171,19 +171,19 @@ const Home = () => {
       num: "01",
       title: "Website Scoring & Insights",
       description:
-        "Your website is scored across five categories — Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness. Optionally connect a public GitHub repo for a deep code analysis across security, performance, and more.",
+        "Stop guessing what's wrong. Your site gets scored across Findability, Mobile Usability, Offer Clarity, Trust & Proof, and Conversion Readiness — so you know exactly where you're losing visitors and revenue.",
     },
     {
       num: "02",
       title: "Competitor Intelligence",
       description:
-        "Compare your website side-by-side with up to 3 competitors. See score differences, strengths, and weaknesses — or let AI automatically discover your most relevant competitors.",
+        "See where competitors outperform you — and where you already lead. Compare scores side-by-side with up to 3 competitors, or let our AI discover who you're really competing against.",
     },
     {
       num: "03",
       title: "Actionable Improvement Plan",
       description:
-        "Receive a prioritized list of concrete optimization tasks based on your analysis. Each task is categorized and ready to execute — so you know exactly what to fix first.",
+        "No more wondering what to fix first. Get a ranked list of concrete tasks — from missing trust signals to weak CTAs — each categorized and ready to hand off to your team or developer.",
     },
   ];
 
@@ -202,7 +202,7 @@ const Home = () => {
       step: "03",
       title: "Get your analysis",
       description:
-        "Receive scores across 5 categories, competitor comparisons, PageSpeed data, and an improvement plan.",
+        "Receive scores across 5 categories, competitor comparisons, and a prioritized improvement plan — all in your dashboard.",
     },
   ];
 
@@ -210,44 +210,44 @@ const Home = () => {
     {
       title: "Pre-Launch Check",
       description:
-        "Scan your site before launch to uncover messaging gaps, missing trust signals, and conversion weaknesses.",
+        "About to launch? Catch weak messaging, missing trust signals, and conversion killers before your audience sees them.",
       badge: "Pre-Launch",
     },
     {
       title: "Competitor Benchmarking",
       description:
-        "Compare your scores side-by-side with up to 3 competitors. See exactly where you lead and where you fall behind.",
+        "Stop guessing where you stand. See your scores next to your competitors' — and know exactly where to invest.",
       badge: "Comparison",
     },
     {
       title: "Conversion Optimization",
       description:
-        "Improve your CTAs, trust elements, and offer clarity based on AI-generated scoring and actionable improvement tasks.",
+        "Your visitors aren't converting? Find out if it's your CTAs, your trust elements, or your offer clarity — and get a fix list.",
       badge: "Optimization",
     },
     {
       title: "Performance Monitoring",
       description:
-        "Track your PageSpeed scores and Core Web Vitals. Understand how technical performance impacts your user experience.",
+        "Slow websites lose customers. Track your Core Web Vitals and see how technical debt impacts your bottom line.",
       badge: "Performance",
     },
     {
       title: "Code Analysis",
       description:
-        "Link your public GitHub repository and get your code scored across six categories — from security to maintainability.",
+        "Your codebase affects your growth. Connect your GitHub repo and get scored across security, performance, and maintainability.",
       badge: "Code Review",
     },
     {
       title: "Auto Competitor Discovery",
       description:
-        "Not sure who you're competing with? Enable AI-powered competitor search and we'll identify relevant competitors for you — no manual URL entry needed.",
+        "Don't know who you're competing against online? Our AI identifies your real competitors based on your positioning — no research needed.",
       badge: "AI-Powered",
     },
   ];
 
   const comparisonRows = [
     { feature: "Analysis Speed", genome: "< 60 seconds", traditional: "Hours to days" },
-    { feature: "Data Depth", genome: "5 scoring categories + PageSpeed", traditional: "Surface-level overview" },
+    { feature: "Data Depth", genome: "5 scoring categories + code analysis", traditional: "Surface-level overview" },
     { feature: "Cost", genome: "Free daily credits / $14.99/mo", traditional: "$500+ per report" },
     { feature: "AI Models", genome: "5 models", traditional: "N/A" },
     { feature: "Structured Output", genome: "Yes", traditional: "Partial" },
@@ -259,7 +259,7 @@ const Home = () => {
     {
       question: "What is a Website Analysis?",
       answer:
-        "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes PageSpeed data, competitor comparisons, and prioritized improvement tasks.",
+        "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes competitor comparisons, optional code analysis, and prioritized improvement tasks.",
     },
     {
       question: "How does the credit system work?",
@@ -297,8 +297,8 @@ const Home = () => {
     <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <SEOHead
         title="AI Website Audit & Competitor Analysis Tool"
-        description="Get an AI-powered website audit in under 60 seconds. Score your site across 5 categories, benchmark against competitors, and get a prioritized improvement plan. Free to start."
-        keywords="website audit tool, website scoring, competitor analysis, conversion optimization, PageSpeed insights, website improvement plan, SEO audit, site analyzer"
+        description="Find out why visitors leave without converting. AI-powered website scoring, competitor benchmarking, and a prioritized improvement plan — in under 60 seconds."
+        keywords="website audit tool, website scoring, competitor analysis, conversion optimization, website improvement plan, SEO audit, site analyzer, code analysis"
         canonical="/"
         ogImage="https://synvertas.com/synvertas-logo.png"
       />
@@ -306,11 +306,11 @@ const Home = () => {
         name="Synvertas"
         url="https://synvertas.com"
         logo="https://synvertas.com/synvertas-logo.png"
-        description="Synvertas – Website Analysis Platform"
+        description="Synvertas – AI-powered website scoring, competitor analysis, and improvement planning."
       />
       <WebPageSchema
         name="Synvertas – Turn your website into a growth engine"
-        description="Scan your website and get AI-powered scoring, competitor analysis, PageSpeed insights, and an improvement plan in under 60 seconds."
+        description="Find out why visitors leave without converting. Get AI-scored insights, competitor benchmarks, and a prioritized fix list in under 60 seconds."
         url="https://synvertas.com/"
       />
       <Navbar />
@@ -321,7 +321,7 @@ const Home = () => {
           {/* Word-by-word reveal headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-normal text-foreground leading-[1.08] mb-6">
             <span className="sr-only">Website Scoring and Competitor Analysis Tool – </span>
-            {["What's", "holding", "your"].map((word, i) => (
+            {["Your", "website", "could"].map((word, i) => (
               <span
                 key={word}
                 className="inline-block opacity-0 animate-fade-in-up"
@@ -338,13 +338,17 @@ const Home = () => {
                 textShadow: "0 0 20px hsl(25 95% 53% / 0.5), 0 0 40px hsl(25 95% 53% / 0.25), 0 0 60px hsl(25 95% 53% / 0.1)",
               }}
             >
-              website
+              convert
             </span>{" "}
-            <span
-              className="inline-block opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.6s", animationFillMode: "both" }}
-            >
-              back?
+            {["more", "customers"].map((word, i) => (
+              <span
+                key={word}
+                className="inline-block opacity-0 animate-fade-in-up"
+                style={{ animationDelay: `${0.6 + i * 0.15}s`, animationFillMode: "both" }}
+              >
+                {word}{i < 1 ? "\u00A0" : ""}
+              </span>
+            ))}
             </span>
           </h1>
           <p
@@ -433,7 +437,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 relative">
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">What you get</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-5">Everything you need to outperform your competition</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Scores, comparisons, and a concrete fix list for your website.
             </p>
@@ -568,7 +572,7 @@ const Home = () => {
       <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">
         <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-8">
-            See what your website scores
+            Find out what's holding your website back
           </h2>
           <Button
             size="lg"

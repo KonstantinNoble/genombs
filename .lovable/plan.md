@@ -1,40 +1,46 @@
 
+Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-## Dashboard-Feature prominenter auf der Analyse-Seite
+1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
+- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
+  - identische horizontale Padding-Logik für `th` und `td` je Spalte
+  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
+  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
+- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
 
-### Aktueller Zustand
-Im Workspace-Header der Analyse-Seite (Chat.tsx) gibt es nur einen kleinen "View Dashboard"-Link in 10px Schrift -- leicht zu uebersehen.
+2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
+- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
+  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
+  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
+- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
 
-### Aenderungen
+3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
+- Tabelle „Category Averages“:
+  - `colgroup` (70/30) behalten
+  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
+- Tabelle „Recent Analyses“:
+  - `colgroup` (50/20/30) behalten
+  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
+  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
 
-**1. Dashboard-Banner im Workspace-Panel (Chat.tsx, Zeilen 468-481)**
+4) Stabilitäts-Feinschliff für Tabellen-Rendering
+- Tabellen auf einheitliches Verhalten setzen:
+  - `table-fixed` bleibt aktiv
+  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
+- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
 
-Wenn eine Analyse abgeschlossen ist (`hasProfiles === true`), wird unterhalb des Workspace-Headers ein kompakter Banner eingefuegt:
+5) Validierung nach Umsetzung
+- Desktop prüfen:
+  - Headertext steht exakt über den Werten in jeder Spalte
+  - kein sichtbares „Springen“ bei langen URLs oder Chips
+- Mobile prüfen:
+  - kein unerwarteter Umbruch in numerischen Spalten
+  - Spalten bleiben visuell untereinander
+- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
 
-```text
-+--------------------------------------------------+
-| [LayoutDashboard Icon]                            |
-| Compare today's scores with your average          |
-| Track improvements over time                      |
-| [Open Dashboard ->]                               |
-+--------------------------------------------------+
-```
-
-- Kompakte Card mit `bg-primary/5 border-primary/20`
-- Icon + kurzer Text: "Compare today's scores with your average"
-- Subtext: "Track your improvements over time"
-- Button/Link "Open Dashboard" mit ArrowRight-Icon
-- Nur sichtbar wenn mindestens ein Profil analysiert wurde
-- Navigiert zu `/dashboard`
-
-**2. Bestehenden "View Dashboard"-Link beibehalten**
-
-Der existierende Link bleibt als sekundaere Navigation bestehen, der neue Banner ist die prominentere Variante.
-
-### Technische Details
-
-- Nur `src/pages/Chat.tsx` wird geaendert
-- Neuer Banner-Block nach dem Workspace-Header (nach Zeile 481), vor der SectionNavBar
-- Verwendet bestehende Komponenten: `Button`, `LayoutDashboard` (bereits importiert), `ArrowRight` (muss importiert werden)
-- Kein neuer State oder Hook noetig, nutzt bestehendes `hasProfiles` und `navigate`
-
+Technische Kurzbegründung
+- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
+  1) ungleichen `th`/`td` Innenabständen,
+  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
+  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
+- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.

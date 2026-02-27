@@ -41,31 +41,31 @@ const aiModels = [
   {
     name: "Gemini Flash",
     description: "Fast responses for quick questions",
-    credits: 1,
+    credits: 3,
     tier: "Free",
   },
   {
-    name: "GPT Mini",
+    name: "ChatGPT Mini",
     description: "Solid quality at low credit cost",
-    credits: 1,
+    credits: 3,
     tier: "Free",
   },
   {
-    name: "GPT-4o",
+    name: "ChatGPT",
     description: "Precise analysis and detailed answers",
-    credits: 4,
+    credits: 6,
     tier: "Premium",
   },
   {
     name: "Claude Sonnet",
     description: "Nuanced reasoning and deep analysis",
-    credits: 5,
+    credits: 6,
     tier: "Premium",
   },
   {
     name: "Perplexity",
     description: "Real-time web search for current info",
-    credits: 5,
+    credits: 7,
     tier: "Premium",
   },
 ];

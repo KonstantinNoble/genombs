@@ -349,14 +349,12 @@ const Home = () => {
                 {word}{i < 1 ? "\u00A0" : ""}
               </span>
             ))}
-            </span>
           </h1>
           <p
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 animate-fade-in-up"
             style={{ animationDelay: "0.15s", animationFillMode: "both" }}
           >
-            Paste a URL and get scores across five categories, AI-powered competitor discovery, and a prioritized list of what to
-            fix.
+            Find out why visitors leave without converting. Get AI-scored insights across findability, trust, and conversion readiness — plus see exactly how you stack up against your competitors.
           </p>
 
           {/* URL Input Container */}

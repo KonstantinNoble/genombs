@@ -1,46 +1,71 @@
 
-Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
-- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
-  - identische horizontale Padding-Logik für `th` und `td` je Spalte
-  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
-  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
-- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
+## 1. Falsche Informationen korrigieren
 
-2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
-- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
-  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
-  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
-- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
+### Gefundene Fehler:
 
-3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
-- Tabelle „Category Averages“:
-  - `colgroup` (70/30) behalten
-  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
-- Tabelle „Recent Analyses“:
-  - `colgroup` (50/20/30) behalten
-  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
-  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
+**Home.tsx - FAQ Section:**
+- **AI Model-Namen falsch**: FAQ sagt "Gemini Flash (fast, great for quick questions) and GPT Mini" -- korrekt waere "Gemini Flash" und "**ChatGPT** Mini" (so heisst es in der App)
+- **"GPT-4o" falsch**: FAQ nennt "GPT-4o" als Premium-Modell, aber in der App heisst es einfach "ChatGPT" (nicht GPT-4o)
+- **Credit-Kosten falsch**: FAQ sagt "Each scan costs 5-10 credits" und "each chat message costs 1-5 credits". Tatsaechlich: Scans kosten 9-14 Credits, Chat kostet 3-7 Credits (laut constants.ts)
+- **Code Analysis FAQ unvollstaendig**: Nennt nur 5 Kategorien ("security, performance, accessibility, maintainability, and SEO") aber es sind 6 -- "Quality" fehlt
+- **SEO keyword**: Meta-Keywords enthalten "SEO audit" -- das Tool macht keine SEO-Audits. Ersetzen durch z.B. "website scoring tool"
 
-4) Stabilitäts-Feinschliff für Tabellen-Rendering
-- Tabellen auf einheitliches Verhalten setzen:
-  - `table-fixed` bleibt aktiv
-  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
-- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
+**Pricing.tsx:**
+- **Model-Name falsch**: "GPT Mini" sollte "ChatGPT Mini" heissen (Zeile 42)
+- **Premium Model-Namen falsch**: "GPT-4o" sollte "ChatGPT" heissen (Zeilen 48, 55)
 
-5) Validierung nach Umsetzung
-- Desktop prüfen:
-  - Headertext steht exakt über den Werten in jeder Spalte
-  - kein sichtbares „Springen“ bei langen URLs oder Chips
-- Mobile prüfen:
-  - kein unerwarteter Umbruch in numerischen Spalten
-  - Spalten bleiben visuell untereinander
-- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
+**HowItWorks.tsx:**
+- **Model-Namen falsch**: "GPT Mini" -> "ChatGPT Mini", "GPT-4o" -> "ChatGPT" (Zeilen 49, 57)
+- **Credit-Kosten falsch**: Zeigt 1 Credit fuer Gemini Flash und GPT Mini, aber tatsaechlich kosten Chat-Nachrichten 3 Credits. Scan-Kosten sind 9+ Credits.
 
-Technische Kurzbegründung
-- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
-  1) ungleichen `th`/`td` Innenabständen,
-  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
-  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
-- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.
+### Alle Korrekturen:
+- Model-Namen ueberall angleichen: "ChatGPT Mini" (nicht "GPT Mini"), "ChatGPT" (nicht "GPT-4o")
+- Credit-Angaben korrigieren: Scans 9-14 Credits, Chat 3-7 Credits
+- Code Analysis: 6 Kategorien (Quality hinzufuegen)
+- SEO-Keyword entfernen aus Meta-Tags
+
+---
+
+## 2. Homepage dynamischer gestalten
+
+Professionell und technisch bleibend, keine verspielten Elemente. Folgende Verbesserungen:
+
+### CTA-Bereich (Hero) groesser und praesenter:
+- Analyze-Button groesser: `h-12 px-8 text-base` statt `h-11 px-6`
+- URL-Input Container etwas mehr Padding und groessere Schrift
+- Mehr vertikaler Abstand unter der Subline
+
+### Feature-Cards interaktiver:
+- Subtiler Scale-Effekt beim Hover (`hover:scale-[1.02]`)
+- Leichter Glow-Effekt auf der Nummer beim Hover
+
+### Stats-Section lebendiger:
+- Animierte Gradient-Linie unter der Stats-Section (horizontal, subtil, wie ein Scanner-Effekt)
+- Nutzt bestehende CSS-Animationsinfrastruktur
+
+### CTA-Section (Footer) groesser:
+- Button groesser: `h-14 px-12 text-lg`
+- Mehr Padding im Container
+
+### Comparison Table:
+- Subtiler Hover-Effekt auf Zeilen (`hover:bg-muted/20`)
+
+### Use Cases Section:
+- Badge-Labels mit leichtem Pulse-Punkt (wie "Live"-Indikator, bereits im CSS vorhanden)
+
+---
+
+## Technische Umsetzung
+
+### Betroffene Dateien:
+1. `src/pages/Home.tsx` - Textkorrekturen + dynamischere Gestaltung
+2. `src/pages/Pricing.tsx` - Model-Namen korrigieren
+3. `src/pages/HowItWorks.tsx` - Model-Namen und Credit-Kosten korrigieren
+4. `src/index.css` - Eine neue Keyframe-Animation fuer Gradient-Scanner-Linie
+
+### Keine strukturellen Aenderungen, nur:
+- String-Korrekturen (Model-Namen, Credits, Kategorien)
+- Tailwind-Klassen fuer groessere CTAs und Hover-Effekte
+- Eine neue subtile CSS-Animation
+

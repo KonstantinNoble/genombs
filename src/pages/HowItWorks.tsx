@@ -34,7 +34,7 @@ const codeCategories = [
   "Performance",
   "Accessibility",
   "Maintainability",
-  "SEO",
+  "Findability",
 ];
 
 const aiModels = [

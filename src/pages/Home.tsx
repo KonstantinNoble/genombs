@@ -284,7 +284,7 @@ const Home = () => {
     {
       question: "What is the Code Analysis?",
       answer:
-        "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: quality, security, performance, accessibility, maintainability, and SEO. The results are included alongside your website scores.",
+        "You can connect a public GitHub repository to your scan. Our AI then analyzes your source code across six categories: quality, security, performance, accessibility, maintainability, and findability. The results are included alongside your website scores.",
     },
     {
       question: "Can AI find my competitors for me?",

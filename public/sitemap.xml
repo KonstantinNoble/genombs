@@ -3,7 +3,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://synvertas.com/</loc>
-    <lastmod>2026-02-25</lastmod>
+    <lastmod>2026-02-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Website Analysis Tool -->
   <url>
     <loc>https://synvertas.com/chat</loc>
-    <lastmod>2026-02-25</lastmod>
+    <lastmod>2026-02-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -19,7 +19,7 @@
   <!-- Pricing -->
   <url>
     <loc>https://synvertas.com/pricing</loc>
-    <lastmod>2026-02-25</lastmod>
+    <lastmod>2026-02-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -27,8 +27,11 @@
   <!-- How It Works -->
   <url>
     <loc>https://synvertas.com/how-it-works</loc>
-    <lastmod>2026-02-25</lastmod>
+    <lastmod>2026-02-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <!-- Public Score Pages (discovered dynamically via crawling and internal links) -->
+  <!-- Individual /scores/:slug pages are indexed automatically when published -->
 </urlset>

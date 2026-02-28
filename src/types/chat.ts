@@ -90,6 +90,9 @@ export interface WebsiteProfile {
   error_message: string | null;
   github_repo_url: string | null;
   code_analysis: CodeAnalysis | null;
+  is_public?: boolean;
+  public_slug?: string | null;
+  published_at?: string | null;
   created_at: string;
 }
 

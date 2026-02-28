@@ -1,12 +1,22 @@
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CheckCircle2, XCircle, Globe, Lock, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase/external-client";
+import { generateSlug } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 import type { WebsiteProfile } from "@/types/chat";
 
 interface WebsiteProfileCardProps {
   profile: WebsiteProfile;
   compact?: boolean;
 }
+
+const MONTHLY_PUBLISH_LIMIT = 5;
 
 const getScoreColor = (score: number) =>
   score >= 80 ? "hsl(var(--chart-6))" : score >= 60 ? "hsl(var(--primary))" : "hsl(var(--destructive))";
@@ -29,16 +39,10 @@ const ScoreRing = ({ score, size = 64 }: { score: number; size?: number }) => {
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth={4} />
         <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={4}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-1000 ease-out"
+          cx={size / 2} cy={size / 2} r={radius} fill="none"
+          stroke={color} strokeWidth={4}
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="round" className="transition-all duration-1000 ease-out"
         />
       </svg>
       <span className="absolute inset-0 flex items-center justify-center text-base font-bold text-foreground">
@@ -66,8 +70,136 @@ const CategoryBar = ({ label, value }: { label: string; value: number }) => {
 
 const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const { profile_data, url, is_own_website, overall_score, category_scores } = profile;
+  const { user, isPremium } = useAuth();
+  const navigate = useNavigate();
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [publishLoading, setPublishLoading] = useState(false);
+  const [isPublic, setIsPublic] = useState(profile.is_public ?? false);
+  const [monthlyUsed, setMonthlyUsed] = useState<number | null>(null);
+
+  // Fetch monthly publish usage
+  useEffect(() => {
+    if (!user) return;
+    const fetchUsage = async () => {
+      const { data } = await supabase.rpc("get_monthly_publish_count", { _user_id: user.id });
+      setMonthlyUsed(typeof data === "number" ? data : 0);
+    };
+    fetchUsage();
+  }, [user]);
 
   if (!profile_data || !category_scores || overall_score == null) return null;
+
+  const limitReached = (monthlyUsed ?? 0) >= MONTHLY_PUBLISH_LIMIT;
+  const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+
+  const handlePublish = async () => {
+    if (!user) return;
+
+    // Free user → upgrade dialog
+    if (!isPremium) {
+      setShowUpgradeDialog(true);
+      return;
+    }
+
+    // Limit reached
+    if (limitReached) {
+      toast({ title: "Monthly limit reached", description: `Your 5 publications reset on ${nextReset}.` });
+      return;
+    }
+
+    setPublishLoading(true);
+    try {
+      let slug = generateSlug(url);
+      let success = false;
+
+      // Try up to 5 times for slug collisions
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const candidateSlug = attempt === 0 ? slug : `${slug}-${attempt}`;
+        const { error } = await supabase
+          .from("website_profiles")
+          .update({ is_public: true, public_slug: candidateSlug, published_at: new Date().toISOString() } as Record<string, unknown>)
+          .eq("id", profile.id);
+
+        if (!error) {
+          slug = candidateSlug;
+          success = true;
+          break;
+        }
+        // If it's not a unique violation, bail out
+        if (!error.message?.includes("unique") && !error.message?.includes("duplicate")) {
+          throw error;
+        }
+      }
+
+      if (!success) {
+        toast({ title: "Slug collision", description: "Could not generate a unique URL. Please try again.", variant: "destructive" });
+        return;
+      }
+
+      // Record usage
+      await supabase.from("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id } as Record<string, unknown>);
+
+      setIsPublic(true);
+      setMonthlyUsed((prev) => (prev ?? 0) + 1);
+
+      const publicUrl = `https://synvertas.com/scores/${slug}`;
+      await navigator.clipboard.writeText(publicUrl);
+
+      toast({ title: "Score published!", description: `Link copied: ${publicUrl}` });
+    } catch (err) {
+      console.error("Publish error:", err);
+      toast({ title: "Failed to publish", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setPublishLoading(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    setPublishLoading(true);
+    try {
+      await supabase
+        .from("website_profiles")
+        .update({ is_public: false } as Record<string, unknown>)
+        .eq("id", profile.id);
+      setIsPublic(false);
+      toast({ title: "Score unpublished", description: "The public page has been removed." });
+    } catch (err) {
+      console.error("Unpublish error:", err);
+    } finally {
+      setPublishLoading(false);
+    }
+  };
+
+  const publishButton = profile.status === "completed" && user ? (
+    <div className="flex items-center gap-2 pt-2 border-t border-border mt-4">
+      {isPublic ? (
+        <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading} className="text-xs">
+          {publishLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Globe className="w-3 h-3 mr-1" />}
+          Unpublish
+        </Button>
+      ) : (
+        <Button
+          variant={isPremium && !limitReached ? "default" : "outline"}
+          size="sm"
+          onClick={handlePublish}
+          disabled={publishLoading}
+          className="text-xs"
+        >
+          {publishLoading ? (
+            <Loader2 className="w-3 h-3 animate-spin mr-1" />
+          ) : isPremium ? (
+            <Globe className="w-3 h-3 mr-1" />
+          ) : (
+            <Lock className="w-3 h-3 mr-1" />
+          )}
+          {isPremium && limitReached ? `${MONTHLY_PUBLISH_LIMIT}/${MONTHLY_PUBLISH_LIMIT} used` : "Publish Score"}
+        </Button>
+      )}
+      {isPremium && monthlyUsed != null && !isPublic && (
+        <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} this month</span>
+      )}
+    </div>
+  ) : null;
 
   if (compact) {
     return (
@@ -87,63 +219,85 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   }
 
   return (
-    <Card
-      className={`border-border bg-gradient-to-br from-card to-card/80 transition-all duration-300 hover:border-primary/20 hover:shadow-[0_8px_24px_-8px_rgb(0_0_0/0.4)] ${is_own_website ? "ring-1 ring-primary/30" : ""}`}
-    >
-      <CardContent className="p-5 space-y-5">
-        <div className="flex items-start gap-4">
-          <ScoreRing score={overall_score} />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-lg font-semibold text-foreground">{profile_data.name}</h3>
-              <Badge variant={is_own_website ? "default" : "outline"} className="text-[10px] shrink-0">
-                {is_own_website ? "Your Site" : "Competitor"}
-              </Badge>
+    <>
+      <Card
+        className={`border-border bg-gradient-to-br from-card to-card/80 transition-all duration-300 hover:border-primary/20 hover:shadow-[0_8px_24px_-8px_rgb(0_0_0/0.4)] ${is_own_website ? "ring-1 ring-primary/30" : ""}`}
+      >
+        <CardContent className="p-5 space-y-5">
+          <div className="flex items-start gap-4">
+            <ScoreRing score={overall_score} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-lg font-semibold text-foreground">{profile_data.name}</h3>
+                <Badge variant={is_own_website ? "default" : "outline"} className="text-[10px] shrink-0">
+                  {is_own_website ? "Your Site" : "Competitor"}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground font-mono mt-0.5">{url}</p>
             </div>
-            <p className="text-sm text-muted-foreground font-mono mt-0.5">{url}</p>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <CategoryBar label="Findability" value={category_scores.findability} />
-          <CategoryBar label="Mobile" value={category_scores.mobileUsability} />
-          <CategoryBar label="Offer" value={category_scores.offerClarity} />
-          <CategoryBar label="Trust" value={category_scores.trustProof} />
-          <CategoryBar label="Conversion" value={category_scores.conversionReadiness} />
-        </div>
+          <div className="space-y-2">
+            <CategoryBar label="Findability" value={category_scores.findability} />
+            <CategoryBar label="Mobile" value={category_scores.mobileUsability} />
+            <CategoryBar label="Offer" value={category_scores.offerClarity} />
+            <CategoryBar label="Trust" value={category_scores.trustProof} />
+            <CategoryBar label="Conversion" value={category_scores.conversionReadiness} />
+          </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-1">
-          <div>
-            <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-chart-6" />
-              Strengths
-            </p>
-            <div className="space-y-1.5">
-              {(profile_data.strengths || []).slice(0, 3).map((s) => (
-                <div key={s} className="flex items-start gap-1.5">
-                  <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
-                  <span className="text-sm text-foreground leading-tight">{s}</span>
-                </div>
-              ))}
+          <div className="grid grid-cols-2 gap-4 pt-1">
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-chart-6" />
+                Strengths
+              </p>
+              <div className="space-y-1.5">
+                {(profile_data.strengths || []).slice(0, 3).map((s) => (
+                  <div key={s} className="flex items-start gap-1.5">
+                    <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
+                    <span className="text-sm text-foreground leading-tight">{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                <XCircle className="w-4 h-4 text-destructive" />
+                Weaknesses
+              </p>
+              <div className="space-y-1.5">
+                {(profile_data.weaknesses || []).slice(0, 3).map((w) => (
+                  <div key={w} className="flex items-start gap-1.5">
+                    <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
+                    <span className="text-sm text-foreground leading-tight">{w}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-              <XCircle className="w-4 h-4 text-destructive" />
-              Weaknesses
-            </p>
-            <div className="space-y-1.5">
-              {(profile_data.weaknesses || []).slice(0, 3).map((w) => (
-                <div key={w} className="flex items-start gap-1.5">
-                  <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
-                  <span className="text-sm text-foreground leading-tight">{w}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          {publishButton}
+        </CardContent>
+      </Card>
+
+      {/* Upgrade Dialog for Free Users */}
+      <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              Get a Do-Follow Backlink for Your SEO
+            </DialogTitle>
+            <DialogDescription>
+              Upgrade to Premium to publish this report as a public page. You get 5 publications per month, each with a high-quality backlink to your domain.
+            </DialogDescription>
+          </DialogHeader>
+          <Button onClick={() => { setShowUpgradeDialog(false); navigate("/pricing"); }}>
+            View Plans
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

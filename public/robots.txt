@@ -1,9 +1,10 @@
 # Synvertas SEO Configuration
-# Updated: 2026-02-25
+# Updated: 2026-02-28
 
 # Google - Priority Crawler
 User-agent: Googlebot
 Allow: /
+Allow: /scores/
 Disallow: /auth
 Disallow: /profile
 Disallow: /achievements
@@ -19,6 +20,7 @@ Crawl-delay: 0
 # Bing
 User-agent: Bingbot
 Allow: /
+Allow: /scores/
 Disallow: /auth
 Disallow: /profile
 Disallow: /achievements
@@ -41,6 +43,7 @@ Allow: /
 # All other crawlers
 User-agent: *
 Allow: /
+Allow: /scores/
 Disallow: /auth
 Disallow: /profile
 Disallow: /achievements

@@ -76,6 +76,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
   const [isPublic, setIsPublic] = useState(profile.is_public ?? false);
+  const [publicSlug, setPublicSlug] = useState<string | null>((profile as any).public_slug ?? null);
   const [monthlyUsed, setMonthlyUsed] = useState<number | null>(null);
 
   // Fetch monthly publish usage

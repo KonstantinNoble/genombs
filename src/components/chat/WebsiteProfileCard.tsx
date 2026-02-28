@@ -220,9 +220,22 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           {showPublishSection && (
             <div className="flex items-center gap-3">
               {isPublic ? (
-                <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
-                  {publishLoading ? "Unpublishing..." : "Unpublish"}
-                </Button>
+                <>
+                  <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
+                    {publishLoading ? "Unpublishing..." : "Unpublish"}
+                  </Button>
+                  {publicSlug && (
+                    <a
+                      href={`https://synvertas.com/scores/${publicSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-primary hover:underline truncate"
+                    >
+                      synvertas.com/scores/{publicSlug}
+                    </a>
+                  )}
+                </>
+
               ) : (
                 <Button
                   variant={isPremium && !limitReached ? "default" : "secondary"}

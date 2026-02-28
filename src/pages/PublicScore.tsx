@@ -56,8 +56,7 @@ const PublicScore = () => {
   useEffect(() => {
     if (!slug) return;
     const fetchProfile = async () => {
-      const { data, error } = await supabase
-        .from("website_profiles")
+      const { data, error } = await (supabase.from as Function)("website_profiles")
         .select("id, url, overall_score, category_scores, profile_data, is_own_website, user_id, conversation_id, status, created_at, public_slug, is_public, published_at")
         .eq("public_slug", slug)
         .eq("is_public", true)

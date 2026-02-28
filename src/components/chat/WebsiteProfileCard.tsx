@@ -81,7 +81,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   useEffect(() => {
     if (!user) return;
     const fetchUsage = async () => {
-      const { data } = await supabase.rpc("get_monthly_publish_count", { _user_id: user.id });
+      const { data } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
       setMonthlyUsed(typeof data === "number" ? data : 0);
     };
     fetchUsage();
@@ -137,7 +137,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
       }
 
       // Record usage
-      await supabase.from("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id } as Record<string, unknown>);
+      await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
 
       setIsPublic(true);
       setMonthlyUsed((prev) => (prev ?? 0) + 1);

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { CheckCircle2, XCircle, Globe, Lock, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase/external-client";
@@ -73,6 +73,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
   const [isPublic, setIsPublic] = useState(profile.is_public ?? false);
   const [monthlyUsed, setMonthlyUsed] = useState<number | null>(null);
@@ -92,27 +93,27 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const limitReached = (monthlyUsed ?? 0) >= MONTHLY_PUBLISH_LIMIT;
   const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString("en-US", { month: "long", day: "numeric" });
 
-  const handlePublish = async () => {
+  const handlePublishClick = () => {
     if (!user) return;
-
-    // Free user → upgrade dialog
     if (!isPremium) {
       setShowUpgradeDialog(true);
       return;
     }
-
-    // Limit reached
     if (limitReached) {
       toast({ title: "Monthly limit reached", description: `Your 5 publications reset on ${nextReset}.` });
       return;
     }
+    setShowConfirmDialog(true);
+  };
 
+  const handleConfirmPublish = async () => {
+    if (!user) return;
+    setShowConfirmDialog(false);
     setPublishLoading(true);
     try {
       let slug = generateSlug(url);
       let success = false;
 
-      // Try up to 5 times for slug collisions
       for (let attempt = 0; attempt < 5; attempt++) {
         const candidateSlug = attempt === 0 ? slug : `${slug}-${attempt}`;
         const { error } = await supabase
@@ -125,7 +126,6 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           success = true;
           break;
         }
-        // If it's not a unique violation, bail out
         if (!error.message?.includes("unique") && !error.message?.includes("duplicate")) {
           throw error;
         }
@@ -136,7 +136,6 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
         return;
       }
 
-      // Record usage
       await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
 
       setIsPublic(true);
@@ -170,36 +169,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
     }
   };
 
-  const publishButton = profile.status === "completed" && user ? (
-    <div className="flex items-center gap-2 pt-2 border-t border-border mt-4">
-      {isPublic ? (
-        <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading} className="text-xs">
-          {publishLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Globe className="w-3 h-3 mr-1" />}
-          Unpublish
-        </Button>
-      ) : (
-        <Button
-          variant={isPremium && !limitReached ? "default" : "outline"}
-          size="sm"
-          onClick={handlePublish}
-          disabled={publishLoading}
-          className="text-xs"
-        >
-          {publishLoading ? (
-            <Loader2 className="w-3 h-3 animate-spin mr-1" />
-          ) : isPremium ? (
-            <Globe className="w-3 h-3 mr-1" />
-          ) : (
-            <Lock className="w-3 h-3 mr-1" />
-          )}
-          {isPremium && limitReached ? `${MONTHLY_PUBLISH_LIMIT}/${MONTHLY_PUBLISH_LIMIT} used` : "Publish Score"}
-        </Button>
-      )}
-      {isPremium && monthlyUsed != null && !isPublic && (
-        <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} this month</span>
-      )}
-    </div>
-  ) : null;
+  const showPublishSection = profile.status === "completed" && user;
 
   if (compact) {
     return (
@@ -245,6 +215,33 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
             <CategoryBar label="Conversion" value={category_scores.conversionReadiness} />
           </div>
 
+          {showPublishSection && (
+            <div className="flex items-center gap-3">
+              {isPublic ? (
+                <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
+                  {publishLoading ? "Unpublishing..." : "Unpublish"}
+                </Button>
+              ) : (
+                <Button
+                  variant={isPremium && !limitReached ? "default" : "secondary"}
+                  onClick={handlePublishClick}
+                  disabled={publishLoading}
+                >
+                  {publishLoading
+                    ? "Publishing..."
+                    : isPremium && limitReached
+                      ? `${MONTHLY_PUBLISH_LIMIT}/${MONTHLY_PUBLISH_LIMIT} used`
+                      : isPremium
+                        ? "Publish Score"
+                        : "Publish Score \u2014 Premium"}
+                </Button>
+              )}
+              {isPremium && monthlyUsed != null && !isPublic && !limitReached && (
+                <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} this month</span>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4 pt-1">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -275,25 +272,49 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
               </div>
             </div>
           </div>
-
-          {publishButton}
         </CardContent>
       </Card>
+
+      {/* Confirmation Dialog for Premium Users */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Publish Your Score Report</DialogTitle>
+            <DialogDescription className="pt-2 space-y-3">
+              <span className="block">
+                Your overall score, category ratings, and key strengths will be published on a public page. A do-follow backlink to your domain will be included.
+              </span>
+              <span className="block text-sm text-muted-foreground">
+                This uses 1 of your {MONTHLY_PUBLISH_LIMIT} monthly publications. You have used {monthlyUsed ?? 0}/{MONTHLY_PUBLISH_LIMIT} this month.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
+            <Button onClick={handleConfirmPublish}>Publish Now</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Upgrade Dialog for Free Users */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
-              Get a Do-Follow Backlink for Your SEO
-            </DialogTitle>
-            <DialogDescription>
-              Upgrade to Premium to publish this report as a public page. You get 5 publications per month, each with a high-quality backlink to your domain.
+            <DialogTitle>Publish Your Score Report</DialogTitle>
+            <DialogDescription className="pt-2">
+              Upgrade to Premium to unlock Public Score Pages and boost your SEO with high-quality backlinks.
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={() => { setShowUpgradeDialog(false); navigate("/pricing"); }}>
-            View Plans
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-foreground">What you get with Premium:</p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>Public page with your website score visible to everyone</li>
+              <li>High-quality do-follow backlink to boost your SEO</li>
+              <li>5 publications per month included with Premium</li>
+            </ul>
+          </div>
+          <Button className="w-full" onClick={() => { setShowUpgradeDialog(false); navigate("/pricing"); }}>
+            View Premium Plans
           </Button>
         </DialogContent>
       </Dialog>

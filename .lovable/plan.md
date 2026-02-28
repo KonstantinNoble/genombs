@@ -1,65 +1,46 @@
 
+Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-# Publish Score Button: Repositioning & UX Improvements
+1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
+- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
+  - identische horizontale Padding-Logik für `th` und `td` je Spalte
+  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
+  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
+- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
 
-## Current Issues
-- The "Publish Score" button is buried at the bottom of the card behind a border-t separator (line 174)
-- It contains icons (Globe, Lock, Loader2) which the user doesn't want
-- The free user upgrade dialog also has a Globe icon
-- The button is small (`size="sm"`, `text-xs`) and not prominent enough
+2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
+- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
+  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
+  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
+- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
 
-## Changes
+3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
+- Tabelle „Category Averages“:
+  - `colgroup` (70/30) behalten
+  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
+- Tabelle „Recent Analyses“:
+  - `colgroup` (50/20/30) behalten
+  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
+  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
 
-### 1. Move Button to Prominent Position (WebsiteProfileCard.tsx)
+4) Stabilitäts-Feinschliff für Tabellen-Rendering
+- Tabellen auf einheitliches Verhalten setzen:
+  - `table-fixed` bleibt aktiv
+  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
+- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
 
-Move the publish button from the bottom of the card (after strengths/weaknesses) to directly below the category bars -- between the score bars and the strengths/weaknesses section. This makes it a natural call-to-action after the user sees their scores.
+5) Validierung nach Umsetzung
+- Desktop prüfen:
+  - Headertext steht exakt über den Werten in jeder Spalte
+  - kein sichtbares „Springen“ bei langen URLs oder Chips
+- Mobile prüfen:
+  - kein unerwarteter Umbruch in numerischen Spalten
+  - Spalten bleiben visuell untereinander
+- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
 
-Remove `publishButton` variable from line 173-202 and the `{publishButton}` render at line 279. Instead, render the button inline at line ~247 (after category bars, before the strengths grid).
-
-### 2. Remove All Icons from Buttons
-
-- Remove Globe, Lock, Loader2 icons from the publish/unpublish buttons
-- Keep only text labels: "Publish Score", "Unpublish", "5/5 used"
-- Loading state: use "Publishing..." text instead of spinner icon
-
-### 3. Premium User: Confirmation Dialog Before Publishing
-
-Instead of publishing immediately on click, premium users get a clean confirmation dialog:
-
-- **Title:** "Publish Your Score Report"
-- **Body:** A short professional paragraph: "Your overall score, category ratings, and key strengths will be published on a public page. A do-follow backlink to your domain will be included. This uses 1 of your 5 monthly publications."
-- **Usage counter:** "X/5 publications used this month"
-- **Two buttons:** "Cancel" (secondary) and "Publish Now" (primary)
-- No icons or emojis anywhere in the dialog
-
-### 4. Free User: More Attractive Upgrade Trigger
-
-Redesign the free user experience:
-
-- **Button style:** Use a subtle gradient or the `default` variant instead of `outline` to make it visually appealing even though it's locked
-- **Button text:** "Publish Score -- Premium" (no lock icon)
-- **Upgrade Dialog redesign:**
-  - Remove the Globe icon from the title
-  - **Title:** "Publish Your Score Report"
-  - **Body:** Professional copy highlighting 3 key benefits as a clean text list (no icons):
-    1. Public page with your website score visible to everyone
-    2. High-quality do-follow backlink to boost your SEO
-    3. 5 publications per month included with Premium
-  - **CTA:** "View Premium Plans" (primary button, full width)
-
-### 5. Unpublish State
-
-- Simple outline button with text "Unpublish" (no Globe icon)
-- No confirmation needed for unpublish (keeps current behavior)
-
-## Files Modified
-
-| File | Change |
-|------|--------|
-| `src/components/chat/WebsiteProfileCard.tsx` | Reposition button, remove icons, add confirmation dialog for premium, redesign free user dialog |
-
-## Summary of Removals
-- Remove imports: `Globe`, `Lock`, `Loader2` (if no longer used elsewhere in the file)
-- Remove all icon JSX from buttons and dialog titles
-- Remove `border-t` separator styling from publish section
-
+Technische Kurzbegründung
+- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
+  1) ungleichen `th`/`td` Innenabständen,
+  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
+  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
+- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.

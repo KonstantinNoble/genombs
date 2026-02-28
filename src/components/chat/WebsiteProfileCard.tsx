@@ -76,6 +76,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
   const [isPublic, setIsPublic] = useState(profile.is_public ?? false);
+  const [publicSlug, setPublicSlug] = useState<string | null>((profile as any).public_slug ?? null);
   const [monthlyUsed, setMonthlyUsed] = useState<number | null>(null);
 
   // Fetch monthly publish usage
@@ -139,6 +140,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
       await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
 
       setIsPublic(true);
+      setPublicSlug(slug);
       setMonthlyUsed((prev) => (prev ?? 0) + 1);
 
       const publicUrl = `https://synvertas.com/scores/${slug}`;
@@ -218,9 +220,22 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           {showPublishSection && (
             <div className="flex items-center gap-3">
               {isPublic ? (
-                <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
-                  {publishLoading ? "Unpublishing..." : "Unpublish"}
-                </Button>
+                <>
+                  <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
+                    {publishLoading ? "Unpublishing..." : "Unpublish"}
+                  </Button>
+                  {publicSlug && (
+                    <a
+                      href={`https://synvertas.com/scores/${publicSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-primary hover:underline truncate"
+                    >
+                      synvertas.com/scores/{publicSlug}
+                    </a>
+                  )}
+                </>
+
               ) : (
                 <Button
                   variant={isPremium && !limitReached ? "default" : "secondary"}

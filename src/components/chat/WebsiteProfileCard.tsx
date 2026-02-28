@@ -218,41 +218,34 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           </div>
 
           {showPublishSection && (
-            <div className="flex items-center gap-3">
+            <div className="rounded-lg border border-border bg-muted/30 p-3">
               {isPublic ? (
-                <>
-                  <Button variant="outline" size="sm" onClick={handleUnpublish} disabled={publishLoading}>
-                    {publishLoading ? "Unpublishing..." : "Unpublish"}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-sm font-medium text-foreground shrink-0">Published</span>
+                    {publicSlug && (
+                      <a
+                        href={`https://synvertas.com/scores/${publicSlug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-primary hover:underline truncate"
+                      >
+                        synvertas.com/scores/{publicSlug}
+                      </a>
+                    )}
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={handleUnpublish} disabled={publishLoading} className="shrink-0 text-muted-foreground hover:text-destructive">
+                    {publishLoading ? "Removing..." : "Unpublish"}
                   </Button>
-                  {publicSlug && (
-                    <a
-                      href={`https://synvertas.com/scores/${publicSlug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-primary hover:underline truncate"
-                    >
-                      synvertas.com/scores/{publicSlug}
-                    </a>
-                  )}
-                </>
-
+                </div>
               ) : (
-                <Button
-                  variant={isPremium && !limitReached ? "default" : "secondary"}
-                  onClick={handlePublishClick}
-                  disabled={publishLoading}
-                >
-                  {publishLoading
-                    ? "Publishing..."
-                    : isPremium && limitReached
-                      ? `${MONTHLY_PUBLISH_LIMIT}/${MONTHLY_PUBLISH_LIMIT} used`
-                      : isPremium
-                        ? "Publish Score"
-                        : "Publish Score \u2014 Premium"}
-                </Button>
-              )}
-              {isPremium && monthlyUsed != null && !isPublic && !limitReached && (
-                <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} this month</span>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-foreground">
+                      {isPremium ? "Publish your score and earn a backlink" : "Earn a do-follow backlink with Premium"}
+                    </span>
+                    {isPremium && monthlyUsed != null && !limitReached && (
+                      <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} publications used this month</span>
               )}
             </div>
           )}

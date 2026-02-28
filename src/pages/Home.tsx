@@ -581,17 +581,20 @@ const Home = () => {
       <FAQSchema faqs={homeFAQ} />
 
       {/* CTA */}
-      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden dot-grid">
-        <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground mb-8">
-            Find out what's holding your website back
+      <section className="py-16 sm:py-20 border-t border-border relative overflow-hidden dot-grid">
+        <div className="container mx-auto px-4 text-center max-w-2xl relative z-10 scroll-reveal-scale flex flex-col items-center">
+          <h2 className="text-lg sm:text-xl font-mono text-muted-foreground mb-6 flex items-center gap-2">
+            <span className="text-primary animate-pulse">&gt;_</span> Find out what's holding your website back
           </h2>
           <Button
-            size="lg"
+            variant="outline"
+            size="default"
             asChild
-            className="text-lg px-12 h-14"
+            className="font-mono text-sm px-8 h-10 border-primary/30 hover:border-primary/80 hover:bg-primary/5 transition-colors rounded-sm bg-transparent"
           >
-            <Link to={isLoggedIn ? "/chat" : "/auth"} className="btn-glow">Get Started</Link>
+            <Link to={isLoggedIn ? "/chat" : "/auth"}>
+              [ INIT_ANALYSIS ]
+            </Link>
           </Button>
         </div>
       </section>

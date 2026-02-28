@@ -74,6 +74,7 @@ function ScoreValue({ value, visible }: { value: number; visible: boolean }) {
 }
 
 export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [todayScore, setTodayScore] = useState<number | null>(null);

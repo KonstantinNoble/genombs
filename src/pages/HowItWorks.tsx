@@ -291,6 +291,55 @@ const HowItWorks = () => {
           </div>
         </section>
 
+        {/* Public Score Pages */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16 scroll-reveal">
+              <h2 className="text-3xl sm:text-4xl font-medium text-foreground mb-5">
+                Public Score Pages
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                Publish your results and earn a do-follow backlink to boost your SEO.
+              </p>
+            </div>
+
+            <div className="border border-border bg-card rounded-lg p-8 sm:p-10 scroll-reveal-scale">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-foreground">How it works</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    After completing a website analysis, Premium members can publish their results as a public page 
+                    on Synvertas (e.g., synvertas.com/scores/your-domain). Each published page includes a high-quality 
+                    do-follow backlink to your website — helping you build domain authority and improve search rankings.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-medium text-foreground mb-4">What's included</h3>
+                  <ul className="space-y-3">
+                    {[
+                      "Do-follow backlink to your domain on every published page",
+                      "5 publications per month included with Premium",
+                      "Only scores and strengths are shown — weaknesses stay private",
+                      "Unpublish anytime with one click (instant removal)",
+                      "SEO-optimized pages with structured data and canonical URLs",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm stagger-reveal" style={{ animationDelay: `${i * 0.08}s` }}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+                        <span className="text-foreground leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  All published pages are GDPR-compliant and automatically removed when you delete your account.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border dot-grid">
           <div className="max-w-2xl mx-auto text-center scroll-reveal-scale">

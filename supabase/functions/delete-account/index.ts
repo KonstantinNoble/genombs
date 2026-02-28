@@ -125,6 +125,16 @@ serve(async (req) => {
       }
     }
 
+    // 3a. Delete publish_usage (GDPR - public score tracking, before website_profiles)
+    console.log('Deleting publish_usage for user:', userId);
+    const { error: publishUsageError } = await adminClient
+      .from('publish_usage')
+      .delete()
+      .eq('user_id', userId);
+    if (publishUsageError) {
+      console.error('Failed to delete publish_usage:', publishUsageError);
+    }
+
     // 4. Delete website_profiles (depends on conversations)
     console.log('Deleting website_profiles for user:', userId);
     const { error: wpError } = await adminClient

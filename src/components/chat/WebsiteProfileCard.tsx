@@ -246,6 +246,24 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
                     </span>
                     {isPremium && monthlyUsed != null && !limitReached && (
                       <span className="text-xs text-muted-foreground">{monthlyUsed}/{MONTHLY_PUBLISH_LIMIT} publications used this month</span>
+                    )}
+                  </div>
+                  <Button
+                    variant={isPremium && !limitReached ? "default" : "secondary"}
+                    size="lg"
+                    onClick={handlePublishClick}
+                    disabled={publishLoading}
+                    className="shrink-0"
+                  >
+                    {publishLoading
+                      ? "Publishing..."
+                      : isPremium && limitReached
+                        ? `${MONTHLY_PUBLISH_LIMIT}/${MONTHLY_PUBLISH_LIMIT} used`
+                        : isPremium
+                          ? "Publish Score"
+                          : "Publish Score \u2014 Premium"}
+                  </Button>
+                </div>
               )}
             </div>
           )}

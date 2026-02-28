@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.find-competitors]
 verify_jwt = false
+
+[functions.publish-score]
+verify_jwt = false

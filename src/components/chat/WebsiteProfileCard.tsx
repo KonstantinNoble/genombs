@@ -6,8 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase/external-client";
-import { generateSlug } from "@/lib/utils";
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
 import { toast } from "@/hooks/use-toast";
 import type { WebsiteProfile } from "@/types/chat";
 
@@ -137,81 +136,54 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   };
 
   /**
-   * Core publish logic. When `replacing` is true, the currently active
-   * published profile is unpublished first so only 1 URL is ever public.
+   * Calls the publish-score Edge Function which handles:
+   * - Server-side premium verification
+   * - Monthly limit enforcement (atomic)
+   * - Single-active-backlink rule (auto-unpublishes any other)
+   * - Unique slug generation
+   * - Usage tracking
    */
-  const handleConfirmPublish = async (replacing = false) => {
+  const handleConfirmPublish = async () => {
     if (!user) return;
     setShowConfirmDialog(false);
     setShowReplaceDialog(false);
     setPublishLoading(true);
     try {
-      // Server-side re-validation
-      const { data: freshCount } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
-      const currentUsage = typeof freshCount === "number" ? freshCount : 0;
+      const session = await supabase.auth.getSession();
+      const accessToken = session.data.session?.access_token;
+      if (!accessToken) throw new Error("Not authenticated");
 
-      if (currentUsage >= MONTHLY_PUBLISH_LIMIT) {
-        setMonthlyUsed(currentUsage);
-        toast({ title: "Monthly limit reached", description: `Your 5 URL changes reset on ${nextReset}.` });
-        return;
-      }
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/publish-score`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ action: "publish", profileId: profile.id }),
+      });
 
-      // If replacing, unpublish the currently active profile first
-      if (replacing && activePublished) {
-        const { error: unpubError } = await supabase
-          .from("website_profiles")
-          .update({ is_public: false } as Record<string, unknown>)
-          .eq("id", activePublished.id);
+      const result = await resp.json();
 
-        if (unpubError) {
-          throw new Error("Failed to remove the currently published URL. Please try again.");
+      if (!resp.ok) {
+        // Update monthly usage from server response if available
+        if (typeof result.monthlyUsed === "number") {
+          setMonthlyUsed(result.monthlyUsed);
         }
+        throw new Error(result.error || "Failed to publish");
       }
 
-      // Publish this profile with a unique slug
-      let slug = generateSlug(url);
-      let success = false;
-
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const candidateSlug = attempt === 0 ? slug : `${slug}-${attempt}`;
-        const { error } = await supabase
-          .from("website_profiles")
-          .update({ is_public: true, public_slug: candidateSlug, published_at: new Date().toISOString() } as Record<string, unknown>)
-          .eq("id", profile.id);
-
-        if (!error) {
-          slug = candidateSlug;
-          success = true;
-          break;
-        }
-        if (error.code !== "23505" && !error.message?.includes("unique") && !error.message?.includes("duplicate")) {
-          throw error;
-        }
-      }
-
-      if (!success) {
-        toast({ title: "Slug collision", description: "Could not generate a unique URL. Please try again.", variant: "destructive" });
-        return;
-      }
-
-      // Track usage -- wrap in try/catch so a tracking failure doesn't hide a successful publish
-      const { error: usageError } = await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
-      if (usageError) {
-        console.error("publish_usage insert failed:", usageError);
-      }
-
-      // Re-fetch actual count from DB
-      const { data: updatedCount } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
-      setMonthlyUsed(typeof updatedCount === "number" ? updatedCount : currentUsage + 1);
-
+      setMonthlyUsed(result.monthlyUsed ?? (monthlyUsed ?? 0) + 1);
       setIsPublic(true);
-      setPublicSlug(slug);
+      setPublicSlug(result.slug);
       setActivePublished(null); // This profile is now the active one
 
-      const publicUrl = `https://synvertas.com/scores/${slug}`;
-      await navigator.clipboard.writeText(publicUrl);
-
-      toast({ title: "Score published!", description: `Link copied: ${publicUrl}` });
+      try {
+        await navigator.clipboard.writeText(result.publicUrl);
+        toast({ title: "Score published!", description: `Link copied: ${result.publicUrl}` });
+      } catch {
+        toast({ title: "Score published!", description: result.publicUrl });
+      }
     } catch (err: unknown) {
       console.error("Publish error:", err);
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
@@ -224,17 +196,30 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const handleUnpublish = async () => {
     setPublishLoading(true);
     try {
-      const { error } = await supabase
-        .from("website_profiles")
-        .update({ is_public: false } as Record<string, unknown>)
-        .eq("id", profile.id);
-      if (error) throw error;
+      const session = await supabase.auth.getSession();
+      const accessToken = session.data.session?.access_token;
+      if (!accessToken) throw new Error("Not authenticated");
+
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/publish-score`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ action: "unpublish", profileId: profile.id }),
+      });
+
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || "Failed to unpublish");
+
       setIsPublic(false);
       setActivePublished(null);
       toast({ title: "Backlink removed", description: "Your public page has been removed. You can now publish a different URL." });
     } catch (err) {
       console.error("Unpublish error:", err);
-      toast({ title: "Failed to unpublish", description: "Something went wrong. Please try again.", variant: "destructive" });
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      toast({ title: "Failed to unpublish", description: message, variant: "destructive" });
     } finally {
       setPublishLoading(false);
     }
@@ -415,7 +400,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           </DialogHeader>
           <DialogFooter className="flex gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-            <Button onClick={() => handleConfirmPublish(false)}>Publish Now</Button>
+            <Button onClick={handleConfirmPublish}>Publish Now</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -439,7 +424,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
           </DialogHeader>
           <DialogFooter className="flex gap-2 sm:gap-2">
             <Button variant="outline" onClick={() => setShowReplaceDialog(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => handleConfirmPublish(true)}>Replace & Publish</Button>
+            <Button variant="destructive" onClick={handleConfirmPublish}>Replace & Publish</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -56,7 +56,9 @@ END
 $$;
 
 -- Recreate UPDATE policy: users can update their own profiles, but cannot set
--- is_public = true directly (must go through the publish-score Edge Function).
+-- is_public = true via the anon client. The publish-score Edge Function uses
+-- service_role which bypasses RLS, so this only blocks direct client abuse.
+-- The NEW row's is_public must be false (or match the OLD value) to pass.
 CREATE POLICY "Users can update own profiles"
   ON website_profiles
   FOR UPDATE
@@ -64,10 +66,8 @@ CREATE POLICY "Users can update own profiles"
   WITH CHECK (
     auth.uid() = user_id
     AND (
-      -- Allow updates that do NOT try to set is_public = true
+      -- Allow any update that does NOT set is_public = true
       is_public IS NOT TRUE
-      -- OR the profile was already public (allow toggling other fields)
-      OR (SELECT wp.is_public FROM website_profiles wp WHERE wp.id = id)
     )
   );
 

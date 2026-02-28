@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 
 interface TodayVsAverageProps {
@@ -73,6 +74,7 @@ function ScoreValue({ value, visible }: { value: number; visible: boolean }) {
 }
 
 export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [todayScore, setTodayScore] = useState<number | null>(null);
@@ -164,12 +166,18 @@ export const TodayVsAverage = ({ userId, refreshKey }: TodayVsAverageProps) => {
   if (todayScore === null) {
     return (
       <div
-        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-8 text-center transition-all duration-500"
+        className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-6 text-center transition-all duration-500"
         style={{ opacity: visible ? 1 : 0 }}
       >
-        <p className="text-sm text-muted-foreground">
-          No analysis of your own website today. Run an analysis to see your daily comparison.
+        <p className="text-sm text-muted-foreground mb-3">
+          No analysis of your own website today.
         </p>
+        <button
+          onClick={() => navigate("/chat")}
+          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200 border-b border-primary/30 hover:border-primary/60 pb-0.5"
+        >
+          Run an analysis now
+        </button>
       </div>
     );
   }

@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 28, 2026 | Version 8.3</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 28, 2026 | Version 8.4</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -764,6 +764,21 @@ const PrivacyPolicy = () => {
               page on our platform (e.g., synvertas.com/scores/example-com). This is an explicit opt-in feature — 
               no data is published without your active consent.
             </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Single active backlink:</strong> Each Premium user can have at most 1 published score page 
+              (and thus 1 active do-follow backlink) at any given time. If you wish to publish a different URL, 
+              the currently published page is automatically removed and replaced. You may change which URL is 
+              published up to 5 times per calendar month. This limit resets automatically on the first day of 
+              each month.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Server-Side Processing</h4>
+            <p className="text-muted-foreground mb-4">
+              All publish and unpublish actions are processed through a secure server-side function (Supabase Edge 
+              Function) that verifies your Premium status, enforces the single-active-backlink rule, and tracks 
+              your monthly URL change usage. This ensures that limits cannot be circumvented through client-side 
+              manipulation.
+            </p>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Data Published</h4>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
@@ -784,23 +799,23 @@ const PrivacyPolicy = () => {
 
             <h4 className="text-lg font-semibold mb-2 mt-4">User Control</h4>
             <p className="text-muted-foreground mb-4">
-              You can unpublish any score page at any time. Unpublishing immediately removes the public page 
+              You can unpublish your score page at any time. Unpublishing immediately removes the public page 
               and returns a 404 error for anyone visiting the URL. When you delete your account, all published 
               score pages are automatically and permanently removed as part of the cascading account deletion 
               process described in Section 12.
             </p>
 
-            <h4 className="text-lg font-semibold mb-2 mt-4">Publication Usage Tracking</h4>
+            <h4 className="text-lg font-semibold mb-2 mt-4">URL Change Usage Tracking</h4>
             <p className="text-muted-foreground mb-4">
-              We track the number of publish actions per month in a <code>publish_usage</code> table to enforce 
-              the monthly limit of 5 publications per Premium user. This table stores: your user ID, the 
-              associated website profile ID, the action type, and a timestamp. This data is permanently deleted 
+              We track the number of URL change actions (publish/replace) per month in a <code>publish_usage</code> table 
+              to enforce the monthly limit of 5 URL changes per Premium user. This table stores: your user ID, 
+              the associated website profile ID, and a timestamp. This data is permanently deleted 
               when you delete your account.
             </p>
 
             <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
             <p className="text-muted-foreground mb-4">
-              <strong>Art. 6(1)(a) GDPR:</strong> Your explicit consent via the opt-in publish toggle. You can 
+              <strong>Art. 6(1)(a) GDPR:</strong> Your explicit consent via the opt-in publish action. You can 
               withdraw consent at any time by unpublishing the score page.
             </p>
             <p className="text-muted-foreground mb-4">
@@ -1245,7 +1260,7 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">User-initiated deletion</td>
                   </tr>
                   <tr>
-                    <td className="border border-border p-3">Publication usage data</td>
+                    <td className="border border-border p-3">URL change usage data</td>
                     <td className="border border-border p-3">Until account deletion</td>
                     <td className="border border-border p-3">User-initiated deletion (cascading)</td>
                   </tr>
@@ -1367,6 +1382,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 8.4 (February 28, 2026):</strong> Updated Public Score Pages section (Section 8.5) to reflect single-active-backlink model (1 URL at a time, up to 5 URL changes per month). Added server-side processing disclosure for publish/unpublish actions via Supabase Edge Function. Clarified URL change usage tracking terminology.</li>
               <li><strong>Version 8.3 (February 28, 2026):</strong> Added Public Score Pages (Opt-in) section (Section 8.5) covering opt-in publication of website scores, published data, user controls, and publication usage tracking. Updated storage duration table (Section 17) with publication usage data.</li>
               <li><strong>Version 8.2 (February 21, 2026):</strong> Added Gamification and Activity Tracking section (Section 8.4) covering streaks and badges. Updated data categories table (Section 13) and storage duration table (Section 17) with gamification data.</li>
               <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF. Corrected Supabase transfer basis to SCCs.</li>

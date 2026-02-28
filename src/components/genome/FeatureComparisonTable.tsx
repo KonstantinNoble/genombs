@@ -17,6 +17,7 @@ const features: Feature[] = [
   { name: "AI Chat", free: true, premium: true },
   { name: "GitHub Code Analysis", free: true, premium: true },
   { name: "Premium models (ChatGPT, Claude, Perplexity)", free: false, premium: true },
+  { name: "Public Score Pages (Do-Follow Backlinks)", free: false, premium: "5/month" },
 ];
 
 const renderCell = (value: boolean | string, comingSoon?: boolean) => {

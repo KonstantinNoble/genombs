@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
 
         <article className="max-w-4xl mx-auto prose prose-invert">
           <h1 className="text-4xl font-semibold mb-8">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Effective Date: February 21, 2026 | Version 8.2</p>
+          <p className="text-muted-foreground mb-8">Effective Date: February 28, 2026 | Version 8.3</p>
 
           {/* Section 1: Controller Information */}
           <section className="mb-8">
@@ -757,6 +757,56 @@ const PrivacyPolicy = () => {
               <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
               (gamification features are an integral part of the service).
             </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6">8.5 Public Score Pages (Opt-in)</h3>
+            <p className="text-muted-foreground mb-4">
+              Premium users can optionally publish their website analysis results as a publicly accessible 
+              page on our platform (e.g., synvertas.com/scores/example-com). This is an explicit opt-in feature — 
+              no data is published without your active consent.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data Published</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>The analyzed website URL</li>
+              <li>Overall website score</li>
+              <li>Category scores (Findability, Mobile, Offer, Trust, Conversion)</li>
+              <li>Strengths identified during analysis</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Data NOT Published</h4>
+            <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li>Weaknesses or improvement suggestions</li>
+              <li>Raw analysis markdown</li>
+              <li>Code analysis results</li>
+              <li>Chat messages or conversation history</li>
+              <li>Your email address or account information</li>
+            </ul>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">User Control</h4>
+            <p className="text-muted-foreground mb-4">
+              You can unpublish any score page at any time. Unpublishing immediately removes the public page 
+              and returns a 404 error for anyone visiting the URL. When you delete your account, all published 
+              score pages are automatically and permanently removed as part of the cascading account deletion 
+              process described in Section 12.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Publication Usage Tracking</h4>
+            <p className="text-muted-foreground mb-4">
+              We track the number of publish actions per month in a <code>publish_usage</code> table to enforce 
+              the monthly limit of 5 publications per Premium user. This table stores: your user ID, the 
+              associated website profile ID, the action type, and a timestamp. This data is permanently deleted 
+              when you delete your account.
+            </p>
+
+            <h4 className="text-lg font-semibold mb-2 mt-4">Legal Basis</h4>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(a) GDPR:</strong> Your explicit consent via the opt-in publish toggle. You can 
+              withdraw consent at any time by unpublishing the score page.
+            </p>
+            <p className="text-muted-foreground mb-4">
+              <strong>Art. 6(1)(b) GDPR:</strong> Processing is necessary for the performance of the contract 
+              (providing the public score page feature as part of the Premium subscription).
+            </p>
           </section>
 
           {/* Section 9: AI-Powered Data Processing */}
@@ -1194,6 +1244,11 @@ const PrivacyPolicy = () => {
                     <td className="border border-border p-3">Until account deletion</td>
                     <td className="border border-border p-3">User-initiated deletion</td>
                   </tr>
+                  <tr>
+                    <td className="border border-border p-3">Publication usage data</td>
+                    <td className="border border-border p-3">Until account deletion</td>
+                    <td className="border border-border p-3">User-initiated deletion (cascading)</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1312,6 +1367,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Version History</h2>
             <ul className="text-muted-foreground mb-4 list-disc pl-6">
+              <li><strong>Version 8.3 (February 28, 2026):</strong> Added Public Score Pages (Opt-in) section (Section 8.5) covering opt-in publication of website scores, published data, user controls, and publication usage tracking. Updated storage duration table (Section 17) with publication usage data.</li>
               <li><strong>Version 8.2 (February 21, 2026):</strong> Added Gamification and Activity Tracking section (Section 8.4) covering streaks and badges. Updated data categories table (Section 13) and storage duration table (Section 17) with gamification data.</li>
               <li><strong>Version 8.1 (February 19, 2026):</strong> Corrected data transfer basis for OpenAI (SCCs instead of DPF). Updated Resend transfer basis to DPF. Corrected Supabase transfer basis to SCCs.</li>
               <li><strong>Version 8.0 (February 19, 2026):</strong> Added GitHub Repository Code Analysis (Deep Code Analysis) feature documentation (Section 8.3). Added GitHub, Inc. (Microsoft) as data recipient. Updated analysis data categories to include source code and code analysis scores.</li>
@@ -1325,7 +1381,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-8 border-t border-border pt-8">
             <p className="text-muted-foreground text-center">
-              Last updated: February 21, 2026
+              Last updated: February 28, 2026
               <br />
               If you have any questions about this Privacy Policy, please contact us at{" "}
               <a href="mailto:mail@wealthconomy.com" className="text-primary hover:underline">

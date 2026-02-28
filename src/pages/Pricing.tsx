@@ -58,6 +58,7 @@ const PricingPage = () => {
     { text: "PageSpeed Insights", included: true },
     { text: "AI Chat with all models", included: true },
     { text: "GitHub Code Analysis", included: true },
+    { text: "Public Score Pages — earn do-follow backlinks (5/month)", included: true },
   ];
 
   const pricingFAQ = [

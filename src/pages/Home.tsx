@@ -185,6 +185,12 @@ const Home = () => {
       description:
         "No more wondering what to fix first. Get a ranked list of concrete tasks — from missing trust signals to weak CTAs — each categorized and ready to hand off to your team or developer. Export everything as a PDF report to share with your team or clients.",
     },
+    {
+      num: "04",
+      title: "Public Score Pages & Backlinks",
+      description:
+        "Publish your analysis as a public page and earn a high-quality do-follow backlink from Synvertas to boost your SEO. Premium members get 5 publications per month — each linking back to your domain.",
+    },
   ];
 
   const steps = [
@@ -254,6 +260,7 @@ const Home = () => {
     { feature: "Improvement Tasks", genome: "Yes", traditional: "No" },
     { feature: "PDF Report Export", genome: "Yes", traditional: "Extra cost" },
     { feature: "Auto Competitor Discovery", genome: "Yes", traditional: "Manual research" },
+    { feature: "Do-Follow Backlinks", genome: "5/month (Premium)", traditional: "Not included" },
   ];
 
   const homeFAQ = [
@@ -291,6 +298,11 @@ const Home = () => {
       question: "Can AI find my competitors for me?",
       answer:
         "Yes. When starting an analysis, you can toggle 'Find competitors automatically with AI.' Our system uses AI-powered web search to identify your most relevant competitors based on your website's industry and positioning. You then select which ones to include in the analysis.",
+    },
+    {
+      question: "What are Public Score Pages?",
+      answer:
+        "Premium members can publish their website analysis as a public page on Synvertas. Each published page includes a high-quality do-follow backlink to your domain — boosting your SEO. You get 5 publications per month, can unpublish at any time, and only scores and strengths are shown (weaknesses stay private).",
     },
   ];
 
@@ -441,7 +453,7 @@ const Home = () => {
               Scores, comparisons, and a concrete fix list for your website.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, i) => (
               <div
                 key={feature.title}

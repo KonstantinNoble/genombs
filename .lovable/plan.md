@@ -1,101 +1,46 @@
 
-# Public Score Pages: GDPR Deletion, Privacy Policy Update & Marketing Integration
+Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-## Analysis Summary
+1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
+- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
+  - identische horizontale Padding-Logik für `th` und `td` je Spalte
+  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
+  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
+- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
 
-### 1. GDPR Account Deletion -- Current Gap
+2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
+- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
+  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
+  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
+- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
 
-The `delete-account` edge function already deletes `website_profiles` (line 129-136), which cascade-deletes `publish_usage` entries (via `ON DELETE CASCADE` on `website_profile_id`). When `website_profiles` rows are deleted, `is_public` and `public_slug` are removed too -- so the public score page will automatically return a 404.
+3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
+- Tabelle „Category Averages“:
+  - `colgroup` (70/30) behalten
+  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
+- Tabelle „Recent Analyses“:
+  - `colgroup` (50/20/30) behalten
+  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
+  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
 
-**However**, the deletion function does NOT explicitly delete `publish_usage` entries. While the foreign key CASCADE should handle it, we should add an explicit deletion step for safety (belt-and-suspenders approach), since the table also has a `user_id` column that isn't part of the FK cascade.
+4) Stabilitäts-Feinschliff für Tabellen-Rendering
+- Tabellen auf einheitliches Verhalten setzen:
+  - `table-fixed` bleibt aktiv
+  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
+- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
 
-**Action needed:** Add `publish_usage` deletion to `delete-account/index.ts` (before `website_profiles` deletion).
+5) Validierung nach Umsetzung
+- Desktop prüfen:
+  - Headertext steht exakt über den Werten in jeder Spalte
+  - kein sichtbares „Springen“ bei langen URLs oder Chips
+- Mobile prüfen:
+  - kein unerwarteter Umbruch in numerischen Spalten
+  - Spalten bleiben visuell untereinander
+- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
 
-### 2. Privacy Policy Update Required -- Yes
-
-The privacy policy (currently v8.2) needs a new subsection under Section 8 covering:
-- What data is published (score, categories, strengths, URL)
-- Opt-in nature (user explicitly chooses)
-- What is NOT published (weaknesses, raw data)
-- Deletion behavior (unpublish anytime, full removal on account deletion)
-- Legal basis: Art. 6(1)(a) GDPR (consent via opt-in) and Art. 6(1)(b) (contract performance)
-- `publish_usage` tracking in the Storage Duration table
-
-New section: **8.5 Public Score Pages (Opt-in)**
-
-Also update the Storage Duration table (Section 17) with `publish_usage` data.
-
-### 3. Marketing: Backlink Mentions on Homepage, Pricing, How It Works
-
-#### Homepage (`Home.tsx`)
-- Add a 4th feature card: "Public Score Pages" highlighting the do-follow backlink benefit
-- Add a new FAQ entry explaining the backlink feature
-- Add "Do-Follow Backlinks" to the comparison table row
-
-#### Pricing Page (`Pricing.tsx`)
-- Add "Public Score Pages (5/mo)" to `premiumFeatures` list
-- Add "Public Score Pages" row to `FeatureComparisonTable.tsx` (Free: locked, Premium: "5/month")
-
-#### How It Works (`HowItWorks.tsx`)
-- Add a new section between "AI Chat" and "CTA" explaining how Public Score Pages work and the SEO benefit
-
----
-
-## Technical Details
-
-### File Changes
-
-| Action | File | What |
-|--------|------|------|
-| Modify | `supabase/functions/delete-account/index.ts` | Add `publish_usage` deletion step |
-| Modify | `src/pages/PrivacyPolicy.tsx` | Add Section 8.5 + Storage Duration row |
-| Modify | `src/pages/Home.tsx` | 4th feature card, FAQ entry, comparison row |
-| Modify | `src/pages/Pricing.tsx` | Add to premiumFeatures list |
-| Modify | `src/components/genome/FeatureComparisonTable.tsx` | Add "Public Score Pages" row |
-| Modify | `src/pages/HowItWorks.tsx` | Add Public Score Pages section |
-
-### Delete-Account Change (Edge Function)
-
-Insert before the `website_profiles` deletion (around line 128):
-
-```text
-// Delete publish_usage (GDPR - public score tracking)
-await adminClient.from('publish_usage').delete().eq('user_id', userId);
-```
-
-This ensures `publish_usage` records are cleaned up even if the FK cascade doesn't fire (e.g. if the table structure changes later).
-
-### Privacy Policy Section 8.5
-
-New subsection covering:
-- Feature description (opt-in publication of website scores)
-- Data published: URL, overall score, category scores, strengths
-- Data NOT published: weaknesses, code analysis, raw markdown
-- User control: can unpublish at any time (immediate removal)
-- Account deletion: all published pages are removed automatically
-- `publish_usage` tracking: monthly counter, deleted with account
-- Legal basis: Art. 6(1)(a) GDPR (explicit consent via opt-in toggle)
-
-### Marketing Copy (English)
-
-**Homepage feature card:**
-- Title: "Public Score Pages"
-- Description: "Publish your analysis as a public page and earn a high-quality do-follow backlink from Synvertas to boost your SEO. Premium members get 5 publications per month."
-
-**Homepage comparison table new row:**
-- Feature: "Do-Follow Backlinks"
-- Synvertas: "5/month (Premium)"
-- Consultant: "Not included"
-
-**Homepage FAQ addition:**
-- Q: "What are Public Score Pages?"
-- A: Explanation of opt-in publishing, backlink benefit, privacy controls, monthly limit
-
-**Pricing premiumFeatures addition:**
-- "Public Score Pages -- earn do-follow backlinks (5/month)"
-
-**FeatureComparisonTable row:**
-- "Public Score Pages (Do-Follow Backlinks)" | Free: locked | Premium: "5/month"
-
-**HowItWorks section:**
-- New section with title "Public Score Pages" explaining the publish flow, backlink value, and privacy safeguards
+Technische Kurzbegründung
+- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
+  1) ungleichen `th`/`td` Innenabständen,
+  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
+  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
+- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.

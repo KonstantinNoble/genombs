@@ -27,6 +27,7 @@ const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Chat = lazy(() => import("./pages/Chat"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const PublicScore = lazy(() => import("./pages/PublicScore"));
 
 
 const queryClient = new QueryClient();
@@ -88,6 +89,7 @@ const App = () => (
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/scores/:slug" element={<PublicScore />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes >

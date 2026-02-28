@@ -112,6 +112,16 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
     setShowConfirmDialog(false);
     setPublishLoading(true);
     try {
+      // Server-side re-validation: fetch the real count from the DB right before publishing
+      const { data: freshCount } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
+      const currentUsage = typeof freshCount === "number" ? freshCount : 0;
+
+      if (currentUsage >= MONTHLY_PUBLISH_LIMIT) {
+        setMonthlyUsed(currentUsage);
+        toast({ title: "Monthly limit reached", description: `Your 5 publications reset on ${nextReset}.` });
+        return;
+      }
+
       let slug = generateSlug(url);
       let success = false;
 
@@ -139,9 +149,12 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
 
       await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
 
+      // Re-fetch the actual count from DB after insert to keep state accurate
+      const { data: updatedCount } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
+      setMonthlyUsed(typeof updatedCount === "number" ? updatedCount : currentUsage + 1);
+
       setIsPublic(true);
       setPublicSlug(slug);
-      setMonthlyUsed((prev) => (prev ?? 0) + 1);
 
       const publicUrl = `https://synvertas.com/scores/${slug}`;
       await navigator.clipboard.writeText(publicUrl);

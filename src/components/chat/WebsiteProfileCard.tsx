@@ -140,6 +140,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
       await (supabase.from as Function)("publish_usage").insert({ user_id: user.id, website_profile_id: profile.id });
 
       setIsPublic(true);
+      setPublicSlug(slug);
       setMonthlyUsed((prev) => (prev ?? 0) + 1);
 
       const publicUrl = `https://synvertas.com/scores/${slug}`;

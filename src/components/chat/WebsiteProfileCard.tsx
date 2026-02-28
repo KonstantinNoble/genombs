@@ -88,29 +88,60 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
   const [activePublished, setActivePublished] = useState<ActivePublishedProfile | null>(null);
 
   // Fetch monthly publish usage AND check for already-published profile
-  useEffect(() => {
+  const fetchUsageAndActive = async () => {
     if (!user) return;
-    const fetchUsageAndActive = async () => {
-      // 1) Monthly usage count
-      const { data } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
-      setMonthlyUsed(typeof data === "number" ? data : 0);
+    // 1) Monthly usage count
+    const { data } = await (supabase.rpc as Function)("get_monthly_publish_count", { _user_id: user.id });
+    setMonthlyUsed(typeof data === "number" ? data : 0);
 
-      // 2) Check if user already has a DIFFERENT profile published
-      const { data: published } = await (supabase.from as Function)("website_profiles")
-        .select("id, url, public_slug")
-        .eq("user_id", user.id)
-        .eq("is_public", true)
-        .limit(1)
-        .maybeSingle();
+    // 2) Check if user already has a DIFFERENT profile published
+    const { data: published } = await (supabase.from as Function)("website_profiles")
+      .select("id, url, public_slug")
+      .eq("user_id", user.id)
+      .eq("is_public", true)
+      .limit(1)
+      .maybeSingle();
 
-      if (published && published.id !== profile.id) {
-        setActivePublished(published as ActivePublishedProfile);
-      } else {
-        setActivePublished(null);
+    if (published && published.id !== profile.id) {
+      setActivePublished(published as ActivePublishedProfile);
+      // If this profile was marked as public locally but DB says otherwise, sync it
+      if (isPublic && published.id !== profile.id) {
+        setIsPublic(false);
+        setPublicSlug(null);
       }
-    };
+    } else if (published && published.id === profile.id) {
+      // This profile is the active one
+      setActivePublished(null);
+      setIsPublic(true);
+      setPublicSlug(published.public_slug);
+    } else {
+      setActivePublished(null);
+    }
+  };
+
+  useEffect(() => {
     fetchUsageAndActive();
   }, [user, profile.id]);
+
+  // Listen for publish events from other WebsiteProfileCards to sync state
+  useEffect(() => {
+    const handlePublishEvent = (event: CustomEvent<{ publishedProfileId: string; userId: string }>) => {
+      if (event.detail.userId !== user?.id) return;
+      
+      // If another profile was published, this one is no longer public
+      if (event.detail.publishedProfileId !== profile.id && isPublic) {
+        setIsPublic(false);
+        setPublicSlug(null);
+      }
+      // Refresh the active published state for all cards
+      fetchUsageAndActive();
+    };
+
+    window.addEventListener("backlink-published" as any, handlePublishEvent as any);
+    return () => {
+      window.removeEventListener("backlink-published" as any, handlePublishEvent as any);
+    };
+  }, [user?.id, profile.id, isPublic]);
 
   if (!profile_data || !category_scores || overall_score == null) return null;
 
@@ -177,6 +208,14 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
       setIsPublic(true);
       setPublicSlug(result.slug);
       setActivePublished(null); // This profile is now the active one
+
+      // Dispatch event to notify other WebsiteProfileCards that this profile is now published
+      // This will cause them to update their state (e.g., mark themselves as unpublished)
+      window.dispatchEvent(
+        new CustomEvent("backlink-published", {
+          detail: { publishedProfileId: profile.id, userId: user.id },
+        })
+      );
 
       try {
         await navigator.clipboard.writeText(result.publicUrl);
@@ -333,7 +372,7 @@ const WebsiteProfileCard = ({ profile, compact }: WebsiteProfileCardProps) => {
                       size="lg"
                       onClick={handlePublishClick}
                       disabled={publishLoading}
-                      className="shrink-0"
+                      className={`shrink-0 ${!isPremium ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}`}
                     >
                       {publishLoading
                         ? "Publishing..."

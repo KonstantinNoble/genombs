@@ -2,6 +2,37 @@
 -- Enforce single active backlink per user at the database level
 -- ============================================================
 
+-- ── 0) Ensure the publish_usage table and RPC function exist ──
+-- These may have been created manually; CREATE IF NOT EXISTS makes this safe.
+
+-- publish_usage table: tracks each publish/replace action for monthly limit
+CREATE TABLE IF NOT EXISTS publish_usage (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  website_profile_id uuid NOT NULL REFERENCES website_profiles(id) ON DELETE CASCADE,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Enable RLS on publish_usage
+ALTER TABLE publish_usage ENABLE ROW LEVEL SECURITY;
+
+-- Index for fast monthly count lookups
+CREATE INDEX IF NOT EXISTS idx_publish_usage_user_month
+  ON publish_usage (user_id, created_at);
+
+-- RPC function: counts publish actions in the current calendar month
+CREATE OR REPLACE FUNCTION get_monthly_publish_count(_user_id uuid)
+RETURNS integer
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+AS $$
+  SELECT COALESCE(COUNT(*)::integer, 0)
+  FROM publish_usage
+  WHERE user_id = _user_id
+    AND created_at >= date_trunc('month', now());
+$$;
+
 -- 1) Partial unique index: guarantees at most 1 published profile per user_id.
 --    Only rows where is_public = true are included, so unpublished rows are unaffected.
 --    If a user somehow ends up with 2+ published profiles, clean them up first.

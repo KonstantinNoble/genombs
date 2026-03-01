@@ -30,6 +30,12 @@ const Footer = () => {
                 >
                   Analyze
                 </Link>
+                <Link 
+                  to="/blog" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
+                  Blog
+                </Link>
               </nav>
             </div>
 

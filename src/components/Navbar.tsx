@@ -137,7 +137,7 @@ const Navbar = () => {
               {user && <NavLink to="/chat">Analyze</NavLink>}
               {user && <NavLink to="/dashboard">Dashboard</NavLink>}
               <NavLink to="/pricing">Pricing</NavLink>
-
+              <NavLink to="/blog">Blog</NavLink>
             </div>
           </div>
 
@@ -239,6 +239,9 @@ const Navbar = () => {
               )}
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={4}>
                 Pricing
+              </MobileNavLink>
+              <MobileNavLink to="/blog" onClick={() => setIsOpen(false)} delay={5}>
+                Blog
               </MobileNavLink>
             </div>
 

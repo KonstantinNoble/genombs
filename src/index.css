@@ -1406,3 +1406,52 @@ All colors MUST be HSL.
   box-shadow: 0 0 20px -6px hsl(var(--primary) / 0.15);
   background: hsl(var(--secondary) / 0.3);
 }
+
+/* ============================================
+   BLOG PROSE STYLING
+   ============================================ */
+.blog-prose h2 {
+  @apply text-2xl font-medium text-foreground mt-10 mb-4;
+  letter-spacing: -0.025em;
+}
+
+.blog-prose h3 {
+  @apply text-lg font-medium text-foreground mt-8 mb-3;
+}
+
+.blog-prose p {
+  @apply text-muted-foreground leading-relaxed mb-5;
+}
+
+.blog-prose strong {
+  @apply text-foreground font-medium;
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  @apply text-muted-foreground leading-relaxed mb-5 pl-5 space-y-2;
+}
+
+.blog-prose ul {
+  list-style-type: disc;
+}
+
+.blog-prose ol {
+  list-style-type: decimal;
+}
+
+.blog-prose li {
+  @apply text-muted-foreground;
+}
+
+.blog-prose blockquote {
+  @apply border-l-2 border-primary/40 pl-5 my-6 italic text-muted-foreground;
+}
+
+.blog-prose a {
+  @apply text-primary underline underline-offset-2 hover:text-primary/80 transition-colors duration-200;
+}
+
+.blog-prose hr {
+  @apply border-border my-8;
+}

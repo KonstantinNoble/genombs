@@ -8,6 +8,7 @@ import { TodayVsAverage } from "@/components/gamification/TodayVsAverage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 /** Animates a number from 0 to `target` over `duration` ms */
 function useCountUp(target: number, duration = 900, enabled = true) {
@@ -89,6 +90,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background/60">
+      <SEOHead
+        title="Dashboard"
+        description="Your performance metrics, streak history, and achievement progress."
+        noindex={true}
+      />
       <Navbar />
       <main className="container mx-auto px-4 py-10 max-w-5xl">
         {/* Back link */}

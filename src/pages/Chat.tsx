@@ -38,6 +38,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
 import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } from "@/lib/constants";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const Chat = () => {
   const isMobile = useIsMobile();

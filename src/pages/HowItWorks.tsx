@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -118,6 +119,10 @@ const HowItWorks = () => {
         keywords="how website analysis works, website scoring process, AI website audit steps"
         canonical="/how-it-works"
       />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://synvertas.com" },
+        { name: "How It Works", url: "https://synvertas.com/how-it-works" },
+      ]} />
 
       <Navbar />
 

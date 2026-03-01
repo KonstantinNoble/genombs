@@ -38,6 +38,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
 import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } from "@/lib/constants";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -548,6 +549,11 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background/60">
+      <SEOHead
+        title="Website Analysis Tool – Score Your Site in 60 Seconds"
+        description="Paste your URL and get scored across findability, trust, mobile usability, offer clarity, and conversion readiness. Compare against competitors and get a fix list."
+        canonical="/chat"
+      />
       <Navbar />
       <div className="flex-1 flex overflow-hidden">
         {/* Desktop Sidebar */}

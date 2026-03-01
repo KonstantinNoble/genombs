@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { BreadcrumbSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
 import FeatureComparisonTable from "@/components/genome/FeatureComparisonTable";
 import FAQSection from "@/components/genome/FAQSection";
@@ -95,6 +96,11 @@ const PricingPage = () => {
         keywords="website analysis pricing, website audit cost, free website scanner, premium website tool"
         canonical="/pricing"
       />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://synvertas.com" },
+        { name: "Pricing", url: "https://synvertas.com/pricing" },
+      ]} />
+      <FAQSchema faqs={pricingFAQ} />
 
       <Navbar />
 

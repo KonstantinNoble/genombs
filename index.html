@@ -13,7 +13,7 @@
     <meta name="description" content="Get an AI-powered website audit in under 60 seconds. Score your site across 5 categories, benchmark against competitors, and get a prioritized improvement plan. Free to start.">
     <meta
       name="keywords"
-      content="website scoring tool, website audit, competitor benchmarking, conversion optimization, PageSpeed analysis, website improvement plan, site analyzer"
+      content="website scoring tool, website audit, competitor benchmarking, conversion optimization, website performance analysis, code analysis, website improvement plan, site analyzer"
     />
     <meta name="author" content="Synvertas" />
     <meta name="robots" content="index, follow" />
@@ -95,8 +95,8 @@
 
         <h3>How does the credit system work?</h3>
         <p>
-          You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model.
-          Credits reset automatically every 24 hours.
+          You get 20 free credits per day (100 with Premium). Each scan costs 9–14 credits depending on the AI model,
+          and each chat message costs 3–7 credits. Credits reset automatically every 24 hours.
         </p>
 
         <h3>How much does it cost?</h3>
@@ -150,54 +150,6 @@
       }
     </script>
 
-    <!-- FAQPage Structured Data for Rich Results -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is a Website Analysis?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "A Website Analysis is a structured report generated from your URL. It scores your site across 5 categories: Findability, Mobile Usability, Offer Clarity, Trust and Proof, and Conversion Readiness. It includes PageSpeed data, competitor comparisons, and prioritized improvement tasks."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does the credit system work?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "You get 20 free credits per day (100 with Premium). Each scan costs 5–10 credits depending on the AI model, and each chat message costs 1–5 credits. Credits reset automatically every 24 hours."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How much does Synvertas cost?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Synvertas is free to start — you get 20 credits per day with no credit card required. Premium is $14.99/month and includes 100 daily credits, all 5 AI models, and up to 3 competitor URLs per analysis."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How long does a scan take?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Most scans complete in under 60 seconds. You'll see a real-time status update while the scan is running."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can AI find my competitors automatically?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. During a scan you can enable 'Find competitors automatically with AI.' Synvertas uses AI-powered web search to identify your most relevant competitors based on your website's industry and positioning."
-            }
-          }
-        ]
-      }
-    </script>
+    <!-- FAQPage schema is rendered dynamically by Home.tsx via FAQSchema component -->
   </body>
 </html>

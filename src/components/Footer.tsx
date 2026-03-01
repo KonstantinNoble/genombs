@@ -14,7 +14,25 @@ const Footer = () => {
           </div>
           
           {/* Links Grid */}
-          <div className="grid grid-cols-2 gap-8 mb-10">
+          <div className="grid grid-cols-3 gap-8 mb-10">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide text-center sm:text-left">Product</h3>
+              <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Product links">
+                <Link 
+                  to="/how-it-works" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
+                  How It Works
+                </Link>
+                <Link 
+                  to="/chat" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 min-h-[44px] flex items-center"
+                >
+                  Analyze
+                </Link>
+              </nav>
+            </div>
+
             <div className="space-y-4">
               <h3 className="font-semibold text-sm text-foreground uppercase tracking-wide text-center sm:text-left">Legal</h3>
               <nav className="flex flex-col space-y-3 items-center sm:items-start" aria-label="Legal links">

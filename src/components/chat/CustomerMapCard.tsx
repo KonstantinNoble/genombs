@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Check, ExternalLink, Users, Target, TrendingUp, MessageSquare } from "lucide-react";
+import { Copy, Check, ExternalLink, Users, Target, TrendingUp, MessageSquare, Send } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ interface CustomerMapCardProps {
   productSummary: string;
   icp: ICP;
   communities: Community[];
+  onGeneratePost?: () => void;
 }
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -47,7 +48,7 @@ const PLATFORM_COLORS: Record<string, string> = {
   Other: "bg-muted-foreground/20 text-muted-foreground",
 };
 
-const CustomerMapCard = ({ url, productSummary, icp, communities }: CustomerMapCardProps) => {
+const CustomerMapCard = ({ url, productSummary, icp, communities, onGeneratePost }: CustomerMapCardProps) => {
   const [copied, setCopied] = useState(false);
   const [expandedCommunity, setExpandedCommunity] = useState<number | null>(null);
 
@@ -70,10 +71,18 @@ const CustomerMapCard = ({ url, productSummary, icp, communities }: CustomerMapC
             <Target className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Customer Map</h3>
           </div>
-          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={copyAll}>
-            {copied ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
-            {copied ? "Copied" : "Copy All"}
-          </Button>
+          <div className="flex items-center gap-1.5">
+            {onGeneratePost && (
+              <Button variant="default" size="sm" className="h-7 text-xs px-2.5" onClick={onGeneratePost}>
+                <Send className="w-3 h-3 mr-1" />
+                Generate Post →
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={copyAll}>
+              {copied ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+              {copied ? "Copied" : "Copy All"}
+            </Button>
+          </div>
         </div>
         <p className="text-xs text-muted-foreground">{url}</p>
       </div>

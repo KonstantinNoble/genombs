@@ -1,7 +1,12 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Copy, Check, Target, Send, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/lib/supabase/external-client";
+import { useAuth } from "@/contexts/AuthContext";
 import type { WebsiteProfile, ImprovementTask } from "@/types/chat";
 import PageSpeedCard from "./PageSpeedCard";
 import WebsiteGrid from "./WebsiteGrid";
@@ -63,6 +68,132 @@ const PlaceholderCard = ({ title, description, buttonLabel, onAction }: { title:
   </Card>
 );
 
+// ─── Customer Maps History ───
+const CustomerMapsHistory = () => {
+  const { user } = useAuth();
+  const [maps, setMaps] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("customer_maps")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(10)
+      .then(({ data }) => setMaps(data || []));
+  }, [user]);
+
+  if (maps.length === 0) return null;
+
+  return (
+    <div className="space-y-3">
+      {maps.map((m) => (
+        <Card key={m.id} className="border-border bg-card">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Target className="w-3.5 h-3.5 text-primary" />
+                <span className="text-sm font-medium text-foreground truncate">{m.url}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground">
+                {new Date(m.created_at).toLocaleDateString()}
+              </span>
+            </div>
+            {m.product_summary && (
+              <p className="text-xs text-muted-foreground line-clamp-2">{m.product_summary}</p>
+            )}
+            {m.communities && Array.isArray(m.communities) && (
+              <div className="flex flex-wrap gap-1">
+                {(m.communities as any[]).slice(0, 5).map((c: any, i: number) => (
+                  <Badge key={i} variant="outline" className="text-[9px]">
+                    {c.platform || "Community"}
+                  </Badge>
+                ))}
+                {m.communities.length > 5 && (
+                  <Badge variant="outline" className="text-[9px] text-muted-foreground">
+                    +{m.communities.length - 5} more
+                  </Badge>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+// ─── Generated Posts History ───
+const PostsHistory = () => {
+  const { user } = useAuth();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("generated_posts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(({ data }) => setPosts(data || []));
+  }, [user]);
+
+  if (posts.length === 0) return null;
+
+  const handleCopy = (id: string, content: string) => {
+    navigator.clipboard.writeText(content);
+    setCopiedId(id);
+    toast.success("Post copied!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const platformEmoji: Record<string, string> = {
+    reddit: "🟠", linkedin: "🔵", x: "🐦", youtube: "🔴",
+    facebook: "📘", discord: "💬", tiktok: "🎵", quora: "❓",
+    forum: "📝", cold_email: "✉️",
+  };
+
+  return (
+    <div className="space-y-3">
+      {posts.map((p) => (
+        <Card key={p.id} className="border-border bg-card">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">{platformEmoji[p.platform] || "📝"}</span>
+                <Badge variant="outline" className="text-[10px] capitalize">{p.platform}</Badge>
+                {p.tone && <Badge variant="secondary" className="text-[9px] capitalize">{p.tone}</Badge>}
+                {p.goal && <Badge variant="secondary" className="text-[9px] capitalize">{p.goal}</Badge>}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">
+                  {new Date(p.created_at).toLocaleDateString()}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 text-xs px-1.5"
+                  onClick={() => handleCopy(p.id, p.content || "")}
+                >
+                  {copiedId === p.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                </Button>
+              </div>
+            </div>
+            {p.content && (
+              <pre className="text-xs text-foreground/80 whitespace-pre-wrap font-sans leading-relaxed line-clamp-4">
+                {p.content}
+              </pre>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
 const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDialog }: AnalysisTabsContentProps) => {
   const ownSite = profiles.find((p) => p.is_own_website);
   const competitors = profiles.filter((p) => !p.is_own_website);
@@ -115,7 +246,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
                         <div>
                           <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Site Structure</p>
                           <div className="flex flex-wrap gap-1">
-                            {(profile.profile_data.siteStructure || []).map((s) => (
+                            {(profile.profile_data.siteStructure || []).map((s: string) => (
                               <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
                             ))}
                           </div>
@@ -144,7 +275,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
                       <div>
                         <p className="text-xs uppercase tracking-wider text-muted-foreground/60 mb-1.5">Call-to-Actions</p>
                         <div className="flex flex-wrap gap-1.5">
-                          {(profile.profile_data.ctas || []).map((cta) => (
+                          {(profile.profile_data.ctas || []).map((cta: string) => (
                             <Badge key={cta} variant="outline" className="text-xs border-primary/30 text-primary">{cta}</Badge>
                           ))}
                         </div>
@@ -185,7 +316,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
             <p className="text-sm font-semibold text-muted-foreground mb-2">Strengths
                           </p>
                           <div className="space-y-1.5">
-                            {(profile.profile_data.strengths || []).slice(0, 5).map((s) => (
+                            {(profile.profile_data.strengths || []).slice(0, 5).map((s: string) => (
                               <div key={s} className="flex items-start gap-1.5">
                                 <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-chart-6 shrink-0" />
                                 <span className="text-sm text-foreground leading-tight">{s}</span>
@@ -197,7 +328,7 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
             <p className="text-sm font-semibold text-muted-foreground mb-2">Weaknesses
                           </p>
                           <div className="space-y-1.5">
-                            {(profile.profile_data.weaknesses || []).slice(0, 5).map((w) => (
+                            {(profile.profile_data.weaknesses || []).slice(0, 5).map((w: string) => (
                               <div key={w} className="flex items-start gap-1.5">
                                 <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-destructive shrink-0" />
                                 <span className="text-sm text-foreground leading-tight">{w}</span>
@@ -244,6 +375,24 @@ const AnalysisTabsContent = ({ profiles, tasks, onOpenUrlDialog, onOpenGithubDia
             onAction={onOpenGithubDialog}
           />
         )}
+      </div>
+
+      {/* ── SEPARATOR ── */}
+      <Separator className="my-2" />
+
+      {/* ── CUSTOMER MAPS HISTORY ── */}
+      <div className="space-y-4">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Customer Maps</h2>
+        <CustomerMapsHistory />
+      </div>
+
+      {/* ── SEPARATOR ── */}
+      <Separator className="my-2" />
+
+      {/* ── GENERATED POSTS HISTORY ── */}
+      <div className="space-y-4">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Generated Posts</h2>
+        <PostsHistory />
       </div>
     </div>
   );

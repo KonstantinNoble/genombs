@@ -77,8 +77,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     // Auth – extract user ID from JWT (token is signed by external project with ES256)
     const authHeader = req.headers.get("Authorization") ?? "";
@@ -104,8 +102,10 @@ serve(async (req) => {
       });
     }
 
-    // Admin client uses external project for DB operations (where user data lives)
-    const adminClient = createClient(EXTERNAL_SUPABASE_URL, serviceRoleKey, { auth: { persistSession: false } });
+    const userClient = createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
 
     const { platform, tone, goal, product_context, audience_context, model: modelKey } = await req.json();
 
@@ -130,7 +130,7 @@ serve(async (req) => {
 
     // Premium model check
     if (EXPENSIVE_MODELS.includes(resolvedModel)) {
-      const { data: credits } = await adminClient
+      const { data: credits } = await userClient
         .from("user_credits")
         .select("is_premium")
         .eq("user_id", userId)
@@ -144,7 +144,7 @@ serve(async (req) => {
     }
 
     // Credit check
-    const { data: credits } = await adminClient
+    const { data: credits } = await userClient
       .from("user_credits")
       .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
       .eq("user_id", userId)
@@ -161,7 +161,7 @@ serve(async (req) => {
     const resetAt = new Date(credits.credits_reset_at);
     if (resetAt < new Date()) {
       creditsUsed = 0;
-      await adminClient
+      await userClient
         .from("user_credits")
         .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
         .eq("id", credits.id);
@@ -178,7 +178,7 @@ serve(async (req) => {
 
     // Daily feature limit
     const dailyLimit = credits.is_premium ? PREMIUM_DAILY_LIMIT : FREE_DAILY_LIMIT;
-    const { data: usage } = await adminClient
+    const { data: usage } = await userClient
       .from("feature_usage")
       .select("id, used_today, reset_at")
       .eq("user_id", userId)
@@ -189,7 +189,7 @@ serve(async (req) => {
     if (usage) {
       const usageResetAt = new Date(usage.reset_at);
       if (usageResetAt < new Date()) {
-        await adminClient
+        await userClient
           .from("feature_usage")
           .update({ used_today: 0, reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
           .eq("id", usage.id);
@@ -349,7 +349,7 @@ Important:
         } finally {
           // Save post and deduct credits after stream completes
           try {
-            await adminClient.from("generated_posts").insert({
+            await userClient.from("generated_posts").insert({
               user_id: userId,
               platform,
               tone: tone || "casual",
@@ -359,18 +359,18 @@ Important:
               model_used: resolvedModel,
             });
 
-            await adminClient
+            await userClient
               .from("user_credits")
               .update({ credits_used: creditsUsed + creditCost })
               .eq("id", credits.id);
 
             if (usage) {
-              await adminClient
+              await userClient
                 .from("feature_usage")
                 .update({ used_today: currentUsage + 1 })
                 .eq("id", usage.id);
             } else {
-              await adminClient
+              await userClient
                 .from("feature_usage")
                 .insert({
                   user_id: userId,

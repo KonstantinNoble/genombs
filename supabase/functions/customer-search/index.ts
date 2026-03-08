@@ -22,8 +22,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
@@ -60,8 +59,10 @@ serve(async (req) => {
       });
     }
 
-    // Admin client uses external project for DB operations (where user data lives)
-    const adminClient = createClient(EXTERNAL_SUPABASE_URL, serviceRoleKey, { auth: { persistSession: false } });
+    const userClient = createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
 
     // Parse input
     const { url } = await req.json();
@@ -73,7 +74,7 @@ serve(async (req) => {
     }
 
     // Credit check
-    const { data: credits } = await adminClient
+    const { data: credits } = await userClient
       .from("user_credits")
       .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
       .eq("user_id", userId)
@@ -90,7 +91,7 @@ serve(async (req) => {
     const resetAt = new Date(credits.credits_reset_at);
     if (resetAt < new Date()) {
       creditsUsed = 0;
-      await adminClient
+      await userClient
         .from("user_credits")
         .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
         .eq("id", credits.id);
@@ -107,7 +108,7 @@ serve(async (req) => {
 
     // Daily feature usage limit check
     const dailyLimit = credits.is_premium ? PREMIUM_DAILY_LIMIT : FREE_DAILY_LIMIT;
-    const { data: usage } = await adminClient
+    const { data: usage } = await userClient
       .from("feature_usage")
       .select("id, used_today, reset_at")
       .eq("user_id", userId)
@@ -119,7 +120,7 @@ serve(async (req) => {
       const usageResetAt = new Date(usage.reset_at);
       if (usageResetAt < new Date()) {
         // Reset
-        await adminClient
+        await userClient
           .from("feature_usage")
           .update({ used_today: 0, reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
           .eq("id", usage.id);
@@ -324,7 +325,7 @@ Return ONLY a JSON object:
     }
 
     // Save to customer_maps table
-    const { data: savedMap, error: saveError } = await adminClient
+    const { data: savedMap, error: saveError } = await userClient
       .from("customer_maps")
       .insert({
         user_id: userId,
@@ -342,19 +343,19 @@ Return ONLY a JSON object:
     }
 
     // Deduct credits
-    await adminClient
+    await userClient
       .from("user_credits")
       .update({ credits_used: creditsUsed + CUSTOMER_SEARCH_COST })
       .eq("id", credits.id);
 
     // Update feature usage
     if (usage) {
-      await adminClient
+      await userClient
         .from("feature_usage")
         .update({ used_today: currentUsage + 1 })
         .eq("id", usage.id);
     } else {
-      await adminClient
+      await userClient
         .from("feature_usage")
         .insert({
           user_id: userId,

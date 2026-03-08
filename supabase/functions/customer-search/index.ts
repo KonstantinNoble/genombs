@@ -343,7 +343,7 @@ Return ONLY a JSON object:
     }
 
     // Deduct credits
-    await adminClient
+    await userClient
       .from("user_credits")
       .update({ credits_used: creditsUsed + CUSTOMER_SEARCH_COST })
       .eq("id", credits.id);

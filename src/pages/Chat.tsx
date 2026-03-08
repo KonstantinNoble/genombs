@@ -37,7 +37,7 @@ import { useChatConversations } from "@/hooks/useChatConversations";
 import { useChatAnalysis } from "@/hooks/useChatAnalysis";
 import { useChatMessages } from "@/hooks/useChatMessages";
 
-import { saveMessage, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
+import { saveMessage, saveMessageWithMetadata, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
 import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost, CUSTOMER_SEARCH_CREDIT_COST } from "@/lib/constants";
 import { SEOHead } from "@/components/seo/SEOHead";

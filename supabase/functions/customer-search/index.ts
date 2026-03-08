@@ -325,7 +325,7 @@ Return ONLY a JSON object:
     }
 
     // Save to customer_maps table
-    const { data: savedMap, error: saveError } = await adminClient
+    const { data: savedMap, error: saveError } = await userClient
       .from("customer_maps")
       .insert({
         user_id: userId,

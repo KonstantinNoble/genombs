@@ -5,6 +5,36 @@
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
 
+// ─── Customer Search ───
+
+export async function customerSearch(
+  url: string,
+  accessToken: string
+): Promise<{
+  id: string;
+  url: string;
+  product_summary: string;
+  icp: any;
+  communities: any[];
+}> {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/customer-search`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ url }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(err.error || "Customer search failed");
+  }
+
+  return resp.json();
+}
+
 // ─── Conversations ───
 
 export async function loadConversations(userId: string): Promise<Conversation[]> {

@@ -54,6 +54,19 @@ export function getCodeAnalysisCreditCost(modelId: string): number {
   return (MODEL_CREDIT_COSTS.codeAnalysis as Record<string, number>)[modelId] ?? 12;
 }
 
+// ─── Customer Search ───
+export const CUSTOMER_SEARCH_CREDIT_COST = 10;
+export const FREE_DAILY_CUSTOMER_SEARCHES = 2;
+export const PREMIUM_DAILY_CUSTOMER_SEARCHES = 10;
+
+// ─── Post Generator ───
+export const FREE_DAILY_POSTS = 5;
+export const PREMIUM_DAILY_POSTS = 25;
+
+export function getPostCreditCost(modelId: string): number {
+  return (MODEL_CREDIT_COSTS.chat as Record<string, number>)[modelId] ?? 3;
+}
+
 // ─── Chat Context ───
 export const MAX_CONTEXT_MESSAGES = 30;
 

@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code, ArrowRight } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code, ArrowRight, Search, Send } from "lucide-react";
 import PdfDownloadButton from "@/components/dashboard/PdfDownloadButton";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +25,8 @@ import ChatInput from "@/components/chat/ChatInput";
 import AnalysisProgress from "@/components/chat/AnalysisProgress";
 import InlineUrlPrompt from "@/components/chat/InlineUrlPrompt";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
+import CustomerMapCard from "@/components/chat/CustomerMapCard";
+import PostGeneratorCard from "@/components/chat/PostGeneratorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,10 +37,12 @@ import { useChatConversations } from "@/hooks/useChatConversations";
 import { useChatAnalysis } from "@/hooks/useChatAnalysis";
 import { useChatMessages } from "@/hooks/useChatMessages";
 
-import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
+import { saveMessage, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
-import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } from "@/lib/constants";
+import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost, CUSTOMER_SEARCH_CREDIT_COST } from "@/lib/constants";
 import { SEOHead } from "@/components/seo/SEOHead";
+
+type ChatMode = "analyze" | "find_customers" | "generate_post";
 
 const Chat = () => {
   const isMobile = useIsMobile();
@@ -129,6 +133,10 @@ const Chat = () => {
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
   const [isFindingCompetitors, setIsFindingCompetitors] = useState(false);
   const [selectedModel, setSelectedModel] = useState("gemini-flash");
+  const [chatMode, setChatMode] = useState<ChatMode>("analyze");
+  const [customerMapResult, setCustomerMapResult] = useState<any>(null);
+  const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
+  const [customerSearchUrl, setCustomerSearchUrl] = useState("");
 
   // Competitor URL limits: free→1, premium→3
   const maxCompetitorSelectable = isPremium ? PREMIUM_MAX_URL_FIELDS - 1 : FREE_MAX_URL_FIELDS - 1;
@@ -178,7 +186,36 @@ const Chat = () => {
     }
   };
 
-  // Handler: Analyze selected competitors from suggestions
+  // Handler: Customer Search
+  const handleCustomerSearch = async (url: string) => {
+    if (!user || isSearchingCustomers) return;
+    setIsSearchingCustomers(true);
+    setCustomerMapResult(null);
+    try {
+      const token = await getAccessToken();
+      const result = await customerSearch(url, token);
+      setCustomerMapResult(result);
+      refreshCredits();
+      toast.success("Customer map generated!");
+    } catch (e: any) {
+      const msg = e.message || "Customer search failed";
+      if (msg.startsWith("insufficient_credits:")) {
+        const hours = msg.split(":")[1];
+        toast.error("Not enough credits", {
+          description: `Customer search costs ${CUSTOMER_SEARCH_CREDIT_COST} credits. Resets in ${hours}h.`,
+        });
+      } else if (msg.startsWith("daily_limit_reached:")) {
+        toast.error("Daily limit reached", {
+          description: "You've used all your customer searches for today.",
+        });
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setIsSearchingCustomers(false);
+    }
+  };
+
   const handleAnalyzeSelectedCompetitors = async (urls: string[]) => {
     if (!activeId || !user || urls.length === 0) return;
     const limitedUrls = urls.slice(0, maxCompetitorSelectable);
@@ -436,6 +473,87 @@ const Chat = () => {
           </div>
         </div>
       )}
+      {/* Mode Selector */}
+      <div className="max-w-3xl mx-auto w-full px-4 pt-2">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50 border border-border/60 w-fit">
+          <button
+            onClick={() => setChatMode("analyze")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "analyze" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔍 Analyze
+          </button>
+          <button
+            onClick={() => setChatMode("find_customers")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "find_customers" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🎯 Find Customers
+          </button>
+          <button
+            onClick={() => setChatMode("generate_post")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "generate_post" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            ✍️ Generate Post
+          </button>
+        </div>
+      </div>
+
+      {/* Customer Search Input */}
+      {chatMode === "find_customers" && (
+        <div className="max-w-3xl mx-auto w-full px-4 py-2">
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <input
+                type="url"
+                value={customerSearchUrl}
+                onChange={(e) => setCustomerSearchUrl(e.target.value)}
+                placeholder="https://your-website.com"
+                className="w-full h-10 px-3 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              />
+            </div>
+            <Button
+              className="h-10 text-xs"
+              disabled={!customerSearchUrl.trim() || isSearchingCustomers || remainingCredits < CUSTOMER_SEARCH_CREDIT_COST}
+              onClick={() => handleCustomerSearch(customerSearchUrl.trim())}
+            >
+              {isSearchingCustomers ? (
+                <><Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> Searching...</>
+              ) : (
+                <><Search className="w-3 h-3 mr-1.5" /> Find Customers ({CUSTOMER_SEARCH_CREDIT_COST} Credits)</>
+              )}
+            </Button>
+          </div>
+          {customerMapResult && (
+            <div className="mt-3">
+              <CustomerMapCard
+                url={customerMapResult.url}
+                productSummary={customerMapResult.product_summary}
+                icp={customerMapResult.icp}
+                communities={customerMapResult.communities}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Post Generator */}
+      {chatMode === "generate_post" && (
+        <div className="max-w-3xl mx-auto w-full px-4 py-2">
+          <PostGeneratorCard
+            productContext={customerMapResult?.product_summary || profiles.find(p => p.is_own_website)?.url || ""}
+            audienceContext={customerMapResult?.icp}
+            selectedModel={selectedModel}
+          />
+        </div>
+      )}
+
+      {/* Original Chat Input - only show in analyze mode */}
+      {chatMode === "analyze" && (
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
           onSend={(content, model) => handleSend(content, user?.id, model)}
@@ -463,6 +581,7 @@ const Chat = () => {
           onExternalGithubChange={setGithubDialogOpen}
         />
       </div>
+      )}
     </div>
   );
 

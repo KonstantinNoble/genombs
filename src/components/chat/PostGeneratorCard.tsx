@@ -48,10 +48,9 @@ interface PostGeneratorCardProps {
   productContext: string;
   audienceContext?: any;
   selectedModel: string;
-  accessToken: string;
 }
 
-const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, accessToken }: PostGeneratorCardProps) => {
+const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: PostGeneratorCardProps) => {
   const { remainingCredits, refreshCredits } = useAuth();
   const [platform, setPlatform] = useState("reddit");
   const [tone, setTone] = useState("casual");

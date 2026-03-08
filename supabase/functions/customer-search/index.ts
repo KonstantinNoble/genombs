@@ -91,7 +91,7 @@ serve(async (req) => {
     const resetAt = new Date(credits.credits_reset_at);
     if (resetAt < new Date()) {
       creditsUsed = 0;
-      await adminClient
+      await userClient
         .from("user_credits")
         .update({ credits_used: 0, credits_reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
         .eq("id", credits.id);

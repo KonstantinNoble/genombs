@@ -547,8 +547,9 @@ const Chat = () => {
         <div className="max-w-3xl mx-auto w-full px-4 py-2">
           <PostGeneratorCard
             productContext={customerMapResult?.product_summary || profiles.find(p => p.is_own_website)?.url || ""}
-            audienceContext={customerMapResult?.icp}
+            audienceContext={customerMapResult ? { icp: customerMapResult.icp, communities: customerMapResult.communities, product_summary: customerMapResult.product_summary } : undefined}
             selectedModel={selectedModel}
+            onSwitchToCustomerSearch={() => setChatMode("find_customers")}
           />
         </div>
       )}

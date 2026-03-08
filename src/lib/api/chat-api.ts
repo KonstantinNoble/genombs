@@ -1,11 +1,16 @@
 /**
  * API client for all chat-related backend calls.
- * Uses the external Supabase project.
+ * Uses the external Supabase project for DB ops,
+ * and Lovable Cloud for new edge functions (customer-search, generate-post).
  */
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
 import type { Conversation, Message, WebsiteProfile, ImprovementTask } from "@/types/chat";
 
-// ─── Customer Search ───
+// Lovable Cloud URL for new edge functions
+const LOVABLE_CLOUD_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co`;
+const LOVABLE_CLOUD_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+// ─── Customer Search (Lovable Cloud) ───
 
 export async function customerSearch(
   url: string,
@@ -17,12 +22,12 @@ export async function customerSearch(
   icp: any;
   communities: any[];
 }> {
-  const resp = await fetch(`${SUPABASE_URL}/functions/v1/customer-search`, {
+  const resp = await fetch(`${LOVABLE_CLOUD_URL}/functions/v1/customer-search`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      apikey: SUPABASE_ANON_KEY,
+      apikey: LOVABLE_CLOUD_ANON_KEY,
     },
     body: JSON.stringify({ url }),
   });
@@ -33,6 +38,85 @@ export async function customerSearch(
   }
 
   return resp.json();
+}
+
+// ─── Post Generator (Lovable Cloud) ───
+
+export async function generatePost({
+  platform,
+  tone,
+  goal,
+  productContext,
+  audienceContext,
+  model,
+  accessToken,
+  onDelta,
+  onDone,
+}: {
+  platform: string;
+  tone: string;
+  goal: string;
+  productContext: string;
+  audienceContext?: any;
+  model: string;
+  accessToken: string;
+  onDelta: (text: string) => void;
+  onDone: () => void;
+}): Promise<void> {
+  const resp = await fetch(`${LOVABLE_CLOUD_URL}/functions/v1/generate-post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      apikey: LOVABLE_CLOUD_ANON_KEY,
+    },
+    body: JSON.stringify({
+      platform,
+      tone,
+      goal,
+      product_context: productContext,
+      audience_context: audienceContext,
+      model,
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ error: "Generation failed" }));
+    throw new Error(err.error || "Generation failed");
+  }
+
+  if (!resp.body) throw new Error("No response body");
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let idx;
+    while ((idx = buffer.indexOf("\n")) !== -1) {
+      let line = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 1);
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (!line.startsWith("data: ")) continue;
+      const jsonStr = line.slice(6).trim();
+      if (jsonStr === "[DONE]") {
+        onDone();
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const delta = parsed.choices?.[0]?.delta?.content;
+        if (delta) onDelta(delta);
+      } catch {}
+    }
+  }
+
+  onDone();
 }
 
 // ─── Conversations ───

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, Copy, Check, Loader2 } from "lucide-react";
+import { Send, Copy, Check, Loader2, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,8 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getPostCreditCost } from "@/lib/constants";
-import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
+import { generatePost } from "@/lib/api/chat-api";
+import { supabase } from "@/lib/supabase/external-client";
 
 const PLATFORMS = [
   { id: "reddit", label: "Reddit", emoji: "🟠" },
@@ -48,9 +49,10 @@ interface PostGeneratorCardProps {
   productContext: string;
   audienceContext?: any;
   selectedModel: string;
+  onSwitchToCustomerSearch?: () => void;
 }
 
-const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: PostGeneratorCardProps) => {
+const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, onSwitchToCustomerSearch }: PostGeneratorCardProps) => {
   const { remainingCredits, refreshCredits } = useAuth();
   const [platform, setPlatform] = useState("reddit");
   const [tone, setTone] = useState("casual");
@@ -62,6 +64,7 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: P
 
   const creditCost = getPostCreditCost(selectedModel);
   const notEnoughCredits = remainingCredits < creditCost;
+  const hasAudienceContext = audienceContext && Object.keys(audienceContext).length > 0;
 
   const handleGenerate = async () => {
     if (isGenerating || notEnoughCredits) return;
@@ -72,75 +75,34 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: P
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token || "";
 
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/generate-post`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          apikey: SUPABASE_ANON_KEY,
+      let content = "";
+      await generatePost({
+        platform,
+        tone,
+        goal,
+        productContext: customContext || productContext,
+        audienceContext,
+        model: selectedModel,
+        accessToken: token,
+        onDelta: (delta) => {
+          content += delta;
+          setGeneratedContent(content);
         },
-        body: JSON.stringify({
-          platform,
-          tone,
-          goal,
-          product_context: customContext || productContext,
-          audience_context: audienceContext,
-          model: selectedModel,
-        }),
+        onDone: () => {},
       });
 
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: "Generation failed" }));
-        const msg = err.error || "Generation failed";
-        if (msg.startsWith("insufficient_credits:")) {
-          toast.error("Not enough credits");
-        } else if (msg.startsWith("daily_limit_reached:")) {
-          toast.error("Daily post limit reached");
-        } else if (msg === "premium_model_required") {
-          toast.error("This model requires Premium");
-        } else {
-          toast.error(msg);
-        }
-        setIsGenerating(false);
-        return;
-      }
-
-      if (!resp.body) throw new Error("No response body");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let content = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        let idx;
-        while ((idx = buffer.indexOf("\n")) !== -1) {
-          let line = buffer.slice(0, idx);
-          buffer = buffer.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const delta = parsed.choices?.[0]?.delta?.content;
-            if (delta) {
-              content += delta;
-              setGeneratedContent(content);
-            }
-          } catch {}
-        }
-      }
-
       refreshCredits();
-    } catch (e) {
-      console.error("Post generation error:", e);
-      toast.error("Post generation failed");
+    } catch (e: any) {
+      const msg = e.message || "Generation failed";
+      if (msg.startsWith("insufficient_credits:")) {
+        toast.error("Not enough credits");
+      } else if (msg.startsWith("daily_limit_reached:")) {
+        toast.error("Daily post limit reached");
+      } else if (msg === "premium_model_required") {
+        toast.error("This model requires Premium");
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -165,6 +127,27 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: P
       </div>
 
       <div className="p-4 space-y-3">
+        {/* Audience Context Indicator */}
+        {hasAudienceContext ? (
+          <div className="rounded-md bg-chart-6/10 border border-chart-6/20 p-2.5 flex items-center gap-2">
+            <Users className="w-3.5 h-3.5 text-chart-6 shrink-0" />
+            <p className="text-[11px] text-foreground/80">
+              <span className="font-medium text-chart-6">Audience context loaded</span> — Posts will be tailored to your customer map's ICP and communities.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-md bg-muted/50 border border-border/60 p-2.5 flex items-center justify-between gap-2">
+            <p className="text-[11px] text-muted-foreground">
+              💡 Run <span className="font-medium">Find Customers</span> first for better targeting
+            </p>
+            {onSwitchToCustomerSearch && (
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-primary" onClick={onSwitchToCustomerSearch}>
+                Find Customers →
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Platform */}
         <div className="space-y-1.5">
           <Label className="text-xs">Platform</Label>

@@ -350,7 +350,7 @@ Return ONLY a JSON object:
 
     // Update feature usage
     if (usage) {
-      await adminClient
+      await userClient
         .from("feature_usage")
         .update({ used_today: currentUsage + 1 })
         .eq("id", usage.id);

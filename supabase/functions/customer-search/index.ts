@@ -59,8 +59,10 @@ serve(async (req) => {
       });
     }
 
-    // Admin client uses external project for DB operations (where user data lives)
-    const adminClient = createClient(EXTERNAL_SUPABASE_URL, serviceRoleKey, { auth: { persistSession: false } });
+    const userClient = createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
 
     // Parse input
     const { url } = await req.json();

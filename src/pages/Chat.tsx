@@ -473,6 +473,88 @@ const Chat = () => {
           </div>
         </div>
       )}
+      {/* Mode Selector */}
+      <div className="max-w-3xl mx-auto w-full px-4 pt-2">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50 border border-border/60 w-fit">
+          <button
+            onClick={() => setChatMode("analyze")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "analyze" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔍 Analyze
+          </button>
+          <button
+            onClick={() => setChatMode("find_customers")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "find_customers" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🎯 Find Customers
+          </button>
+          <button
+            onClick={() => setChatMode("generate_post")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              chatMode === "generate_post" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            ✍️ Generate Post
+          </button>
+        </div>
+      </div>
+
+      {/* Customer Search Input */}
+      {chatMode === "find_customers" && (
+        <div className="max-w-3xl mx-auto w-full px-4 py-2">
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <input
+                type="url"
+                value={customerSearchUrl}
+                onChange={(e) => setCustomerSearchUrl(e.target.value)}
+                placeholder="https://your-website.com"
+                className="w-full h-10 px-3 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              />
+            </div>
+            <Button
+              className="h-10 text-xs"
+              disabled={!customerSearchUrl.trim() || isSearchingCustomers || remainingCredits < CUSTOMER_SEARCH_CREDIT_COST}
+              onClick={() => handleCustomerSearch(customerSearchUrl.trim())}
+            >
+              {isSearchingCustomers ? (
+                <><Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> Searching...</>
+              ) : (
+                <><Search className="w-3 h-3 mr-1.5" /> Find Customers ({CUSTOMER_SEARCH_CREDIT_COST} Credits)</>
+              )}
+            </Button>
+          </div>
+          {customerMapResult && (
+            <div className="mt-3">
+              <CustomerMapCard
+                url={customerMapResult.url}
+                productSummary={customerMapResult.product_summary}
+                icp={customerMapResult.icp}
+                communities={customerMapResult.communities}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Post Generator */}
+      {chatMode === "generate_post" && (
+        <div className="max-w-3xl mx-auto w-full px-4 py-2">
+          <PostGeneratorCard
+            productContext={customerMapResult?.product_summary || profiles.find(p => p.is_own_website)?.url || ""}
+            audienceContext={customerMapResult?.icp}
+            selectedModel={selectedModel}
+            accessToken=""
+          />
+        </div>
+      )}
+
+      {/* Original Chat Input - only show in analyze mode */}
+      {chatMode === "analyze" && (
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
           onSend={(content, model) => handleSend(content, user?.id, model)}
@@ -498,6 +580,9 @@ const Chat = () => {
           onExternalDialogChange={setUrlDialogOpen}
           externalGithubOpen={githubDialogOpen}
           onExternalGithubChange={setGithubDialogOpen}
+        />
+      </div>
+      )}
         />
       </div>
     </div>

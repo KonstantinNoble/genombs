@@ -7,6 +7,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// External Supabase project credentials (publishable, safe for client-side)
+const EXTERNAL_SUPABASE_URL = "https://xnkspttfhcnqzhmazggn.supabase.co";
+const EXTERNAL_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhua3NwdHRmaGNucXpobWF6Z2duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NDU0NDAsImV4cCI6MjA4NjMyMTQ0MH0.AluwfNe4T-tJQo73ResSpnqZ3Dky34CBv50ubxX2_ec";
+
 const FREE_DAILY_LIMIT = 5;
 const PREMIUM_DAILY_LIMIT = 25;
 

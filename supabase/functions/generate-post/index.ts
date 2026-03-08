@@ -144,7 +144,7 @@ serve(async (req) => {
     }
 
     // Credit check
-    const { data: credits } = await adminClient
+    const { data: credits } = await userClient
       .from("user_credits")
       .select("id, is_premium, daily_credits_limit, credits_used, credits_reset_at")
       .eq("user_id", userId)

@@ -130,7 +130,7 @@ serve(async (req) => {
 
     // Premium model check
     if (EXPENSIVE_MODELS.includes(resolvedModel)) {
-      const { data: credits } = await adminClient
+      const { data: credits } = await userClient
         .from("user_credits")
         .select("is_premium")
         .eq("user_id", userId)

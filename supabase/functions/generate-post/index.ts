@@ -359,7 +359,7 @@ Important:
               model_used: resolvedModel,
             });
 
-            await adminClient
+            await userClient
               .from("user_credits")
               .update({ credits_used: creditsUsed + creditCost })
               .eq("id", credits.id);

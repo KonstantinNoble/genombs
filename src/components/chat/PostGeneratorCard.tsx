@@ -69,11 +69,14 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel }: P
     setGeneratedContent("");
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || "";
+
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/generate-post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
           apikey: SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({

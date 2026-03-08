@@ -548,7 +548,6 @@ const Chat = () => {
             productContext={customerMapResult?.product_summary || profiles.find(p => p.is_own_website)?.url || ""}
             audienceContext={customerMapResult?.icp}
             selectedModel={selectedModel}
-            accessToken=""
           />
         </div>
       )}

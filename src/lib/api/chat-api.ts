@@ -187,7 +187,7 @@ export async function saveMessageWithMetadata(
 ): Promise<Message> {
   const { data, error } = await supabase
     .from("messages")
-    .insert({ conversation_id: conversationId, role, content, metadata })
+    .insert({ conversation_id: conversationId, role, content, metadata: metadata as any })
     .select()
     .single();
 

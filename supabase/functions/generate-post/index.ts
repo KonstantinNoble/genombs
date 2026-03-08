@@ -365,7 +365,7 @@ Important:
               .eq("id", credits.id);
 
             if (usage) {
-              await adminClient
+              await userClient
                 .from("feature_usage")
                 .update({ used_today: currentUsage + 1 })
                 .eq("id", usage.id);

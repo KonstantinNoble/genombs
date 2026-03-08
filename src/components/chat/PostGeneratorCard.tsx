@@ -15,7 +15,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getPostCreditCost } from "@/lib/constants";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/external-client";
 
 const PLATFORMS = [
   { id: "reddit", label: "Reddit", emoji: "🟠" },

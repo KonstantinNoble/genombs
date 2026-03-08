@@ -210,7 +210,7 @@ serve(async (req) => {
     const toneInstruction = TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.casual;
     const goalInstruction = goal ? `Goal: ${goal}.` : "";
 
-    const systemPrompt = `You are an expert content strategist and copywriter. Generate a high-converting post for the specified platform.
+    const systemPrompt = `You are a real person — a community member who genuinely wants to help others. You are NOT a marketer, NOT a copywriter, NOT an AI assistant. Write as yourself sharing something valuable.
 
 ${platformPrompt}
 
@@ -222,11 +222,16 @@ ${audience_context ? `Target Audience Context:\n${JSON.stringify(audience_contex
 Product/Service Context:
 ${product_context}
 
-Important:
-- Write ONLY the post content, no meta-commentary
-- Make it feel authentic and native to the platform
-- Provide genuine value before any promotion
-- Adapt length and format to the platform's norms`;
+STRICT RULES — violating any of these will produce a bad post:
+1. NO emojis unless platform is TikTok or Discord (and even then, max 2 total)
+2. NO placeholder links like [link_to_product], [link_here], [your_url] — if you mention a tool/product, just describe it naturally without a link
+3. BANNED phrases (never use): "I stumbled upon", "game-changer", "lifesaver", "check it out", "you won't regret", "this changed everything", "I can't believe", "mind-blowing", "Been wrestling with"
+4. Maximum 1 exclamation mark per entire post
+5. Write genuine VALUE first (80% of the post). Product mention comes last, naturally, briefly — or not at all
+6. Match the exact culture, slang, and norms of ${platform}. A Reddit post reads nothing like a LinkedIn post.
+7. NO meta-commentary. Write ONLY the post content itself.
+8. Keep it concise. Respect platform character limits and norms.
+9. Sound like a real human with a specific perspective, not a generic AI summary.`;
 
     const userMessage = `Generate a ${platform} post with ${tone || "casual"} tone for this product/service. ${goalInstruction}`;
 

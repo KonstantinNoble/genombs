@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Send, Copy, Check, Loader2, Users } from "lucide-react";
+import { Send, Copy, Check, Loader2, Users, RefreshCw } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -50,9 +51,10 @@ interface PostGeneratorCardProps {
   audienceContext?: any;
   selectedModel: string;
   onSwitchToCustomerSearch?: () => void;
+  onPostGenerated?: (content: string, platform: string, tone: string, goal: string) => void;
 }
 
-const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, onSwitchToCustomerSearch }: PostGeneratorCardProps) => {
+const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, onSwitchToCustomerSearch, onPostGenerated }: PostGeneratorCardProps) => {
   const { remainingCredits, refreshCredits } = useAuth();
   const [platform, setPlatform] = useState("reddit");
   const [tone, setTone] = useState("casual");
@@ -88,7 +90,11 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, onS
           content += delta;
           setGeneratedContent(content);
         },
-        onDone: () => {},
+        onDone: () => {
+          if (content && onPostGenerated) {
+            onPostGenerated(content, platform, tone, goal);
+          }
+        },
       });
 
       refreshCredits();
@@ -239,15 +245,25 @@ const PostGeneratorCard = ({ productContext, audienceContext, selectedModel, onS
             <Badge variant="outline" className="text-[10px]">
               {selectedPlatform?.emoji} {selectedPlatform?.label}
             </Badge>
-            <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={handleCopy}>
-              {copied ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
-              {copied ? "Copied" : "Copy"}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 text-xs"
+                disabled={isGenerating || notEnoughCredits}
+                onClick={handleGenerate}
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Regenerate
+              </Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={handleCopy}>
+                {copied ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+                {copied ? "Copied" : "Copy"}
+              </Button>
+            </div>
           </div>
-          <div className="rounded-lg bg-muted/50 p-3">
-            <pre className="text-xs text-foreground/90 whitespace-pre-wrap font-sans leading-relaxed">
-              {generatedContent}
-            </pre>
+          <div className="rounded-lg bg-muted/50 p-3 prose prose-sm prose-invert max-w-none prose-p:text-foreground/90 prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary">
+            <ReactMarkdown>{generatedContent}</ReactMarkdown>
           </div>
         </div>
       )}

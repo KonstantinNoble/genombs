@@ -37,7 +37,7 @@ import { useChatConversations } from "@/hooks/useChatConversations";
 import { useChatAnalysis } from "@/hooks/useChatAnalysis";
 import { useChatMessages } from "@/hooks/useChatMessages";
 
-import { saveMessage, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
+import { saveMessage, saveMessageWithMetadata, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
 import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost, CUSTOMER_SEARCH_CREDIT_COST } from "@/lib/constants";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -188,13 +188,28 @@ const Chat = () => {
 
   // Handler: Customer Search
   const handleCustomerSearch = async (url: string) => {
-    if (!user || isSearchingCustomers) return;
+    if (!user || isSearchingCustomers || !activeId) return;
     setIsSearchingCustomers(true);
     setCustomerMapResult(null);
     try {
       const token = await getAccessToken();
       const result = await customerSearch(url, token);
       setCustomerMapResult(result);
+
+      // Persist as assistant message with metadata
+      try {
+        const msg = await saveMessageWithMetadata(activeId, "assistant", `Customer map generated for ${url}`, {
+          type: "customer_map",
+          url: result.url,
+          product_summary: result.product_summary,
+          icp: result.icp,
+          communities: result.communities,
+        });
+        setMessages((prev) => [...prev, msg]);
+      } catch (e) {
+        console.error("Failed to persist customer map message:", e);
+      }
+
       refreshCredits();
       toast.success("Customer map generated!");
     } catch (e: any) {
@@ -528,17 +543,6 @@ const Chat = () => {
               )}
             </Button>
           </div>
-      {customerMapResult && (
-            <div className="mt-3">
-              <CustomerMapCard
-                url={customerMapResult.url}
-                productSummary={customerMapResult.product_summary}
-                icp={customerMapResult.icp}
-                communities={customerMapResult.communities}
-                onGeneratePost={() => setChatMode("generate_post")}
-              />
-            </div>
-          )}
         </div>
       )}
 
@@ -550,12 +554,26 @@ const Chat = () => {
             audienceContext={customerMapResult ? { icp: customerMapResult.icp, communities: customerMapResult.communities, product_summary: customerMapResult.product_summary } : undefined}
             selectedModel={selectedModel}
             onSwitchToCustomerSearch={() => setChatMode("find_customers")}
+            onPostGenerated={async (content, platform, tone, goal) => {
+              if (!activeId) return;
+              try {
+                const msg = await saveMessageWithMetadata(activeId, "assistant", content, {
+                  type: "generated_post",
+                  post_content: content,
+                  platform,
+                  tone,
+                  goal,
+                });
+                setMessages((prev) => [...prev, msg]);
+              } catch (e) {
+                console.error("Failed to persist generated post:", e);
+              }
+            }}
           />
         </div>
       )}
 
-      {/* Original Chat Input - only show in analyze mode */}
-      {chatMode === "analyze" && (
+      {/* Chat Input - always visible */}
       <div className="max-w-3xl mx-auto w-full">
         <ChatInput
           onSend={(content, model) => handleSend(content, user?.id, model)}
@@ -573,7 +591,7 @@ const Chat = () => {
             setShowInlineUrlPrompt(true);
           }}
           disabled={!activeId || isStreaming}
-          hasProfiles={profiles.length > 0}
+          hasProfiles={profiles.length > 0 || chatMode !== "analyze"}
           hasOwnProfile={true}
           initialOwnUrl={profiles.find((p) => p.is_own_website)?.url}
           initialCompetitorUrls={profiles.filter((p) => !p.is_own_website).map((p) => p.url)}
@@ -583,7 +601,6 @@ const Chat = () => {
           onExternalGithubChange={setGithubDialogOpen}
         />
       </div>
-      )}
     </div>
   );
 

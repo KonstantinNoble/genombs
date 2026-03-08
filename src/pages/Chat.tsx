@@ -133,6 +133,10 @@ const Chat = () => {
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
   const [isFindingCompetitors, setIsFindingCompetitors] = useState(false);
   const [selectedModel, setSelectedModel] = useState("gemini-flash");
+  const [chatMode, setChatMode] = useState<ChatMode>("analyze");
+  const [customerMapResult, setCustomerMapResult] = useState<any>(null);
+  const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
+  const [customerSearchUrl, setCustomerSearchUrl] = useState("");
 
   // Competitor URL limits: free→1, premium→3
   const maxCompetitorSelectable = isPremium ? PREMIUM_MAX_URL_FIELDS - 1 : FREE_MAX_URL_FIELDS - 1;

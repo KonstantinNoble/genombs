@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code, ArrowRight } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose, LayoutDashboard, MessageSquare, Loader2, CheckCircle2, Code, ArrowRight, Search, Send } from "lucide-react";
 import PdfDownloadButton from "@/components/dashboard/PdfDownloadButton";
 import CreditResetTimer from "@/components/chat/CreditResetTimer";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +25,8 @@ import ChatInput from "@/components/chat/ChatInput";
 import AnalysisProgress from "@/components/chat/AnalysisProgress";
 import InlineUrlPrompt from "@/components/chat/InlineUrlPrompt";
 import AnalysisTabsContent from "@/components/dashboard/AnalysisTabs";
+import CustomerMapCard from "@/components/chat/CustomerMapCard";
+import PostGeneratorCard from "@/components/chat/PostGeneratorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBlocker from "@/components/MobileBlocker";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,10 +37,12 @@ import { useChatConversations } from "@/hooks/useChatConversations";
 import { useChatAnalysis } from "@/hooks/useChatAnalysis";
 import { useChatMessages } from "@/hooks/useChatMessages";
 
-import { saveMessage, findCompetitors, analyzeWebsite, loadMessages } from "@/lib/api/chat-api";
+import { saveMessage, findCompetitors, analyzeWebsite, loadMessages, customerSearch } from "@/lib/api/chat-api";
 import type { WebsiteProfile } from "@/types/chat";
-import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost } from "@/lib/constants";
+import { FREE_MAX_URL_FIELDS, PREMIUM_MAX_URL_FIELDS, getAnalysisCreditCost, CUSTOMER_SEARCH_CREDIT_COST } from "@/lib/constants";
 import { SEOHead } from "@/components/seo/SEOHead";
+
+type ChatMode = "analyze" | "find_customers" | "generate_post";
 
 const Chat = () => {
   const isMobile = useIsMobile();

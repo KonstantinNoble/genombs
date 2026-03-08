@@ -108,7 +108,7 @@ serve(async (req) => {
 
     // Daily feature usage limit check
     const dailyLimit = credits.is_premium ? PREMIUM_DAILY_LIMIT : FREE_DAILY_LIMIT;
-    const { data: usage } = await adminClient
+    const { data: usage } = await userClient
       .from("feature_usage")
       .select("id, used_today, reset_at")
       .eq("user_id", userId)

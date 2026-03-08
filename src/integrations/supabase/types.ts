@@ -89,6 +89,39 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_maps: {
+        Row: {
+          communities: Json | null
+          created_at: string
+          icp_data: Json | null
+          id: string
+          model_used: string | null
+          product_summary: string | null
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          communities?: Json | null
+          created_at?: string
+          icp_data?: Json | null
+          id?: string
+          model_used?: string | null
+          product_summary?: string | null
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          communities?: Json | null
+          created_at?: string
+          icp_data?: Json | null
+          id?: string
+          model_used?: string | null
+          product_summary?: string | null
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       deleted_accounts: {
         Row: {
           deleted_at: string | null
@@ -107,6 +140,66 @@ export type Database = {
           email_hash?: string
           id?: string
           reason?: string | null
+        }
+        Relationships: []
+      }
+      feature_usage: {
+        Row: {
+          feature: string
+          id: string
+          reset_at: string
+          used_today: number
+          user_id: string
+        }
+        Insert: {
+          feature: string
+          id?: string
+          reset_at?: string
+          used_today?: number
+          user_id: string
+        }
+        Update: {
+          feature?: string
+          id?: string
+          reset_at?: string
+          used_today?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      generated_posts: {
+        Row: {
+          audience_context: Json | null
+          content: string | null
+          created_at: string
+          goal: string | null
+          id: string
+          model_used: string | null
+          platform: string | null
+          tone: string | null
+          user_id: string
+        }
+        Insert: {
+          audience_context?: Json | null
+          content?: string | null
+          created_at?: string
+          goal?: string | null
+          id?: string
+          model_used?: string | null
+          platform?: string | null
+          tone?: string | null
+          user_id: string
+        }
+        Update: {
+          audience_context?: Json | null
+          content?: string | null
+          created_at?: string
+          goal?: string | null
+          id?: string
+          model_used?: string | null
+          platform?: string | null
+          tone?: string | null
+          user_id?: string
         }
         Relationships: []
       }

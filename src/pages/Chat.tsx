@@ -528,13 +528,14 @@ const Chat = () => {
               )}
             </Button>
           </div>
-          {customerMapResult && (
+      {customerMapResult && (
             <div className="mt-3">
               <CustomerMapCard
                 url={customerMapResult.url}
                 productSummary={customerMapResult.product_summary}
                 icp={customerMapResult.icp}
                 communities={customerMapResult.communities}
+                onGeneratePost={() => setChatMode("generate_post")}
               />
             </div>
           )}

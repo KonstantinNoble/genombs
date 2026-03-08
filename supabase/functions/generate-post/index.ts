@@ -81,20 +81,22 @@ serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Auth
+    // Auth – validate JWT against external Supabase project
     const authHeader = req.headers.get("Authorization") ?? "";
-    const userClient = createClient(supabaseUrl, anonKey, {
+    const externalClient = createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
       auth: { persistSession: false },
     });
-    const { data: userData, error: getUserError } = await userClient.auth.getUser();
+    const { data: userData, error: getUserError } = await externalClient.auth.getUser();
     if (getUserError || !userData?.user) {
+      console.error("Auth error:", getUserError);
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     const userId = userData.user.id;
+    // Lovable Cloud admin client for DB operations
     const adminClient = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
     const { platform, tone, goal, product_context, audience_context, model: modelKey } = await req.json();

@@ -9,6 +9,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { supabase } from "@/lib/supabase/external-client";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Target, Send, Users, MessageSquare } from "lucide-react";
 
 /** Animates a number from 0 to `target` over `duration` ms */
 function useCountUp(target: number, duration = 900, enabled = true) {
@@ -42,7 +46,39 @@ const SECTIONS = [
   { num: "01", label: "Today vs Average" },
   { num: "02", label: "Analytics" },
   { num: "03", label: "Badges" },
+  { num: "04", label: "Customer Maps" },
+  { num: "05", label: "Generated Posts" },
 ];
+
+const PLATFORM_LABELS: Record<string, string> = {
+  reddit: "🟠 Reddit",
+  linkedin: "🔵 LinkedIn",
+  x: "🐦 X",
+  youtube: "🔴 YouTube",
+  facebook: "📘 Facebook",
+  discord: "💬 Discord",
+  tiktok: "🎵 TikTok",
+  quora: "❓ Quora",
+  forum: "📝 Forum",
+  cold_email: "✉️ Email",
+};
+
+interface CustomerMap {
+  id: string;
+  url: string | null;
+  product_summary: string | null;
+  icp_data: any;
+  created_at: string;
+}
+
+interface GeneratedPost {
+  id: string;
+  platform: string | null;
+  tone: string | null;
+  goal: string | null;
+  content: string | null;
+  created_at: string;
+}
 
 const Dashboard = () => {
   const { user, isLoading } = useAuth();
@@ -50,6 +86,8 @@ const Dashboard = () => {
   const { streak } = useStreak(user?.id ?? null, true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [customerMaps, setCustomerMaps] = useState<CustomerMap[]>([]);
+  const [generatedPosts, setGeneratedPosts] = useState<GeneratedPost[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -62,6 +100,30 @@ const Dashboard = () => {
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, []);
+
+  // Fetch customer maps and generated posts
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      const [mapsRes, postsRes] = await Promise.all([
+        supabase
+          .from("customer_maps")
+          .select("id, url, product_summary, icp_data, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("generated_posts")
+          .select("id, platform, tone, goal, content, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
+      if (mapsRes.data) setCustomerMaps(mapsRes.data as CustomerMap[]);
+      if (postsRes.data) setGeneratedPosts(postsRes.data as GeneratedPost[]);
+    };
+    fetchData();
+  }, [user, refreshKey]);
 
   // Trigger entrance animation after mount
   useEffect(() => {
@@ -87,6 +149,99 @@ const Dashboard = () => {
     { num: "02", label: "Longest Streak", value: longestStreak, unit: "days", highlight: null },
     { num: "03", label: "Total Active Days", value: totalDays, unit: "days", highlight: null },
   ];
+
+  const renderSection = (sIdx: number) => {
+    switch (sIdx) {
+      case 0:
+        return <TodayVsAverage userId={user.id} refreshKey={refreshKey} />;
+      case 1:
+        return <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />;
+      case 2:
+        return <BadgeGallery userId={user.id} size="lg" />;
+      case 3:
+        return (
+          <div className="space-y-3">
+            {customerMaps.length === 0 ? (
+              <Card className="p-6 text-center">
+                <Target className="w-6 h-6 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No customer maps yet. Use <span className="font-medium text-foreground">Find Customers</span> in the chat to generate one.</p>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {customerMaps.map((cm) => {
+                  const roles = cm.icp_data?.demographics?.roles as string[] | undefined;
+                  const industries = cm.icp_data?.demographics?.industries as string[] | undefined;
+                  return (
+                    <Card key={cm.id} className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3.5 h-3.5 text-primary" />
+                          <span className="text-sm font-medium text-foreground truncate max-w-[300px]">{cm.url || "Unknown URL"}</span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(cm.created_at).toLocaleDateString("de-DE")}
+                        </span>
+                      </div>
+                      {cm.product_summary && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">{cm.product_summary}</p>
+                      )}
+                      <div className="flex flex-wrap gap-1.5">
+                        {roles?.slice(0, 3).map((r, i) => (
+                          <Badge key={i} variant="outline" className="text-[9px] h-4">{r}</Badge>
+                        ))}
+                        {industries?.slice(0, 2).map((ind, i) => (
+                          <Badge key={i} variant="secondary" className="text-[9px] h-4">{ind}</Badge>
+                        ))}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-3">
+            {generatedPosts.length === 0 ? (
+              <Card className="p-6 text-center">
+                <Send className="w-6 h-6 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No posts generated yet. Use <span className="font-medium text-foreground">Generate Post</span> in the chat.</p>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {generatedPosts.map((post) => (
+                  <Card key={post.id} className="p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                        <Badge variant="outline" className="text-[10px]">
+                          {post.platform ? (PLATFORM_LABELS[post.platform] || post.platform) : "Post"}
+                        </Badge>
+                        {post.tone && (
+                          <Badge variant="secondary" className="text-[9px] h-4">{post.tone}</Badge>
+                        )}
+                        {post.goal && (
+                          <Badge variant="secondary" className="text-[9px] h-4">{post.goal}</Badge>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(post.created_at).toLocaleDateString("de-DE")}
+                      </span>
+                    </div>
+                    {post.content && (
+                      <p className="text-xs text-muted-foreground line-clamp-3">{post.content}</p>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background/60">
@@ -185,9 +340,7 @@ const Dashboard = () => {
             <div className="mb-6 h-[2px] w-full overflow-hidden rounded-full">
               <div className="h-full w-full dashboard-shimmer-line" />
             </div>
-            {sIdx === 0 && <TodayVsAverage userId={user.id} refreshKey={refreshKey} />}
-            {sIdx === 1 && <AnalyticsOverview userId={user.id} refreshKey={refreshKey} />}
-            {sIdx === 2 && <BadgeGallery userId={user.id} size="lg" />}
+            {renderSection(sIdx)}
           </section>
         ))}
       </main>

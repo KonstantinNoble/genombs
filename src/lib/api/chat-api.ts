@@ -179,6 +179,22 @@ export async function saveMessage(
   return data as Message;
 }
 
+export async function saveMessageWithMetadata(
+  conversationId: string,
+  role: "user" | "assistant",
+  content: string,
+  metadata: Record<string, unknown>
+): Promise<Message> {
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({ conversation_id: conversationId, role, content, metadata })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Message;
+}
+
 // ─── Website Profiles ───
 
 export async function loadProfiles(conversationId: string): Promise<WebsiteProfile[]> {

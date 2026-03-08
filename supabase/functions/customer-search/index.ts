@@ -355,7 +355,7 @@ Return ONLY a JSON object:
         .update({ used_today: currentUsage + 1 })
         .eq("id", usage.id);
     } else {
-      await adminClient
+      await userClient
         .from("feature_usage")
         .insert({
           user_id: userId,

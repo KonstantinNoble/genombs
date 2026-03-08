@@ -349,7 +349,7 @@ Important:
         } finally {
           // Save post and deduct credits after stream completes
           try {
-            await adminClient.from("generated_posts").insert({
+            await userClient.from("generated_posts").insert({
               user_id: userId,
               platform,
               tone: tone || "casual",

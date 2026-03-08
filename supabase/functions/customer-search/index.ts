@@ -23,7 +23,6 @@ serve(async (req) => {
 
   try {
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
 

@@ -120,7 +120,7 @@ serve(async (req) => {
       const usageResetAt = new Date(usage.reset_at);
       if (usageResetAt < new Date()) {
         // Reset
-        await adminClient
+        await userClient
           .from("feature_usage")
           .update({ used_today: 0, reset_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
           .eq("id", usage.id);

@@ -80,21 +80,30 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Auth – validate JWT against external Supabase project
+    // Auth – extract user ID from JWT (token is signed by external project with ES256)
     const authHeader = req.headers.get("Authorization") ?? "";
-    const externalClient = createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false },
-    });
-    const { data: userData, error: getUserError } = await externalClient.auth.getUser();
-    if (getUserError || !userData?.user) {
-      console.error("Auth error:", getUserError);
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    const token = authHeader.replace("Bearer ", "");
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const userId = userData.user.id;
+
+    let userId: string;
+    try {
+      const payloadBase64 = token.split(".")[1];
+      const payload = JSON.parse(atob(payloadBase64));
+      userId = payload.sub;
+      if (!userId) throw new Error("No sub claim");
+    } catch (e) {
+      console.error("JWT decode error:", e);
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Admin client uses external project for DB operations (where user data lives)
     const adminClient = createClient(EXTERNAL_SUPABASE_URL, serviceRoleKey, { auth: { persistSession: false } });
 

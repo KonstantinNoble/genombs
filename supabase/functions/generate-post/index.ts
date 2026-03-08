@@ -77,8 +77,6 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     // Auth – extract user ID from JWT (token is signed by external project with ES256)
     const authHeader = req.headers.get("Authorization") ?? "";

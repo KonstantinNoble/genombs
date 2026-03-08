@@ -186,7 +186,36 @@ const Chat = () => {
     }
   };
 
-  // Handler: Analyze selected competitors from suggestions
+  // Handler: Customer Search
+  const handleCustomerSearch = async (url: string) => {
+    if (!user || isSearchingCustomers) return;
+    setIsSearchingCustomers(true);
+    setCustomerMapResult(null);
+    try {
+      const token = await getAccessToken();
+      const result = await customerSearch(url, token);
+      setCustomerMapResult(result);
+      refreshCredits();
+      toast.success("Customer map generated!");
+    } catch (e: any) {
+      const msg = e.message || "Customer search failed";
+      if (msg.startsWith("insufficient_credits:")) {
+        const hours = msg.split(":")[1];
+        toast.error("Not enough credits", {
+          description: `Customer search costs ${CUSTOMER_SEARCH_CREDIT_COST} credits. Resets in ${hours}h.`,
+        });
+      } else if (msg.startsWith("daily_limit_reached:")) {
+        toast.error("Daily limit reached", {
+          description: "You've used all your customer searches for today.",
+        });
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setIsSearchingCustomers(false);
+    }
+  };
+
   const handleAnalyzeSelectedCompetitors = async (urls: string[]) => {
     if (!activeId || !user || urls.length === 0) return;
     const limitedUrls = urls.slice(0, maxCompetitorSelectable);

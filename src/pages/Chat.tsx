@@ -188,13 +188,28 @@ const Chat = () => {
 
   // Handler: Customer Search
   const handleCustomerSearch = async (url: string) => {
-    if (!user || isSearchingCustomers) return;
+    if (!user || isSearchingCustomers || !activeId) return;
     setIsSearchingCustomers(true);
     setCustomerMapResult(null);
     try {
       const token = await getAccessToken();
       const result = await customerSearch(url, token);
       setCustomerMapResult(result);
+
+      // Persist as assistant message with metadata
+      try {
+        const msg = await saveMessageWithMetadata(activeId, "assistant", `Customer map generated for ${url}`, {
+          type: "customer_map",
+          url: result.url,
+          product_summary: result.product_summary,
+          icp: result.icp,
+          communities: result.communities,
+        });
+        setMessages((prev) => [...prev, msg]);
+      } catch (e) {
+        console.error("Failed to persist customer map message:", e);
+      }
+
       refreshCredits();
       toast.success("Customer map generated!");
     } catch (e: any) {

@@ -601,7 +601,6 @@ const Chat = () => {
           onExternalGithubChange={setGithubDialogOpen}
         />
       </div>
-      )}
     </div>
   );
 

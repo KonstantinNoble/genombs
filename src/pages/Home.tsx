@@ -7,7 +7,12 @@ import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
-import FAQSection from "@/components/genome/FAQSection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -575,7 +580,23 @@ const Home = () => {
       {/* FAQ */}
       <section className="py-20 sm:py-28 border-t border-border">
         <div className="container mx-auto px-4 max-w-2xl scroll-reveal">
-          <FAQSection items={homeFAQ} />
+          <div className="space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground text-center">
+              Frequently Asked Questions
+            </h2>
+            <Accordion type="single" collapsible className="w-full">
+              {homeFAQ.map((item, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="border-border">
+                  <AccordionTrigger className="text-left text-foreground hover:text-primary">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
       <FAQSchema faqs={homeFAQ} />

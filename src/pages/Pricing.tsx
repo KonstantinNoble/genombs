@@ -8,8 +8,12 @@ import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { BreadcrumbSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
-import FeatureComparisonTable from "@/components/genome/FeatureComparisonTable";
-import FAQSection from "@/components/genome/FAQSection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -152,7 +156,7 @@ const PricingPage = () => {
               <Button
                 variant="outline"
                 className="w-full h-12"
-                onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/profile" : "/auth")}
               >
                 {isLoggedIn ? "Go to Dashboard" : "Get Started"}
               </Button>
@@ -213,27 +217,22 @@ const PricingPage = () => {
           </div>
         </section>
 
-        {/* Feature Comparison */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground mb-4">
-                Full Feature Comparison
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                See exactly what's included in each plan.
-              </p>
-            </div>
-            <div className="border border-border rounded-xl overflow-hidden">
-              <FeatureComparisonTable />
-            </div>
-          </div>
-        </section>
-
         {/* FAQ */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 border-t border-border">
-          <div className="max-w-2xl mx-auto">
-            <FAQSection title="Pricing FAQ" items={pricingFAQ} />
+          <div className="max-w-2xl mx-auto space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground text-center">Pricing FAQ</h2>
+            <Accordion type="single" collapsible className="w-full">
+              {pricingFAQ.map((item, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="border-border">
+                  <AccordionTrigger className="text-left text-foreground hover:text-primary">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </section>
 
@@ -253,9 +252,9 @@ const PricingPage = () => {
                 <Button
                   size="lg"
                   className="px-10 h-13"
-                  onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
+                  onClick={() => navigate(isLoggedIn ? "/profile" : "/auth")}
                 >
-                  {isLoggedIn ? "Go to Dashboard" : "Create Account"}
+                  {isLoggedIn ? "Go to Profile" : "Create Account"}
                 </Button>
               </div>
             </div>

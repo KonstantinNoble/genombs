@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -21,6 +21,7 @@ import {
   Save,
   RotateCcw,
   Zap,
+  Loader2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -29,47 +30,145 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+
+// ── Defaults ──────────────────────────────────────────────────────────────────
+
+const DEFAULTS = {
+  cacheSimilarity: 95,
+  cacheEnabled: true,
+  cacheTTLHours: 24,
+  smartRoutingEnabled: true,
+  shortQueryModel: "gpt-4o-mini",
+  longQueryModel: "gpt-4o",
+  shortQueryThreshold: 100,
+  fallbackEnabled: true,
+  retryAttempts: 3,
+};
+
+const TTL_OPTIONS = [
+  { label: "1 Hour", value: 1 },
+  { label: "6 Hours", value: 6 },
+  { label: "24 Hours", value: 24 },
+  { label: "7 Days", value: 168 },
+  { label: "30 Days", value: 720 },
+];
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const OptimizerSection = () => {
   const { toast } = useToast();
-  
+  const { user } = useAuth();
+
+  // Loading states
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   // Cache Settings
-  const [cacheSimilarity, setCacheSimilarity] = useState([95]);
-  const [cacheEnabled, setCacheEnabled] = useState(true);
-  const [cacheTTL, setCacheTTL] = useState("24h");
+  const [cacheEnabled, setCacheEnabled] = useState(DEFAULTS.cacheEnabled);
+  const [cacheSimilarity, setCacheSimilarity] = useState([DEFAULTS.cacheSimilarity]);
+  const [cacheTTLHours, setCacheTTLHours] = useState(DEFAULTS.cacheTTLHours);
 
   // Smart Routing Settings
-  const [smartRoutingEnabled, setSmartRoutingEnabled] = useState(true);
-  const [shortQueryModel, setShortQueryModel] = useState("gpt-3.5-turbo");
-  const [longQueryModel, setLongQueryModel] = useState("gpt-4");
-  const [shortQueryThreshold, setShortQueryThreshold] = useState([100]);
+  const [smartRoutingEnabled, setSmartRoutingEnabled] = useState(DEFAULTS.smartRoutingEnabled);
+  const [shortQueryModel, setShortQueryModel] = useState(DEFAULTS.shortQueryModel);
+  const [longQueryModel, setLongQueryModel] = useState(DEFAULTS.longQueryModel);
+  const [shortQueryThreshold, setShortQueryThreshold] = useState([DEFAULTS.shortQueryThreshold]);
 
   // Fallback Settings
-  const [fallbackEnabled, setFallbackEnabled] = useState(true);
-  const [retryAttempts, setRetryAttempts] = useState([3]);
+  const [fallbackEnabled, setFallbackEnabled] = useState(DEFAULTS.fallbackEnabled);
+  const [retryAttempts, setRetryAttempts] = useState([DEFAULTS.retryAttempts]);
 
-  const handleSaveSettings = () => {
-    toast({
-      title: "Settings Saved",
-      description: "Your optimizer configuration has been updated.",
-    });
+  // ── Load settings from DB on mount ─────────────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+
+    const load = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("gateway_settings")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setCacheEnabled(data.cache_enabled ?? DEFAULTS.cacheEnabled);
+        setCacheSimilarity([Math.round((data.cache_similarity ?? DEFAULTS.cacheSimilarity / 100) * 100)]);
+        setCacheTTLHours(data.cache_ttl_hours ?? DEFAULTS.cacheTTLHours);
+        setSmartRoutingEnabled(data.smart_routing_enabled ?? DEFAULTS.smartRoutingEnabled);
+        setShortQueryModel(data.short_query_model ?? DEFAULTS.shortQueryModel);
+        setLongQueryModel(data.long_query_model ?? DEFAULTS.longQueryModel);
+        setShortQueryThreshold([data.short_query_threshold ?? DEFAULTS.shortQueryThreshold]);
+        setFallbackEnabled(data.fallback_enabled ?? DEFAULTS.fallbackEnabled);
+        setRetryAttempts([data.retry_attempts ?? DEFAULTS.retryAttempts]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  // ── Save settings to DB ─────────────────────────────────────────────────────
+  const handleSaveSettings = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const payload = {
+        user_id: user.id,
+        cache_enabled: cacheEnabled,
+        cache_similarity: cacheSimilarity[0] / 100, // store as 0–1
+        cache_ttl_hours: cacheTTLHours,
+        smart_routing_enabled: smartRoutingEnabled,
+        short_query_model: shortQueryModel,
+        long_query_model: longQueryModel,
+        short_query_threshold: shortQueryThreshold[0],
+        fallback_enabled: fallbackEnabled,
+        retry_attempts: retryAttempts[0],
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from("gateway_settings")
+        .upsert(payload, { onConflict: "user_id" });
+
+      if (error) throw error;
+
+      toast({
+        title: "Settings Saved ✓",
+        description: "Your gateway configuration has been updated.",
+      });
+    } catch (err: unknown) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Could not save settings.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
+  // ── Reset to defaults ───────────────────────────────────────────────────────
   const handleResetDefaults = () => {
-    setCacheSimilarity([95]);
-    setCacheEnabled(true);
-    setCacheTTL("24h");
-    setSmartRoutingEnabled(true);
-    setShortQueryModel("gpt-3.5-turbo");
-    setLongQueryModel("gpt-4");
-    setShortQueryThreshold([100]);
-    setFallbackEnabled(true);
-    setRetryAttempts([3]);
-    toast({
-      title: "Settings Reset",
-      description: "All settings have been restored to defaults.",
-    });
+    setCacheEnabled(DEFAULTS.cacheEnabled);
+    setCacheSimilarity([DEFAULTS.cacheSimilarity]);
+    setCacheTTLHours(DEFAULTS.cacheTTLHours);
+    setSmartRoutingEnabled(DEFAULTS.smartRoutingEnabled);
+    setShortQueryModel(DEFAULTS.shortQueryModel);
+    setLongQueryModel(DEFAULTS.longQueryModel);
+    setShortQueryThreshold([DEFAULTS.shortQueryThreshold]);
+    setFallbackEnabled(DEFAULTS.fallbackEnabled);
+    setRetryAttempts([DEFAULTS.retryAttempts]);
+    toast({ title: "Settings Reset", description: "Restored to default values." });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -84,15 +183,10 @@ const OptimizerSection = () => {
                 </div>
                 <div>
                   <CardTitle>Semantic Cache</CardTitle>
-                  <CardDescription>
-                    Cache similar requests to reduce API calls and latency
-                  </CardDescription>
+                  <CardDescription>Cache similar requests to reduce API calls and latency</CardDescription>
                 </div>
               </div>
-              <Switch
-                checked={cacheEnabled}
-                onCheckedChange={setCacheEnabled}
-              />
+              <Switch checked={cacheEnabled} onCheckedChange={setCacheEnabled} />
             </div>
           </CardHeader>
           <CardContent className={`space-y-6 ${!cacheEnabled ? "opacity-50 pointer-events-none" : ""}`}>
@@ -113,17 +207,12 @@ const OptimizerSection = () => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <Badge variant="secondary" className="font-mono">
-                  {cacheSimilarity[0]}%
-                </Badge>
+                <Badge variant="secondary" className="font-mono">{cacheSimilarity[0]}%</Badge>
               </div>
               <Slider
                 value={cacheSimilarity}
                 onValueChange={setCacheSimilarity}
-                min={70}
-                max={100}
-                step={1}
-                className="w-full"
+                min={70} max={100} step={1} className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>More cache hits</span>
@@ -144,34 +233,17 @@ const OptimizerSection = () => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <Select value={cacheTTL} onValueChange={setCacheTTL}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
+              <Select
+                value={String(cacheTTLHours)}
+                onValueChange={(v) => setCacheTTLHours(Number(v))}
+              >
+                <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1h">1 Hour</SelectItem>
-                  <SelectItem value="6h">6 Hours</SelectItem>
-                  <SelectItem value="24h">24 Hours</SelectItem>
-                  <SelectItem value="7d">7 Days</SelectItem>
-                  <SelectItem value="30d">30 Days</SelectItem>
+                  {TTL_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={String(o.value)}>{o.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Cache Stats Preview */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/50">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">87%</p>
-                <p className="text-xs text-muted-foreground">Hit Rate</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">12.4K</p>
-                <p className="text-xs text-muted-foreground">Cached Entries</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-500">$847</p>
-                <p className="text-xs text-muted-foreground">Saved This Month</p>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -186,19 +258,14 @@ const OptimizerSection = () => {
                 </div>
                 <div>
                   <CardTitle>Smart Routing</CardTitle>
-                  <CardDescription>
-                    Automatically route queries to the most cost-effective model
-                  </CardDescription>
+                  <CardDescription>Automatically route queries to the most cost-effective model</CardDescription>
                 </div>
               </div>
-              <Switch
-                checked={smartRoutingEnabled}
-                onCheckedChange={setSmartRoutingEnabled}
-              />
+              <Switch checked={smartRoutingEnabled} onCheckedChange={setSmartRoutingEnabled} />
             </div>
           </CardHeader>
           <CardContent className={`space-y-6 ${!smartRoutingEnabled ? "opacity-50 pointer-events-none" : ""}`}>
-            {/* Query Length Threshold */}
+            {/* Threshold */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -208,23 +275,16 @@ const OptimizerSection = () => {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p>
-                        Queries shorter than this token count will be routed to the cheaper model.
-                      </p>
+                      <p>Queries shorter than this token count will be routed to the cheaper model.</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <Badge variant="secondary" className="font-mono">
-                  {shortQueryThreshold[0]} tokens
-                </Badge>
+                <Badge variant="secondary" className="font-mono">{shortQueryThreshold[0]} tokens</Badge>
               </div>
               <Slider
                 value={shortQueryThreshold}
                 onValueChange={setShortQueryThreshold}
-                min={50}
-                max={500}
-                step={10}
-                className="w-full"
+                min={50} max={500} step={10} className="w-full"
               />
             </div>
 
@@ -233,13 +293,12 @@ const OptimizerSection = () => {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Short Queries</Label>
                 <Select value={shortQueryModel} onValueChange={setShortQueryModel}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo ($0.002/1K)</SelectItem>
-                    <SelectItem value="claude-instant">Claude Instant ($0.0008/1K)</SelectItem>
-                    <SelectItem value="mistral-small">Mistral Small ($0.001/1K)</SelectItem>
+                    <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
+                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                    <SelectItem value="claude-instant">Claude Instant</SelectItem>
+                    <SelectItem value="mistral-small">Mistral Small</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">Cheaper, faster model</p>
@@ -247,13 +306,12 @@ const OptimizerSection = () => {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Long/Complex Queries</Label>
                 <Select value={longQueryModel} onValueChange={setLongQueryModel}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-4">GPT-4 ($0.03/1K)</SelectItem>
-                    <SelectItem value="claude-3-opus">Claude 3 Opus ($0.015/1K)</SelectItem>
-                    <SelectItem value="mistral-large">Mistral Large ($0.008/1K)</SelectItem>
+                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
+                    <SelectItem value="gpt-4">GPT-4</SelectItem>
+                    <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
+                    <SelectItem value="mistral-large">Mistral Large</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">More capable model</p>
@@ -269,11 +327,11 @@ const OptimizerSection = () => {
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between p-2 rounded bg-background/50">
                   <span className="text-muted-foreground">"What's the weather?"</span>
-                  <Badge variant="outline" className="text-xs">GPT-3.5</Badge>
+                  <Badge variant="outline" className="text-xs">{shortQueryModel}</Badge>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-background/50">
                   <span className="text-muted-foreground">"Analyze this 2000-word document..."</span>
-                  <Badge variant="outline" className="text-xs">GPT-4</Badge>
+                  <Badge variant="outline" className="text-xs">{longQueryModel}</Badge>
                 </div>
               </div>
             </div>
@@ -290,15 +348,10 @@ const OptimizerSection = () => {
                 </div>
                 <div>
                   <CardTitle>Reliability Settings</CardTitle>
-                  <CardDescription>
-                    Configure fallback behavior and retry logic
-                  </CardDescription>
+                  <CardDescription>Configure fallback behavior and retry logic</CardDescription>
                 </div>
               </div>
-              <Switch
-                checked={fallbackEnabled}
-                onCheckedChange={setFallbackEnabled}
-              />
+              <Switch checked={fallbackEnabled} onCheckedChange={setFallbackEnabled} />
             </div>
           </CardHeader>
           <CardContent className={`space-y-6 ${!fallbackEnabled ? "opacity-50 pointer-events-none" : ""}`}>
@@ -315,17 +368,12 @@ const OptimizerSection = () => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <Badge variant="secondary" className="font-mono">
-                  {retryAttempts[0]}x
-                </Badge>
+                <Badge variant="secondary" className="font-mono">{retryAttempts[0]}x</Badge>
               </div>
               <Slider
                 value={retryAttempts}
                 onValueChange={setRetryAttempts}
-                min={1}
-                max={5}
-                step={1}
-                className="w-full"
+                min={1} max={5} step={1} className="w-full"
               />
             </div>
 
@@ -346,13 +394,17 @@ const OptimizerSection = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3">
-          <Button variant="outline" onClick={handleResetDefaults}>
+          <Button variant="outline" onClick={handleResetDefaults} disabled={saving}>
             <RotateCcw className="h-4 w-4 mr-2" />
             Reset to Defaults
           </Button>
-          <Button onClick={handleSaveSettings}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Settings
+          <Button onClick={handleSaveSettings} disabled={saving}>
+            {saving ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
+            {saving ? "Saving..." : "Save Settings"}
           </Button>
         </div>
       </div>

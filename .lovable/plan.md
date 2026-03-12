@@ -1,46 +1,52 @@
 
-Ziel: Die Tabellen sollen nicht nur feste Spaltenbreiten haben, sondern auch optisch exakt ausgerichtet wirken. Aktuell sind die Spaltenbreiten zwar per `colgroup` gesetzt, aber Header- und Body-Zellen nutzen unterschiedliche Innenabstände und teilweise konkurrierende Width-Klassen, wodurch Werte “verschoben” erscheinen.
 
-1) Root-Cause beheben (kein Redesign, nur präzise Layout-Korrektur)
-- In allen drei betroffenen Tabellen (`Category Breakdown`, `Category Averages`, `Recent Analyses`) die Zell-Ausrichtung vereinheitlichen:
-  - identische horizontale Padding-Logik für `th` und `td` je Spalte
-  - gleiche Textausrichtung pro Spalte (`text-left` vs `text-right`) in Kopf und Body
-  - `whitespace-nowrap` für numerische Spalten (Score/Date/Delta), damit kein Zeilenumbruch die Wahrnehmung verschiebt
-- Konfliktierende Breiten-Helfer in Headern entfernen (z. B. `w-16`, `w-24`, `w-28`), wenn bereits `colgroup` aktiv ist.
+# Plan: Strip All Feature-Specific Functionality, Keep Core Infrastructure
 
-2) `src/components/gamification/TodayVsAverage.tsx` gezielt korrigieren
-- `colgroup` behalten (40/15/15/30), aber Header-/Body-Zellen pro Spalte auf ein gemeinsames Raster bringen:
-  - Kategorie-Spalte: gleiche linke Einrückung in `th` und `td`
-  - Today/Average/Delta: identisches `text-right` + identisches rechtes Padding
-- Verbleibende `w-*` Klassen in den Headerzellen entfernen, damit nur `colgroup` die Breite steuert.
+Based on your uploaded implementation plan, here's what will be done:
 
-3) `src/components/gamification/AnalyticsOverview.tsx` gezielt korrigieren
-- Tabelle „Category Averages“:
-  - `colgroup` (70/30) behalten
-  - Header Score-Spalte mit gleichem rechtem Padding wie Score-`td`
-- Tabelle „Recent Analyses“:
-  - `colgroup` (50/20/30) behalten
-  - URL-, Score- und Date-Spalten auf konsistente Header/Body-Paddings bringen
-  - URL-Truncation sauber auf ein inneres Element legen (statt uneinheitlicher `td`-Breitenwirkung), damit die 50%-Spalte stabil bleibt
+## DELETE — Files & Directories
 
-4) Stabilitäts-Feinschliff für Tabellen-Rendering
-- Tabellen auf einheitliches Verhalten setzen:
-  - `table-fixed` bleibt aktiv
-  - konsistente `border-spacing`/Padding-Wahrnehmung (ohne zusätzliche variierende Width-Utilities)
-- Bestehende Hover-/Animation-Effekte bleiben unverändert, damit nur das Alignment korrigiert wird.
+**Pages (3 files):**
+- `src/pages/Chat.tsx`, `src/pages/Dashboard.tsx`, `src/pages/PublicScore.tsx`
 
-5) Validierung nach Umsetzung
-- Desktop prüfen:
-  - Headertext steht exakt über den Werten in jeder Spalte
-  - kein sichtbares „Springen“ bei langen URLs oder Chips
-- Mobile prüfen:
-  - kein unerwarteter Umbruch in numerischen Spalten
-  - Spalten bleiben visuell untereinander
-- Ergebnis: reine Layout-Korrektur ohne Logikänderung.
+**Component directories (4 dirs, ~40 files):**
+- `src/components/chat/` (entire directory)
+- `src/components/dashboard/` (entire directory)
+- `src/components/gamification/` (entire directory)
+- `src/components/genome/` (entire directory)
 
-Technische Kurzbegründung
-- Das Problem ist sehr wahrscheinlich kein fehlendes `colgroup` mehr, sondern eine Kombination aus:
-  1) ungleichen `th`/`td` Innenabständen,
-  2) zusätzlichen `w-*` Klassen in Headern trotz `colgroup`,
-  3) uneinheitlicher Inhaltsbegrenzung (insb. URL-Zelle).
-- Durch „ein Raster für alle Zellen“ + „eine einzige Breitenquelle (`colgroup`)“ werden die Spalten wieder sauber ausgerichtet.
+**Hooks (6 files):**
+- `useChatAnalysis.ts`, `useChatMessages.ts`, `useChatConversations.ts`
+- `useGamificationTrigger.ts`, `useBadgeChecker.ts`, `useStreak.ts`
+
+**Lib files (6 files):**
+- `src/lib/api/chat-api.ts` (+ `api/` folder)
+- `src/lib/badges.ts`, `src/lib/demo-battlecard-data.ts`, `src/lib/demo-competitor-data.ts`, `src/lib/demo-data.ts`, `src/lib/demo-winloss-data.ts`, `src/lib/mock-chat-data.ts`
+
+**Types (2 files):**
+- `src/types/chat.ts`, `src/types/gamification.ts`
+
+## MODIFY — Files with broken imports
+
+1. **`App.tsx`** — Remove routes `/chat`, `/dashboard`, `/scores/:slug` and their lazy imports
+2. **`Navbar.tsx`** — Remove `useStreak` import/usage, `StreakBadge` import/usage, and any links to `/chat` or `/dashboard`
+3. **`Profile.tsx`** — Remove `BadgeGallery` and `CreditResetTimer` imports/usage, remove "Progress & Achievements" card
+4. **`Pricing.tsx`** — Remove `FeatureComparisonTable` and `FAQSection` imports from `genome/`, replace with inline JSX or simple alternatives. Update CTA links from `/chat` to `/` or `/profile`
+5. **`Home.tsx`** — Remove `FAQSection` import from `genome/`, replace with inline JSX or remove
+
+## KEEP (unchanged)
+- Auth system (`AuthContext.tsx`, `Auth.tsx`, `AuthCallback.tsx`, `ResetPassword.tsx`, `UpdatePassword.tsx`)
+- Freemius payments (`useFreemiusCheckout.ts`)
+- Credit system infrastructure (`constants.ts`)
+- All static pages (Blog, HowItWorks, Contact, Imprint, Privacy, Terms)
+- Navbar & Footer (after cleanup)
+- All edge functions (backend untouched)
+- All UI components (`src/components/ui/`)
+
+## Execution order
+1. Delete all files/directories listed above
+2. Fix imports in the 5 modified files
+3. Verify no remaining broken imports across the codebase
+
+This is a large refactor (~50+ file deletions) but straightforward — no logic changes, just removal and import cleanup.
+

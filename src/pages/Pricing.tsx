@@ -8,8 +8,12 @@ import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { BreadcrumbSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
-import FeatureComparisonTable from "@/components/genome/FeatureComparisonTable";
-import FAQSection from "@/components/genome/FAQSection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const PricingPage = () => {
   const navigate = useNavigate();

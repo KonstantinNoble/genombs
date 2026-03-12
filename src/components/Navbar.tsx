@@ -2,16 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useStreak } from "@/hooks/useStreak";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { StreakBadge } from "@/components/gamification/StreakBadge";
 
 import logo from "@/assets/synvertas-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
   const { user } = useAuth();
-  const { streak } = useStreak(user?.id ?? null, true);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -134,8 +131,6 @@ const Navbar = () => {
             <div className="flex items-center gap-1 rounded-full bg-white/[0.03] border border-white/[0.05] px-2 py-1.5">
               <NavLink to="/">Home</NavLink>
               <NavLink to="/how-it-works">How It Works</NavLink>
-              {user && <NavLink to="/chat">Analyze</NavLink>}
-              {user && <NavLink to="/dashboard">Dashboard</NavLink>}
               <NavLink to="/pricing">Pricing</NavLink>
               <NavLink to="/blog">Blog</NavLink>
             </div>
@@ -143,7 +138,6 @@ const Navbar = () => {
 
           {/* CTA Button - Right */}
           <div className="hidden md:flex items-center shrink-0 gap-2">
-            {user && <StreakBadge streak={streak} userId={user.id} />}
             {user ? (
               <Link
                 to="/profile"
@@ -227,20 +221,10 @@ const Navbar = () => {
               <MobileNavLink to="/how-it-works" onClick={() => setIsOpen(false)} delay={1}>
                 How It Works
               </MobileNavLink>
-              {user && (
-                <MobileNavLink to="/chat" onClick={() => setIsOpen(false)} delay={2}>
-                  Analyze
-                </MobileNavLink>
-              )}
-              {user && (
-                <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={3}>
-                  Dashboard
-                </MobileNavLink>
-              )}
-              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={4}>
+              <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={2}>
                 Pricing
               </MobileNavLink>
-              <MobileNavLink to="/blog" onClick={() => setIsOpen(false)} delay={5}>
+              <MobileNavLink to="/blog" onClick={() => setIsOpen(false)} delay={3}>
                 Blog
               </MobileNavLink>
             </div>

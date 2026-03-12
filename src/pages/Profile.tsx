@@ -238,10 +238,14 @@ const Profile = () => {
                   value={creditsLimit > 0 ? (remainingCredits / creditsLimit) * 100 : 0}
                   className="h-2"
                 />
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Resets in</span>
-                  <CreditResetTimer creditsResetAt={creditsResetAt} />
-                </div>
+                {creditsResetAt && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Resets at</span>
+                    <span className="text-foreground font-medium">
+                      {new Date(creditsResetAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

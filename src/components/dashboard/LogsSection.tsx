@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,17 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Search,
-  Filter,
-  RefreshCw,
-  ChevronDown,
-  ChevronUp,
-  Zap,
-  DollarSign,
-  Clock,
-  ExternalLink,
-} from "lucide-react";
 
 interface LogEntry {
   id: string;
@@ -170,13 +159,12 @@ const LogsSection = () => {
       case "cached":
         return (
           <Badge className="bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20">
-            <Zap className="h-3 w-3 mr-1" />
             Cache Hit
           </Badge>
         );
       case "success":
         return (
-          <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+          <Badge variant="secondary" className="bg-muted text-muted-foreground">
             API Call
           </Badge>
         );
@@ -190,78 +178,55 @@ const LogsSection = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Section Header */}
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">Logs</h2>
+        <p className="text-muted-foreground mt-1">View and analyze all requests through your gateway</p>
+      </div>
+
       {/* Summary Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="glass-card">
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Total Requests</p>
-                <p className="text-xl font-bold">{mockLogs.length}</p>
-              </div>
-              <RefreshCw className="h-4 w-4 text-muted-foreground" />
-            </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-card/50 border-border/40">
+          <CardContent className="pt-5 pb-5">
+            <p className="text-xs text-muted-foreground">Total Requests</p>
+            <p className="text-xl font-semibold mt-1">{mockLogs.length}</p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Cache Hit Rate</p>
-                <p className="text-xl font-bold text-green-500">{cacheHitRate.toFixed(1)}%</p>
-              </div>
-              <Zap className="h-4 w-4 text-green-500" />
-            </div>
+        <Card className="bg-card/50 border-border/40">
+          <CardContent className="pt-5 pb-5">
+            <p className="text-xs text-muted-foreground">Cache Hit Rate</p>
+            <p className="text-xl font-semibold text-green-500 mt-1">{cacheHitRate.toFixed(1)}%</p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Total Saved</p>
-                <p className="text-xl font-bold text-primary">${totalSaved.toFixed(3)}</p>
-              </div>
-              <DollarSign className="h-4 w-4 text-primary" />
-            </div>
+        <Card className="bg-card/50 border-border/40">
+          <CardContent className="pt-5 pb-5">
+            <p className="text-xs text-muted-foreground">Total Saved</p>
+            <p className="text-xl font-semibold text-primary mt-1">${totalSaved.toFixed(3)}</p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Avg Latency (Cache)</p>
-                <p className="text-xl font-bold">44ms</p>
-              </div>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </div>
+        <Card className="bg-card/50 border-border/40">
+          <CardContent className="pt-5 pb-5">
+            <p className="text-xs text-muted-foreground">Avg Latency (Cache)</p>
+            <p className="text-xl font-semibold mt-1">44ms</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Logs Table */}
-      <Card className="glass-card">
+      <Card className="bg-card/50 border-border/40">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle>Request Logs</CardTitle>
-              <CardDescription>
-                View and analyze all requests through your gateway
-              </CardDescription>
-            </div>
+            <CardTitle className="text-lg font-medium">Request Logs</CardTitle>
             <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search prompts or models..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-64"
-                />
-              </div>
+              <Input
+                placeholder="Search prompts or models..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64"
+              />
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-36">
-                  <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filter" />
                 </SelectTrigger>
                 <SelectContent>
@@ -273,23 +238,19 @@ const LogsSection = () => {
               </Select>
               <Button
                 variant="outline"
-                size="icon"
+                size="sm"
                 onClick={() => setSortDirection(sortDirection === "desc" ? "asc" : "desc")}
               >
-                {sortDirection === "desc" ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronUp className="h-4 w-4" />
-                )}
+                {sortDirection === "desc" ? "Newest" : "Oldest"}
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-border/50 overflow-hidden">
+          <div className="rounded-lg border border-border/30 overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                <TableRow className="bg-muted/20 hover:bg-muted/20">
                   <TableHead className="w-40">Timestamp</TableHead>
                   <TableHead className="w-32">Model</TableHead>
                   <TableHead>Prompt</TableHead>
@@ -304,17 +265,17 @@ const LogsSection = () => {
                   <TableRow
                     key={log.id}
                     className={`cursor-pointer transition-colors ${
-                      expandedRow === log.id ? "bg-muted/20" : ""
-                    } ${log.cacheHit ? "bg-green-500/[0.02]" : ""}`}
+                      expandedRow === log.id ? "bg-muted/10" : ""
+                    }`}
                     onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
                   >
                     <TableCell className="font-mono text-xs text-muted-foreground">
                       {log.timestamp}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono text-xs">
+                      <span className="font-mono text-xs">
                         {log.model}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell className="max-w-xs">
                       <p className="truncate text-sm">
@@ -349,18 +310,17 @@ const LogsSection = () => {
 
           {/* Expanded Details */}
           {expandedRow && (
-            <div className="mt-4 p-4 rounded-lg bg-muted/20 border border-border/50">
+            <div className="mt-4 p-4 rounded-lg bg-muted/10 border border-border/30">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">Request Details</span>
                 <Button variant="ghost" size="sm">
-                  <ExternalLink className="h-4 w-4 mr-2" />
                   View Full Trace
                 </Button>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Full Prompt</p>
-                  <p className="text-sm bg-background/50 p-3 rounded border border-border/50 font-mono">
+                  <p className="text-xs text-muted-foreground mb-2">Full Prompt</p>
+                  <p className="text-sm bg-background/50 p-3 rounded border border-border/30 font-mono">
                     {mockLogs.find((l) => l.id === expandedRow)?.prompt}
                   </p>
                 </div>
@@ -383,7 +343,7 @@ const LogsSection = () => {
           )}
 
           {/* Pagination hint */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
             <p className="text-xs text-muted-foreground">
               Showing {filteredLogs.length} of {mockLogs.length} requests
             </p>

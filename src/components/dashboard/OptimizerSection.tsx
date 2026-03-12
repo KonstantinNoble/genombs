@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -12,16 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Database,
-  Route,
-  Gauge,
-  Sparkles,
-  Info,
-  Save,
-  RotateCcw,
-  Zap,
-} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -73,21 +63,22 @@ const OptimizerSection = () => {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
+      <div className="space-y-8">
+        {/* Section Header */}
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight">Optimizer</h2>
+          <p className="text-muted-foreground mt-1">Configure caching rules and routing logic</p>
+        </div>
+
         {/* Cache Configuration */}
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Database className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Semantic Cache</CardTitle>
-                  <CardDescription>
-                    Cache similar requests to reduce API calls and latency
-                  </CardDescription>
-                </div>
+              <div>
+                <CardTitle className="text-lg font-medium">Semantic Cache</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Cache similar requests to reduce API calls and latency
+                </p>
               </div>
               <Switch
                 checked={cacheEnabled}
@@ -103,12 +94,12 @@ const OptimizerSection = () => {
                   <Label className="text-sm font-medium">Cache Similarity Threshold</Label>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground cursor-help">?</span>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <p>
                         How similar a new query must be to a cached query to return the cached response.
-                        Higher values = more accurate but fewer cache hits.
+                        Higher values mean more accurate but fewer cache hits.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -133,17 +124,7 @@ const OptimizerSection = () => {
 
             {/* Cache TTL */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium">Cache Duration (TTL)</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>How long cached responses remain valid</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+              <Label className="text-sm font-medium">Cache Duration (TTL)</Label>
               <Select value={cacheTTL} onValueChange={setCacheTTL}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
@@ -159,37 +140,32 @@ const OptimizerSection = () => {
             </div>
 
             {/* Cache Stats Preview */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/50">
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border/30">
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">87%</p>
-                <p className="text-xs text-muted-foreground">Hit Rate</p>
+                <p className="text-2xl font-semibold text-primary">87%</p>
+                <p className="text-xs text-muted-foreground mt-1">Hit Rate</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold">12.4K</p>
-                <p className="text-xs text-muted-foreground">Cached Entries</p>
+                <p className="text-2xl font-semibold">12.4K</p>
+                <p className="text-xs text-muted-foreground mt-1">Cached Entries</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-500">$847</p>
-                <p className="text-xs text-muted-foreground">Saved This Month</p>
+                <p className="text-2xl font-semibold text-green-500">$847</p>
+                <p className="text-xs text-muted-foreground mt-1">Saved This Month</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Smart Routing */}
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Route className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Smart Routing</CardTitle>
-                  <CardDescription>
-                    Automatically route queries to the most cost-effective model
-                  </CardDescription>
-                </div>
+              <div>
+                <CardTitle className="text-lg font-medium">Smart Routing</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Automatically route queries to the most cost-effective model
+                </p>
               </div>
               <Switch
                 checked={smartRoutingEnabled}
@@ -201,19 +177,7 @@ const OptimizerSection = () => {
             {/* Query Length Threshold */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium">Short Query Threshold</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p>
-                        Queries shorter than this token count will be routed to the cheaper model.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
+                <Label className="text-sm font-medium">Short Query Threshold</Label>
                 <Badge variant="secondary" className="font-mono">
                   {shortQueryThreshold[0]} tokens
                 </Badge>
@@ -226,6 +190,9 @@ const OptimizerSection = () => {
                 step={10}
                 className="w-full"
               />
+              <p className="text-xs text-muted-foreground">
+                Queries shorter than this will be routed to the cheaper model
+              </p>
             </div>
 
             {/* Model Selection */}
@@ -261,12 +228,9 @@ const OptimizerSection = () => {
             </div>
 
             {/* Routing Preview */}
-            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Routing Preview</span>
-              </div>
-              <div className="space-y-2 text-xs">
+            <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+              <p className="text-sm font-medium mb-3">Routing Preview</p>
+              <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 rounded bg-background/50">
                   <span className="text-muted-foreground">"What's the weather?"</span>
                   <Badge variant="outline" className="text-xs">GPT-3.5</Badge>
@@ -281,19 +245,14 @@ const OptimizerSection = () => {
         </Card>
 
         {/* Fallback & Retry */}
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Gauge className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Reliability Settings</CardTitle>
-                  <CardDescription>
-                    Configure fallback behavior and retry logic
-                  </CardDescription>
-                </div>
+              <div>
+                <CardTitle className="text-lg font-medium">Reliability Settings</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Configure fallback behavior and retry logic
+                </p>
               </div>
               <Switch
                 checked={fallbackEnabled}
@@ -304,17 +263,7 @@ const OptimizerSection = () => {
           <CardContent className={`space-y-6 ${!fallbackEnabled ? "opacity-50 pointer-events-none" : ""}`}>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium">Retry Attempts</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Number of retries before failing or falling back</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
+                <Label className="text-sm font-medium">Retry Attempts</Label>
                 <Badge variant="secondary" className="font-mono">
                   {retryAttempts[0]}x
                 </Badge>
@@ -329,17 +278,12 @@ const OptimizerSection = () => {
               />
             </div>
 
-            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-              <div className="flex items-start gap-3">
-                <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">Automatic Fallback</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    If primary provider fails, requests automatically route to backup providers
-                    (OpenAI → Anthropic → Mistral)
-                  </p>
-                </div>
-              </div>
+            <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+              <p className="text-sm font-medium">Automatic Fallback</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                If primary provider fails, requests automatically route to backup providers
+                (OpenAI - Anthropic - Mistral)
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -347,11 +291,9 @@ const OptimizerSection = () => {
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3">
           <Button variant="outline" onClick={handleResetDefaults}>
-            <RotateCcw className="h-4 w-4 mr-2" />
             Reset to Defaults
           </Button>
           <Button onClick={handleSaveSettings}>
-            <Save className="h-4 w-4 mr-2" />
             Save Settings
           </Button>
         </div>

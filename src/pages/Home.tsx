@@ -7,7 +7,12 @@ import Footer from "@/components/Footer";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { WebPageSchema, OrganizationSchema, FAQSchema } from "@/components/seo/StructuredData";
 import { useAuth } from "@/contexts/AuthContext";
-import FAQSection from "@/components/genome/FAQSection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 

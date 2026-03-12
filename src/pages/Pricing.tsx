@@ -252,9 +252,9 @@ const PricingPage = () => {
                 <Button
                   size="lg"
                   className="px-10 h-13"
-                  onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
+                  onClick={() => navigate(isLoggedIn ? "/profile" : "/auth")}
                 >
-                  {isLoggedIn ? "Go to Dashboard" : "Create Account"}
+                  {isLoggedIn ? "Go to Profile" : "Create Account"}
                 </Button>
               </div>
             </div>

@@ -21,11 +21,9 @@ import {
 import { User } from "@supabase/supabase-js";
 import { useFreemiusCheckout } from "@/hooks/useFreemiusCheckout";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { BadgeGallery } from "@/components/gamification/BadgeGallery";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
-import CreditResetTimer from "@/components/chat/CreditResetTimer";
 
 const Profile = () => {
   const { remainingCredits, creditsLimit, creditsResetAt } = useAuth();

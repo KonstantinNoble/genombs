@@ -132,6 +132,7 @@ const Navbar = () => {
               <NavLink to="/">Home</NavLink>
               <NavLink to="/how-it-works">How It Works</NavLink>
               <NavLink to="/pricing">Pricing</NavLink>
+              <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/blog">Blog</NavLink>
             </div>
           </div>
@@ -224,7 +225,10 @@ const Navbar = () => {
               <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)} delay={2}>
                 Pricing
               </MobileNavLink>
-              <MobileNavLink to="/blog" onClick={() => setIsOpen(false)} delay={3}>
+              <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)} delay={3}>
+                Dashboard
+              </MobileNavLink>
+              <MobileNavLink to="/blog" onClick={() => setIsOpen(false)} delay={4}>
                 Blog
               </MobileNavLink>
             </div>

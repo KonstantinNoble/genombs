@@ -1,7 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-import { DollarSign, Zap, Clock, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 // Mock data for the cost comparison chart
 const costData = [
@@ -28,129 +27,116 @@ const chartConfig = {
 interface KPICardProps {
   title: string;
   value: string;
-  description: string;
-  trend?: "up" | "down" | "neutral";
-  trendValue?: string;
-  icon: React.ReactNode;
+  change?: string;
+  changeType?: "positive" | "negative" | "neutral";
 }
 
-const KPICard = ({ title, value, description, trend, trendValue, icon }: KPICardProps) => {
-  const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
-  const trendColor = trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground";
+const KPICard = ({ title, value, change, changeType = "neutral" }: KPICardProps) => {
+  const changeColor = changeType === "positive" 
+    ? "text-green-500" 
+    : changeType === "negative" 
+    ? "text-red-500" 
+    : "text-muted-foreground";
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-          {icon}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold tracking-tight">{value}</div>
-        <div className="flex items-center gap-2 mt-1">
-          {trend && trendValue && (
-            <span className={`flex items-center gap-1 text-xs ${trendColor}`}>
-              <TrendIcon className="h-3 w-3" />
-              {trendValue}
-            </span>
-          )}
-          <p className="text-xs text-muted-foreground">{description}</p>
-        </div>
+    <Card className="bg-card/50 border-border/40">
+      <CardContent className="pt-6">
+        <p className="text-sm text-muted-foreground mb-1">{title}</p>
+        <p className="text-3xl font-semibold tracking-tight">{value}</p>
+        {change && (
+          <p className={`text-sm mt-2 ${changeColor}`}>
+            {change}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
 };
 
 const InsightsSection = () => {
-  // Calculate total savings
   const totalSavings = costData.reduce(
     (acc, item) => acc + (item.withoutGateway - item.withGateway),
     0
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Section Header */}
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">Insights</h2>
+        <p className="text-muted-foreground mt-1">Monitor your cost savings and performance metrics</p>
+      </div>
+
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Total Savings"
           value={`$${totalSavings.toLocaleString()}`}
-          description="vs. direct API calls"
-          trend="up"
-          trendValue="+23.5%"
-          icon={<DollarSign className="h-4 w-4 text-primary" />}
+          change="+23.5% vs last month"
+          changeType="positive"
         />
         <KPICard
           title="Cache Hit Rate"
           value="87.3%"
-          description="of requests served from cache"
-          trend="up"
-          trendValue="+4.2%"
-          icon={<Zap className="h-4 w-4 text-primary" />}
+          change="+4.2% improvement"
+          changeType="positive"
         />
         <KPICard
           title="Latency Saved"
           value="2.4s"
-          description="average per request"
-          trend="up"
-          trendValue="+12%"
-          icon={<Clock className="h-4 w-4 text-primary" />}
+          change="Average per request"
+          changeType="neutral"
         />
         <KPICard
           title="Requests Today"
           value="12,847"
-          description="processed through gateway"
-          trend="neutral"
-          trendValue="stable"
-          icon={<TrendingUp className="h-4 w-4 text-primary" />}
+          change="Processed through gateway"
+          changeType="neutral"
         />
       </div>
 
       {/* Cost Comparison Chart */}
-      <Card className="glass-card">
+      <Card className="bg-card/50 border-border/40">
         <CardHeader>
-          <CardTitle>Cost Comparison</CardTitle>
-          <CardDescription>
-            Monthly API costs: With vs. Without Gateway
-          </CardDescription>
+          <CardTitle className="text-lg font-medium">Cost Comparison</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Monthly API costs with and without the gateway
+          </p>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[350px] w-full">
+          <ChartContainer config={chartConfig} className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={costData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <defs>
                   <linearGradient id="withoutGateway" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.3} />
+                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.2} />
                     <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="withGateway" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" vertical={false} />
                 <XAxis
                   dataKey="month"
                   axisLine={false}
                   tickLine={false}
-                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(value) => `$${value}`}
-                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => (
+                      formatter={(value) => (
                         <span className="font-mono">${Number(value).toLocaleString()}</span>
                       )}
                     />
@@ -179,13 +165,13 @@ const InsightsSection = () => {
           </ChartContainer>
           
           {/* Legend */}
-          <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-border/50">
+          <div className="flex items-center justify-center gap-8 mt-6 pt-4 border-t border-border/30">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-muted-foreground/60" />
+              <div className="w-3 h-0.5 rounded-full bg-muted-foreground" />
               <span className="text-sm text-muted-foreground">Without Gateway</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-primary" />
+              <div className="w-3 h-0.5 rounded-full bg-primary" />
               <span className="text-sm text-muted-foreground">With Gateway</span>
             </div>
           </div>
@@ -194,48 +180,27 @@ const InsightsSection = () => {
 
       {/* Summary Stats */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">This Month</p>
-                <p className="text-2xl font-bold text-green-500">$2,200</p>
-                <p className="text-xs text-muted-foreground">saved so far</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-green-500" />
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">This Month</p>
+            <p className="text-2xl font-semibold text-green-500 mt-1">$2,200</p>
+            <p className="text-sm text-muted-foreground mt-1">saved so far</p>
           </CardContent>
         </Card>
         
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Cache Efficiency</p>
-                <p className="text-2xl font-bold">94.2%</p>
-                <p className="text-xs text-muted-foreground">semantic match rate</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Zap className="h-6 w-6 text-primary" />
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">Cache Efficiency</p>
+            <p className="text-2xl font-semibold mt-1">94.2%</p>
+            <p className="text-sm text-muted-foreground mt-1">semantic match rate</p>
           </CardContent>
         </Card>
         
-        <Card className="glass-card">
+        <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Avg Response</p>
-                <p className="text-2xl font-bold">45ms</p>
-                <p className="text-xs text-muted-foreground">from cache</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-blue-500" />
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">Avg Response</p>
+            <p className="text-2xl font-semibold mt-1">45ms</p>
+            <p className="text-sm text-muted-foreground mt-1">from cache</p>
           </CardContent>
         </Card>
       </div>

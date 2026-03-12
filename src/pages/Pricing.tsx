@@ -156,7 +156,7 @@ const PricingPage = () => {
               <Button
                 variant="outline"
                 className="w-full h-12"
-                onClick={() => navigate(isLoggedIn ? "/chat" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/profile" : "/auth")}
               >
                 {isLoggedIn ? "Go to Dashboard" : "Get Started"}
               </Button>

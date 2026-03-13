@@ -30,7 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
@@ -82,11 +82,14 @@ const OptimizerSection = () => {
 
   // ── Load settings from DB on mount ─────────────────────────────────────────
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const load = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("gateway_settings")
         .select("*")
         .eq("user_id", user.id)
@@ -127,7 +130,7 @@ const OptimizerSection = () => {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("gateway_settings")
         .upsert(payload, { onConflict: "user_id" });
 

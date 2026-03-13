@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,143 +19,94 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { supabase } from "@/lib/supabase/external-client";
+import { useAuth } from "@/contexts/AuthContext";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface LogEntry {
   id: string;
-  timestamp: string;
-  model: string;
-  prompt: string;
-  tokens: number;
-  latency: number;
-  cost: number;
-  saved: number;
-  cacheHit: boolean;
-  status: "success" | "error" | "cached";
+  created_at: string;
+  model: string | null;
+  prompt_hash: string | null;
+  total_tokens: number | null;
+  latency_ms: number | null;
+  cache_hit: boolean | null;
+  status: string | null;
 }
 
-// Mock log data
-const mockLogs: LogEntry[] = [
-  {
-    id: "req_1",
-    timestamp: "2024-01-15 14:32:15",
-    model: "gpt-4",
-    prompt: "Explain quantum computing in simple terms...",
-    tokens: 847,
-    latency: 45,
-    cost: 0,
-    saved: 0.025,
-    cacheHit: true,
-    status: "cached",
-  },
-  {
-    id: "req_2",
-    timestamp: "2024-01-15 14:31:42",
-    model: "gpt-3.5-turbo",
-    prompt: "What is the capital of France?",
-    tokens: 52,
-    latency: 230,
-    cost: 0.0001,
-    saved: 0,
-    cacheHit: false,
-    status: "success",
-  },
-  {
-    id: "req_3",
-    timestamp: "2024-01-15 14:30:58",
-    model: "claude-3-opus",
-    prompt: "Analyze this quarterly financial report and provide...",
-    tokens: 2341,
-    latency: 38,
-    cost: 0,
-    saved: 0.035,
-    cacheHit: true,
-    status: "cached",
-  },
-  {
-    id: "req_4",
-    timestamp: "2024-01-15 14:29:33",
-    model: "gpt-4",
-    prompt: "Write a Python function that implements...",
-    tokens: 1205,
-    latency: 1850,
-    cost: 0.036,
-    saved: 0,
-    cacheHit: false,
-    status: "success",
-  },
-  {
-    id: "req_5",
-    timestamp: "2024-01-15 14:28:10",
-    model: "gpt-3.5-turbo",
-    prompt: "Translate 'Hello, how are you?' to Spanish",
-    tokens: 28,
-    latency: 42,
-    cost: 0,
-    saved: 0.0001,
-    cacheHit: true,
-    status: "cached",
-  },
-  {
-    id: "req_6",
-    timestamp: "2024-01-15 14:27:45",
-    model: "mistral-large",
-    prompt: "Summarize the key points from this meeting transcript...",
-    tokens: 1892,
-    latency: 1200,
-    cost: 0.015,
-    saved: 0,
-    cacheHit: false,
-    status: "success",
-  },
-  {
-    id: "req_7",
-    timestamp: "2024-01-15 14:26:22",
-    model: "gpt-4",
-    prompt: "Connection timeout to OpenAI API",
-    tokens: 0,
-    latency: 30000,
-    cost: 0,
-    saved: 0,
-    cacheHit: false,
-    status: "error",
-  },
-  {
-    id: "req_8",
-    timestamp: "2024-01-15 14:25:18",
-    model: "claude-instant",
-    prompt: "Generate a creative tagline for a coffee shop...",
-    tokens: 156,
-    latency: 52,
-    cost: 0,
-    saved: 0.0001,
-    cacheHit: true,
-    status: "cached",
-  },
-];
+type StatusFilter = "all" | "success" | "cached" | "error";
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const LogsSection = () => {
+  const { user } = useAuth();
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 50;
 
-  const filteredLogs = mockLogs
-    .filter((log) => {
-      const matchesSearch = log.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        log.model.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || log.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.timestamp).getTime();
-      const dateB = new Date(b.timestamp).getTime();
-      return sortDirection === "desc" ? dateB - dateA : dateA - dateB;
-    });
+  // ── Fetch logs from DB ──────────────────────────────────────────────────────
+  const fetchLogs = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("gateway_request_logs")
+        .select("id, created_at, model, prompt_hash, total_tokens, latency_ms, cache_hit, status")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: sortDirection === "asc" })
+        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-  const totalSaved = mockLogs.reduce((acc, log) => acc + log.saved, 0);
-  const cacheHitRate = (mockLogs.filter((log) => log.cacheHit).length / mockLogs.length) * 100;
+      if (error) throw error;
+      setLogs(data ?? []);
+    } catch (err) {
+      console.error("[LogsSection] fetchLogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, sortDirection, page]);
 
-  const getStatusBadge = (status: LogEntry["status"]) => {
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  // ── Derived data ────────────────────────────────────────────────────────────
+  const getDisplayStatus = (log: LogEntry): "success" | "cached" | "error" => {
+    if (log.cache_hit) return "cached";
+    if (log.status === "error" || log.status === "failed") return "error";
+    return "success";
+  };
+
+  const filteredLogs = logs.filter((log) => {
+    const matchesSearch =
+      !searchQuery ||
+      (log.model ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.prompt_hash ?? "").toLowerCase().includes(searchQuery.toLowerCase());
+    const displayStatus = getDisplayStatus(log);
+    const matchesStatus = statusFilter === "all" || displayStatus === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalRequests = logs.length;
+  const cachedCount = logs.filter((l) => l.cache_hit).length;
+  const cacheHitRate = totalRequests > 0 ? ((cachedCount / totalRequests) * 100).toFixed(1) : "0.0";
+  const avgCacheLatency =
+    cachedCount > 0
+      ? Math.round(
+        logs.filter((l) => l.cache_hit && l.latency_ms).reduce((a, l) => a + (l.latency_ms ?? 0), 0) / cachedCount,
+      )
+      : 0;
+
+  // ── Badge ───────────────────────────────────────────────────────────────────
+  const getStatusBadge = (status: "success" | "cached" | "error") => {
     switch (status) {
       case "cached":
         return (
@@ -177,6 +129,7 @@ const LogsSection = () => {
     }
   };
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-8">
       {/* Section Header */}
@@ -190,25 +143,25 @@ const LogsSection = () => {
         <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-5 pb-5">
             <p className="text-xs text-muted-foreground">Total Requests</p>
-            <p className="text-xl font-semibold mt-1">{mockLogs.length}</p>
+            <p className="text-xl font-semibold mt-1">{loading ? "—" : totalRequests}</p>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-5 pb-5">
             <p className="text-xs text-muted-foreground">Cache Hit Rate</p>
-            <p className="text-xl font-semibold text-green-500 mt-1">{cacheHitRate.toFixed(1)}%</p>
+            <p className="text-xl font-semibold text-green-500 mt-1">{loading ? "—" : `${cacheHitRate}%`}</p>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-5 pb-5">
-            <p className="text-xs text-muted-foreground">Total Saved</p>
-            <p className="text-xl font-semibold text-primary mt-1">${totalSaved.toFixed(3)}</p>
+            <p className="text-xs text-muted-foreground">Cached Requests</p>
+            <p className="text-xl font-semibold text-primary mt-1">{loading ? "—" : cachedCount}</p>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border/40">
           <CardContent className="pt-5 pb-5">
             <p className="text-xs text-muted-foreground">Avg Latency (Cache)</p>
-            <p className="text-xl font-semibold mt-1">44ms</p>
+            <p className="text-xl font-semibold mt-1">{loading ? "—" : `${avgCacheLatency}ms`}</p>
           </CardContent>
         </Card>
       </div>
@@ -220,12 +173,12 @@ const LogsSection = () => {
             <CardTitle className="text-lg font-medium">Request Logs</CardTitle>
             <div className="flex items-center gap-2">
               <Input
-                placeholder="Search prompts or models..."
+                placeholder="Search models or hashes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-64"
               />
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
                 <SelectTrigger className="w-36">
                   <SelectValue placeholder="Filter" />
                 </SelectTrigger>
@@ -247,111 +200,118 @@ const LogsSection = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-border/30 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/20 hover:bg-muted/20">
-                  <TableHead className="w-40">Timestamp</TableHead>
-                  <TableHead className="w-32">Model</TableHead>
-                  <TableHead>Prompt</TableHead>
-                  <TableHead className="w-24 text-right">Tokens</TableHead>
-                  <TableHead className="w-24 text-right">Latency</TableHead>
-                  <TableHead className="w-24 text-right">Saved</TableHead>
-                  <TableHead className="w-28">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLogs.map((log) => (
-                  <TableRow
-                    key={log.id}
-                    className={`cursor-pointer transition-colors ${
-                      expandedRow === log.id ? "bg-muted/10" : ""
-                    }`}
-                    onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
-                  >
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {log.timestamp}
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs">
-                        {log.model}
-                      </span>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      <p className="truncate text-sm">
-                        {log.prompt}
-                      </p>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
-                      {log.tokens.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
-                      <span className={log.cacheHit ? "text-green-500" : ""}>
-                        {log.latency < 1000 ? `${log.latency}ms` : `${(log.latency / 1000).toFixed(1)}s`}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {log.saved > 0 ? (
-                        <span className="font-mono text-sm text-green-500">
-                          +${log.saved.toFixed(4)}
-                        </span>
-                      ) : (
-                        <span className="font-mono text-sm text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(log.status)}
-                    </TableCell>
+          {loading ? (
+            <div className="flex items-center justify-center py-12 text-muted-foreground gap-2">
+              <Loader2 className="h-5 w-5 animate-spin" /> Loading logs…
+            </div>
+          ) : filteredLogs.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              No gateway requests yet — send your first request through the proxy to see logs here.
+            </div>
+          ) : (
+            <div className="rounded-lg border border-border/30 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/20 hover:bg-muted/20">
+                    <TableHead className="w-44">Timestamp</TableHead>
+                    <TableHead className="w-32">Model</TableHead>
+                    <TableHead>Prompt Hash</TableHead>
+                    <TableHead className="w-24 text-right">Tokens</TableHead>
+                    <TableHead className="w-24 text-right">Latency</TableHead>
+                    <TableHead className="w-28">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredLogs.map((log) => {
+                    const status = getDisplayStatus(log);
+                    return (
+                      <TableRow
+                        key={log.id}
+                        className={`cursor-pointer transition-colors ${expandedRow === log.id ? "bg-muted/10" : ""}`}
+                        onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {new Date(log.created_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-mono text-xs">{log.model ?? "—"}</span>
+                        </TableCell>
+                        <TableCell className="max-w-xs">
+                          <p className="truncate text-sm font-mono text-muted-foreground">
+                            {log.prompt_hash ? `${log.prompt_hash.slice(0, 16)}…` : "—"}
+                          </p>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-sm">
+                          {(log.total_tokens ?? 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-sm">
+                          <span className={log.cache_hit ? "text-green-500" : ""}>
+                            {log.latency_ms != null
+                              ? log.latency_ms < 1000
+                                ? `${log.latency_ms}ms`
+                                : `${(log.latency_ms / 1000).toFixed(1)}s`
+                              : "—"}
+                          </span>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(status)}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
           {/* Expanded Details */}
           {expandedRow && (
             <div className="mt-4 p-4 rounded-lg bg-muted/10 border border-border/30">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">Request Details</span>
-                <Button variant="ghost" size="sm">
-                  View Full Trace
-                </Button>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-2">Full Prompt</p>
-                  <p className="text-sm bg-background/50 p-3 rounded border border-border/30 font-mono">
-                    {mockLogs.find((l) => l.id === expandedRow)?.prompt}
-                  </p>
-                </div>
+              <span className="text-sm font-medium">Request Details</span>
+              <div className="grid gap-4 md:grid-cols-2 mt-3">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Request ID</span>
-                    <span className="font-mono">{expandedRow}</span>
+                    <span className="font-mono text-xs">{expandedRow}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Cache Key</span>
-                    <span className="font-mono text-xs">sem_hash_a7f3b2...</span>
+                    <span className="text-muted-foreground">Prompt Hash</span>
+                    <span className="font-mono text-xs">
+                      {logs.find((l) => l.id === expandedRow)?.prompt_hash ?? "—"}
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Model</span>
+                    <span className="font-mono text-xs">
+                      {logs.find((l) => l.id === expandedRow)?.model ?? "—"}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Similarity Score</span>
-                    <span className="font-mono">98.7%</span>
+                    <span className="text-muted-foreground">Cache Hit</span>
+                    <span className="font-mono text-xs">
+                      {logs.find((l) => l.id === expandedRow)?.cache_hit ? "Yes ✓" : "No"}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Pagination hint */}
+          {/* Pagination */}
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
             <p className="text-xs text-muted-foreground">
-              Showing {filteredLogs.length} of {mockLogs.length} requests
+              Showing {filteredLogs.length} requests (page {page + 1})
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled>
+              <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
                 Previous
               </Button>
-              <Button variant="outline" size="sm" disabled>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={logs.length < PAGE_SIZE}
+                onClick={() => setPage((p) => p + 1)}
+              >
                 Next
               </Button>
             </div>

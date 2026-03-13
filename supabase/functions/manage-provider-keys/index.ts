@@ -1,26 +1,10 @@
 /**
  * Edge Function: manage-provider-keys
  * =====================================
- * Handles CRUD for encrypted LLM provider API keys.
- *
- * Routes (determined by method):
- *   GET    → List provider key metadata (NO plaintext key ever returned)
- *   POST   → Encrypt + store a new provider key
- *   DELETE → Remove a provider key
- *
- * The plaintext key is ONLY ever present in this Edge Function's memory
- * during encryption. It is never returned to the client in any response.
- *
- * Required env vars:
- *   SUPABASE_URL
- *   SUPABASE_ANON_KEY
- *   SUPABASE_SERVICE_ROLE_KEY
- *   GATEWAY_ENCRYPTION_SECRET (min 32 chars)
  */
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { encrypt, getEncryptionSecret } from "../_shared/crypto.ts";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -28,11 +12,62 @@ const corsHeaders = {
     "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
 };
 
-// Valid provider identifiers
+// ─── CRYPTO FUNCTIONS INLINED ───────────────────────────────────────────────
+const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_SALT = "synvertas-gateway-v1"; // fixed salt (key derives from secret)
+
+async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
+    const encoder = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(secret),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"],
+    );
+    return crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: encoder.encode(PBKDF2_SALT),
+            iterations: PBKDF2_ITERATIONS,
+            hash: "SHA-256",
+        },
+        baseKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"],
+    );
+}
+
+async function encrypt(plaintext: string, secret: string): Promise<string> {
+    const key = await deriveCryptoKey(secret);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        key,
+        new TextEncoder().encode(plaintext),
+    );
+
+    const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(ciphertext), iv.byteLength);
+
+    return btoa(String.fromCharCode(...combined));
+}
+
+function getEncryptionSecret(): string {
+    const secret = Deno.env.get("GATEWAY_ENCRYPTION_SECRET");
+    if (!secret || secret.length < 32) {
+        throw new Error("GATEWAY_ENCRYPTION_SECRET is missing or too short.");
+    }
+    return secret;
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 const VALID_PROVIDERS = ["openai", "anthropic", "google", "mistral"] as const;
 type Provider = (typeof VALID_PROVIDERS)[number];
 
-// Extract the last 4 chars for display (e.g. "sk-...abcd")
 function buildKeyPrefix(plainKey: string): string {
     const trimmed = plainKey.trim();
     const suffix = trimmed.slice(-4);
@@ -46,83 +81,78 @@ serve(async (req: Request) => {
     }
 
     try {
-        // ─── Auth: Identify the calling user ─────────────────────────────────────
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
         const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-        const authHeader = req.headers.get("Authorization") ?? "";
-        if (!authHeader.startsWith("Bearer ")) {
-            return json({ error: "Missing or invalid Authorization header" }, 401);
+        // 1. Hole den JWT Token aus dem Header
+        const authHeader = req.headers.get("Authorization");
+        if (!authHeader) {
+            return json({ error: "DEBUG: Missing Authorization header" }, 401);
         }
 
-        // User-scoped client — enforces RLS automatically
-        const userClient = createClient(supabaseUrl, anonKey, {
-            global: { headers: { Authorization: authHeader } },
-            auth: { persistSession: false },
-        });
-
-        const { data: { user }, error: userError } = await userClient.auth.getUser();
-        if (userError || !user) {
-            return json({ error: "Unauthorized" }, 401);
+        const token = authHeader.replace("Bearer ", "").trim();
+        if (!token) {
+            return json({ error: "DEBUG: JWT Token empty" }, 401);
         }
 
-        // Service-role client — used only for direct decryption path (internal only)
+        // 2. Erstelle einen Admin-Client (ignoriert RLS, darf alles)
         const adminClient = createClient(supabaseUrl, serviceKey, {
             auth: { persistSession: false },
         });
 
+        // 3. Verifiziere den JWT-Token des Nutzers manuell über den Admin-Client!
+        const { data: { user }, error: userError } = await adminClient.auth.getUser(token);
+
+        if (userError || !user) {
+            console.error("[manage-provider-keys] JWT verification failed:", userError?.message);
+            return json({ error: "DEBUG: Unauthorized token" }, 401);
+        }
+
+        // --- Ab hier wissen wir zu 100%, dass der User legitim eingeloggt ist! ---
+
         // ─── GET: Return key metadata (never plaintext) ───────────────────────────
         if (req.method === "GET") {
-            const { data, error } = await userClient
+            const { data, error } = await adminClient
                 .from("gateway_provider_keys")
                 .select("id, provider, key_prefix, is_active, last_used_at, created_at, updated_at")
                 .eq("user_id", user.id)
                 .order("provider");
 
             if (error) throw error;
-
             return json({ keys: data ?? [] }, 200);
         }
 
         // ─── POST: Encrypt & store a new key ─────────────────────────────────────
         if (req.method === "POST") {
             const body = await req.json().catch(() => null);
-            if (!body) return json({ error: "Invalid JSON body" }, 400);
+            if (!body) return json({ error: "DEBUG: Invalid JSON body" }, 400);
 
             const { provider, api_key: plaintextKey } = body as {
                 provider: string;
                 api_key: string;
             };
 
-            // Validate provider
             if (!VALID_PROVIDERS.includes(provider as Provider)) {
-                return json(
-                    { error: `Invalid provider. Must be one of: ${VALID_PROVIDERS.join(", ")}` },
-                    400,
-                );
+                return json({ error: "DEBUG: Invalid provider" }, 400);
             }
 
-            // Validate key presence and minimum length
             if (!plaintextKey || typeof plaintextKey !== "string" || plaintextKey.trim().length < 10) {
-                return json({ error: "api_key is required and must be at least 10 characters" }, 400);
+                return json({ error: "DEBUG: api_key is too short" }, 400);
             }
 
             const trimmedKey = plaintextKey.trim();
-
-            // Encrypt — key now lives only in memory of this function
             const secret = getEncryptionSecret();
             const encryptedBase64 = await encrypt(trimmedKey, secret);
             const keyPrefix = buildKeyPrefix(trimmedKey);
 
-            // Upsert (one key per user per provider)
+            // Speichern mit Admin-Client
             const { error: upsertError } = await adminClient
                 .from("gateway_provider_keys")
                 .upsert(
                     {
                         user_id: user.id,
                         provider,
-                        key_encrypted: encryptedBase64, // stored as TEXT (base64)
+                        key_encrypted: encryptedBase64,
                         key_prefix: keyPrefix,
                         is_active: true,
                     },
@@ -131,14 +161,8 @@ serve(async (req: Request) => {
 
             if (upsertError) throw upsertError;
 
-            // Return only metadata — plaintext is gone from memory after this return
             return json(
-                {
-                    success: true,
-                    message: `${provider} API key saved securely.`,
-                    provider,
-                    key_prefix: keyPrefix,
-                },
+                { success: true, message: `${provider} API key saved securely.`, provider, key_prefix: keyPrefix },
                 200,
             );
         }
@@ -149,10 +173,10 @@ serve(async (req: Request) => {
             const provider = url.searchParams.get("provider");
 
             if (!provider || !VALID_PROVIDERS.includes(provider as Provider)) {
-                return json({ error: "Invalid or missing provider query parameter" }, 400);
+                return json({ error: "DEBUG: Invalid provider" }, 400);
             }
 
-            const { error: deleteError } = await userClient
+            const { error: deleteError } = await adminClient
                 .from("gateway_provider_keys")
                 .delete()
                 .eq("user_id", user.id)
@@ -167,8 +191,8 @@ serve(async (req: Request) => {
 
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Internal server error";
-        console.error("[manage-provider-keys]", message);
-        return json({ error: message }, 500);
+        console.error("[manage-provider-keys] FATAL:", message);
+        return json({ error: `FATAL_ERROR: ${message}` }, 500);
     }
 });
 

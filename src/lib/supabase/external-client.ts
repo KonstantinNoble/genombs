@@ -9,16 +9,14 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-// External Supabase project credentials
-// These override the auto-managed .env values from Lovable Cloud
-const EXTERNAL_SUPABASE_URL = "https://xnkspttfhcnqzhmazggn.supabase.co";
-const EXTERNAL_SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhua3NwdHRmaGNucXpobWF6Z2duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NDU0NDAsImV4cCI6MjA4NjMyMTQ0MH0.AluwfNe4T-tJQo73ResSpnqZ3Dky34CBv50ubxX2_ec";
+// External Supabase project credentials from .env
+const EXTERNAL_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const EXTERNAL_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
 // Export the URL and anon key for edge function calls
 export const SUPABASE_URL = EXTERNAL_SUPABASE_URL;
 export const SUPABASE_ANON_KEY = EXTERNAL_SUPABASE_ANON_KEY;
-export const SUPABASE_PROJECT_ID = "xnkspttfhcnqzhmazggn";
+export const SUPABASE_PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID || "";
 
 // Create and export the external Supabase client
 export const supabase = createClient<Database>(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {

@@ -21,7 +21,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
-import { decodeBase64 } from "jsr:@std/encoding/base64";
+import { decode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -67,7 +67,7 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 
 async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
-    const combined = decodeBase64(encryptedBase64);
+    const combined = decode(encryptedBase64.trim());
     const plaintext = await crypto.subtle.decrypt(
         { name: "AES-GCM", iv: combined.slice(0, 12) },
         key,

@@ -28,7 +28,17 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 
 async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
-    const combined = Uint8Array.from(atob(encryptedBase64), (c) => c.charCodeAt(0));
+    
+    // Normalize base64: handle URL-safe characters, whitespace, and missing padding
+    let normalized = encryptedBase64.trim()
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+    // Re-add missing base64 padding
+    while (normalized.length % 4 !== 0) {
+        normalized += "=";
+    }
+    
+    const combined = Uint8Array.from(atob(normalized), (c) => c.charCodeAt(0));
     const iv = combined.slice(0, 12);
     const ciphertext = combined.slice(12);
     const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);

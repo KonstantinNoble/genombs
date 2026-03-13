@@ -109,7 +109,7 @@ const DEFAULT_SETTINGS: GatewaySettings = {
     cache_ttl_hours: 24,
     smart_routing_enabled: true,
     short_query_threshold: 100,
-    short_query_model: "o1-mini",  // Short, fast queries — reasoning model
+    short_query_model: "o4-mini",  // Short, fast queries — reasoning model
     long_query_model: "gpt-4o",   // Complex, long queries — allround stable model
     fallback_enabled: true,
 };

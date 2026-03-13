@@ -25,7 +25,7 @@ async function runTest() {
         // Du forderst ein Modell an
         model: "gpt-4o",
         messages: [
-          { role: "user", content: "Schreibe mir auf Deutsch genau einen Satz darüber, warum APIs toll sind." }
+          { role: "user", content: "Schreibe mir auf Deutsch genau einen Satz darüber, warum APIs wichtig sind für Entwickler." }
         ]
       })
     });

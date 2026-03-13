@@ -23,7 +23,7 @@ async function runTest() {
       },
       body: JSON.stringify({
         // Du forderst ein Modell an
-        model: "gpt-4.5-preview",
+        model: "gpt-4o",
         messages: [
           { role: "user", content: "Schreibe mir auf Deutsch genau einen Satz darüber, warum APIs toll sind." }
         ]

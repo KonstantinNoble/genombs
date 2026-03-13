@@ -16,12 +16,13 @@ import {
   CheckCircle2,
   Loader2,
   Trash2,
+  Lock,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase/external-client";
 import { useAuth } from "@/contexts/AuthContext";
 
-type Provider = "openai" | "anthropic" | "google" | "mistral";
+type Provider = "openai" | "anthropic" | "google";
 
 interface ProviderKeyMeta {
   id: string;
@@ -33,10 +34,9 @@ interface ProviderKeyMeta {
 }
 
 const PROVIDERS: { id: Provider; label: string; models: string; placeholder: string }[] = [
-  { id: "openai", label: "OpenAI", models: "GPT-4o, GPT-4o-mini", placeholder: "sk-..." },
-  { id: "anthropic", label: "Anthropic", models: "Claude 3.5, Claude 3", placeholder: "sk-ant-..." },
-  { id: "google", label: "Google AI", models: "Gemini Pro, Gemini Flash", placeholder: "AIza..." },
-  { id: "mistral", label: "Mistral AI", models: "Mistral Large, Medium", placeholder: "mk-..." },
+  { id: "openai", label: "OpenAI", models: "GPT-5.4 Thinking, GPT-5.3 Instant", placeholder: "sk-..." },
+  { id: "anthropic", label: "Anthropic", models: "Claude Opus 4.6, Claude 3.5 Haiku", placeholder: "sk-ant-..." },
+  { id: "google", label: "Google AI", models: "Gemini 3.1 Pro, Gemini 3.1 Flash", placeholder: "AIza..." },
 ];
 
 const GatewaySection = () => {
@@ -45,17 +45,17 @@ const GatewaySection = () => {
 
   // Saved key metadata from server (NO plaintext)
   const [savedKeys, setSavedKeys] = useState<Record<Provider, ProviderKeyMeta | null>>({
-    openai: null, anthropic: null, google: null, mistral: null,
+    openai: null, anthropic: null, google: null,
   });
 
   // Input values — local only, cleared after save, never sent back from server
   const [inputs, setInputs] = useState<Record<Provider, string>>({
-    openai: "", anthropic: "", google: "", mistral: "",
+    openai: "", anthropic: "", google: "",
   });
 
-  const [showKey, setShowKey] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false, mistral: false });
-  const [saving, setSaving] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false, mistral: false });
-  const [deleting, setDeleting] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false, mistral: false });
+  const [showKey, setShowKey] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false });
+  const [saving, setSaving] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false });
+  const [deleting, setDeleting] = useState<Record<Provider, boolean>>({ openai: false, anthropic: false, google: false });
   const [loadingKeys, setLoadingKeys] = useState(true);
   const [copiedProxy, setCopiedProxy] = useState(false);
 
@@ -76,7 +76,7 @@ const GatewaySection = () => {
       if (error) throw error;
 
       const map: Record<Provider, ProviderKeyMeta | null> = {
-        openai: null, anthropic: null, google: null, mistral: null,
+        openai: null, anthropic: null, google: null,
       };
       (data.keys as ProviderKeyMeta[]).forEach((k) => {
         map[k.provider] = k;
@@ -318,17 +318,23 @@ const client = new OpenAI({
                           type={showKey[p.id] ? "text" : "password"}
                           value={inputs[p.id]}
                           onChange={(e) => setInputs((i) => ({ ...i, [p.id]: e.target.value }))}
-                          placeholder={saved ? `Update key (${saved.key_prefix})` : p.placeholder}
+                          placeholder={saved ? `••••••••${saved.key_prefix ?? "****"} (Saved)` : p.placeholder}
                           className="pl-9 pr-9 font-mono text-xs"
                           onKeyDown={(e) => { if (e.key === "Enter") handleSaveKey(p.id); }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => setShowKey((s) => ({ ...s, [p.id]: !s[p.id] }))}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {showKey[p.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
+                        {saved && !inputs[p.id] ? (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" title="Key is encrypted and cannot be revealed">
+                            <Lock className="h-4 w-4" />
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setShowKey((s) => ({ ...s, [p.id]: !s[p.id] }))}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showKey[p.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        )}
                       </div>
 
                       <Button

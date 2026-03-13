@@ -40,8 +40,8 @@ const DEFAULTS = {
   cacheEnabled: true,
   cacheTTLHours: 24,
   smartRoutingEnabled: true,
-  shortQueryModel: "gpt-4o-mini",
-  longQueryModel: "gpt-4o",
+  shortQueryModel: "gpt-5.3-instant",
+  longQueryModel: "gpt-5.4-thinking",
   shortQueryThreshold: 100,
   fallbackEnabled: true,
   retryAttempts: 3,
@@ -298,10 +298,9 @@ const OptimizerSection = () => {
                 <Select value={shortQueryModel} onValueChange={setShortQueryModel}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                    <SelectItem value="claude-instant">Claude Instant</SelectItem>
-                    <SelectItem value="mistral-small">Mistral Small</SelectItem>
+                    <SelectItem value="gpt-5.3-instant">GPT-5.3 Instant</SelectItem>
+                    <SelectItem value="gemini-3.1-flash">Gemini 3.1 Flash</SelectItem>
+                    <SelectItem value="claude-3-5-haiku">Claude 3.5 Haiku</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">Cheaper, faster model</p>
@@ -311,10 +310,9 @@ const OptimizerSection = () => {
                 <Select value={longQueryModel} onValueChange={setLongQueryModel}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                    <SelectItem value="gpt-4">GPT-4</SelectItem>
-                    <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
-                    <SelectItem value="mistral-large">Mistral Large</SelectItem>
+                    <SelectItem value="gpt-5.4-thinking">GPT-5.4 Thinking</SelectItem>
+                    <SelectItem value="gemini-3.1-pro">Gemini 3.1 Pro</SelectItem>
+                    <SelectItem value="claude-4-6-opus">Claude Opus 4.6</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">More capable model</p>

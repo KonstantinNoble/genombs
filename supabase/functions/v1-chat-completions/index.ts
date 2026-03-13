@@ -9,42 +9,18 @@
  *   3. Semantic Cache Check (pgvector Cosine Similarity)
  *      → HIT:  Antwort direkt zurück, $0 Kosten
  *      → MISS: weiter zu Schritt 4
- *   4. Provider Key entschlüsseln (AES-256-GCM)
+ *   4. Provider Key entschlüsseln (AES-256-GCM) via _shared
  *   5. Request an OpenAI/Anthropic/Google/Mistral forwarden
  *   6. Antwort an Cache speichern (retroaktiv)
  *   7. Streaming-Antwort oder JSON zurückschicken
  *   8. Metriken loggen (tokens, kosten, latenz, cache status)
  *
  * Embeddings: Hugging Face Inference API (kostenlos, kein User-Key nötig)
- * Alles in einer Datei gebündelt für manuelles Deployment.
  */
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
-
-/** Pure-JS base64 encoder — no btoa/atob, no imports, works with all binary data */
-function b64Encode(data: Uint8Array): string {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let str = "";
-    for (let i = 0; i < data.length; i += 3) {
-        const b0 = data[i], b1 = data[i + 1] ?? 0, b2 = data[i + 2] ?? 0;
-        str += chars[b0 >> 2];
-        str += chars[((b0 & 3) << 4) | (b1 >> 4)];
-        str += i + 1 < data.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
-        str += i + 2 < data.length ? chars[b2 & 63] : "=";
-    }
-    return str;
-}
-
-/** Robust base64 decoder — uses built-in atob */
-function b64Decode(b64: string): Uint8Array {
-    const binary = atob(b64.trim());
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-}
+import { encrypt, decrypt, getEncryptionSecret } from "../_shared/crypto.ts";
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -61,57 +37,11 @@ const corsHeaders = {
 
 // Hugging Face model for embeddings (free, no user key needed)
 // 384-dimensional — NOTE: requires schema to use vector(384) not vector(1536)
-// We use the HF Inference API which is free for public models
 const HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2";
 
 // ============================================================================
-// 1. CRYPTO UTILS (AES-256-GCM — Web Crypto API, kein npm nötig)
+// 1. CRYPTO UTILS — now via _shared/crypto.ts
 // ============================================================================
-
-const PBKDF2_ITERATIONS = 100_000;
-const PBKDF2_SALT = "synvertas-gateway-v1";
-
-async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
-    const raw = await crypto.subtle.importKey(
-        "raw",
-        new TextEncoder().encode(secret),
-        { name: "PBKDF2" },
-        false,
-        ["deriveKey"],
-    );
-    return crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: new TextEncoder().encode(PBKDF2_SALT), iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
-        raw,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"],
-    );
-}
-
-async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
-    try {
-        const key = await deriveCryptoKey(secret);
-        const combined = b64Decode(encryptedBase64);
-
-        if (combined.byteLength < 13) {
-            throw new Error(`Malformed data: length ${combined.byteLength} is too short.`);
-        }
-
-        const iv = combined.slice(0, 12);
-        const ciphertext = combined.slice(12);
-
-        const plaintext = await crypto.subtle.decrypt(
-            { name: "AES-GCM", iv },
-            key,
-            ciphertext,
-        );
-        return new TextDecoder().decode(plaintext);
-    } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.error(`[decrypt-error] ${msg}`);
-        throw new Error(`Decryption failed: ${msg}. Try re-saving the API key in the dashboard.`);
-    }
-}
 
 async function sha256Hex(input: string): Promise<string> {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
@@ -122,14 +52,9 @@ async function sha256Hex(input: string): Promise<string> {
 // 2. HUGGING FACE EMBEDDINGS (Free, no user key required)
 // ============================================================================
 
-/**
- * Generate embeddings using Hugging Face Inference API.
- * Uses the free tier — no API key required for public models.
- * Falls back to null on failure (cache miss, not fatal).
- */
 async function generateEmbedding(text: string): Promise<number[] | null> {
     try {
-        const hfToken = Deno.env.get("HUGGINGFACE_API_KEY"); // optional, increases rate limits
+        const hfToken = Deno.env.get("HUGGINGFACE_API_KEY");
         const headers: Record<string, string> = { "Content-Type": "application/json" };
         if (hfToken) headers["Authorization"] = `Bearer ${hfToken}`;
 
@@ -139,7 +64,7 @@ async function generateEmbedding(text: string): Promise<number[] | null> {
                 method: "POST",
                 headers,
                 body: JSON.stringify({
-                    inputs: text.slice(0, 512), // MiniLM max token limit
+                    inputs: text.slice(0, 512),
                     options: { wait_for_model: true },
                 }),
             },
@@ -151,7 +76,6 @@ async function generateEmbedding(text: string): Promise<number[] | null> {
         }
 
         const data = await res.json();
-        // HF returns nested array for sentence-transformers: [[0.1, 0.2, ...]]
         if (Array.isArray(data) && Array.isArray(data[0])) return data[0] as number[];
         if (Array.isArray(data)) return data as number[];
         return null;
@@ -217,7 +141,7 @@ async function resolveUser(
     return { userId: data.user_id, settings: { ...DEFAULT_SETTINGS, ...(s ?? {}) } };
 }
 
-/** Fetch + decrypt provider key from vault */
+/** Fetch + decrypt provider key from vault using shared crypto */
 async function resolveProviderKey(
     admin: SupabaseClient,
     userId: string,
@@ -238,12 +162,7 @@ async function resolveProviderKey(
         );
     }
 
-    const secret = Deno.env.get("GATEWAY_ENCRYPTION_SECRET");
-    if (!secret || secret.length < 32) {
-        throw new Error("GATEWAY_ENCRYPTION_SECRET is misconfigured on the server.");
-    }
-    console.log(`[crypto-debug] Secret length: ${secret.length}, Start: ${secret.slice(0, 3)}...`);
-
+    const secret = getEncryptionSecret();
     const plaintext = await decrypt(data.key_encrypted as string, secret);
 
     admin.from("gateway_provider_keys")
@@ -265,14 +184,6 @@ interface CacheHitResult {
     provider: string;
 }
 
-/**
- * Check the semantic cache for this user's prompt.
- * Step 1: Exact SHA-256 hash match (free, instant, no API calls).
- * Step 2: pgvector cosine-similarity search via HuggingFace embeddings (free).
- *
- * Completely provider-agnostic: works regardless of which LLM provider the user has.
- * Falls back gracefully (returns null) if HuggingFace is unavailable.
- */
 async function checkSemanticCache(
     admin: SupabaseClient,
     userId: string,
@@ -281,7 +192,6 @@ async function checkSemanticCache(
     sidecar: { promptHash?: string; embedding?: number[] },
 ): Promise<CacheHitResult | null> {
 
-    // ── Step A: Exact hash match (free, instant) ──────────────────────────────
     const promptHash = await sha256Hex(promptContent);
     sidecar.promptHash = promptHash;
 
@@ -295,15 +205,14 @@ async function checkSemanticCache(
 
     if (exactRow) return exactRow as CacheHitResult;
 
-    // ── Step B: Semantic similarity via HuggingFace + pgvector ───────────────
     const embedding = await generateEmbedding(promptContent);
-    if (!embedding) return null; // HF unavailable → skip, proceed to provider
+    if (!embedding) return null;
 
     sidecar.embedding = embedding;
 
     const { data: matches, error: matchError } = await admin.rpc("match_cache_entries", {
         p_user_id: userId,
-        p_embedding: `[${embedding.join(",")}]`, // Postgres vector literal
+        p_embedding: `[${embedding.join(",")}]`,
         p_threshold: settings.cache_similarity,
         p_limit: 1,
     });
@@ -322,13 +231,9 @@ async function checkSemanticCache(
         };
     }
 
-    return null; // genuine cache miss
+    return null;
 }
 
-/**
- * Persist a successful LLM response to the semantic cache.
- * Called fire-and-forget — does NOT block the HTTP response.
- */
 function storeCacheEntry(
     admin: SupabaseClient,
     userId: string,
@@ -363,7 +268,7 @@ function storeCacheEntry(
 }
 
 // ============================================================================
-// 5. PROVIDER ROUTING (All 4 providers: OpenAI, Anthropic, Google, Mistral)
+// 5. PROVIDER ROUTING
 // ============================================================================
 
 interface UpstreamConfig {
@@ -372,10 +277,6 @@ interface UpstreamConfig {
     body: unknown;
 }
 
-/**
- * Build the upstream request config for each provider.
- * Handles API differences (headers, URL formats, body formats).
- */
 function buildUpstreamRequest(
     provider: Provider,
     providerKey: string,
@@ -393,7 +294,6 @@ function buildUpstreamRequest(
             };
 
         case "anthropic": {
-            // Convert OpenAI messages format to Anthropic format
             const messages = (body.messages as Array<{ role: string; content: string }>) ?? [];
             const systemMsg = messages.find((m) => m.role === "system")?.content ?? "";
             const userMessages = messages.filter((m) => m.role !== "system");
@@ -416,7 +316,6 @@ function buildUpstreamRequest(
         }
 
         case "google":
-            // Google provides an OpenAI-compatible endpoint — simplest approach
             return {
                 url: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
                 headers: {
@@ -427,7 +326,6 @@ function buildUpstreamRequest(
             };
 
         case "mistral":
-            // Mistral is fully OpenAI-compatible (same request format)
             return {
                 url: "https://api.mistral.ai/v1/chat/completions",
                 headers: { ...baseHeaders, "Authorization": `Bearer ${providerKey}` },
@@ -500,7 +398,6 @@ function jsonResponse(body: unknown, status = 200, extra_headers: Record<string,
 // ============================================================================
 
 serve(async (req: Request) => {
-    console.log("Synvertas Gateway v1.2 Deployment Verified — Pure JS Base64");
     if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
     const startTime = Date.now();
@@ -511,8 +408,6 @@ serve(async (req: Request) => {
 
     try {
         // ── Auth ─────────────────────────────────────────────────────────────────
-        // x-gateway-key: bevorzugter Header (vermeidet Supabase JWT-Validierung)
-        // Authorization: Bearer sgw_... wird als Fallback unterstützt
         const gatewayKeyHeader = req.headers.get("x-gateway-key") ?? "";
         const authHeader = req.headers.get("Authorization") ?? "";
 
@@ -525,7 +420,7 @@ serve(async (req: Request) => {
             throw new HttpError("Missing or invalid API key. Expected: x-gateway-key: sgw_... header.", 401);
         }
 
-        // ── Bootstrap Supabase Admin Client (service role, bypasses RLS) ─────────
+        // ── Bootstrap Supabase Admin Client ──────────────────────────────────────
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
@@ -559,7 +454,7 @@ serve(async (req: Request) => {
             body.model = finalModel;
         }
 
-        // ── Semantic Cache Check (provider-agnostic via HuggingFace) ─────────────
+        // ── Semantic Cache Check ──────────────────────────────────────────────────
         const promptContent = JSON.stringify(body.messages);
         const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
 
@@ -573,7 +468,6 @@ serve(async (req: Request) => {
                         ? JSON.parse(hit.response_data)
                         : hit.response_data;
 
-                    // Update hit count (fire-and-forget)
                     admin.from("gateway_cache_entries")
                         .update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() })
                         .eq("id", hit.id).then(() => { });
@@ -588,11 +482,10 @@ serve(async (req: Request) => {
                 }
             } catch (err) {
                 console.warn("[cache] Cache check failed, continuing:", err);
-                // Non-fatal — continue to upstream provider
             }
         }
 
-        // ── Decrypt Provider Key ──────────────────────────────────────────────────
+        // ── Decrypt Provider Key via _shared/crypto ───────────────────────────────
         const providerKey = await resolveProviderKey(admin, userId, finalProvider);
 
         // ── Build and Send Upstream Request ───────────────────────────────────────

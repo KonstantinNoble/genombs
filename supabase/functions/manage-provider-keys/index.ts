@@ -5,80 +5,13 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-
-/** Pure-JS base64 encoder — no btoa/atob, no imports */
-function b64Encode(data: Uint8Array): string {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let str = "";
-    for (let i = 0; i < data.length; i += 3) {
-        const b0 = data[i], b1 = data[i + 1] ?? 0, b2 = data[i + 2] ?? 0;
-        str += chars[b0 >> 2];
-        str += chars[((b0 & 3) << 4) | (b1 >> 4)];
-        str += i + 1 < data.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
-        str += i + 2 < data.length ? chars[b2 & 63] : "=";
-    }
-    return str;
-}
+import { encrypt, getEncryptionSecret } from "../_shared/crypto.ts";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
 };
-
-// ─── CRYPTO FUNCTIONS INLINED ───────────────────────────────────────────────
-const PBKDF2_ITERATIONS = 100_000;
-const PBKDF2_SALT = "synvertas-gateway-v1"; // fixed salt (key derives from secret)
-
-async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
-    const encoder = new TextEncoder();
-    const baseKey = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(secret),
-        { name: "PBKDF2" },
-        false,
-        ["deriveKey"],
-    );
-    return crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: encoder.encode(PBKDF2_SALT),
-            iterations: PBKDF2_ITERATIONS,
-            hash: "SHA-256",
-        },
-        baseKey,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["encrypt", "decrypt"],
-    );
-}
-
-async function encrypt(plaintext: string, secret: string): Promise<string> {
-    const key = await deriveCryptoKey(secret);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-
-    const ciphertext = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv },
-        key,
-        new TextEncoder().encode(plaintext),
-    );
-
-    const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(ciphertext), iv.byteLength);
-
-    return b64Encode(combined);
-}
-
-function getEncryptionSecret(): string {
-    const secret = Deno.env.get("GATEWAY_ENCRYPTION_SECRET");
-    if (!secret || secret.length < 32) {
-        throw new Error("GATEWAY_ENCRYPTION_SECRET is missing or too short.");
-    }
-    console.log(`[crypto-debug] Secret length: ${secret.length}, Start: ${secret.slice(0, 3)}...`);
-    return secret;
-}
-// ────────────────────────────────────────────────────────────────────────────
 
 const VALID_PROVIDERS = ["openai", "anthropic", "google", "mistral"] as const;
 type Provider = (typeof VALID_PROVIDERS)[number];
@@ -90,8 +23,6 @@ function buildKeyPrefix(plainKey: string): string {
 }
 
 serve(async (req: Request) => {
-    console.log("Synvertas Gateway v1.2 Deployment Verified — Pure JS Base64");
-    // Handle CORS preflight
     if (req.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
     }
@@ -100,31 +31,29 @@ serve(async (req: Request) => {
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-        // 1. Hole den JWT Token aus dem Header
+        // 1. JWT aus Header lesen
         const authHeader = req.headers.get("Authorization");
         if (!authHeader) {
-            return json({ error: "DEBUG: Missing Authorization header" }, 401);
+            return json({ error: "Missing Authorization header" }, 401);
         }
 
         const token = authHeader.replace("Bearer ", "").trim();
         if (!token) {
-            return json({ error: "DEBUG: JWT Token empty" }, 401);
+            return json({ error: "JWT Token empty" }, 401);
         }
 
-        // 2. Erstelle einen Admin-Client (ignoriert RLS, darf alles)
+        // 2. Admin-Client erstellen
         const adminClient = createClient(supabaseUrl, serviceKey, {
             auth: { persistSession: false },
         });
 
-        // 3. Verifiziere den JWT-Token des Nutzers manuell über den Admin-Client!
+        // 3. JWT-Token verifizieren
         const { data: { user }, error: userError } = await adminClient.auth.getUser(token);
 
         if (userError || !user) {
             console.error("[manage-provider-keys] JWT verification failed:", userError?.message);
-            return json({ error: "DEBUG: Unauthorized token" }, 401);
+            return json({ error: "Unauthorized" }, 401);
         }
-
-        // --- Ab hier wissen wir zu 100%, dass der User legitim eingeloggt ist! ---
 
         // ─── GET: Return key metadata (never plaintext) ───────────────────────────
         if (req.method === "GET") {
@@ -141,7 +70,7 @@ serve(async (req: Request) => {
         // ─── POST: Encrypt & store a new key ─────────────────────────────────────
         if (req.method === "POST") {
             const body = await req.json().catch(() => null);
-            if (!body) return json({ error: "DEBUG: Invalid JSON body" }, 400);
+            if (!body) return json({ error: "Invalid JSON body" }, 400);
 
             const { provider, api_key: plaintextKey } = body as {
                 provider: string;
@@ -149,19 +78,20 @@ serve(async (req: Request) => {
             };
 
             if (!VALID_PROVIDERS.includes(provider as Provider)) {
-                return json({ error: "DEBUG: Invalid provider" }, 400);
+                return json({ error: "Invalid provider" }, 400);
             }
 
             if (!plaintextKey || typeof plaintextKey !== "string" || plaintextKey.trim().length < 10) {
-                return json({ error: "DEBUG: api_key is too short" }, 400);
+                return json({ error: "api_key is too short" }, 400);
             }
 
             const trimmedKey = plaintextKey.trim();
+
+            // Shared crypto — same as what v1-chat-completions uses to decrypt
             const secret = getEncryptionSecret();
             const encryptedBase64 = await encrypt(trimmedKey, secret);
             const keyPrefix = buildKeyPrefix(trimmedKey);
 
-            // Speichern mit Admin-Client
             const { error: upsertError } = await adminClient
                 .from("gateway_provider_keys")
                 .upsert(
@@ -189,7 +119,7 @@ serve(async (req: Request) => {
             const provider = url.searchParams.get("provider");
 
             if (!provider || !VALID_PROVIDERS.includes(provider as Provider)) {
-                return json({ error: "DEBUG: Invalid provider" }, 400);
+                return json({ error: "Invalid provider" }, 400);
             }
 
             const { error: deleteError } = await adminClient
@@ -208,7 +138,7 @@ serve(async (req: Request) => {
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Internal server error";
         console.error("[manage-provider-keys] FATAL:", message);
-        return json({ error: `FATAL_ERROR: ${message}` }, 500);
+        return json({ error: message }, 500);
     }
 });
 

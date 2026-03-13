@@ -5,7 +5,20 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { encode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
+
+/** Pure-JS base64 encoder — no btoa/atob, no imports */
+function b64Encode(data: Uint8Array): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let str = "";
+    for (let i = 0; i < data.length; i += 3) {
+        const b0 = data[i], b1 = data[i + 1] ?? 0, b2 = data[i + 2] ?? 0;
+        str += chars[b0 >> 2];
+        str += chars[((b0 & 3) << 4) | (b1 >> 4)];
+        str += i + 1 < data.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
+        str += i + 2 < data.length ? chars[b2 & 63] : "=";
+    }
+    return str;
+}
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -54,7 +67,7 @@ async function encrypt(plaintext: string, secret: string): Promise<string> {
     combined.set(iv, 0);
     combined.set(new Uint8Array(ciphertext), iv.byteLength);
 
-    return encode(combined);
+    return b64Encode(combined);
 }
 
 function getEncryptionSecret(): string {
@@ -62,6 +75,7 @@ function getEncryptionSecret(): string {
     if (!secret || secret.length < 32) {
         throw new Error("GATEWAY_ENCRYPTION_SECRET is missing or too short.");
     }
+    console.log(`[crypto-debug] Secret length: ${secret.length}, Start: ${secret.slice(0, 3)}...`);
     return secret;
 }
 // ────────────────────────────────────────────────────────────────────────────
@@ -76,6 +90,7 @@ function buildKeyPrefix(plainKey: string): string {
 }
 
 serve(async (req: Request) => {
+    console.log("Synvertas Gateway v1.2 Deployment Verified — Pure JS Base64");
     // Handle CORS preflight
     if (req.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });

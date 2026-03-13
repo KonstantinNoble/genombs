@@ -21,7 +21,30 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
-import { decode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
+
+/** Pure-JS base64 encoder — no btoa/atob, no imports, works with all binary data */
+function b64Encode(data: Uint8Array): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let str = "";
+    for (let i = 0; i < data.length; i += 3) {
+        const b0 = data[i], b1 = data[i + 1] ?? 0, b2 = data[i + 2] ?? 0;
+        str += chars[b0 >> 2];
+        str += chars[((b0 & 3) << 4) | (b1 >> 4)];
+        str += i + 1 < data.length ? chars[((b1 & 15) << 2) | (b2 >> 6)] : "=";
+        str += i + 2 < data.length ? chars[b2 & 63] : "=";
+    }
+    return str;
+}
+
+/** Robust base64 decoder — uses built-in atob */
+function b64Decode(b64: string): Uint8Array {
+    const binary = atob(b64.trim());
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -32,7 +55,7 @@ type Provider = (typeof VALID_PROVIDERS)[number];
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type, x-provider",
+    "Access-Control-Allow-Headers": "authorization, content-type, x-provider, x-gateway-key",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -66,14 +89,28 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 }
 
 async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
-    const key = await deriveCryptoKey(secret);
-    const combined = decode(encryptedBase64.trim());
-    const plaintext = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: combined.slice(0, 12) },
-        key,
-        combined.slice(12),
-    );
-    return new TextDecoder().decode(plaintext);
+    try {
+        const key = await deriveCryptoKey(secret);
+        const combined = b64Decode(encryptedBase64);
+
+        if (combined.byteLength < 13) {
+            throw new Error(`Malformed data: length ${combined.byteLength} is too short.`);
+        }
+
+        const iv = combined.slice(0, 12);
+        const ciphertext = combined.slice(12);
+
+        const plaintext = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv },
+            key,
+            ciphertext,
+        );
+        return new TextDecoder().decode(plaintext);
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`[decrypt-error] ${msg}`);
+        throw new Error(`Decryption failed: ${msg}. Try re-saving the API key in the dashboard.`);
+    }
 }
 
 async function sha256Hex(input: string): Promise<string> {
@@ -205,6 +242,7 @@ async function resolveProviderKey(
     if (!secret || secret.length < 32) {
         throw new Error("GATEWAY_ENCRYPTION_SECRET is misconfigured on the server.");
     }
+    console.log(`[crypto-debug] Secret length: ${secret.length}, Start: ${secret.slice(0, 3)}...`);
 
     const plaintext = await decrypt(data.key_encrypted as string, secret);
 
@@ -462,6 +500,7 @@ function jsonResponse(body: unknown, status = 200, extra_headers: Record<string,
 // ============================================================================
 
 serve(async (req: Request) => {
+    console.log("Synvertas Gateway v1.2 Deployment Verified — Pure JS Base64");
     if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
     const startTime = Date.now();
@@ -472,11 +511,19 @@ serve(async (req: Request) => {
 
     try {
         // ── Auth ─────────────────────────────────────────────────────────────────
+        // x-gateway-key: bevorzugter Header (vermeidet Supabase JWT-Validierung)
+        // Authorization: Bearer sgw_... wird als Fallback unterstützt
+        const gatewayKeyHeader = req.headers.get("x-gateway-key") ?? "";
         const authHeader = req.headers.get("Authorization") ?? "";
-        if (!authHeader.startsWith("Bearer sgw_")) {
-            throw new HttpError("Missing or invalid API key. Expected: Authorization: Bearer sgw_...", 401);
+
+        let saasKey = "";
+        if (gatewayKeyHeader.startsWith("sgw_")) {
+            saasKey = gatewayKeyHeader.trim();
+        } else if (authHeader.startsWith("Bearer sgw_")) {
+            saasKey = authHeader.slice(7).trim();
+        } else {
+            throw new HttpError("Missing or invalid API key. Expected: x-gateway-key: sgw_... header.", 401);
         }
-        const saasKey = authHeader.slice(7).trim();
 
         // ── Bootstrap Supabase Admin Client (service role, bypasses RLS) ─────────
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

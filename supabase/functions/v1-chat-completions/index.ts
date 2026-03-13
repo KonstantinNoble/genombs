@@ -10,11 +10,12 @@
  *      → HIT:  Antwort direkt zurück, $0 Kosten
  *      → MISS: weiter zu Schritt 4
  *   4. Provider Key entschlüsseln (AES-256-GCM)
- *   5. Request an OpenAI/Anthropic forwarden
+ *   5. Request an OpenAI/Anthropic/Google/Mistral forwarden
  *   6. Antwort an Cache speichern (retroaktiv)
  *   7. Streaming-Antwort oder JSON zurückschicken
  *   8. Metriken loggen (tokens, kosten, latenz, cache status)
  *
+ * Embeddings: Hugging Face Inference API (kostenlos, kein User-Key nötig)
  * Alles in einer Datei gebündelt für manuelles Deployment.
  */
 
@@ -33,6 +34,11 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, content-type, x-provider",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+// Hugging Face model for embeddings (free, no user key needed)
+// 384-dimensional — NOTE: requires schema to use vector(384) not vector(1536)
+// We use the HF Inference API which is free for public models
+const HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2";
 
 // ============================================================================
 // 1. CRYPTO UTILS (AES-256-GCM — Web Crypto API, kein npm nötig)
@@ -75,7 +81,50 @@ async function sha256Hex(input: string): Promise<string> {
 }
 
 // ============================================================================
-// 2. DATABASE HELPERS
+// 2. HUGGING FACE EMBEDDINGS (Free, no user key required)
+// ============================================================================
+
+/**
+ * Generate embeddings using Hugging Face Inference API.
+ * Uses the free tier — no API key required for public models.
+ * Falls back to null on failure (cache miss, not fatal).
+ */
+async function generateEmbedding(text: string): Promise<number[] | null> {
+    try {
+        const hfToken = Deno.env.get("HUGGINGFACE_API_KEY"); // optional, increases rate limits
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (hfToken) headers["Authorization"] = `Bearer ${hfToken}`;
+
+        const res = await fetch(
+            `https://api-inference.huggingface.co/pipeline/feature-extraction/${HF_EMBEDDING_MODEL}`,
+            {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    inputs: text.slice(0, 512), // MiniLM max token limit
+                    options: { wait_for_model: true },
+                }),
+            },
+        );
+
+        if (!res.ok) {
+            console.warn(`[embed] HuggingFace API error ${res.status} — skipping semantic cache.`);
+            return null;
+        }
+
+        const data = await res.json();
+        // HF returns nested array for sentence-transformers: [[0.1, 0.2, ...]]
+        if (Array.isArray(data) && Array.isArray(data[0])) return data[0] as number[];
+        if (Array.isArray(data)) return data as number[];
+        return null;
+    } catch (err) {
+        console.warn("[embed] Embedding generation failed:", err);
+        return null;
+    }
+}
+
+// ============================================================================
+// 3. DATABASE HELPERS
 // ============================================================================
 
 interface GatewaySettings {
@@ -167,7 +216,7 @@ async function resolveProviderKey(
 }
 
 // ============================================================================
-// 3. SEMANTIC CACHE
+// 4. SEMANTIC CACHE (Provider-Agnostic via Hugging Face)
 // ============================================================================
 
 interface CacheHitResult {
@@ -179,19 +228,17 @@ interface CacheHitResult {
 
 /**
  * Check the semantic cache for this user's prompt.
- * First tries an exact SHA-256 hash match (nanoseconds), then falls back
- * to pgvector cosine-similarity search (milliseconds).
+ * Step 1: Exact SHA-256 hash match (free, instant, no API calls).
+ * Step 2: pgvector cosine-similarity search via HuggingFace embeddings (free).
  *
- * Returns null if no suitable cached response is found.
- * As a side effect, attaches the generated embedding to `sidecar` for
- * later storage if the cache misses.
+ * Completely provider-agnostic: works regardless of which LLM provider the user has.
+ * Falls back gracefully (returns null) if HuggingFace is unavailable.
  */
 async function checkSemanticCache(
     admin: SupabaseClient,
     userId: string,
     promptContent: string,
     settings: GatewaySettings,
-    openAIEmbedKey: string,
     sidecar: { promptHash?: string; embedding?: number[] },
 ): Promise<CacheHitResult | null> {
 
@@ -209,28 +256,12 @@ async function checkSemanticCache(
 
     if (exactRow) return exactRow as CacheHitResult;
 
-    // ── Step B: Semantic similarity via pgvector ──────────────────────────────
-    // Generate an embedding using text-embedding-3-small
-    const embedRes = await fetch("https://api.openai.com/v1/embeddings", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${openAIEmbedKey}`,
-        },
-        body: JSON.stringify({ input: promptContent, model: "text-embedding-3-small" }),
-    });
+    // ── Step B: Semantic similarity via HuggingFace + pgvector ───────────────
+    const embedding = await generateEmbedding(promptContent);
+    if (!embedding) return null; // HF unavailable → skip, proceed to provider
 
-    if (!embedRes.ok) {
-        // Embedding generation failed — skip cache, proceed to provider
-        console.warn(`[cache] Embedding API error ${embedRes.status} — skipping cache.`);
-        return null;
-    }
+    sidecar.embedding = embedding;
 
-    const embedJson = await embedRes.json();
-    const embedding: number[] = embedJson.data[0].embedding;
-    sidecar.embedding = embedding; // store for later cache insertion
-
-    // Call the match_cache_entries() Postgres function (defined in schema)
     const { data: matches, error: matchError } = await admin.rpc("match_cache_entries", {
         p_user_id: userId,
         p_embedding: `[${embedding.join(",")}]`, // Postgres vector literal
@@ -270,7 +301,7 @@ function storeCacheEntry(
     tokensSaved: number,
     ttlHours: number,
 ) {
-    if (!sidecar.promptHash || !sidecar.embedding) return; // nothing to cache
+    if (!sidecar.promptHash) return;
 
     const expiresAt = ttlHours > 0
         ? new Date(Date.now() + ttlHours * 3_600_000).toISOString()
@@ -280,7 +311,7 @@ function storeCacheEntry(
         user_id: userId,
         prompt_hash: sidecar.promptHash,
         prompt_text: promptContent.slice(0, 10_000),
-        embedding: `[${sidecar.embedding.join(",")}]`, // Postgres vector literal
+        embedding: sidecar.embedding ? `[${sidecar.embedding.join(",")}]` : null,
         response_data: responseData,
         model,
         provider,
@@ -293,7 +324,84 @@ function storeCacheEntry(
 }
 
 // ============================================================================
-// 4. LOGGING
+// 5. PROVIDER ROUTING (All 4 providers: OpenAI, Anthropic, Google, Mistral)
+// ============================================================================
+
+interface UpstreamConfig {
+    url: string;
+    headers: Record<string, string>;
+    body: unknown;
+}
+
+/**
+ * Build the upstream request config for each provider.
+ * Handles API differences (headers, URL formats, body formats).
+ */
+function buildUpstreamRequest(
+    provider: Provider,
+    providerKey: string,
+    model: string,
+    body: Record<string, unknown>,
+): UpstreamConfig {
+    const baseHeaders: Record<string, string> = { "Content-Type": "application/json" };
+
+    switch (provider) {
+        case "openai":
+            return {
+                url: "https://api.openai.com/v1/chat/completions",
+                headers: { ...baseHeaders, "Authorization": `Bearer ${providerKey}` },
+                body,
+            };
+
+        case "anthropic": {
+            // Convert OpenAI messages format to Anthropic format
+            const messages = (body.messages as Array<{ role: string; content: string }>) ?? [];
+            const systemMsg = messages.find((m) => m.role === "system")?.content ?? "";
+            const userMessages = messages.filter((m) => m.role !== "system");
+
+            return {
+                url: "https://api.anthropic.com/v1/messages",
+                headers: {
+                    ...baseHeaders,
+                    "x-api-key": providerKey,
+                    "anthropic-version": "2023-06-01",
+                },
+                body: {
+                    model,
+                    max_tokens: (body.max_tokens as number) ?? 1024,
+                    system: systemMsg || undefined,
+                    messages: userMessages.map((m) => ({ role: m.role, content: m.content })),
+                    stream: body.stream,
+                },
+            };
+        }
+
+        case "google":
+            // Google provides an OpenAI-compatible endpoint — simplest approach
+            return {
+                url: `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
+                headers: {
+                    ...baseHeaders,
+                    "Authorization": `Bearer ${providerKey}`,
+                },
+                body,
+            };
+
+        case "mistral":
+            // Mistral is fully OpenAI-compatible (same request format)
+            return {
+                url: "https://api.mistral.ai/v1/chat/completions",
+                headers: { ...baseHeaders, "Authorization": `Bearer ${providerKey}` },
+                body,
+            };
+
+        default:
+            throw new HttpError(`Unsupported provider: ${provider}`, 400);
+    }
+}
+
+// ============================================================================
+// 6. LOGGING
 // ============================================================================
 
 interface LogMetrics {
@@ -332,7 +440,7 @@ function logRequest(admin: SupabaseClient, m: LogMetrics) {
 }
 
 // ============================================================================
-// 5. HELPERS
+// 7. HELPERS
 // ============================================================================
 
 class HttpError extends Error {
@@ -349,7 +457,7 @@ function jsonResponse(body: unknown, status = 200, extra_headers: Record<string,
 }
 
 // ============================================================================
-// 6. MAIN HANDLER
+// 8. MAIN HANDLER
 // ============================================================================
 
 serve(async (req: Request) => {
@@ -399,101 +507,53 @@ serve(async (req: Request) => {
             if (finalModel.includes("claude")) finalProvider = "anthropic";
             else if (finalModel.includes("gpt")) finalProvider = "openai";
             else if (finalModel.includes("gemini")) finalProvider = "google";
+            else if (finalModel.includes("mistral") || finalModel.includes("mixtral")) finalProvider = "mistral";
             body.model = finalModel;
         }
 
-        // ── Semantic Cache Check ──────────────────────────────────────────────────
+        // ── Semantic Cache Check (provider-agnostic via HuggingFace) ─────────────
         const promptContent = JSON.stringify(body.messages);
         const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
 
         if (settings.cache_enabled && !isStreaming) {
-            // For embedding generation, we need an OpenAI key.
-            // We try the user's own OpenAI key which we resolve below — but first we
-            // attempt the cheaper exact-hash path without needing the key at all.
-            const exactHash = await sha256Hex(promptContent);
-            cacheSidecar.promptHash = exactHash;
+            try {
+                const hit = await checkSemanticCache(admin, userId, promptContent, settings, cacheSidecar);
 
-            const { data: exactRow } = await admin
-                .from("gateway_cache_entries")
-                .select("id, response_data, model, provider")
-                .eq("user_id", userId)
-                .eq("prompt_hash", exactHash)
-                .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
-                .maybeSingle();
+                if (hit) {
+                    const latencyMs = Date.now() - startTime;
+                    const cachedBody = typeof hit.response_data === "string"
+                        ? JSON.parse(hit.response_data)
+                        : hit.response_data;
 
-            if (exactRow) {
-                // Exact cache hit — return immediately (no API call, $0)
-                const latencyMs = Date.now() - startTime;
-                const cachedBody = typeof exactRow.response_data === "string"
-                    ? JSON.parse(exactRow.response_data)
-                    : exactRow.response_data;
+                    // Update hit count (fire-and-forget)
+                    admin.from("gateway_cache_entries")
+                        .update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() })
+                        .eq("id", hit.id).then(() => { });
 
-                // Update hit count (fire-and-forget)
-                admin.from("gateway_cache_entries")
-                    .update({ hit_count: (exactRow as any).hit_count + 1, last_hit_at: new Date().toISOString() })
-                    .eq("id", exactRow.id).then(() => { });
+                    const cacheType = cacheSidecar.embedding ? "semantic" : "exact";
+                    logRequest(admin, {
+                        userId, requestedModel, finalModel: hit.model, finalProvider: "cache",
+                        latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id,
+                    });
 
-                logRequest(admin, {
-                    userId, requestedModel, finalModel: exactRow.model, finalProvider: "cache",
-                    latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: exactRow.id,
-                });
-
-                return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": "exact" });
+                    return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": cacheType });
+                }
+            } catch (err) {
+                console.warn("[cache] Cache check failed, continuing:", err);
+                // Non-fatal — continue to upstream provider
             }
         }
 
         // ── Decrypt Provider Key ──────────────────────────────────────────────────
         const providerKey = await resolveProviderKey(admin, userId, finalProvider);
 
-        // ── Semantic (Vector) Cache Check — now we have the key for embeddings ────
-        if (settings.cache_enabled && !isStreaming && !cacheSidecar.embedding) {
-            try {
-                const semanticHit = await checkSemanticCache(
-                    admin, userId, promptContent, settings, providerKey, cacheSidecar
-                );
+        // ── Build and Send Upstream Request ───────────────────────────────────────
+        const upstream_cfg = buildUpstreamRequest(finalProvider, providerKey, finalModel, body);
 
-                if (semanticHit) {
-                    // Semantic cache hit
-                    const latencyMs = Date.now() - startTime;
-                    const cachedBody = typeof semanticHit.response_data === "string"
-                        ? JSON.parse(semanticHit.response_data)
-                        : semanticHit.response_data;
-
-                    admin.from("gateway_cache_entries")
-                        .update({ hit_count: (cachedBody as any).hit_count + 1, last_hit_at: new Date().toISOString() })
-                        .eq("id", semanticHit.id).then(() => { });
-
-                    logRequest(admin, {
-                        userId, requestedModel, finalModel: semanticHit.model, finalProvider: "cache",
-                        latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: semanticHit.id,
-                    });
-
-                    return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": "semantic" });
-                }
-            } catch (err) {
-                console.warn("[cache] Vector search failed, continuing:", err);
-                // Non-fatal — continue to upstream provider
-            }
-        }
-
-        // ── Build Upstream Request ────────────────────────────────────────────────
-        let upstreamUrl = "https://api.openai.com/v1/chat/completions";
-        const upstreamHeaders: Record<string, string> = { "Content-Type": "application/json" };
-
-        if (finalProvider === "openai") {
-            upstreamHeaders["Authorization"] = `Bearer ${providerKey}`;
-        } else if (finalProvider === "anthropic") {
-            upstreamUrl = "https://api.anthropic.com/v1/messages";
-            upstreamHeaders["x-api-key"] = providerKey;
-            upstreamHeaders["anthropic-version"] = "2023-06-01";
-        }
-        // Google / Mistral can be added here in the same pattern
-
-        // ── Forward to Upstream ───────────────────────────────────────────────────
-        const upstream = await fetch(upstreamUrl, {
+        const upstream = await fetch(upstream_cfg.url, {
             method: "POST",
-            headers: upstreamHeaders,
-            body: JSON.stringify(body),
+            headers: upstream_cfg.headers,
+            body: JSON.stringify(upstream_cfg.body),
         });
 
         if (!upstream.ok) {
@@ -506,7 +566,7 @@ serve(async (req: Request) => {
 
         const latencyMs = Date.now() - startTime;
 
-        // ── Streaming Response ────────────────────────────────────────────────────
+        // ── Streaming Response ─────────────────────────────────────────────────────
         if (isStreaming) {
             const { readable, writable } = new TransformStream();
             upstream.body?.pipeTo(writable);
@@ -529,11 +589,10 @@ serve(async (req: Request) => {
         const promptTokens = jsonResp.usage?.prompt_tokens || 0;
         const compTokens = jsonResp.usage?.completion_tokens || 0;
 
-        if (settings.cache_enabled && cacheSidecar.embedding) {
-            // We have an embedding from the vector search step — store the response
+        if (settings.cache_enabled && cacheSidecar.promptHash) {
             storeCacheEntry(
                 admin, userId, cacheSidecar, promptContent, jsonResp,
-                finalModel, finalProvider, promptTokens + compTokens, settings.cache_ttl_hours
+                finalModel, finalProvider, promptTokens + compTokens, settings.cache_ttl_hours,
             );
         }
 
@@ -550,7 +609,6 @@ serve(async (req: Request) => {
         const message = err instanceof Error ? err.message : "Internal Gateway Error";
         console.error(`[v1-chat-completions] ${status} ${message}`);
 
-        // Best-effort log
         if (userId) {
             const admin = createClient(
                 Deno.env.get("SUPABASE_URL")!,

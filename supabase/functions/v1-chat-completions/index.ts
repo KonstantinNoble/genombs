@@ -29,11 +29,19 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
     
+    // Handle Postgres bytea hex format (\x4538...)
+    let base64Input = encryptedBase64;
+    if (base64Input.startsWith("\\x")) {
+        let hex = base64Input.slice(2);
+        let str = "";
+        for (let i = 0; i < hex.length; i += 2) {
+            str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        }
+        base64Input = str;
+    }
+
     // Normalize base64: handle URL-safe characters, whitespace, and missing padding
-    let normalized = encryptedBase64.trim()
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
-    // Re-add missing base64 padding
+    let normalized = base64Input.trim().replace(/-/g, "+").replace(/_/g, "/");
     while (normalized.length % 4 !== 0) {
         normalized += "=";
     }

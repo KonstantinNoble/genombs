@@ -5,6 +5,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { encodeBase64 } from "jsr:@std/encoding/base64";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -53,7 +54,7 @@ async function encrypt(plaintext: string, secret: string): Promise<string> {
     combined.set(iv, 0);
     combined.set(new Uint8Array(ciphertext), iv.byteLength);
 
-    return btoa(String.fromCharCode(...combined));
+    return encodeBase64(combined);
 }
 
 function getEncryptionSecret(): string {

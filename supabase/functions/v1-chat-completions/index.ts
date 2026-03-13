@@ -104,9 +104,14 @@ interface GatewaySettings {
 }
 
 const DEFAULT_SETTINGS: GatewaySettings = {
-    cache_enabled: true, cache_similarity: 0.95, cache_ttl_hours: 24,
-    smart_routing_enabled: true, short_query_threshold: 100,
-    short_query_model: "gpt-4o-mini", long_query_model: "gpt-4o", fallback_enabled: true,
+    cache_enabled: true,
+    cache_similarity: 0.95,
+    cache_ttl_hours: 24,
+    smart_routing_enabled: true,
+    short_query_threshold: 100,
+    short_query_model: "gpt-4.5-preview",  // Short, fast queries
+    long_query_model: "gpt-4.5-preview",   // Complex, long queries
+    fallback_enabled: true,
 };
 
 async function resolveUser(admin: SupabaseClient, saasKey: string): Promise<{ userId: string; settings: GatewaySettings }> {

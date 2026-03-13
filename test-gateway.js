@@ -3,7 +3,7 @@
 
 async function runTest() {
   console.log("🚀 Sende Anfrage an Synvertas Gateway...");
-  
+
   // WICHTIG: Im Dashboard steht "gateway.synvertas.com" als Platzhalter für später.
   // Aktuell läuft dein Gateway live auf deiner Supabase URL!
   const gatewayUrl = "https://jgduivjxkbtbvezqybko.supabase.co/functions/v1/v1-chat-completions";
@@ -23,7 +23,7 @@ async function runTest() {
       },
       body: JSON.stringify({
         // Du forderst ein Modell an
-        model: "gpt-5.3-instant",
+        model: "gpt-4.5-preview",
         messages: [
           { role: "user", content: "Schreibe mir auf Deutsch genau einen Satz darüber, warum APIs toll sind." }
         ]
@@ -38,7 +38,7 @@ async function runTest() {
     const data = await response.json();
     console.log("\n✅ Erfolgreiche Antwort vom Gateway:\n");
     console.log(data.choices[0].message.content);
-    
+
     // Wir können auch sehen, ob es aus dem Cache kam!
     console.log("\n-----------------------------------");
     console.log("War das ein Cache-Hit? ", response.headers.get("x-cache") === "HIT" ? "JA! 💸" : "Nein, frische API Anfrage.");

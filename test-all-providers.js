@@ -4,8 +4,8 @@ const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 const modelsToTest = [
   "gpt-4o-mini",
-  "claude-3-5-haiku-20241022",
-  "gemini-1.5-flash"
+  "claude-haiku-4-5",
+  "gemini-2.5-flash"
 ];
 
 async function runTests() {

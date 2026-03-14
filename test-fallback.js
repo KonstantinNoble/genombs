@@ -13,7 +13,7 @@ async function testProvider(model) {
 }
 
 async function run() {
-    await testProvider("claude-3-5-haiku-20241022");
-    await testProvider("gemini-1.5-flash");
+    await testProvider("claude-haiku-4-5");
+    await testProvider("gemini-2.5-flash");
 }
 run();

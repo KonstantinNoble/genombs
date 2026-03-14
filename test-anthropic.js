@@ -7,7 +7,7 @@ async function run() {
     const res = await fetch(gatewayUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${anonKey}`, "x-gateway-key": saasKey },
-        body: JSON.stringify({ model: "claude-3-5-haiku-20241022", messages: [{ role: "user", content: `Test ${Date.now()}` }] })
+        body: JSON.stringify({ model: "claude-haiku-4-5", messages: [{ role: "user", content: `Test ${Date.now()}` }] })
     });
     
     // Fallbacks happen automatically. But if Anthropic fails, we want to see the Gateway's Cloud logs.

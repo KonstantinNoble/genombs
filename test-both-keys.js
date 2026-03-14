@@ -19,8 +19,8 @@ async function testProvider(saasKey, model) {
 async function run() {
     for (const k of keys) {
         console.log(`\nTesting ${k.name}:`);
-        console.log(`- Requesting Anthropic (claude-3-5-haiku-20241022) -> Received:`, await testProvider(k.key, "claude-3-5-haiku-20241022"));
-        console.log(`- Requesting Gemini (gemini-1.5-flash)            -> Received:`, await testProvider(k.key, "gemini-1.5-flash"));
+        console.log(`- Requesting Anthropic (claude-haiku-4-5) -> Received:`, await testProvider(k.key, "claude-haiku-4-5"));
+        console.log(`- Requesting Gemini (gemini-2.5-flash)            -> Received:`, await testProvider(k.key, "gemini-2.5-flash"));
     }
 }
 run();

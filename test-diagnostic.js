@@ -8,8 +8,8 @@ const accounts = [
 ];
 const models = [
     { name: "OpenAI", model: "gpt-4o-mini" },
-    { name: "Anthropic", model: "claude-3-5-haiku-20241022" },
-    { name: "Gemini", model: "gemini-1.5-flash" },
+    { name: "Anthropic", model: "claude-haiku-4-5" },
+    { name: "Gemini", model: "gemini-2.5-flash" },
 ];
 
 async function test(saasKey, model) {

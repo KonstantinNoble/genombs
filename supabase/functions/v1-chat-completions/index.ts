@@ -318,13 +318,45 @@ function getDefaultModelForProvider(provider: Provider): string {
 // LOGGING
 // ============================================================================
 
-function logRequest(admin: SupabaseClient, m: any) {
+interface LogPayload {
+    userId: string;
+    requestedModel: string;
+    finalModel: string;
+    // "cache" is a virtual provider — stored separately in cache_hit + cache_entry_id,
+    // so we use null in the provider column to avoid a type mismatch.
+    finalProvider: Provider | "cache" | null;
+    latencyMs: number;
+    isStreaming: boolean;
+    promptTokens?: number;
+    compTokens?: number;
+    status: "success" | "cached" | "error";
+    cacheHit?: boolean;
+    cacheEntryId?: string | null;
+    errorCode?: string | null;
+    promptOptimized?: boolean;
+    fallbackUsed?: boolean;
+}
+
+function logRequest(admin: SupabaseClient, m: LogPayload) {
+    // Normalize provider: "cache" is not a real DB provider — store null so foreign-key / check constraints pass.
+    const dbProvider = m.finalProvider === "cache" ? null : (m.finalProvider ?? null);
     admin.from("gateway_request_logs").insert({
-        user_id: m.userId, model_requested: m.requestedModel, model_used: m.finalModel, provider: m.finalProvider,
-        latency_ms: m.latencyMs, is_streaming: m.isStreaming, prompt_tokens: m.promptTokens ?? 0,
-        completion_tokens: m.compTokens ?? 0, total_tokens: (m.promptTokens ?? 0) + (m.compTokens ?? 0),
-        status: m.status, cache_hit: m.cacheHit ?? false, cache_entry_id: m.cacheEntryId ?? null, error_code: m.errorCode ?? null,
-    }).then(({ error }) => { if (error) console.error("[log] Failed:", error.message); });
+        user_id: m.userId,
+        model_requested: m.requestedModel,
+        model_used: m.finalModel,
+        provider: dbProvider,
+        latency_ms: m.latencyMs,
+        is_streaming: m.isStreaming,
+        prompt_tokens: m.promptTokens ?? 0,
+        completion_tokens: m.compTokens ?? 0,
+        total_tokens: (m.promptTokens ?? 0) + (m.compTokens ?? 0),
+        status: m.status,
+        cache_hit: m.cacheHit ?? false,
+        cache_entry_id: m.cacheEntryId ?? null,
+        error_code: m.errorCode ?? null,
+        prompt_optimized: m.promptOptimized ?? false,
+        fallback_used: m.fallbackUsed ?? false,
+    }).then(({ error }) => { if (error) console.error("[log] Insert failed:", error.message, error.details); });
 }
 
 // ============================================================================
@@ -404,6 +436,7 @@ serve(async (req: Request) => {
 
     const startTime = Date.now();
     let userId = "", requestedModel = "gpt-4o-mini", finalModel = "gpt-4o-mini", finalProvider: Provider = "openai";
+    let promptOptimized = false, fallbackUsed = false;
 
     try {
         const gatewayKeyHeader = req.headers.get("x-gateway-key") ?? "";
@@ -446,6 +479,7 @@ serve(async (req: Request) => {
                 const original = messages[lastUserIdx].content as string;
                 const improved = await optimizePrompt(original);
                 if (improved !== original) {
+                    promptOptimized = true;
                     body.messages = [
                         ...messages.slice(0, lastUserIdx),
                         { ...messages[lastUserIdx], content: improved },
@@ -466,7 +500,7 @@ serve(async (req: Request) => {
                     const latencyMs = Date.now() - startTime;
                     const cachedBody = typeof hit.response_data === "string" ? JSON.parse(hit.response_data) : hit.response_data;
                     admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id).then(() => { });
-                    logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id });
+                    logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized });
                     return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": cacheSidecar.embedding ? "semantic" : "exact" });
                 }
             } catch (err) { console.warn("[cache] Cache check failed, continuing:", err); }
@@ -505,6 +539,7 @@ serve(async (req: Request) => {
                 usedProvider = result.provider;
                 usedModel = result.model;
                 if (candidate !== finalProvider) {
+                    fallbackUsed = true;
                     console.log(`[gateway] Fallback to '${candidate}' succeeded.`);
                 }
                 break;
@@ -525,7 +560,7 @@ serve(async (req: Request) => {
         if (isStreaming) {
             const { readable, writable } = new TransformStream();
             upstream.body?.pipeTo(writable);
-            logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success" });
+            logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
             return new Response(readable, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "MISS", "X-Provider-Used": usedProvider } });
         }
 
@@ -544,7 +579,7 @@ serve(async (req: Request) => {
             console.log(`[gateway] Skipping cache store — fallback provider '${usedProvider}' used instead of requested '${finalProvider}'.`);
         }
 
-        logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false });
+        logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
         return jsonResponse(jsonResp, 200, { "X-Cache": "MISS", "X-Provider-Used": usedProvider });
 
     } catch (err: unknown) {

@@ -90,12 +90,16 @@ const OptimizerSection = () => {
 
       if (!error && data) {
         setCacheEnabled(data.cache_enabled ?? DEFAULTS.cacheEnabled);
-        // cache_similarity is stored as 0-1 in DB, convert to percentage for UI
-        const similarityFromDb = data.cache_similarity ?? (DEFAULTS.cacheSimilarity / 100);
-        setCacheSimilarity([Math.round(similarityFromDb * 100)]);
+        // cache_similarity is stored as 0–1 in DB, convert to 70–100 for the slider.
+        // Clamp to [70, 100] so the slider never gets an out-of-range value.
+        const rawSimilarity = data.cache_similarity ?? (DEFAULTS.cacheSimilarity / 100);
+        const pct = Math.round(rawSimilarity * 100);
+        setCacheSimilarity([Math.min(100, Math.max(70, pct))]);
         setCacheTTLHours(data.cache_ttl_hours ?? DEFAULTS.cacheTTLHours);
         setFallbackEnabled(data.fallback_enabled ?? DEFAULTS.fallbackEnabled);
-        setRetryAttempts([data.retry_attempts ?? DEFAULTS.retryAttempts]);
+        // Clamp retry_attempts to [1, 5] to match slider bounds.
+        const retries = data.retry_attempts ?? DEFAULTS.retryAttempts;
+        setRetryAttempts([Math.min(5, Math.max(1, retries))]);
         setPromptOptimizerEnabled(data.prompt_optimizer_enabled ?? DEFAULTS.promptOptimizerEnabled);
       }
       setLoading(false);
@@ -108,13 +112,16 @@ const OptimizerSection = () => {
     if (!user) return;
     setSaving(true);
     try {
+      // Clamp values before persisting to prevent out-of-range DB entries.
+      const clampedSimilarity = Math.min(100, Math.max(70, cacheSimilarity[0]));
+      const clampedRetries = Math.min(5, Math.max(1, retryAttempts[0]));
       const payload = {
         user_id: user.id,
         cache_enabled: cacheEnabled,
-        cache_similarity: cacheSimilarity[0] / 100, // store as 0–1
+        cache_similarity: clampedSimilarity / 100, // store as 0–1
         cache_ttl_hours: cacheTTLHours,
         fallback_enabled: fallbackEnabled,
-        retry_attempts: retryAttempts[0],
+        retry_attempts: clampedRetries,
         prompt_optimizer_enabled: promptOptimizerEnabled,
         updated_at: new Date().toISOString(),
       };

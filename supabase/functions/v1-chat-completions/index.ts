@@ -360,6 +360,49 @@ function logRequest(admin: SupabaseClient, m: LogPayload) {
 }
 
 // ============================================================================
+// RESPONSE NORMALIZER — Converts provider-native responses to OpenAI format
+// ============================================================================
+
+/**
+ * Anthropic returns a very different JSON structure from OpenAI:
+ *   { content: [{ type: "text", text: "..." }], usage: { input_tokens, output_tokens } }
+ * This function converts it into the OpenAI Chat Completion format:
+ *   { choices: [{ message: { role: "assistant", content: "..." } }], usage: { prompt_tokens, completion_tokens, total_tokens } }
+ * For providers that are already OpenAI-compatible (OpenAI, Mistral, Google), the response is
+ * returned as-is.
+ */
+function normalizeToOpenAI(raw: Record<string, unknown>, provider: Provider, model: string): Record<string, unknown> {
+    if (provider !== "anthropic") return raw;
+
+    // Anthropic response shape:
+    // { id, type, role, model, content: [{ type: "text", text: "..." }], stop_reason, usage: { input_tokens, output_tokens } }
+    const content = raw.content as Array<{ type: string; text?: string }> | undefined;
+    const text = content?.find((c) => c.type === "text")?.text ?? "";
+    const anthropicUsage = raw.usage as { input_tokens?: number; output_tokens?: number } | undefined;
+    const promptTokens = anthropicUsage?.input_tokens ?? 0;
+    const compTokens = anthropicUsage?.output_tokens ?? 0;
+
+    return {
+        id: raw.id ?? `anthropic-${Date.now()}`,
+        object: "chat.completion",
+        created: Math.floor(Date.now() / 1000),
+        model: (raw.model as string) ?? model,
+        choices: [
+            {
+                index: 0,
+                message: { role: "assistant", content: text },
+                finish_reason: (raw.stop_reason as string) ?? "stop",
+            },
+        ],
+        usage: {
+            prompt_tokens: promptTokens,
+            completion_tokens: compTokens,
+            total_tokens: promptTokens + compTokens,
+        },
+    };
+}
+
+// ============================================================================
 // CORE FETCH WITH RETRY + FALLBACK
 // ============================================================================
 
@@ -565,9 +608,11 @@ serve(async (req: Request) => {
         }
 
         // ── Non-streaming response ─────────────────────────────────────────────
-        const jsonResp = await upstream.json();
-        const promptTokens = jsonResp.usage?.prompt_tokens || 0;
-        const compTokens = jsonResp.usage?.completion_tokens || 0;
+        const rawResp = await upstream.json();
+        // Normalize provider-native response to OpenAI format (critical for Anthropic)
+        const jsonResp = normalizeToOpenAI(rawResp, usedProvider, usedModel);
+        const promptTokens = (jsonResp.usage as any)?.prompt_tokens || 0;
+        const compTokens = (jsonResp.usage as any)?.completion_tokens || 0;
 
         // Only cache if the PRIMARY (requested) provider handled the request.
         // Never cache fallback responses — a fallback means the primary key failed,

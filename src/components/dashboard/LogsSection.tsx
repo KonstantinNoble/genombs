@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,9 @@ interface LogEntry {
   cache_entry_id: string | null;
   error_code: string | null;
   is_streaming: boolean | null;
-  prompt_optimized: boolean | null;
-  fallback_used: boolean | null;
+  // These columns may not exist yet in older DBs — treat as optional
+  prompt_optimized?: boolean | null;
+  fallback_used?: boolean | null;
 }
 
 type StatusFilter = "all" | "success" | "cached" | "error";
@@ -129,23 +130,35 @@ const LogsSection = () => {
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
   const fetchLogs = useCallback(async () => {
-    if (!user) { setLoading(false); return; }
+    if (!user) { 
+      console.log("[v0] LogsSection: No user, skipping fetch");
+      setLoading(false); 
+      return; 
+    }
+    console.log("[v0] LogsSection: Fetching logs for user", user.id, "page", page, "sort", sortDirection);
     setLoading(true);
     try {
+      // Query only columns that exist in the original schema.
+      // prompt_optimized and fallback_used may not exist yet — we'll handle them gracefully.
       const { data, error } = await (supabase as any)
         .from("gateway_request_logs")
-        .select(
-          "id, created_at, model_requested, model_used, provider, total_tokens, prompt_tokens, completion_tokens, latency_ms, cache_hit, status, cache_entry_id, error_code, is_streaming, prompt_optimized, fallback_used"
-        )
+        .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: sortDirection === "asc" })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
       if (error) {
-        console.error("[LogsSection] Supabase error:", error.message, error.details);
+        console.error("[v0] LogsSection Supabase error:", error.message, error.details, error.hint);
         throw error;
       }
-      setLogs(data ?? []);
+      console.log("[v0] LogsSection fetched", data?.length ?? 0, "logs");
+      // Normalize the data to ensure optional fields have defaults
+      const normalizedLogs: LogEntry[] = (data ?? []).map((row: any) => ({
+        ...row,
+        prompt_optimized: row.prompt_optimized ?? false,
+        fallback_used: row.fallback_used ?? false,
+      }));
+      setLogs(normalizedLogs);
     } catch (err) {
       console.error("[LogsSection] fetchLogs error:", err);
     } finally {
@@ -305,9 +318,8 @@ const LogsSection = () => {
                     const ts = formatTimestamp(log.created_at);
                     const isExpanded = expandedRow === log.id;
                     return (
-                      <>
+                      <React.Fragment key={log.id}>
                         <TableRow
-                          key={log.id}
                           className={`cursor-pointer transition-colors ${isExpanded ? "bg-muted/10" : ""}`}
                           onClick={() => setExpandedRow(isExpanded ? null : log.id)}
                         >
@@ -477,7 +489,7 @@ const LogsSection = () => {
                             </TableCell>
                           </TableRow>
                         )}
-                      </>
+                      </React.Fragment>
                     );
                   })}
                 </TableBody>

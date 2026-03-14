@@ -210,16 +210,30 @@ const GatewaySection = () => {
           </div>
 
           {/* Quick-start example */}
-          <div className="rounded-lg bg-muted/50 p-4 border border-border/50 space-y-2">
-            <p className="text-xs text-muted-foreground">Quick Start (OpenAI SDK)</p>
-            <pre className="text-xs font-mono text-foreground/80 overflow-x-auto whitespace-pre-wrap">
-              {`import OpenAI from 'openai';
+          <div className="rounded-lg bg-muted/50 p-4 border border-border/50 space-y-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">1. Initialize the Standard OpenAI SDK</p>
+              <pre className="text-xs font-mono text-foreground/80 overflow-x-auto whitespace-pre-wrap p-2 bg-background/50 rounded border border-border/30">
+                {`import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: '${proxyEndpoint}',
   apiKey: '${saasKey ?? "YOUR_SYNVERTAS_KEY"}',
 });`}
-            </pre>
+              </pre>
+            </div>
+            
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">2. Call ANY Provider (OpenAI, Anthropic, Google)</p>
+              <pre className="text-xs font-mono text-foreground/80 overflow-x-auto whitespace-pre-wrap p-2 bg-background/50 rounded border border-border/30">
+                {`// The gateway auto-routes based on the model name!
+const response = await client.chat.completions.create({
+  // Use "gpt-4o", "claude-3-5-sonnet-20241022", or "gemini-1.5-pro"
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [{ role: 'user', content: 'Hello!' }],
+});`}
+              </pre>
+            </div>
           </div>
 
           {/* SaaS API Key */}

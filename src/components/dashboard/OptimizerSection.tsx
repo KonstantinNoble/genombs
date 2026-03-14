@@ -14,13 +14,12 @@ import {
 } from "@/components/ui/select";
 import {
   Database,
-  Route,
   Gauge,
-  Sparkles,
   Info,
   Save,
   RotateCcw,
   Zap,
+  Wand2,
   Loader2,
 } from "lucide-react";
 import {
@@ -39,12 +38,9 @@ const DEFAULTS = {
   cacheSimilarity: 95,
   cacheEnabled: true,
   cacheTTLHours: 24,
-  smartRoutingEnabled: true,
-  shortQueryModel: "gpt-5.3-instant",
-  longQueryModel: "gpt-5.4-thinking",
-  shortQueryThreshold: 100,
   fallbackEnabled: true,
   retryAttempts: 3,
+  promptOptimizerEnabled: false,
 };
 
 const TTL_OPTIONS = [
@@ -70,15 +66,12 @@ const OptimizerSection = () => {
   const [cacheSimilarity, setCacheSimilarity] = useState([DEFAULTS.cacheSimilarity]);
   const [cacheTTLHours, setCacheTTLHours] = useState(DEFAULTS.cacheTTLHours);
 
-  // Smart Routing Settings
-  const [smartRoutingEnabled, setSmartRoutingEnabled] = useState(DEFAULTS.smartRoutingEnabled);
-  const [shortQueryModel, setShortQueryModel] = useState(DEFAULTS.shortQueryModel);
-  const [longQueryModel, setLongQueryModel] = useState(DEFAULTS.longQueryModel);
-  const [shortQueryThreshold, setShortQueryThreshold] = useState([DEFAULTS.shortQueryThreshold]);
-
   // Fallback Settings
   const [fallbackEnabled, setFallbackEnabled] = useState(DEFAULTS.fallbackEnabled);
   const [retryAttempts, setRetryAttempts] = useState([DEFAULTS.retryAttempts]);
+
+  // Prompt Optimizer
+  const [promptOptimizerEnabled, setPromptOptimizerEnabled] = useState(DEFAULTS.promptOptimizerEnabled);
 
   // ── Load settings from DB on mount ─────────────────────────────────────────
   useEffect(() => {
@@ -99,12 +92,9 @@ const OptimizerSection = () => {
         setCacheEnabled(data.cache_enabled ?? DEFAULTS.cacheEnabled);
         setCacheSimilarity([Math.round((data.cache_similarity ?? DEFAULTS.cacheSimilarity / 100) * 100)]);
         setCacheTTLHours(data.cache_ttl_hours ?? DEFAULTS.cacheTTLHours);
-        setSmartRoutingEnabled(data.smart_routing_enabled ?? DEFAULTS.smartRoutingEnabled);
-        setShortQueryModel(data.short_query_model ?? DEFAULTS.shortQueryModel);
-        setLongQueryModel(data.long_query_model ?? DEFAULTS.longQueryModel);
-        setShortQueryThreshold([data.short_query_threshold ?? DEFAULTS.shortQueryThreshold]);
         setFallbackEnabled(data.fallback_enabled ?? DEFAULTS.fallbackEnabled);
         setRetryAttempts([data.retry_attempts ?? DEFAULTS.retryAttempts]);
+        setPromptOptimizerEnabled(data.prompt_optimizer_enabled ?? DEFAULTS.promptOptimizerEnabled);
       }
       setLoading(false);
     };
@@ -121,12 +111,9 @@ const OptimizerSection = () => {
         cache_enabled: cacheEnabled,
         cache_similarity: cacheSimilarity[0] / 100, // store as 0–1
         cache_ttl_hours: cacheTTLHours,
-        smart_routing_enabled: smartRoutingEnabled,
-        short_query_model: shortQueryModel,
-        long_query_model: longQueryModel,
-        short_query_threshold: shortQueryThreshold[0],
         fallback_enabled: fallbackEnabled,
         retry_attempts: retryAttempts[0],
+        prompt_optimizer_enabled: promptOptimizerEnabled,
         updated_at: new Date().toISOString(),
       };
 
@@ -156,12 +143,9 @@ const OptimizerSection = () => {
     setCacheEnabled(DEFAULTS.cacheEnabled);
     setCacheSimilarity([DEFAULTS.cacheSimilarity]);
     setCacheTTLHours(DEFAULTS.cacheTTLHours);
-    setSmartRoutingEnabled(DEFAULTS.smartRoutingEnabled);
-    setShortQueryModel(DEFAULTS.shortQueryModel);
-    setLongQueryModel(DEFAULTS.longQueryModel);
-    setShortQueryThreshold([DEFAULTS.shortQueryThreshold]);
     setFallbackEnabled(DEFAULTS.fallbackEnabled);
     setRetryAttempts([DEFAULTS.retryAttempts]);
+    setPromptOptimizerEnabled(DEFAULTS.promptOptimizerEnabled);
     toast({ title: "Settings Reset", description: "Restored to default values." });
   };
 
@@ -251,94 +235,6 @@ const OptimizerSection = () => {
           </CardContent>
         </Card>
 
-        {/* Smart Routing */}
-        <Card className="glass-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Route className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Smart Routing</CardTitle>
-                  <CardDescription>Automatically route queries to the most cost-effective model</CardDescription>
-                </div>
-              </div>
-              <Switch checked={smartRoutingEnabled} onCheckedChange={setSmartRoutingEnabled} />
-            </div>
-          </CardHeader>
-          <CardContent className={`space-y-6 ${!smartRoutingEnabled ? "opacity-50 pointer-events-none" : ""}`}>
-            {/* Threshold */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium">Short Query Threshold</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p>Queries shorter than this token count will be routed to the cheaper model.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Badge variant="secondary" className="font-mono">{shortQueryThreshold[0]} tokens</Badge>
-              </div>
-              <Slider
-                value={shortQueryThreshold}
-                onValueChange={setShortQueryThreshold}
-                min={50} max={500} step={10} className="w-full"
-              />
-            </div>
-
-            {/* Model Selection */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Short Queries</Label>
-                <Select value={shortQueryModel} onValueChange={setShortQueryModel}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpt-5.3-instant">GPT-5.3 Instant</SelectItem>
-                    <SelectItem value="gemini-3.1-flash">Gemini 3.1 Flash</SelectItem>
-                    <SelectItem value="claude-3-5-haiku">Claude 3.5 Haiku</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">Cheaper, faster model</p>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Long/Complex Queries</Label>
-                <Select value={longQueryModel} onValueChange={setLongQueryModel}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpt-5.4-thinking">GPT-5.4 Thinking</SelectItem>
-                    <SelectItem value="gemini-3.1-pro">Gemini 3.1 Pro</SelectItem>
-                    <SelectItem value="claude-4-6-opus">Claude Opus 4.6</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">More capable model</p>
-              </div>
-            </div>
-
-            {/* Routing Preview */}
-            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Routing Preview</span>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between p-2 rounded bg-background/50">
-                  <span className="text-muted-foreground">"What's the weather?"</span>
-                  <Badge variant="outline" className="text-xs">{shortQueryModel}</Badge>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded bg-background/50">
-                  <span className="text-muted-foreground">"Analyze this 2000-word document..."</span>
-                  <Badge variant="outline" className="text-xs">{longQueryModel}</Badge>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Fallback & Retry */}
         <Card className="glass-card">
           <CardHeader>
@@ -388,6 +284,59 @@ const OptimizerSection = () => {
                     (OpenAI → Anthropic → Mistral)
                   </p>
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Prompt Optimizer (Beta) */}
+        <Card className="glass-card border-primary/30">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Wand2 className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle>Auto-Prompt Enhancement</CardTitle>
+                    <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">Beta</span>
+                  </div>
+                  <CardDescription>
+                    Automatically rewrites user prompts for clarity and precision using Llama-4-Scout (Groq)
+                  </CardDescription>
+                </div>
+              </div>
+              <Switch checked={promptOptimizerEnabled} onCheckedChange={setPromptOptimizerEnabled} />
+            </div>
+          </CardHeader>
+          <CardContent className={`space-y-4 ${!promptOptimizerEnabled ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+              <div className="flex items-start gap-3">
+                <Wand2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">How it works</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Before each request is sent to your chosen model, the gateway intercepts the user prompt
+                    and sends it to <strong>meta-llama/llama-4-scout-17b-16e-instruct</strong> via Groq for
+                    instant enhancement. The improved version replaces the original — your users get better
+                    results without changing a single line of their code.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border/30">
+                <span className="text-green-500 font-semibold">~200ms</span>
+                <span>avg Groq latency</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border/30">
+                <span className="text-primary font-semibold">Language</span>
+                <span>preserved automatically</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border/30">
+                <span className="text-yellow-500 font-semibold">Skipped</span>
+                <span>for streaming requests</span>
               </div>
             </div>
           </CardContent>

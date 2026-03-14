@@ -1,7 +1,8 @@
 /**
  * Edge Function: v1-chat-completions
  * =====================================
- * KI-Gateway Proxy — vollständig mit Semantic Cache.
+ * KI-Gateway Proxy — fully featured with Semantic Cache, Smart Routing,
+ * Retry Logic and Provider Fallback.
  */
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
@@ -66,6 +67,12 @@ function getEncryptionSecret(): string {
 const VALID_PROVIDERS = ["openai", "anthropic", "google", "mistral"] as const;
 type Provider = (typeof VALID_PROVIDERS)[number];
 
+// Fallback order: if a provider fails, try the next one in this list
+const FALLBACK_ORDER: Provider[] = ["openai", "anthropic", "google", "mistral"];
+
+// Which HTTP status codes are worth retrying (transient errors)
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "authorization, content-type, x-provider, x-gateway-key",
@@ -93,26 +100,82 @@ function jsonResponse(body: unknown, status = 200, extra_headers: Record<string,
     });
 }
 
+/** Sleep helper for retry back-off */
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // ============================================================================
 // DATABASE
 // ============================================================================
 
 interface GatewaySettings {
     cache_enabled: boolean; cache_similarity: number; cache_ttl_hours: number;
-    smart_routing_enabled: boolean; short_query_threshold: number;
-    short_query_model: string; long_query_model: string; fallback_enabled: boolean;
+    fallback_enabled: boolean; retry_attempts: number;
+    prompt_optimizer_enabled: boolean;
 }
 
 const DEFAULT_SETTINGS: GatewaySettings = {
     cache_enabled: true,
     cache_similarity: 0.95,
     cache_ttl_hours: 24,
-    smart_routing_enabled: true,
-    short_query_threshold: 100,
-    short_query_model: "o4-mini",  // Short, fast queries — reasoning model
-    long_query_model: "gpt-4o",   // Complex, long queries — allround stable model
     fallback_enabled: true,
+    retry_attempts: 3,
+    prompt_optimizer_enabled: false,
 };
+
+// ============================================================================
+// PROMPT OPTIMIZER (Llama-4-Scout via Groq)
+// ============================================================================
+
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const OPTIMIZER_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+const OPTIMIZER_SYSTEM_PROMPT = `You are an expert Prompt Engineer. Your task is to take a user's prompt and rewrite it to be maximally clear, specific, and well-structured for a large language model.
+Rules:
+- Preserve the original language and core intention EXACTLY.
+- Never change, summarize or remove technical details, code snippets, JSON formats or explicit output instructions.
+- Do NOT add explanations, notes, or preambles — return ONLY the improved prompt text.
+- If the prompt is already excellent, return it unchanged.`;
+
+async function optimizePrompt(userText: string): Promise<string> {
+    const groqKey = Deno.env.get("GROQ_API_KEY");
+    if (!groqKey) {
+        console.warn("[optimizer] GROQ_API_KEY not set, skipping optimization.");
+        return userText;
+    }
+    try {
+        const res = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${groqKey}`,
+            },
+            body: JSON.stringify({
+                model: OPTIMIZER_MODEL,
+                messages: [
+                    { role: "system", content: OPTIMIZER_SYSTEM_PROMPT },
+                    { role: "user", content: userText },
+                ],
+                max_tokens: 1024,
+                temperature: 0.3,
+            }),
+        });
+        if (!res.ok) {
+            console.warn(`[optimizer] Groq returned ${res.status}, skipping.`);
+            return userText;
+        }
+        const data = await res.json();
+        const improved = data?.choices?.[0]?.message?.content?.trim();
+        if (improved && improved.length > 0) {
+            console.log("[optimizer] Prompt optimized successfully.");
+            return improved;
+        }
+        return userText;
+    } catch (err) {
+        console.warn("[optimizer] Failed to optimize prompt:", err);
+        return userText;
+    }
+}
 
 async function resolveUser(admin: SupabaseClient, saasKey: string): Promise<{ userId: string; settings: GatewaySettings }> {
     const { data, error } = await admin.from("gateway_saas_keys").select("user_id")
@@ -123,14 +186,26 @@ async function resolveUser(admin: SupabaseClient, saasKey: string): Promise<{ us
     return { userId: data.user_id, settings: { ...DEFAULT_SETTINGS, ...(s ?? {}) } };
 }
 
+/** Safe version — returns null instead of throwing when key not found */
+async function tryResolveProviderKey(admin: SupabaseClient, userId: string, provider: string): Promise<string | null> {
+    try {
+        const { data, error } = await admin.from("gateway_provider_keys").select("key_encrypted")
+            .eq("user_id", userId).eq("provider", provider).eq("is_active", true).maybeSingle();
+        if (error || !data?.key_encrypted) return null;
+        const secret = getEncryptionSecret();
+        const plaintext = await decrypt(data.key_encrypted as string, secret);
+        admin.from("gateway_provider_keys").update({ last_used_at: new Date().toISOString() }).eq("user_id", userId).eq("provider", provider).then(() => { });
+        return plaintext;
+    } catch {
+        return null;
+    }
+}
+
+/** Original version — throws when key not found (used for primary provider) */
 async function resolveProviderKey(admin: SupabaseClient, userId: string, provider: string): Promise<string> {
-    const { data, error } = await admin.from("gateway_provider_keys").select("key_encrypted")
-        .eq("user_id", userId).eq("provider", provider).eq("is_active", true).maybeSingle();
-    if (error || !data?.key_encrypted) throw new HttpError(`No active ${provider} API key found. Please add it in your Synvertas Dashboard.`, 400);
-    const secret = getEncryptionSecret();
-    const plaintext = await decrypt(data.key_encrypted as string, secret);
-    admin.from("gateway_provider_keys").update({ last_used_at: new Date().toISOString() }).eq("user_id", userId).eq("provider", provider).then(() => { });
-    return plaintext;
+    const key = await tryResolveProviderKey(admin, userId, provider);
+    if (!key) throw new HttpError(`No active ${provider} API key found. Please add it in your Synvertas Dashboard.`, 400);
+    return key;
 }
 
 // ============================================================================
@@ -204,6 +279,19 @@ function buildUpstreamRequest(provider: Provider, providerKey: string, model: st
     }
 }
 
+/**
+ * Maps a provider to a sensible default fallback model.
+ * When routing fails over to a new provider, we need to pick a compatible model.
+ */
+function getDefaultModelForProvider(provider: Provider): string {
+    switch (provider) {
+        case "openai": return "gpt-4o-mini";
+        case "anthropic": return "claude-3-5-haiku-20241022";
+        case "google": return "gemini-1.5-flash";
+        case "mistral": return "mistral-small-latest";
+    }
+}
+
 // ============================================================================
 // LOGGING
 // ============================================================================
@@ -215,6 +303,74 @@ function logRequest(admin: SupabaseClient, m: any) {
         completion_tokens: m.compTokens ?? 0, total_tokens: (m.promptTokens ?? 0) + (m.compTokens ?? 0),
         status: m.status, cache_hit: m.cacheHit ?? false, cache_entry_id: m.cacheEntryId ?? null, error_code: m.errorCode ?? null,
     }).then(({ error }) => { if (error) console.error("[log] Failed:", error.message); });
+}
+
+// ============================================================================
+// CORE FETCH WITH RETRY + FALLBACK
+// ============================================================================
+
+interface AttemptResult {
+    response: Response;
+    provider: Provider;
+    model: string;
+}
+
+/**
+ * Tries fetching from a provider with automatic retries.
+ * Returns the successful Response, or null if all retries are exhausted
+ * or error is non-retryable.
+ */
+async function fetchWithRetry(
+    admin: SupabaseClient,
+    userId: string,
+    provider: Provider,
+    model: string,
+    body: Record<string, unknown>,
+    maxAttempts: number,
+): Promise<AttemptResult | null> {
+    const providerKey = await tryResolveProviderKey(admin, userId, provider);
+    if (!providerKey) {
+        console.warn(`[gateway] No key for provider '${provider}', skipping.`);
+        return null;
+    }
+
+    const cfg = buildUpstreamRequest(provider, providerKey, model, { ...body, model });
+    let lastStatus = 0;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            const upstream = await fetch(cfg.url, {
+                method: "POST",
+                headers: cfg.headers,
+                body: JSON.stringify(cfg.body),
+            });
+
+            if (upstream.ok) {
+                return { response: upstream, provider, model };
+            }
+
+            lastStatus = upstream.status;
+            const errText = await upstream.text();
+            console.warn(`[gateway] ${provider} attempt ${attempt}/${maxAttempts} failed: HTTP ${upstream.status} — ${errText}`);
+
+            // Non-retryable client errors (bad request, auth failures)
+            if (!RETRYABLE_STATUSES.has(upstream.status)) {
+                console.warn(`[gateway] Status ${upstream.status} is non-retryable for '${provider}'. Skipping remaining retries.`);
+                return null;
+            }
+        } catch (err) {
+            console.warn(`[gateway] ${provider} attempt ${attempt}/${maxAttempts} network error:`, err);
+            lastStatus = 0;
+        }
+
+        // Exponential back-off: 500ms, 1000ms, 2000ms, ...
+        if (attempt < maxAttempts) {
+            await sleep(500 * Math.pow(2, attempt - 1));
+        }
+    }
+
+    console.warn(`[gateway] All ${maxAttempts} attempts for '${provider}' failed (last HTTP status: ${lastStatus}).`);
+    return null;
 }
 
 // ============================================================================
@@ -244,21 +400,43 @@ serve(async (req: Request) => {
         const { userId: uid, settings } = await resolveUser(admin, saasKey);
         userId = uid;
         finalModel = requestedModel;
-        finalProvider = (req.headers.get("x-provider") || "openai") as Provider;
 
-        if (settings.smart_routing_enabled) {
-            const tokenEstimate = JSON.stringify(body.messages).length / 4;
-            finalModel = tokenEstimate < settings.short_query_threshold ? settings.short_query_model : settings.long_query_model;
-            if (finalModel.includes("claude")) finalProvider = "anthropic";
-            else if (finalModel.includes("gpt")) finalProvider = "openai";
-            else if (finalModel.includes("gemini")) finalProvider = "google";
-            else if (finalModel.includes("mistral") || finalModel.includes("mixtral")) finalProvider = "mistral";
-            body.model = finalModel;
+        // ── Provider Detection ─────────────────────────────────────────────────
+        // Respect explicit x-provider header; otherwise auto-detect from model name.
+        const explicitProvider = req.headers.get("x-provider");
+        if (explicitProvider && VALID_PROVIDERS.includes(explicitProvider as Provider)) {
+            finalProvider = explicitProvider as Provider;
+        } else {
+            const m = requestedModel.toLowerCase();
+            if (m.includes("claude")) finalProvider = "anthropic";
+            else if (m.includes("gemini")) finalProvider = "google";
+            else if (m.includes("mistral") || m.includes("mixtral")) finalProvider = "mistral";
+            else finalProvider = "openai"; // Default: OpenAI (gpt-*, o3-*, o4-*, etc.)
+        }
+
+        // ── Prompt Optimizer (Llama-4-Scout via Groq) ─────────────────────────
+        // Optimizes the last user message before caching and routing.
+        // Skipped for streaming requests to avoid extra latency on first token.
+        if (settings.prompt_optimizer_enabled && !isStreaming) {
+            const messages = body.messages as Array<{ role: string; content: string }>;
+            const lastUserIdx = messages.map((m) => m.role).lastIndexOf("user");
+            if (lastUserIdx !== -1 && typeof messages[lastUserIdx].content === "string") {
+                const original = messages[lastUserIdx].content as string;
+                const improved = await optimizePrompt(original);
+                if (improved !== original) {
+                    body.messages = [
+                        ...messages.slice(0, lastUserIdx),
+                        { ...messages[lastUserIdx], content: improved },
+                        ...messages.slice(lastUserIdx + 1),
+                    ];
+                }
+            }
         }
 
         const promptContent = JSON.stringify(body.messages);
         const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
 
+        // ── Semantic Cache Check ───────────────────────────────────────────────
         if (settings.cache_enabled && !isStreaming) {
             try {
                 const hit = await checkSemanticCache(admin, userId, promptContent, settings, cacheSidecar);
@@ -272,34 +450,74 @@ serve(async (req: Request) => {
             } catch (err) { console.warn("[cache] Cache check failed, continuing:", err); }
         }
 
-        const providerKey = await resolveProviderKey(admin, userId, finalProvider);
-        const upstream_cfg = buildUpstreamRequest(finalProvider, providerKey, finalModel, body);
-        const upstream = await fetch(upstream_cfg.url, { method: "POST", headers: upstream_cfg.headers, body: JSON.stringify(upstream_cfg.body) });
+        // ── Retry + Fallback Logic ─────────────────────────────────────────────
+        //
+        // Build an ordered list of providers to try. The primary provider comes first.
+        // If fallback is enabled, the remaining providers follow in FALLBACK_ORDER.
+        const maxAttempts = Math.max(1, settings.retry_attempts ?? DEFAULT_SETTINGS.retry_attempts);
+        const providersToTry: Provider[] = [finalProvider];
 
-        if (!upstream.ok) {
-            const errText = await upstream.text();
-            throw new HttpError(`Upstream '${finalProvider}' returned error ${upstream.status}: ${errText}`, upstream.status);
+        if (settings.fallback_enabled) {
+            for (const p of FALLBACK_ORDER) {
+                if (p !== finalProvider) providersToTry.push(p);
+            }
+        }
+
+        let successResult: AttemptResult | null = null;
+        let usedProvider = finalProvider;
+        let usedModel = finalModel;
+
+        for (const candidate of providersToTry) {
+            // For the primary provider, use the smart-routed model.
+            // For fallback providers, use their default model (original model may be incompatible).
+            const modelForCandidate = candidate === finalProvider
+                ? finalModel
+                : getDefaultModelForProvider(candidate);
+
+            console.log(`[gateway] Trying provider '${candidate}' with model '${modelForCandidate}' (max ${maxAttempts} attempts)`);
+
+            const result = await fetchWithRetry(admin, userId, candidate, modelForCandidate, body, isStreaming ? 1 : maxAttempts);
+
+            if (result) {
+                successResult = result;
+                usedProvider = result.provider;
+                usedModel = result.model;
+                if (candidate !== finalProvider) {
+                    console.log(`[gateway] Fallback to '${candidate}' succeeded.`);
+                }
+                break;
+            }
+        }
+
+        if (!successResult) {
+            throw new HttpError(
+                `All providers failed after retries${settings.fallback_enabled ? " and fallbacks" : ""}. Please check your provider API keys and try again.`,
+                502
+            );
         }
 
         const latencyMs = Date.now() - startTime;
+        const upstream = successResult.response;
 
+        // ── Streaming response ─────────────────────────────────────────────────
         if (isStreaming) {
             const { readable, writable } = new TransformStream();
             upstream.body?.pipeTo(writable);
-            logRequest(admin, { userId, requestedModel, finalModel, finalProvider, latencyMs, isStreaming: true, status: "success" });
-            return new Response(readable, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "MISS" } });
+            logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success" });
+            return new Response(readable, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "MISS", "X-Provider-Used": usedProvider } });
         }
 
+        // ── Non-streaming response ─────────────────────────────────────────────
         const jsonResp = await upstream.json();
         const promptTokens = jsonResp.usage?.prompt_tokens || 0;
         const compTokens = jsonResp.usage?.completion_tokens || 0;
 
         if (settings.cache_enabled && cacheSidecar.promptHash) {
-            storeCacheEntry(admin, userId, cacheSidecar, promptContent, jsonResp, finalModel, finalProvider, promptTokens + compTokens, settings.cache_ttl_hours);
+            storeCacheEntry(admin, userId, cacheSidecar, promptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
         }
 
-        logRequest(admin, { userId, requestedModel, finalModel, finalProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false });
-        return jsonResponse(jsonResp, 200, { "X-Cache": "MISS" });
+        logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false });
+        return jsonResponse(jsonResp, 200, { "X-Cache": "MISS", "X-Provider-Used": usedProvider });
 
     } catch (err: unknown) {
         const latencyMs = Date.now() - startTime;

@@ -74,11 +74,12 @@ const LogsSection = () => {
 
       if (error) {
         console.error("[LogsSection] Supabase error:", error.message, error.details);
-        throw error;
+        throw new Error("Could not load your gateway logs at this time. Please try again later.");
       }
       setLogs(data ?? []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("[LogsSection] fetchLogs:", err);
+      // Optional: using toast to show error
     } finally {
       setLoading(false);
     }
@@ -256,7 +257,7 @@ const LogsSection = () => {
                         onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
                       >
                         <TableCell className="font-mono text-xs text-muted-foreground">
-                          {new Date(log.created_at).toLocaleString()}
+                          {new Date(log.created_at).toLocaleString("en-US")}
                         </TableCell>
                         <TableCell>
                           <span className={`text-xs font-medium capitalize ${providerColor(log.provider)}`}>

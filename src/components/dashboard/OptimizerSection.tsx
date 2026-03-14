@@ -130,7 +130,7 @@ const OptimizerSection = () => {
     } catch (err: unknown) {
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Could not save settings.",
+        description: "Could not save your optimizer settings. Please try again.",
         variant: "destructive",
       });
     } finally {

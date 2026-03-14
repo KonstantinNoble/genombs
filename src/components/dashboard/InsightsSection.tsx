@@ -8,8 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface MonthlyStats {
-  month: string;
+interface DailyStat {
+  day: string;       // e.g. "Mar 14"
   totalRequests: number;
   cachedRequests: number;
   totalTokens: number;
@@ -24,7 +24,7 @@ interface InsightsData {
   avgLatencyMs: number;
   avgCacheLatencyMs: number;
   requestsToday: number;
-  monthlySeries: MonthlyStats[];
+  dailySeries: DailyStat[];
 }
 
 const EMPTY: InsightsData = {
@@ -35,7 +35,7 @@ const EMPTY: InsightsData = {
   avgLatencyMs: 0,
   avgCacheLatencyMs: 0,
   requestsToday: 0,
-  monthlySeries: [],
+  dailySeries: [],
 };
 
 // ── Chart config ──────────────────────────────────────────────────────────────
@@ -113,7 +113,8 @@ const InsightsSection = () => {
     const fetchInsights = async () => {
       setLoading(true);
       try {
-        const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+        const DAYS = 30;
+        const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000).toISOString();
 
         // Fetch request logs
         const { data: logs, error: logsError } = await (supabase as any)
@@ -157,19 +158,25 @@ const InsightsSection = () => {
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
         const requestsToday = logs.filter((l: any) => new Date(l.created_at) >= todayStart).length;
 
-        // Monthly series
-        const monthMap: Record<string, { total: number; cached: number; tokens: number; latencies: number[] }> = {};
+        // Daily series — pre-seed every day of the last 30 days with 0 so the chart
+        // always renders a continuous area, even when data is sparse (e.g. only 1 day).
+        const dayMap: Record<string, { total: number; cached: number; tokens: number; latencies: number[] }> = {};
+        for (let i = DAYS - 1; i >= 0; i--) {
+          const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+          const key = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          dayMap[key] = { total: 0, cached: 0, tokens: 0, latencies: [] };
+        }
         for (const log of logs) {
-          const key = new Date(log.created_at).toLocaleString("default", { month: "short" });
-          if (!monthMap[key]) monthMap[key] = { total: 0, cached: 0, tokens: 0, latencies: [] };
-          monthMap[key].total++;
-          if (log.cache_hit) monthMap[key].cached++;
-          monthMap[key].tokens += log.total_tokens || 0;
-          if (log.latency_ms) monthMap[key].latencies.push(log.latency_ms);
+          const key = new Date(log.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          if (!dayMap[key]) continue; // outside the 30-day window
+          dayMap[key].total++;
+          if (log.cache_hit) dayMap[key].cached++;
+          dayMap[key].tokens += log.total_tokens || 0;
+          if (log.latency_ms) dayMap[key].latencies.push(log.latency_ms);
         }
 
-        const monthlySeries: MonthlyStats[] = Object.entries(monthMap).map(([month, v]) => ({
-          month,
+        const dailySeries: DailyStat[] = Object.entries(dayMap).map(([day, v]) => ({
+          day,
           totalRequests: v.total,
           cachedRequests: v.cached,
           totalTokens: v.tokens,
@@ -178,9 +185,10 @@ const InsightsSection = () => {
             : 0,
         }));
 
-        setData({ totalRequests: total, cachedRequests: cached, cacheHitRate, tokensSavedByCache: tokensSaved, avgLatencyMs, avgCacheLatencyMs, requestsToday, monthlySeries });
-      } catch (err) {
+        setData({ totalRequests: total, cachedRequests: cached, cacheHitRate, tokensSavedByCache: tokensSaved, avgLatencyMs, avgCacheLatencyMs, requestsToday, dailySeries });
+      } catch (err: any) {
         console.error("[InsightsSection] Failed to load insights:", err);
+        // Only log to console, no toast needed for this background fetch
       } finally {
         setLoading(false);
       }
@@ -228,25 +236,21 @@ const InsightsSection = () => {
         />
       </div>
 
-      {/* Monthly Chart */}
+      {/* Daily Chart */}
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle>Request Volume (Last 3 Months)</CardTitle>
-          <CardDescription>Total requests vs. cache-served requests per month</CardDescription>
+          <CardTitle>Request Volume (Last 30 Days)</CardTitle>
+          <CardDescription>Total requests vs. cache-served requests per day</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="h-[350px] flex items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : data.monthlySeries.length === 0 ? (
-            <div className="h-[350px] flex items-center justify-center text-muted-foreground text-sm">
-              No data yet — send your first request through the gateway to see stats here.
-            </div>
           ) : (
             <ChartContainer config={chartConfig} className="h-[350px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.monthlySeries} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart data={data.dailySeries} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.3} />
@@ -258,8 +262,15 @@ const InsightsSection = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} className="text-xs" />
-                  <YAxis axisLine={false} tickLine={false} className="text-xs" />
+                  <XAxis
+                    dataKey="day"
+                    axisLine={false}
+                    tickLine={false}
+                    className="text-xs"
+                    interval={4}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <YAxis axisLine={false} tickLine={false} className="text-xs" allowDecimals={false} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Area type="monotone" dataKey="totalRequests" stroke="hsl(var(--muted-foreground))" strokeWidth={2} fillOpacity={1} fill="url(#totalGrad)" name="Total Requests" />
                   <Area type="monotone" dataKey="cachedRequests" stroke="hsl(var(--primary))" strokeWidth={2} fillOpacity={1} fill="url(#cacheGrad)" name="Served from Cache" />

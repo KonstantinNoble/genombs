@@ -140,7 +140,7 @@ const GatewaySection = () => {
       setShowKey((s) => ({ ...s, [provider]: false }));
       await loadKeys(); // Refresh metadata
     } catch (err: any) {
-      toast({ title: "Error saving key", description: err.message, variant: "destructive" });
+      toast({ title: "Error saving key", description: "Could not securely save your API key. Please try again.", variant: "destructive" });
     } finally {
       setSaving((s) => ({ ...s, [provider]: false }));
     }
@@ -160,7 +160,7 @@ const GatewaySection = () => {
       setSavedKeys((k) => ({ ...k, [provider]: null }));
       setInputs((i) => ({ ...i, [provider]: "" }));
     } catch (err: any) {
-      toast({ title: "Error deleting key", description: err.message, variant: "destructive" });
+      toast({ title: "Error deleting key", description: "Could not remove your API key. Please check your connection.", variant: "destructive" });
     } finally {
       setDeleting((d) => ({ ...d, [provider]: false }));
     }

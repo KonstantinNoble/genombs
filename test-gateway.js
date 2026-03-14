@@ -7,7 +7,7 @@ async function runTest() {
   // WICHTIG: Im Dashboard steht "gateway.synvertas.com" als Platzhalter für später.
   // Aktuell läuft dein Gateway live auf deiner Supabase URL!
   const gatewayUrl = "https://jgduivjxkbtbvezqybko.supabase.co/functions/v1/v1-chat-completions";
-  const mySaasKey = "sgw_78d8d0a3800c44ca8c2625f1c6838fdd7c2ea9b8640d5982337b5084a67c8ac3";
+  const mySaasKey = "sgw_e73c1bec9651823092465e4ff296ad16ef0909bf024e8b5586a4acc17ba9b834";
   // Supabase Anon Key — wird benötigt, damit Supabase die Anfrage zur Edge Function weiterleitet
   const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnZHVpdmp4a2J0YnZlenF5YmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMzI4NzcsImV4cCI6MjA4ODkwODg3N30._79NzAYIzjC6tuWmXoZZnl2JZpMtjA8zN8hdvionZao";
 

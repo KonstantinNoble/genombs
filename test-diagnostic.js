@@ -7,9 +7,9 @@ const accounts = [
     { name: "Account 2 (sgw_e73c...)", key: "sgw_e73c1bec9651823092465e4ff296ad16ef0909bf024e8b5586a4acc17ba9b834" },
 ];
 const models = [
-    { name: "OpenAI",    model: "gpt-4o-mini" },
+    { name: "OpenAI", model: "gpt-4o-mini" },
     { name: "Anthropic", model: "claude-3-5-haiku-20241022" },
-    { name: "Gemini",    model: "gemini-1.5-flash" },
+    { name: "Gemini", model: "gemini-1.5-flash" },
 ];
 
 async function test(saasKey, model) {

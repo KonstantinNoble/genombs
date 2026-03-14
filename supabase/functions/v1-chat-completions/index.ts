@@ -217,7 +217,8 @@ async function tryResolveProviderKey(admin: SupabaseClient, userId: string, prov
         const plaintext = await decrypt(data.key_encrypted as string, secret);
         admin.from("gateway_provider_keys").update({ last_used_at: new Date().toISOString() }).eq("user_id", userId).eq("provider", provider).then(() => { });
         return plaintext;
-    } catch {
+    } catch (err) {
+        console.error(`[gateway] Decryption failed for provider '${provider}', user '${userId}':`, err instanceof Error ? err.message : String(err));
         return null;
     }
 }

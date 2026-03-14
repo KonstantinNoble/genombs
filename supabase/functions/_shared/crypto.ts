@@ -54,7 +54,7 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
  */
 export async function encrypt(plaintext: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
-    const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit random IV for GCM
+    const iv = crypto.getRandomValues(new Uint8Array(12));
 
     const ciphertext = await crypto.subtle.encrypt(
         { name: "AES-GCM", iv },
@@ -62,34 +62,57 @@ export async function encrypt(plaintext: string, secret: string): Promise<string
         new TextEncoder().encode(plaintext),
     );
 
-    // Prepend IV to ciphertext so we can extract it on decryption
     const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength);
     combined.set(iv, 0);
     combined.set(new Uint8Array(ciphertext), iv.byteLength);
 
-    return btoa(String.fromCharCode(...combined));
+    // Prefix with version tag so decrypt() can reliably identify the format
+    const bytes = Array.from(combined);
+    let binary = "";
+    for (const b of bytes) binary += String.fromCharCode(b);
+    return "v1:" + btoa(binary);
 }
 
 /**
  * Decrypt a base64-encoded ciphertext (IV || ciphertext).
- * Returns the original plaintext string.
- * Throws if decryption fails (wrong key or tampered data).
+ * Handles three formats for backwards compatibility:
+ *   1. "v1:<base64>" — new versioned format (primary path)
+ *   2. "\x<hex>" — Postgres BYTEA hex format
+ *   3. "<base64>" — plain or double-base64 legacy format
  */
-export async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
+export async function decrypt(encryptedRaw: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
+    let base64Input = encryptedRaw;
 
-    const combined = Uint8Array.from(atob(encryptedBase64), (c) => c.charCodeAt(0));
+    if (base64Input.startsWith("v1:")) {
+        base64Input = base64Input.slice(3);
+    } else if (base64Input.startsWith("\\x")) {
+        const hex = base64Input.slice(2);
+        let str = "";
+        for (let i = 0; i < hex.length; i += 2) {
+            str += String.fromCharCode(parseInt(hex.slice(i, i + 2), 16));
+        }
+        base64Input = str.startsWith("v1:") ? str.slice(3) : str;
+    } else {
+        try {
+            const decoded = atob(base64Input.trim());
+            if (/^[A-Za-z0-9+/=]+$/.test(decoded) && decoded.length < base64Input.length) {
+                base64Input = decoded.startsWith("v1:") ? decoded.slice(3) : decoded;
+            }
+        } catch { /* use as-is */ }
+    }
+
+    let normalized = base64Input.trim().replace(/-/g, "+").replace(/_/g, "/");
+    while (normalized.length % 4 !== 0) normalized += "=";
+
+    const combined = Uint8Array.from(atob(normalized), (c) => c.charCodeAt(0));
     const iv = combined.slice(0, 12);
     const ciphertext = combined.slice(12);
 
-    const plaintext = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv },
-        key,
-        ciphertext,
-    );
-
+    const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
     return new TextDecoder().decode(plaintext);
 }
+
 
 /**
  * Get the encryption secret from environment variables.

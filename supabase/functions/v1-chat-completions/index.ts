@@ -362,6 +362,7 @@ interface LogPayload {
 async function logRequest(admin: SupabaseClient, m: LogPayload) {
     // Normalize provider: "cache" is not a real DB provider — store null so foreign-key / check constraints pass.
     const dbProvider = m.finalProvider === "cache" ? null : (m.finalProvider ?? null);
+    console.log(`[log] Logging request: userId=${m.userId}, status=${m.status}, cacheHit=${m.cacheHit}, cacheEntryId=${m.cacheEntryId}`);
     const { error } = await admin.from("gateway_request_logs").insert({
         user_id: m.userId,
         model_requested: m.requestedModel,
@@ -379,7 +380,11 @@ async function logRequest(admin: SupabaseClient, m: LogPayload) {
         prompt_optimized: m.promptOptimized ?? false,
         fallback_used: m.fallbackUsed ?? false,
     });
-    if (error) console.error("[log] Insert failed:", error.message, error.details);
+    if (error) {
+        console.error("[log] Insert failed:", error.message, error.details, error.hint);
+    } else {
+        console.log("[log] Request logged successfully");
+    }
 }
 
 // ============================================================================

@@ -293,7 +293,7 @@ function buildUpstreamRequest(provider: Provider, providerKey: string, model: st
             const userMessages = messages.filter((m) => m.role !== "system");
             return {
                 url: "https://api.anthropic.com/v1/messages",
-                headers: { ...baseHeaders, "x-api-key": providerKey, "anthropic-version": "2023-06-01" },
+                headers: { ...baseHeaders, "x-api-key": providerKey, "anthropic-version": "2024-10-22" },
                 body: { model, max_tokens: (body.max_tokens as number) ?? 1024, system: systemMsg || undefined, messages: userMessages.map((m) => ({ role: m.role, content: m.content })), stream: body.stream },
             };
         }
@@ -308,7 +308,7 @@ function buildUpstreamRequest(provider: Provider, providerKey: string, model: st
 function getDefaultModelForProvider(provider: Provider): string {
     switch (provider) {
         case "openai": return "gpt-4o-mini";
-        case "anthropic": return "claude-haiku-4-5";
+        case "anthropic": return "claude-3-5-haiku-20241022";
         case "google": return "gemini-2.5-flash";
         case "mistral": return "mistral-small-latest";
     }
@@ -512,9 +512,30 @@ serve(async (req: Request) => {
             else finalProvider = "openai"; // Default: OpenAI (gpt-*, o3-*, o4-*, etc.)
         }
 
+        // ── Semantic Cache Check (BEFORE optimizer for consistent cache keys) ─
+        // We cache based on the ORIGINAL user prompt, not the optimized one.
+        // This guarantees that identical user questions always produce the same
+        // cache key, regardless of how Groq rewrites them each time.
+        const originalPromptContent = JSON.stringify(body.messages);
+        const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
+
+        if (settings.cache_enabled && !isStreaming) {
+            try {
+                const hit = await checkSemanticCache(admin, userId, originalPromptContent, settings, cacheSidecar);
+                if (hit) {
+                    const latencyMs = Date.now() - startTime;
+                    const cachedBody = typeof hit.response_data === "string" ? JSON.parse(hit.response_data) : hit.response_data;
+                    admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id).then(() => { });
+                    logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized: false });
+                    return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": cacheSidecar.embedding ? "semantic" : "exact" });
+                }
+            } catch (err) { console.warn("[cache] Cache check failed, continuing:", err); }
+        }
+
         // ── Prompt Optimizer (Llama-4-Scout via Groq) ─────────────────────────
-        // Optimizes the last user message before caching and routing.
-        // Skipped for streaming requests to avoid extra latency on first token.
+        // Optimizes the last user message AFTER cache check.
+        // The optimized version is sent to the provider, but the original
+        // prompt is used for cache storage to ensure consistent matching.
         if (settings.prompt_optimizer_enabled && !isStreaming) {
             const messages = body.messages as Array<{ role: string; content: string }>;
             const lastUserIdx = messages.map((m) => m.role).lastIndexOf("user");
@@ -530,23 +551,6 @@ serve(async (req: Request) => {
                     ];
                 }
             }
-        }
-
-        const promptContent = JSON.stringify(body.messages);
-        const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
-
-        // ── Semantic Cache Check ───────────────────────────────────────────────
-        if (settings.cache_enabled && !isStreaming) {
-            try {
-                const hit = await checkSemanticCache(admin, userId, promptContent, settings, cacheSidecar);
-                if (hit) {
-                    const latencyMs = Date.now() - startTime;
-                    const cachedBody = typeof hit.response_data === "string" ? JSON.parse(hit.response_data) : hit.response_data;
-                    admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id).then(() => { });
-                    logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized });
-                    return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": cacheSidecar.embedding ? "semantic" : "exact" });
-                }
-            } catch (err) { console.warn("[cache] Cache check failed, continuing:", err); }
         }
 
         // ── Retry + Fallback Logic ─────────────────────────────────────────────
@@ -619,7 +623,7 @@ serve(async (req: Request) => {
         // and caching it would permanently serve the wrong provider to future requests.
         const isFallbackResponse = usedProvider !== finalProvider;
         if (settings.cache_enabled && cacheSidecar.promptHash && !isFallbackResponse) {
-            storeCacheEntry(admin, userId, cacheSidecar, promptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
+            storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
         } else if (isFallbackResponse) {
             console.log(`[gateway] Skipping cache store — fallback provider '${usedProvider}' used instead of requested '${finalProvider}'.`);
         }

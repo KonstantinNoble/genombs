@@ -202,7 +202,7 @@ async function resolveUser(admin: SupabaseClient, saasKey: string): Promise<{ us
     const { data, error } = await admin.from("gateway_saas_keys").select("user_id")
         .eq("api_key", saasKey).eq("is_active", true).maybeSingle();
     if (error || !data?.user_id) throw new HttpError("Invalid or inactive Synvertas API key.", 401);
-    admin.from("gateway_saas_keys").update({ last_used_at: new Date().toISOString() }).eq("api_key", saasKey).then(() => { });
+    await admin.from("gateway_saas_keys").update({ last_used_at: new Date().toISOString() }).eq("api_key", saasKey);
     const { data: s } = await admin.from("gateway_settings").select("*").eq("user_id", data.user_id).maybeSingle();
     return { userId: data.user_id, settings: { ...DEFAULT_SETTINGS, ...(s ?? {}) } };
 }
@@ -215,7 +215,7 @@ async function tryResolveProviderKey(admin: SupabaseClient, userId: string, prov
         if (error || !data?.key_encrypted) return null;
         const secret = getEncryptionSecret();
         const plaintext = await decrypt(data.key_encrypted as string, secret);
-        admin.from("gateway_provider_keys").update({ last_used_at: new Date().toISOString() }).eq("user_id", userId).eq("provider", provider).then(() => { });
+        await admin.from("gateway_provider_keys").update({ last_used_at: new Date().toISOString() }).eq("user_id", userId).eq("provider", provider);
         return plaintext;
     } catch (err) {
         console.error(`[gateway] Decryption failed for provider '${provider}', user '${userId}':`, err instanceof Error ? err.message : String(err));
@@ -239,42 +239,64 @@ async function generateEmbedding(text: string): Promise<number[] | null> {
         const hfToken = Deno.env.get("HUGGINGFACE_API_KEY");
         const headers: Record<string, string> = { "Content-Type": "application/json" };
         if (hfToken) headers["Authorization"] = `Bearer ${hfToken}`;
-        const res = await fetch(`https://api-inference.huggingface.co/pipeline/feature-extraction/${HF_EMBEDDING_MODEL}`, {
+        const res = await fetch(`https://router.huggingface.co/hf-inference/models/${HF_EMBEDDING_MODEL}/pipeline/feature-extraction`, {
             method: "POST", headers, body: JSON.stringify({ inputs: text.slice(0, 512), options: { wait_for_model: true } }),
         });
-        if (!res.ok) return null;
+        if (!res.ok) {
+            const errText = await res.text();
+            console.warn(`[cache] HuggingFace API Error (${res.status}):`, errText);
+            return null;
+        }
         const data = await res.json();
         if (Array.isArray(data) && Array.isArray(data[0])) return data[0] as number[];
         if (Array.isArray(data)) return data as number[];
+        console.warn("[cache] Invalid embedding format returned by HuggingFace.");
         return null;
-    } catch { return null; }
+    } catch (err) {
+        console.warn("[cache] Embedding fetch failed:", err);
+        return null;
+    }
 }
 
 async function checkSemanticCache(admin: SupabaseClient, userId: string, promptContent: string, settings: GatewaySettings, sidecar: { promptHash?: string; embedding?: number[] }) {
     const promptHash = await sha256Hex(promptContent);
     sidecar.promptHash = promptHash;
-    const { data: exactRow } = await admin.from("gateway_cache_entries").select("id, response_data, model, provider")
+    console.log(`[cache] Checking cache for hash: ${promptHash.slice(0, 16)}...`);
+    const { data: exactRows, error: exactErr } = await admin.from("gateway_cache_entries").select("id, response_data, model, provider")
         .eq("user_id", userId).eq("prompt_hash", promptHash)
-        .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`).maybeSingle();
-    if (exactRow) return exactRow;
+        .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+    if (exactErr) console.warn("[cache] Exact match query error:", exactErr.message);
+    if (exactRows && exactRows.length > 0) {
+        console.log(`[cache] Exact hash match found! ID: ${exactRows[0].id}`);
+        return exactRows[0];
+    }
+    console.log("[cache] No exact match, trying semantic search...");
     const embedding = await generateEmbedding(promptContent);
-    if (!embedding) return null;
+    if (!embedding) { console.log("[cache] Embedding generation failed, skipping semantic search."); return null; }
     sidecar.embedding = embedding;
     const { data: matches, error } = await admin.rpc("match_cache_entries", {
         p_user_id: userId, p_embedding: `[${embedding.join(",")}]`, p_threshold: settings.cache_similarity, p_limit: 1,
     });
-    if (!error && matches && matches.length > 0) return { id: matches[0].id, response_data: matches[0].response_data, model: matches[0].model, provider: matches[0].provider };
+    if (error) console.warn("[cache] Semantic search error:", error.message);
+    if (!error && matches && matches.length > 0) { console.log(`[cache] Semantic match found! ID: ${matches[0].id}`); return { id: matches[0].id, response_data: matches[0].response_data, model: matches[0].model, provider: matches[0].provider }; }
+    console.log("[cache] No semantic match found.");
     return null;
 }
 
-function storeCacheEntry(admin: SupabaseClient, userId: string, sidecar: { promptHash?: string; embedding?: number[] }, promptContent: string, responseData: Record<string, unknown>, model: string, provider: string, tokensSaved: number, ttlHours: number) {
-    if (!sidecar.promptHash) return;
+async function storeCacheEntry(admin: SupabaseClient, userId: string, sidecar: { promptHash?: string; embedding?: number[] }, promptContent: string, responseData: Record<string, unknown>, model: string, provider: string, tokensSaved: number, ttlHours: number) {
+    if (!sidecar.promptHash) { console.warn("[cache] No prompt hash, skipping cache store."); return; }
     const expiresAt = ttlHours > 0 ? new Date(Date.now() + ttlHours * 3_600_000).toISOString() : null;
-    admin.from("gateway_cache_entries").insert({
+    console.log(`[cache] Storing cache entry: hash=${sidecar.promptHash.slice(0, 16)}..., model=${model}, provider=${provider}, tokens=${tokensSaved}`);
+    const { error } = await admin.from("gateway_cache_entries").insert({
         user_id: userId, prompt_hash: sidecar.promptHash, prompt_text: promptContent.slice(0, 10_000),
         embedding: sidecar.embedding ? `[${sidecar.embedding.join(",")}]` : null, response_data: responseData,
         model, provider, tokens_saved: tokensSaved, hit_count: 0, expires_at: expiresAt,
-    }).then(({ error }) => { if (error) console.warn("[cache] Insert failed:", error.message); });
+    });
+    if (error) console.warn("[cache] Insert failed:", error.message, error.details);
+    else console.log("[cache] Cache entry stored successfully.");
 }
 
 // ============================================================================
@@ -337,10 +359,10 @@ interface LogPayload {
     fallbackUsed?: boolean;
 }
 
-function logRequest(admin: SupabaseClient, m: LogPayload) {
+async function logRequest(admin: SupabaseClient, m: LogPayload) {
     // Normalize provider: "cache" is not a real DB provider — store null so foreign-key / check constraints pass.
     const dbProvider = m.finalProvider === "cache" ? null : (m.finalProvider ?? null);
-    admin.from("gateway_request_logs").insert({
+    const { error } = await admin.from("gateway_request_logs").insert({
         user_id: m.userId,
         model_requested: m.requestedModel,
         model_used: m.finalModel,
@@ -356,7 +378,8 @@ function logRequest(admin: SupabaseClient, m: LogPayload) {
         error_code: m.errorCode ?? null,
         prompt_optimized: m.promptOptimized ?? false,
         fallback_used: m.fallbackUsed ?? false,
-    }).then(({ error }) => { if (error) console.error("[log] Insert failed:", error.message, error.details); });
+    });
+    if (error) console.error("[log] Insert failed:", error.message, error.details);
 }
 
 // ============================================================================
@@ -516,17 +539,43 @@ serve(async (req: Request) => {
         // We cache based on the ORIGINAL user prompt, not the optimized one.
         // This guarantees that identical user questions always produce the same
         // cache key, regardless of how Groq rewrites them each time.
-        const originalPromptContent = JSON.stringify(body.messages);
+        const originalPromptContent = JSON.stringify(
+            (body.messages as Array<any>).map(m => ({ role: m.role, content: m.content }))
+        );
         const cacheSidecar: { promptHash?: string; embedding?: number[] } = {};
 
-        if (settings.cache_enabled && !isStreaming) {
+        if (settings.cache_enabled) {
             try {
                 const hit = await checkSemanticCache(admin, userId, originalPromptContent, settings, cacheSidecar);
                 if (hit) {
                     const latencyMs = Date.now() - startTime;
                     const cachedBody = typeof hit.response_data === "string" ? JSON.parse(hit.response_data) : hit.response_data;
-                    admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id).then(() => { });
-                    logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming: false, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized: false });
+                    await admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id);
+                    await logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized: false });
+
+                    if (isStreaming) {
+                        // Convert cached JSON into an SSE stream
+                        const text = cachedBody?.choices?.[0]?.message?.content || "";
+                        const chunk = {
+                            id: cachedBody.id || `chatcmpl-${Date.now()}`,
+                            object: "chat.completion.chunk",
+                            created: cachedBody.created || Math.floor(Date.now() / 1000),
+                            model: hit.model,
+                            choices: [{ index: 0, delta: { role: "assistant", content: text }, finish_reason: null }]
+                        };
+                        const finalChunk = { ...chunk, choices: [{ index: 0, delta: {}, finish_reason: "stop" }] };
+
+                        const stream = new ReadableStream({
+                            start(controller) {
+                                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(chunk)}\n\n`));
+                                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
+                                controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
+                                controller.close();
+                            }
+                        });
+                        return new Response(stream, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "HIT", "X-Cache-Type": cacheSidecar.embedding ? "semantic" : "exact" } });
+                    }
+
                     return jsonResponse(cachedBody, 200, { "X-Cache": "HIT", "X-Cache-Type": cacheSidecar.embedding ? "semantic" : "exact" });
                 }
             } catch (err) { console.warn("[cache] Cache check failed, continuing:", err); }
@@ -605,10 +654,49 @@ serve(async (req: Request) => {
 
         // ── Streaming response ─────────────────────────────────────────────────
         if (isStreaming) {
-            const { readable, writable } = new TransformStream();
-            upstream.body?.pipeTo(writable);
-            logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
-            return new Response(readable, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "MISS", "X-Provider-Used": usedProvider } });
+            let accumulatedText = "";
+
+            const transform = new TransformStream({
+                transform(chunk, controller) {
+                    controller.enqueue(chunk); // Pass it to the user instantly
+
+                    // Try to accumulate text for the cache
+                    try {
+                        const chunkStr = new TextDecoder().decode(chunk);
+                        const lines = chunkStr.split('\n').filter(line => line.trim().startsWith('data: '));
+                        for (const line of lines) {
+                            const dataStr = line.replace('data: ', '').trim();
+                            if (dataStr === '[DONE]') continue;
+                            const data = JSON.parse(dataStr);
+                            const content = data.choices?.[0]?.delta?.content;
+                            if (content) accumulatedText += content;
+                        }
+                    } catch (e) { /* ignore parse errors on partial chunks */ }
+                },
+                flush() {
+                    // Stream has ended, now save to the cache in the background!
+                    const isFallbackResponse = usedProvider !== finalProvider;
+                    if (settings.cache_enabled && cacheSidecar.promptHash && !isFallbackResponse && accumulatedText.length > 0) {
+                        // Mock an OpenAI response payload to match what standard caching expects
+                        const mockJsonResponse = {
+                            id: `chatcmpl-${Date.now()}`,
+                            object: "chat.completion",
+                            created: Math.floor(Date.now() / 1000),
+                            model: usedModel,
+                            choices: [{ message: { role: "assistant", content: accumulatedText }, finish_reason: "stop" }],
+                            usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 } // Cannot easily estimate tokens
+                        };
+                        storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, mockJsonResponse as any, usedModel, usedProvider, 0, settings.cache_ttl_hours)
+                            .catch(err => console.error("[cache] Background stream cache save failed:", err));
+                    }
+                }
+            });
+
+            upstream.body?.pipeTo(transform.writable);
+
+            // Can't easily count tokens before returning real stream, just log success
+            await logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
+            return new Response(transform.readable, { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Cache": "MISS", "X-Provider-Used": usedProvider } });
         }
 
         // ── Non-streaming response ─────────────────────────────────────────────
@@ -623,13 +711,21 @@ serve(async (req: Request) => {
         // and caching it would permanently serve the wrong provider to future requests.
         const isFallbackResponse = usedProvider !== finalProvider;
         if (settings.cache_enabled && cacheSidecar.promptHash && !isFallbackResponse) {
-            storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
+            await storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
         } else if (isFallbackResponse) {
             console.log(`[gateway] Skipping cache store — fallback provider '${usedProvider}' used instead of requested '${finalProvider}'.`);
         }
 
-        logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
-        return jsonResponse(jsonResp, 200, { "X-Cache": "MISS", "X-Provider-Used": usedProvider });
+        await logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false, promptOptimized, fallbackUsed });
+
+        // Return detailed headers so we can see why it didn't hit cache
+        const extraHeaders = {
+            "X-Cache": "MISS",
+            "X-Provider-Used": usedProvider,
+            "X-Cache-Hash": cacheSidecar.promptHash || "none",
+            "X-Semantic-Status": cacheSidecar.embedding ? "success" : "failed"
+        };
+        return jsonResponse(jsonResp, 200, extraHeaders);
 
     } catch (err: unknown) {
         const latencyMs = Date.now() - startTime;
@@ -637,8 +733,8 @@ serve(async (req: Request) => {
         const message = err instanceof Error ? err.message : "Internal Gateway Error";
         console.error(`[v1-chat-completions] ${status} ${message}`);
         if (userId) {
-            const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
-            logRequest(admin, { userId, requestedModel, finalModel, finalProvider, latencyMs, isStreaming: false, status: "error", errorCode: String(status) });
+            const tempAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+            await logRequest(tempAdmin, { userId, requestedModel, finalModel, finalProvider, latencyMs, isStreaming: false, status: "error", errorCode: String(status) });
         }
         return jsonResponse({ error: { message, status } }, status);
     }

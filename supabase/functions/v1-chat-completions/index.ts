@@ -28,37 +28,40 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 }
 async function decrypt(encryptedRaw: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
-
     let base64Input = encryptedRaw;
 
-    // Format 1: Postgres bytea hex format — \x414243...
-    // The Supabase JS client returns BYTEA columns as "\x" + hex digits.
-    // Each pair of hex digits represents one byte of the original stored data.
-    if (base64Input.startsWith("\\x")) {
+    // ── Primary path: versioned format set by updated manage-provider-keys ──────
+    // New keys are stored as "v1:<base64>". This is 100% unambiguous regardless
+    // of DB column type (BYTEA vs TEXT) or PostgREST version.
+    if (base64Input.startsWith("v1:")) {
+        base64Input = base64Input.slice(3);
+    }
+    // ── Legacy path 1: Postgres bytea hex format — stored as \x414243... ────────
+    // The Supabase PostgREST layer returns BYTEA columns as "\x" + hex digits.
+    else if (base64Input.startsWith("\\x")) {
         const hex = base64Input.slice(2);
         let str = "";
         for (let i = 0; i < hex.length; i += 2) {
             str += String.fromCharCode(parseInt(hex.slice(i, i + 2), 16));
         }
         base64Input = str;
+        // After hex decode, check if the result still has the v1: prefix
+        if (base64Input.startsWith("v1:")) base64Input = base64Input.slice(3);
     }
-    // Format 2: PostgREST / newer Supabase version may base64-encode BYTEA before returning it.
-    // Detect this by checking if decoding the value gives a string starting with standard base64 chars.
-    // We try decoding once and see if the result is valid base64 itself (double-base64).
+    // ── Legacy path 2: PostgREST base64-encoded BYTEA (double-base64) ───────────
     else {
         try {
             const decoded = atob(base64Input.trim());
-            // If the decoded string itself looks like base64 (all printable ASCII, starts with non-binary)
-            // and is less than 512 chars (typical encrypted key size), treat outer layer as wrapping.
+            // decoded will be the original base64 string if this is double-base64
             if (/^[A-Za-z0-9+/=]+$/.test(decoded) && decoded.length < base64Input.length) {
-                base64Input = decoded;
+                base64Input = decoded.startsWith("v1:") ? decoded.slice(3) : decoded;
             }
         } catch {
-            // Not valid base64 at outer level, use as-is
+            // Not valid outer base64, use as-is
         }
     }
 
-    // Normalize base64: convert URL-safe characters and fix padding
+    // Normalize URL-safe base64 and fix padding
     let normalized = base64Input.trim().replace(/-/g, "+").replace(/_/g, "/");
     while (normalized.length % 4 !== 0) {
         normalized += "=";
@@ -67,10 +70,10 @@ async function decrypt(encryptedRaw: string, secret: string): Promise<string> {
     const combined = Uint8Array.from(atob(normalized), (c) => c.charCodeAt(0));
     const iv = combined.slice(0, 12);
     const ciphertext = combined.slice(12);
-
     const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
     return new TextDecoder().decode(plaintext);
 }
+
 
 function getEncryptionSecret(): string {
     const secret = Deno.env.get("GATEWAY_ENCRYPTION_SECRET");

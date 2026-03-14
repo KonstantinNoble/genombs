@@ -34,7 +34,12 @@ async function encrypt(plaintext: string, secret: string): Promise<string> {
     const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength);
     combined.set(iv, 0);
     combined.set(new Uint8Array(ciphertext), iv.byteLength);
-    return btoa(String.fromCharCode(...combined));
+    // Prefix with version tag so decrypt() can reliably identify the format
+    // regardless of whether the DB column is TEXT or BYTEA.
+    const bytes = Array.from(combined);
+    let binary = "";
+    for (const b of bytes) binary += String.fromCharCode(b);
+    return "v1:" + btoa(binary);
 }
 
 function getEncryptionSecret(): string {

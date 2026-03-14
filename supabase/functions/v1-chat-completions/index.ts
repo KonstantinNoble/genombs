@@ -308,7 +308,7 @@ function getDefaultModelForProvider(provider: Provider): string {
     switch (provider) {
         case "openai": return "gpt-4o-mini";
         case "anthropic": return "claude-3-5-haiku-20241022";
-        case "google": return "gemini-1.5-flash";
+        case "google": return "gemini-2.0-flash-lite";
         case "mistral": return "mistral-small-latest";
     }
 }

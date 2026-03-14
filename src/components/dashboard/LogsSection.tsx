@@ -27,7 +27,9 @@ import { useAuth } from "@/contexts/AuthContext";
 interface LogEntry {
   id: string;
   created_at: string;
-  model: string | null;
+  model_requested: string | null;
+  model_used: string | null;
+  provider: string | null;
   prompt_hash: string | null;
   total_tokens: number | null;
   latency_ms: number | null;
@@ -60,7 +62,7 @@ const LogsSection = () => {
     try {
       const { data, error } = await (supabase as any)
         .from("gateway_request_logs")
-        .select("id, created_at, model, prompt_hash, total_tokens, latency_ms, cache_hit, status")
+        .select("id, created_at, model_requested, model_used, provider, prompt_hash, total_tokens, latency_ms, cache_hit, status")
         .eq("user_id", user.id)
         .order("created_at", { ascending: sortDirection === "asc" })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
@@ -88,7 +90,9 @@ const LogsSection = () => {
   const filteredLogs = logs.filter((log) => {
     const matchesSearch =
       !searchQuery ||
-      (log.model ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.model_used ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.model_requested ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.provider ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (log.prompt_hash ?? "").toLowerCase().includes(searchQuery.toLowerCase());
     const displayStatus = getDisplayStatus(log);
     const matchesStatus = statusFilter === "all" || displayStatus === statusFilter;
@@ -214,7 +218,8 @@ const LogsSection = () => {
                 <TableHeader>
                   <TableRow className="bg-muted/20 hover:bg-muted/20">
                     <TableHead className="w-44">Timestamp</TableHead>
-                    <TableHead className="w-32">Model</TableHead>
+                    <TableHead className="w-32">Model Used</TableHead>
+                    <TableHead className="w-24">Provider</TableHead>
                     <TableHead>Prompt Hash</TableHead>
                     <TableHead className="w-24 text-right">Tokens</TableHead>
                     <TableHead className="w-24 text-right">Latency</TableHead>
@@ -234,7 +239,10 @@ const LogsSection = () => {
                           {new Date(log.created_at).toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          <span className="font-mono text-xs">{log.model ?? "—"}</span>
+                          <span className="font-mono text-xs">{log.model_used ?? log.model_requested ?? "—"}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-xs text-muted-foreground capitalize">{log.provider ?? "—"}</span>
                         </TableCell>
                         <TableCell className="max-w-xs">
                           <p className="truncate text-sm font-mono text-muted-foreground">
@@ -281,9 +289,21 @@ const LogsSection = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Model</span>
+                    <span className="text-muted-foreground">Model Used</span>
                     <span className="font-mono text-xs">
-                      {logs.find((l) => l.id === expandedRow)?.model ?? "—"}
+                      {logs.find((l) => l.id === expandedRow)?.model_used ?? "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Model Requested</span>
+                    <span className="font-mono text-xs">
+                      {logs.find((l) => l.id === expandedRow)?.model_requested ?? "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Provider</span>
+                    <span className="font-mono text-xs capitalize">
+                      {logs.find((l) => l.id === expandedRow)?.provider ?? "—"}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">

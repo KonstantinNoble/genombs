@@ -551,7 +551,12 @@ serve(async (req: Request) => {
                     const latencyMs = Date.now() - startTime;
                     const cachedBody = typeof hit.response_data === "string" ? JSON.parse(hit.response_data) : hit.response_data;
                     await admin.from("gateway_cache_entries").update({ hit_count: (hit as any).hit_count + 1, last_hit_at: new Date().toISOString() }).eq("id", hit.id);
-                    await logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized: false });
+
+                    // Extract token counts from cached response
+                    const promptTokens = (cachedBody?.usage?.prompt_tokens) ?? 0;
+                    const compTokens = (cachedBody?.usage?.completion_tokens) ?? 0;
+
+                    await logRequest(admin, { userId, requestedModel, finalModel: hit.model, finalProvider: "cache", latencyMs, isStreaming, promptTokens, compTokens, status: "cached", cacheHit: true, cacheEntryId: hit.id, promptOptimized: false });
 
                     if (isStreaming) {
                         // Convert cached JSON into an SSE stream

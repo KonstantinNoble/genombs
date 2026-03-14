@@ -198,6 +198,32 @@ const InsightsSection = () => {
     };
 
     fetchInsights();
+
+    // Subscribe to real-time updates for logs and cache entries
+    const logsSubscription = (supabase as any)
+      .from("gateway_request_logs")
+      .on("*", (payload: any) => {
+        if (payload.new?.user_id === user.id) {
+          console.log("[InsightsSection] Real-time log update received, refreshing insights");
+          setTimeout(() => fetchInsights(), 500);
+        }
+      })
+      .subscribe();
+
+    const cacheSubscription = (supabase as any)
+      .from("gateway_cache_entries")
+      .on("*", (payload: any) => {
+        if (payload.new?.user_id === user.id) {
+          console.log("[InsightsSection] Real-time cache update received, refreshing insights");
+          setTimeout(() => fetchInsights(), 500);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      logsSubscription.unsubscribe();
+      cacheSubscription.unsubscribe();
+    };
   }, [user]);
 
   return (

@@ -167,7 +167,26 @@ const LogsSection = () => {
     }
   }, [user, sortDirection, page]);
 
-  useEffect(() => { fetchLogs(); }, [fetchLogs]);
+  useEffect(() => {
+    fetchLogs();
+
+    // Subscribe to real-time updates for new logs
+    if (!user) return;
+    const subscription = (supabase as any)
+      .from("gateway_request_logs")
+      .on("*", (payload: any) => {
+        if (payload.new?.user_id === user.id) {
+          console.log("[LogsSection] Real-time update received, refreshing logs");
+          // Small delay to ensure all database writes are complete
+          setTimeout(() => fetchLogs(), 500);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [fetchLogs, user]);
 
   // ── Derived data ────────────────────────────────────────────────────────────
   const getDisplayStatus = (log: LogEntry): "success" | "cached" | "error" => {

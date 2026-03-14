@@ -115,36 +115,47 @@ const InsightsSection = () => {
       try {
         const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
-        const { data: logs, error } = await (supabase as any)
+        // Fetch request logs
+        const { data: logs, error: logsError } = await (supabase as any)
           .from("gateway_request_logs")
           .select("created_at, status, cache_hit, total_tokens, latency_ms, prompt_tokens, completion_tokens")
           .eq("user_id", user.id)
           .gte("created_at", since)
           .order("created_at", { ascending: true });
 
-        if (error) throw error;
-        if (!logs || logs.length === 0) { setData(EMPTY); return; }
+        if (logsError) throw logsError;
+
+        // Fetch cache entries (contains actual tokens_saved per entry)
+        const { data: cacheEntries } = await (supabase as any)
+          .from("gateway_cache_entries")
+          .select("tokens_saved, hit_count")
+          .eq("user_id", user.id)
+          .gte("created_at", since);
+
+        const tokensSaved = (cacheEntries ?? []).reduce(
+          (acc: number, e: { tokens_saved: number | null; hit_count: number | null }) =>
+            acc + (e.tokens_saved ?? 0) * Math.max(1, e.hit_count ?? 1),
+          0
+        );
+
+        if (!logs || logs.length === 0) { setData({ ...EMPTY, tokensSavedByCache: tokensSaved }); return; }
 
         const total = logs.length;
-        const cached = logs.filter((l) => l.cache_hit).length;
+        const cached = logs.filter((l: any) => l.cache_hit).length;
         const cacheHitRate = total > 0 ? Math.round((cached / total) * 1000) / 10 : 0;
 
-        const tokensSaved = logs
-          .filter((l) => l.cache_hit)
-          .reduce((acc, l) => acc + (l.total_tokens || 0), 0);
-
-        const nonCachedLogs = logs.filter((l) => !l.cache_hit && l.latency_ms);
+        const nonCachedLogs = logs.filter((l: any) => !l.cache_hit && l.latency_ms);
         const avgLatencyMs = nonCachedLogs.length > 0
-          ? Math.round(nonCachedLogs.reduce((acc, l) => acc + l.latency_ms, 0) / nonCachedLogs.length)
+          ? Math.round(nonCachedLogs.reduce((acc: number, l: any) => acc + l.latency_ms, 0) / nonCachedLogs.length)
           : 0;
 
-        const cachedLogs = logs.filter((l) => l.cache_hit && l.latency_ms);
+        const cachedLogs = logs.filter((l: any) => l.cache_hit && l.latency_ms);
         const avgCacheLatencyMs = cachedLogs.length > 0
-          ? Math.round(cachedLogs.reduce((acc, l) => acc + l.latency_ms, 0) / cachedLogs.length)
+          ? Math.round(cachedLogs.reduce((acc: number, l: any) => acc + l.latency_ms, 0) / cachedLogs.length)
           : 0;
 
         const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-        const requestsToday = logs.filter((l) => new Date(l.created_at) >= todayStart).length;
+        const requestsToday = logs.filter((l: any) => new Date(l.created_at) >= todayStart).length;
 
         // Monthly series
         const monthMap: Record<string, { total: number; cached: number; tokens: number; latencies: number[] }> = {};

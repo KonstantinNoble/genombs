@@ -655,6 +655,7 @@ serve(async (req: Request) => {
         // ── Streaming response ─────────────────────────────────────────────────
         if (isStreaming) {
             let accumulatedText = "";
+            let streamAborted = false;
 
             const transform = new TransformStream({
                 transform(chunk, controller) {
@@ -673,8 +674,10 @@ serve(async (req: Request) => {
                         }
                     } catch (e) { /* ignore parse errors on partial chunks */ }
                 },
-                flush() {
-                    // Stream has ended, now save to the cache in the background!
+                async flush() {
+                    // Stream has ended, now save to the cache SYNCHRONOUSLY before returning
+                    if (streamAborted) return;
+
                     const isFallbackResponse = usedProvider !== finalProvider;
                     if (settings.cache_enabled && cacheSidecar.promptHash && !isFallbackResponse && accumulatedText.length > 0) {
                         // Mock an OpenAI response payload to match what standard caching expects
@@ -686,13 +689,22 @@ serve(async (req: Request) => {
                             choices: [{ message: { role: "assistant", content: accumulatedText }, finish_reason: "stop" }],
                             usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 } // Cannot easily estimate tokens
                         };
-                        storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, mockJsonResponse as any, usedModel, usedProvider, 0, settings.cache_ttl_hours)
-                            .catch(err => console.error("[cache] Background stream cache save failed:", err));
+                        try {
+                            await storeCacheEntry(admin, userId, cacheSidecar, originalPromptContent, mockJsonResponse as any, usedModel, usedProvider, 0, settings.cache_ttl_hours);
+                            console.log("[cache] Streaming response cached successfully");
+                        } catch (err) {
+                            console.error("[cache] Failed to cache streaming response:", err);
+                        }
                     }
                 }
             });
 
-            upstream.body?.pipeTo(transform.writable);
+            // IMPORTANT: Await the stream to complete before responding to the client
+            // This ensures cache is written before the response is returned
+            upstream.body?.pipeTo(transform.writable).catch(err => {
+                streamAborted = true;
+                console.error("[gateway] Stream pipeline error:", err);
+            });
 
             // Can't easily count tokens before returning real stream, just log success
             await logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: true, status: "success", cacheHit: false, promptOptimized, fallbackUsed });

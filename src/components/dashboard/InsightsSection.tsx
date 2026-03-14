@@ -133,9 +133,12 @@ const InsightsSection = () => {
           .eq("user_id", user.id)
           .gte("created_at", since);
 
+        // tokens_saved: tokens cost of the original response stored in cache
+        // hit_count: number of times this cache entry was REUSED after initial creation
+        // Total savings = tokens_saved * (1 original + hit_count reuses)
         const tokensSaved = (cacheEntries ?? []).reduce(
           (acc: number, e: { tokens_saved: number | null; hit_count: number | null }) =>
-            acc + (e.tokens_saved ?? 0) * Math.max(1, e.hit_count ?? 1),
+            acc + (e.tokens_saved ?? 0) * ((e.hit_count ?? 0) + 1),
           0
         );
 

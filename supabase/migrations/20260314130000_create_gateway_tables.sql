@@ -61,12 +61,14 @@ CREATE INDEX IF NOT EXISTS idx_gateway_request_logs_provider ON public.gateway_r
 ALTER TABLE public.gateway_cache_entries ENABLE ROW LEVEL SECURITY;
 
 -- RLS policy: Users can only see their own cache entries
-CREATE POLICY IF NOT EXISTS cache_entries_user_isolation ON public.gateway_cache_entries
+DROP POLICY IF EXISTS cache_entries_user_isolation ON public.gateway_cache_entries;
+CREATE POLICY cache_entries_user_isolation ON public.gateway_cache_entries
     FOR ALL USING (auth.uid() = user_id);
 
 -- Enable RLS for gateway_request_logs
 ALTER TABLE public.gateway_request_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS policy: Users can only see their own logs
-CREATE POLICY IF NOT EXISTS request_logs_user_isolation ON public.gateway_request_logs
+DROP POLICY IF EXISTS request_logs_user_isolation ON public.gateway_request_logs;
+CREATE POLICY request_logs_user_isolation ON public.gateway_request_logs
     FOR ALL USING (auth.uid() = user_id);

@@ -29,7 +29,7 @@ async function deriveCryptoKey(secret: string): Promise<CryptoKey> {
 
 async function decrypt(encryptedBase64: string, secret: string): Promise<string> {
     const key = await deriveCryptoKey(secret);
-    
+
     // Handle Postgres bytea hex format (\x4538...)
     let base64Input = encryptedBase64;
     if (base64Input.startsWith("\\x")) {
@@ -46,7 +46,7 @@ async function decrypt(encryptedBase64: string, secret: string): Promise<string>
     while (normalized.length % 4 !== 0) {
         normalized += "=";
     }
-    
+
     const combined = Uint8Array.from(atob(normalized), (c) => c.charCodeAt(0));
     const iv = combined.slice(0, 12);
     const ciphertext = combined.slice(12);

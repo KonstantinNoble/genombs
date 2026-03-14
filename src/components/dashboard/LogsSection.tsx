@@ -491,7 +491,6 @@ const LogsSection = () => {
                           </TableRow>
                         )}
                       </React.Fragment>
->>>>>>> 7ed58d06e626495dbd05db2b5e90c2ccde0302a1
                     );
                   })}
                 </TableBody>

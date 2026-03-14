@@ -4,8 +4,8 @@ const saasKey = "sgw_e73c1bec9651823092465e4ff296ad16ef0909bf024e8b5586a4acc17ba
 
 const models = [
     { name: "OpenAI",    model: "gpt-4o-mini" },
-    { name: "Anthropic", model: "claude-3-5-haiku-20241022" },
-    { name: "Gemini",    model: "gemini-2.0-flash-lite" },
+    { name: "Anthropic", model: "claude-haiku-4-5" },
+    { name: "Gemini",    model: "gemini-2.5-flash" },
 ];
 
 async function test(model) {

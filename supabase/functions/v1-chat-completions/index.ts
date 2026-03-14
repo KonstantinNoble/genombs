@@ -307,8 +307,8 @@ function buildUpstreamRequest(provider: Provider, providerKey: string, model: st
 function getDefaultModelForProvider(provider: Provider): string {
     switch (provider) {
         case "openai": return "gpt-4o-mini";
-        case "anthropic": return "claude-3-5-haiku-20241022";
-        case "google": return "gemini-2.0-flash-lite";
+        case "anthropic": return "claude-haiku-4-5";
+        case "google": return "gemini-2.5-flash";
         case "mistral": return "mistral-small-latest";
     }
 }

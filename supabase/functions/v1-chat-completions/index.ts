@@ -262,7 +262,7 @@ async function checkSemanticCache(admin: SupabaseClient, userId: string, promptC
     const promptHash = await sha256Hex(promptContent);
     sidecar.promptHash = promptHash;
     console.log(`[cache] Checking cache for hash: ${promptHash.slice(0, 16)}...`);
-    const { data: exactRows, error: exactErr } = await admin.from("gateway_cache_entries").select("id, response_data, model, provider")
+    const { data: exactRows, error: exactErr } = await admin.from("gateway_cache_entries").select("id, response_data, model, provider, hit_count, last_hit_at")
         .eq("user_id", userId).eq("prompt_hash", promptHash)
         .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
         .order("created_at", { ascending: false })
@@ -281,7 +281,7 @@ async function checkSemanticCache(admin: SupabaseClient, userId: string, promptC
         p_user_id: userId, p_embedding: `[${embedding.join(",")}]`, p_threshold: settings.cache_similarity, p_limit: 1,
     });
     if (error) console.warn("[cache] Semantic search error:", error.message);
-    if (!error && matches && matches.length > 0) { console.log(`[cache] Semantic match found! ID: ${matches[0].id}`); return { id: matches[0].id, response_data: matches[0].response_data, model: matches[0].model, provider: matches[0].provider }; }
+    if (!error && matches && matches.length > 0) { console.log(`[cache] Semantic match found! ID: ${matches[0].id}`); return { id: matches[0].id, response_data: matches[0].response_data, model: matches[0].model, provider: matches[0].provider, hit_count: matches[0].hit_count, last_hit_at: matches[0].last_hit_at }; }
     console.log("[cache] No semantic match found.");
     return null;
 }

@@ -90,7 +90,9 @@ const OptimizerSection = () => {
 
       if (!error && data) {
         setCacheEnabled(data.cache_enabled ?? DEFAULTS.cacheEnabled);
-        setCacheSimilarity([Math.round((data.cache_similarity ?? DEFAULTS.cacheSimilarity / 100) * 100)]);
+        // cache_similarity is stored as 0-1 in DB, convert to percentage for UI
+        const similarityFromDb = data.cache_similarity ?? (DEFAULTS.cacheSimilarity / 100);
+        setCacheSimilarity([Math.round(similarityFromDb * 100)]);
         setCacheTTLHours(data.cache_ttl_hours ?? DEFAULTS.cacheTTLHours);
         setFallbackEnabled(data.fallback_enabled ?? DEFAULTS.fallbackEnabled);
         setRetryAttempts([data.retry_attempts ?? DEFAULTS.retryAttempts]);

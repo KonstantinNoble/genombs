@@ -173,18 +173,25 @@ const LogsSection = () => {
     // Subscribe to real-time updates for new logs
     if (!user) return;
     const subscription = (supabase as any)
-      .from("gateway_request_logs")
-      .on("*", (payload: any) => {
-        if (payload.new?.user_id === user.id) {
+      .channel(`gateway_logs_${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "gateway_request_logs",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: any) => {
           console.log("[LogsSection] Real-time update received, refreshing logs");
           // Small delay to ensure all database writes are complete
           setTimeout(() => fetchLogs(), 500);
         }
-      })
+      )
       .subscribe();
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, [fetchLogs, user]);
 

@@ -40,7 +40,7 @@ const DEFAULTS = {
   cacheTTLHours: 24,
   fallbackEnabled: true,
   retryAttempts: 3,
-  promptOptimizerEnabled: false,
+  promptOptimizerEnabled: true,
 };
 
 const TTL_OPTIONS = [
@@ -300,7 +300,6 @@ const OptimizerSection = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <CardTitle>Auto-Prompt Enhancement</CardTitle>
-                    <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">Beta</span>
                   </div>
                   <CardDescription>
                     Automatically rewrites user prompts for clarity and precision using Llama-4-Scout (Groq)

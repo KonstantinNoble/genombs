@@ -121,7 +121,7 @@ const DEFAULT_SETTINGS: GatewaySettings = {
     cache_ttl_hours: 24,
     fallback_enabled: true,
     retry_attempts: 3,
-    prompt_optimizer_enabled: false,
+    prompt_optimizer_enabled: true,
 };
 
 // ============================================================================

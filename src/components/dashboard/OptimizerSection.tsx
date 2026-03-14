@@ -148,14 +148,36 @@ const OptimizerSection = () => {
   };
 
   // ── Reset to defaults ───────────────────────────────────────────────────────
-  const handleResetDefaults = () => {
+  const handleResetDefaults = async () => {
     setCacheEnabled(DEFAULTS.cacheEnabled);
     setCacheSimilarity([DEFAULTS.cacheSimilarity]);
     setCacheTTLHours(DEFAULTS.cacheTTLHours);
     setFallbackEnabled(DEFAULTS.fallbackEnabled);
     setRetryAttempts([DEFAULTS.retryAttempts]);
     setPromptOptimizerEnabled(DEFAULTS.promptOptimizerEnabled);
-    toast({ title: "Settings Reset", description: "Restored to default values." });
+
+    // Save the defaults to DB immediately
+    setSaving(true);
+    try {
+      if (!user) return;
+      const payload = {
+        user_id: user.id,
+        cache_enabled: DEFAULTS.cacheEnabled,
+        cache_similarity: DEFAULTS.cacheSimilarity / 100,
+        cache_ttl_hours: DEFAULTS.cacheTTLHours,
+        fallback_enabled: DEFAULTS.fallbackEnabled,
+        retry_attempts: DEFAULTS.retryAttempts,
+        prompt_optimizer_enabled: DEFAULTS.promptOptimizerEnabled,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await (supabase as any).from("gateway_settings").upsert(payload, { onConflict: "user_id" });
+      if (error) throw error;
+      toast({ title: "Settings Reset", description: "Restored and saved default values." });
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to save default settings.", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -169,6 +191,28 @@ const OptimizerSection = () => {
   return (
     <TooltipProvider>
       <div className="space-y-6">
+        
+        {/* Header & Action Buttons */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight">Optimizer</h2>
+            <p className="text-muted-foreground mt-1 text-sm">Fine-tune your gateway's performance, caching, and reliability settings.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={handleResetDefaults} disabled={saving}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
+            <Button onClick={handleSaveSettings} disabled={saving}>
+              {saving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {saving ? "Saving..." : "Save Settings"}
+            </Button>
+          </div>
+        </div>
         {/* Cache Configuration */}
         <Card className="glass-card">
           <CardHeader>
@@ -350,21 +394,6 @@ const OptimizerSection = () => {
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3">
-          <Button variant="outline" onClick={handleResetDefaults} disabled={saving}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset to Defaults
-          </Button>
-          <Button onClick={handleSaveSettings} disabled={saving}>
-            {saving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            {saving ? "Saving..." : "Save Settings"}
-          </Button>
-        </div>
       </div>
     </TooltipProvider>
   );

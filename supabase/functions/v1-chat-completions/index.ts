@@ -534,8 +534,14 @@ serve(async (req: Request) => {
         const promptTokens = jsonResp.usage?.prompt_tokens || 0;
         const compTokens = jsonResp.usage?.completion_tokens || 0;
 
-        if (settings.cache_enabled && cacheSidecar.promptHash) {
+        // Only cache if the PRIMARY (requested) provider handled the request.
+        // Never cache fallback responses — a fallback means the primary key failed,
+        // and caching it would permanently serve the wrong provider to future requests.
+        const isFallbackResponse = usedProvider !== finalProvider;
+        if (settings.cache_enabled && cacheSidecar.promptHash && !isFallbackResponse) {
             storeCacheEntry(admin, userId, cacheSidecar, promptContent, jsonResp, usedModel, usedProvider, promptTokens + compTokens, settings.cache_ttl_hours);
+        } else if (isFallbackResponse) {
+            console.log(`[gateway] Skipping cache store — fallback provider '${usedProvider}' used instead of requested '${finalProvider}'.`);
         }
 
         logRequest(admin, { userId, requestedModel, finalModel: usedModel, finalProvider: usedProvider, latencyMs, isStreaming: false, promptTokens, compTokens, status: "success", cacheHit: false });

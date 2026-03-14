@@ -293,7 +293,7 @@ function buildUpstreamRequest(provider: Provider, providerKey: string, model: st
             const userMessages = messages.filter((m) => m.role !== "system");
             return {
                 url: "https://api.anthropic.com/v1/messages",
-                headers: { ...baseHeaders, "x-api-key": providerKey, "anthropic-version": "2024-10-22" },
+                headers: { ...baseHeaders, "x-api-key": providerKey, "anthropic-version": "2023-06-01" },
                 body: { model, max_tokens: (body.max_tokens as number) ?? 1024, system: systemMsg || undefined, messages: userMessages.map((m) => ({ role: m.role, content: m.content })), stream: body.stream },
             };
         }
